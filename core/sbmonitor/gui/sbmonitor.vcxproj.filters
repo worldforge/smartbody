@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Generated">
+      <UniqueIdentifier>{0998543c-72cd-4a0c-9b74-37938744c37a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="moc_CommandDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_ConnectDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_DataViewerDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_glwidget.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_ResourceDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_SbmDebuggerForm.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_SettingsDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_UtilsDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CommandDialog.cpp" />
+    <ClCompile Include="ConnectDialog.cpp" />
+    <ClCompile Include="DataViewerDialog.cpp" />
+    <ClCompile Include="GLGraphWidget.cpp" />
+    <ClCompile Include="glwidget.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ResourceDialog.cpp" />
+    <ClCompile Include="SbmDebuggerForm.cpp" />
+    <ClCompile Include="SettingsDialog.cpp" />
+    <ClCompile Include="UtilsDialog.cpp" />
+    <ClCompile Include="BmlCreatorDialog.cpp" />
+    <ClCompile Include="EntityCreatorDialog.cpp" />
+    <ClCompile Include="FaceDialog.cpp" />
+    <ClCompile Include="moc_BMLCreatorDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_EntityCreatorDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="moc_FaceDialog.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui_CommandDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_ConnectDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_DataViewerDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_ResourceDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_SbmDebuggerForm.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_SettingsDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_UtilsDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CommandDialog.h" />
+    <ClInclude Include="ConnectDialog.h" />
+    <ClInclude Include="DataViewerDialog.h" />
+    <ClInclude Include="GLGraphWidget.h" />
+    <ClInclude Include="glwidget.h" />
+    <ClInclude Include="QtCrtDbgOff.h" />
+    <ClInclude Include="QtCrtDbgOn.h" />
+    <ClInclude Include="ResourceDialog.h" />
+    <ClInclude Include="SbmDebuggerForm.h" />
+    <ClInclude Include="SettingsDialog.h" />
+    <ClInclude Include="UtilsDialog.h" />
+    <ClInclude Include="BmlCreatorDialog.h" />
+    <ClInclude Include="EntityCreatorDialog.h" />
+    <ClInclude Include="FaceDialog.h" />
+    <ClInclude Include="ui_BMLCreatorDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_EntityCreatorDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_FaceDialog.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,77 @@
+span.glyphicon{
+    font-size: 2.0em;
+}
+#btm-note{
+	margin: auto;
+    width: 80%;
+    padding: 10px;
+	bottom: 10px;
+}
+body{
+    background-color: white;
+	overflow: scroll;
+}
+.tb_right{
+    float: right;
+}
+#header-div{
+    background-color: black;
+}
+#content-div{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    color: black;
+    background-color: white;
+}
+
+#logos{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#nav > li > a:hover {
+    color: #d9534f;
+    background-color: black;
+}
+
+#nav{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#nav > li > a.current {
+    color: #d9534f;
+    background-color: black;
+}
+p{
+	font-size: 1.2em;
+}
+.note {
+	font-size: 1.0em;
+}
+.error{
+	margin-top : 5px;
+	margin-bottom : 5px;
+	border-radius: 10px;
+    border: 2px dashed #d9534f;
+    padding: 10px; 
+    width: auto;
+    height: auto; 
+	font-style : italic;
+	font-size : 1.0em;
+}
+.correct{
+	margin-top : 5px;
+	margin-bottom : 5px;
+	border-radius: 10px;
+    border: 2px dashed #428bca;
+    padding: 10px; 
+    width: auto;
+    height: auto; 
+	font-style : italic;
+	font-size : 1.0em;
+}

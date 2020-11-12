@@ -1,0 +1,1 @@
+..\..\lib\qt\bin\designer.exe

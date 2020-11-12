@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13156.6" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="XqP-it-38I">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13137.5"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--GLKit View Controller-->
+        <scene sceneID="wSa-hl-v3N">
+            <objects>
+                <glkViewController preferredFramesPerSecond="30" id="XqP-it-38I" customClass="SceneController" customModule="SmartbodyMinimal" customModuleProvider="target" sceneMemberID="viewController">
+                    <glkView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="YES" drawableDepthFormat="16" id="Zbz-Ru-khG">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JDy-2c-xl4">
+                                <rect key="frame" x="167.5" y="617" width="39" height="30"/>
+                                <state key="normal" title="Reset"/>
+                                <connections>
+                                    <action selector="resetCamera:" destination="XqP-it-38I" eventType="touchUpInside" id="QDh-sd-0NH"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="S3V-08-yeh">
+                                <rect key="frame" x="20" y="40" width="335" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="commandEditingDidEnd:" destination="XqP-it-38I" eventType="editingDidEnd" id="xgE-Ya-E6C"/>
+                                    <outlet property="delegate" destination="XqP-it-38I" id="uJ0-LK-FLN"/>
+                                </connections>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="JDy-2c-xl4" firstAttribute="centerX" secondItem="Zbz-Ru-khG" secondAttribute="centerX" id="2FR-ze-PqQ"/>
+                            <constraint firstItem="ABq-63-DCw" firstAttribute="trailing" secondItem="S3V-08-yeh" secondAttribute="trailing" constant="20" id="8MI-kt-dBa"/>
+                            <constraint firstItem="S3V-08-yeh" firstAttribute="top" secondItem="ABq-63-DCw" secondAttribute="top" constant="20" id="Bg5-5d-Yym"/>
+                            <constraint firstItem="S3V-08-yeh" firstAttribute="leading" secondItem="ABq-63-DCw" secondAttribute="leading" constant="20" id="U4h-V4-Scb"/>
+                            <constraint firstItem="ABq-63-DCw" firstAttribute="bottom" secondItem="JDy-2c-xl4" secondAttribute="bottom" constant="20" id="x1w-1b-JcL"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="ABq-63-DCw"/>
+                        <connections>
+                            <outlet property="delegate" destination="XqP-it-38I" id="rdW-Fh-3S5"/>
+                        </connections>
+                    </glkView>
+                </glkViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OFQ-Wg-OFf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-257" y="-108"/>
+        </scene>
+    </scenes>
+</document>

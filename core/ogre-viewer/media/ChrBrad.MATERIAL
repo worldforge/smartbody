@@ -1,0 +1,237 @@
+material ChrBrad_Hair_Mat
+{
+	technique
+	{
+		pass
+		{
+			shading phong
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0 0 0 1.59454
+			emissive 0 0 0
+
+			scene_blend alpha_blend
+			depth_write off
+
+			texture_unit
+			{
+				texture ChrBrad_Hair_Dif.png
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}
+material ChrBrad_Teeth_Mat
+{
+	technique
+	{
+		pass
+		{
+			shading phong
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0 0 0 1.59454
+			emissive 0 0 0
+
+			texture_unit
+			{
+				texture ChrBrad_Teeth_Dif.png
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}
+material ChrBrad_EyeShell_Mat
+{
+	technique
+	{
+		pass
+		{
+			shading phong
+			ambient 0.588235 0.588235 0.588235 1
+			diffuse 0.5 0.5 0.5 0
+			specular 0 0 0 1.59454
+			emissive 0 0 0
+
+			scene_blend alpha_blend
+			depth_write off
+		}
+	}
+}
+material ChrBrad_Hands_Mat
+{
+	technique
+	{
+		pass
+		{
+			shading phong
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0.0650339 0.0650339 0.0650339 1.59454
+			emissive 0 0 0
+
+			texture_unit
+			{
+				texture ChrBrad_Hands_Dif.png
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}
+material ChrBrad_UpperBody_Mat
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0 0 0 1
+			emissive 0 0 0
+
+			texture_unit
+			{
+				texture ChrBrad_UpperBody_Dif.png
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}
+material ChrBrad_LowerBody_Mat
+{
+	technique
+	{
+		pass
+		{
+			shading phong
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0 0 0 1.59454
+			emissive 0 0 0
+
+			texture_unit
+			{
+				texture ChrBrad_LowerBody_Dif.png
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}
+material ChrBrad_Shoes_Mat
+{
+	technique
+	{
+		pass
+		{
+			shading phong
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0.0487831 0.0487831 0.0487831 1.59454
+			emissive 0 0 0
+
+			texture_unit
+			{
+				texture ChrBrad_Shoes_Dif.PNG
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}
+material ChrBrad_Head_Mat
+{
+	technique
+	{
+		pass
+		{
+			shading phong
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0.073167 0.073167 0.073167 1.59454
+			emissive 0 0 0
+
+			texture_unit
+			{
+				texture ChrBrad_Head_Dif.png
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}
+material ChrBrad_Eyelashes_Mat
+{
+	technique
+	{
+		pass
+		{
+			shading phong
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0 0 0 1.59454
+			emissive 0 0 0
+
+			scene_blend alpha_blend
+			depth_write off
+
+			texture_unit
+			{
+				texture ChrBrad_Eyelash_Dif.png
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}
+material ChrBrad_Eye_Mat
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 1 1 1 1
+			specular 0 0 0 1
+			emissive 0 0 0
+
+			texture_unit
+			{
+				texture ChrBrad_Eye_Dif.png
+				tex_coord_set 0
+				colour_op modulate
+				scale 1 1
+				scroll 0 0
+				rotate 0
+			}
+		}
+	}
+}

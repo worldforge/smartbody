@@ -1,0 +1,5 @@
+0	path ME sbm/common-sk
+
+0	echo >>> Loading common motions and poses...
+0	load motions -R sbm/common-sk
+0	load skeletons -R sbm/common-sk

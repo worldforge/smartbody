@@ -1,0 +1,30 @@
+diff -rupN xerces-c-3.1.4 2/config/ltmain.sh xerces-c-3.1.4 3/config/ltmain.sh
+--- xerces-c-3.1.4 2/config/ltmain.sh	2016-06-22 08:26:34.000000000 -0700
++++ xerces-c-3.1.4 3/config/ltmain.sh	2017-09-23 10:08:06.000000000 -0700
+@@ -8715,16 +8715,16 @@ EOF
+ 
+       case $host in
+       *-*-darwin*)
+-	# Don't allow lazy linking, it breaks C++ global constructors
+-	# But is supposedly fixed on 10.4 or later (yay!).
+-	if test "$tagname" = CXX ; then
+-	  case ${MACOSX_DEPLOYMENT_TARGET-10.0} in
+-	    10.[0123])
+-	      func_append compile_command " ${wl}-bind_at_load"
+-	      func_append finalize_command " ${wl}-bind_at_load"
+-	    ;;
+-	  esac
+-	fi
++#	# Don't allow lazy linking, it breaks C++ global constructors
++#	# But is supposedly fixed on 10.4 or later (yay!).
++# 	if test "$tagname" = CXX ; then
++# 	  case ${MACOSX_DEPLOYMENT_TARGET-10.0} in
++# 	    10.[0123])
++# 	      func_append compile_command " ${wl}-bind_at_load"
++# 	      func_append finalize_command " ${wl}-bind_at_load"
++# 	    ;;
++# 	  esac
++# 	fi
+ 	# Time to change all our "foo.ltframework" stuff back to "-framework foo"
+ 	compile_deplibs=`$ECHO " $compile_deplibs" | $SED 's% \([^ $]*\).ltframework% -framework \1%g'`
+ 	finalize_deplibs=`$ECHO " $finalize_deplibs" | $SED 's% \([^ $]*\).ltframework% -framework \1%g'`

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Smartbody Auto Rigging</title>
+    <link rel="stylesheet" type="text/css" href="../css/demo.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-slider.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+</head>
+
+<body onload="checkCompatibility()">
+    <img id='ict-logo' src='../img/ict.png'>
+    <img id='smartbody-logo' src='../img/smartbody-logo.png'>
+    <div class="spinner" id='spinner'></div>
+    <div class="emscripten" id="status">Downloading...</div>
+    <span id='controls'>
+        <span><input type="button" value="Fullscreen" onclick="Module.requestFullScreen(0, 0)"></span>
+    </span>
+    <div class="emscripten">
+        <progress value="0" max="100" id="progress" hidden=1></progress>
+    </div>
+    <div id="div-container">
+        <div id="left-panel">
+            <span id='instruction' hidden=1>Rotation: ALT + LEFT Mouse&nbsp&nbsp&nbsp&nbspDolly: ALT + RIGHT Mouse&nbsp&nbsp&nbsp&nbspTranslation: ALT + MIDDLE Mouse</span>
+            <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+            <div id="cmd">
+                <textarea id="command" rows="8" placeholder="Type your Javascript code here..."></textarea>
+                <input id="runBtn" type="button" value="Run Script" onclick="runCommand()"></input>
+            </div>
+        </div>
+        <div class="panel panel-default" id="right-panel">
+            <div class="panel-heading"><strong>Auto Rigging Control Panel</strong></div>
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <div class="form-group list-group-item">
+                        <div class="pull-right">
+                            <input id="resetDefaultValue" type="button" value="Reset Values" class="btn btn-sm btn-default">
+                            <input id="resetCamera" type="button" value="Reset Camera" class="btn btn-sm btn-default">
+                        </div>
+                    </div>
+                    <div class="form-group list-group-item">
+                        <label class="control-label">1.Load Mesh</label>
+                        <input type="file" class="filestyle" accept=".ply,.obj,.mtl,image/*" data-classButton="btn btn-primary" data-input="false" data-classIcon="icon-plus" name="files[]" id="upload_files" multiple data-buttonText="Load Scan Mesh">
+                    </div>
+                    <div class="form-group list-group-item">
+                        <label class="control-label">2.Adjust Orientation</label>
+                        <div class="form-inline">
+                            <label class="control-label">Rot X&nbsp&nbsp&nbsp&nbsp</label>
+                            <input type="text" id="rotateX" class="pull-right" data-slider-min="-3.14" data-slider-max="3.14" data-slider-step="0.01" data-slider-value="0.0" data-slider-tooltip="hide" />
+                        </div>
+                        <div class="form-inline">
+                            <label class="control-label">Rot Y&nbsp&nbsp&nbsp&nbsp</label>
+                            <input type="text" id="rotateY" class="pull-right" data-slider-min="-3.14" data-slider-max="3.14" data-slider-step="0.01" data-slider-value="0.0" data-slider-tooltip="hide" />
+                        </div>
+                        <div class="form-inline">
+                            <label class="control-label">Rot Z&nbsp&nbsp&nbsp&nbsp</label>
+                            <input type="text" id="rotateZ" class="pull-right" data-slider-min="-3.14" data-slider-max="3.14" data-slider-step="0.01" data-slider-value="0.0" data-slider-tooltip="hide" />
+                        </div>
+                    </div>
+                    <div class="form-group list-group-item">
+                        <label class="control-label">3.Adjust Height</label>
+                        <div class="form-inline">
+                            <label class="control-label" for="height">Height</label>
+                            <input type="number" class="form-control pull-right input-sm" id="height" min="1.4" max="2.3" step="0.01" value="1.7">
+                        </div>
+                    </div>
+                    <div class="form-group list-group-item">
+                        <label class="control-label">4.Auto-Rigging</label>
+                        <div class="form-inline dropdown" id="rig_div">
+                            <label class="control-label">Select Rig</label>
+                            <button class="btn btn-default dropdown-toggle pull-right input-sm" type="button" id="rig" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right input-sm" aria-labelledby="rig" style="height: auto !important;">
+                                <li>SmartBodyRig.dae</li>
+                            </ul>
+                        </div>
+                        <br>
+                        <div class="form-inline" id="gender">
+                            <label class="control-label">Select Gender</label>
+                            <div class="pull-right">
+                                <label class="radio-inline">
+                                    <input id="male" type="radio" name="optradio" value="male" checked>Male
+                                </label>
+                                <label class="radio-inline">
+                                    <input id="female" type="radio" name="optradio" value="female">Female
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form" id="interpolation">
+                            <label class="control-label">Select Skinning Method</label>
+
+                            <label class="radio-inline">
+                                <input type="radio" name="interpradio" value="harmonic" id="Harmonic" checked>Harmonic Interpolation
+                            </label>
+                            <br>
+                            <label class="radio-inline">
+                                <input type="radio" name="interpradio" value="barycentric" id="Barycentric">Barycentric Interpolation
+                            </label>
+
+                        </div>
+                        <br>
+                        <div>
+                            <input type="button" value="Auto Rigging" class="btn btn-sm btn-primary pull-right" id="auto_rigging"></input>
+                            <i class="fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom pull-right" style="visibility:hidden" id="status_spinner"></i>
+                        </div>
+                    </div>
+                    <div class="form-group list-group-item">
+                        <label class="control-label">5.Play Motion</label>
+                        <div class="form-inline dropdown" id="motion_div">
+                            <button class="btn btn-default dropdown-toggle input-sm" type="button" id="motion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu input-sm" aria-labelledby="motion" style="height: auto !important;">
+                                <li>Guitar</li>
+                                <li>Jog</li>
+                                <li>Kick</li>
+                                <li>Punch</li>
+                            </ul>
+                            <div class="pull-right">
+                                <input type="button" value="Play" class="btn btn-sm btn-success" id="playMotionBtn"></input>
+                                <input type="button" value="Reset Motion" class="btn btn-sm btn-primary" id="resetMotionBtn"></input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group list-group-item">
+                        <label class="control-label">6.Save DAE File</label>
+                        <br>
+                        <a id="daeRes" download href="#" style="visibility : hidden;">file.dae</a>
+                    </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    </div>
+    <!-- intialization -->
+    <script async type="text/javascript" src="../scripts/emscriptenInit.js"></script>
+    <!-- data package, your data package scripts here -->
+    <script async type="text/javascript" src="../data/data-auto-rigging.js"></script>
+    <!-- common scripts, default settings-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../scripts/bootstrap/bootstrap-filestyle.min.js"></script>
+    <script type='text/javascript' src="../scripts/bootstrap/bootstrap-slider.js"></script>
+    <script async type="text/javascript" src="../scripts/recorderJS/recorder.js"></script>
+    <script async type="text/javascript" src="../scripts/FPSCounter.js"></script>
+    <script async type="text/javascript" src="../scripts/mathUtils.js"></script>
+    <script sysnc type="text/javascript" src="../scripts/autoRigging.js"></script>
+    <script async type="text/javascript" src="../SmartBodyJS.js"></script>
+    <script async type="text/javascript" src="../scripts/scripts/defaultViewer.js"></script>
+    <script async type="text/javascript" src="../scripts/scripts/defaultInterface.js"></script>
+    <!-- application scripts, replace your scripts here-->
+    <script async type="text/javascript" src="../scripts/scripts/zebra2-map.js"></script>
+    <script async type="text/javascript" src="../scripts/behaviorsets/BehaviorSetCommon.js"></script>
+    <script async type="text/javascript" src="../scripts/scripts/init-diphoneDefault.js"></script>
+    <script async type="text/javascript" src="../scripts/examples/AutoRiggingDemo.js"></script>
+</body>
+
+</html>

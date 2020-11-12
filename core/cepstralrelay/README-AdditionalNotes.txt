@@ -1,0 +1,1 @@
+The generated audio files are saved in "%SASO_ROOT%\dimr\tmpaudio".  If %SASO_ROOT% is not defined, they are saved in the relative directory "..\..\..\dimr\tmpaudio".  It uses the file name given to it by SmartBody, with the exception that it replaces the ".aiff" extension with ".wav" since it is outputting a .wav audio file.

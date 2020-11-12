@@ -1,0 +1,3 @@
+Use prebuilt apk file :
+1. Install sbjniapp.apk to the android device ( Note : the device must support Android OS 2.3 or higher ). 
+2. Copy the directory sbjniappdata/ to the sdcard in the android device.

@@ -1,0 +1,48 @@
+print "=== Starting: data/sbm-common/scripts/common-init-face-blend.py"
+# this setup assumes that blendshapes are being used and are controlled
+# by the renderer and not by SmartBody. Thus, this file is similar to
+# common-init-face.py, but doesn't establish any motions for the AUs/visemes.
+
+defaultFace = scene.getFaceDefinition("_default_")
+defaultFace.setFaceNeutral("face_neutral")
+defaultFace.setAU(1, "left", "")
+defaultFace.setAU(1, "right", "")
+defaultFace.setAU(2, "left", "")
+defaultFace.setAU(2, "right", "")
+defaultFace.setAU(4, "left", "")
+defaultFace.setAU(4, "right", "")
+defaultFace.setAU(5, "both", "")
+defaultFace.setAU(6, "both", "")
+defaultFace.setAU(7, "both", "")
+defaultFace.setAU(9, "both", "")
+defaultFace.setAU(10, "both", "")
+defaultFace.setAU(12, "both", "")
+defaultFace.setAU(15, "both", "")
+defaultFace.setAU(20, "both", "")
+defaultFace.setAU(23, "both", "")
+defaultFace.setAU(25, "both", "")
+defaultFace.setAU(26, "both", "")
+defaultFace.setAU(27, "both", "")
+defaultFace.setAU(38, "both", "")
+defaultFace.setAU(39, "both", "")
+defaultFace.setAU(45, "left", "")
+defaultFace.setAU(45, "right", "")
+
+defaultFace.setViseme("Ao", "")
+defaultFace.setViseme("D", "")
+defaultFace.setViseme("EE", "")
+defaultFace.setViseme("Er", "")
+defaultFace.setViseme("f", "")
+defaultFace.setViseme("j", "")
+defaultFace.setViseme("KG", "")
+defaultFace.setViseme("Ih", "")
+defaultFace.setViseme("NG", "")
+defaultFace.setViseme("oh", "")
+defaultFace.setViseme("OO", "")
+defaultFace.setViseme("R", "")
+defaultFace.setViseme("Th", "")
+defaultFace.setViseme("Z", "")
+defaultFace.setViseme("BMP", "")
+defaultFace.setViseme("blink", "")
+
+print "Complete: data/sbm-common/scripts/common-init-face-blend.py"

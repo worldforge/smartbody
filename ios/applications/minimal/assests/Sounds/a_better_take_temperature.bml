@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bml>
+    <speech id="sp1" start="0.0" ready="0.1" stroke="0.1" relax="0.2" end="0.2">
+        <text>
+            <sync id="T0" time="0" />we
+            <sync id="T1" time="0.09" />
+            <sync id="T2" time="0.09" />better
+            <sync id="T3" time="0.34" />
+            <sync id="T4" time="0.34" />take
+            <sync id="T5" time="0.58" />
+            <sync id="T6" time="0.58" />your
+            <sync id="T7" time="0.66" />
+            <sync id="T8" time="0.66" />temperature
+            <sync id="T9" time="1.24" />
+        </text>
+        <description level="1" type="audio/x-wav">
+            <file ref="a_better_take_temperature" />
+        </description>
+    </speech>
+    <lips viseme="W" articulation="1.0" start="0" ready="0" relax="0.05" end="0.05" />
+    <lips viseme="Ih" articulation="1.0" start="0.05" ready="0.05" relax="0.09" end="0.09" />
+    <lips viseme="BMP" articulation="1.0" start="0.09" ready="0.09" relax="0.16" end="0.16" />
+    <lips viseme="Eh" articulation="1.0" start="0.16" ready="0.16" relax="0.22" end="0.22" />
+    <lips viseme="D" articulation="1.0" start="0.22" ready="0.22" relax="0.26" end="0.26" />
+    <lips viseme="Er" articulation="1.0" start="0.26" ready="0.26" relax="0.34" end="0.34" />
+    <lips viseme="D" articulation="1.0" start="0.34" ready="0.34" relax="0.43" end="0.43" />
+    <lips viseme="Eh" articulation="1.0" start="0.43" ready="0.43" relax="0.5" end="0.5" />
+    <lips viseme="Kg" articulation="1.0" start="0.5" ready="0.5" relax="0.58" end="0.58" />
+    <lips viseme="Sh" articulation="1.0" start="0.58" ready="0.58" relax="0.61" end="0.61" />
+    <lips viseme="Er" articulation="1.0" start="0.61" ready="0.61" relax="0.66" end="0.66" />
+    <lips viseme="D" articulation="1.0" start="0.66" ready="0.66" relax="0.75" end="0.75" />
+    <lips viseme="Eh" articulation="1.0" start="0.75" ready="0.75" relax="0.8" end="0.8" />
+    <lips viseme="BMP" articulation="1.0" start="0.8" ready="0.8" relax="0.87" end="0.87" />
+    <lips viseme="BMP" articulation="1.0" start="0.87" ready="0.87" relax="0.91" end="0.91" />
+    <lips viseme="Er" articulation="1.0" start="0.91" ready="0.91" relax="0.97" end="0.97" />
+    <lips viseme="Sh" articulation="1.0" start="0.97" ready="0.97" relax="1.05" end="1.05" />
+    <lips viseme="Er" articulation="1.0" start="1.05" ready="1.05" relax="1.24" end="1.24" />
+    <lips viseme="_" articulation="1.0" start="1.24" ready="1.24" relax="1.270062" end="1.270062" />
+    <curves>
+        <curve name="BMP" num_keys="7" owner="analysis">-0.072667 0 0 0 0.029629 0.987259 0 0 0.129333 0 0 0 0.444 0 0 0 0.52 0.288347 3.794034 3.32626 0.733865 0.999715 0 0 0.896 0 0 0</curve>
+        <curve name="Er" num_keys="10" owner="analysis">0.127333 0 0 0 0.233902 0.995507 0 0 0.396 0 0 0 0.444 0 0 0 0.58122 0.591507 0 0 0.739018 0.000255 0 0 0.871247 0.492711 0 0 0.923624 0 0 0 1.027932 1 0 0 1.695999 0 0 0</curve>
+        <curve name="Eh" num_keys="7" owner="analysis">0.027333 0 0 0 0.130144 0.987259 0 0 0.233902 0.004493 0 0 0.399674 0.998719 0 0 0.561404 0.012088 0 0 0.711996 0.071427 0 0 0.746 0 0 0</curve>
+        <curve name="W" num_keys="3" owner="analysis">-0.422667 0 0 0 -0.037897 1 0 0 0.029333 0 0 0</curve>
+        <curve name="Sh" num_keys="6" owner="analysis">0.394 0 0 0 0.547017 0.657152 0 0 0.646 0 0 0 0.744 0 0 0 0.915762 1 0 0 1.012666 0 0 0</curve>
+        <curve name="Eye Pitch" num_keys="3" owner="analysis">-0.082 0 0 0 0.165116 -3.999977 0 0 0.636667 0 0 0</curve>
+        <curve name="Head Pitch" num_keys="3" owner="analysis">-0.082 0 0 0 0.165116 3.999977 0 0 0.636667 0 0 0</curve>
+        <curve name="au_7" num_keys="3" owner="analysis">-0.048667 0 0 0 0.164319 0.398096 0 0 0.536667 0 0 0</curve>
+    </curves>
+</bml>

@@ -1,0 +1,100 @@
+cmake_minimum_required (VERSION 2.8)
+project(vhmsg)
+
+option(BUILD_STATIC "build static library" ON)
+option(BUILD_DYNAMIC "build dynamic library" OFF)
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+   add_definitions(-fPIC)
+endif()
+
+
+include_directories(include)
+include_directories(../../vhcl/include)
+
+if (UNIX)
+   include_directories(/usr/local/include/activemq-cpp-3.8.3)
+endif (UNIX)
+
+if (APPLE)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-value")
+endif ()
+
+if (MSVC)
+   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif (MSVC)
+
+
+set ( SRC
+   src/HttpUtility.cpp
+   src/vhmsg.cpp
+   src/vhmsg-tt.cpp
+)
+
+if(BUILD_STATIC)
+	add_library( vhmsg
+		 STATIC 
+		 ${SRC}
+	)
+endif()
+
+if(APPLE OR UNIX) 
+
+	FIND_LIBRARY(VHCL_LIBRARY vhcl HINTS ${CMAKE_INSTALL_PREFIX}/lib )
+	MESSAGE( STATUS "VHCL_LIBRARY:         " ${VHCL_LIBRARY} )
+
+	if ( VHCL_LIBRARY )
+	
+	else ()
+		set(VHCL_LIBRARY "vhcl")
+	endif ()
+	
+	MESSAGE( STATUS "VHCL_LIBRARY:         " ${VHCL_LIBRARY} )
+
+	FIND_LIBRARY(ACTIVEMQ_LIBRARY activemq-cpp HINTS ${CMAKE_INSTALL_PREFIX}/lib )
+
+	if(BUILD_DYNAMIC)
+		add_library( vhmsgShared
+			SHARED 
+			${SRC}
+		)
+		set_target_properties(vhmsgShared PROPERTIES OUTPUT_NAME vhmsg)
+	endif()
+
+	if(BUILD_STATIC)
+		target_link_libraries(vhmsg
+			${VHCL_LIBRARY}
+			${ACTIVEMQ_LIBRARY}
+		)
+	endif()
+
+	if(BUILD_DYNAMIC)
+		target_link_libraries(vhmsgShared 
+			${VHCL_LIBRARY}
+			${ACTIVEMQ_LIBRARY}
+		)
+	endif()
+
+	if(BUILD_STATIC)
+		install (TARGETS vhmsg
+			ARCHIVE DESTINATION lib
+			LIBRARY DESTINATION lib
+			INCLUDES DESTINATION include
+		)
+	endif()
+
+	if(BUILD_DYNAMIC)
+		install (TARGETS vhmsgShared
+			ARCHIVE DESTINATION lib
+			LIBRARY DESTINATION lib
+			INCLUDES DESTINATION include
+		)
+	endif()
+
+	if(BUILD_STATIC OR BUILD_DYNAMIC)
+		install (DIRECTORY include/ 
+			DESTINATION include
+		)
+	endif()
+
+endif()

@@ -1,0 +1,172 @@
+/************************************************************************
+*                                                                       *
+*   SkeletalViewer.rc -- Declaration of application resources           *
+*                                                                       *
+* Copyright (c) Microsoft Corp. All rights reserved.                    *
+*                                                                       *
+* This code is licensed under the terms of the                          *
+* Microsoft Kinect for Windows Developer Toolkit (Beta)                               *
+* License Agreement: http://kinectforwindows.org/KinectSDK-ToU          *
+*                                                                       *
+************************************************************************/
+
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_SKELETALVIEWER      ICON                    "SkeletalViewer.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_APP DIALOGEX 0, 0, 824, 267
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTROLPARENT | WS_EX_APPWINDOW
+CAPTION "SmartBody Kinect Viewer"
+CLASS "SkeletalViewerAppDlgWndClass"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_DEPTHVIEWER,"Static",SS_BLACKFRAME,7,16,160,120
+    CONTROL         "",IDC_SKELETALVIEW,"Static",SS_BLACKFRAME,171,16,320,240
+    CONTROL         "",IDC_VIDEOVIEW,"Static",SS_BLACKFRAME,495,16,320,240
+    LTEXT           "---",IDC_FPS,8,153,110,40
+    LTEXT           "Frames Per Second:",IDC_STATIC,7,143,68,8
+    LTEXT           "Depth View:",IDC_STATIC,8,5,41,8
+    LTEXT           "Skeletal View:",IDC_STATIC,170,5,48,8
+    LTEXT           "Color View:",IDC_STATIC,496,5,36,8
+    COMBOBOX        IDC_CAMERAS,74,195,87,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Kinect:",IDC_STATIC,45,196,23,8
+    COMBOBOX        IDC_TRACKINGMODE,74,211,87,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Tracking Mode:",IDC_STATIC,18,212,50,8
+    COMBOBOX        IDC_TRACKEDSKELETONS,74,227,87,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Tracked Skeletons:",IDC_STATIC,6,228,62,8
+    COMBOBOX        IDC_RANGE,74,243,87,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Range:",IDC_STATIC,43,244,25,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_APP, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_APPTITLE            "SmartBody Kinect Viewer"
+    IDS_ERROR_APP_INSTANCE  "There is already an instance of this app running."
+    IDS_ERROR_DRAWDEVICE    "Failed to initialize the draw device."
+    IDS_ERROR_NUIINIT       "Failed to initialize Kinect."
+    IDS_ERROR_SKELETONTRACKING "Could not enable skeleton tracking."
+    IDS_ERROR_DEPTHSTREAM   "Could not open image stream depth."
+    IDS_ERROR_VIDEOSTREAM   "Could not open image stream video."
+    IDS_ERROR_SETTRACKED    "Could not set tracked skeletons."
+    IDS_ERROR_IN_USE        "This Kinect sensor is already in use."
+    IDS_ERROR_IMAGESTREAMFLAGS "Could not change image stream flags."
+    IDS_TRACKEDSKELETONS_DEFAULT "Default System"
+    IDS_TRACKEDSKELETONS_NEAREST1 "Closest 1 Player"
+    IDS_TRACKEDSKELETONS_NEAREST2 "Closest 2 Players"
+    IDS_TRACKEDSKELETONS_STICKY1 "Sticky 1 Player"
+    IDS_TRACKEDSKELETONS_STICKY2 "Sticky 2 Players"
+    IDS_TRACKINGMODE_DEFAULT "Default"
+    IDS_TRACKINGMODE_SEATED "Seated"
+    IDS_RANGE_DEFAULT       "Default"
+    IDS_RANGE_NEAR          "Near"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_NUICREATE     "Failed to acquire Kinect."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

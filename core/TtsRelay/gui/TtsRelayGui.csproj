@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8337A68C-24FE-4572-B6BE-FB3696F8F87E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TtsRelayGui</RootNamespace>
+    <AssemblyName>TtsRelayGui</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>..\bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\lib\vhmsg\vhmsg-net\vhmsg-net.csproj">
+      <Project>{DE4240A9-DBBA-410F-888F-462384A5B280}</Project>
+      <Name>vhmsg-net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TtsRelay.csproj">
+      <Project>{20C3D8FC-B1E9-49B4-9BBB-485AA95F56D2}</Project>
+      <Name>TtsRelay</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">
+if exist $(ProjectDir)\..\CerevoiceDLL\lib\CerevoiceDLL.dll (
+   copy /Y $(ProjectDir)\..\CerevoiceDLL\lib\CerevoiceDLL.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\xerces-c\bin\xerces-c_3_1.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\3rdparty\lib\msvcr71.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\3rdparty\lib\python24.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\3rdparty\lib\pyexpat.pyd $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\3rdparty\lib\libexpat.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\3rdparty\lib\libspeex.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\3rdparty\lib\libSoundTouch.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\cerenorm\lib\libcerenorm_wrap_shared.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\cerevoice\lib\libcerevoice_shared.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\..\..\lib\cerevoice\cerevoice_pmod\lib\libcerevoice_pmod_shared.dll $(TargetDir)
+)
+
+if exist $(ProjectDir)\..\FestivalDLL\lib\FestivalDLL.dll (
+   copy /Y $(ProjectDir)\..\FestivalDLL\lib\FestivalDLL.dll $(TargetDir)
+
+   if not exist $(TargetDir)\..\..\lib\festival\festival\lib mkdir $(TargetDir)\..\..\lib\festival\festival\lib
+   xcopy /Y /Q /E /I /D $(ProjectDir)\..\..\..\lib\festival\festival\lib $(TargetDir)\..\..\lib\festival\festival\lib
+
+   if not exist $(TargetDir)\..\..\lib\festival\speech_tools\lib\siod mkdir $(TargetDir)\..\..\lib\festival\speech_tools\lib\siod
+   copy /Y $(ProjectDir)\..\..\..\lib\festival\speech_tools\lib\siod\cstr.scm $(TargetDir)\..\..\lib\festival\speech_tools\lib
+   copy /Y $(ProjectDir)\..\..\..\lib\festival\speech_tools\lib\siod\fringe.scm $(TargetDir)\..\..\lib\festival\speech_tools\lib
+   copy /Y $(ProjectDir)\..\..\..\lib\festival\speech_tools\lib\siod\siod.scm $(TargetDir)\..\..\lib\festival\speech_tools\lib
+   copy /Y $(ProjectDir)\..\..\..\lib\festival\speech_tools\lib\siod\siod_client.scm $(TargetDir)\..\..\lib\festival\speech_tools\lib
+   copy /Y $(ProjectDir)\..\..\..\lib\festival\speech_tools\lib\siod\siod_server.scm $(TargetDir)\..\..\lib\festival\speech_tools\lib
+   copy /Y $(ProjectDir)\..\..\..\lib\festival\speech_tools\lib\siod\web.scm $(TargetDir)\..\..\lib\festival\speech_tools\lib
+)
+
+if exist $(ProjectDir)\..\RvoiceDLL\lib\RvoiceDLL.dll (
+   copy /Y $(ProjectDir)\..\RvoiceDLL\lib\RvoiceDLL.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\RvoiceDLL\rhetrapi.dll $(TargetDir)
+   copy /Y $(ProjectDir)\..\RvoiceDLL\pthreadVSE.dll $(TargetDir)
+)
+
+copy /Y "$(VS140COMNTOOLS)\..\..\VC\redist\x86\Microsoft.VC140.CRT\msvcp140.dll" $(TargetDir)
+copy /Y "$(VS140COMNTOOLS)\..\..\VC\redist\x86\Microsoft.VC140.CRT\vcruntime140.dll" $(TargetDir)
+copy /Y "$(VS100COMNTOOLS)\..\..\VC\redist\x86\Microsoft.VC100.CRT\msvcp100.dll" $(TargetDir)
+copy /Y "$(VS100COMNTOOLS)\..\..\VC\redist\x86\Microsoft.VC100.CRT\msvcr100.dll" $(TargetDir)
+
+xcopy /Y /Q /E /I /D $(ProjectDir)\..\bin $(ProjectDir)\..\..\..\bin\TtsRelay\bin
+copy /Y $(ProjectDir)\..\run.bat $(ProjectDir)\..\..\..\bin\TtsRelay\
+</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' != 'Windows_NT' ">
+mkdir -p $(TargetDir)../../../../bin/core/TtsRelay/bin/Release
+cp -R $(TargetDir)* $(TargetDir)../../../../bin/core/TtsRelay/bin/Release/
+cp $(TargetDir)../../../../bin/core/TtsRelay/FestivalDll/libFestivalDLL.dylib $(TargetDir)../../../../bin/core/TtsRelay/bin/Release/
+mkdir -p $(TargetDir)../../../../bin/core/TtsRelay/lib/festival/festival/lib
+cp -R $(TargetDir)../../../../lib/festival/festival/lib/* $(TargetDir)../../../../bin/core/TtsRelay/lib/festival/festival/lib/
+mkdir -p $(TargetDir)../../../../bin/core/TtsRelay/lib/festival/speech_tools/lib
+cp -R $(TargetDir)../../../../lib/festival/speech_tools/lib/* $(TargetDir)../../../../bin/core/TtsRelay/lib/festival/speech_tools/lib/  
+cp $(TargetDir)../../run.sh $(TargetDir)../../../../bin/core/TtsRelay
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

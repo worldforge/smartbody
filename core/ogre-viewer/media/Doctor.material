@@ -1,0 +1,98 @@
+material Eyes_Teeth
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+
+			texture_unit
+			{
+				texture AH_teeth_tongue_eyes.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material Hand
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+
+			texture_unit
+			{
+				texture doctor_hand.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material Pants
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+
+			texture_unit
+			{
+				texture doctor_lower_body.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material Shirt
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+
+			texture_unit
+			{
+				texture AH_doctor_upper_body.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material Face
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			scene_blend alpha_blend
+
+			texture_unit
+			{
+				texture AH_dr_face_texture.dds
+			}
+		}
+
+	}
+
+}

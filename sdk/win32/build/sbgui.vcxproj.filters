@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="viewer">
+      <UniqueIdentifier>{1bd7e2de-8fb3-42cb-8fc5-7f04e3167f3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bmlviewer">
+      <UniqueIdentifier>{64aecdde-9411-4a3f-a918-c6cc8c347d13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nle">
+      <UniqueIdentifier>{b727a71a-b28b-4825-a79d-05ab588582f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="panimationviewer">
+      <UniqueIdentifier>{d187f1d8-7feb-45ef-9a30-c7a698f13b76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="channelbufferviewer">
+      <UniqueIdentifier>{10560945-c3f1-4ef6-a345-64e254284bf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="commandwindow">
+      <UniqueIdentifier>{ff1b1c37-9aac-4d39-b69d-642094e8703b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resourceViewer">
+      <UniqueIdentifier>{0788b2c9-2d1c-4d2d-a5e9-7c3d2f9c90ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="faceviewer">
+      <UniqueIdentifier>{75a3bc51-6c6b-4525-aa1a-7dd25cd03160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bmlcreator">
+      <UniqueIdentifier>{fbaae2c9-1e25-4b03-b1cf-0b767bb24300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="monitorviewer">
+      <UniqueIdentifier>{6f962f55-7281-489e-ad9b-4c381c001a85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="motioneditor">
+      <UniqueIdentifier>{42bd09ff-f612-4031-bf07-476a23845bec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="behaviorsetviewer">
+      <UniqueIdentifier>{7f983ecd-5e90-4253-bde5-ff7f00300634}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jointmapviewer">
+      <UniqueIdentifier>{5c85f00a-4129-4993-aa40-cd28f3358310}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glew">
+      <UniqueIdentifier>{c0320fe5-a593-4568-8e8d-c4a017caa66b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cegui">
+      <UniqueIdentifier>{0b599e4c-36b7-405c-bb79-1db58577a9cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lipsyncviewer">
+      <UniqueIdentifier>{2b51ee1f-542b-4db5-8b62-afe631bec4b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="flu">
+      <UniqueIdentifier>{0ad6220e-f19d-4e3e-a049-a98e2cc0077e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jointmapviewer\retargetcreator">
+      <UniqueIdentifier>{56361f18-4f18-4cc4-b99b-6afd39fa8ac8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="autorig">
+      <UniqueIdentifier>{916cb17b-904c-456e-9716-5e306fa77173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pythonbind">
+      <UniqueIdentifier>{e981edbf-6e00-447b-9168-26006c8a974e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="faceshiftviewer">
+      <UniqueIdentifier>{14c552ac-4dba-4ce6-970d-56caa091ab6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="posecreator">
+      <UniqueIdentifier>{08ccd5b8-9776-44f4-9c6e-6bb4581308f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sbrender">
+      <UniqueIdentifier>{627bbbdd-fcfb-4146-a21f-9723863da0e5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\sbgui\glfont2.cpp" />
+    <ClCompile Include="..\src\sbgui\pic.cpp" />
+    <ClCompile Include="..\src\sbgui\ppm.cpp" />
+    <ClCompile Include="..\src\sbgui\sbm_main.cpp" />
+    <ClCompile Include="..\src\sbgui\bmlcreator\BMLCreatorWindow.cpp">
+      <Filter>bmlcreator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimAutoMarkingEditor.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimBlock.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimEditorWidget.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimParameterEditor.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimRunTimeEditor.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimScriptEditor.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimStateCreatorWidget.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimStateEditor.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimTransitionCreatorWidget.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimTransitionEditor.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParamAnimTransitionEditor2.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\Parameter3DVisualization.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParameterGroup.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ParameterVisualization.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\retargetviewer\RetargetViewer.cpp">
+      <Filter>behaviorsetviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\bmlcreator\AttributeWindow.cpp">
+      <Filter>bmlcreator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\channelbufferviewer\channelbufferWindow.cpp">
+      <Filter>channelbufferviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\channelbufferviewer\GlChartView.cpp">
+      <Filter>channelbufferviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\channelbufferviewer\GlChartViewArchive.cpp">
+      <Filter>channelbufferviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\channelbufferviewer\GlChartViewCoordinate.cpp">
+      <Filter>channelbufferviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\CommandWindow.cpp">
+      <Filter>commandwindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\faceviewer\FaceViewer.cpp">
+      <Filter>faceviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\flu\Flu_Button.cpp">
+      <Filter>flu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\flu\Flu_Collapsable_Group.cpp">
+      <Filter>flu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\flu\FluSimpleString.cpp">
+      <Filter>flu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\retargetcreator\RetargetCreatorWindow.cpp">
+      <Filter>jointmapviewer\retargetcreator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\jointmapviewer\JointMapViewer.cpp">
+      <Filter>jointmapviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\jointmapviewer\RetargetStepWindow.cpp">
+      <Filter>jointmapviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\visemeviewer\VisemeViewerWindow.cpp">
+      <Filter>lipsyncviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\visemeviewer\VisemeRunTimeWindow.cpp">
+      <Filter>lipsyncviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\visemeviewer\VisemeRTCurveViewer.cpp">
+      <Filter>lipsyncviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\visemeviewer\VisemeCurveEditor.cpp">
+      <Filter>lipsyncviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\visemeviewer\VisemeCurve.cpp">
+      <Filter>lipsyncviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\monitorviewer\MonitorConnectWindow.cpp">
+      <Filter>monitorviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\motioneditor\MotionEditorWindow.cpp">
+      <Filter>motioneditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\nle\NonLinearEditor.cpp">
+      <Filter>nle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\nle\NonLinearEditorWidget.cpp">
+      <Filter>nle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\ErrorVisualization.cpp">
+      <Filter>panimationviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\resourceViewer\Fl_Tree_Horizontal.cpp">
+      <Filter>resourceViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\resourceViewer\ResourceWindow.cpp">
+      <Filter>resourceViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\resourceViewer\TreeInfoObject.cpp">
+      <Filter>resourceViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\resourceViewer\TreeItemInfoWidget.cpp">
+      <Filter>resourceViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\CharacterCreatorWindow.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\fltk_viewer.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\ObjectManipulationHandle.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\RootWindow.cxx">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\bmlviewer\BehaviorBlock.cpp">
+      <Filter>bmlviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\bmlviewer\BehaviorEditorWidget.cpp">
+      <Filter>bmlviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\bmlviewer\BehaviorWindow.cpp">
+      <Filter>bmlviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\ExportWindow.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\FLTKListener.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\PanimationWindow.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\PawnPosControl.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\PositionControl.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\RotationControl.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\SBGUIManager.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\bmlcreator\TextEditor.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\panimationviewer\VisualizationView.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\FLTKOgreViewer.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\EmbeddedOgre.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\OgreFrameListener.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\ExampleFrameListener.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\SBOgreListener.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\resourceViewer\AttributeEditor.cpp">
+      <Filter>resourceViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\autorig\SBAutoRigManager.cpp">
+      <Filter>autorig</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\autorig\VoxelizerWindow.cpp">
+      <Filter>autorig</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\SBSelectionManager.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\SBWindowListener.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\visemeviewer\ImageSequencePlayer.cpp">
+      <Filter>lipsyncviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\pythonbind\SBPythonAutorig.cpp">
+      <Filter>pythonbind</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\autorig\AutoRigViewer.cpp">
+      <Filter>autorig</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\faceshiftviewer\FaceShiftViewer.cpp">
+      <Filter>faceshiftviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\SBInterfaceListener.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\posecreator\PoseCreator.cpp">
+      <Filter>posecreator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\SBFrameBufferObject.cpp">
+      <Filter>sbrender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sbgui\SBRenderer.cpp">
+      <Filter>sbrender</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\smartbody-lib\src\external\glew\glew.h">
+      <Filter>glew</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\glfont2.h" />
+    <ClInclude Include="..\src\sbgui\pic.h" />
+    <ClInclude Include="..\src\sbgui\bmlcreator\BMLCreatorWindow.h">
+      <Filter>bmlcreator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimAutoMarkingEditor.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimBlock.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimEditorWidget.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimParameterEditor.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimRunTimeEditor.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimScriptEditor.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimStateCreatorWidget.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimStateEditor.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimTransitionCreatorWidget.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimTransitionEditor.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParamAnimTransitionEditor2.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\Parameter3DVisualization.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParameterGroup.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ParameterVisualization.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\retargetviewer\RetargetViewer.h">
+      <Filter>behaviorsetviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\bmlcreator\AttributeWindow.h">
+      <Filter>bmlcreator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\channelbufferviewer\channelbufferWindow.hpp">
+      <Filter>channelbufferviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\channelbufferviewer\GlChartView.hpp">
+      <Filter>channelbufferviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\channelbufferviewer\GlChartViewArchive.hpp">
+      <Filter>channelbufferviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\channelbufferviewer\GlChartViewCoordinate.hpp">
+      <Filter>channelbufferviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\CommandWindow.h">
+      <Filter>commandwindow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\faceviewer\FaceViewer.h">
+      <Filter>faceviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\flu\Flu_Button.h">
+      <Filter>flu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\flu\Flu_Collapsable_Group.h">
+      <Filter>flu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\flu\Flu_Enumerations.h">
+      <Filter>flu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\flu\flu_export.h">
+      <Filter>flu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\flu\FluSimpleString.h">
+      <Filter>flu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\retargetcreator\RetargetCreatorWindow.h">
+      <Filter>jointmapviewer\retargetcreator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\jointmapviewer\JointMapViewer.h">
+      <Filter>jointmapviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\jointmapviewer\RetargetStepWindow.h">
+      <Filter>jointmapviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\visemeviewer\VisemeViewerWindow.h">
+      <Filter>lipsyncviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\visemeviewer\VisemeRunTimeWindow.h">
+      <Filter>lipsyncviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\visemeviewer\VisemeRTCurveViewer.h">
+      <Filter>lipsyncviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\visemeviewer\VisemeCurveEditor.h">
+      <Filter>lipsyncviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\visemeviewer\VisemeCurve.h">
+      <Filter>lipsyncviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\monitorviewer\MonitorConnectWindow.h">
+      <Filter>monitorviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\motioneditor\MotionEditorWindow.h">
+      <Filter>motioneditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\nle\NonLinearEditor.h">
+      <Filter>nle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\nle\NonLinearEditorWidget.h">
+      <Filter>nle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\ErrorVisualization.h">
+      <Filter>panimationviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\resourceViewer\Fl_Tree_Horizontal.h">
+      <Filter>resourceViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\resourceViewer\ResourceWindow.h">
+      <Filter>resourceViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\resourceViewer\TreeInfoObject.h">
+      <Filter>resourceViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\resourceViewer\TreeItemInfoWidget.h">
+      <Filter>resourceViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\CharacterCreatorWindow.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\fltk_viewer.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\ObjectManipulationHandle.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\RootWindow.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\bmlviewer\BehaviorBlock.h">
+      <Filter>bmlviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\bmlviewer\BehaviorEditorWidget.h">
+      <Filter>bmlviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\bmlviewer\BehaviorWindow.h">
+      <Filter>bmlviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\ExportWindow.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\FLTKListener.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\PanimationWindow.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\PawnPosControl.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\PositionControl.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\RotationControl.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\SBGUIManager.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\bmlcreator\TextEditor.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\panimationviewer\VisualizationView.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\FLTKOgreViewer.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\EmbeddedOgre.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\OgreFrameListener.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\ExampleFrameListener.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\SBOgreListener.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\resourceViewer\AttributeEditor.h">
+      <Filter>resourceViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\autorig\SBAutoRigManager.h">
+      <Filter>autorig</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\autorig\VoxelizerWindow.h">
+      <Filter>autorig</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\SBSelectionManager.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\SBWindowListener.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\visemeviewer\ImageSequencePlayer.h">
+      <Filter>lipsyncviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\pythonbind\SBPythonAutoRig.h">
+      <Filter>pythonbind</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\autorig\AutoRigViewer.h">
+      <Filter>autorig</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\faceshiftviewer\FaceShiftViewer.h">
+      <Filter>faceshiftviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\SBInterfaceListener.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\posecreator\PoseCreator.h">
+      <Filter>posecreator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\SBFrameBufferObject.h">
+      <Filter>sbrender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sbgui\SBRenderer.h">
+      <Filter>sbrender</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

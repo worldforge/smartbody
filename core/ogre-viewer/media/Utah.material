@@ -1,0 +1,60 @@
+material ChrUtah_MeshBody_Material
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0.00813306 0.00813306 0.00813306 1 128
+
+			texture_unit
+			{
+				texture ChrUtah_body_Diffuse.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material blinn2
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0.00813306 0.00813306 0.00813306 1 128
+
+			texture_unit
+			{
+				texture ChrUtah_Head_Diffuse.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material blinn1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0.00813306 0.00813306 0.00813306 1 128
+
+			texture_unit
+			{
+				texture ChrUtah_Head_Diffuse.dds
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Smartbody Talking Face</title>
+    <link rel="stylesheet" type="text/css" href="../css/demo.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+</head>
+
+<body onload="checkCompatibility()">
+    <img id='ict-logo' src='../img/ict.png'>
+    <img id='smartbody-logo' src='../img/smartbody-logo.png'>
+    <div class="spinner" id='spinner'></div>
+    <div class="emscripten" id="status">Downloading...</div>
+    <span id='controls'>
+        <span><input type="button" value="Fullscreen" onclick="Module.requestFullScreen(0, 0)"></span>
+    </span>
+    <div class="emscripten">
+        <progress value="0" max="100" id="progress" hidden=1></progress>
+    </div>
+    <div id="div-container">
+        <div id="left-panel">
+            <span id='instruction' hidden=1>Rotation: ALT + LEFT Mouse&nbsp&nbsp&nbsp&nbspDolly: ALT + RIGHT Mouse&nbsp&nbsp&nbsp&nbspTranslation: ALT + MIDDLE Mouse</span>
+            <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+            <div id="cmd">
+                <textarea id="command" rows="8" placeholder="Type your Javascript code here..."></textarea>
+                <input id="runBtn" type="button" value="Run Script" onclick="runCommand()"></input>
+            </div>
+        </div>
+        <div class="panel panel-default" id="right-panel">
+            <div class="panel-heading"><strong>Phoneme Scheduler Control Panel</strong></div>
+            <div class="panel-body">
+                <label class="control-label">Options:</label>
+                <form class="form-horizontal list-group-item" style="padding : 5px;">
+                    <div class="form-group">
+                        <label class="col-xs-6 control-label">lipSyncScale:</label>
+                        <div class="col-xs-6">
+                            <input class="form-control" type="number" id="lipSyncScale" value="1.0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-6 control-label">lipSyncSmoothWindow:</label>
+                        <div class="col-xs-6">
+                            <input class="form-control" type="number" id="lipSyncSmoothWindow" value="0.18" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-6 control-label">lipSyncSpeedLimit:</label>
+                        <div class="col-xs-6">
+                            <input class="form-control" type="number" id="lipSyncSpeedLimit" value="6.0" step="0.01">
+                        </div>
+                    </div>
+                </form>
+                <br>
+                <form>
+                    <div class="form-group">
+                        <label class="control-label">Select files from your computer</label>
+                        <input type="file" name="files[]" id="upload_files" multiple>
+                    </div>
+                    <!-- Drop Zone -->
+                    <h5><strong>Or drag and drop files below</strong></h5>
+                    <div class="upload-drop-zone" id="drop_zone">
+                        DRAG AND DROP FILES HERE
+                    </div>
+                    <!--<textarea style="resize: none;" class="form-control" rows="4" id="textTranscript2" placeholder="Type your transcript here..."></textarea>-->
+                    <br>
+                    <div class="form-group pull-right">
+                        <span class="glyphicon glyphicon-edit" style="font-size: 20px;" aria-hidden="true" data-toggle="modal" data-target="#textModal" data-backdrop="static" data-keyboard="false"></span>
+                        <span class="glyphicon glyphicon-record" style="font-size: 20px;" aria-hidden="true" data-toggle="modal" data-target="#recordModal" data-backdrop="static" data-keyboard="false"></span>
+                    </div>
+                    <br>
+                </form>
+                <form class="form-horizontal">
+                    <div class="form-group pull-left" id="characterRadioButton" style="text-align: left;">
+                        <label class="col-xs-4 control-label">Characters:</label>
+                        <div class="col-xs-8">
+                            <label class="radio-inline">
+                                <input type="radio" name="optradio" value="ChrBrad" checked>Brad</label>
+                            <label class="radio-inline">
+                                <input type="radio" name="optradio" value="ChrRachel">Rachel</label>
+                        </div>
+                    </div>
+                    <br>
+                    <!-- File list -->
+                    <div id="file-list-div" class="js-file-list" style="visibility:hidden;">
+                        <h4 id="file-list-title" style="text-align=left; width:100px;">File List</h4>
+                        <div class="list-group" id="file-list">
+                        </div>
+                    </div>
+                    <strong style="color:#d9534f">
+							<div class="pull-right" id="upload_info"></div>
+						</strong>
+                    <br>
+                    <div>
+                        <input type="button" value="Phoneme Scheduler" class="btn btn-sm btn-primary pull-right" id="cslu_upload_submit"></input>
+                        <i class="fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom pull-right" style="visibility:hidden" id="upload_spinner"></i>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Transcript-->
+    <div class="modal fade" id="textModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="quitTranscriptBtn"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Text Editor</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="textTranscriptFilename" placeholder="Filename (e.g. Transcript.txt)">
+                    <br>
+                    <textarea class="form-control" rows="8" id="textTranscript" placeholder="Type your transcript here..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <strong style="color:#d9534f">
+                    <div class="pull-left" id="save_info" style="visibility:hidden">File name and content should not be empty!</div>
+				</strong>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="closeTranscriptBtn">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveTranscriptBtn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Recorder-->
+    <div class="modal fade" id="recordModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="quitRecordWAV()"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Recorder</h4>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom : 10px">
+                        <input type="text" class="form-control" id="WAVFilename" placeholder="Filename (e.g. audio)">
+                        <br>
+                        <textarea class="form-control" rows="4" id="recordTextTranscript" placeholder="Type your transcript here..."></textarea>
+                    </div>
+                    <div id="recording-div" style="display: none;"><i class="fa fa-circle-o-notch fa-spin fa-1x"></i><strong>&nbspRecording...</strong></div>
+                    <div id="playing-div" style="display: none;">
+                        <audio controls id="wav-player">
+                            <source id="wav-src" src="" type="audio/wav">
+                        </audio>
+                        <a id="download-link" class="pull-right" href="" download><span class="glyphicon glyphicon-save" aria-hidden="true" style="font-size: 20px;"></a></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="recordBtn" disabled>Record</button>
+                    <button type="button" class="btn btn-default" id="saveRecordBtn" disabled>Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- intialization -->
+    <script async type="text/javascript" src="../scripts/emscriptenInit.js"></script>
+    <!-- data package, your data package scripts here -->
+    <script async type="text/javascript" src="../data/data-chrbrad-limited.js"></script>
+    <script async type="text/javascript" src="../data/data-chrrachel-limited.js"></script>
+    <script async type="text/javascript" src="../data/data-audio-test.js"></script>
+    <!-- common scripts, default settings-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script async type="text/javascript" src="../scripts/recorderJS/recorder.js"></script>
+    <script async type="text/javascript" src="../scripts/FPSCounter.js"></script>
+    <script async type="text/javascript" src="../scripts/mathUtils.js"></script>
+    <script sysnc type="text/javascript" src="../scripts/phonemeScheduler.js"></script>
+    <script async type="text/javascript" src="../SmartBodyJS.js"></script>
+    <script async type="text/javascript" src="../scripts/scripts/defaultViewer.js"></script>
+    <script async type="text/javascript" src="../scripts/scripts/defaultInterface.js"></script>
+    <!-- application scripts, replace your scripts here-->
+    <script async type="text/javascript" src="../scripts/scripts/zebra2-map.js"></script>
+    <script async type="text/javascript" src="../scripts/scripts/init-diphoneDefault.js"></script>
+    <script async type="text/javascript" src="../scripts/examples/TalkingFaceDemo.js"></script>
+</body>
+
+</html>

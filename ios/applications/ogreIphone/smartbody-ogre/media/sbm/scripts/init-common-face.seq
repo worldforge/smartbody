@@ -1,0 +1,49 @@
+0   echo === Starting: data/sbm-common/scripts/common-init-face.seq
+
+#0   echo common-init-face: Initializing FAC and viseme channels...
+
+0	set	face neutral face_neutral
+
+0	set face au 1  left 	fac_1L_inner_brow_raiser
+0	set face au 1  right	fac_1R_inner_brow_raiser
+0	set face au 2  left 	fac_2L_outer_brow_raiser
+0	set face au 2  right	fac_2R_outer_brow_raiser
+0	set face au 4  left		fac_4L_brow_lowerer
+0	set face au 4  right	fac_4R_brow_lowerer
+0	set face au 5		fac_5_upper_lid_raiser
+0	set face au 6		fac_6_cheek_raiser
+0	set face au 7		fac_7_lid_tightener
+0	set face au 9		fac_9_nose_wrinkler
+0	set face au 10		fac_10_upper_lip_raiser
+0	set face au 12		fac_12_lip_corner_puller
+0	set face au 15		fac_15_lip_corner_depressor
+0	set face au 20		fac_20_lip_stretcher
+0	set face au 23		fac_23_lip_tightener
+0	set face au 25		fac_25_lips_part
+0	set face au 26		fac_26_jaw_drop
+0	set face au	27		fac_27_mouth_stretch
+0	set face au 38		fac_38_nostril_dilator
+0	set face au 39		fac_39_nostril_compressor
+0	set face au 45 left		fac_45L_blink
+0	set face au 45 right 	fac_45R_blink
+# Test case: this one should warn of overwrite
+#0	set face au 45		fac_45_blink
+
+0	set face viseme Ao	viseme_ao
+0	set face viseme D	viseme_d
+0	set face viseme EE	viseme_ee
+0	set face viseme Er	viseme_er
+0	set face viseme f	viseme_f
+0	set face viseme j	viseme_j
+0	set face viseme KG	viseme_kg
+0	set face viseme Ih	viseme_ih
+0	set face viseme NG	viseme_ng
+0	set face viseme Oh	viseme_oh
+0	set face viseme OO	viseme_oo
+0	set face viseme R	viseme_r
+0	set face viseme Th	viseme_th
+0	set face viseme Z	viseme_z
+0	set face viseme BMP	viseme_bmp
+0	set face viseme blink fac_45_blink
+
+0   echo === Complete: data/sbm-common/scripts/common-init-face.seq

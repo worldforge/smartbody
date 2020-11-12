@@ -1,0 +1,4 @@
+add_subdirectory (SmartBody)
+add_subdirectory (sbgui)
+add_subdirectory (simplesmartbody)
+

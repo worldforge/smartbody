@@ -1,0 +1,45 @@
+ACTIVEMQ server setup:
+add the following transport connector to the activemq configuration:
+
+<transportConnector uri="stomp://localhost:61613"/>
+
+in the section:
+
+<transportConnectors>
+	<transportConnector name="openwire" uri="tcp://0.0.0.0:61616"/>
+	<transportConnector uri="stomp://localhost:61613"/>
+</transportConnectors>
+
+How to load:
+this package has a ASD definition file and can be loaded using the
+ASDF package management system. http://common-lisp.net/project/asdf/
+Just make sure that you add to the ASDF path the location of the required
+libraries (in the lib sub-directory).
+
+Otherwise you can load it by loading the file load.lisp.
+if you already have some of the required libraries (in the subdir lib)
+then make sure to add the location of those libraries to the asdf path
+so they are loaded insted of the provided ones (paths specified
+in the load.lisp file).
+
+How to use:
+first call (connect) by default it connects to localhost:61613.
+If you need to change host or port use the keyword arguments :host
+and :port.
+
+then call (attach-listener prefix listener) to redirect all incoming
+messages matching the prefix (a string, if nil all messages will be
+sent to the listener) to the listener. The listener is a function
+of one argument, the received message.
+See the provided function sample-listener for an example of a listener.
+If you want to be able to selectively detach some listener, provide
+a unique string identifier for each call to the attach-listener function.
+For example: (attach-listener "test" #'sample-listener :id "test-id")
+will register the function sample-listener to receive only messages with
+prefix "test" and it'll be register with id "test-id". This listener
+can then be removed calling (detach-listener "test-id").
+
+call (stop) when you need to close the connection to the activemq server.
+
+to send a message use (post prefix message) where prefix and message
+are two strings.

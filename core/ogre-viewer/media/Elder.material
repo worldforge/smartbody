@@ -1,0 +1,94 @@
+material PantsShirtShoes_Mat
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			scene_blend alpha_blend
+
+			texture_unit
+			{
+				texture PantsShirtShoes.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material Jacket_Mat
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+
+			texture_unit
+			{
+				texture Jacket.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material NoMaterial
+{
+	technique
+	{
+		pass
+		{
+		}
+
+	}
+
+}
+
+
+
+material Hat_Mat
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			scene_blend alpha_blend
+
+			texture_unit
+			{
+				texture Hat.dds
+			}
+		}
+
+	}
+
+}
+
+
+
+material Face_Mat
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			scene_blend alpha_blend
+
+			texture_unit
+			{
+				texture Face.dds
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,65 @@
+diff -rNup --exclude='.*' --exclude=Makefile activemq-cpp-library-3.9.4 2/config/ltmain.sh activemq-cpp-library-3.9.4/config/ltmain.sh
+--- activemq-cpp-library-3.9.4 2/config/ltmain.sh	2017-02-20 08:03:45.000000000 -0800
++++ activemq-cpp-library-3.9.4/config/ltmain.sh	2017-09-23 08:31:04.000000000 -0700
+@@ -10217,16 +10217,16 @@ EOF
+ 
+       case $host in
+       *-*-darwin*)
+-	# Don't allow lazy linking, it breaks C++ global constructors
+-	# But is supposedly fixed on 10.4 or later (yay!).
+-	if test CXX = "$tagname"; then
+-	  case ${MACOSX_DEPLOYMENT_TARGET-10.0} in
+-	    10.[0123])
+-	      func_append compile_command " $wl-bind_at_load"
+-	      func_append finalize_command " $wl-bind_at_load"
+-	    ;;
+-	  esac
+-	fi
++#	# Don't allow lazy linking, it breaks C++ global constructors
++#	# But is supposedly fixed on 10.4 or later (yay!).
++# 	if test CXX = "$tagname"; then
++# 	  case ${MACOSX_DEPLOYMENT_TARGET-10.0} in
++# 	    10.[0123])
++# 	      func_append compile_command " $wl-bind_at_load"
++# 	      func_append finalize_command " $wl-bind_at_load"
++# 	    ;;
++# 	  esac
++# 	fi
+ 	# Time to change all our "foo.ltframework" stuff back to "-framework foo"
+ 	compile_deplibs=`$ECHO " $compile_deplibs" | $SED 's% \([^ $]*\).ltframework% -framework \1%g'`
+ 	finalize_deplibs=`$ECHO " $finalize_deplibs" | $SED 's% \([^ $]*\).ltframework% -framework \1%g'`
+diff -rNup --exclude='.*' --exclude=Makefile activemq-cpp-library-3.9.4 2/src/main/decaf/internal/util/concurrent/unix/Atomics.cpp activemq-cpp-library-3.9.4/src/main/decaf/internal/util/concurrent/unix/Atomics.cpp
+--- activemq-cpp-library-3.9.4 2/src/main/decaf/internal/util/concurrent/unix/Atomics.cpp	2016-03-17 08:30:18.000000000 -0700
++++ activemq-cpp-library-3.9.4/src/main/decaf/internal/util/concurrent/unix/Atomics.cpp	2017-09-23 08:21:03.000000000 -0700
+@@ -122,8 +122,8 @@ void* Atomics::getAndSet(volatile void**
+     return (void*) __sync_lock_test_and_set(target, newValue);
+ #elif defined(SOLARIS2) && SOLARIS2 >= 10
+     return atomic_swap_ptr(target, newValue);
+-#elif defined(__APPLE__)
+-    return atomic_swap_32(target, newValue);
++//#elif defined(__APPLE__)
++//    return atomic_swap_32(target, newValue);
+ #else
+     void* oldValue;
+     PlatformThread::lockMutex(atomicMutex);
+diff -rNup --exclude='.*' --exclude=Makefile activemq-cpp-library-3.9.4 2/src/main/decaf/lang/System.cpp activemq-cpp-library-3.9.4/src/main/decaf/lang/System.cpp
+--- activemq-cpp-library-3.9.4 2/src/main/decaf/lang/System.cpp	2016-03-17 08:30:18.000000000 -0700
++++ activemq-cpp-library-3.9.4/src/main/decaf/lang/System.cpp	2017-09-23 08:21:03.000000000 -0700
+@@ -469,12 +469,12 @@ std::vector<std::string> System::getEnvA
+ 
+ #else
+ 
+-#if defined(__APPLE__)
+-   #include <crt_externs.h>
+-   #define environ (*_NSGetEnviron())
+-#else
++// #if defined(__APPLE__)
++//    #include <crt_externs.h>
++//    #define environ (*_NSGetEnviron())
++// #else
+    extern char** environ;
+-#endif
++//#endif
+ 
+ ////////////////////////////////////////////////////////////////////////////////
+ std::vector<std::string> System::getEnvArray() {

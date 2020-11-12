@@ -1,0 +1,556 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D3623260D0F684500981E51 /* ChasesAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* ChasesAppDelegate.m */; };
+		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
+		28FD14FE0DC6FC130079059D /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FD14FD0DC6FC130079059D /* EAGLView.m */; };
+		AA03674B142A80BC00DDDCA2 /* libblas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA036748142A80BC00DDDCA2 /* libblas.a */; };
+		AA03674C142A80BC00DDDCA2 /* libf2c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA036749142A80BC00DDDCA2 /* libf2c.a */; };
+		AA03674D142A80BC00DDDCA2 /* liblapack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA03674A142A80BC00DDDCA2 /* liblapack.a */; };
+		AA12CB1914031DD50017A491 /* Window.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA12CB1814031DD50017A491 /* Window.xib */; };
+		AA12CB1C14031E040017A491 /* ApplicationViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = AA12CB1B14031E040017A491 /* ApplicationViewer.m */; };
+		AA813ABB140FFC130026D507 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA813ABA140FFC130026D507 /* MainWindow-iPad.xib */; };
+		AA813ABD140FFCBE0026D507 /* Window-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA813ABC140FFCBE0026D507 /* Window-iPad.xib */; };
+		AA9AC3B617E7A7280077D800 /* libalut.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9AC3B517E7A7280077D800 /* libalut.a */; };
+		AA9CDAAF141FFFB90064C27A /* minimalwrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9CDAAD141FFFB90064C27A /* minimalwrapper.cpp */; };
+		AAA6ACD016EFF951006E8ACF /* assests in Resources */ = {isa = PBXBuildFile; fileRef = AAA6ACCF16EFF951006E8ACF /* assests */; };
+		AAC4061718594098002E407D /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC4061618594098002E407D /* libprotobuf.a */; };
+		AAC9AC50142010C000F56F9C /* libactivemq-cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC40142010C000F56F9C /* libactivemq-cpp.a */; };
+		AAC9AC51142010C000F56F9C /* libapr-1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC41142010C000F56F9C /* libapr-1.a */; };
+		AAC9AC52142010C000F56F9C /* libaprutil-1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC42142010C000F56F9C /* libaprutil-1.a */; };
+		AAC9AC53142010C000F56F9C /* libbonebus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC43142010C000F56F9C /* libbonebus.a */; };
+		AAC9AC57142010C000F56F9C /* libexpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC47142010C000F56F9C /* libexpat.a */; };
+		AAC9AC58142010C000F56F9C /* libode.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC48142010C000F56F9C /* libode.a */; };
+		AAC9AC59142010C000F56F9C /* libpprAI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC49142010C000F56F9C /* libpprAI.a */; };
+		AAC9AC5A142010C000F56F9C /* libsmartbody-lib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC4A142010C000F56F9C /* libsmartbody-lib.a */; };
+		AAC9AC5B142010C000F56F9C /* libSteerLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC4B142010C000F56F9C /* libSteerLib.a */; };
+		AAC9AC5C142010C000F56F9C /* libvhcl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC4C142010C000F56F9C /* libvhcl.a */; };
+		AAC9AC5D142010C000F56F9C /* libvhmsg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC4D142010C000F56F9C /* libvhmsg.a */; };
+		AAC9AC5E142010C000F56F9C /* libwsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC4E142010C000F56F9C /* libwsp.a */; };
+		AAC9AC5F142010C000F56F9C /* libxerces-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAC9AC4F142010C000F56F9C /* libxerces-c.a */; };
+		AAD2C3FA1551FFF30053C478 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2C3F91551FFF30053C478 /* Foundation.framework */; };
+		AAD2C3FC155200040053C478 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2C3FB155200040053C478 /* OpenGLES.framework */; };
+		AAD2C3FE1552000C0053C478 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2C3FD1552000C0053C478 /* UIKit.framework */; };
+		AAD2C400155200120053C478 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2C3FF155200120053C478 /* QuartzCore.framework */; };
+		AAD2C402155201450053C478 /* libpython2.6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2C401155201450053C478 /* libpython2.6.a */; };
+		AAD5A308177A39F70056CDD4 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD5A304177A39F70056CDD4 /* libboost_filesystem.a */; };
+		AAD5A309177A39F70056CDD4 /* libboost_python.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD5A305177A39F70056CDD4 /* libboost_python.a */; };
+		AAD5A30A177A39F70056CDD4 /* libboost_regex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD5A306177A39F70056CDD4 /* libboost_regex.a */; };
+		AAD5A30B177A39F70056CDD4 /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD5A307177A39F70056CDD4 /* libboost_system.a */; };
+		AAE74E4F1798E6E300D36911 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE74E4E1798E6E300D36911 /* libsndfile.a */; };
+		AAE74E531798E70600D36911 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE74E511798E70600D36911 /* CoreAudio.framework */; };
+		AAE74E551798EEF300D36911 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE74E541798EEF300D36911 /* OpenAL.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D3623240D0F684500981E51 /* ChasesAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChasesAppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* ChasesAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChasesAppDelegate.m; sourceTree = "<group>"; };
+		1D6058910D05DD3D006BFB54 /* SBGLES.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SBGLES.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		28FD14FC0DC6FC130079059D /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
+		28FD14FD0DC6FC130079059D /* EAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAGLView.m; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		32CA4F630368D1EE00C91783 /* Chases_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chases_Prefix.pch; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA036748142A80BC00DDDCA2 /* libblas.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libblas.a; path = ../../libs/iphoneos/libblas.a; sourceTree = "<group>"; };
+		AA036749142A80BC00DDDCA2 /* libf2c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libf2c.a; path = ../../libs/iphoneos/libf2c.a; sourceTree = "<group>"; };
+		AA03674A142A80BC00DDDCA2 /* liblapack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblapack.a; path = ../../libs/iphoneos/liblapack.a; sourceTree = "<group>"; };
+		AA12CB1814031DD50017A491 /* Window.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Window.xib; sourceTree = "<group>"; };
+		AA12CB1A14031E040017A491 /* ApplicationViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationViewer.h; sourceTree = "<group>"; };
+		AA12CB1B14031E040017A491 /* ApplicationViewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationViewer.m; sourceTree = "<group>"; };
+		AA813ABA140FFC130026D507 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow-iPad.xib"; path = "iPad/MainWindow-iPad.xib"; sourceTree = "<group>"; };
+		AA813ABC140FFCBE0026D507 /* Window-iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Window-iPad.xib"; sourceTree = "<group>"; };
+		AA9AC3B517E7A7280077D800 /* libalut.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libalut.a; path = ../../libs/iphoneos/libalut.a; sourceTree = "<group>"; };
+		AA9CDAAD141FFFB90064C27A /* minimalwrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = minimalwrapper.cpp; sourceTree = "<group>"; };
+		AA9CDAAE141FFFB90064C27A /* minimalwrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = minimalwrapper.h; sourceTree = "<group>"; };
+		AAA6ACCF16EFF951006E8ACF /* assests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assests; sourceTree = "<group>"; };
+		AAC4061618594098002E407D /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprotobuf.a; path = ../../libs/iphoneos/libprotobuf.a; sourceTree = "<group>"; };
+		AAC9AC40142010C000F56F9C /* libactivemq-cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libactivemq-cpp.a"; path = "../../libs/iphoneos/libactivemq-cpp.a"; sourceTree = "<group>"; };
+		AAC9AC41142010C000F56F9C /* libapr-1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libapr-1.a"; path = "../../libs/iphoneos/libapr-1.a"; sourceTree = "<group>"; };
+		AAC9AC42142010C000F56F9C /* libaprutil-1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libaprutil-1.a"; path = "../../libs/iphoneos/libaprutil-1.a"; sourceTree = "<group>"; };
+		AAC9AC43142010C000F56F9C /* libbonebus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbonebus.a; path = ../../libs/iphoneos/libbonebus.a; sourceTree = "<group>"; };
+		AAC9AC47142010C000F56F9C /* libexpat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libexpat.a; path = ../../libs/iphoneos/libexpat.a; sourceTree = "<group>"; };
+		AAC9AC48142010C000F56F9C /* libode.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libode.a; path = ../../libs/iphoneos/libode.a; sourceTree = "<group>"; };
+		AAC9AC49142010C000F56F9C /* libpprAI.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpprAI.a; path = ../../libs/iphoneos/libpprAI.a; sourceTree = "<group>"; };
+		AAC9AC4A142010C000F56F9C /* libsmartbody-lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsmartbody-lib.a"; path = "../../libs/iphoneos/libsmartbody-lib.a"; sourceTree = "<group>"; };
+		AAC9AC4B142010C000F56F9C /* libSteerLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSteerLib.a; path = ../../libs/iphoneos/libSteerLib.a; sourceTree = "<group>"; };
+		AAC9AC4C142010C000F56F9C /* libvhcl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvhcl.a; path = ../../libs/iphoneos/libvhcl.a; sourceTree = "<group>"; };
+		AAC9AC4D142010C000F56F9C /* libvhmsg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvhmsg.a; path = ../../libs/iphoneos/libvhmsg.a; sourceTree = "<group>"; };
+		AAC9AC4E142010C000F56F9C /* libwsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwsp.a; path = ../../libs/iphoneos/libwsp.a; sourceTree = "<group>"; };
+		AAC9AC4F142010C000F56F9C /* libxerces-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libxerces-c.a"; path = "../../libs/iphoneos/libxerces-c.a"; sourceTree = "<group>"; };
+		AAD2C3F91551FFF30053C478 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AAD2C3FB155200040053C478 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		AAD2C3FD1552000C0053C478 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		AAD2C3FF155200120053C478 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		AAD2C401155201450053C478 /* libpython2.6.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpython2.6.a; path = ../../libs/iphoneos/libpython2.6.a; sourceTree = "<group>"; };
+		AAD5A304177A39F70056CDD4 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../../libs/iphoneos/libboost_filesystem.a; sourceTree = "<group>"; };
+		AAD5A305177A39F70056CDD4 /* libboost_python.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_python.a; path = ../../libs/iphoneos/libboost_python.a; sourceTree = "<group>"; };
+		AAD5A306177A39F70056CDD4 /* libboost_regex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_regex.a; path = ../../libs/iphoneos/libboost_regex.a; sourceTree = "<group>"; };
+		AAD5A307177A39F70056CDD4 /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = ../../libs/iphoneos/libboost_system.a; sourceTree = "<group>"; };
+		AAE74E4E1798E6E300D36911 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = ../../libs/iphoneos/libsndfile.a; sourceTree = "<group>"; };
+		AAE74E511798E70600D36911 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		AAE74E541798EEF300D36911 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAC9AC50142010C000F56F9C /* libactivemq-cpp.a in Frameworks */,
+				AAC9AC51142010C000F56F9C /* libapr-1.a in Frameworks */,
+				AAC9AC52142010C000F56F9C /* libaprutil-1.a in Frameworks */,
+				AAC9AC53142010C000F56F9C /* libbonebus.a in Frameworks */,
+				AAC9AC57142010C000F56F9C /* libexpat.a in Frameworks */,
+				AAC9AC58142010C000F56F9C /* libode.a in Frameworks */,
+				AAC9AC59142010C000F56F9C /* libpprAI.a in Frameworks */,
+				AAC9AC5A142010C000F56F9C /* libsmartbody-lib.a in Frameworks */,
+				AAC9AC5B142010C000F56F9C /* libSteerLib.a in Frameworks */,
+				AAC9AC5C142010C000F56F9C /* libvhcl.a in Frameworks */,
+				AAC9AC5D142010C000F56F9C /* libvhmsg.a in Frameworks */,
+				AAC9AC5E142010C000F56F9C /* libwsp.a in Frameworks */,
+				AAC9AC5F142010C000F56F9C /* libxerces-c.a in Frameworks */,
+				AA03674B142A80BC00DDDCA2 /* libblas.a in Frameworks */,
+				AA03674C142A80BC00DDDCA2 /* libf2c.a in Frameworks */,
+				AA03674D142A80BC00DDDCA2 /* liblapack.a in Frameworks */,
+				AAD2C3FA1551FFF30053C478 /* Foundation.framework in Frameworks */,
+				AAD2C3FC155200040053C478 /* OpenGLES.framework in Frameworks */,
+				AAD2C3FE1552000C0053C478 /* UIKit.framework in Frameworks */,
+				AAD2C400155200120053C478 /* QuartzCore.framework in Frameworks */,
+				AAD2C402155201450053C478 /* libpython2.6.a in Frameworks */,
+				AAD5A308177A39F70056CDD4 /* libboost_filesystem.a in Frameworks */,
+				AAD5A309177A39F70056CDD4 /* libboost_python.a in Frameworks */,
+				AAD5A30A177A39F70056CDD4 /* libboost_regex.a in Frameworks */,
+				AAD5A30B177A39F70056CDD4 /* libboost_system.a in Frameworks */,
+				AAE74E4F1798E6E300D36911 /* libsndfile.a in Frameworks */,
+				AAE74E531798E70600D36911 /* CoreAudio.framework in Frameworks */,
+				AAE74E551798EEF300D36911 /* OpenAL.framework in Frameworks */,
+				AA9AC3B617E7A7280077D800 /* libalut.a in Frameworks */,
+				AAC4061718594098002E407D /* libprotobuf.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				AA9CDAAD141FFFB90064C27A /* minimalwrapper.cpp */,
+				AA9CDAAE141FFFB90064C27A /* minimalwrapper.h */,
+				AA12CB1A14031E040017A491 /* ApplicationViewer.h */,
+				AA12CB1B14031E040017A491 /* ApplicationViewer.m */,
+				28FD14FC0DC6FC130079059D /* EAGLView.h */,
+				28FD14FD0DC6FC130079059D /* EAGLView.m */,
+				1D3623240D0F684500981E51 /* ChasesAppDelegate.h */,
+				1D3623250D0F684500981E51 /* ChasesAppDelegate.m */,
+				AA12CB1814031DD50017A491 /* Window.xib */,
+				AA813ABC140FFCBE0026D507 /* Window-iPad.xib */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* SBGLES.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				AA813AB9140FFC110026D507 /* iPad */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* Chases_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AAA6ACCF16EFF951006E8ACF /* assests */,
+				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
+				8D1107310486CEB800E47090 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AAC4061618594098002E407D /* libprotobuf.a */,
+				AA9AC3B517E7A7280077D800 /* libalut.a */,
+				AAE74E4E1798E6E300D36911 /* libsndfile.a */,
+				AAD5A304177A39F70056CDD4 /* libboost_filesystem.a */,
+				AAD5A305177A39F70056CDD4 /* libboost_python.a */,
+				AAD5A306177A39F70056CDD4 /* libboost_regex.a */,
+				AAD5A307177A39F70056CDD4 /* libboost_system.a */,
+				AAD2C401155201450053C478 /* libpython2.6.a */,
+				AA036748142A80BC00DDDCA2 /* libblas.a */,
+				AA036749142A80BC00DDDCA2 /* libf2c.a */,
+				AA03674A142A80BC00DDDCA2 /* liblapack.a */,
+				AAC9AC40142010C000F56F9C /* libactivemq-cpp.a */,
+				AAC9AC41142010C000F56F9C /* libapr-1.a */,
+				AAC9AC42142010C000F56F9C /* libaprutil-1.a */,
+				AAC9AC43142010C000F56F9C /* libbonebus.a */,
+				AAC9AC47142010C000F56F9C /* libexpat.a */,
+				AAC9AC48142010C000F56F9C /* libode.a */,
+				AAC9AC49142010C000F56F9C /* libpprAI.a */,
+				AAC9AC4A142010C000F56F9C /* libsmartbody-lib.a */,
+				AAC9AC4B142010C000F56F9C /* libSteerLib.a */,
+				AAC9AC4C142010C000F56F9C /* libvhcl.a */,
+				AAC9AC4D142010C000F56F9C /* libvhmsg.a */,
+				AAC9AC4E142010C000F56F9C /* libwsp.a */,
+				AAC9AC4F142010C000F56F9C /* libxerces-c.a */,
+				AAE74E541798EEF300D36911 /* OpenAL.framework */,
+				AAE74E511798E70600D36911 /* CoreAudio.framework */,
+				AAD2C3FF155200120053C478 /* QuartzCore.framework */,
+				AAD2C3F91551FFF30053C478 /* Foundation.framework */,
+				AAD2C3FD1552000C0053C478 /* UIKit.framework */,
+				AAD2C3FB155200040053C478 /* OpenGLES.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AA813AB9140FFC110026D507 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				AA813ABA140FFC130026D507 /* MainWindow-iPad.xib */,
+			);
+			name = iPad;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* smartbody-openglES */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "smartbody-openglES" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "smartbody-openglES";
+			productName = Chases;
+			productReference = 1D6058910D05DD3D006BFB54 /* SBGLES.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = 4RX84Q9D57;
+					};
+				};
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "smartbody-openglES" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* smartbody-openglES */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
+				AA12CB1914031DD50017A491 /* Window.xib in Resources */,
+				AA813ABB140FFC130026D507 /* MainWindow-iPad.xib in Resources */,
+				AA813ABD140FFCBE0026D507 /* Window-iPad.xib in Resources */,
+				AAA6ACD016EFF951006E8ACF /* assests in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				1D3623260D0F684500981E51 /* ChasesAppDelegate.m in Sources */,
+				28FD14FE0DC6FC130079059D /* EAGLView.m in Sources */,
+				AA12CB1C14031E040017A491 /* ApplicationViewer.m in Sources */,
+				AA9CDAAF141FFFB90064C27A /* minimalwrapper.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../../Downloads/MacTorcs-master/Frameworks\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Chases_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = "";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = (
+					/usr/include/python2.6,
+					"../../python/Python-2.6.5",
+					"../../python/Python-2.6.5/_install/include/python2.6",
+					../../boost/boost_1_51_0,
+					"../../boost/boost-numeric-bindings",
+					"../../xerces-c/iphoneos/include",
+					../../ode/iphoneos/include,
+					"../../activemq/activemq-cpp/iphoneos/include/activemq-cpp-3.4.0",
+					../../../core/smartbody/SmartBody/src,
+					"../../../core/smartbody/steersuite-1.3/pprAI/include",
+					"../../../core/smartbody/steersuite-1.3/steerlib/include",
+					"../../../core/smartbody/steersuite-1.3/external",
+					../../../lib/vhcl/include,
+					"../../../lib/vhmsg/vhmsg-c/include",
+					../../../lib/wsp/wsp/include,
+					../../../lib/bonebus/include,
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
+					"../../python/Python-2.6.5",
+					"../../python/Python-2.6.5/_install/include/python2.6",
+					../../boost/boost_1_51_0,
+					"../../boost/boost-numeric-bindings",
+					"../../xerces-c/iphonesimulator/include",
+					../../ode/iphonesimulator/include,
+					"../../activemq/activemq-cpp/iphonesimulator/include/activemq-cpp-3.4.0",
+					../../../core/smartbody/SmartBody/src,
+					"../../../core/smartbody/steersuite-1.3/pprAI/include",
+					"../../../core/smartbody/steersuite-1.3/steerlib/include",
+					"../../../core/smartbody/steersuite-1.3/external",
+					../../../lib/vhcl/include,
+					"../../../lib/vhmsg/vhmsg-c/include",
+					../../../lib/wsp/wsp/include,
+					../../../lib/bonebus/include,
+				);
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../libs/iphoneos\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../../Downloads/freealut-1.1.0/build\"",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = ../../libs/iphoneos;
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = ../../libs/iphonesimulator;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = SBGLES;
+				PROVISIONING_PROFILE = "";
+				SYMROOT = $PROJECT_DIR/build;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv6 armv7 i386";
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../../Downloads/MacTorcs-master/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Chases_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = "";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = (
+					/usr/include/python2.6,
+					"../../python/Python-2.6.5",
+					"../../python/Python-2.6.5/_install/include/python2.6",
+					../../boost/boost_1_51_0,
+					"../../boost/boost-numeric-bindings",
+					"../../xerces-c/iphoneos/include",
+					../../ode/iphoneos/include,
+					"../../activemq/activemq-cpp/iphoneos/include/activemq-cpp-3.4.0",
+					../../../core/smartbody/SmartBody/src,
+					"../../../core/smartbody/steersuite-1.3/pprAI/include",
+					"../../../core/smartbody/steersuite-1.3/steerlib/include",
+					"../../../core/smartbody/steersuite-1.3/external",
+					../../../lib/vhcl/include,
+					"../../../lib/vhmsg/vhmsg-c/include",
+					../../../lib/wsp/wsp/include,
+					../../../lib/bonebus/include,
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = (
+					"../../python/Python-2.6.5",
+					"../../python/Python-2.6.5/_install/include/python2.6",
+					../../boost/boost_1_51_0,
+					"../../boost/boost-numeric-bindings",
+					"../../xerces-c/iphonesimulator/include",
+					../../ode/iphonesimulator/include,
+					"../../activemq/activemq-cpp/iphonesimulator/include/activemq-cpp-3.4.0",
+					../../../core/smartbody/SmartBody/src,
+					"../../../core/smartbody/steersuite-1.3/pprAI/include",
+					"../../../core/smartbody/steersuite-1.3/steerlib/include",
+					"../../../core/smartbody/steersuite-1.3/external",
+					../../../lib/vhcl/include,
+					"../../../lib/vhmsg/vhmsg-c/include",
+					../../../lib/wsp/wsp/include,
+					../../../lib/bonebus/include,
+				);
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../libs/iphoneos\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../../Downloads/freealut-1.1.0/build\"",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=*]" = ../../libs/iphoneos;
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=*]" = ../../libs/iphonesimulator;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = SBGLES;
+				PROVISIONING_PROFILE = "";
+				SYMROOT = $PROJECT_DIR/build;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv6 armv7 i386";
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/Users/yxu/trunk/core/smartbody/smartbody-lib/src",
+					"/Users/yxu/Desktop/xcode-boost/boost_1_51_0",
+					/Users/yxu/xerces/include,
+					"/Users/yxu/trunk/core/smartbody/steersuite-1.3/**",
+					/Users/yxu/ode/include,
+					"/Users/yxu/Downloads/boost-numeric-bindings",
+					/Users/yxu/trunk/lib/bonebus/include,
+					"/Users/yxu/trunk/lib/vhmsg/vhmsg-c/include",
+					/Users/yxu/trunk/lib/vhcl/include,
+					/Users/yxu/trunk/lib/wsp/wsp/include,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/Users/yxu/trunk/core/smartbody/smartbody-lib/src",
+					"/Users/yxu/Desktop/xcode-boost/boost_1_51_0",
+					/Users/yxu/xerces/include,
+					"/Users/yxu/trunk/core/smartbody/steersuite-1.3/**",
+					/Users/yxu/ode/include,
+					"/Users/yxu/Downloads/boost-numeric-bindings",
+					/Users/yxu/trunk/lib/bonebus/include,
+					"/Users/yxu/trunk/lib/vhmsg/vhmsg-c/include",
+					/Users/yxu/trunk/lib/vhcl/include,
+					/Users/yxu/trunk/lib/wsp/wsp/include,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "smartbody-openglES" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "smartbody-openglES" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

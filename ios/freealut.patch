@@ -1,0 +1,1705 @@
+diff -rupN freealut-freealut_1_1_0/CMakeLists.txt freealut-master/CMakeLists.txt
+--- freealut-freealut_1_1_0/CMakeLists.txt	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/CMakeLists.txt	2014-06-26 06:45:18.000000000 -0700
+@@ -1,208 +1,233 @@
+ # cmake project file by Prakash Punnoor
+-CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
++# improved by Ryan Pavlik
++cmake_minimum_required(VERSION 2.6)
+ 
+-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/admin/CMakeModules")
+-PROJECT(Alut C)
+-SET(PACKAGE "freealut")
+-SET(PACKAGE_TARNAME "freealut")
+-SET(PACKAGE_NAME "freealut library")
+-SET(PACKAGE_MAJOR_VERSION "1")
+-SET(PACKAGE_MINOR_VERSION "0")
+-SET(PACKAGE_BUILD_VERSION "1")
+-SET(PACKAGE_VERSION "${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}")
+-SET(MAJOR_VERSION "0")
+-SET(MINOR_VERSION "0")
+-SET(BUILD_VERSION "0")
+-SET(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION}")
+-SET(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
+-SET(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
+-SET(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
+-
+-INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
+-INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
+-INCLUDE(${CMAKE_ROOT}/Modules/CheckCSourceCompiles.cmake)
+-
+-FIND_PACKAGE(ConfigHelper)
+-
+-SET(ALUT_SOURCES src/alutBufferData.c
+-                 src/alutCodec.c
+-                 src/alutError.c
+-                 src/alutInit.c
+-                 src/alutInputStream.c
+-                 src/alutInternal.h
+-                 src/alutLoader.c
+-                 src/alutOutputStream.c
+-                 src/alutUtil.c
+-                 src/alutVersion.c
+-                 src/alutWaveform.c)
+-
+-INCLUDE_DIRECTORIES(${Alut_SOURCE_DIR}/include)
+-
+-SET(ADD_WFLAGS "")
+-SET(ADD_CFLAGS "")
+-SET(ADD_LDFLAGS "")
+-SET(ADD_LIBS "")
+-
+-OPTION(BUILD_STATIC    "build static library too"   ON)
+-OPTION(PROFILE         "enable profile"            OFF)
+-OPTION(OPTIMIZATION    "enable optimization"        ON)
+-OPTION(WARNINGS        "enable warnings"            ON)
+-IF(WARNINGS)
+-  OPTION(MORE_WARNINGS "enable more warnings"       OFF)
+-  OPTION(USE_WERROR    "enable fail on all warning" OFF)
+-ENDIF(WARNINGS)
+-
+-#want test-suit?
+-OPTION(BUILD_TESTS "build the test-suite" OFF)
+-
+-
+-ADD_DEFINE(ALUT_BUILD_LIBRARY)
+-# We could possibly need struct timespec and random(), which are not ANSI.
+-# Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.
+-ADD_DEFINE("_XOPEN_SOURCE 500")
+-# We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
+-# Define to the POSIX version that should be used.
+-ADD_DEFINE("_POSIX_C_SOURCE 199309")
+-# Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
+-# dependency. By defining this identifier we are currently backwards compatible
+-# to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
+-# which triggers warnings with -Wunreachable-code.
+-ADD_DEFINE("__NO_CTYPE 1")
+-
+-ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+-ADD_DEFINITIONS(-DNDEBUG)
+-
+-FIND_LIBRARY(OPENAL_LIB NAMES openal openal32 PATHS /usr/lib /usr/local/lib ${OPENAL_LIB_DIR})
+-IF(OPENAL_LIB MATCHES "NOTFOUND")
+-  MESSAGE(FATAL_ERROR "OpenAL not installed, cannot build alut - aborting.")
+-ENDIF(OPENAL_LIB MATCHES "NOTFOUND")
+-
+-IF(UNIX)
+- SET(ADD_LIBS ${ADD_LIBS} m)
+-ENDIF(UNIX)
+-
+-SET(CMAKE_REQUIRED_INCLUDES ${OPENAL_INCLUDE_DIR})
+-CHECK_INCLUDE_FILES("AL/alc.h;AL/al.h" AL_HEADERS)
+-IF(NOT AL_HEADERS)
+-  MESSAGE(FATAL_ERROR "OpenAL header files not found - aborting.")
+-ENDIF(NOT AL_HEADERS)
+-
+-IF(DEFINED OPENAL_INCLUDE_DIR)
+-  INCLUDE_DIRECTORIES(${OPENAL_INCLUDE_DIR})
+-ENDIF(DEFINED OPENAL_INCLUDE_DIR)
+-
+-FIND_PACKAGE(SleepFunction)
+-
+-CHECK_INCLUDE_FILE_DEFINE(stdint.h HAVE_STDINT_H)
+-
+-IF(WIN32)
+-  CHECK_INCLUDE_FILE_DEFINE(basetsd.h HAVE_BASETSD_H)
+-ENDIF(WIN32)
+-
+-# FindSleepFunction will check for unistd.h if time.h wasn't found
+-IF(HAVE_TIME_H)
+-  CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
+-ENDIF(HAVE_TIME_H)
+-
+-IF(HAVE_UNISTD_H)
+-  CHECK_FUNCTION_DEFINE("
+-  #include <sys/types.h>
+-  #include <sys/stat.h>
+-  #include <unistd.h>
+-  " stat "(\"\", (struct stat*)0)" HAVE_STAT)
+-ENDIF(HAVE_UNISTD_H)
+-
+-IF(NOT HAVE_STAT)
+-  CHECK_FUNCTION_DEFINE("
+-  #include <sys/types.h>
+-  #include <sys/stat.h>
+-  " _stat "(\"\", (struct _stat*)0)" HAVE__STAT)
+-ENDIF(NOT HAVE_STAT)
+-
+-# compiler specific settings
+-FIND_PACKAGE(CompilerAttribute)
+-FIND_PACKAGE(CompilerVisibility)
+-FIND_PACKAGE(CompilerFlagsSet)
+-
+-GENERATE_CONFIG_H()
+-
+-SET(CMAKE_C_FLAGS "${ADD_WFLAGS} ${ADD_CFLAGS} ${CMAKE_C_FLAGS}")
+-SET(CMAKE_CXX_FLAGS "${ADD_CFLAGS} ${CMAKE_CXX_FLAGS}")
+-SET(CMAKE_SHARED_LINKER_FLAGS "${ADD_LDFLAGS} ${CMAKE_SHARED_LINKER_FLAGS}")
+-SET(CMAKE_MODULE_LINKER_FLAGS "${ADD_LDFLAGS} ${CMAKE_MODULE_LINKER_FLAGS}")
+-
+-IF(BUILD_STATIC)
+-  # we can't create a static library with the same name
+-  # as the shared one, so we copy it over after creation
+-  ADD_LIBRARY(alut_static STATIC ${ALUT_SOURCES})
+-  TARGET_LINK_LIBRARIES(alut_static ${OPENAL_LIB} ${ADD_LIBS})
+-  IF(NOT WIN32)
+-    ADD_CUSTOM_COMMAND(
+-      TARGET alut_static
+-      POST_BUILD
+-      COMMAND ${CMAKE_COMMAND}
+-      ARGS -E copy
+-        ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut_static${CMAKE_STATIC_LIBRARY_SUFFIX}
+-        ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
+-    INSTALL_FILES(/lib FILES ${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
+-  ENDIF(NOT WIN32)
+-ENDIF(BUILD_STATIC)
+-
+-
+-ADD_LIBRARY(alut SHARED ${ALUT_SOURCES})
+-SET_TARGET_PROPERTIES(alut PROPERTIES VERSION ${VERSION} SOVERSION ${MAJOR_VERSION})
+-TARGET_LINK_LIBRARIES(alut ${OPENAL_LIB} ${ADD_LIBS})
+-
+-INSTALL_TARGETS(/lib alut)
+-INSTALL_FILES(/include/AL FILES include/AL/alut.h)
++project(Alut C)
+ 
++set(PACKAGE "freealut")
++set(PACKAGE_TARNAME "freealut")
++set(PACKAGE_NAME "freealut library")
++set(PACKAGE_MAJOR_VERSION "1")
++set(PACKAGE_MINOR_VERSION "1")
++set(PACKAGE_BUILD_VERSION "0")
++set(PACKAGE_VERSION
++	"${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}")
++
++# For SONAME
++set(MAJOR_VERSION "0")
++set(MINOR_VERSION "1")
++set(BUILD_VERSION "0")
++
++set(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION}")
++set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
++set(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
++set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
++
++include_directories(${Alut_SOURCE_DIR}/include)
++
++# What to build?
++option(BUILD_EXAMPLES "build example applications" ON)
++option(BUILD_STATIC "build static library too" OFF)
++option(BUILD_TESTS "build the test-suite" ON)
++
++# How to build it?
++option(BUILD_PROFILE "enable profile" OFF)
++option(BUILD_OPTIMIZATION "enable optimization" ON)
++option(BUILD_WARNINGS "enable warnings" OFF)
++option(BUILD_MORE_WARNINGS "enable more warnings" OFF)
++option(BUILD_USE_WERROR "enable fail on all warning" OFF)
++
++###
++# Dependencies
++###
++find_package(OpenAL REQUIRED)
++include_directories(${OPENAL_INCLUDE_DIR})
++
++###
++# Checking for types
++###
++if(WIN32)
++	include(CheckTypeSize)
++	check_type_size(__int8 HAVE___INT8)
++endif()
++
++###
++# Checking for Includes
++###
++include(CheckIncludeFile)
++check_include_file(stdint.h HAVE_STDINT_H)
++check_include_file(unistd.h HAVE_UNISTD_H)
++check_include_file(time.h HAVE_TIME_H)
++check_include_file(windows.h HAVE_WINDOWS_H)
++check_include_file(features.h HAVE_FEATURES_H)
++
++###
++# Checking for functions
++###
++include(CheckSymbolExists)
++
++check_symbol_exists(_stat "sys/types.h;sys/stat.h" HAVE__STAT)
++if(HAVE_TIME_H)
++	check_symbol_exists(nanosleep "time.h" HAVE_NANOSLEEP)
++endif()
++if(HAVE_UNISTD_H)
++	check_symbol_exists(usleep "unistd.h" HAVE_USLEEP)
++	check_symbol_exists(stat "sys/types.h;sys/stat.h;unistd.h" HAVE_STAT)
++endif()
++if(HAVE_WINDOWS_H)
++	check_symbol_exists(Sleep "windows.h" HAVE_SLEEP)
++endif()
++
++###
++# Checking for GLIBC
++###
++if(HAVE_FEATURES_H)
++	check_symbol_exists(__GLIBC__ "features.h" HAVE_GLIBC)
++endif()
++
++###
++# Checking for __attribute__
++###
++include(CheckCSourceCompiles)
++check_c_source_compiles("void  foo (int bar __attribute__((unused)) ) { }
++	static void baz (void) __attribute__((unused));
++	static void baz (void) { }
++	int main(){}
++	"
++	HAVE___ATTRIBUTE__)
++
++###
++# Checking for __attribute__((visibility("default"))) and -fvisibility=hidden
++###
++set(CMAKE_REQUIRED_FLAGS "-fvisibility=hidden")
++check_c_source_compiles("void __attribute__((visibility(\"default\"))) test() {}
++	#ifdef __INTEL_COMPILER
++	#error ICC breaks with binutils and visibility
++	#endif
++	int main(){}
++	" HAVE_GCC_VISIBILITY)
++set(CMAKE_REQUIRED_FLAGS)
++
++
++###
++# Checking compiler flags
++###
++include(CheckCCompilerFlag)
++set(NEW_FLAGS)
++set(POTENTIAL_FLAGS)
++if(NOT MSVC)
++	if(BUILD_OPTIMIZATION)
++		list(APPEND POTENTIAL_FLAGS -finline-functions -ffast-math)
++	endif()
++
++	if(BUILD_PROFILE)
++		list(APPEND POTENTIAL_FLAGS -pg)
++	elseif(BUILD_OPTIMIZATION)
++		# -pg and -fomit-frame-pointer are incompatible
++		list(APPEND POTENTIAL_FLAGS -fomit-frame-pointer)
++	endif()
++
++	if(BUILD_WARNINGS)
++		list(APPEND POTENTIAL_FLAGS -Wall -ansi -pedantic -W)
++
++		if(BUILD_MORE_WARNINGS)
++			list(APPEND POTENTIAL_FLAGS -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wendif-labels -Winline -Wlong-long -Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wwrite-strings)
++		endif()
++
++		if(BUILD_USE_WERROR)
++			list(APPEND POTENTIAL_FLAGS -Werror)
++		endif()
++	else()
++
++		if(BUILD_MORE_WARNINGS)
++			message(STATUS "NOTE: BUILD_MORE_WARNINGS ignored because BUILD_WARNINGS not set!")
++		endif()
++
++		if(BUILD_USE_WERROR)
++			message(STATUS "NOTE: BUILD_USE_WERROR ignored because BUILD_WARNINGS not set!")
++		endif()
++	endif()
++endif()
++
++if(POTENTIAL_FLAGS)
++	foreach(FLAG ${POTENTIAL_FLAGS})
++		string(REGEX REPLACE "^-" "COMPILER_SUPPORTS_" VAR "${FLAG}")
++		check_c_compiler_flag("${FLAG}" ${VAR})
++		if(${${VAR}})
++			list(APPEND NEW_FLAGS ${FLAG})
++		endif()
++	endforeach()
++
++	if(NEW_FLAGS)
++		string(REPLACE ";" " " NEW_FLAGS "${NEW_FLAGS}")
++		message(STATUS "Building with additional flags: ${NEW_FLAGS}")
++		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${NEW_FLAGS}")
++	endif()
++endif()
++
++###
++# Generate the config header
++###
++configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
++include_directories("${CMAKE_CURRENT_BINARY_DIR}")
++
++###
++# Build the library
++###
++add_subdirectory(src)
++
++###
++# Make the pkg-config and config files
++###
+ # needed for openal.pc.in and openal-config.in
+-SET(prefix ${CMAKE_INSTALL_PREFIX})
+-SET(exec_prefix "\${prefix}")
+-SET(libdir "\${exec_prefix}/lib")
+-SET(bindir "\${exec_prefix}/bin")
+-SET(includedir "\${prefix}/include")
+-SET(requirements "")
+-# static linking dependecies are broken, so pthread isn't needed currently
+-SET(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
+-
+-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
+-               ${CMAKE_BINARY_DIR}/admin/pkgconfig/freealut.pc @ONLY)
+-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
+-               ${CMAKE_BINARY_DIR}/admin/pkgconfig/freealut-config @ONLY)
+-INSTALL_PROGRAMS(/bin FILES admin/pkgconfig/freealut-config)
+-INSTALL_FILES(/lib/pkgconfig FILES admin/pkgconfig/freealut.pc)
+-
++set(prefix ${CMAKE_INSTALL_PREFIX})
++set(exec_prefix "\${prefix}")
++set(libdir "\${exec_prefix}/lib${LIB_SUFFIX}")
++set(bindir "\${exec_prefix}/bin")
++set(includedir "\${prefix}/include")
++set(requirements "")
++
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
++	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
++	@ONLY)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
++	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
++	@ONLY)
++install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
++	DESTINATION bin)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
++	DESTINATION lib${LIB_SUFFIX}/pkgconfig)
++
++###
++# Examples
++###
++add_subdirectory(examples)
+ 
++###
+ # test-suite
+-IF(BUILD_TESTS)
+-    # examples
+-    ADD_EXECUTABLE(hello_world examples/hello_world.c)
+-    TARGET_LINK_LIBRARIES(hello_world ${OPENAL_LIB} ${ADD_LIBS} alut)
+-
+-    ADD_EXECUTABLE(playfile examples/playfile.c)
+-    TARGET_LINK_LIBRARIES(playfile ${OPENAL_LIB} ${ADD_LIBS} alut)
+-
+-
+-    SET(TESTS errorstuff
+-              fileloader
+-              memoryloader
+-              version
+-              waveforms)
+-
+-    FOREACH(TEST ${TESTS})
+-      SET(TEST_SRC test_suite/test_${TEST}.c)
+-      SET_SOURCE_FILES_PROPERTIES(${TEST_SRC} PROPERTIES COMPILE_FLAGS "-Wno-deprecated-declarations")
+-      ADD_EXECUTABLE(test_${TEST} ${TEST_SRC})
+-      TARGET_LINK_LIBRARIES(test_${TEST} ${OPENAL_LIB} ${ADD_LIBS} alut)
+-    ENDFOREACH(TEST)
+-
+-    #copy over testdata, so test-suite can be used in binary dir
+-    SET(TESTDATA file1.wav
+-                 file2.au
+-                 file3.raw)
+-
+-    FOREACH(TESTDATUM ${TESTDATA})
+-      CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/test_suite/${TESTDATUM} ${CMAKE_BINARY_DIR}/${TESTDATUM} COPYONLY)
+-    ENDFOREACH(TESTDATUM)
+-ENDIF(BUILD_TESTS)
++###
++if(BUILD_TESTS)
++
++	set(TESTS errorstuff fileloader memoryloader version waveforms)
++
++	foreach(TEST ${TESTS})
++		set(TEST_SRC test_suite/test_${TEST}.c)
++		if(CMAKE_COMPILER_IS_GNUCC)
++			set_source_files_properties(${TEST_SRC}
++				PROPERTIES
++				COMPILE_FLAGS
++				"-Wno-deprecated-declarations")
++		endif()
++		add_executable(test_${TEST} ${TEST_SRC})
++		target_link_libraries(test_${TEST} alut)
++	endforeach()
++
++	#copy over testdata, so test-suite can be used in binary dir
++	set(TESTDATA file1.wav file2.au file3.raw)
++
++	foreach(TESTDATUM ${TESTDATA})
++		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test_suite/${TESTDATUM}
++			${CMAKE_CURRENT_BINARY_DIR}/${TESTDATUM}
++			COPYONLY)
++	endforeach()
++endif()
+diff -rupN freealut-freealut_1_1_0/ChangeLog freealut-master/ChangeLog
+--- freealut-freealut_1_1_0/ChangeLog	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/ChangeLog	2014-06-26 06:45:18.000000000 -0700
+@@ -1,3 +1,35 @@
++2006-11-24  Sven Panne  <sven.panne@aedion.de>
++
++	* CMakeLists.txt, admin/VisualStudio6/alut/alut.dsp,
++	admin/VisualStudio6/hello_world/hello_world.dsp,
++	admin/VisualStudio6/playfile/playfile.dsp,
++	admin/VisualStudioDotNET/alut/alut.vcproj, configure.ac: Fixed Visual
++	Studio files, so VS finds the correct sized types. Removed the last
++	remnants of basetsd.h.
++
++2006-07-31  Sven Panne  <sven.panne@aedion.de>
++
++	* src/al_siteconfig.h: Cleaned up #ifdefs for sized integer types.
++
++2006-07-31  Prakash Punnoor <prakash@punnoor.de>
++
++	* CMakeLists.txt: disable warnings by default, add -W flags only for GCC
++	compatible compilers, don't check twice for unistd.h, add checks for
++	__int8, don't build static lib
++	
++	* admin/CMakeModules/FindSleepFunction.cmake: sync to OpenAL SI version
++
++2006-07-26  Pannes  <sven.panne@aedion.de>
++
++	* configure.ac: Due to some troubles with -ansi on MinGW and Cygwin,
++	don't enable warnings by default.
++
++2006-06-07  Sven Panne  <sven.panne@aedion.de>
++
++	* admin/RPM/freealut.spec.in: Small spec updates for SuSE 10.1.
++
++	* Released Version 1.1.0, subversion tag is "freealut_1_1_0".
++
+ 2006-05-22  Sven Panne  <sven.panne@aedion.de>
+ 
+ 	* Prepared release candidate 1 for 1.1.0, tag is "freealut_1_1_0_RC1".
+diff -rupN freealut-freealut_1_1_0/NEWS freealut-master/NEWS
+--- freealut-freealut_1_1_0/NEWS	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/NEWS	2014-06-26 06:45:18.000000000 -0700
+@@ -1,4 +1,4 @@
+-Release 1.1.0 (2006-05-22, tag "freealut_1_1_0")
++Release 1.1.0 (2006-06-07, tag "freealut_1_1_0")
+ ------------------------------------------------
+ 
+    * Improved build under Visual Studio (warnings and paths to OpenAL SDK).
+diff -rupN freealut-freealut_1_1_0/README freealut-master/README
+--- freealut-freealut_1_1_0/README	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/README	2014-06-26 06:45:18.000000000 -0700
+@@ -4,6 +4,61 @@ The freealut library
+ freealut is a free implementation of OpenAL's ALUT standard. See the file
+ AUTHORS for the people involved.
+ 
++This is a slightly-updated version maintained at
++https://github.com/vance-group/freealut that contains an updated
++CMake build system, and potentially other fixes over time.
++
++
++Building freealut
++=================
++
++While the "official" build system of upstream may be autotools,
++that build is sufficiently outdated to require patching on modern
++Linux operating systems. The CMake build system has been updated
++to work smoothly on all platforms (tested on Linux and Windows,
++including cross-building), so I'd recommend using it.
++
++(Instructions for older build systems are still included for completeness.)
++
++
++This document explains briefly how to build with CMake via out-
++of-tree build:
++
++- Change to the alut dir.
++- Create a dir, eg "build", and change into it.
++- Now (eg.) run:
++
++cmake .. -DCMAKE_INSTALL_PREFIX:STRING="/usr" -DCMAKE_C_FLAGS:STRING="-march=athlon-xp -O2"
++make
++make install
++
++  If you exported your CFLAGS, there is no need to specify them
++  explicitly, as CMake will pick them up.
++
++- OpenAL should get installed as you got used to it.
++
++You could also use ccmake for a console gui, or the Qt CMake gui.
++An out-of-source build is recommended. This works on Windows, too,
++generating a Visual Studio solution for whatever version you
++like.
++
++Some Tips:
++
++- If you want more output at compile time, use
++
++make VERBOSE=1
++
++- If you want to install to a different directory (using same prefix),
++  use
++
++make install DESTDIR=/foo/bar
++
++- CMake doesn't has a distclean target by default, so you better
++  really do an out-of-tree build, then you can simply delete its
++  content when you want a distclean... Furthermore it is easier to
++  have different builds using different parameters via out-of-tree
++  builds.
++
+ 
+ Building and installing on *nix-alikes using autotools
+ ======================================================
+@@ -50,86 +105,6 @@ project settings within Visual Studio. W
+ e.g. the hello_world project and you should get the ALUT library itself and a
+ demo with Steve Baker saying an immortal phrase.
+ 
+-
+-Building with CMake
+-===================
+-
+-The CMake build files are maintained by prakash@punnoor.de, so
+-if you have troubles building Alut using CMake, please contact
+-me and not the Alut devs, as the official build system is still
+-the one using autotools. The CMake build files are currenty
+-meant as an additional possibility to build Alut.
+-
+-The aim of using CMake is making portable development easier, as
+-CMake containg generators for various build systems. On eg. Unix
+-Makefiles will be built, and on Windows MS VC++ project files, if
+-you wish. You can get CMake at cmake.org.
+-
+-Current status:
+-The build system is feature complete, so it (should) build every-
+-thing as the default one does.
+-
+-
+-This document explains briefly how to build with CMake on Linux via out-
+-of-tree build:
+-
+-- Change to the alut dir.
+-- Create a dir, eg "default", and change into it.
+-- Now (eg.) run:
+-
+-cmake .. -DCMAKE_INSTALL_PREFIX:STRING="/usr" -DCMAKE_C_FLAGS:STRING="-march=athlon-xp -O2"
+-make
+-make install
+-
+-  If you exported your CFLAGS, there is no need to specify them
+-  explicitly, as CMake will pick them up.
+-
+-- OpenAL should get installed as you got used to it.
+-
+-
+-I really would like to get CMake building Alut on every
+-supported platform. So please contact me if it doesn't build
+-on yours. I'll try to fix this with your help.
+-
+-
+-Some Tips:
+-
+-- You can use a console GUI named ccmake for configuring cmake.
+-  This also comes in handy, to find out about available options.
+-  You can also set options via command-line:
+-
+-ccmake .. -DCMAKE_INSTALL_PREFIX:STRING="/usr" -DCMAKE_C_FLAGS:STRING="-march=athlon-xp -O2"
+-
+-  sets the two variables defined on command line and then starts
+-  the GUI. Press 'c' the first time and every time you want to commit
+-  changes in the config. Finally press 'g' to run the generator.
+-  Btw, to set boolean vars from the command line, use -DVAR:BOOL=X,
+-  where X is eg. ON or OFF.
+-
+-- If you want more output at compile time, use
+-
+-make VERBOSE=1
+-
+-- If you want to install to a different directory (using same prefix),
+-  use
+-
+-make install DESTDIR=/foo/bar
+-
+-- CMake doesn't has a distclean target by default, so you better
+-  really do an out-of-tree build, then you can simply delete its
+-  content when you want a distclean... Furthermore it is easier to
+-  have different builds using different parameters via out-of-tree
+-  builds.
+-
+-- If you are interested in variables to set, take a look into
+-  CMakeCache.txt after having run the configuring stage.
+-
+-- If you update your source tree via cvs and want to rebuild an pre-
+-  viously built lib without cleaning, you better at least clear the 
+-  CMake cache (remove CMakeCache.txt) otherwise a modified CMake project
+-  file could result to unwanted behaviour.
+-
+-
+ Support
+ =======
+ 
+diff -rupN freealut-freealut_1_1_0/admin/CMakeModules/FindCompilerAttribute.cmake freealut-master/admin/CMakeModules/FindCompilerAttribute.cmake
+--- freealut-freealut_1_1_0/admin/CMakeModules/FindCompilerAttribute.cmake	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/CMakeModules/FindCompilerAttribute.cmake	1969-12-31 16:00:00.000000000 -0800
+@@ -1,11 +0,0 @@
+-SET(VAR HAVE_ATTRIBUTE)
+-
+-CHECK_C_SOURCE_COMPILES(
+-"void  foo (int bar __attribute__((unused)) ) { }
+-static void baz (void) __attribute__((unused));
+-static void baz (void) { }
+-int main(){}
+-" ${VAR})
+-IF(${VAR})
+-  ADD_DEFINE("HAVE___ATTRIBUTE__ 1")
+-ENDIF(${VAR})
+diff -rupN freealut-freealut_1_1_0/admin/CMakeModules/FindCompilerFlagsSet.cmake freealut-master/admin/CMakeModules/FindCompilerFlagsSet.cmake
+--- freealut-freealut_1_1_0/admin/CMakeModules/FindCompilerFlagsSet.cmake	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/CMakeModules/FindCompilerFlagsSet.cmake	1969-12-31 16:00:00.000000000 -0800
+@@ -1,34 +0,0 @@
+-IF(CMAKE_COMPILER_IS_GNUCC)
+-  #ADD_DEFINITIONS(-std=c99)
+-
+-  IF(WARNINGS)
+-    SET(ADD_WFLAGS "${ADD_WFLAGS} -Wall -ansi -pedantic -W")
+-
+-    IF(MORE_WARNINGS)
+-      SET(ADD_WFLAGS "${ADD_WFLAGS} -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wendif-labels -Winline -Wlong-long -Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wwrite-strings")
+-    ENDIF(MORE_WARNINGS)
+-
+-    # Should we use turn warnings into errors?
+-    IF(USE_WERROR)
+-      SET(ADD_WFLAGS "${ADD_WFLAGS} -Werror -pedantic-errors")
+-    ENDIF(USE_WERROR)
+-  ENDIF(WARNINGS)
+-
+-  IF(OPTIMIZATION)
+-    SET(ADD_CFLAGS "${ADD_CFLAGS} -O2 -finline-functions -ffast-math")
+-  ENDIF(OPTIMIZATION)
+-
+-  IF(PROFILE)
+-    SET(ADD_CFLAGS "${ADD_CFLAGS} -pg")
+-    SET(ADD_LDFLAGS "-pg")
+-  ELSE(PROFILE)
+-
+-    IF(OPTIMIZATION)
+-      # -pg and -fomit-frame-pointer are incompatible
+-      SET(ADD_CFLAGS "${ADD_CFLAGS} -fomit-frame-pointer")
+-    ENDIF(OPTIMIZATION)
+-  ENDIF(PROFILE)
+-ELSE(CMAKE_COMPILER_IS_GNUCC)
+-
+-  MESSAGE("Your compiler isn't fully supported yet - no flags set.")
+-ENDIF(CMAKE_COMPILER_IS_GNUCC)
+diff -rupN freealut-freealut_1_1_0/admin/CMakeModules/FindCompilerVisibility.cmake freealut-master/admin/CMakeModules/FindCompilerVisibility.cmake
+--- freealut-freealut_1_1_0/admin/CMakeModules/FindCompilerVisibility.cmake	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/CMakeModules/FindCompilerVisibility.cmake	1969-12-31 16:00:00.000000000 -0800
+@@ -1,37 +0,0 @@
+-SET(VAR HAVE_VISIBILITY)
+-
+-IF(NOT DEFINED ${VAR})
+-  SET(SOURCE
+-"void __attribute__((visibility(\"default\"))) test() {}
+-#ifdef __INTEL_COMPILER
+-#error ICC breaks with binutils and visibility
+-#endif
+-int main(){}
+-")
+-  FILE(WRITE "${CMAKE_BINARY_DIR}/CMakeTmp/src.c" "${SOURCE}")
+-
+-  MESSAGE(STATUS "Performing Test ${VAR}")
+-  TRY_COMPILE(${VAR}
+-              ${CMAKE_BINARY_DIR}
+-              ${CMAKE_BINARY_DIR}/CMakeTmp/src.c
+-              CMAKE_FLAGS
+-              "-DCOMPILE_DEFINITIONS:STRING=-fvisibility=hidden"
+-              OUTPUT_VARIABLE OUTPUT)
+-
+-  WRITE_FILE(${CMAKE_BINARY_DIR}/CMakeOutput.log
+-             "Performing manual C SOURCE FILE Test ${VAR} with the following output:\n"
+-             "${OUTPUT}\n"
+-             "Source file was:\n${SOURCE}\n" APPEND)
+-
+-  SET(${VAR} ${${VAR}} CACHE INTERNAL "Test Visibility")
+-  IF(${VAR})
+-    MESSAGE(STATUS "Performing Test ${VAR} - Success")
+-  ELSE(${VAR})
+-    MESSAGE(STATUS "Performing Test ${VAR} - Failed")
+-  ENDIF(${VAR})
+-ENDIF(NOT DEFINED ${VAR})
+-
+-IF(${VAR})
+-  ADD_DEFINITIONS(-fvisibility=hidden)
+-  ADD_DEFINITIONS(-DHAVE_GCC_VISIBILITY)
+-ENDIF(${VAR})
+diff -rupN freealut-freealut_1_1_0/admin/CMakeModules/FindConfigHelper.cmake freealut-master/admin/CMakeModules/FindConfigHelper.cmake
+--- freealut-freealut_1_1_0/admin/CMakeModules/FindConfigHelper.cmake	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/CMakeModules/FindConfigHelper.cmake	1969-12-31 16:00:00.000000000 -0800
+@@ -1,22 +0,0 @@
+-# config.h magic
+-SET(CONFIG_H_VALS_OLD "${CONFIG_H_VALS}")
+-SET(CONFIG_H_VALS "" CACHE INTERNAL "")
+-SET(CONFIG_H_FILE ${CMAKE_BINARY_DIR}/config.h)
+-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+-
+-
+-MACRO(ADD_DEFINE ARG)
+-SET(CONFIG_H_CONTENT "${CONFIG_H_CONTENT}#define ${ARG}
+-
+-")
+-# can't cache mulitline values
+-SET(CONFIG_H_VALS "${CONFIG_H_VALS}${ARG}" CACHE INTERNAL "")
+-ENDMACRO(ADD_DEFINE ARG)
+-
+-MACRO(GENERATE_CONFIG_H)
+-# Generate config.h only if values differ
+-IF(NOT CONFIG_H_VALS_OLD STREQUAL CONFIG_H_VALS OR NOT EXISTS ${CONFIG_H_FILE})
+-  MESSAGE(STATUS "Writing config.h")
+-  FILE(WRITE ${CONFIG_H_FILE} "${CONFIG_H_CONTENT}")
+-ENDIF(NOT CONFIG_H_VALS_OLD STREQUAL CONFIG_H_VALS OR NOT EXISTS ${CONFIG_H_FILE})
+-ENDMACRO(GENERATE_CONFIG_H)
+\ No newline at end of file
+diff -rupN freealut-freealut_1_1_0/admin/CMakeModules/FindSleepFunction.cmake freealut-master/admin/CMakeModules/FindSleepFunction.cmake
+--- freealut-freealut_1_1_0/admin/CMakeModules/FindSleepFunction.cmake	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/CMakeModules/FindSleepFunction.cmake	1969-12-31 16:00:00.000000000 -0800
+@@ -1,40 +0,0 @@
+-MACRO(CHECK_INCLUDE_FILE_DEFINE HEADER VAR)
+-CHECK_INCLUDE_FILE(${HEADER} HAVE_INCLUDE_FILE)
+-IF(HAVE_INCLUDE_FILE)
+-  ADD_DEFINE("${VAR} 1")
+-  SET(${VAR} 1 CACHE INTERNAL "")
+-ENDIF(HAVE_INCLUDE_FILE)
+-ENDMACRO(CHECK_INCLUDE_FILE_DEFINE ARG)
+-
+-MACRO(CHECK_FUNCTION_DEFINE HEADERS FUNC PARAM VAR)
+-CHECK_C_SOURCE_COMPILES(
+-"
+-${HEADERS}
+-int main(){
+-${FUNC} ${PARAM};
+-}
+-" ${VAR})
+-IF(${VAR})
+-  ADD_DEFINE("${VAR} 1")
+-ENDIF(${VAR})
+-ENDMACRO(CHECK_FUNCTION_DEFINE HEADERS FUNC PARAM VAR)
+-
+-
+-IF(WIN32)
+-  CHECK_INCLUDE_FILE_DEFINE(windows.h HAVE_WINDOWS_H)
+-  IF(HAVE_WINDOWS_H)
+-    CHECK_FUNCTION_DEFINE("#include <windows.h>" Sleep "(0)" HAVE_SLEEP)
+-  ENDIF(HAVE_WINDOWS_H)
+-ELSE(WIN32)
+-
+-  CHECK_INCLUDE_FILE_DEFINE(time.h HAVE_TIME_H)
+-  IF(HAVE_TIME_H)
+-    CHECK_FUNCTION_DEFINE("#include <time.h>" nanosleep "((struct timespec*)0, (struct timespec*)0)" HAVE_NANOSLEEP)
+-  ELSE(HAVE_TIME_H)
+-
+-    CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
+-    IF(HAVE_UNISTD_H)
+-      CHECK_FUNCTION_DEFINE("#include <unistd.h>" usleep "(0)" HAVE_USLEEP)
+-    ENDIF(HAVE_UNISTD_H)
+-  ENDIF(HAVE_TIME_H)
+-ENDIF(WIN32)
+\ No newline at end of file
+diff -rupN freealut-freealut_1_1_0/admin/RPM/freealut.spec.in freealut-master/admin/RPM/freealut.spec.in
+--- freealut-freealut_1_1_0/admin/RPM/freealut.spec.in	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/RPM/freealut.spec.in	2014-06-26 06:45:18.000000000 -0700
+@@ -1,22 +1,27 @@
+ #
+ # spec file for package freealut (@PACKAGE_VERSION@)
+ #
++# Copyright (c) 2006 SUSE LINUX Products GmbH, Nuernberg, Germany.
++# This file and all modifications and additions to the pristine
++# package are under the same license as the package itself.
++#
++# Please submit bugfixes or comments via http://bugs.opensuse.org/
++#
+ 
+ # norootforbuild
+-# neededforbuild SDL SDL-devel aalib aalib-devel alsa alsa-devel arts audiofile esound esound-devel glib2 glib2-devel libogg libogg-devel libstdc++-devel libvorbis libvorbis-devel openal openal-devel pkgconfig resmgr slang slang-devel smpeg smpeg-devel xorg-x11-devel xorg-x11-libs
+-
+-BuildRequires: aaa_base acl attr bash bind-utils bison bzip2 coreutils cpio cpp cracklib cvs cyrus-sasl db devs diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv klogd less libacl libattr libgcc libnscd libselinux libstdc++ libxcrypt libzio m4 make man mktemp module-init-tools ncurses ncurses-devel net-tools netcfg openldap2-client openssl pam pam-modules patch permissions popt procinfo procps psmisc pwdutils rcs readline sed strace syslogd sysvinit tar tcpd texinfo timezone unzip util-linux vim zlib zlib-devel autoconf automake binutils gcc gdbm gettext libtool perl rpm SDL SDL-devel aalib aalib-devel alsa alsa-devel arts audiofile esound esound-devel glib2 glib2-devel libogg libogg-devel libstdc++-devel libvorbis libvorbis-devel openal openal-devel resmgr slang slang-devel smpeg smpeg-devel xorg-x11-devel xorg-x11-libs dialog expat fontconfig fontconfig-devel freetype2 freetype2-devel gnome-filesystem jack liblcms libjpeg libmng libpng libsndfile libtiff pciutils pkgconfig qt3 aaa_skel ash bind-libs gpg libgcj logrotate openslp suse-build-key suse-release tcsh
++# usedforbuild    aaa_base acl attr bash bind-libs bind-utils bison bzip2 coreutils cpio cpp cracklib cvs cyrus-sasl db diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel gettext-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv klogd less libacl libattr libcom_err libgcc libnscd libstdc++ libxcrypt libzio m4 make man mktemp module-init-tools ncurses ncurses-devel net-tools netcfg openldap2-client openssl pam pam-modules patch permissions popt procinfo procps psmisc pwdutils rcs readline sed strace sysvinit tar tcpd texinfo timezone unzip util-linux vim zlib zlib-devel autoconf automake binutils gcc gdbm gettext libtool perl rpm openal openal-devel
+ 
+-Name:         freealut
+-License:      LGPL
+-Group:        System/Libraries
+-Autoreqprov:  on
+-Version:      @PACKAGE_VERSION@
+-Release:      1
+-URL:          http://www.openal.org/
+-Summary:      Open Audio Library Utility Toolkit
+-Source:       freealut-%{version}.tar.gz
+-BuildRoot:    %{_tmppath}/%{name}-%{version}-build
++Name:           freealut
++BuildRequires:  openal-devel
++License:        LGPL
++Group:          System/Libraries
++Autoreqprov:    on
++Version:        @PACKAGE_VERSION@
++Release:        1
++URL:            http://www.openal.org/
++Summary:        Open Audio Library Utility Toolkit
++Source:         freealut-%{version}.tar.bz2
++BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+ 
+ %description
+ freealut is a highly portable Open Source implementation of ALUT, a
+@@ -83,9 +88,9 @@ rm -rf $RPM_BUILD_ROOT
+ 
+ %files devel
+ %defattr(-,root,root)
++%{_prefix}/bin/freealut-config
+ %doc %{_defaultdocdir}/%{name}/alut.html
+ %doc %{_defaultdocdir}/%{name}/alut.css
+-%{_prefix}/bin/freealut-config
+ %{_includedir}/AL/alut.h
+ %{_libdir}/libalut.a
+ %{_libdir}/libalut.la
+@@ -93,6 +98,8 @@ rm -rf $RPM_BUILD_ROOT
+ %{_libdir}/pkgconfig/freealut.pc
+ 
+ %changelog -n freealut
++* Tue May 30 2006 - sven.panne@aedion.de
++- Updates for SuSE 10.1
+ * Wed Apr 12 2006 - sven.panne@aedion.de
+ - Handle version via configure
+ * Thu Dec 15 2005 - sven.panne@aedion.de
+diff -rupN freealut-freealut_1_1_0/admin/VisualStudio6/alut/alut.dsp freealut-master/admin/VisualStudio6/alut/alut.dsp
+--- freealut-freealut_1_1_0/admin/VisualStudio6/alut/alut.dsp	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/VisualStudio6/alut/alut.dsp	2014-06-26 06:45:18.000000000 -0700
+@@ -42,7 +42,7 @@ RSC=rc.exe
+ # PROP Intermediate_Dir "Release"
+ # PROP Target_Dir ""
+ # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "ALUT_EXPORTS" /YX /FD /c
+-# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "NDEBUG" /D "_WINDOWS" /D "_USRDLL" /D "ALUT_EXPORTS" /D "WIN32" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE_BASETSD_H" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /c
++# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "NDEBUG" /D "_WINDOWS" /D "_USRDLL" /D "ALUT_EXPORTS" /D "WIN32" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE___INT8" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /c
+ # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+ # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+ # ADD BASE RSC /l 0x407 /d "NDEBUG"
+@@ -68,7 +68,7 @@ LINK32=link.exe
+ # PROP Ignore_Export_Lib 0
+ # PROP Target_Dir ""
+ # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "ALUT_EXPORTS" /YX /FD /GZ /c
+-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_DEBUG" /D "_WINDOWS" /D "_USRDLL" /D "ALUT_EXPORTS" /D "WIN32" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE_BASETSD_H" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
++# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_DEBUG" /D "_WINDOWS" /D "_USRDLL" /D "ALUT_EXPORTS" /D "WIN32" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE___INT8" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
+ # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+ # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+ # ADD BASE RSC /l 0x407 /d "_DEBUG"
+diff -rupN freealut-freealut_1_1_0/admin/VisualStudio6/hello_world/hello_world.dsp freealut-master/admin/VisualStudio6/hello_world/hello_world.dsp
+--- freealut-freealut_1_1_0/admin/VisualStudio6/hello_world/hello_world.dsp	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/VisualStudio6/hello_world/hello_world.dsp	2014-06-26 06:45:18.000000000 -0700
+@@ -65,7 +65,7 @@ LINK32=link.exe
+ # PROP Ignore_Export_Lib 0
+ # PROP Target_Dir ""
+ # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_CONSOLE" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE_BASETSD_H" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
++# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_CONSOLE" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE___INT8" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
+ # ADD BASE RSC /l 0x407 /d "_DEBUG"
+ # ADD RSC /l 0x407 /d "_DEBUG"
+ BSC32=bscmake.exe
+diff -rupN freealut-freealut_1_1_0/admin/VisualStudio6/playfile/playfile.dsp freealut-master/admin/VisualStudio6/playfile/playfile.dsp
+--- freealut-freealut_1_1_0/admin/VisualStudio6/playfile/playfile.dsp	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/VisualStudio6/playfile/playfile.dsp	2014-06-26 06:45:18.000000000 -0700
+@@ -65,7 +65,7 @@ LINK32=link.exe
+ # PROP Ignore_Export_Lib 0
+ # PROP Target_Dir ""
+ # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_CONSOLE" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE_BASETSD_H" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
++# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_CONSOLE" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE___INT8" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
+ # ADD BASE RSC /l 0x407 /d "_DEBUG"
+ # ADD RSC /l 0x407 /d "_DEBUG"
+ BSC32=bscmake.exe
+diff -rupN freealut-freealut_1_1_0/admin/VisualStudioDotNET/alut/alut.vcproj freealut-master/admin/VisualStudioDotNET/alut/alut.vcproj
+--- freealut-freealut_1_1_0/admin/VisualStudioDotNET/alut/alut.vcproj	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/admin/VisualStudioDotNET/alut/alut.vcproj	2014-06-26 06:45:18.000000000 -0700
+@@ -20,7 +20,7 @@
+ 				Name="VCCLCompilerTool"
+ 				Optimization="0"
+ 				AdditionalIncludeDirectories="C:\Program Files\OpenAL 1.1 with EFX SDK\include;..\..\..\include"
+-				PreprocessorDefinitions="ALUT_BUILD_LIBRARY;HAVE__STAT;HAVE_BASETSD_H;HAVE_SLEEP;HAVE_WINDOWS_H"
++				PreprocessorDefinitions="ALUT_BUILD_LIBRARY;HAVE__STAT;HAVE___INT8;HAVE_SLEEP;HAVE_WINDOWS_H"
+ 				MinimalRebuild="TRUE"
+ 				BasicRuntimeChecks="3"
+ 				RuntimeLibrary="3"
+@@ -68,7 +68,7 @@
+ 				InlineFunctionExpansion="1"
+ 				OmitFramePointers="TRUE"
+ 				AdditionalIncludeDirectories="C:\Program Files\OpenAL 1.1 with EFX SDK\include;..\..\..\include"
+-				PreprocessorDefinitions="ALUT_BUILD_LIBRARY;HAVE__STAT;HAVE_BASETSD_H;HAVE_SLEEP;HAVE_WINDOWS_H"
++				PreprocessorDefinitions="ALUT_BUILD_LIBRARY;HAVE__STAT;HAVE___INT8;HAVE_SLEEP;HAVE_WINDOWS_H"
+ 				StringPooling="TRUE"
+ 				RuntimeLibrary="2"
+ 				EnableFunctionLevelLinking="TRUE"
+diff -rupN freealut-freealut_1_1_0/config.h.cmake_in freealut-master/config.h.cmake_in
+--- freealut-freealut_1_1_0/config.h.cmake_in	1969-12-31 16:00:00.000000000 -0800
++++ freealut-master/config.h.cmake_in	2014-06-26 06:45:18.000000000 -0700
+@@ -0,0 +1,47 @@
++
++/* Define to 1 if we are using a GCC with symbol visibility support. */
++#cmakedefine HAVE_GCC_VISIBILITY 1
++
++/* Define to 1 if the system has the type `__int8'. */
++#cmakedefine HAVE___INT8 1
++
++/* Define to 1 if your C compiler supports __attribute__. */
++#cmakedefine HAVE___ATTRIBUTE__ 1
++
++/* Define to 1 if you have the `stat' function. */
++#cmakedefine HAVE_STAT 1
++
++/* Define to 1 if you have the `_stat' function. */
++#cmakedefine HAVE__STAT 1
++
++/* Define to 1 if you have the `nanosleep' function. */
++#cmakedefine HAVE_NANOSLEEP 1
++
++/* Define to 1 if you have the `usleep' function. */
++#cmakedefine HAVE_USLEEP 1
++
++/* Define to 1 if you have the `Sleep' function. */
++#cmakedefine HAVE_SLEEP 1
++
++/* Define to 1 if you have the <stdint.h> header file. */
++#cmakedefine HAVE_STDINT_H 1
++
++/* Define to 1 if you have the <unistd.h> header file. */
++#cmakedefine HAVE_UNISTD_H 1
++
++/* Define to 1 if you have the <time.h> header file. */
++#cmakedefine HAVE_TIME_H 1
++
++/* Define to 1 if you have the <windows.h> header file. */
++#cmakedefine HAVE_WINDOWS_H 1
++
++/* We could possibly need struct timespec and random(), which are not ANSI.
++   Define to 500 if Single Unix conformance is wanted, 600 for sixth revision. */
++#if HAVE_NANOSLEEP && HAVE_TIME_H
++#define _XOPEN_SOURCE 600
++/* We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
++   Define to the POSIX version that should be used. */
++#define _POSIX_C_SOURCE 200112L
++#endif
++
++#define ALUT_BUILD_LIBRARY
+diff -rupN freealut-freealut_1_1_0/configure.ac freealut-master/configure.ac
+--- freealut-freealut_1_1_0/configure.ac	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/configure.ac	2014-06-26 06:45:18.000000000 -0700
+@@ -90,10 +90,10 @@ AC_SEARCH_LIBS([alGetError], [openal32 o
+ ################################################################################
+ 
+ # We could possibly need struct timespec and random(), which are not ANSI.
+-AC_DEFINE([_XOPEN_SOURCE], [500], [Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.])
++AC_DEFINE([_XOPEN_SOURCE], [600], [Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.])
+ 
+ # We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
+-AC_DEFINE([_POSIX_C_SOURCE], [199309], [Define to the POSIX version that should be used.])
++AC_DEFINE([_POSIX_C_SOURCE], [200112L], [Define to the POSIX version that should be used.])
+ 
+ # Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
+ # dependency. By defining this identifier we are currently backwards compatible
+@@ -102,7 +102,7 @@ AC_DEFINE([_POSIX_C_SOURCE], [199309], [
+ AC_DEFINE([__NO_CTYPE], [1], [Define to 1 if tolower and friends should not be macros.])
+ 
+ AC_HEADER_STDC
+-AC_CHECK_HEADERS([AL/alc.h AL/al.h basetsd.h ctype.h math.h stdio.h time.h windows.h])
++AC_CHECK_HEADERS([AL/alc.h AL/al.h ctype.h math.h stdio.h time.h windows.h])
+ 
+ # Checks for library functions.
+ ALUT_CHECK_FUNC([[@%:@include <time.h>]],
+@@ -126,15 +126,17 @@ ALUT_CHECK_FUNC([[@%:@include <sys/types
+ AC_CHECK_LIBM
+ AC_SUBST([LIBM])
+ 
++AC_CHECK_TYPES([__int8])
++
+ ################################################################################
+ # Build time configuration.
+ ################################################################################
+ 
+ AC_ARG_ENABLE([warnings],
+ [AS_HELP_STRING([--enable-warnings],
+-                [enable pedantic compiler warnings @<:@default=yes@:>@])])
++                [enable pedantic compiler warnings @<:@default=no@:>@])])
+ 
+-if test "x$enable_warnings" != xno; then
++if test "x$enable_warnings" = xyes; then
+   # Doing it in two steps gives a nicer message...
+   AX_CFLAGS_WARN_ALL_ANSI([flags])
+   AM_CFLAGS="$AM_CFLAGS $flags"
+diff -rupN freealut-freealut_1_1_0/examples/CMakeLists.txt freealut-master/examples/CMakeLists.txt
+--- freealut-freealut_1_1_0/examples/CMakeLists.txt	1969-12-31 16:00:00.000000000 -0800
++++ freealut-master/examples/CMakeLists.txt	2014-06-26 06:45:18.000000000 -0700
+@@ -0,0 +1,8 @@
++if(BUILD_EXAMPLES)
++	# examples
++	add_executable(hello_world hello_world.c)
++	target_link_libraries(hello_world alut)
++
++	add_executable(playfile playfile.c)
++	target_link_libraries(playfile alut)
++endif()
+diff -rupN freealut-freealut_1_1_0/src/CMakeLists.txt freealut-master/src/CMakeLists.txt
+--- freealut-freealut_1_1_0/src/CMakeLists.txt	1969-12-31 16:00:00.000000000 -0800
++++ freealut-master/src/CMakeLists.txt	2014-06-26 06:45:18.000000000 -0700
+@@ -0,0 +1,91 @@
++
++add_definitions(-DHAVE_CONFIG_H=1)
++
++# Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
++# dependency. By defining this identifier we are currently backwards compatible
++# to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
++# which triggers warnings with -Wunreachable-code.
++if(HAVE_GLIBC)
++	add_definitions(-D__NO_CTYPE=1)
++endif()
++
++
++if(HAVE_GCC_VISIBILITY)
++	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
++	add_definitions(-DHAVE_GCC_VISIBILITY)
++endif()
++
++# So our static library can be linked into shared libraries (for instance,
++# gcc on amd64 needs -fPIC)
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
++
++set(ALUT_SOURCES
++	alutBufferData.c
++	alutCodec.c
++	alutError.c
++	alutInit.c
++	alutInputStream.c
++	alutLoader.c
++	alutOutputStream.c
++	alutUtil.c
++	alutVersion.c
++	alutWaveform.c)
++
++set(ALUT_INTERNAL_HEADERS
++	alutInternal.h)
++source_group(InternalHeader FILES ${ALUT_INTERNAL_HEADERS})
++
++set(ALUT_HEADERS
++	../include/AL/alut.h)
++source_group(APIHeader FILES ${ALUT_HEADERS})
++
++
++if(BUILD_STATIC)
++	# we can't create a static library with the same name
++	# as the shared one, so we copy it over after creation
++	add_library(alut_static STATIC ${ALUT_SOURCES} ${ALUT_INTERNAL_HEADERS} ${ALUT_HEADERS})
++	target_link_libraries(alut_static ${OPENAL_LIBRARY} ${ADD_LIBS})
++	if(UNIX)
++		target_link_libraries(alut_static m)
++	endif()	
++	if(NOT WIN32)
++		# TODO this is an inelegant hack...
++		add_custom_command(TARGET
++			alut_static
++			POST_BUILD
++			COMMAND
++			${CMAKE_COMMAND}
++			ARGS
++			-E
++			copy
++			${CMAKE_BINARY_DIR}/src/${CMAKE_STATIC_LIBRARY_PREFIX}alut_static${CMAKE_STATIC_LIBRARY_SUFFIX}
++			${CMAKE_BINARY_DIR}/src/${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
++		install_files(/lib${LIB_SUFFIX}
++			FILES
++			${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
++	endif()
++endif()
++
++
++add_library(alut SHARED ${ALUT_SOURCES} ${ALUT_INTERNAL_HEADERS} ${ALUT_HEADERS})
++set_property(TARGET
++	alut
++	PROPERTY
++	PUBLIC_HEADER
++	${ALUT_HEADERS})
++set_target_properties(alut
++	PROPERTIES
++	VERSION
++	${MAJOR_VERSION}
++	SOVERSION
++	${MAJOR_VERSION})
++target_link_libraries(alut ${OPENAL_LIBRARY})
++if(UNIX)
++	target_link_libraries(alut m)
++endif()	
++
++install(TARGETS alut
++	LIBRARY DESTINATION lib${LIB_SUFFIX}
++	ARCHIVE DESTINATION lib${LIB_SUFFIX}
++	RUNTIME DESTINATION bin
++	PUBLIC_HEADER DESTINATION include/AL)
+diff -rupN freealut-freealut_1_1_0/src/alutCodec.c freealut-master/src/alutCodec.c
+--- freealut-freealut_1_1_0/src/alutCodec.c	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutCodec.c	2014-06-26 06:45:18.000000000 -0700
+@@ -2,7 +2,8 @@
+ 
+ ALvoid *
+ _alutCodecLinear (ALvoid *data, size_t length, ALint numChannels,
+-                  ALint bitsPerSample, ALfloat sampleFrequency)
++                  ALint bitsPerSample, ALfloat sampleFrequency,
++                  ALint blockAlign)
+ {
+   return _alutBufferDataConstruct (data, length, numChannels, bitsPerSample,
+                                    sampleFrequency);
+@@ -10,7 +11,8 @@ _alutCodecLinear (ALvoid *data, size_t l
+ 
+ ALvoid *
+ _alutCodecPCM8s (ALvoid *data, size_t length, ALint numChannels,
+-                 ALint bitsPerSample, ALfloat sampleFrequency)
++                 ALint bitsPerSample, ALfloat sampleFrequency,
++                 ALint blockAlign)
+ {
+   int8_t *d = (int8_t *) data;
+   size_t i;
+@@ -24,7 +26,8 @@ _alutCodecPCM8s (ALvoid *data, size_t le
+ 
+ ALvoid *
+ _alutCodecPCM16 (ALvoid *data, size_t length, ALint numChannels,
+-                 ALint bitsPerSample, ALfloat sampleFrequency)
++                 ALint bitsPerSample, ALfloat sampleFrequency,
++                 ALint blockAlign)
+ {
+   int16_t *d = (int16_t *) data;
+   size_t i, l = length / 2;
+@@ -61,7 +64,8 @@ mulaw2linear (uint8_t mulawbyte)
+ 
+ ALvoid *
+ _alutCodecULaw (ALvoid *data, size_t length, ALint numChannels,
+-                ALint bitsPerSample, ALfloat sampleFrequency)
++                ALint bitsPerSample, ALfloat sampleFrequency,
++                ALint blockAlign)
+ {
+   uint8_t *d = (uint8_t *) data;
+   int16_t *buf = (int16_t *) _alutMalloc (length * 2);
+@@ -80,7 +84,7 @@ _alutCodecULaw (ALvoid *data, size_t len
+ }
+ 
+ /*
+- * From: http://www.multimedia.cx/simpleaudio.html#tth_sEc6.1
++ * From: http://www.multimedia.cx/simpleaudio.html#tth_sEc6.2
+  */
+ #define SIGN_BIT (0x80)         /* Sign bit for a A-law byte. */
+ #define QUANT_MASK (0xf)        /* Quantization field mask. */
+@@ -110,7 +114,8 @@ alaw2linear (uint8_t a_val)
+ 
+ ALvoid *
+ _alutCodecALaw (ALvoid *data, size_t length, ALint numChannels,
+-                ALint bitsPerSample, ALfloat sampleFrequency)
++                ALint bitsPerSample, ALfloat sampleFrequency,
++                ALint blockAlign)
+ {
+   uint8_t *d = (uint8_t *) data;
+   int16_t *buf = (int16_t *) _alutMalloc (length * 2);
+@@ -127,3 +132,119 @@ _alutCodecALaw (ALvoid *data, size_t len
+   return _alutBufferDataConstruct (buf, length * 2, numChannels,
+                                    bitsPerSample, sampleFrequency);
+ }
++
++
++/*
++ * From: http://www.multimedia.cx/simpleaudio.html#tth_sEc4.2
++ */
++static int16_t
++ima2linear (uint8_t nibble, int16_t *val, uint8_t *idx)
++{
++  static const int16_t index_table[16] =
++    {
++      -1, -1, -1, -1, 2, 4, 6, 8,
++      -1, -1, -1, -1, 2, 4, 6, 8
++    };
++  static const int16_t step_table[89] =
++    {
++      7, 8, 9, 10, 11, 12, 13, 14, 16, 17,
++      19, 21, 23, 25, 28, 31, 34, 37, 41, 45,
++      50, 55, 60, 66, 73, 80, 88, 97, 107, 118,
++      130, 143, 157, 173, 190, 209, 230, 253, 279, 307,
++      337, 371, 408, 449, 494, 544, 598, 658, 724, 796,
++      876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066,
++      2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358,
++      5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899,
++      15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
++    };
++  int16_t predictor, diff, step;
++  int8_t delta, sign;
++  int8_t index;
++
++  index = *idx;
++  step = step_table[index];
++  predictor = *val;
++
++  index += index_table[nibble];
++  if (index < 0) index = 0;
++  if (index > 88) index = 88;
++
++  sign = nibble & 0x8;
++  delta = nibble & 0x7;
++
++  diff = step >> 3;
++  if (delta & 4) diff += step;
++  if (delta & 2) diff += (step >> 1);
++  if (delta & 1) diff += (step >> 2);
++
++  if (sign) predictor -= diff;
++  else predictor += diff;
++
++  *val = predictor;
++  *idx = index;
++
++  return predictor;
++}
++
++#define MAX_IMA_CHANNELS	2
++ALvoid *
++_alutCodecIMA4 (ALvoid *data, size_t length, ALint numChannels,
++                ALint bitsPerSample, ALfloat sampleFrequency,
++                ALint blockAlign)
++{
++  uint8_t *d = (uint8_t *) data;
++  int16_t *ptr, *buf;
++  size_t i, blocks;
++
++  blocks = length/blockAlign;
++  buf = (int16_t *) _alutMalloc ((blockAlign-numChannels)*blocks * 4);
++  if ((buf == NULL) || (numChannels > MAX_IMA_CHANNELS))
++    {
++      return NULL;
++    }
++
++  ptr = buf;
++  for (i = 0; i < blocks; i++)
++    {
++      int16_t predictor[MAX_IMA_CHANNELS];
++      uint8_t nibble, index[MAX_IMA_CHANNELS];
++      size_t j, chn;
++
++      for (chn=0; chn < numChannels; chn++)
++        {
++          predictor[chn] = *d++;
++          predictor[chn] |= *d++ << 8;
++
++          index[chn] = *d++;
++          d++;
++        }
++
++      for (j=numChannels*4; j < blockAlign;)
++        {
++          for (chn = 0; chn < numChannels; chn++)
++            {
++              int16_t *ptr_ch;
++              size_t q;
++
++              ptr_ch = ptr + chn;
++              for (q=0; q<4; q++)
++                {
++
++                  nibble = *d & 0xf;
++                  *ptr_ch = ima2linear(nibble, &predictor[chn], &index[chn]);
++                  ptr_ch += numChannels;
++
++                  nibble = *d++ >> 4;
++                  *ptr_ch = ima2linear(nibble, &predictor[chn], &index[chn]);
++                  ptr_ch += numChannels;
++                }
++            }
++          j += numChannels*4;
++          ptr += numChannels*8;
++        }
++    }
++  free (data);
++  return _alutBufferDataConstruct (buf, (blockAlign-numChannels)*blocks * 4,
++                                   numChannels, bitsPerSample, sampleFrequency);
++}
++#undef MAX_IMA_CHANNELS
+diff -rupN freealut-freealut_1_1_0/src/alutError.c freealut-master/src/alutError.c
+--- freealut-freealut_1_1_0/src/alutError.c	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutError.c	2014-06-26 06:45:18.000000000 -0700
+@@ -18,16 +18,16 @@ _alutSetError (ALenum err)
+     }
+ }
+ 
+-ALenum
+-alutGetError (void)
++ALUT_API ALenum
++ALUT_APIENTRY alutGetError (void)
+ {
+   ALint ret = lastError;
+   lastError = ALUT_ERROR_NO_ERROR;
+   return ret;
+ }
+ 
+-const char *
+-alutGetErrorString (ALenum error)
++ALUT_API const char *
++ALUT_APIENTRY alutGetErrorString (ALenum error)
+ {
+   switch (error)
+     {
+diff -rupN freealut-freealut_1_1_0/src/alutInit.c freealut-master/src/alutInit.c
+--- freealut-freealut_1_1_0/src/alutInit.c	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutInit.c	2014-06-26 06:45:18.000000000 -0700
+@@ -46,8 +46,8 @@ _alutSanityCheck (void)
+   return AL_TRUE;
+ }
+ 
+-ALboolean
+-alutInit (int *argcp, char **argv)
++ALUT_API ALboolean
++ALUT_APIENTRY alutInit (int *argcp, char **argv)
+ {
+   ALCdevice *device;
+   ALCcontext *context;
+@@ -92,8 +92,8 @@ alutInit (int *argcp, char **argv)
+   return AL_TRUE;
+ }
+ 
+-ALboolean
+-alutInitWithoutContext (int *argcp, char **argv)
++ALUT_API ALboolean
++ALUT_APIENTRY alutInitWithoutContext (int *argcp, char **argv)
+ {
+   if (initialisationState != Unintialized)
+     {
+@@ -111,8 +111,8 @@ alutInitWithoutContext (int *argcp, char
+   return AL_TRUE;
+ }
+ 
+-ALboolean
+-alutExit (void)
++ALUT_API ALboolean
++ALUT_APIENTRY alutExit (void)
+ {
+   ALCdevice *device;
+ 
+diff -rupN freealut-freealut_1_1_0/src/alutInputStream.c freealut-master/src/alutInputStream.c
+--- freealut-freealut_1_1_0/src/alutInputStream.c	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutInputStream.c	2014-06-26 06:45:18.000000000 -0700
+@@ -149,7 +149,6 @@ streamRead (InputStream *stream, void *p
+                          ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
+           return AL_FALSE;
+         }
+-      return AL_TRUE;
+     }
+   else
+     {
+@@ -160,8 +159,9 @@ streamRead (InputStream *stream, void *p
+         }
+       memcpy (ptr, stream->u.data, numBytesToRead);
+       stream->u.data = ((const char *) (stream->u.data) + numBytesToRead);
+-      return AL_TRUE;
+     }
++  stream->remainingLength -= numBytesToRead;
++  return AL_TRUE;
+ }
+ 
+ /****************************************************************************
+diff -rupN freealut-freealut_1_1_0/src/alutInternal.h freealut-master/src/alutInternal.h
+--- freealut-freealut_1_1_0/src/alutInternal.h	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutInternal.h	2014-06-26 06:45:18.000000000 -0700
+@@ -13,21 +13,13 @@
+ 
+ #if HAVE_STDINT_H
+ #include <stdint.h>
+-#elif _MSC_VER < 1300
+-typedef char int8_t;
+-typedef unsigned char uint8_t;
+-typedef short int16_t;
+-typedef unsigned short uint16_t;
+-typedef int int32_t;
+-typedef unsigned int uint32_t;
+-#elif HAVE_BASETSD_H
+-#include <basetsd.h>
+-typedef INT8 int8_t;
+-typedef UINT8 uint8_t;
+-typedef INT16 int16_t;
+-typedef UINT16 uint16_t;
+-typedef INT32 int32_t;
+-typedef UINT32 uint32_t;
++#elif HAVE___INT8
++typedef __int8 int8_t;
++typedef unsigned __int8 uint8_t;
++typedef __int16 int16_t;
++typedef unsigned __int16 uint16_t;
++typedef __int32 int32_t;
++typedef unsigned __int32 uint32_t;
+ #else
+ #error Do not know sized types on this platform
+ #endif
+@@ -62,12 +54,14 @@ enum AUEncoding
+ 
+ /* in alutCodec.c */
+ typedef ALvoid *Codec (ALvoid *data, size_t length, ALint numChannels,
+-                       ALint bitsPerSample, ALfloat sampleFrequency);
++                       ALint bitsPerSample, ALfloat sampleFrequency,
++                       ALint blockAlign);
+ extern Codec _alutCodecLinear;
+ extern Codec _alutCodecPCM8s;
+ extern Codec _alutCodecPCM16;
+ extern Codec _alutCodecULaw;
+ extern Codec _alutCodecALaw;
++extern Codec _alutCodecIMA4;
+ 
+ /* in alutError.c */
+ extern void _alutSetError (ALenum err);
+diff -rupN freealut-freealut_1_1_0/src/alutLoader.c freealut-master/src/alutLoader.c
+--- freealut-freealut_1_1_0/src/alutLoader.c	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutLoader.c	2014-06-26 06:45:18.000000000 -0700
+@@ -136,10 +136,18 @@ loadWavFile (InputStream *stream)
+                        || endianess () ==
+                        LittleEndian) ? _alutCodecLinear : _alutCodecPCM16;
+               break;
++            case 6:            /* aLaw */
++              bitsPerSample *= 2;
++              codec = _alutCodecALaw;
++              break; 
+             case 7:            /* uLaw */
+-              bitsPerSample *= 2;       /* ToDo: ??? */
++              bitsPerSample *= 2;
+               codec = _alutCodecULaw;
+               break;
++            case 17:		/* ima4 adpcm */
++              bitsPerSample *= 4;
++              codec = _alutCodecIMA4;
++              break;
+             default:
+               _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
+               return NULL;
+@@ -160,7 +168,7 @@ loadWavFile (InputStream *stream)
+               return NULL;
+             }
+           return codec (data, chunkLength, numChannels, bitsPerSample,
+-                        (ALfloat) sampleFrequency);
++                        (ALfloat) sampleFrequency, blockAlign);
+         }
+       else
+         {
+@@ -247,7 +255,7 @@ loadAUFile (InputStream *stream)
+       return NULL;
+     }
+   return codec (data, length, numChannels, bitsPerSample,
+-                (ALfloat) sampleFrequency);
++                (ALfloat) sampleFrequency, 1);
+ }
+ 
+ static BufferData *
+@@ -260,7 +268,7 @@ loadRawFile (InputStream *stream)
+       return NULL;
+     }
+   /* Guesses */
+-  return _alutCodecLinear (data, length, 1, 8, 8000);
++  return _alutCodecLinear (data, length, 1, 8, 8000, 1);
+ }
+ 
+ static BufferData *
+@@ -323,8 +331,8 @@ _alutCreateBufferFromInputStream (InputS
+   return buffer;
+ }
+ 
+-ALuint
+-alutCreateBufferFromFile (const char *fileName)
++ALUT_API ALuint
++ALUT_APIENTRY alutCreateBufferFromFile (const char *fileName)
+ {
+   InputStream *stream;
+   if (!_alutSanityCheck ())
+@@ -335,8 +343,9 @@ alutCreateBufferFromFile (const char *fi
+   return _alutCreateBufferFromInputStream (stream);
+ }
+ 
+-ALuint
+-alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
++ALUT_API ALuint
++ALUT_APIENTRY alutCreateBufferFromFileImage (const ALvoid *data,
++                                             ALsizei length)
+ {
+   InputStream *stream;
+   if (!_alutSanityCheck ())
+@@ -395,9 +404,9 @@ _alutLoadMemoryFromInputStream (InputStr
+   return data;
+ }
+ 
+-ALvoid *
+-alutLoadMemoryFromFile (const char *fileName, ALenum *format,
+-                        ALsizei *size, ALfloat *frequency)
++ALUT_API ALvoid *
++ALUT_APIENTRY alutLoadMemoryFromFile (const char *fileName, ALenum *format,
++                                      ALsizei *size, ALfloat *frequency)
+ {
+   InputStream *stream;
+   if (!_alutSanityCheck ())
+@@ -408,10 +417,10 @@ alutLoadMemoryFromFile (const char *file
+   return _alutLoadMemoryFromInputStream (stream, format, size, frequency);
+ }
+ 
+-ALvoid *
+-alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
+-                             ALenum *format, ALsizei *size,
+-                             ALfloat *frequency)
++ALUT_API ALvoid *
++ALUT_APIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
++                                           ALenum *format, ALsizei *size,
++                                           ALfloat *frequency)
+ {
+   InputStream *stream;
+   if (!_alutSanityCheck ())
+@@ -426,11 +435,11 @@ alutLoadMemoryFromFileImage (const ALvoi
+   Yukky backwards compatibility crap.
+ */
+ 
+-void
+-alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data, ALsizei *size,
+-                 ALsizei *frequency
++ALUT_API void
++ALUT_APIENTRY alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data,
++                               ALsizei *size, ALsizei *frequency
+ #if !defined(__APPLE__)
+-                 , ALboolean *loop
++                               , ALboolean *loop
+ #endif
+   )
+ {
+@@ -459,11 +468,11 @@ alutLoadWAVFile (ALbyte *fileName, ALenu
+ #endif
+ }
+ 
+-void
+-alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
+-                   ALsizei *frequency
++ALUT_API void
++ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data,
++                                 ALsizei *size, ALsizei *frequency
+ #if !defined(__APPLE__)
+-                   , ALboolean *loop
++                                 , ALboolean *loop
+ #endif
+   )
+ {
+@@ -474,7 +483,7 @@ alutLoadWAVMemory (ALbyte *buffer, ALenu
+ 
+   /* ToDo: Can we do something less insane than passing 0x7FFFFFFF? */
+   stream = _alutInputStreamConstructFromMemory (buffer, 0x7FFFFFFF);
+-  _alutLoadMemoryFromInputStream (stream, format, size, &freq);
++  *data = _alutLoadMemoryFromInputStream (stream, format, size, &freq);
+   if (*data == NULL)
+     {
+       return;
+@@ -493,17 +502,17 @@ alutLoadWAVMemory (ALbyte *buffer, ALenu
+ #endif
+ }
+ 
+-void
+-alutUnloadWAV (ALenum UNUSED (format), ALvoid *data, ALsizei UNUSED (size),
+-               ALsizei UNUSED (frequency))
++ALUT_API void
++ALUT_APIENTRY alutUnloadWAV (ALenum UNUSED (format), ALvoid *data,
++                             ALsizei UNUSED (size), ALsizei UNUSED (frequency))
+ {
+   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
+ 
+   free (data);
+ }
+ 
+-const char *
+-alutGetMIMETypes (ALenum loader)
++ALUT_API const char *
++ALUT_APIENTRY alutGetMIMETypes (ALenum loader)
+ {
+   if (!_alutSanityCheck ())
+     {
+diff -rupN freealut-freealut_1_1_0/src/alutUtil.c freealut-master/src/alutUtil.c
+--- freealut-freealut_1_1_0/src/alutUtil.c	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutUtil.c	2014-06-26 06:45:18.000000000 -0700
+@@ -11,8 +11,8 @@
+ #error No way to sleep on this platform
+ #endif
+ 
+-ALboolean
+-alutSleep (ALfloat duration)
++ALUT_API ALboolean
++ALUT_APIENTRY alutSleep (ALfloat duration)
+ {
+   if (duration < 0)
+     {
+diff -rupN freealut-freealut_1_1_0/src/alutVersion.c freealut-master/src/alutVersion.c
+--- freealut-freealut_1_1_0/src/alutVersion.c	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutVersion.c	2014-06-26 06:45:18.000000000 -0700
+@@ -1,13 +1,13 @@
+ #include "alutInternal.h"
+ 
+-ALint
+-alutGetMajorVersion (void)
++ALUT_API ALint
++ALUT_APIENTRY alutGetMajorVersion (void)
+ {
+   return ALUT_API_MAJOR_VERSION;
+ }
+ 
+-ALint
+-alutGetMinorVersion (void)
++ALUT_API ALint
++ALUT_APIENTRY alutGetMinorVersion (void)
+ {
+   return ALUT_API_MINOR_VERSION;
+ }
+diff -rupN freealut-freealut_1_1_0/src/alutWaveform.c freealut-master/src/alutWaveform.c
+--- freealut-freealut_1_1_0/src/alutWaveform.c	2006-05-22 05:28:57.000000000 -0700
++++ freealut-master/src/alutWaveform.c	2014-06-26 06:45:18.000000000 -0700
+@@ -141,10 +141,11 @@ generateWaveform (ALenum waveshape, ALfl
+   return stream;
+ }
+ 
+-ALvoid *
+-alutLoadMemoryWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
+-                        ALfloat duration, ALenum *format, ALsizei *size,
+-                        ALfloat *freq)
++ALUT_API ALvoid *
++ALUT_APIENTRY alutLoadMemoryWaveform (ALenum waveshape, ALfloat frequency,
++                                      ALfloat phase, ALfloat duration,
++                                      ALenum *format, ALsizei *size,
++                                      ALfloat *freq)
+ {
+   OutputStream *outputStream;
+   InputStream *inputStream;
+@@ -179,9 +180,9 @@ alutLoadMemoryWaveform (ALenum waveshape
+   return data;
+ }
+ 
+-ALuint
+-alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
+-                          ALfloat duration)
++ALUT_API ALuint
++ALUT_APIENTRY alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency,
++                                        ALfloat phase, ALfloat duration)
+ {
+   OutputStream *outputStream;
+   InputStream *inputStream;
+@@ -916,8 +917,9 @@ generateHelloWorld (void)
+                                               sizeof (helloWorldSample));
+ }
+ 
+-ALvoid *
+-alutLoadMemoryHelloWorld (ALenum *format, ALsizei *size, ALfloat *frequency)
++ALUT_API ALvoid *
++ALUT_APIENTRY alutLoadMemoryHelloWorld (ALenum *format, ALsizei *size,
++                                        ALfloat *frequency)
+ {
+   if (!_alutSanityCheck ())
+     {
+@@ -927,8 +929,8 @@ alutLoadMemoryHelloWorld (ALenum *format
+                                          frequency);
+ }
+ 
+-ALuint
+-alutCreateBufferHelloWorld (void)
++ALUT_API ALuint
++ALUT_APIENTRY alutCreateBufferHelloWorld (void)
+ {
+   if (!_alutSanityCheck ())
+     {

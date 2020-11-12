@@ -1,0 +1,5 @@
+mediapath=../data
+pythonlibpath=../Python27/Lib
+ogrepath=../OgreSDK
+speechrelaycommand=start ./TtsRelayGui.exe
+renderer=custom

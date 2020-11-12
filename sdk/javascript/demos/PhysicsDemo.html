@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Physics Demo</title>
+	<link rel="stylesheet" type="text/css" href="../css/demo.css">
+  </head>
+  <body>
+	<img id='ict-logo' src='../img/ict.png'>
+	<img id='smartbody-logo' src='../img/smartbody-logo.png'>
+    <div class="spinner" id='spinner'></div>
+    <div class="emscripten" id="status">Downloading...</div>
+
+	<span id='controls'>
+	  <span><input type="button" value="Fullscreen" onclick="Module.requestFullScreen(0, 0)"></span>
+	</span>
+	
+    <div class="emscripten">
+      <progress value="0" max="100" id="progress" hidden=1></progress>
+    </div>
+
+    <div class="emscripten_border">
+	  <div id='instruction' hidden=1>Rotation: ALT + LEFT Mouse&nbsp&nbsp&nbsp&nbspDolly: ALT + RIGHT Mouse&nbsp&nbsp&nbsp&nbspTranslation: ALT + MIDDLE Mouse</div>
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+	</div>
+	<div id = "cmd">
+		<textarea id="command" rows="8" placeholder="Type your Javascript code here..."></textarea>
+	</div>
+	<input id="runBtn" type="button" value="Run Script" onclick="runCommand()"></input>
+	
+	<!-- intialization -->
+	<script async type="text/javascript" src="../scripts/emscriptenInit.js"></script>
+	
+	<!-- data package, your data package scripts here -->
+	<script async type="text/javascript" src="../data/data-brad-mesh.js"></script>
+	<script async type="text/javascript" src="../data/data-elder-mesh.js"></script>
+	<script async type="text/javascript" src="../data/data-doctor-mesh.js"></script>
+	<script async type="text/javascript" src="../data/data-common-motion.js"></script>
+	<script async type="text/javascript" src="../data/data-reaching.js"></script>
+	
+	<!-- common scripts, default settings-->
+	<script async type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script async type="text/javascript" src="../scripts/FPSCounter.js"></script>
+	<script async type="text/javascript" src="../scripts/mathUtils.js"></script>
+    <script async type="text/javascript" src="../SmartBodyJS.js"></script>
+	<script async type="text/javascript" src="../scripts/scripts/defaultViewer.js"></script>
+	<script async type="text/javascript" src="../scripts/scripts/defaultInterface.js"></script>
+	<!-- application scripts, replace your scripts here-->
+	<script async type="text/javascript" src="../scripts/examples/PhysicsDemo.js"></script>
+	<script async type="text/javascript" src="../scripts/scripts/zebra2-map.js"></script>
+	<script async type="text/javascript" src="../scripts/behaviorsets/BehaviorSetCommon.js"></script>
+	<script async type="text/javascript" src="../scripts/behaviorsets/BehaviorSetReaching.js"></script>
+	<script async type="text/javascript" src="../scripts/behaviorsets/reaching/init-reach.js"></script>
+  </body>
+</html>

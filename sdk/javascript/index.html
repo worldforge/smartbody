@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SmartBody::Demos</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="css/index.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  </head>
+  <body>
+	<div id="header-div">
+		<table id="logos">
+			<tr>
+				<td><img src='img/university-of-sc.png'>
+				</td>
+				<td class="tb_right"><img src='img/usc-mono.png'>
+				</td>
+			</tr>
+			<tr>
+				<td><img src='img/ict.png'>
+				</td>
+				<td class="tb_right"><img src='img/smartbody-logo.png'>
+				</td>
+			</tr>
+		</table>
+		<ul id="nav" class="nav nav-pills">
+			<li role="presentation"><a href="./document.html">Documentation</a>
+			</li>
+			<li role="presentation"><a href="#">API</a>
+			</li>
+			<li role="presentation"><a class="current" href="./index.html">Demos</a>
+			</li>
+		</ul>
+	</div>
+	<div id="content-div">
+		<h2 id="tables-hover-rows">SmartBody Demos</h2>
+		<table id="demo-table" class="table table-hover">
+		  <thead>
+			<tr>
+			  <th>#</th>
+			  <th>Demo Name</th>
+			  <th>Description</th>
+			  <th>Video</th>
+			  <th>Last Update</th>
+			</tr>
+		  </thead>
+		  <tbody>
+			<tr>
+			  <th scope="row">1</th>
+			  <th><a href="demos/GazeDemo.html" target="_blank">Gaze Demo</a></th>
+			  <td>Convert to DeformableMeshGPU</td>
+			  <td>
+				<a href="https://www.youtube.com/watch?v=uDcAGpPc0TM" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.20</td>
+			</tr>
+			<tr>
+			  <th scope="row">2</th>
+			  <th><a href="demos/OgreCrowdDemo.html" target="_blank">Ogre Crowd Demo</a></th>
+			  <td>Bug fixed: passing Event pointer instead of reference in <code>sendLocomotionEvent</code><br>
+				  Bug: behavior is wrong(caused by allLocomotion->BLAS/LAPACK), temporary fixed
+			  </td>
+			  <td>
+				<a href="http://youtu.be/PhF_Uaj-t64" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.27</td>
+			</tr>
+			<tr>
+			  <th scope="row">3</th>
+			  <th><a href="demos/OnlineRetargettingDemo.html" target="_blank">Online Retargetting Demo</a></th>
+			  <td>No Description</td>
+			  <td>
+				<a href="https://www.youtube.com/watch?v=iP2qmEw6Nl4" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.16</td>
+			</tr>
+			<tr>
+			  <th scope="row">4</th>
+			  <th><a href="demos/HeadDemo.html" target="_blank">Head Demo</a></th>
+			  <td>Bug: Alpha Blending, artifacts around eyes<br>
+				  Fixed: for now, set a bool attribute to enable alpha blend for this demo <code>scene.setBoolAttribute("enableAlphaBlend", true)</code>
+			  </td>
+			  <td>
+				<a href="http://youtu.be/P07yAlzUNhk" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.20</td>
+			</tr>
+			<tr>
+			  <th scope="row">5</th>
+			  <th><a href="demos/GestureDemo.html" target="_blank"> Gesture Demo</a></th>
+			  <td>No Description</td>
+			  <td>
+				<a href="http://youtu.be/cACrj_iS28w" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.20</td>
+			</tr>
+			<tr>
+			  <th scope="row">6</th>
+			  <th><a href="demos/ConstraintDemo.html" target="_blank"> Constraint Demo</a></th>
+			   <td>
+				Bug fixed: 1)passing Event pointer instead of reference in <code>sendReachEvent</code><br>
+						   2)Lapack causing failure, fix later, use Eigen instead<br>
+				Improvement: drawing pawns as sphere(need lighting)
+			   </td>
+			  <td>
+				<a href="http://youtu.be/cACrj_iS28w" target="_blank"></a>
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+			  </td>
+			  <td>2015.07.21</td>
+			</tr>
+			<tr>
+			  <th scope="row">7</th>
+			  <th><a href="demos/BlendDemo.html" target="_blank"> Blend Demo</a></th>
+			   <td>
+				No Description
+			   </td>
+			  <td>
+				<a href="https://www.youtube.com/watch?v=MfF6HxqthVQ&feature=youtu.be" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.21</td>
+			</tr>
+			<tr>
+			  <th scope="row">8</th>
+			  <th><a href="demos/CrowdDemo.html" target="_blank"> Crowd Demo</a></th>
+			   <td>
+				Bug: Behavior is different from the desktop version(caused by allLocomotion->BLAS/LAPACK), temporary fixed
+			   </td>
+			  <td>
+				<a href="http://youtu.be/APhNjSHALok" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.27</td>
+			</tr>
+			<tr>
+			  <th scope="row">9</th>
+			  <th><a href="demos/FacialMovementDemo.html" target="_blank"> Facial Movement Demo</a></th>
+			   <td>
+				Bug: Alpha Blending, artifacts around eyes<br>
+				Fixed: for now, set a bool attribute to enable alpha blend for this demo <code>scene.setBoolAttribute("enableAlphaBlend", true)</code>
+			   </td>
+			  <td>
+				<a href="http://youtu.be/-MjdhI5RY1Q" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.22</td>
+			</tr>
+			<tr>
+			  <th scope="row">10</th>
+			  <th><a href="demos/AudioTestDemo.html" target="_blank"> Audio Test Demo</a></th>
+			   <td>
+				Bug: don't know why the first call could not be played, seems like it needs some trigger<br>
+				Support issue: Firefox's support for .wav file is limited, see <a href="https://support.mozilla.org/en-US/kb/html5-audio-and-video-firefox">here</a>
+			   </td>
+			  <td>
+				<a href="http://youtu.be/-MjdhI5RY1Q" target="_blank"></a>
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+			  </td>
+			  <td>2015.07.23</td>
+			</tr>
+			<tr>
+			  <th scope="row">11</th>
+			  <th><a href="demos/OgreDemo.html" target="_blank"> Ogre Demo</a></th>
+			   <td>
+				Bug: Behavior is different from the desktop version(caused by allLocomotion->BLAS/LAPACK), temporary fixed
+			   </td>
+			  <td>
+				<a href="http://youtu.be/P6ZUyH5UY_k" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.27</td>
+			</tr>
+			<tr>
+			  <th scope="row">12</th>
+			  <th><a href="demos/AddCharacterDemo.html" target="_blank"> Add Character Demo</a></th>
+			   <td>
+				Bug
+			   </td>
+			  <td>
+				<a href="http://youtu.be/P6ZUyH5UY_k" target="_blank"></a>
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+			  </td>
+			  <td>2015.07.27</td>
+			</tr>
+			<tr>
+			  <th scope="row">13</th>
+			  <th><a href="demos/LocomotionDemo.html" target="_blank"> Locomotion Demo</a></th>
+			   <td>
+				Bug:
+			   </td>
+			  <td>
+				<a href="http://youtu.be/P6ZUyH5UY_k" target="_blank"></a>
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+			  </td>
+			  <td>2015.07.28</td>
+			</tr>
+			<tr>
+			  <th scope="row">14</th>
+			  <th><a href="demos/PhysicsDemo.html" target="_blank"> Physics Demo</a></th>
+			   <td>
+				Fixed:<code>phyManager.getJointObj(chr, joint)</code> returns null (caused by a mistake in script code)<br>
+				Fixed: 1)passing Event pointer instead of reference in <code>MeCtPhysicsController::controller_evaluate</code><br>
+					   2)reaching behavior is not correct caused by LAPACK, use Eigen instead<br>
+			   </td>
+			  <td>
+				<a href="http://youtu.be/P6ZUyH5UY_k" target="_blank"></a>
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+			  </td>
+			  <td>2015.07.28</td>
+			</tr>
+			<tr>
+			  <th scope="row">15</th>
+			  <th><a href="demos/PhysicsRagdollDemo.html" target="_blank"> Physics Ragdoll Demo</a></th>
+			   <td>
+				Improvement: Added drawBox and drawGrid and lighting
+			   </td>
+			  <td>
+				<a href="http://youtu.be/P6ZUyH5UY_k" target="_blank"></a>
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+			  </td>
+			  <td>2015.07.28</td>
+			</tr>
+			<tr>
+			  <th scope="row">16</th>
+			  <th><a href="demos/SaccadeDemo.html" target="_blank"> Saccade Demo</a></th>
+			   <td>
+				Fix: Character Maarten Motion 
+			   </td>
+			  <td>
+				<a href="http://youtu.be/Ro9510UVE8g" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.07.31</td>
+			</tr>
+			<tr>
+			  <th scope="row">17</th>
+			  <th><a href="demos/HandSynthesisDemo.html" target="_blank"> Hand Synthesis Demo</a></th>
+			   <td>
+				Improvement: added <code>drawSkeleton</code>
+			   </td>
+			  <td>
+				<a href="http://youtu.be/Dacl6knWgxQ" target="_blank">
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+				</a>
+			  </td>
+			  <td>2015.08.03</td>
+			</tr>
+			<tr>
+			  <th scope="row">18</th>
+			  <th><a href="demos/InterfaceTestDemo.html" target="_blank"> Interface Test Demo</a></th>
+			   <td>
+				Improvement: added <code>drawSkeleton</code>
+			   </td>
+			  <td>
+				<a href="http://youtu.be/Dacl6knWgxQ" target="_blank"></a>
+				<span class="glyphicon glyphicon-facetime-video" aria-hidden="true" ></span>
+			  </td>
+			  <td>2015.10.08</td>
+			</tr>
+		  </tbody>
+		</table>
+		<div id="btm-note">
+			Note: To enable Native OpenGL, go to <b>about:config</b> and set <b>webgl.disable-angle</b> to <b>true</b>for Firefox<br>
+			For Google Chrome, there is some <a href="https://code.google.com/p/chromium/issues/detail?id=335018" target="_blank">issue</a> with it, still waiting for the bug to be fixed by Chrome support team.
+			But we accommodated the ANGEL implementation with limited number of vertex uniform vectors  
+		</div>
+	</div>
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script src="libs/fps/FPSCounter.js"></script>
+  </body>
+</html>

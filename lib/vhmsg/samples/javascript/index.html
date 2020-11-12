@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="chat.css" type="text/css">
+
+ <!--
+    <style type="text/css" media="screen">
+        @import url(/admin/styles/sorttable.css);
+        @import url(/admin/styles/type-settings.css);
+        @import url(/admin/styles/site.css);
+        @import url(/admin/styles/prettify.css);
+    </style>
+-->
+
+	<title>Chat Example Using Stomp Over WebSocket</title>
+    <link rel="stylesheet" type="text/css" href="chat.css"/>
+    <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src='stomp.js'></script>
+    <script type="text/javascript" src='chat.js'></script>
+    <script type="text/javascript" >
+        $(document).ready(function() {
+        var supported = ("WebSocket" in window);
+        if(!supported) {
+        var msg = "Your browser does not support Web Sockets. This example will not work properly.<br>";
+        msg += "Please use a Web Browser with Web Sockets support (WebKit or Google Chrome).";
+        $("#connect").html(msg);
+        }
+        });
+    </script>
+</head>
+<body>
+
+<div style="margin-bottom:20px; font-size:11pt">
+	
+<p>Make sure you have enabled <a href="http://activemq.apache.org/websockets.html">websockets transport</a> before running this demo:</p>
+
+	<ol style="margin-left:20pt">
+		<li>Stop your ActvieMQ server</li>
+		<li>open <span style="font-family: monospace;color:gray;">activemq.xml</span>, </li>
+		<li><p>find</p>
+<pre>
+	<span style="font-family: monospace;color:gray;">
+&lt;transportConnectors>
+	&lt;transportConnector name="openwire" uri="tcp://0.0.0.0:61616?wireFormat.maxInactivityDuration=0"/>
+&lt;/transportConnectors>
+	</span>
+</pre>
+</li>
+
+<li>add <span style="font-family: monospace;color:gray;">&lt;transportConnector name="websocket" uri="ws://0.0.0.0:61614"/></span>. The result should look like</p>
+
+<pre>
+	<span style="font-family: monospace;color:gray;">
+&lt;transportConnectors>
+	&lt;transportConnector name="openwire" uri="tcp://0.0.0.0:61616?wireFormat.maxInactivityDuration=0"/>
+	&lt;transportConnector name="websocket" uri="ws://0.0.0.0:61614"/>
+&lt;/transportConnectors>
+	</span>
+</pre>
+</li>
+<li>save the file</li>
+<li>restart the ActiveMQ server.</li>
+		</ol>
+</div>
+
+<p>
+                <div>
+
+                    <table border="0">
+                        <tbody>
+                        <tr>
+                            <td valign="top" width="100%" style="overflow:hidden;">
+                                <div class="body-content">
+
+<div id='connect'>
+    <form id='connect_form'>
+        <dl>
+            <dt><label for=connect_url>Server</label></dt>
+            <dd><input name=url id='connect_url' value='localhost'></dd>
+            <dt><label for=scope>Scope</label></dt>
+            <dd><input id='scope' placeholder="Scope" value="DEFAULT_SCOPE"></dd>
+            <dt>&nbsp;</dt>
+            <dd><input type=submit id='connect_submit' value="Connect"></dd>
+        </dl>
+    </form>    
+
+</div>
+<div id="disconnect">
+    <form id='disconnect_form'>
+        <input type=submit id='disconnect_submit' value="Disconnect">
+    </form>
+</div>
+<div id="messages">
+</div>
+
+<form id='send_form'>
+    <input id='send_form_input' placeholder="Type your message here" disabled />
+</form>
+
+<pre id="debug"></pre>
+
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+</p>
+
+</body>
+</html>
+

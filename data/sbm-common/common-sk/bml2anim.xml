@@ -1,0 +1,112 @@
+<bml2anim>
+	
+	<!-- CrossedArms -->
+	<gesture type="beat" posture="CrossedArms" hand="both">CrossedArms_Arms_Beat</gesture>
+	<gesture type="calmdown" posture="CrossedArms" hand="both">CrossedArms_Arms_CalmDown</gesture>
+	<gesture type="chop" handshape="fist" posture="CrossedArms" hand="both">CrossedArms_Arms_FistsChop</gesture>
+	<gesture type="chop" posture="CrossedArms" hand="both">CrossedArms_Arms_Chop</gesture>
+	<gesture type="head" posture="CrossedArms" hand="both">CrossedArms_Arms_GestureHead</gesture>
+	<gesture type="me" posture="CrossedArms" hand="both">CrossedArms_Arms_GestureMe</gesture>
+	<gesture type="offer" posture="CrossedArms" hand="both">CrossedArms_Arms_GestureOffer</gesture>
+	<gesture type="stop" posture="CrossedArms" hand="both">CrossedArms_Arms_GestureStop</gesture>
+	<gesture type="what" posture="CrossedArms" hand="both">CrossedArms_Arms_GestureWhat</gesture>
+	<gesture type="why" posture="CrossedArms" hand="both">CrossedArms_Arms_GestureWhy</gesture>	
+	<gesture type="indicate" armdirection="left" posture="CrossedArms" hand="right">CrossedArms_RArmOnHip_IndicateLeft</gesture>
+	<gesture type="chop" posture="CrossedArms" hand="right">CrossedArms_RArm_Chop</gesture>
+	<gesture type="dismiss" posture="CrossedArms" hand="right">CrossedArms_RArm_GestureDismiss</gesture>
+	<gesture type="head" posture="CrossedArms" hand="right">CrossedArms_RArm_GestureHead</gesture>
+	<gesture type="however" posture="CrossedArms" hand="right">CrossedArms_RArm_GestureHowever</gesture>
+	<gesture type="me" posture="CrossedArms" hand="right">CrossedArms_RArm_GestureMe</gesture>
+	<gesture type="up" posture="CrossedArms" hand="right">CrossedArms_RArm_GestureUp</gesture>
+	<gesture type="what" posture="CrossedArms" hand="right">CrossedArms_RArm_GestureWhat</gesture>
+	<gesture type="you" palmdirection="up" posture="CrossedArms" hand="right">CrossedArms_RArm_GestureYouPalmUp</gesture>
+	<gesture type="you" posture="CrossedArms" hand="right">CrossedArms_RArm_GestureYou</gesture>
+	<gesture type="grab" target="chin" posture="CrossedArms" hand="right">CrossedArms_RArm_GrabChin</gesture>
+	<gesture type="indicate" armdirection="left" posture="CrossedArms" hand="right">CrossedArms_RArm_IndicateLeft</gesture>
+	<gesture type="indicate" armdirection="right" posture="CrossedArms" hand="right">CrossedArms_RArm_IndicateRight</gesture>
+	<gesture type="indicate" armdirection="up" posture="CrossedArms" hand="right">CrossedArms_RArm_IndicateUp</gesture>
+	<gesture type="beat" trajectory="small" posture="CrossedArms" hand="right">CrossedArms_RArm_LowBeat</gesture>
+	<gesture type="beat" trajectory="medium" posture="CrossedArms" hand="right">CrossedArms_RArm_MidBeat</gesture>
+	<gesture type="stop" trajectory="small" posture="CrossedArms" hand="right">CrossedArms_RArm_SoftStop</gesture>
+	<gesture type="stop" posture="CrossedArms" hand="right">CrossedArms_RArm_NegativeStop</gesture>
+	<gesture type="rub" target="head" posture="CrossedArms" hand="right">CrossedArms_RArm_RubHead</gesture>
+	<gesture type="chop" trajectory="small" armdirection="right" posture="CrossedArms" hand="right">CrossedArms_RArm_SoftRight</gesture>
+	<gesture type="chop" trajectory="small" posture="CrossedArms" hand="right">CrossedArms_RArm_SoftChop</gesture>
+	<gesture type="sweep" armdirection="right" posture="CrossedArms" hand="right">CrossedArms_RArm_SweepRight</gesture>
+	<gesture type="emphasis" posture="Crossed" hand="right">CrossedArms_RArm_Emphasis</gesture>
+
+	<!-- HandsAtSide -->
+	<gesture type="chop" posture="HandsAtSide" hand="both">HandsAtSide_Arms_Chop</gesture>
+	<gesture type="me" posture="HandsAtSide" hand="both">HandsAtSide_Arms_GestureMe</gesture>
+	<gesture type="stop" posture="HandsAtSide" hand="both">HandsAtSide_Arms_GestureStop</gesture>
+	<gesture type="why" posture="HandsAtSide" hand="both">HandsAtSide_Arms_GestureWhy</gesture>
+	<gesture type="ohwell" posture="HandsAtSide" hand="both">HandsAtSide_Arms_OhWell</gesture>
+	<gesture type="sweep" posture="HandsAtSide" hand="both">HandsAtSide_Arms_Sweep_2</gesture>
+	<gesture type="dismiss" posture="HandsAtSide" hand="left">HandsAtSide_LArm_Dismiss</gesture>
+	<gesture type="indicate" armdirection="left" posture="HandsAtSide" hand="left">HandsAtSide_LArm_IndicateLeft</gesture>	
+	<gesture type="chop" posture="HandsAtSide" hand="right">HandsAtSide_RArm_Chop</gesture>
+	<gesture type="dismiss" posture="HandsAtSide" hand="right">HandsAtSide_RArm_Dismiss</gesture>
+	<gesture type="emphasis" posture="HandsAtSide" hand="right">HandsAtSide_RArm_Emphasis</gesture>
+	<gesture type="chop" handshape="fist" posture="HandsAtSide" hand="right">HandsAtSide_RArm_FistsChop</gesture>
+	<gesture type="me" posture="HandsAtSide" hand="right">HandsAtSide_RArm_GestureMe</gesture>
+	<gesture type="offer" posture="HandsAtSide" hand="right">HandsAtSide_RArm_GestureOffer</gesture>
+	<gesture type="you" posture="HandsAtSide" hand="right">HandsAtSide_RArm_GestureYou</gesture>
+	<gesture type="indicate" armdirection="right" posture="HandsAtSide" hand="right">HandsAtSide_RArm_IndicateRight</gesture>
+
+	<!-- HandsOnHip -->
+	<gesture type="dismiss" posture="HandsOnHip" hand="both">HandsOnHip_Arms_GestureDismiss</gesture>
+	<gesture type="me" posture="HandsOnHip" hand="both">HandsOnHip_Arms_GestureMe</gesture>
+	<gesture type="stop" posture="HandsOnHip" hand="both">HandsOnHip_Arms_GestureStop</gesture>
+	<gesture type="why" posture="HandsOnHip" hand="both">HandsOnHip_Arms_GestureWhy</gesture>
+	<gesture type="ohwell" posture="HandsOnHip" hand="both">HandsOnHip_Arms_OhWell</gesture>
+	<gesture type="indicate" armdirection="left" posture="HandsOnHip" hand="left">HandsOnHip_LArm_IndicateLeft</gesture>
+	<gesture type="rub" target="neck" posture="HandsOnHip" hand="left">HandsOnHip_LArm_RubNeck</gesture>
+	<gesture type="dismiss" posture="HandsOnHip" hand="right">HandsOnHip_RArm_Dismiss</gesture>
+	<gesture type="point" target="you" posture="HandsOnHip" hand="right">HandsOnHip_RArm_GestureYouPoint</gesture>
+	<gesture type="grab" target="chin" posture="HandsOnHip" hand="right">HandsOnHip_RArm_GrabChin</gesture>
+	<gesture type="indicate" armdirection="right" posture="HandsOnHip" hand="right">HandsOnHip_RArm_IndicateRight</gesture>
+	<gesture type="beat" trajectory="medium" posture="HandsOnHip" hand="right">HandsOnHip_RArm_MidBeat</gesture>
+	<gesture type="stop" posture="HandsOnHip" hand="right">HandsOnHip_RArm_Stop</gesture>
+	<gesture type="sweep" posture="HandsOnHip" hand="right">HandsOnHip_RArm_Sweep</gesture>
+
+	<!-- LHandOnHip -->
+	<gesture type="chop" posture="LHandOnHip" hand="both">LHandOnHip_Arms_Chop</gesture>
+	<gesture type="dismiss" posture="LHandOnHip" hand="both">LHandOnHip_Arms_GestureDismiss</gesture>
+	<gesture type="stop" posture="LHandOnHip" hand="both">LHandOnHip_Arms_GestureStop</gesture>
+	<gesture type="what" posture="LHandOnHip" hand="both">LHandOnHip_Arms_GestureWhat</gesture>
+	<gesture type="why" posture="LHandOnHip" hand="both">LHandOnHip_Arms_GestureWhy</gesture>
+	<gesture type="indicate" armdirection="up" posture="LHandOnHip">LHandOnHip_IndicateUp</gesture>
+	<gesture type="chop" posture="LHandOnHip" hand="right">LHandOnHip_RArm_Chop</gesture>
+	<gesture type="dismiss" posture="LHandOnHip" hand="right">LHandOnHip_RArm_Dismiss</gesture>
+	<gesture type="point" target="me" posture="LHandOnHip" hand="right">LHandOnHip_RArm_GestureMe</gesture>
+	<gesture type="offer" posture="LHandOnHip" hand="right">LHandOnHip_RArm_GestureOffer</gesture>
+	<gesture type="point" target="you" posture="LHandOnHip" hand="right">LHandOnHip_RArm_GestureYou</gesture>
+	<gesture type="grab" target="chin" posture="LHandOnHip" hand="right">LHandOnHip_RArm_GrabChin</gesture>
+	<gesture type="beat" trajectory="large" posture="LHandOnHip" hand="right">LHandOnHip_RArm_HighBeat</gesture>
+	<gesture type="indicate" armdirection="left" posture="LHandOnHip" hand="right">LHandOnHip_RArm_IndicateLeft</gesture>
+	<gesture type="indicate" armdirection="right" posture="LHandOnHip" hand="right">LHandOnHip_RArm_IndicateRight</gesture>
+	<gesture type="beat" trajectory="small" posture="LHandOnHip" hand="right">LHandOnHip_RArm_LowBeat</gesture>
+	<gesture type="beat" trajectory="medium" posture="LHandOnHip" hand="right">LHandOnHip_RArm_MidBeat</gesture>
+	<gesture type="ohwell" posture="LHandOnHip" hand="right">LHandOnHip_RArm_OhWell</gesture>
+	<gesture type="sweep" armdirection="right" posture="LHandOnHip" hand="right">LHandOnHip_RArm_SweepRight</gesture>
+	<gesture type="sweep" posture="LHandOnHip" hand="right">LHandOnHip_RArm_Sweep</gesture>
+	
+	
+	<!-- Gestures without posture requirement -->
+	<gesture type="beat">HandsOnHip_RArm_MidBeat</gesture>
+	<gesture type="chop">LHandOnHip_Arms_Chop</gesture>
+	<gesture type="sweep">HandsOnHip_RArm_Sweep</gesture>
+	<gesture type="dismiss">LHandOnHip_Arms_GestureDismiss</gesture>
+	<gesture type="what">LHandOnHip_Arms_GestureWhat</gesture>
+	<gesture type="why">LHandOnHip_Arms_GestureWhy</gesture>
+	<gesture type="emphasis">Crossed_RArm_Emphasis</gesture>
+	<gesture type="me">CrossedArms_RArm_GestureMe</gesture>
+
+	<!-- Postures (bml 1.0 compliant) -->
+	<posture shape="walk">WalkF</posture>
+	<posture shape="HandsAtSide">HandsAtSide_Motex</posture>
+	<posture shape="LHandOnHip">LHandOnHip_Motex</posture>
+	<posture shape="CrossedArms">CrossedArms_Motex</posture>
+	<posture shape="HandsOnHip">HandsOnHip_Motex</posture>
+
+</bml2anim>

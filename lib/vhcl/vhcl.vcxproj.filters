@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="nocturnal">
+      <UniqueIdentifier>{37312aa0-8f48-4a00-92e4-d75863566cb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nocturnal\Debug">
+      <UniqueIdentifier>{139bd3b5-9a0e-4893-8390-9ac57ce71fa1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\nocturnal\Debug\API.h">
+      <Filter>nocturnal\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\nocturnal\Debug\Exception.h">
+      <Filter>nocturnal\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\nocturnal\Debug\Mail.h">
+      <Filter>nocturnal\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\nocturnal\Debug\Memory.h">
+      <Filter>nocturnal\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\nocturnal\Debug\Symbols.h">
+      <Filter>nocturnal\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Pow2Assert.h" />
+    <ClInclude Include="include\vhcl.h" />
+    <ClInclude Include="include\vhcl_assert.h" />
+    <ClInclude Include="include\vhcl_audio.h" />
+    <ClInclude Include="include\vhcl_crash.h" />
+    <ClInclude Include="include\vhcl_log.h" />
+    <ClInclude Include="include\vhcl_memory.h" />
+    <ClInclude Include="include\vhcl_platform.h" />
+    <ClInclude Include="include\vhcl_public.h" />
+    <ClInclude Include="include\vhcl_string.h" />
+    <ClInclude Include="include\vhcl_timer.h" />
+    <ClInclude Include="include\vhcl_types.h" />
+    <ClInclude Include="include\vhcl_win32.h" />
+    <ClInclude Include="include\vhcl_socket.h" />
+    <ClInclude Include="include\vhcl_math.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\nocturnal\Debug\Exception.cpp">
+      <Filter>nocturnal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nocturnal\Debug\Mail.cpp">
+      <Filter>nocturnal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nocturnal\Debug\Memory.cpp">
+      <Filter>nocturnal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nocturnal\Debug\Symbols.cpp">
+      <Filter>nocturnal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pow2Assert.cpp" />
+    <ClCompile Include="src\vhcl_audio.cpp" />
+    <ClCompile Include="src\vhcl_crash.cpp" />
+    <ClCompile Include="src\vhcl_log.cpp" />
+    <ClCompile Include="src\vhcl_memory.cpp" />
+    <ClCompile Include="src\vhcl_string.cpp" />
+    <ClCompile Include="src\vhcl_timer.cpp" />
+    <ClCompile Include="src\vhcl_socket.cpp" />
+    <ClCompile Include="src\vhcl_math.cpp" />
+  </ItemGroup>
+</Project>

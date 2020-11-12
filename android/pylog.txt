@@ -1,0 +1,120 @@
+class WritableObject:
+	def __init__(self):
+		self.content = []
+	def write(self, string):
+		for key in string:
+			if key in "aA":
+				pa()
+			elif key in "bB":
+				pb()			
+			elif key in "cC":
+				pc()
+			elif key in "dD":
+				pd()
+			elif key in "eE":
+				pe()
+			elif key in "fF":
+				pf()
+			elif key in "gG":
+				pg()
+			elif key in "hH":
+				ph()
+			elif key in "iI":
+				pi()
+			elif key in "jJ":
+				pj()
+			elif key in "kK":
+				pk()
+			elif key in "lL":
+				pl()
+			elif key in "mM":
+				pm()
+			elif key in "nN":
+				pn()
+			elif key in "oO":
+				po()
+			elif key in "pP":
+				pp()
+			elif key in "qQ":
+				pq()
+			elif key in "rR":
+				pr()
+			elif key in "sS":
+				ps()
+			elif key in "tT":
+				pt()
+			elif key in "uU":
+				pu()
+			elif key in "vV":
+				pv()
+			elif key in "wW":
+				pw()
+			elif key in "xX":
+				px()
+			elif key in "yY":
+				py()
+			elif key in "zZ":
+				pz()
+			elif key == " ":
+				pspace()
+			elif key == "1":
+				p1()
+			elif key == "2":
+				p2()
+			elif key == "3":
+				p3()
+			elif key == "4":
+				p4()
+			elif key == "5":
+				p5()
+			elif key == "6":
+				p6()
+			elif key == "7":
+				p7()
+			elif key == "8":
+				p8()
+			elif key == "9":
+				p9()
+			elif key == "0":
+				p0()
+			elif key == "(":
+				openparen()
+			elif key == ")":
+				closeparen()
+			elif key == "[":
+				openbracket()
+			elif key == "]":
+				closebracket()
+			elif key == "P":
+				openbrace()
+			elif key == "}":
+				closebrace()
+			elif key == "+":
+				plus()
+			elif key == "-":
+				minus()
+			elif key == "*":
+				aster()
+			elif key == "/":
+				backslash()
+			elif key == "\\":
+				slash()
+			elif key == ",":
+				comma()
+			elif key == ":":
+				colon()
+			elif key == ";":
+				semicolon()
+			elif key == "=":
+				equal()
+			elif key == "<":
+				less()
+			elif key == ">":
+				more()			
+			else :
+				pnon()
+				
+		outlog()
+			
+		
+			
