@@ -46,8 +46,8 @@ void ExampleFrameListener::updateStats( void )
 ExampleFrameListener::ExampleFrameListener( RenderWindow* win, Camera* cam, bool bufferedKeys /*= false*/, bool bufferedMouse /*= false*/, bool bufferedJoy /*= false */ ) :
 mCamera(cam), mTranslateVector(Vector3::ZERO), mCurrentSpeed(0), mWindow(win), mStatsOn(false), mNumScreenShots(0),
 mMoveScale(0.0f), mRotScale(0.0f), mTimeUntilNextToggle(0), mFiltering(TFO_BILINEAR),
-mAniso(1), mSceneDetailIndex(0), mMoveSpeed(500), mRotateSpeed(36), mDebugOverlay(0),
-mInputManager(0), mMouse(0), mKeyboard(0), mJoy(0)
+mAniso(1), mSceneDetailIndex(0), mMoveSpeed(500), mRotateSpeed(36), mDebugOverlay(0)
+//mInputManager(0), mMouse(0), mKeyboard(0), mJoy(0)
 {	
 	LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 	OIS::ParamList pl;

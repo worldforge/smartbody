@@ -38,15 +38,12 @@ D:        Step right
 #ifdef WIN32_LEAN_AND_MEAN
 #undef WIN32_LEAN_AND_MEAN
 #endif
-#include "OGRE/Ogre.h"
-#include "OGRE/OgreStringConverter.h"
-#include "OGRE/OgreException.h"
-#include "OGRE/Bites/OgreWindowEventUtilities.h"
-#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 9
-#include "OGRE/Overlay/OgreOverlay.h"
-#else
-#include "OGRE/OgreOverlay.h"
-#endif
+#include <Ogre.h>
+#include <OgreStringConverter.h>
+#include <OgreException.h>
+#include <Bites/OgreWindowEventUtilities.h>
+#include <Overlay/OgreOverlay.h>
+
 
 //Use this define to signify OIS will be used as a DLL
 //(so that dll import/export macros are in effect)

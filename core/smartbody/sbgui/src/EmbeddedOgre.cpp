@@ -118,13 +118,13 @@ void EmbeddedOgre::resetOgreScene()
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
 	std::vector<std::string> texNames = texManager.getTextureNames(SbmTextureManager::TEXTURE_DIFFUSE);
 	for (unsigned int i=0;i<texNames.size();i++)
-		ogreTexManager.remove(texNames[i]);
+		ogreTexManager.remove(texNames[i], Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	texNames = texManager.getTextureNames(SbmTextureManager::TEXTURE_NORMALMAP);
 	for (unsigned int i=0;i<texNames.size();i++)
-		ogreTexManager.remove(texNames[i]);
+		ogreTexManager.remove(texNames[i], Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	texNames = texManager.getTextureNames(SbmTextureManager::TEXTURE_SPECULARMAP);
 	for (unsigned int i=0;i<texNames.size();i++)
-		ogreTexManager.remove(texNames[i]);
+		ogreTexManager.remove(texNames[i], Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 	OgreFrameListener* frameListener = dynamic_cast<OgreFrameListener*>(ogreFrameListener);
 	if (frameListener) // clear all frame listener data
@@ -866,7 +866,7 @@ Ogre::MovableObject* EmbeddedOgre::createOgrePawn( SmartBody::SBPawn* sbPawn )
 	if (meshName == "") meshName = sbPawn->getName();
 
 	addDeformableMesh(meshName, meshInstance);
-	Ogre::MeshPtr     ogreMesh = Ogre::MeshManager::getSingleton().getByName(meshName);	
+	Ogre::MeshPtr     ogreMesh = Ogre::MeshManager::getSingleton().getByName(meshName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	if (ogreMesh.isNull()) return NULL;
 	if (!meshInstance) return NULL;
 	DeformableMesh* deformMesh = meshInstance->getDeformableMesh();
@@ -936,8 +936,8 @@ Ogre::Entity* EmbeddedOgre::createOgreCharacter( SmartBody::SBCharacter* sbChar 
 	SmartBody::SBSkeleton* charSkel = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
 	addSBSkeleton(charSkel);
 	addDeformableMesh(meshName, meshInstance);
-	Ogre::SkeletonPtr ogreSkel = Ogre::SkeletonManager::getSingleton().getByName(skeletonName);
-	Ogre::MeshPtr     ogreMesh = Ogre::MeshManager::getSingleton().getByName(meshName);	
+	Ogre::SkeletonPtr ogreSkel = Ogre::SkeletonManager::getSingleton().getByName(skeletonName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+	Ogre::MeshPtr     ogreMesh = Ogre::MeshManager::getSingleton().getByName(meshName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	if (ogreSkel.isNull() || ogreMesh.isNull()) return NULL;
     if (!meshInstance) return NULL;
 
@@ -1118,7 +1118,7 @@ void EmbeddedOgre::addSBSkeleton( SmartBody::SBSkeleton* skel )
 	if (!skel) return;
  	Ogre::String skelName = skel->getName();
  	Ogre::SkeletonManager& skelManager = Ogre::SkeletonManager::getSingleton();
-	if (!skelManager.getByName(skelName).isNull()) 
+	if (!skelManager.getByName(skelName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).isNull())
 	{
 		return; // skeleton already exists
 	}
@@ -1239,7 +1239,7 @@ void EmbeddedOgre::addDeformableMesh( std::string meshName, DeformableMeshInstan
 	
 
 	Ogre::MeshManager& meshManager = Ogre::MeshManager::getSingleton();	
-	if (!meshManager.getByName(meshName).isNull()) 
+	if (!meshManager.getByName(meshName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).isNull())
 	{		
 		return; // mesh already exists
 	}
@@ -1374,7 +1374,7 @@ void EmbeddedOgre::addDeformableMesh( std::string meshName, DeformableMeshInstan
 		std::string materialName = subModel->matName + boost::lexical_cast<std::string>(i); //meshName + boost::lexical_cast<std::string>(i) + "Mat";
 		Ogre::MaterialPtr ogreMat = Ogre::MaterialManager::getSingleton().create(materialName, "General");
 		Ogre::Pass* pass = ogreMat->getTechnique(0)->getPass(0);
- 		Ogre::TexturePtr texPtr = Ogre::TextureManager::getSingleton().getByName(subModel->texName);
+ 		Ogre::TexturePtr texPtr = Ogre::TextureManager::getSingleton().getByName(subModel->texName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 		if (!texPtr.isNull())
 		{
  			Ogre::TextureUnitState* texUnit = pass->createTextureUnitState();
@@ -1448,7 +1448,7 @@ void EmbeddedOgre::addTexture( std::string texName )
 	SbmTexture* tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE,texName.c_str());
 	Ogre::TextureManager& ogreTexManager = Ogre::TextureManager::getSingleton();	
 	ogreTexManager.setDefaultNumMipmaps(MIP_UNLIMITED);
-	Ogre::TexturePtr ogreTex = ogreTexManager.getByName(texName);		
+	Ogre::TexturePtr ogreTex = ogreTexManager.getByName(texName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	if (!ogreTex.isNull()) return; // the texture already exist in ogre
 	if (!tex) return; // the texture not exist in SmartBody
 

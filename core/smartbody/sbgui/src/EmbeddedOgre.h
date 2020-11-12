@@ -3,7 +3,7 @@
 #ifdef WIN32_LEAN_AND_MEAN
 #undef WIN32_LEAN_AND_MEAN
 #endif
-#include <OGRE/Ogre.h>
+#include <Ogre.h>
 
 #define USE_RTSHADER 0
 #if USE_RTSHADER
