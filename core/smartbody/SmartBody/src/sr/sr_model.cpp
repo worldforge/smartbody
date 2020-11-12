@@ -105,9 +105,9 @@ void SrModel::validate ()
    if ( fsize==0 || V.size()==0 )
     { 
 	   // preserve the name
-	   std::string curName = this->name;
+	   SrString curName = this->name;
 	   init ();
-	   this->name = SrString(curName.c_str());
+	   this->name = curName;
       compress ();
       return;
     }
