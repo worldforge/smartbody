@@ -69,7 +69,3 @@ mixamoMap.setMapping("RightToe_End", "r_toe")
 mixamoMap.setMapping("Spine2", "spine3")
 mixamoMap.setMapping("Spine1", "spine2")
 mixamoMap.setMapping("Spine", "spine1")
-
-
-
-

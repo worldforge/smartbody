@@ -1,31 +1,28 @@
-
-
 def ipisoftmap():
-
     # Mapping from ipiSoft skeleton to SmartBody skeleton
 
     jointMapManager = scene.getJointMapManager()
     ipisoftMap = jointMapManager.getJointMap("ipisoft")
     if (ipisoftMap == None):
-	ipisoftMap = jointMapManager.createJointMap('ipisoft')
+        ipisoftMap = jointMapManager.createJointMap('ipisoft')
 
     # Core
     ipisoftMap.setMapping("Hip", "base")
     ipisoftMap.setMapping("LowerSpine", "spine1")
     ipisoftMap.setMapping("MiddleSpine", "spine2")
     ipisoftMap.setMapping("Chest", "spine3")
-    #ipisoftMap.setMapping("", "spine4")
+    # ipisoftMap.setMapping("", "spine4")
     ipisoftMap.setMapping("Neck", "spine5")
     ipisoftMap.setMapping("Head", "skullbase")
 
     # Arm, left
     ipisoftMap.setMapping("LClavicle", "l_sternoclavicular")
     ipisoftMap.setMapping("LShoulder", "l_shoulder")
-    #ipisoftMap.setMapping("", "l_upperarm1")
-    #ipisoftMap.setMapping("", "l_upperarm2")
+    # ipisoftMap.setMapping("", "l_upperarm1")
+    # ipisoftMap.setMapping("", "l_upperarm2")
     ipisoftMap.setMapping("LForearm", "l_elbow")
-    #ipisoftMap.setMapping("", "l_forearm1")
-    #ipisoftMap.setMapping("", "l_forearm2")
+    # ipisoftMap.setMapping("", "l_forearm1")
+    # ipisoftMap.setMapping("", "l_forearm2")
     ipisoftMap.setMapping("LHand", "l_wrist")
     ipisoftMap.setMapping("LFinger0", "l_thumb1")
     ipisoftMap.setMapping("LFinger01", "l_thumb2")
@@ -51,11 +48,11 @@ def ipisoftmap():
     # Arm, right
     ipisoftMap.setMapping("RClavicle", "r_sternoclavicular")
     ipisoftMap.setMapping("RShoulder", "r_shoulder")
-    #ipisoftMap.setMapping("", "r_upperarm1")
-    #ipisoftMap.setMapping("", "r_upperarm2")
+    # ipisoftMap.setMapping("", "r_upperarm1")
+    # ipisoftMap.setMapping("", "r_upperarm2")
     ipisoftMap.setMapping("RForearm", "r_elbow")
-    #ipisoftMap.setMapping("", "r_forearm1")
-    #ipisoftMap.setMapping("", "r_forearm2")
+    # ipisoftMap.setMapping("", "r_forearm1")
+    # ipisoftMap.setMapping("", "r_forearm2")
     ipisoftMap.setMapping("RHand", "r_wrist")
     ipisoftMap.setMapping("RFinger0", "r_thumb1")
     ipisoftMap.setMapping("RFinger01", "r_thumb2")
@@ -93,18 +90,17 @@ def ipisoftmap():
     ipisoftMap.setMapping("RToeEndSite", "r_toe")
 
     # Head, left
-    #ipisoftMap.setMapping("JtEyeLf", "eyeball_left")
-    #ipisoftMap.setMapping("JtEyelidUpperLf", "upper_eyelid_left")
-    #ipisoftMap.setMapping("JtEyelidLowerLf", "lower_eyelid_left")
+    # ipisoftMap.setMapping("JtEyeLf", "eyeball_left")
+    # ipisoftMap.setMapping("JtEyelidUpperLf", "upper_eyelid_left")
+    # ipisoftMap.setMapping("JtEyelidLowerLf", "lower_eyelid_left")
 
     # Head, right
-    #ipisoftMap.setMapping("JtEyeRt", "eyeball_right")
-    #ipisoftMap.setMapping("JtEyelidUpperRt", "upper_eyelid_right")
-    #ipisoftMap.setMapping("JtEyelidLowerRt", "lower_eyelid_right")
+    # ipisoftMap.setMapping("JtEyeRt", "eyeball_right")
+    # ipisoftMap.setMapping("JtEyelidUpperRt", "upper_eyelid_right")
+    # ipisoftMap.setMapping("JtEyelidLowerRt", "lower_eyelid_right")
 
-    #ipisoftMap.setMapping("eyeJoint_R", "eyeball_right")
-    #ipisoftMap.setMapping("eyeJoint_L", "eyeball_left")
-
+    # ipisoftMap.setMapping("eyeJoint_R", "eyeball_right")
+    # ipisoftMap.setMapping("eyeJoint_L", "eyeball_left")
 
 
 ipisoftmap()

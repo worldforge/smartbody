@@ -1,4 +1,4 @@
-print "=== Starting: data/sbm-common/scripts/common-init-face-blend.py"
+print("=== Starting: data/sbm-common/scripts/common-init-face-blend.py")
 # this setup assumes that blendshapes are being used and are controlled
 # by the renderer and not by SmartBody. Thus, this file is similar to
 # common-init-face.py, but doesn't establish any motions for the AUs/visemes.
@@ -45,4 +45,4 @@ defaultFace.setViseme("Z", "")
 defaultFace.setViseme("BMP", "")
 defaultFace.setViseme("blink", "")
 
-print "Complete: data/sbm-common/scripts/common-init-face-blend.py"
+print("Complete: data/sbm-common/scripts/common-init-face-blend.py")

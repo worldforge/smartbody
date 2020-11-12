@@ -1,8 +1,9 @@
 import math
 import random
-print "|--------------------------------------------|"
-print "|         Starting Ogre Demo           |"
-print "|--------------------------------------------|"
+
+print("|--------------------------------------------|")
+print("|         Starting Ogre Demo           |")
+print("|--------------------------------------------|")
 
 scene.setScale(0.1)
 # Add asset paths
@@ -14,10 +15,10 @@ scene.addAssetPath('script', 'behaviorsets')
 scene.loadAssets()
 
 # Set scene parameters and camera
-#scene.getPawn('camera').setPosition(SrVec(0, -5, 0))
+# scene.getPawn('camera').setPosition(SrVec(0, -5, 0))
 
 # Set joint map for Sinbad
-print 'Setting up joint map for Brad'
+print('Setting up joint map for Brad')
 scene.run('ogre-sinbad-map.py')
 sinbadSkName = 'Sinbad.skeleton.xml'
 jointMapManager = scene.getJointMapManager()
@@ -29,16 +30,16 @@ sinbadMap.applySkeleton(ogreSk)
 scene.run('behaviorsetup.py')
 
 # Animation setup
-#scene.run('init-param-animation.py')
+# scene.run('init-param-animation.py')
 steerManager = scene.getSteerManager()
 
 # Setting up Sinbad
-print 'Setting up Sinbad'
+print('Setting up Sinbad')
 sinbadName = 'sinbad'
-sinbad = scene.createCharacter(sinbadName,'')
+sinbad = scene.createCharacter(sinbadName, '')
 sinbadSk = scene.createSkeleton(sinbadSkName)
 sinbad.setSkeleton(sinbadSk)
-sinbadPos = SrVec(0,5.16, 0)
+sinbadPos = SrVec(0, 5.16, 0)
 sinbad.setPosition(sinbadPos)
 sinbad.createStandardControllers()
 sinbad.setStringAttribute('deformableMesh', 'Sinbad.mesh.xml')
@@ -60,12 +61,9 @@ scene.run('BehaviorSetGestures.py')
 setupBehaviorSet()
 retargetBehaviorSet(sinbadName)
 
-
-
 sinbad.setStringAttribute("displayType", "GPUmesh")
 
-
-print 'Configuring scene parameters and camera'
+print('Configuring scene parameters and camera')
 scene.setBoolAttribute('internalAudio', True)
 camera = getCamera()
 camera.setEye(0, 5.98, 13.44)
@@ -80,7 +78,6 @@ camera.setAspectRatio(1.02)
 sim.start()
 bml.execBML(sinbadName, '<body posture="ChrUtah_Idle001"/>')
 sim.resume()
-
 
 g = scene.getGestureMapManager().getGestureMap("BradGesture")
 g.addGestureMapping("test", "BEAT", "RHYTHM", "LEFT_HAND", "", "ChrBrad@Idle01")
@@ -129,18 +126,15 @@ motionNames.append("ChrBrad@Idle01_StopBt02")
 motionNames.append("ChrBrad@Idle01_SurroundBt01")
 motionNames.append("ChrBrad@Idle01_SurroundBt02")
 
-for b in range(0, len(stateNames)):	
-	stateTest = scene.getBlendManager().createState1D(stateNames[b])
-	stateTest.setBlendSkeleton(skeleton)
-	motions = StringVec()
-	motions.append(motionNames[b * 2])
-	motions.append(motionNames[b * 2 + 1])
+for b in range(0, len(stateNames)):
+    stateTest = scene.getBlendManager().createState1D(stateNames[b])
+    stateTest.setBlendSkeleton(skeleton)
+    motions = StringVec()
+    motions.append(motionNames[b * 2])
+    motions.append(motionNames[b * 2 + 1])
 
-	stateTest.addMotion(motionNames[b * 2], 0.0)
-	stateTest.addMotion(motionNames[b * 2 + 1], 1.0)
-	print "Added gesture blend " + stateNames[b]
+    stateTest.addMotion(motionNames[b * 2], 0.0)
+    stateTest.addMotion(motionNames[b * 2 + 1], 1.0)
+    print("Added gesture blend " + stateNames[b])
 
-	
-	
-	
 bml.execBML(sinbadName, '<body posture="ChrBrad@Idle01"/>')

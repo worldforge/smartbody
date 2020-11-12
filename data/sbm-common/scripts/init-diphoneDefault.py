@@ -6963,4 +6963,3 @@ diphone.addKey("open", 1, 0)
 diphone.addKey("wide", 0.177546, 0)
 diphone.addKey("wide", 0.45953, 0.539359)
 diphone.addKey("wide", 0.81201, -0.00291545)
-

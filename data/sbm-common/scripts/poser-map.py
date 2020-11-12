@@ -79,8 +79,3 @@ poserMap.setMapping("Right_Shin", "r_knee")
 poserMap.setMapping("Right_Foot", "r_ankle")
 poserMap.setMapping("Right_Toe", "r_forefoot")
 poserMap.setMapping("", "r_toe")
-
-
-
-
-

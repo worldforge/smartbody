@@ -10,6 +10,7 @@
 #include <sr/sr_random.h>
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
 #include <sbm/GPU/VBOData.h>
+#include <boost/lexical_cast.hpp>
 
 char vTestShaderStr[] =
 "#version 430                        \n"

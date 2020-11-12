@@ -1,8 +1,8 @@
-print "|--------------------------------------------|"
-print "|         Starting Tutorial 5	            |"
-print "|--------------------------------------------|"
+print("|--------------------------------------------|")
+print("|         Starting Tutorial 5	            |")
+print("|--------------------------------------------|")
 
-print 'media path = ' + scene.getMediaPath()
+print('media path = ' + scene.getMediaPath())
 # Add asset paths
 assetManager = scene.getAssetManager()
 assetManager.addAssetPath('motion', 'ChrBrad')
@@ -45,6 +45,6 @@ bml.execBML('ChrBrad', '<animation name="ChrBrad@Guitar01"/>')
 bml.execBML('ChrBrad', '<head type="NOD"/>')
 # set gaze
 obj = scene.createPawn('obj1')
-obj.setPosition(SrVec(0.5,0.1,0))
-bml.execBML('ChrBrad','<gaze target="obj1"/>')
+obj.setPosition(SrVec(0.5, 0.1, 0))
+bml.execBML('ChrBrad', '<gaze target="obj1"/>')
 sim.resume()

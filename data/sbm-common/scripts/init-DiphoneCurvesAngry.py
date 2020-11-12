@@ -2908,4 +2908,3 @@ diphone.addKey("bmp", 1.000000, 1.500000)
 diphone.addKey("stickyLips", 0.000000, 0.500000)
 diphone.addKey("stickyLips", 0.500000, 0.500000)
 diphone.addKey("stickyLips", 1.000000, 0.500000)
-

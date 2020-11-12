@@ -3,10 +3,9 @@ mirrorMotion.mirror("ChrMarine@Turn90Lf01", "ChrBackovic.sk")
 mirrorMotion1 = scene.getMotion("ChrMarine@Turn180Rt01")
 mirrorMotion1.mirror("ChrMarine@Turn180Lf01", "ChrBackovic.sk")
 
-
 stateManager = scene.getStateManager()
 
-#print "** State: ChrMarineIdleTurn"
+# print "** State: ChrMarineIdleTurn"
 state = stateManager.createState1D("mocapIdleTurn")
 state.setBlendSkeleton('ChrBackovic.sk')
 motions = StringVec()
@@ -23,7 +22,7 @@ params.append(90)
 params.append(180)
 
 for i in range(0, len(motions)):
-	state.addMotion(motions[i], params[i])
+    state.addMotion(motions[i], params[i])
 
 points1 = DoubleVec()
 points1.append(0)

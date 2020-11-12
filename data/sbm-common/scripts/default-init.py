@@ -1,6 +1,6 @@
-print "|--------------------------------------------|"
-print "|         Starting Character Demo            |"
-print "|--------------------------------------------|"
+print("|--------------------------------------------|")
+print("|         Starting Character Demo            |")
+print("|--------------------------------------------|")
 
 scene.setScale(.01)
 
@@ -33,48 +33,48 @@ zebra2Map.applyMotionRecurse('ChrRachel')
 # scale all the motions by 100
 motionNames = scene.getMotionNames()
 for m in motionNames:
-	scene.getMotion(m).scale(100)
+    scene.getMotion(m).scale(100)
 
 # Establish lip syncing data set
-print 'Establishing lip syncing data set'
+print('Establishing lip syncing data set')
 scene.run('init-diphoneDefault.py')
 
 # Set up face definition
-print 'Setting up face definition'
+print('Setting up face definition')
 
 characters = ['ChrBrad', 'ChrRachel']
 # face definition
 for c in characters:
-	face = scene.createFaceDefinition(c)
-	face.setFaceNeutral('ChrBrad@face_neutral')
-	face.setAU(1,  "left",  c + "@001_inner_brow_raiser_lf")
-	face.setAU(1,  "right", c + "@001_inner_brow_raiser_rt")
-	face.setAU(2,  "left",  c + "@002_outer_brow_raiser_lf")
-	face.setAU(2,  "right", c + "@002_outer_brow_raiser_rt")
-	face.setAU(4,  "left",  c + "@004_brow_lowerer_lf")
-	face.setAU(4,  "right", c + "@004_brow_lowerer_rt")
-	face.setAU(5,  "both",  c + "@005_upper_lid_raiser")
-	face.setAU(6,  "both",  c + "@006_cheek_raiser")
-	face.setAU(7,  "both",  c + "@007_lid_tightener")
-	face.setAU(10, "both",  c + "@010_upper_lip_raiser")
-	face.setAU(12, "left",  c + "@012_lip_corner_puller_lf")
-	face.setAU(12, "right", c + "@012_lip_corner_puller_rt")
-	face.setAU(25, "both",  c + "@025_lips_part")
-	face.setAU(26, "both",  c + "@026_jaw_drop")
-	face.setAU(45, "left",  c + "@045_blink_lf")
-	face.setAU(45, "right", c + "@045_blink_rt")
+    face = scene.createFaceDefinition(c)
+    face.setFaceNeutral('ChrBrad@face_neutral')
+    face.setAU(1, "left", c + "@001_inner_brow_raiser_lf")
+    face.setAU(1, "right", c + "@001_inner_brow_raiser_rt")
+    face.setAU(2, "left", c + "@002_outer_brow_raiser_lf")
+    face.setAU(2, "right", c + "@002_outer_brow_raiser_rt")
+    face.setAU(4, "left", c + "@004_brow_lowerer_lf")
+    face.setAU(4, "right", c + "@004_brow_lowerer_rt")
+    face.setAU(5, "both", c + "@005_upper_lid_raiser")
+    face.setAU(6, "both", c + "@006_cheek_raiser")
+    face.setAU(7, "both", c + "@007_lid_tightener")
+    face.setAU(10, "both", c + "@010_upper_lip_raiser")
+    face.setAU(12, "left", c + "@012_lip_corner_puller_lf")
+    face.setAU(12, "right", c + "@012_lip_corner_puller_rt")
+    face.setAU(25, "both", c + "@025_lips_part")
+    face.setAU(26, "both", c + "@026_jaw_drop")
+    face.setAU(45, "left", c + "@045_blink_lf")
+    face.setAU(45, "right", c + "@045_blink_rt")
 
-	face.setViseme("open",    c + "@open")
-	face.setViseme("W",       c + "@W")
-	face.setViseme("ShCh",    c + "@ShCh")
-	face.setViseme("PBM",     c + "@PBM")
-	face.setViseme("FV",      c + "@FV")
-	face.setViseme("wide",    c + "@wide")
-	face.setViseme("tBack",   c + "@tBack")
-	face.setViseme("tRoof",   c + "@tRoof")
-	face.setViseme("tTeeth",  c + "@tTeeth")
+    face.setViseme("open", c + "@open")
+    face.setViseme("W", c + "@W")
+    face.setViseme("ShCh", c + "@ShCh")
+    face.setViseme("PBM", c + "@PBM")
+    face.setViseme("FV", c + "@FV")
+    face.setViseme("wide", c + "@wide")
+    face.setViseme("tBack", c + "@tBack")
+    face.setViseme("tRoof", c + "@tRoof")
+    face.setViseme("tTeeth", c + "@tTeeth")
 
-print 'Adding charactesr into scene'
+print('Adding charactesr into scene')
 
 # Set up Brad
 brad = scene.createCharacter('ChrBrad', 'ChrMaarten')
@@ -138,12 +138,12 @@ retargetBehaviorSet('ChrRachel')
 '''
 
 # Set up steering
-print 'Setting up steering'
+print('Setting up steering')
 steerManager = scene.getSteerManager()
 steerManager.setEnable(False)
 steerManager.setEnable(True)
 # Start the simulation
-print 'Starting the simulation'
+print('Starting the simulation')
 sim.start()
 
 bml.execBML('ChrBrad', '<body posture="ChrMarine@Idle01"/>')

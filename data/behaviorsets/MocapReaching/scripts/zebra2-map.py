@@ -1,11 +1,9 @@
-
 # PLEASE NOTE:
 #  This .py file is not longer in use.  All smartbody initialization is now done within Unity itself.  See the SmartbodyManager gameobject
 #
 #
 
 def Zebra2map():
-
     # Mapping from Zebra2 skeleton to SmartBody skeleton
 
     jointMapManager = scene.getJointMapManager()
@@ -106,9 +104,8 @@ def Zebra2map():
     zebra2Map.setMapping("JtEyelidUpperRt", "upper_eyelid_right")
     zebra2Map.setMapping("JtEyelidLowerRt", "lower_eyelid_right")
 
-    #zebra2Map.setMapping("eyeJoint_R", "eyeball_right")
-    #zebra2Map.setMapping("eyeJoint_L", "eyeball_left")
-
+    # zebra2Map.setMapping("eyeJoint_R", "eyeball_right")
+    # zebra2Map.setMapping("eyeJoint_L", "eyeball_left")
 
 
 Zebra2map()

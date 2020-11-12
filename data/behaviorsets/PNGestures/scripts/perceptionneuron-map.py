@@ -1,15 +1,10 @@
-
-
-
-
 def perceptionNeuronMap():
-
     # Mapping from Zebra2 skeleton to SmartBody skeleton
 
     jointMapManager = scene.getJointMapManager()
     perceptionNeuronMap = jointMapManager.getJointMap("perceptionneuron")
     if (perceptionNeuronMap == None):
-		perceptionNeuronMap = jointMapManager.createJointMap('perceptionneuron')
+        perceptionNeuronMap = jointMapManager.createJointMap('perceptionneuron')
 
     # Core
     perceptionNeuronMap.setMapping("Hips", "base")
@@ -17,11 +12,11 @@ def perceptionNeuronMap():
     perceptionNeuronMap.setMapping("Spine2", "spine2")
     perceptionNeuronMap.setMapping("Spine3", "spine3")
     perceptionNeuronMap.setMapping("Neck", "spine5")
-    #perceptionNeuronMap.setMapping("", "spine5")
+    # perceptionNeuronMap.setMapping("", "spine5")
     perceptionNeuronMap.setMapping("Head", "skullbase")
 
     # Arm, left
-    #perceptionNeuronMap.setMapping("LeftShoulder", "l_sternoclavicular")
+    # perceptionNeuronMap.setMapping("LeftShoulder", "l_sternoclavicular")
     perceptionNeuronMap.setMapping("LeftArm", "l_shoulder")
     perceptionNeuronMap.setMapping("", "l_upperarm1")
     perceptionNeuronMap.setMapping("", "l_upperarm2")
@@ -51,7 +46,7 @@ def perceptionNeuronMap():
     perceptionNeuronMap.setMapping("LeftHandPinky3", "l_pinky4")
 
     # Arm, right
-    #perceptionNeuronMap.setMapping("RightShoulder", "r_sternoclavicular")
+    # perceptionNeuronMap.setMapping("RightShoulder", "r_sternoclavicular")
     perceptionNeuronMap.setMapping("RightArm", "r_shoulder")
     perceptionNeuronMap.setMapping("", "r_upperarm1")
     perceptionNeuronMap.setMapping("", "r_upperarm2")
@@ -104,9 +99,8 @@ def perceptionNeuronMap():
     perceptionNeuronMap.setMapping("", "upper_eyelid_right")
     perceptionNeuronMap.setMapping("", "lower_eyelid_right")
 
-    #perceptionNeuronMap.setMapping("eyeJoint_R", "eyeball_right")
-    #perceptionNeuronMap.setMapping("eyeJoint_L", "eyeball_left")
-
+    # perceptionNeuronMap.setMapping("eyeJoint_R", "eyeball_right")
+    # perceptionNeuronMap.setMapping("eyeJoint_L", "eyeball_left")
 
 
 perceptionNeuronMap()

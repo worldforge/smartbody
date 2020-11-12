@@ -1007,15 +1007,15 @@ void initPython(std::string pythonLibPath)
 	//SmartBody::util::log("After LD_LIBRARY_PATH");
 	Py_NoSiteFlag = 1;
 
-#if defined(__ANDROID__) || defined(SB_IPHONE)
-	Py_SetProgramName((char*)pythonHome.c_str());
-    Py_SetPythonHome((char*)pythonHome.c_str());
-#else
-	Py_SetProgramName((char*)"../../../../core/smartbody/Python27/");
-#ifdef WIN32
-	Py_SetPythonHome((char*)pythonHome.c_str());
-#endif
-#endif	
+//#if defined(__ANDROID__) || defined(SB_IPHONE)
+//	Py_SetProgramName((char*)pythonHome.c_str());
+//    Py_SetPythonHome((char*)pythonHome.c_str());
+//#else
+//	Py_SetProgramName((wchar_t*)"../../../../core/smartbody/Python27/");
+//#ifdef WIN32
+//	Py_SetPythonHome((char*)pythonHome.c_str());
+//#endif
+//#endif
 	//SmartBody::util::log("After SetProgramName");
 #if defined(__ANDROID__) || defined(SB_IPHONE)
 //#if 0
@@ -1076,6 +1076,11 @@ void initPython(std::string pythonLibPath)
 	//appendPythonModule("_ctypes", init_ctypes);
 	//appendPythonModule("_hashlib", init_hashlib);
 #endif
+
+	//SmartBody::util::log("Before initSmartBody");
+	PyImport_AppendInittab("SmartBody", &SmartBody::PyInit_SmartBody);
+	//SmartBody::util::log("After initSmartBody");
+
 	//SmartBody::util::log("After appendPythonModule");
 	Py_InitializeEx(0);
 	//SmartBody::util::log("After Py_Initialize");
@@ -1087,41 +1092,47 @@ void initPython(std::string pythonLibPath)
 		boost::python::object dict  = module.attr("__dict__");
 		scene->setPythonMainDict(dict);
 
-		PyRun_SimpleString("import sys");
+
+		boost::python::object sysModule = boost::python::import("sys");
+		auto path = boost::python::list(sysModule.attr("path"));
+		path.append(pythonLibPath);
+		path.append(pythonLibPath + "/site-packages");
+		path.append(pythonLibPath + "/../DLLs");
+
+
+//		PyRun_SimpleString("import sys");
 #endif
 
-#if 1
-		// set the proper python path
-		std::stringstream strstr;
-		strstr << "sys.path.append(\"";
-		strstr << pythonLibPath;
-		strstr << "\");";	
-		PyRun_SimpleString(strstr.str().c_str());
+//#if 1
+//		// set the proper python path
+//		std::stringstream strstr;
+//		strstr << "sys.path.append(\"";
+//		strstr << pythonLibPath;
+//		strstr << "\");";
+//		PyRun_SimpleString(strstr.str().c_str());
+//
+//		// add path to site-packages
+//		std::string pythonSitePackagePath = pythonLibPath + "/site-packages";
+//		strstr.str(std::string());
+//		strstr.clear();
+//		strstr << "sys.path.append(\"";
+//		strstr << pythonSitePackagePath;
+//		strstr << "\");";
+//		PyRun_SimpleString(strstr.str().c_str());
+//
+//		// add path to DLLs
+//		std::string pythonDLLPath = pythonLibPath + "/../DLLs";
+//		strstr.str(std::string());
+//		strstr.clear();
+//		strstr << "sys.path.append(\"";
+//		strstr << pythonDLLPath;
+//		strstr << "\");";
+//		PyRun_SimpleString(strstr.str().c_str());
+//#endif
 
-		// add path to site-packages
-		std::string pythonSitePackagePath = pythonLibPath + "/site-packages";
-		strstr.str(std::string());
-		strstr.clear();
-		strstr << "sys.path.append(\"";
-		strstr << pythonSitePackagePath;
-		strstr << "\");";
-		PyRun_SimpleString(strstr.str().c_str());
+		auto smartBodyModule = boost::python::import("SmartBody");
 
-		// add path to DLLs
-		std::string pythonDLLPath = pythonLibPath + "/../DLLs";
-		strstr.str(std::string());
-		strstr.clear();
-		strstr << "sys.path.append(\"";
-		strstr << pythonDLLPath;
-		strstr << "\");";
-		PyRun_SimpleString(strstr.str().c_str());
-#endif
 
-		//SmartBody::util::log("Before initSmartBody");
-		SmartBody::initSmartBody();
-		//SmartBody::util::log("After initSmartBody");
-		
-		
 
 		if (PyErr_Occurred())
 			PyErr_Print();
@@ -1131,7 +1142,8 @@ void initPython(std::string pythonLibPath)
 		setupPython();
 		//SmartBody::util::log("After setupPython");
 	} catch (...) {
-		PyErr_Print();
+		if (PyErr_Occurred())
+			PyErr_Print();
 		//SmartBody::util::log("PyError Exception");
 	}
 #endif
@@ -1162,6 +1174,7 @@ void setupPython()
 			SmartBody::util::log("Open File Fail!!!\n");
 		}	
 #else
+		PyRun_SimpleString("import sys");
 		PyRun_SimpleString("class WritableObject:\n\tdef __init__(self):\n\t\tself.content = []\n\tdef write(self, string):\n\t\tprintlog(string)\n");
 		PyRun_SimpleString("logwriter = WritableObject()");
 		PyRun_SimpleString("sys.stdout = logwriter");

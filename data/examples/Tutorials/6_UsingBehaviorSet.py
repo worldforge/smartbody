@@ -1,8 +1,8 @@
-print "|--------------------------------------------|"
-print "|         Starting Tutorial 6	            |"
-print "|--------------------------------------------|"
+print("|--------------------------------------------|")
+print("|         Starting Tutorial 6	            |")
+print("|--------------------------------------------|")
 
-print 'media path = ' + scene.getMediaPath()
+print('media path = ' + scene.getMediaPath())
 # Add asset paths
 assetManager = scene.getAssetManager()
 assetManager.addAssetPath('motion', 'ChrBrad')
@@ -35,13 +35,13 @@ brad.setStringAttribute('deformableMesh', 'ChrBrad.dae')
 brad.setStringAttribute('displayType', 'GPUmesh')
 
 # setup behavior sets
-scene.addAssetPath("script", "behaviorsets") # add search path for behavior set
+scene.addAssetPath("script", "behaviorsets")  # add search path for behavior set
 # locomotion
-scene.run('BehaviorSetMaleMocapLocomotion.py') 
+scene.run('BehaviorSetMaleMocapLocomotion.py')
 setupBehaviorSet()
 retargetBehaviorSet('ChrBrad')
 # jump
-scene.run('BehaviorSetJumping.py') 
+scene.run('BehaviorSetJumping.py')
 setupBehaviorSet()
 retargetBehaviorSet('ChrBrad')
 

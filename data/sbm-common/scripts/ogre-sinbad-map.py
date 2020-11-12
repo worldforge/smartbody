@@ -65,4 +65,3 @@ sinbadMap.setMapping("Eye.R", "eyeball_right")
 sinbadMap.setMapping("Chest", "spine3")
 sinbadMap.setMapping("Stomach", "spine2")
 sinbadMap.setMapping("Waist", "spine1")
-

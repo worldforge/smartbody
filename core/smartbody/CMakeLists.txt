@@ -7,7 +7,7 @@ set (PYTHON_INCLUDE
 )
 else()
 set (PYTHON_INCLUDE
-	/usr/include/python2.7
+	/usr/include/python3.8
         )
 endif()
 

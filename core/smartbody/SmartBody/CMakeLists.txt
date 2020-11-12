@@ -38,7 +38,7 @@ find_library (GLEW GLEW)
 else()
 find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
 find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTPYTHONLIB boost_python PATHS ${CMAKE_SOURCE_DIR}/lib )
+find_library (BOOSTPYTHONLIB boost_python3 )
 find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
 find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
 find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
@@ -149,7 +149,7 @@ set( PYTHON_LIB
 else()
 set( PYTHON_LIB
 	${BOOSTPYTHONLIB}
-	python2.7
+	python3.8
 )
 endif()
 
@@ -172,17 +172,29 @@ set ( PROTOC ${CMAKE_SOURCE_DIR}/bin/protoc)
 else()
 set ( PROTOC ${CMAKE_SOURCE_DIR}/bin/protoc)
 endif()
-add_custom_target(protoctarget
-		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto 
-		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto 
-		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto 
-		)
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.pb.cc
+        COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
+        COMMAND ${PROTOC} --proto_path=. --cpp_out=. sbmotion.proto
+        COMMAND ${PROTOC} --proto_path=. --cpp_out=. sbutilities.proto
+        COMMAND ${PROTOC} --proto_path=. --cpp_out=. sbmesh.proto
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto
+        )
+
+#add_custom_target(protoctarget
+#        COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
+#		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto
+#		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto
+#		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto
+#		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto
+#        )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 set (SBDLL )
 set (GCCLIBS )
 else()
-set (SBDLL smartbody-dll.c )
+set (SBDLL ./src/sb/smartbody-c-dll.cpp )
 set (GCCLIBS gcc gcc_s)
 
 endif()
@@ -650,9 +662,9 @@ set( SMARTBODY_LIB_SBM_SRC
 		
 	${SBDLL}
 		
-	./src/protocols/sbmotion.pb.cpp
-	./src/protocols/sbutilities.pb.cpp
-	./src/protocols/sbmesh.pb.cpp
+	./src/protocols/sbmotion.pb.cc
+	./src/protocols/sbutilities.pb.cc
+	./src/protocols/sbmesh.pb.cc
 		
 )
 
@@ -719,7 +731,6 @@ target_link_libraries( SmartBody
 	${GCCLIBS}
 )
 
-add_dependencies(SmartBody protoctarget)
 
 set( EXEC_LIST
 

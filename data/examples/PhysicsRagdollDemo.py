@@ -1,7 +1,8 @@
 import random
-print "|--------------------------------------------|"
-print "|      Starting Physics Ragdoll Demo         |"
-print "|--------------------------------------------|"
+
+print("|--------------------------------------------|")
+print("|      Starting Physics Ragdoll Demo         |")
+print("|--------------------------------------------|")
 
 # Add asset paths
 scene.addAssetPath('script', 'sbm-common/scripts')
@@ -14,7 +15,7 @@ scene.loadAssets()
 scene.run('init-param-animation.py')
 
 # Set scene parameters and camera
-print 'Configuring scene parameters and camera'
+print('Configuring scene parameters and camera')
 scene.setBoolAttribute('internalAudio', True)
 
 scene.setScale(0.01)
@@ -29,7 +30,7 @@ camera.setNearPlane(5.0)
 camera.setAspectRatio(1.02)
 
 # Setting up characters
-print 'Setting up characters'
+print('Setting up characters')
 brad1 = scene.createCharacter('brad1', '')
 brad1Skeleton = scene.createSkeleton('common.sk')
 brad1.setSkeleton(brad1Skeleton)
@@ -48,10 +49,10 @@ bml.execBML('brad2', '<body posture="HandsAtSide_Motex"/>')
 
 bradList = []
 for name in scene.getCharacterNames():
-	bradList.append(scene.getCharacter(name))
-	
+    bradList.append(scene.getCharacter(name))
+
 # Adding pawns in scene
-print 'Adding pawns in the scene'
+print('Adding pawns in the scene')
 # Constraint
 constraint = scene.createPawn('constraint')
 constraint.setStringAttribute('collisionShape', 'sphere')
@@ -82,10 +83,10 @@ wall4.setPosition(SrVec(90, 100, 150))
 
 # Turn on GPU deformable geometry for all
 for name in scene.getCharacterNames():
-	scene.getCharacter(name).setStringAttribute("displayType", "GPUmesh")
+    scene.getCharacter(name).setStringAttribute("displayType", "GPUmesh")
 
 # Configuring character physics
-print 'Configuring character physics'
+print('Configuring character physics')
 phyManager = scene.getPhysicsManager()
 phyManager.getPhysicsEngine().setBoolAttribute('enable', True)
 # Brad1 and Brad2
@@ -94,16 +95,18 @@ brad2.getAttribute('createPhysics').setValue()
 phyManager.getPhysicsCharacter('brad1').setBoolAttribute('usePD', True)
 phyManager.getPhysicsCharacter('brad2').setBoolAttribute('usePD', True)
 
+
 def constrainChr(chr, joint, object=''):
-	''' Name of character, jointname of character, object name to act as constraint '''
-	bodyLink = phyManager.getJointObj(chr, joint)
-	bodyLink.setBoolAttribute('constraint', True)
-	bodyLink.setStringAttribute('constraintTarget', object)
-	
+    ''' Name of character, jointname of character, object name to act as constraint '''
+    bodyLink = phyManager.getJointObj(chr, joint)
+    bodyLink.setBoolAttribute('constraint', True)
+    bodyLink.setStringAttribute('constraintTarget', object)
+
+
 constrainChr('brad1', 'l_wrist', 'constraint')
 
 # Set up pawn physics
-print 'Setting up pawn physics'
+print('Setting up pawn physics')
 ball.getAttribute('createPhysics').setValue()
 wall1.getAttribute('createPhysics').setValue()
 wall2.getAttribute('createPhysics').setValue()
@@ -128,49 +131,52 @@ last = 0
 canTime = True
 delay = 5
 started = False
+
+
 class PhysicsRagdollDemo(SBScript):
-	def update(self, time):
-		global canTime, last, started, amountZ, curZ, amountX, curX
-		global forceX, forceZ, bradRagdoll
-		if canTime:
-			last = time
-			canTime = False
-		diff = time - last
-		if diff >= delay:
-			diff = 0
-			canTime = True
-		# Trigger once
-		if canTime and not started:
-			started = True
-			ball.setBoolAttribute('enablePhysics', True)
-			phyManager.getPhysicsCharacter('brad1').setBoolAttribute('enable', True)
-			bml.execBML('brad1', '<body posture="Walk"/>')
-		# If time's up, do action
-		if canTime:
-			forceX = random.uniform(-200, 200)
-			forceZ = random.uniform(-200, 200)
-			phyManager.applyForceToPawn('ball', SrVec(forceX, 0, forceZ))
-			randX = random.uniform(-50000, 50000)
-			randY = random.uniform(-50000, 50000)
-			randZ = random.uniform(-50000, 50000)
-			phyManager.applyForceToCharacter('brad1', 'spine1', SrVec(randX, randY, randZ))
-			if not bradRagdoll:
-				bradRagdoll = True
-				# Brad 2
-				phyManager.getPhysicsCharacter(brad2.getName()).setBoolAttribute('enable', True)
-			elif bradRagdoll:
-				bradRagdoll = False
-				phyManager.getPhysicsCharacter(brad2.getName()).setBoolAttribute('enable', False)
-				# Randomize position and rotation
-				randX = random.uniform(-150, 150)
-				randY = random.uniform(200, 250)
-				randZ = random.uniform(0, 150)
-				randH = random.uniform(-180, 180)
-				randP = random.uniform(-180, 180)
-				randR = random.uniform(-180, 180)
-				scene.getCharacter(brad2.getName()).setPosition(SrVec(randX, randY, randZ))
-				scene.getCharacter(brad2.getName()).setHPR(SrVec(randH, randP, randR))
-			
+    def update(self, time):
+        global canTime, last, started, amountZ, curZ, amountX, curX
+        global forceX, forceZ, bradRagdoll
+        if canTime:
+            last = time
+            canTime = False
+        diff = time - last
+        if diff >= delay:
+            diff = 0
+            canTime = True
+        # Trigger once
+        if canTime and not started:
+            started = True
+            ball.setBoolAttribute('enablePhysics', True)
+            phyManager.getPhysicsCharacter('brad1').setBoolAttribute('enable', True)
+            bml.execBML('brad1', '<body posture="Walk"/>')
+        # If time's up, do action
+        if canTime:
+            forceX = random.uniform(-200, 200)
+            forceZ = random.uniform(-200, 200)
+            phyManager.applyForceToPawn('ball', SrVec(forceX, 0, forceZ))
+            randX = random.uniform(-50000, 50000)
+            randY = random.uniform(-50000, 50000)
+            randZ = random.uniform(-50000, 50000)
+            phyManager.applyForceToCharacter('brad1', 'spine1', SrVec(randX, randY, randZ))
+            if not bradRagdoll:
+                bradRagdoll = True
+                # Brad 2
+                phyManager.getPhysicsCharacter(brad2.getName()).setBoolAttribute('enable', True)
+            elif bradRagdoll:
+                bradRagdoll = False
+                phyManager.getPhysicsCharacter(brad2.getName()).setBoolAttribute('enable', False)
+                # Randomize position and rotation
+                randX = random.uniform(-150, 150)
+                randY = random.uniform(200, 250)
+                randZ = random.uniform(0, 150)
+                randH = random.uniform(-180, 180)
+                randP = random.uniform(-180, 180)
+                randR = random.uniform(-180, 180)
+                scene.getCharacter(brad2.getName()).setPosition(SrVec(randX, randY, randZ))
+                scene.getCharacter(brad2.getName()).setHPR(SrVec(randH, randP, randR))
+
+
 # Run the update script
 scene.removeScript('physicsragdolldemo')
 physicsragdolldemo = PhysicsRagdollDemo()

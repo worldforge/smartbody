@@ -1,6 +1,6 @@
-print "|-------------------------------------------------|"
-print "|  Mixamo character setup                         |"
-print "|-------------------------------------------------|"
+print("|-------------------------------------------------|")
+print("|  Mixamo character setup                         |")
+print("|-------------------------------------------------|")
 
 skelName = 'mixamo.dae'
 characterName = 'mycharacter'
@@ -28,8 +28,8 @@ mixamoMap = jointMapManager.createJointMap("mixamoMap")
 mixamoMap.guessMapping(skeletonInstance, True)
 
 # 2) load an explicit mapping for mixamo
-#scene.run("mixamo-map.py")
-#mixamoMap = jointMapManager.getJointMap('mixamo')	
+# scene.run("mixamo-map.py")
+# mixamoMap = jointMapManager.getJointMap('mixamo')
 
 # now apply that mapping to the skeleton, so that all 
 # future uses of that skeleton will be properly mapped
@@ -37,10 +37,10 @@ mixamoMap.applySkeleton(skeletonInstance)
 
 # create the character
 sbChar = scene.createCharacter(characterName, "")
-sbSkeleton = scene.createSkeleton(skelName)		
+sbSkeleton = scene.createSkeleton(skelName)
 sbChar.setSkeleton(sbSkeleton)
 sbPos = SrVec(0, 0, 0)
-sbChar.setPosition(sbPos)	
+sbChar.setPosition(sbPos)
 sbChar.createStandardControllers()
 sbChar.setStringAttribute("deformableMesh", meshName)
 sbChar.setStringAttribute("displayType", "GPUMesh")
@@ -65,17 +65,7 @@ sim.start()
 bml.execBML(characterName, '<body posture="ChrMarine@Idle01"/>')
 
 # some commands to try:
-#bml.execBML(characterName, '<locomotion target="100 200"/>')
-#bml.execBML(characterName, '<gesture name="ChrBrad@Idle01_Contemplate01"/>')
+# bml.execBML(characterName, '<locomotion target="100 200"/>')
+# bml.execBML(characterName, '<gesture name="ChrBrad@Idle01_Contemplate01"/>')
 
 sim.resume()
-
-
-	
-
-	
-
-
-
-
-

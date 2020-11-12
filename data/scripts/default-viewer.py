@@ -1,16 +1,16 @@
 viewer = getViewer()
 viewer.show()
 
-sscale = 1.0/scene.getScale()
+sscale = 1.0 / scene.getScale()
 
 camera = getCamera()
-camera.setEye(0*sscale, 1.66*sscale, 1.85*sscale)
-camera.setCenter(0, .92*sscale, 0)
-camera.setFarPlane(100*sscale)
-camera.setNearPlane(0.1*sscale)
+camera.setEye(0 * sscale, 1.66 * sscale, 1.85 * sscale)
+camera.setCenter(0, .92 * sscale, 0)
+camera.setFarPlane(100 * sscale)
+camera.setNearPlane(0.1 * sscale)
 
 cameraPawn = scene.createPawn("camera")
-cameraPos = SrVec(0, 1.66*sscale, 1.85*sscale)
+cameraPos = SrVec(0, 1.66 * sscale, 1.85 * sscale)
 cameraPawn.setPosition(cameraPos)
 '''
 light0 = scene.createPawn("light0")
@@ -48,4 +48,3 @@ light1.createDoubleAttribute("lightConstantAttenuation", 1.0, True, "LightAttrib
 light1.createDoubleAttribute("lightLinearAttenuation", 0.0, True, "LightAttributes", 80, False, False, False, "Linear attenuation")
 light1.createDoubleAttribute("lightQuadraticAttenuation", 0.0, True, "LightAttributes", 90, False, False, False, "Quadratic attenuation")
 '''
-

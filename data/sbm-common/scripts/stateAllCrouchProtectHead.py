@@ -1,4 +1,4 @@
-print "** State: allCrouchProtectHead"
+print("** State: allCrouchProtectHead")
 
 mirrorMotion = scene.getMotion("ChrUtah_Relax001_CrouchProtectHead_right")
 mirrorMotion.mirror("ChrUtah_Relax001_CrouchProtectHead_left", "test_utah.sk")
@@ -16,7 +16,7 @@ params.append(-90)
 params.append(90)
 
 for i in range(0, len(motions)):
-	state1.addMotion(motions[i], params[i])
+    state1.addMotion(motions[i], params[i])
 
 points1 = DoubleVec()
 points1.append(0)
@@ -35,5 +35,3 @@ points3.append(2.46667)
 points3.append(2.8)
 points3.append(2.79517)
 state1.addCorrespondancePoints(motions, points3)
-
-

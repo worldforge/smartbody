@@ -717,7 +717,7 @@ int main( int argc, char **argv )	{
 	Fl::scheme("gtk+");
 #endif
 	
-	std::string python_lib_path = "../../../../core/smartbody/Python27/Lib";
+	std::string python_lib_path = "/usr/lib64/python3.8/";
 	std::string festivalLibDir = "../../../../lib/festival/festival/lib/";
 	std::string festivalCacheDir = "../../../../data/cache/festival/";
 	std::string mediaPath = "../../../../data";
@@ -1343,7 +1343,7 @@ int main( int argc, char **argv )	{
 	// run the specified scripts
 	if( init_seqs.empty() && init_pys.empty())
 	{
-		SmartBody::util::log( "No Python scripts specified. Loading default configuration.'\n" );
+		SmartBody::util::log( "No Python scripts specified. Loading default configuration.\n" );
 		SmartBody::SBScene::getScene()->run("getViewer().show()\ngetCamera().reset()");
 	}
 
@@ -1397,6 +1397,8 @@ int main( int argc, char **argv )	{
 
 	std::string pythonPrompt = "# ";
 	std::string commandPrompt = "> ";
+
+	//SmartBody::SBScene::getScene()->getCommandManager()->execute("viewer open");
 
 	SrTimer timer;
 	timer.start();

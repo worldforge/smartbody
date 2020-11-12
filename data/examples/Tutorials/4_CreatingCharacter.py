@@ -1,8 +1,8 @@
-print "|--------------------------------------------|"
-print "|         Starting Tutorial 4	            |"
-print "|--------------------------------------------|"
+print("|--------------------------------------------|")
+print("|         Starting Tutorial 4	            |")
+print("|--------------------------------------------|")
 
-print 'media path = ' + scene.getMediaPath()
+print('media path = ' + scene.getMediaPath())
 # Add asset paths
 assetManager = scene.getAssetManager()
 assetManager.addAssetPath('motion', 'ChrBrad')

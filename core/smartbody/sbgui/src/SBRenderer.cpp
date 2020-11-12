@@ -41,7 +41,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/GPU/VBOData.h>
 
 #include <algorithm>
-
+#include <boost/lexical_cast.hpp>
 
 
 SBRenderer* SBRenderer::_singleton = NULL;

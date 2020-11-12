@@ -1,4 +1,4 @@
-print "=== Starting: data/sbm-common/scripts/common-init-face.py"
+print("=== Starting: data/sbm-common/scripts/common-init-face.py")
 
 # 
 defaultFace = scene.createFaceDefinition("_default_")
@@ -50,9 +50,9 @@ defaultFace.setViseme("PBM", "viseme_bmp")
 defaultFace.setViseme("ShCh", "viseme_er")
 defaultFace.setViseme("W", "viseme_oo")
 defaultFace.setViseme("Wide", "viseme_ee")
-#defaultFace.setViseme("tBack", "")
-#defaultFace.setViseme("tRoof", "")
-#defaultFace.setViseme("tTeeth", "")
+# defaultFace.setViseme("tBack", "")
+# defaultFace.setViseme("tRoof", "")
+# defaultFace.setViseme("tTeeth", "")
 
 
-print "Complete: data/sbm-common/scripts/common-init-face.py"
+print("Complete: data/sbm-common/scripts/common-init-face.py")

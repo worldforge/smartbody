@@ -1,8 +1,7 @@
 add_subdirectory ( external/Pinocchio)
 add_subdirectory ( external/polyvox)
 
-#add_definitions(  -std=c++11 )
-add_definitions(  -std=c++0x )
+set(CMAKE_CXX_STANDARD 11)
 
 include_directories( ./src )
 include_directories( ../SmartBody/src )
@@ -96,7 +95,7 @@ set( PYTHON_LIB
 else()
 set( PYTHON_LIB
 	${BOOSTPYTHONLIB}
-        python2.7
+        python3.8
 )
 endif()
 

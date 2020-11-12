@@ -1404,23 +1404,15 @@ bool SBScene::run(const std::string& command)
 {
 #ifndef SB_NO_PYTHON
 	try {
-		//SmartBody::util::log("executePython = %s",command);
+		//SmartBody::util::log("executePython = %s",command.c_str());
+		boost::python::exec(command.c_str(), _mainDict, _mainDict);
 
-		int ret = PyRun_SimpleString(command.c_str());
-		//SmartBody::util::log("cmd result = %d",result);
-		if (ret == -1)
-		{
-			SBEvent* event = this->getEventManager()->createEvent("error", command, this->getStringFromObject(this));
-			this->getEventManager()->handleEvent(event);
-			delete event;
-			PyErr_Print();
-			PyErr_Clear();
-		}
 
 		return true;
 	} catch (...) {
-		PyErr_Print();
-		PyErr_Clear();
+		if (PyErr_Occurred()) {
+			PyErr_Print();
+		}
 		SBEvent* event = this->getEventManager()->createEvent("error", command, this->getStringFromObject(this));
 		this->getEventManager()->handleEvent(event);
 		delete event;
@@ -1452,7 +1444,7 @@ bool SBScene::runScript(const std::string& script)
 
 	std::string curFilename = SmartBody::SBScene::getScene()->getAssetManager()->findFileName("script", candidateSeqName);
 	SmartBody::util::log("script name = '%s', curFilename = '%s'", script.c_str(), curFilename.c_str());
-	if (curFilename != "")
+	if (!curFilename.empty())
 	{
 		try {
 			// save the last directory so that a script path can be used as a relative pathing for asset loading or other use
@@ -1460,24 +1452,12 @@ bool SBScene::runScript(const std::string& script)
 			boost::filesystem::path scriptDir = scriptPath.parent_path();
 			this->setLastScriptDirectory(scriptDir.string());
 
-			std::stringstream strstr;
-			strstr << "execfile(\"" << curFilename << "\")";
-			int ret = PyRun_SimpleString(strstr.str().c_str());
-			if (ret == -1)
-			{
-				SBEvent* event = this->getEventManager()->createEvent("error", script, this->getStringFromObject(this));
-				this->getEventManager()->handleEvent(event);
-				delete event;
-				
-				PyErr_Print();
-				PyErr_Clear();
-			}
-			PyErr_Print();
-			PyErr_Clear();
+			boost::python::exec_file(curFilename.c_str(), _mainDict, _mainDict);
 			return true;
 		} catch (...) {
-			PyErr_Print();			
-			PyErr_Clear();
+			if (PyErr_Occurred()) {
+				PyErr_Print();
+			}
 			SBEvent* event = this->getEventManager()->createEvent("error", script, this->getStringFromObject(this));
 			this->getEventManager()->handleEvent(event);
 			delete event;

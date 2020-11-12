@@ -1005,6 +1005,7 @@ void VisemeViewerWindow::OnLoadCB(Fl_Widget* widget, void* data)
 	if (fileName == "")
 		return;
 
+//FIXME: Either always require Python, or honour SB_NO_PYTHON
 	try {
 		std::stringstream strstr;
 		strstr << "execfile(\"" << fileName << "\")";

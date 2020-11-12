@@ -72,8 +72,3 @@ mixamoMap.setMapping("RightFoot", "r_ankle")
 mixamoMap.setMapping("RightToeBase", "r_forefoot")
 mixamoMap.setMapping("RightFootToeBase_End", "r_toe")
 mixamoMap.setMapping("RightToe_End", "r_toe")
-
-
-
-
-

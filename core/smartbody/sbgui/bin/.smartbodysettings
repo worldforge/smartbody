@@ -1,5 +1,5 @@
 mediapath=../../../../data
-pythonlibpath=../../../../core/smartbody/Python27/Lib
+pythonlibpath=/usr/lib64/python3.8/
 ogrepath=../../../../lib/OgreSDK
 speechrelaycommand=start ..\..\..\..\bin\TtsRelay\bin\x86\Release\TtsRelayGui.exe
 renderer=custom

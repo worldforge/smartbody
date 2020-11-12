@@ -61,6 +61,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBUtilities.h>
 #include <sbm/PPRAISteeringAgent.h>
 #include <sbm/ParserOpenCOLLADA.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 using namespace BML;
