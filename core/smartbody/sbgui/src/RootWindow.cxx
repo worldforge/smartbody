@@ -2032,10 +2032,10 @@ void BaseWindow::CreateCharacterCB(Fl_Widget* w, void* data)
 
 void BaseWindow::CreatePawnCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
+//#if !NO_OGRE_VIEWER_CMD
 	BaseWindow* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->create_pawn();
-#endif
+//#endif
 }
 
 void BaseWindow::CreatePawnFromModelCB(Fl_Widget* w, void* data)

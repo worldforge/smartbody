@@ -113,6 +113,7 @@ set (OGRE_LIBS
 )
 set (OGRE_SRCS
 )
+add_definitions(-DNO_OGRE_VIEWER_CMD)
 endif()
 
 
