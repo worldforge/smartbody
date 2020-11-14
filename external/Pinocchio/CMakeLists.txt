@@ -1,0 +1,15 @@
+add_library(pinocchio
+        attachment.cpp
+        discretization.cpp
+        embedding.cpp
+        graphutils.cpp
+        indexer.cpp
+        intersector.cpp
+        lsqSolver.cpp
+        matrix.cpp
+        mesh.cpp
+        Pinocchio.cpp
+        pinocchioApi.cpp
+        refinement.cpp
+        skeleton.cpp
+        PinnocchioCallback.cpp)

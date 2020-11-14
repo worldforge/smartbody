@@ -1,5 +1,5 @@
 #if !defined(__FLASHPLAYER__)
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #endif
 
 #ifdef WIN32

@@ -8,7 +8,7 @@
 #ifndef SB_NO_VHMSG
 #include "vhmsg-tt.h"
 #endif
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 
 #include <signal.h>
 #include <iostream>

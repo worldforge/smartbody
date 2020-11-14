@@ -13,8 +13,4 @@ endif()
 
 #add_subdirectory( kinecttracker )
 
-if(${SB_NO_ASSIMP})
-else()
-add_subdirectory( assimp-3.1.1)
-endif()
 

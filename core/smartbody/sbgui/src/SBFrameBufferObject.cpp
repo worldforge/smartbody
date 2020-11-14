@@ -1,6 +1,6 @@
 
 #if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(EMSCRIPTEN)
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #endif
 
 #include "SBFrameBufferObject.h"

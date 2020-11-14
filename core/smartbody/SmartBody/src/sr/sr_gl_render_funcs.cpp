@@ -30,7 +30,7 @@
 #elif defined(SB_IPHONE)
 #include <OpenGLES/ES1/gl.h>
 #elif !defined(__FLASHPLAYER__) && !defined(ANDROID_BUILD) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #endif
 
 

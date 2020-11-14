@@ -21,9 +21,8 @@ set (ASSIMP_INCLUDE
 endif()
 
 include_directories(
-	steersuite-1.3/steerlib/include
-	steersuite-1.3/pprAI/include
-	steersuite-1.3/external
+        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/steerlib/include
+        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/pprAI/include
 	${PYTHON_INCLUDE}
 	${ASSIMP_INCLUDE}
 )
@@ -33,7 +32,7 @@ LINK_DIRECTORIES(
 
 
 add_subdirectory( SmartBody )
-add_subdirectory( steersuite-1.3 )
+#add_subdirectory( steersuite-1.3 )
 
 add_subdirectory( simplesmartbody)
 add_subdirectory( sbgui )

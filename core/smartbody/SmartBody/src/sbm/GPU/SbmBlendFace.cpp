@@ -21,7 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBTypes.h>
 
 #if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #include "external/jpge/jpge.h"
 #endif
 

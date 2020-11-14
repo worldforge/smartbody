@@ -1,6 +1,6 @@
 
 #include "VoxelizerWindow.h"
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #include <sr/sr_gl.h>
 #include <sb/SBUtilities.h>
 //#include <imdebug/imdebug.h>

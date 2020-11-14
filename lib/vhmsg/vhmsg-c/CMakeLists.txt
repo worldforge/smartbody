@@ -45,29 +45,29 @@ if(APPLE OR UNIX)
 
     FIND_LIBRARY(ACTIVEMQ_LIBRARY activemq-cpp HINTS ${CMAKE_SOURCE_DIR}/lib )
 
-	add_library( vhmsgShared
-		SHARED 
-		${SRC}
-	)
-	set_target_properties(vhmsgShared PROPERTIES OUTPUT_NAME vhmsg)
+#	add_library( vhmsgShared
+#		SHARED
+#		${SRC}
+#	)
+#	set_target_properties(vhmsgShared PROPERTIES OUTPUT_NAME vhmsg)
 
-	target_link_libraries(vhmsg
-		${VHCL_LIBRARY}
-		${ACTIVEMQ_LIBRARY}
-	)
+#	target_link_libraries(vhmsg
+#		${VHCL_LIBRARY}
+#		${ACTIVEMQ_LIBRARY}
+#	)
+#
+#	target_link_libraries(vhmsgShared
+#		${VHCL_LIBRARY}
+#		${ACTIVEMQ_LIBRARY}
+#	)
 
-	target_link_libraries(vhmsgShared 
-		${VHCL_LIBRARY}
-		${ACTIVEMQ_LIBRARY}
-	)
-
-	install (TARGETS vhmsg vhmsgShared
-		ARCHIVE DESTINATION lib
-		LIBRARY DESTINATION lib
-		INCLUDES DESTINATION include
-	)
-
-	install (DIRECTORY include/ 
-		DESTINATION include
-	)
+#	install (TARGETS vhmsg vhmsgShared
+#		ARCHIVE DESTINATION lib
+#		LIBRARY DESTINATION lib
+#		INCLUDES DESTINATION include
+#	)
+#
+#	install (DIRECTORY include/
+#		DESTINATION include
+#	)
 endif()

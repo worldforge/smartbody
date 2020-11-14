@@ -2,7 +2,7 @@
 # define TRANSPARENT_VIEWER_H
 
 //#define _WIN32_WINNT 0x0500
-#include <external/glew/glew.h>
+#include <GL/glew.h>
 #include <windows.h>
 # include <sr/sr_viewer.h>
 # include <sr/sr_light.h>

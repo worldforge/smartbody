@@ -1,6 +1,6 @@
 
 #include "ImageSequencePlayer.h"
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #include <sr/sr_gl.h>
 #include <sbm/GPU/SbmTexture.h>
 #include <sb/SBScene.h>

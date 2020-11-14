@@ -8,7 +8,7 @@
 #ifdef UINTMAX_C
 #undef UINTMAX_C
 #endif
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 
 #include "EmbeddedOgre.h"
 #include "FLTKOgreViewer.h"

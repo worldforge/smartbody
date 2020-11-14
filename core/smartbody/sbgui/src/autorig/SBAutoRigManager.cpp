@@ -9,8 +9,8 @@
 
 #include "SBAutoRigManager.h"
 #if defined USE_AUTO_RIGGING && USE_AUTO_RIGGING > 0
-#include "pinocchioApi.h"
-#include "lsqSolver.h"
+#include "Pinocchio/pinocchioApi.h"
+#include "Pinocchio/lsqSolver.h"
 #include "VoxelizerWindow.h"
 #endif
 

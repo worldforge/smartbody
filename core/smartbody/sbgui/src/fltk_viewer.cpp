@@ -21,10 +21,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "FL/Fl_Slider.H" 
 
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "external/stb/stb_image_write.h"
+
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 //#include "external/SOIL/SOIL.h"
 //#include <FL/enumerations.H>

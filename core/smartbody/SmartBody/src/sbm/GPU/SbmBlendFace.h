@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "external/glm/glm/gtc/matrix_transform.hpp"
 
 #if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #include "TBOData.h"
 #include <sbm/sbm_deformable_mesh.h>
 #include "SbmShader.h"

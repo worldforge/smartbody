@@ -4,7 +4,7 @@
 #define SBM_REPORT_MEMORY_LEAKS  0
 #define SBM_EMAIL_CRASH_REPORTS  0
 
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 
 #ifndef SB_NO_VHMSG
 #include "vhmsg-tt.h"

@@ -1,13 +1,14 @@
-include_directories( ./src)
+include_directories(src
+        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/steerlib/include
+        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/pprAI/include)
 
-add_definitions( "-DdDOUBLE" )
+add_definitions("-DdDOUBLE")
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-add_definitions( "-Dfopen64=fopen" )
-add_definitions( "-Dfseeko64=fseeko" )
-add_definitions( "-Dftello64=ftello" )
-endif()
-
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    add_definitions("-Dfopen64=fopen")
+    add_definitions("-Dfseeko64=fseeko")
+    add_definitions("-Dftello64=ftello")
+endif ()
 
 
 set(SB_EXPORTS 1)
@@ -16,201 +17,168 @@ set(SMARTBODY_C_DLL_EXPORTS 1)
 set(_COMPILING_STEERLIB 1)
 
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
-find_library (ACTIVEMQLIB activemq-cpp )
-find_library (XERCESLIB xerces-c )
-find_library (BOOSTPYTHONLIB boost_python27 )
-find_library (BOOSTFILESYSTEMLIB boost_filesystem  )
-find_library (BOOSTSYSTEMLIB boost_system  )
-find_library (BOOSTREGEXLIB boost_regex )
-find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (PROTOCLIB protoc PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (PROTOBUFLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (COREAUDIO_LIBRARY CoreAudio)
-find_library (AUDIOUNIT_LIBRARY AudioUnit)
-find_library (CORESERVICES_LIBRARY CoreServices)
-find_library (LIBSNDFILE sndfile )
-find_library (ALUT alut )
-find_library (OPENAL openal)
-find_library (GLEW GLEW)
-else()
-find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTPYTHONLIB boost_python3 )
-find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (PROTOCLIB protoc PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (PROTOCLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
-#find_library (PROTOBUFLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (LIBSNDFILE sndfile )
-find_library (ALUT alut )
-find_library (OPENAL openal)
-endif()
+    #find_library (ACTIVEMQLIB activemq-cpp )
+    #find_library (XERCESLIB xerces-c )
+    #find_library (BOOSTPYTHONLIB boost_python27 )
+    #find_library (BOOSTFILESYSTEMLIB boost_filesystem  )
+    #find_library (BOOSTSYSTEMLIB boost_system  )
+    #find_library (BOOSTREGEXLIB boost_regex )
+    #find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (PROTOCLIB protoc PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (PROTOBUFLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
+    find_library(COREAUDIO_LIBRARY CoreAudio)
+    find_library(AUDIOUNIT_LIBRARY AudioUnit)
+    find_library(CORESERVICES_LIBRARY CoreServices)
+    #find_library (LIBSNDFILE sndfile )
+    find_library(ALUT alut)
+    #find_library (OPENAL openal)
+    #find_library (GLEW GLEW)
+else ()
+    #find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (BOOSTPYTHONLIB boost_python3 )
+    #find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (PROTOCLIB protoc PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (PROTOCLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
+    ##find_library (PROTOBUFLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
+    #find_library (LIBSNDFILE sndfile )
+    find_library(ALUT alut)
+    #find_library (OPENAL openal)
+endif ()
 
 
 if (${BUILD_FESTIVAL})
-find_library (FESTIVAL Festival ../../../lib/festival/festival/src/lib)
-find_library (ESTBASE estbase ../../../lib/festival/speech_tools/lib)
-find_library (ESTSTRING eststring ../../..//lib/festival/speech_tools/lib)
-find_library (ESTOOLS estools ../../../lib/festival/speech_tools/lib)
-endif()
-
+    find_library(FESTIVAL Festival ../../../lib/festival/festival/src/lib)
+    find_library(ESTBASE estbase ../../../lib/festival/speech_tools/lib)
+    find_library(ESTSTRING eststring ../../..//lib/festival/speech_tools/lib)
+    find_library(ESTOOLS estools ../../../lib/festival/speech_tools/lib)
+endif ()
 
 
 # osx c++ version >= clang 4.2.0
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-		if (NOT (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.2.0))
-			add_definitions(-Wno-dangling-else)
-			add_definitions(-Wno-deprecated-writable-strings)
-			add_definitions(-Wno-format)
-			add_definitions(-Wno-implicit-function-declaration)
-			add_definitions(-Wno-logical-op-parentheses)
-			add_definitions(-Wno-parentheses-equality)
-			add_definitions(-Wno-switch)
-			add_definitions(-Wno-tautological-compare)
-			add_definitions(-Wno-unused-value)
-		endif()
-	endif()
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
-		if (NOT (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.7.3))
-			add_definitions(-Wno-format)
-		endif()
-	endif()
-endif()
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+        if (NOT (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.2.0))
+            add_definitions(-Wno-dangling-else)
+            add_definitions(-Wno-deprecated-writable-strings)
+            add_definitions(-Wno-format)
+            add_definitions(-Wno-implicit-function-declaration)
+            add_definitions(-Wno-logical-op-parentheses)
+            add_definitions(-Wno-parentheses-equality)
+            add_definitions(-Wno-switch)
+            add_definitions(-Wno-tautological-compare)
+            add_definitions(-Wno-unused-value)
+        endif ()
+    endif ()
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
+        if (NOT (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.7.3))
+            add_definitions(-Wno-format)
+        endif ()
+    endif ()
+endif ()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-if (${BUILD_FESTIVAL})
-set( FESTIVAL_LIBS
-	${FESTIVAL}
-	${ESTBASE}
-	${ESTSTRING}
-	${ESTOOLS}
-)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    if (${BUILD_FESTIVAL})
+        set(FESTIVAL_LIBS
+                ${FESTIVAL}
+                ${ESTBASE}
+                ${ESTSTRING}
+                ${ESTOOLS}
+                )
 
 
-else()
-set( FESTIVAL_LIBS
-)
-endif()
-set( MORE_LIBS
-	${COREAUDIO_LIBRARY}
-	${AUDIOUNIT_LIBRARY}
-	${CORESERVICES_LIBRARY}
-	${LIBSNDFILE}
-	${ALUT}
-	${OPENAL}
-	${GLEW}
-	${FESTIVAL_LIBS}
-)
-else()
-if (DEFINED ${FLASCC_ROOT})
-set( MORE_LIBS
-	rt
-	)
+    else ()
+        set(FESTIVAL_LIBS
+                )
+    endif ()
+    set(MORE_LIBS
+            ${COREAUDIO_LIBRARY}
+            ${AUDIOUNIT_LIBRARY}
+            ${CORESERVICES_LIBRARY}
+            )
+else ()
+    if (DEFINED ${FLASCC_ROOT})
+        set(MORE_LIBS
+                rt
+                )
 
-else()
-set( MORE_LIBS
-	${LIBSNDFILE}
-	${ALUT}
-	${OPENAL}
-	rt
-)       
-endif()
-endif()
+    else ()
+        set(MORE_LIBS
+                rt
+                )
+    endif ()
+endif ()
 
 if (${SB_NO_VHMSG})
-set( VHMSG_LIB
-)
-else()
-set( VHMSG_LIB
-	vhmsg
-	${ACTIVEMQLIB}
-)
-endif()
+    set(VHMSG_LIB
+            )
+else ()
+    set(VHMSG_LIB
+            vhmsg
+            ${ACTIVEMQLIB}
+            )
+endif ()
 
 if (${SB_NO_BONEBUS})
-set( BONEBUS_LIB
-)
-else()
-set( BONEBUS_LIB
-	bonebus
-)
-endif()
-
-if (${SB_NO_PYTHON})
-set( PYTHON_LIB
-)
-else()
-set( PYTHON_LIB
-	${BOOSTPYTHONLIB}
-	python3.8
-)
-endif()
+    set(BONEBUS_LIB
+            )
+else ()
+    set(BONEBUS_LIB
+            bonebus
+            )
+endif ()
 
 if (${SB_NO_ODE_PHYSICS})
-set( ODE_LIB
-)
-else()
-set( ODE_LIB
-	${ODELIB}
-)
-endif()
-
-
+    set(ODE_LIB
+            )
+else ()
+    set(ODE_LIB
+            ${ODELIB}
+            )
+endif ()
 
 
 find_package(OpenGL REQUIRED)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-set ( PROTOC ${CMAKE_SOURCE_DIR}/bin/protoc)
-else()
-set ( PROTOC ${CMAKE_SOURCE_DIR}/bin/protoc)
-endif()
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.pb.cc
         COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
-        COMMAND ${PROTOC} --proto_path=. --cpp_out=. sbmotion.proto
-        COMMAND ${PROTOC} --proto_path=. --cpp_out=. sbutilities.proto
-        COMMAND ${PROTOC} --proto_path=. --cpp_out=. sbmesh.proto
+        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbmotion.proto
+        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbutilities.proto
+        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbmesh.proto
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto
-        )
+)
 
-#add_custom_target(protoctarget
-#        COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
-#		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto
-#		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto
-#		COMMAND ${PROTOC} --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols --cpp_out=${CMAKE_CURRENT_SOURCE_DIR}/src/protocols ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto
-#		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto
-#        )
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-set (SBDLL )
-set (GCCLIBS )
-else()
-set (SBDLL ./src/sb/smartbody-c-dll.cpp )
-set (GCCLIBS gcc gcc_s)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(SBDLL)
+    set(GCCLIBS)
+else ()
+    set(SBDLL ./src/sb/smartbody-c-dll.cpp)
+    set(GCCLIBS gcc gcc_s)
 
-endif()
+endif ()
 
-set( SMARTBODY_LIB_EXT_NANOFLANN_SRC
+set(SMARTBODY_LIB_EXT_NANOFLANN_SRC
 
         ./src/external/nanoflann/nanoflann.hpp
 
-)
+        )
 
-set( SMARTBODY_LIB_EXT_RPLY_SRC
+set(SMARTBODY_LIB_EXT_RPLY_SRC
 
         ./src/external/rply/rply.c
 
-)
-set( SMARTBODY_LIB_EXT_PARSER_SRC
+        )
+set(SMARTBODY_LIB_EXT_PARSER_SRC
 
         ./src/external/parser/Bchart.cpp
         ./src/external/parser/BchartSm.cpp
@@ -248,32 +216,9 @@ set( SMARTBODY_LIB_EXT_PARSER_SRC
         ./src/external/parser/UnitRules.cpp
         ./src/external/parser/utils.cpp
         ./src/external/parser/ValHeap.cpp
-)
+        )
 
-set( SMARTBODY_LIB_EXT_ZLIB_SRC
-	
-	./src/external/zlib-1.2.5/adler32.c
-	./src/external/zlib-1.2.5/compress.c
-	./src/external/zlib-1.2.5/crc32.c
-	./src/external/zlib-1.2.5/deflate.c
-	./src/external/zlib-1.2.5/example.c
-	./src/external/zlib-1.2.5/gzclose.c
-	./src/external/zlib-1.2.5/gzlib.c
-	./src/external/zlib-1.2.5/gzread.c
-	./src/external/zlib-1.2.5/gzwrite.c
-	./src/external/zlib-1.2.5/infback.c
-	./src/external/zlib-1.2.5/inffast.c
-	./src/external/zlib-1.2.5/inflate.c
-	./src/external/zlib-1.2.5/inftrees.c
-	./src/external/zlib-1.2.5/ioapi.c
-	./src/external/zlib-1.2.5/trees.c
-	./src/external/zlib-1.2.5/uncompr.c
-	./src/external/zlib-1.2.5/unzip.c
-	./src/external/zlib-1.2.5/zip.c
-	./src/external/zlib-1.2.5/zutil.c
-)
-
-set( SMARTBODY_LIB_EXT_RECAST_SRC
+set(SMARTBODY_LIB_EXT_RECAST_SRC
 
         ./src/external/recast/Recast.cpp
         ./src/external/recast/RecastAlloc.cpp
@@ -291,14 +236,14 @@ set( SMARTBODY_LIB_EXT_RECAST_SRC
         ./src/external/recast/DetourNavMeshBuilder.cpp
         ./src/external/recast/DetourNavMeshQuery.cpp
         ./src/external/recast/DetourNode.cpp
-)
+        )
 
-set( SMARTBODY_LIB_EXT_PERLIN_SRC
+set(SMARTBODY_LIB_EXT_PERLIN_SRC
 
         ./src/external/perlin/perlin.cpp
-)
+        )
 
-set( SMARTBODY_LIB_ME_SRC
+set(SMARTBODY_LIB_ME_SRC
 
         ./src/controllers/me_controller_context.cpp
         ./src/controllers/me_controller_context_proxy.cpp
@@ -319,9 +264,9 @@ set( SMARTBODY_LIB_ME_SRC
         ./src/controllers/me_spline_1d.cpp
         ./src/controllers/me_ct_pose_postprocessing.cpp
         ./src/controllers/me_ct_generic_hand.cpp
-)
+        )
 
-set( SMARTBODY_LIB_SK_SRC
+set(SMARTBODY_LIB_SK_SRC
 
         ./src/sk/sk_channel_array.cpp
         ./src/sk/sk_channel.cpp
@@ -337,9 +282,9 @@ set( SMARTBODY_LIB_SK_SRC
         ./src/sk/sk_skeleton.cpp
         ./src/sk/sk_skeleton_io.cpp
         ./src/sk/sk_vec_limits.cpp
-)
+        )
 
-set( SMARTBODY_LIB_SR_SRC
+set(SMARTBODY_LIB_SR_SRC
 
         ./src/sr/sr_alg.cpp
         ./src/sr/sr_array.cpp
@@ -380,7 +325,7 @@ set( SMARTBODY_LIB_SR_SRC
         ./src/sr/sr_sa_render_mode.cpp
         ./src/sr/sr_shared_ptr.cpp
         ./src/sr/sr_sn.cpp
-		./src/sr/sr_sn_editor.cpp
+        ./src/sr/sr_sn_editor.cpp
         ./src/sr/sr_sn_group.cpp
         ./src/sr/sr_sn_matrix.cpp
         ./src/sr/sr_sn_shape.cpp
@@ -408,15 +353,15 @@ set( SMARTBODY_LIB_SR_SRC
         ./src/sr/planner/sr_cfg_path.cpp
         ./src/sr/planner/sr_cfg_tree.cpp
         ./src/sr/planner/sk_pos_cfg_manager.cpp
-)
+        )
 
-set( SMARTBODY_LIB_SBM_SRC
+set(SMARTBODY_LIB_SBM_SRC
 
         ./src/sbm/BMLDefs.cpp
         ./src/bml/behavior_scheduler_constant_speed.cpp
         ./src/bml/behavior_scheduler.cpp
         ./src/bml/behavior_scheduler_fixed.cpp
-		./src/bml/behavior_scheduler_gesture.cpp
+        ./src/bml/behavior_scheduler_gesture.cpp
         ./src/bml/behavior_span.cpp
         ./src/bml/bml_animation.cpp
         ./src/bml/bml_gesture.cpp
@@ -437,23 +382,23 @@ set( SMARTBODY_LIB_SBM_SRC
         ./src/bml/bml_target.cpp
         ./src/bml/bml_saccade.cpp
         ./src/bml/bml_noise.cpp
-		./src/bml/bml_states.cpp
-		./src/bml/BMLAnimationObject.cpp
-		./src/bml/BMLBodyObject.cpp
-		./src/bml/BMLConstraintObject.cpp
-		./src/bml/BMLEventObject.cpp
-		./src/bml/BMLFaceObject.cpp
-		./src/bml/BMLGazeObject.cpp
-		./src/bml/BMLGestureObject.cpp
-		./src/bml/BMLHeadObject.cpp
-		./src/bml/BMLLocomotionObject.cpp
-		./src/bml/BMLObject.cpp
-		./src/bml/BMLReachObject.cpp
-		./src/bml/BMLSpeechObject.cpp
-		./src/bml/BMLSaccadeObject.cpp
-		./src/bml/BMLHandObject.cpp
-		./src/bml/BMLStateObject.cpp
-		./src/bml/BMLNoiseObject.cpp
+        ./src/bml/bml_states.cpp
+        ./src/bml/BMLAnimationObject.cpp
+        ./src/bml/BMLBodyObject.cpp
+        ./src/bml/BMLConstraintObject.cpp
+        ./src/bml/BMLEventObject.cpp
+        ./src/bml/BMLFaceObject.cpp
+        ./src/bml/BMLGazeObject.cpp
+        ./src/bml/BMLGestureObject.cpp
+        ./src/bml/BMLHeadObject.cpp
+        ./src/bml/BMLLocomotionObject.cpp
+        ./src/bml/BMLObject.cpp
+        ./src/bml/BMLReachObject.cpp
+        ./src/bml/BMLSpeechObject.cpp
+        ./src/bml/BMLSaccadeObject.cpp
+        ./src/bml/BMLHandObject.cpp
+        ./src/bml/BMLStateObject.cpp
+        ./src/bml/BMLNoiseObject.cpp
 
         ./src/sbm/GenericViewer.cpp
         ./src/sbm/gwiz_cmdl.cpp
@@ -483,7 +428,7 @@ set( SMARTBODY_LIB_SBM_SRC
         ./src/controllers/me_ct_jacobian_IK.cpp
         ./src/controllers/me_ct_limb.cpp
         ./src/controllers/me_ct_locomotion_func.cpp
-		./src/controllers/me_ct_new_locomotion.cpp
+        ./src/controllers/me_ct_new_locomotion.cpp
         ./src/controllers/me_ct_motion_example.cpp
         ./src/controllers/me_ct_motion_parameter.cpp
         ./src/controllers/me_ct_motion_player.cpp
@@ -504,8 +449,8 @@ set( SMARTBODY_LIB_SBM_SRC
         ./src/controllers/me_ct_physics_controller.cpp
         ./src/controllers/me_ct_noise_controller.cpp
         ./src/controllers/me_ct_motion_recorder.cpp
-		./src/controllers/me_ct_motion_graph.cpp
-		./src/controllers/RealTimeLipSyncController.cpp
+        ./src/controllers/me_ct_motion_graph.cpp
+        ./src/controllers/RealTimeLipSyncController.cpp
 
         ./src/controllers/MeCtBlendEngine.cpp
         ./src/controllers/me_ct_motion_blend.cpp
@@ -523,8 +468,8 @@ set( SMARTBODY_LIB_SBM_SRC
         ./src/controllers/MeCtReachEngine.cpp
         ./src/controllers/me_ct_saccade.cpp
         ./src/sbm/local_speech.cpp
-## UNUSED:
-##      sbm/sbm_bml.cpp
+        ## UNUSED:
+        ##      sbm/sbm_bml.cpp
         ./src/sbm/sbm_deformable_mesh.cpp
         ./src/sbm/sbm_speech_audiofile.cpp
         ./src/sbm/sbm_speech.cpp
@@ -550,7 +495,7 @@ set( SMARTBODY_LIB_SBM_SRC
         ./src/sbm/GPU/TBOData.cpp
         ./src/sbm/GPU/VBOData.cpp
         ./src/sbm/GPU/SbmShader.cpp
-		./src/sbm/GPU/SbmBlendFace.cpp
+        ./src/sbm/GPU/SbmBlendFace.cpp
         ./src/sbm/PPRAISteeringAgent.cpp
         ./src/sbm/SteerSuiteEnginerDriver.cpp
         ./src/sbm/sr_path_list.cpp
@@ -581,7 +526,7 @@ set( SMARTBODY_LIB_SBM_SRC
         ./src/sb/SBAnimationTransition.cpp
         ./src/sb/SBAnimationTransitionRule.cpp
         ./src/sb/SBAnimationStateManager.cpp
-	./src/sb/SBMotionGraph.cpp
+        ./src/sb/SBMotionGraph.cpp
         ./src/sb/SBSteerManager.cpp
         ./src/sb/SBSteerAgent.cpp
         ./src/sb/SBReachManager.cpp
@@ -636,123 +581,97 @@ set( SMARTBODY_LIB_SBM_SRC
         ./src/sb/SBPythonSkeleton.cpp
         ./src/sb/SBPythonSystem.cpp
         ./src/sb/SBPythonClass.cpp
-		
+
         ./src/sb/SBAssetHandler.cpp
         ./src/sb/SBAssetHandlerHDR.cpp
         ./src/sb/SBAssetHandlerCOLLADA.cpp
         ./src/sb/SBAssetHandlerSk.cpp
         ./src/sb/SBAssetHandlerSkm.cpp
-	./src/sb/SBAssetHandlerAsf.cpp
-	./src/sb/SBAssetHandlerAmc.cpp
-	./src/sb/SBAssetHandlerOgre.cpp
-	./src/sb/SBAssetHandlerObj.cpp
-	./src/sb/SBAssetHandlerBvh.cpp
-	./src/sb/SBAssetHandlerPly.cpp
+        ./src/sb/SBAssetHandlerAsf.cpp
+        ./src/sb/SBAssetHandlerAmc.cpp
+        ./src/sb/SBAssetHandlerOgre.cpp
+        ./src/sb/SBAssetHandlerObj.cpp
+        ./src/sb/SBAssetHandlerBvh.cpp
+        ./src/sb/SBAssetHandlerPly.cpp
         ./src/sb/SBBehavior.cpp
-	./src/sb/SBAssetHandlerSkmb.cpp
-	./src/sb/SBAssetHandlerSBMeshBinary.cpp
+        ./src/sb/SBAssetHandlerSkmb.cpp
+        ./src/sb/SBAssetHandlerSBMeshBinary.cpp
         ./src/sb/SBDebuggerServer.cpp
         ./src/sb/SBDebuggerClient.cpp
         ./src/sb/SBDebuggerUtility.cpp
         ./src/sb/SBRealtimeManager.cpp
-	./src/sb/SBRigNode.cpp
-	./src/sb/SBUtilities.cpp
+        ./src/sb/SBRigNode.cpp
+        ./src/sb/SBUtilities.cpp
         ./src/sbm/SteerPath.cpp
         ./src/sbm/MiscCommands.cpp
-		
-	${SBDLL}
-		
-	./src/protocols/sbmotion.pb.cc
-	./src/protocols/sbutilities.pb.cc
-	./src/protocols/sbmesh.pb.cc
-		
-)
+
+        ${SBDLL}
+
+        ./src/protocols/sbmotion.pb.cc
+        ./src/protocols/sbutilities.pb.cc
+        ./src/protocols/sbmesh.pb.cc
+
+        )
 
 add_library(
-	SmartBody
-	SHARED 
-
-	${SMARTBODY_LIB_EXT_SOIL_SRC}
-
-	${SMARTBODY_LIB_EXT_ZLIB_SRC}
-
+        SmartBody
+        ${SMARTBODY_LIB_EXT_SOIL_SRC}
+        ${SMARTBODY_LIB_EXT_ZLIB_SRC}
         ${SMARTBODY_LIB_EXT_PARSER_SRC}
-
         ${SMARTBODY_LIB_EXT_RECAST_SRC}
-
         ${SMARTBODY_LIB_EXT_PERLIN_SRC}
-
         ${SMARTBODY_LIB_EXT_NANOFLAN_SRC}
-
         ${SMARTBODY_LIB_EXT_RPLY_SRC}
-
         ${SMARTBODY_LIB_ME_SRC}
-
         ${SMARTBODY_LIB_SK_SRC}
-
         ${SMARTBODY_LIB_SR_SRC}
-
         ${SMARTBODY_LIB_SBM_SRC}
-
-	
-
 )
 
 if (${GOOGLE_PROFILER})
-set (PROFILER_LIBS
-	tcmalloc
-	profiler
-)
-else()
-set (PROFILER_LIBS "")
-endif()
+    set(PROFILER_LIBS
+            tcmalloc
+            profiler
+            )
+else ()
+    set(PROFILER_LIBS "")
+endif ()
 
-target_link_libraries( SmartBody
+#if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+#    conan_target_link_libraries(SmartBody)
+#endif ()
 
-	${PROFILER_LIBS}
-	${BONEBUS_LIB}
-	${VHMSG_LIB}
-	${PYTHON_LIB}
-	vhcl
-	${XERCESLIB}
-	${BOOSTFILESYSTEMLIB}
-	${BOOSTSYSTEMLIB}
-	${BOOSTREGEXLIB}
-	blas
-	lapack
-	${OPENGL_LIBRARIES}
-	steerlib
-	pprAI
-	${ODE_LIB}
-	ncurses
-	${MORE_LIBS}
-	${PROTOCLIB}
-	${PROTOBUFLIB}
-	${GCCLIBS}
-)
+target_link_libraries(SmartBody
+
+        ${PROFILER_LIBS}
+        ${BONEBUS_LIB}
+        ${VHMSG_LIB}
+        vhcl
+        steerlib
+        pprAI
+        ${MORE_LIBS}
+        )
 
 
-set( EXEC_LIST
+set(EXEC_LIST
+        SmartBody
+        )
 
-       SmartBody
-)
+#[[set(APP_LIBRARY_SOURCE_PATHS
+        ${CMAKE_SOURCE_DIR}/core/smartbody/sbgui/bin
+        )]]
 
-set( APP_LIBRARY_SOURCE_PATHS
+#set_target_properties(
+#        ${EXEC_LIST}
+#        PROPERTIES
+#        ## link with install tree:
+#        INSTALL_RPATH "${APP_LIBRARY_SOURCE_PATHS}"
+#        BUILD_WITH_INSTALL_RPATH TRUE
+#)
 
-${CMAKE_SOURCE_DIR}/core/smartbody/sbgui/bin
-)       
-
-set_target_properties(
-	${EXEC_LIST}
-	PROPERTIES
-	## link with install tree:
-	INSTALL_RPATH                   "${APP_LIBRARY_SOURCE_PATHS}"
-	BUILD_WITH_INSTALL_RPATH        TRUE
-)
-
-install(
-
-        TARGETS ${EXEC_LIST}
-	DESTINATION core/smartbody/sbgui/bin
-)
+#install(
+#
+#        TARGETS ${EXEC_LIST}
+#	DESTINATION core/smartbody/sbgui/bin
+#)
 

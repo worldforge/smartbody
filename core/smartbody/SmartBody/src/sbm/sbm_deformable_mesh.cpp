@@ -19,10 +19,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
+#include <google/protobuf/io/coded_stream.h>
 #include <sb/SBTypes.h>
 
 #if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #include "sbm/GPU/SbmDeformableMeshGPU.h"
 #endif
 
@@ -37,7 +38,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/gwiz_math.h>
 #include <sbm/GPU/SbmTexture.h>
 
-#include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -57,6 +57,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <sbm/ParserCOLLADAFast.h>
 #include <sbm/ParserOpenCOLLADA.h>
+
 
 
 

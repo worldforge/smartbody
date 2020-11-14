@@ -1,7 +1,8 @@
-add_subdirectory ( external/Pinocchio)
-add_subdirectory ( external/polyvox)
+#add_subdirectory ( external/Pinocchio)
+#add_subdirectory ( external/polyvox)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED on)
 
 include_directories( ./src )
 include_directories( ../SmartBody/src )
@@ -22,33 +23,33 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 find_library (COREAUDIO_LIBRARY CoreAudio)
 find_library (AUDIOUNIT_LIBRARY AudioUnit)
 find_library (CORESERVICES_LIBRARY CoreServices)
-find_library (GLEW GLEW)
-find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTPYTHONLIB boost_python PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (GLEW GLEW)
+#find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (BOOSTPYTHONLIB boost_python PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
 find_library (FLTKLIB fltk PATHS ${CMAKE_SOURCE_DIR}/lib )
 find_library (FLTKIMAGESLIB fltk_images PATHS ${CMAKE_SOURCE_DIR}/lib )
 find_library (FLTKGLLIB fltk_gl PATHS ${CMAKE_SOURCE_DIR}/lib )
 
 else()
 
-find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTPYTHONLIB boost_python PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (BOOSTPYTHONLIB boost_python PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
 find_library (FLTKLIB fltk )
 find_library (FLTKIMAGESLIB fltk_images )
 find_library (FLTKGLLIB fltk_gl )
 
-find_library (PROTOCLIB protoc PATHS ${CMAKE_SOURCE_DIR}/lib )
-find_library (PROTOBUFLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (PROTOCLIB protoc PATHS ${CMAKE_SOURCE_DIR}/lib )
+#find_library (PROTOBUFLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
 
 endif()
 
@@ -89,16 +90,6 @@ set( BONEBUS_LIB
 )
 endif()
 
-if (${SB_NO_PYTHON})
-set( PYTHON_LIB
-)
-else()
-set( PYTHON_LIB
-	${BOOSTPYTHONLIB}
-        python3.8
-)
-endif()
-
 
 
 set (OGRE_SRCS
@@ -118,9 +109,9 @@ endif()
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-find_library (LIBSNDFILE sndfile PATHS ${PROJECT_DOURCE_DIR}/lib)
-find_library (ALUT alut PATHS ${PROJECT_DOURCE_DIR}/lib)
-find_library (OPENAL openal PATHS ${PROJECT_DOURCE_DIR}/lib)
+#find_library (LIBSNDFILE sndfile PATHS ${PROJECT_DOURCE_DIR}/lib)
+#find_library (ALUT alut PATHS ${PROJECT_DOURCE_DIR}/lib)
+#find_library (OPENAL openal PATHS ${PROJECT_DOURCE_DIR}/lib)
 
 link_directories(/usr/X11R6/lib)
 if (${BUILD_FESTIVAL})
@@ -133,9 +124,9 @@ set( FESTIVAL_LIBS
 else()
 set( FESTIVAL_LIBS
 )
-find_library (LIBSNDFILE sndfile )
-find_library (ALUT alut )
-find_library (OPENAL openal)
+#find_library (LIBSNDFILE sndfile )
+#find_library (ALUT alut )
+#find_library (OPENAL openal)
 endif()
 set( MORE_LIBS
         ${COREAUDIO_LIBRARY}
@@ -144,22 +135,22 @@ set( MORE_LIBS
 	${IOKIT_LIBRARY}
 	${FOUNDATION_LIBRARY}
 	${COCOA_LIBRARY}
-	${X11_LIBRARY}	
-        ${LIBSNDFILE}
-        ${ALUT}
-        ${OPENAL}
-        ${GLEW}
-        ${FESTIVAL_LIBS}
+#	${X11_LIBRARY}
+#        ${LIBSNDFILE}
+#        ${ALUT}
+#        ${OPENAL}
+#        ${GLEW}
+#        ${FESTIVAL_LIBS}
 )
 else()
 set( MORE_LIBS
-        ${LIBSNDFILE}
-        ${ALUT}
-        ${OPENAL}
-	rt
-	fontconfig
-	Xft
-	GLEW
+#        ${LIBSNDFILE}
+#        ${ALUT}
+#        ${OPENAL}
+#	rt
+#	fontconfig
+#	Xft
+#	GLEW
 )
 
 endif()
@@ -299,50 +290,42 @@ endif()
 target_link_libraries( sbgui
 
 	${PROFILER_LIBS}
-	${FLTKLIB}
-	${FLTKIMAGESLIB}
-	${FLTKGLLIB}
-	${OPENGL_LIBRARIES}
 	SmartBody
-	${BONEBUS_LIB}
-	${VHMSG_LIB}
-	vhcl
-	${BOOSTFILESYSTEMLIB}
-	${BOOSTSYSTEMLIB}
-	${BOOSTREGEXLIB}
-	${PYTHON_LIB}
 	${XFT}
    	ncurses	
 	pthread
 	pinocchio
-        polyvoxcore
 	${MORE_LIBS}
 	${OGRE_LIBS}
-	#CEGUIBase
-	#CEGUIOpenGLRenderer
-	${PROTOCLIB}
-	${PROTOBUFLIB}
 )
+
+if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    conan_target_link_libraries(sbgui)
+endif ()
+
 
 set( EXEC_LIST
 
 	sbgui
 )
 
-set_target_properties( 
+install(TARGETS sbgui DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
 
-	${EXEC_LIST} 
 
-	PROPERTIES 
+#set_target_properties(
+#
+#	${EXEC_LIST}
+#
+#	PROPERTIES
+#
+#	INSTALL_RPATH				.:${CMAKE_SOURCE_DIR}/lib
+#
+#	BUILD_WITH_INSTALL_RPATH	TRUE
+#)
 
-	INSTALL_RPATH				.:${CMAKE_SOURCE_DIR}/lib 
-
-	BUILD_WITH_INSTALL_RPATH	TRUE
-)
-
-install(
-
-  	TARGETS ${EXEC_LIST}
-	RUNTIME DESTINATION core/smartbody/sbgui/bin
-)
+#install(
+#
+#  	TARGETS ${EXEC_LIST}
+#	RUNTIME DESTINATION core/smartbody/sbgui/bin
+#)
 

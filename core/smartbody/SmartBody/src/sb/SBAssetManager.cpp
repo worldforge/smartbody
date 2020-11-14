@@ -60,7 +60,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/filesystem/path.hpp>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <external/stb/stb_image_write.h>
+#include <stb_image_write.h>
 
 #if defined(EMSCRIPTEN)
 #include <emscripten.h>

@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBTypes.h>
 
 #if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #include "sbm/GPU/SbmDeformableMeshGPU.h"
 #endif
 
@@ -131,7 +131,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 // for minizip compression
 
 #if !defined(__FLASHPLAYER__) && !defined(EMSCRIPTEN)
-#include <external/zlib-1.2.5/zip.h>
+#include <zlib.h>
+#include <zip.h>
 #endif
 
 

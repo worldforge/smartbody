@@ -20,15 +20,17 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBTypes.h>
 
 #if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
-#include "external/glew/glew.h"
+#include "GL/glew.h"
 #include "sbm/GPU/SbmDeformableMeshGPU.h"
 #endif
 #include "SbmTexture.h"
 #include "SbmShader.h"
 //#include "external/SOIL/SOIL.h"
 
+#define STB_DEFINE
+#include "stb.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "external/stb/stb_image.h"
+#include <stb_image.h>
 #include <sb/SBTypes.h>
 #include <sb/SBAttribute.h>
 #include <sb/SBScene.h>

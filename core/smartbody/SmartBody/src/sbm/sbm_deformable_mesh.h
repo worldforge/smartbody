@@ -37,29 +37,28 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define USE_SKIN_WEIGHT_SIZE_8 0
 
 #ifdef WIN32
-	//#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <wingdi.h>
 	#include <GL/gl.h>
 #elif defined(SB_IPHONE)
-    #include <OpenGLES/ES3/gl.h>
+#include <OpenGLES/ES3/gl.h>
     #include <OpenGLES/ES3/glext.h>
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
-       #include <OpenGL/gl.h>
+#include <OpenGL/gl.h>
 //       #include <Carbon/Carbon.h>
        #define APIENTRY
 #elif defined(__FLASHPLAYER__)
-	#include <GL/gl.h>
+#include <GL/gl.h>
 #elif defined(EMSCRIPTEN)
-	#include <GLES2/gl2.h>
+#include <GLES2/gl2.h>
 	#include <GLES2/gl2ext.h>
 #elif defined(__ANDROID__)
-	//#include <GLES/gl.h>
+//#include <GLES/gl.h>
 	#include <GLES3/gl3.h>
 	//#include "wes_gl.h"
 #else
-	#include <GL/gl.h>
-	#include <GL/glx.h>
+#include <GL/gl.h>
 #endif
 
 typedef std::vector<SkJoint*> SkJointList;

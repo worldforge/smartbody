@@ -1,7 +1,7 @@
 #ifndef _TRANSPARENTRENDERS_H_
 #define _TRANSPARENTRENDERS_H_
 
-#include <external/glew/glew.h>
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
