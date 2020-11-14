@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 //#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-//#include "external/SOIL/SOIL.h"
+//#include "SOIL/SOIL.h"
 //#include <FL/enumerations.H>
 #if !defined (__ANDROID__) && !defined(SBM_IPHONE) // disable shader support
 #include "sbm/GPU/SbmShader.h"

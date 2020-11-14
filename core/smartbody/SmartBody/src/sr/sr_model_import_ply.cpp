@@ -24,7 +24,7 @@
 #include <sr/sr_model.h>
 #include <sb/SBTypes.h>
 #include <sb/SBUtilities.h>
-#include <external/rply/rply.h>
+#include "rply/rply.h"
 
 #if !defined(EMSCRIPTEN)
 #include <sbm/GPU/SbmTexture.h>

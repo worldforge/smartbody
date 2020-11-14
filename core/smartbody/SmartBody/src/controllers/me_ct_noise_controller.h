@@ -3,7 +3,7 @@
 
 #include <sb/SBController.h>
 #include <sb/sbm_character.hpp>
-#include <external/perlin/perlin.h>
+#include <perlin/perlin.h>
 #include <map>
 
 class MeCtNoiseController : public SmartBody::SBController

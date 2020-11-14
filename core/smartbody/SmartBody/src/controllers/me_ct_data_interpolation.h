@@ -2,7 +2,7 @@
 #include <map>
 #include "me_ct_motion_example.hpp"
 #include "me_ct_ublas.hpp"
-#include "external/nanoflann/nanoflann.hpp"
+#include "nanoflann.hpp"
 
 class DataInterpolator
 {

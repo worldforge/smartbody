@@ -17,6 +17,8 @@ activemq-cpp/3.9.0@smartbody/stable
 boost/1.74.0
 zlib/1.2.11
 openssl/1.0.2u
+glm/0.9.9.5
+nanoflann/1.3.2
 
 [generators]
 cmake

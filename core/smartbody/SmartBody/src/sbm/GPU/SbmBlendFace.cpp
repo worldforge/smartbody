@@ -22,16 +22,16 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#include "external/jpge/jpge.h"
+#include "jpge/jpge.h"
 #endif
 
 #if !defined(SB_IPHONE)
 #include "sbm/sbm_deformable_mesh.h"
 #include "SbmDeformableMeshGPU.h"
 #include <sbm/GPU/SbmTexture.h>
-#include "external/glm/glm/glm.hpp"
-#include "external/glm/glm/gtc/type_ptr.hpp"
-#include "external/glm/glm/gtc/matrix_transform.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #endif
 
 

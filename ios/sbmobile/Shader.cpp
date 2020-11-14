@@ -30,9 +30,9 @@
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
 #include <sbm/GPU/VBOData.h>
 
-#include "external/glm/glm/glm.hpp"
-#include "external/glm/glm/gtc/type_ptr.hpp"
-#include "external/glm/glm/gtc/matrix_transform.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #if defined(__ANDROID__)
 #include <EGL/egl.h>

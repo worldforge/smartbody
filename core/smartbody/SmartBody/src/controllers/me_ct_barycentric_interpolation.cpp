@@ -7,7 +7,7 @@
 
 //#define USE_TETGEN
 #ifdef USE_TETGEN
-#include <external/tetgen/tetgen.h>
+#include <tetgen/tetgen.h>
 #endif
 
 #define FREE_DATA(data) if (data) delete data; data=NULL;

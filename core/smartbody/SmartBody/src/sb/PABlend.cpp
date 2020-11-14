@@ -29,7 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 
 #ifdef USE_TETGEN
-#include <external/tetgen/tetgen.h>
+#include <tetgen/tetgen.h>
 #endif
 
 const double changeLimit = 20;

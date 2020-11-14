@@ -29,7 +29,7 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBUtilities.h>
 #include "controllers/me_ct_generic_hand.h"
-#include <external/perlin/perlin.h>
+#include <perlin/perlin.h>
 
 //=================================== MeCtMotion =====================================
 

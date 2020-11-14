@@ -37,7 +37,7 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBRetarget.h>
 #include <sb/SBUtilities.h>
 #include <sb/SBScene.h>
-#include <external/perlin/perlin.h>
+#include <perlin/perlin.h>
 
 using namespace gwiz;
 

@@ -20,9 +20,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sb/SBNavigationMesh.h>
-#include <external/recast/Recast.h>
-#include <external/recast/DetourNavMeshBuilder.h>
-#include <external/recast/DetourNavMeshQuery.h>
+#include <recast/Recast.h>
+#include <recast/DetourNavMeshBuilder.h>
+#include <recast/DetourNavMeshQuery.h>
 #include <math.h>
 #include <string.h>
 #include <sb/SBAttribute.h>

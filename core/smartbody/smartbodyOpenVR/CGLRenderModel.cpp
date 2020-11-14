@@ -1,4 +1,4 @@
-#include <external/glew/glew.h>
+#include <glew/glew.h>
 #include "CGLRenderModel.h"
 
 

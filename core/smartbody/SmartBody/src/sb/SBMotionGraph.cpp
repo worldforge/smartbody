@@ -32,7 +32,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_param_animation_utilities.h>
 #include <controllers/me_ct_jacobian_IK.hpp>
 #include <sr/sr_random.h>
-//#include "external/SOIL/SOIL.h"
+//#include "SOIL/SOIL.h"
 
 namespace SmartBody {
 

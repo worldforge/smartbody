@@ -22,7 +22,7 @@
 #include <sr/sr_light.h>
 #include <sr/sr_gl.h>
 #include <sr/sr_sn_group.h>
-#include <external/glew/wglew.h>
+#include <glew/wglew.h>
 #include <vector>
 #include <sbm/GPU/SbmShader.h>
 #include <sbm/GPU/SbmTexture.h>

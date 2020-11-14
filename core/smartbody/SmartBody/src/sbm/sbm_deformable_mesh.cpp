@@ -49,9 +49,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/filesystem/convenience.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "external/glm/glm/glm.hpp"
-#include "external/glm/glm/gtc/type_ptr.hpp"
-#include "external/glm/glm/gtc/matrix_transform.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #include <boost/filesystem.hpp>
 #include <algorithm>

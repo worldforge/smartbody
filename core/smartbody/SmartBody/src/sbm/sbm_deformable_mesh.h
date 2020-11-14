@@ -31,8 +31,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAsset.h>
 #include <sb/SBCharacter.h>
 
-#include "external/glm/glm/glm.hpp"
-#include "external/nanoflann/nanoflann.hpp"
+#include "glm/glm.hpp"
+#include "nanoflann.hpp"
 
 #define USE_SKIN_WEIGHT_SIZE_8 0
 

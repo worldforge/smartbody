@@ -25,7 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #include "SbmTexture.h"
 #include "SbmShader.h"
-//#include "external/SOIL/SOIL.h"
+//#include "SOIL/SOIL.h"
 
 #define STB_DEFINE
 #include "stb.h"
@@ -35,7 +35,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttribute.h>
 #include <sb/SBScene.h>
 #include <sb/SBUtilities.h>
-//#include "external/imdebug/imdebug.h"
+//#include "imdebug/imdebug.h"
 #include <sr/sr_gl.h>
 
 /************************************************************************/

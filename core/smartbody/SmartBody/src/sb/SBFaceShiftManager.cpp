@@ -19,7 +19,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "SBFaceShiftManager.h"
-#include "external/faceshift/fsbinarystream.h"
+#include "faceshift/fsbinarystream.h"
 #include <sb/SBScene.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBSkeleton.h>

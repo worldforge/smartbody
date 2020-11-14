@@ -167,81 +167,6 @@ else ()
 
 endif ()
 
-set(SMARTBODY_LIB_EXT_NANOFLANN_SRC
-
-        ./src/external/nanoflann/nanoflann.hpp
-
-        )
-
-set(SMARTBODY_LIB_EXT_RPLY_SRC
-
-        ./src/external/rply/rply.c
-
-        )
-set(SMARTBODY_LIB_EXT_PARSER_SRC
-
-        ./src/external/parser/Bchart.cpp
-        ./src/external/parser/BchartSm.cpp
-        ./src/external/parser/Bst.cpp
-        ./src/external/parser/ChartBase.cpp
-        ./src/external/parser/ClassRule.cpp
-        ./src/external/parser/CntxArray.cpp
-        ./src/external/parser/CombineBests.cpp
-        ./src/external/parser/ECArgs.cpp
-        ./src/external/parser/Edge.cpp
-        ./src/external/parser/EdgeHeap.cpp
-        ./src/external/parser/edgeSubFns.cpp
-        ./src/external/parser/EgsFromTree.cpp
-        ./src/external/parser/ewDciTokStrm.cpp
-        ./src/external/parser/extraMain.cpp
-        ./src/external/parser/FBinaryArray.cpp
-        ./src/external/parser/Feat.cpp
-        ./src/external/parser/Feature.cpp
-        ./src/external/parser/FeatureTree.cpp
-        ./src/external/parser/fhSubFns.cpp
-        ./src/external/parser/Field.cpp
-        ./src/external/parser/FullHist.cpp
-        ./src/external/parser/GotIter.cpp
-        ./src/external/parser/headFinder.cpp
-        ./src/external/parser/headFinderCh.cpp
-        ./src/external/parser/InputTree.cpp
-        ./src/external/parser/Item.cpp
-        ./src/external/parser/Link.cpp
-        ./src/external/parser/MeChart.cpp
-        ./src/external/parser/Params.cpp
-        ./src/external/parser/ParseStats.cpp
-        ./src/external/parser/SentRep.cpp
-        ./src/external/parser/Term.cpp
-        ./src/external/parser/TimeIt.cpp
-        ./src/external/parser/UnitRules.cpp
-        ./src/external/parser/utils.cpp
-        ./src/external/parser/ValHeap.cpp
-        )
-
-set(SMARTBODY_LIB_EXT_RECAST_SRC
-
-        ./src/external/recast/Recast.cpp
-        ./src/external/recast/RecastAlloc.cpp
-        ./src/external/recast/RecastArea.cpp
-        ./src/external/recast/RecastContour.cpp
-        ./src/external/recast/RecastFilter.cpp
-        ./src/external/recast/RecastLayers.cpp
-        ./src/external/recast/RecastMesh.cpp
-        ./src/external/recast/RecastMeshDetail.cpp
-        ./src/external/recast/RecastRasterization.cpp
-        ./src/external/recast/RecastRegion.cpp
-        ./src/external/recast/DetourAlloc.cpp
-        ./src/external/recast/DetourCommon.cpp
-        ./src/external/recast/DetourNavMesh.cpp
-        ./src/external/recast/DetourNavMeshBuilder.cpp
-        ./src/external/recast/DetourNavMeshQuery.cpp
-        ./src/external/recast/DetourNode.cpp
-        )
-
-set(SMARTBODY_LIB_EXT_PERLIN_SRC
-
-        ./src/external/perlin/perlin.cpp
-        )
 
 set(SMARTBODY_LIB_ME_SRC
 
@@ -615,13 +540,6 @@ set(SMARTBODY_LIB_SBM_SRC
 
 add_library(
         SmartBody
-        ${SMARTBODY_LIB_EXT_SOIL_SRC}
-        ${SMARTBODY_LIB_EXT_ZLIB_SRC}
-        ${SMARTBODY_LIB_EXT_PARSER_SRC}
-        ${SMARTBODY_LIB_EXT_RECAST_SRC}
-        ${SMARTBODY_LIB_EXT_PERLIN_SRC}
-        ${SMARTBODY_LIB_EXT_NANOFLAN_SRC}
-        ${SMARTBODY_LIB_EXT_RPLY_SRC}
         ${SMARTBODY_LIB_ME_SRC}
         ${SMARTBODY_LIB_SK_SRC}
         ${SMARTBODY_LIB_SR_SRC}
@@ -649,6 +567,12 @@ target_link_libraries(SmartBody
         vhcl
         steerlib
         pprAI
+        SOIL
+        rply
+        parser
+        recast
+        perlin
+        rply
         ${MORE_LIBS}
         )
 

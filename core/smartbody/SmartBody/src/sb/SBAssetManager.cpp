@@ -55,7 +55,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/GPU/SbmTexture.h>
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
 
-//#include <external/SOIL/SOIL.h>
+//#include <SOIL/SOIL.h>
 
 #include <boost/filesystem/path.hpp>
 

@@ -202,7 +202,7 @@ int KNNBaseInterpolator::kdTreeKNN( ANNkd_tree* kdTree, const dVector& inPara, i
 #else
 int KNNBaseInterpolator::kdTreeKNN( SBKDTree* kdTree, const dVector& inPara, int numKNN, VecOfInterpWeight& outWeight )
 {
-	int nPts = kdTree->size();
+	int nPts = kdTree->size(*kdTree);
 	int nKNN = nPts > numKNN ? numKNN : nPts;	
 	std::vector<size_t>   ret_index(nKNN);
 	std::vector<double> out_dist_sqr(nKNN);

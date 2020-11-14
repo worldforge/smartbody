@@ -1,7 +1,7 @@
 
 // ==== OpenVR Headers ===
 #include <SDL.h>
-#include <external/glew/glew.h>
+#include <glew/glew.h>
 #include <SDL_opengl.h>
 #include <gl/glu.h>
 #include <stdio.h>
