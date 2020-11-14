@@ -1,4 +1,5 @@
 [requires]
+recastnavigation/cci.20200511
 lapack/3.7.1@smartbody/stable
 fltk/1.3.5@smartbody/stable
 ncurses/6.2

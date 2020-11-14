@@ -20,9 +20,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sb/SBNavigationMesh.h>
-#include <recast/Recast.h>
-#include <recast/DetourNavMeshBuilder.h>
-#include <recast/DetourNavMeshQuery.h>
+#include <Recast.h>
+#include <DetourNavMeshBuilder.h>
+#include <DetourNavMeshQuery.h>
 #include <math.h>
 #include <string.h>
 #include <sb/SBAttribute.h>
@@ -524,8 +524,10 @@ std::vector<SrVec> SBNavigationMesh::findPath( SrVec& spos, SrVec& epos )
 		{
 			SrVec epos1 = epos;
 			// In case of partial path, make sure the end point is clamped to the last polygon.			
-			if (polys[nPolys-1] != endPoly)
-				m_navQuery->closestPointOnPoly(polys[nPolys-1], &epos[0], &epos1[0]);
+			if (polys[nPolys-1] != endPoly) {
+				bool posOverPoly;
+				m_navQuery->closestPointOnPoly(polys[nPolys - 1], &epos[0], &epos1[0], &posOverPoly);
+			}
 
 			m_navQuery->findStraightPath(&spos[0], &epos1[0], polys, nPolys,
 				&m_straightPath[0][0], m_straightPathFlags,
