@@ -1,22 +1,19 @@
 include_directories("include" "../steerlib/include")
 
-
 add_library(
         pprAI
+        SHARED
         src/PPRAIModule.cpp
         src/PPRAgent.cpp
 )
 
 
-set(EXEC_LIST
-
-        pprAI
-        )
 
 target_link_libraries(pprAI
-
         steerlib
         )
+
+install(TARGETS pprAI DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
 
 #set_target_properties(

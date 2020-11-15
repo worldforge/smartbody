@@ -720,7 +720,7 @@ int main( int argc, char **argv )	{
 	std::string python_lib_path = "/usr/lib64/python3.8/";
 	std::string festivalLibDir = "../../../../lib/festival/festival/lib/";
 	std::string festivalCacheDir = "../../../../data/cache/festival/";
-	std::string mediaPath = "../../../../data";
+	std::string mediaPath = SMARTBODY_DATADIR "/smartbody/data";
 	std::string renderer = "custom";
 
 	std::string cereprocLibDir = "../../../../lib/cerevoice/voices/";	
@@ -1155,9 +1155,9 @@ int main( int argc, char **argv )	{
 
 #ifndef SB_NO_PYTHON
 	// initialize python
-	SmartBody::util::log("Initializing Python with libraries at location: %s", python_lib_path.c_str());
+	SmartBody::util::log("Initializing Python.");
 
-	SmartBody::SBScene::setSystemParameter("pythonlibpath", python_lib_path);
+	//SmartBody::SBScene::setSystemParameter("pythonlibpath", python_lib_path);
 	initPython(python_lib_path);
 	initAutoRigPythonModule();
 	initMiscPythonModule();
@@ -1300,7 +1300,7 @@ int main( int argc, char **argv )	{
 
 	if( seq_paths.empty() && py_paths.empty() ) {
 		SmartBody::util::log( "No script paths specified. Adding current working directory to script path.\n" );
-		seq_paths.push_back( "." );
+		seq_paths.push_back( mediaPath + "/sbm-common/scripts" );
 	}
 
 	for( it = me_paths.begin();

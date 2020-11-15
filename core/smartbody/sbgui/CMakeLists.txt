@@ -1,6 +1,9 @@
 include_directories(./src)
 include_directories(../SmartBody/src)
 
+
+
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     find_library(COREAUDIO_LIBRARY CoreAudio)
     find_library(AUDIOUNIT_LIBRARY AudioUnit)

@@ -50,8 +50,8 @@ SBSteerManager::SBSteerManager() : SBService()
 			createStringAttribute("aimodule", "pprAI", true, "Basic", 60, false, false, false, "Agent module library");
 #endif
 
-	createStringAttribute("engineOptions.testCaseSearchPath", "../../../../core/smartbody/steersuite-1.3/testcases/", true, "Basic", 60, false, false, false, "Path to find agent shared libraries");
-	createStringAttribute("engineOptions.moduleSearchPath", "../../../../core/smartbody/sbgui/bin/", true, "Basic", 60, false, false, false, "Path to find test cases");
+	createStringAttribute("engineOptions.testCaseSearchPath", "../../../../core/smartbody/steersuite-1.3/testcases/", true, "Basic", 60, false, false, false, "Path to find test cases");
+	createStringAttribute("engineOptions.moduleSearchPath", SMARTBODY_LIBDIR "/", true, "Basic", 60, false, false, false, "Path to find agent shared libraries");
 	createDoubleAttribute("gridDatabaseOptions.gridSizeX", 35, true, "Basic", 60, false, false, false, "Size of grid in x dimension.");
 	createDoubleAttribute("gridDatabaseOptions.gridSizeZ", 35, true, "Basic", 60, false, false, false, "Size of grid in z dimension.");
 	createIntAttribute("gridDatabaseOptions.numGridCellsX", 70, true, "Basic", 60, false, false, false, "Number of grid cells in x dimension.");

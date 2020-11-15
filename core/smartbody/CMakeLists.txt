@@ -1,3 +1,8 @@
+#Needed for loading media assets
+add_definitions(-DSMARTBODY_DATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
+#Needed for dynamically loading SteerLib modules
+add_definitions(-DSMARTBODY_LIBDIR="${CMAKE_INSTALL_FULL_LIBDIR}")
+
 if (${GOOGLE_PROFILER})
     add_definitions(-DUSE_GOOGLE_PROFILER)
 endif ()

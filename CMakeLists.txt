@@ -37,6 +37,8 @@ include_directories(
 option(BUILD_STATIC "build static library" ON)
 option(BUILD_DYNAMIC "build dynamic library" ON)
 
+#We need to load plugins
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #TODO: upgrade code to handle newer version of Ogre.
 option(BUILD_OGRE "Build OGRE renderer." FALSE)

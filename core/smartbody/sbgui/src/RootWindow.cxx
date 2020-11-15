@@ -746,8 +746,11 @@ void BaseWindow::ResetScene()
 	std::string pythonLibPath = SmartBody::SBScene::getSystemParameter("pythonlibpath");
 	setupPython();
 #endif
-	if (mediaPath != "")
+	if (!mediaPath.empty()) {
 		SmartBody::SBScene::getScene()->setMediaPath(mediaPath);
+	} else {
+		SmartBody::SBScene::getScene()->setMediaPath(SMARTBODY_DATADIR "/smartbody/data");
+	}
 
 	scene->getVHMsgManager()->setEnable(true);		
 	updateObjectList();

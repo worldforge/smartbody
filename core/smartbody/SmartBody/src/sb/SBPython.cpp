@@ -480,7 +480,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("exportForService", &SBPhonemeManager::exportForService, "Exports the data")
 		.def("createFastMap", &SBPhonemeManager::createFastMap, "Optimizes the phoneme pair search.");
 
-		;
+
 
 	boost::python::class_<SBDiphone>("SBDiphone")
 		.def("addKey", &SBDiphone::addKey, "add key to the diphone.")
@@ -983,7 +983,6 @@ extern "C" {
 void appendPythonModule(const char* moduleName, PyObject* (*initfunc)(void))
 {
 #ifndef SB_NO_PYTHON
-	// TODO - remove (char *) cast when moving to new python version that has a proper const-aware header
 	int result = PyImport_AppendInittab(moduleName, initfunc);
 	SmartBody::util::log("initialize module %s, result = %d",moduleName, result);
 #endif
@@ -993,30 +992,10 @@ void appendPythonModule(const char* moduleName, PyObject* (*initfunc)(void))
 void initPython(std::string pythonLibPath)
 {	
 #ifndef SB_NO_PYTHON
-	//SmartBody::util::log("Start Init Python");
-	XMLPlatformUtils::Initialize(); 
-	//SmartBody::util::log("After XML Platform Initialize");
-	
-	std::string pythonHome = pythonLibPath + "/..";
-// #ifdef __ANDROID__
-// 	SmartBody::util::log("before LD_LIBRARY_PATH");
-// 	std::string libPath = getenv("LD_LIBRARY_PATH");
-// 	SmartBody::util::log("LD_LIBRARY_PATH  = %s", libPath.c_str());	
-// #endif
+	XMLPlatformUtils::Initialize();
 
-	//SmartBody::util::log("After LD_LIBRARY_PATH");
 	Py_NoSiteFlag = 1;
 
-//#if defined(__ANDROID__) || defined(SB_IPHONE)
-//	Py_SetProgramName((char*)pythonHome.c_str());
-//    Py_SetPythonHome((char*)pythonHome.c_str());
-//#else
-//	Py_SetProgramName((wchar_t*)"../../../../core/smartbody/Python27/");
-//#ifdef WIN32
-//	Py_SetPythonHome((char*)pythonHome.c_str());
-//#endif
-//#endif
-	//SmartBody::util::log("After SetProgramName");
 #if defined(__ANDROID__) || defined(SB_IPHONE)
 //#if 0
 	//appendPythonModule("pyexpat", initpyexpat);
@@ -1077,13 +1056,9 @@ void initPython(std::string pythonLibPath)
 	//appendPythonModule("_hashlib", init_hashlib);
 #endif
 
-	//SmartBody::util::log("Before initSmartBody");
 	PyImport_AppendInittab("SmartBody", &SmartBody::PyInit_SmartBody);
-	//SmartBody::util::log("After initSmartBody");
 
-	//SmartBody::util::log("After appendPythonModule");
 	Py_InitializeEx(0);
-	//SmartBody::util::log("After Py_Initialize");
 	try {
 #ifndef SB_NO_PYTHON
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -1091,60 +1066,18 @@ void initPython(std::string pythonLibPath)
 		scene->setPythonMainModule(module);
 		boost::python::object dict  = module.attr("__dict__");
 		scene->setPythonMainDict(dict);
-
-
-		boost::python::object sysModule = boost::python::import("sys");
-		auto path = boost::python::list(sysModule.attr("path"));
-		path.append(pythonLibPath);
-		path.append(pythonLibPath + "/site-packages");
-		path.append(pythonLibPath + "/../DLLs");
-
-
-//		PyRun_SimpleString("import sys");
 #endif
-
-//#if 1
-//		// set the proper python path
-//		std::stringstream strstr;
-//		strstr << "sys.path.append(\"";
-//		strstr << pythonLibPath;
-//		strstr << "\");";
-//		PyRun_SimpleString(strstr.str().c_str());
-//
-//		// add path to site-packages
-//		std::string pythonSitePackagePath = pythonLibPath + "/site-packages";
-//		strstr.str(std::string());
-//		strstr.clear();
-//		strstr << "sys.path.append(\"";
-//		strstr << pythonSitePackagePath;
-//		strstr << "\");";
-//		PyRun_SimpleString(strstr.str().c_str());
-//
-//		// add path to DLLs
-//		std::string pythonDLLPath = pythonLibPath + "/../DLLs";
-//		strstr.str(std::string());
-//		strstr.clear();
-//		strstr << "sys.path.append(\"";
-//		strstr << pythonDLLPath;
-//		strstr << "\");";
-//		PyRun_SimpleString(strstr.str().c_str());
-//#endif
 
 		auto smartBodyModule = boost::python::import("SmartBody");
 
-
-
 		if (PyErr_Occurred())
 			PyErr_Print();
-		// redirect stdout
-		//SmartBody::util::log("Before redirect stdout");
+
 
 		setupPython();
-		//SmartBody::util::log("After setupPython");
 	} catch (...) {
 		if (PyErr_Occurred())
 			PyErr_Print();
-		//SmartBody::util::log("PyError Exception");
 	}
 #endif
 }
@@ -1185,19 +1118,12 @@ void setupPython()
 			PyErr_Print();
 
 	
-		//SmartBody::util::log("before import os");
 		PyRun_SimpleString("from os import *");
-		//SmartBody::util::log("before import Smartbody");
 		PyRun_SimpleString("from SmartBody import *");
-		//SmartBody::util::log("before import pydoc");
-		//PyRun_SimpleString("from pydoc import *");
-#if 1
 		PyRun_SimpleString("scene = getScene()");
 		PyRun_SimpleString("bml = scene.getBmlProcessor()");
 		PyRun_SimpleString("sim = scene.getSimulationManager()");
 		PyRun_SimpleString("assets = scene.getAssetManager()");
-#endif
-		//SmartBody::util::log("After import os");
 
 		if (PyErr_Occurred())
 			PyErr_Print();
@@ -1205,7 +1131,6 @@ void setupPython()
 
 	} catch (...) {
 		PyErr_Print();
-		//SmartBody::util::log("PyError Exception");
 	}
 #endif
 }
