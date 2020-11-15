@@ -35,7 +35,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 	//#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <wingdi.h>
-	#include <GL/gl.h>
+	#include <GL/glew.h>
 #elif defined(SB_IPHONE)
     #include <OpenGLES/ES1/gl.h>
     #include <OpenGLES/ES1/glext.h>
@@ -44,7 +44,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 //       #include <Carbon/Carbon.h>
        #define APIENTRY
 #elif defined(__FLASHPLAYER__)
-	#include <GL/gl.h>
+	#include <GL/glew.h>
 #elif defined(__ANDROID__)
 	//#include <GLES/gl.h>
 	#include <GLES3/gl3.h>
@@ -53,7 +53,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 	#include<GLES2/gl2.h>
 	#include<GLES2/gl2ext.h>
 #else
-	#include <GL/gl.h>
+	#include <GL/glew.h>
 	#include <GL/glx.h>
 #endif
 

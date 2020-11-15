@@ -1,8 +1,8 @@
 #include "PositionControl.h"
 
 
-#include <FL/gl.h>
-#include <FL/glu.h>
+#include <GL/glew.h>
+#include <GL/glu.h>
 #include <sr/sr_gl.h>
 #include <sr/sr_plane.h>
 #include <sr/sr_sphere.h>

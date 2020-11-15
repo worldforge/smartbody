@@ -48,6 +48,3 @@ add_library(
         src/SimulationRecorderModule.cpp
         src/XMLParser.cpp
 )
-
-target_link_libraries(steerlib tinyxml)
-

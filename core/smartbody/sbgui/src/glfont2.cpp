@@ -16,7 +16,7 @@ using namespace std;
 #ifdef _WINDOWS
 #include <windows.h>
 #endif
-#include <FL/gl.h>
+#include <sr/sr_gl.h>
 
 //glFont header
 #include "glfont2.h"

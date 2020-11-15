@@ -40,7 +40,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 //#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <wingdi.h>
-	#include <GL/gl.h>
+	#include <GL/ew.h>
 #elif defined(SB_IPHONE)
 #include <OpenGLES/ES3/gl.h>
     #include <OpenGLES/ES3/glext.h>
@@ -49,7 +49,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 //       #include <Carbon/Carbon.h>
        #define APIENTRY
 #elif defined(__FLASHPLAYER__)
-#include <GL/gl.h>
+#include <GL/glew.h>
 #elif defined(EMSCRIPTEN)
 #include <GLES2/gl2.h>
 	#include <GLES2/gl2ext.h>
@@ -58,7 +58,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 	#include <GLES3/gl3.h>
 	//#include "wes_gl.h"
 #else
-#include <GL/gl.h>
+#include <GL/glew.h>
 #endif
 
 typedef std::vector<SkJoint*> SkJointList;

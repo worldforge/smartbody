@@ -22,7 +22,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "GlChartViewCoordinate.hpp"
 
-#include <FL/gl.h>
+#include <sr/sr_gl.h>
 #include <cstring>
 #include <sb/SBScene.h>
 #include <sb/SBUtilities.h>

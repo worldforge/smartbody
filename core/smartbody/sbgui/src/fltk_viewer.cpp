@@ -36,7 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sbm/GPU/SbmDeformableMeshGPU.h>
 # include "fltk_viewer.h"
 # include <FL/Fl.H>
-# include <FL/gl.h>
+# include <sr/sr_gl.h>
 # include <FL/glut.H>
 //# include <fltk/visual.h>
 //# include <fltk/compat/FL/Fl_Menu_Item.H>
@@ -54,7 +54,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sr/sr_event.h>
 # include <sr/sr_string.h>
 
-# include <sr/sr_gl.h>
 # include <sr/sr_camera.h>
 # include <sr/sr_trackball.h>
 # include <sr/sr_lines.h>

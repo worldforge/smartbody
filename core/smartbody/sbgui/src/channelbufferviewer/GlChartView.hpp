@@ -31,7 +31,7 @@
 #include <sr/sr_viewer.h>
 #include "GlChartViewCoordinate.hpp"
 #include "GlChartViewArchive.hpp"
-#include <FL/gl.h>
+#include <sr/sr_gl.h>
 
 #ifdef WIN32
 #include "glfont2.h"

@@ -2,7 +2,6 @@
 #define _TRANSPARENTRENDERS_H_
 
 #include <GL/glew.h>
-#include <GL/gl.h>
 #include <GL/glu.h>
 
 class TransparentViewer;

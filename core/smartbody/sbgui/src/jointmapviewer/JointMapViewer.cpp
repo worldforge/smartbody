@@ -13,11 +13,10 @@
 #include <FL/Fl_Input.H>
 #include <sstream>
 #include <cstring>
+#include <sr/sr_gl.h>
 #include <FL/Fl.H>
-#include <FL/gl.h>
 #include <FL/glu.h>
 #include <FL/glut.H>
-#include <sr/sr_gl.h>
 #include <sr/sr_gl_render_funcs.h>
 #include <sr/sr_sphere.h>
 #include <sr/sr_sn_shape.h>

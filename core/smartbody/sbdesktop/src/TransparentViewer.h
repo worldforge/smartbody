@@ -14,7 +14,6 @@
 # include <sr/sr_sa_bbox.h>
 #include <sb/SBObject.h>
 
-#include <GL/gl.h>
 #include <GL/glu.h>
 #include "TransparencyRenders.h"
 

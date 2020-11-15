@@ -2,7 +2,7 @@
 
 #include <sb/sbm_pawn.hpp>
 
-#include <FL/gl.h>
+#include <sr/sr_gl.h>
 #include <sr/sr_euler.h>
 #include <sr/sr_plane.h>
 #include <sr/sr_sphere.h>

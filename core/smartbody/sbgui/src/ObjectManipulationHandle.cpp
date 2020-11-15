@@ -4,9 +4,6 @@
 #include <sb/SBCharacter.h>
 #include <sr/sr_gl.h>
 
-#include <FL/gl.h>
-#include <FL/glu.h>
-
 bool ObjectManipulationHandle::renderSelectedBoundingBox = true;
 
 ObjectManipulationHandle::ObjectManipulationHandle(void)

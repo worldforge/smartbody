@@ -21,7 +21,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "VisualizationView.h"
 #include <sb/SBCharacter.h>
 
-#include <FL/gl.h>
 #include <FL/fl_draw.H>
 #include "ErrorVisualization.h"
 #include <controllers/me_ct_param_animation.h>

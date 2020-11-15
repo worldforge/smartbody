@@ -14,15 +14,6 @@ if (WIN32)
     install(FILES ${DLL_FILES} DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
 endif ()
 
-if (NOT WIN32)
-    #There's an issue with the Conan provided boost libraries in that they will declare library dependencies as "-l" options
-    #rather than links to the ".a" files (as we want static libs). To work around it we need to link directly to the
-    #boost filesystem lib, otherwise the system one will be used.
-    #This should be removed once it's fixed in the Conan recipes.
-    link_libraries("${CONAN_LIB_DIRS_BOOST}/libboost_python38.a")
-endif ()
-
-
 #We don't provide Python though Conan (currently), since the user must have Python in their system to
 # run Conan anyway. However, we might look into perhaps doing it anyways (as we then could pin the Python version)
 find_package(PythonLibs 3.3 REQUIRED)
@@ -33,10 +24,10 @@ link_libraries(${PYTHON_LIBRARIES})
 
 
 #Make external libs available everywhere.
-include_directories(${PROJECT_SOURCE_DIR}/external/boost-numeric-bindings
+include_directories(
+        ${PROJECT_SOURCE_DIR}/external/boost-numeric-bindings
         ${PROJECT_SOURCE_DIR}/external
         )
-
 
 set(PROTOC_CMD ${CONAN_BIN_DIRS_PROTOBUF}/protoc)
 
@@ -66,15 +57,15 @@ set(BUILD_FESTIVAL FALSE)
 #set( SB_NO_ODE_PHYSICS TRUE)
 
 
-#add_definitions(	-D__linux__	-fPIC -m32 -Ignore -fpermissive -g3 )
-#add_definitions(	-g3 -fPIC -fpermissive -std=c++11)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    add_definitions(-O3 -D__APPLE__ -fPIC -fpermissive)
-    #add_definitions(	-g3 -D__APPLE__ -fPIC -fpermissive )
-else ()
-    add_definitions(-O3 -D__linux__ -fPIC -fpermissive -std=c++11)
-endif ()
-#add_definitions(	-v -W -Wall -Wextra -pedantic )
+##add_definitions(	-D__linux__	-fPIC -m32 -Ignore -fpermissive -g3 )
+##add_definitions(	-g3 -fPIC -fpermissive -std=c++11)
+#if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+#    add_definitions(-O3 -D__APPLE__ -fPIC -fpermissive)
+#    #add_definitions(	-g3 -D__APPLE__ -fPIC -fpermissive )
+#else ()
+#    add_definitions(-O3 -D__linux__ -fPIC -fpermissive -std=c++11)
+#endif ()
+##add_definitions(	-v -W -Wall -Wextra -pedantic )
 
 
 

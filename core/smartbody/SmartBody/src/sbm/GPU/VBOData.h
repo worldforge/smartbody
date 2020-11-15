@@ -4,7 +4,7 @@
 #include <sr/sr_vec2.h>
 #include <string.h>
 #include <sb/SBUtilities.h>
-
+#include <GL/glew.h>
 
 enum
 {	

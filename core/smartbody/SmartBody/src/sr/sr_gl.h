@@ -43,7 +43,7 @@
 //#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <wingdi.h>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glu.h>
 #elif defined(SB_IPHONE)
 #include <OpenGLES/ES3/gl.h>
@@ -54,7 +54,7 @@
 //       #include <Carbon/Carbon.h>
 #define APIENTRY
 #elif defined(__FLASHPLAYER__)
-#include <GL/gl.h>
+#include <GL/glew.h>
 #elif __native_client__
 #include <GLES2/gl2.h>
 #elif defined(__ANDROID__)
@@ -64,11 +64,11 @@
 //#include "wes_glu.h"
 
 #elif defined(EMSCRIPTEN)
-#include <GLES/gl.h>
+#include <GLES/glew.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #else
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glx.h>
 #include <GL/glu.h>
 #endif
