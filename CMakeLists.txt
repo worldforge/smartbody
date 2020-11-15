@@ -15,8 +15,10 @@ if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
         install(FILES ${DLL_FILES} DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
     endif ()
 
+    #We need to call on the "protoc" command to regenerate from the .proto files when they change.
     set(PROTOC_CMD ${CONAN_BIN_DIRS_PROTOBUF}/protoc)
 else ()
+    #TODO: check for correct libs so distros can package this.
     message(FATAL_ERROR "Building without Conan is currently not supported.")
 endif (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 
