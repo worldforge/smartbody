@@ -1,3 +1,5 @@
+import fnmatch
+
 from conans import ConanFile, tools, MSBuild, AutoToolsBuildEnvironment
 import os
 
@@ -14,15 +16,14 @@ class Conan(ConanFile):
     options = {"shared": [True, False]}
     default_options = {"shared": False}
     generators = "cmake"
-    source_subfolder = "source"
-    requires = ["apr/1.7.0", "openssl/1.0.2u"]
+    source_subfolder = "activemq-cpp"
+    requires = ["apr/1.7.0", "openssl/1.0.2u", "zlib/1.2.11"]
+    exports_sources = ["patches*"]
 
     def source(self):
         tools.get("https://github.com/apache/activemq-cpp/archive/activemq-cpp-{0}.tar.gz".format(self.version))
         os.rename("activemq-cpp-activemq-cpp-{0}/activemq-cpp".format(self.version), self.source_subfolder)
-
-    #        with tools.chdir(self.source_subfolder):
-    #            self.run("./autogen.sh")
+        self._apply_patches('patches', "")
 
     def build(self):
         with tools.chdir(self.source_subfolder):
@@ -44,3 +45,12 @@ class Conan(ConanFile):
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
         self.cpp_info.includedirs = [os.path.join("include", "activemq-cpp-{}".format(self.version))]
+
+    @staticmethod
+    def _apply_patches(source, dest):
+        for root, _dirnames, filenames in os.walk(source):
+            for filename in fnmatch.filter(filenames, '*.patch'):
+                print("Applying path {}.".format(filename))
+                patch_file = os.path.join(root, filename)
+                dest_path = os.path.join(dest, os.path.relpath(root, source))
+                tools.patch(base_path=dest_path, patch_file=patch_file)
