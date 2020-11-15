@@ -517,22 +517,11 @@ add_library(
         ${SMARTBODY_LIB_SBM_SRC}
 )
 
-if (${GOOGLE_PROFILER})
-    set(PROFILER_LIBS
-            tcmalloc
-            profiler
-            )
-else ()
-    set(PROFILER_LIBS "")
-endif ()
-
 #if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 #    conan_target_link_libraries(SmartBody)
 #endif ()
 
 target_link_libraries(SmartBody
-
-        ${PROFILER_LIBS}
         ${BONEBUS_LIB}
         ${VHMSG_LIB}
         vhcl
@@ -545,27 +534,3 @@ target_link_libraries(SmartBody
         rply
         ${MORE_LIBS}
         )
-
-
-set(EXEC_LIST
-        SmartBody
-        )
-
-#[[set(APP_LIBRARY_SOURCE_PATHS
-        ${CMAKE_SOURCE_DIR}/core/smartbody/sbgui/bin
-        )]]
-
-#set_target_properties(
-#        ${EXEC_LIST}
-#        PROPERTIES
-#        ## link with install tree:
-#        INSTALL_RPATH "${APP_LIBRARY_SOURCE_PATHS}"
-#        BUILD_WITH_INSTALL_RPATH TRUE
-#)
-
-#install(
-#
-#        TARGETS ${EXEC_LIST}
-#	DESTINATION core/smartbody/sbgui/bin
-#)
-

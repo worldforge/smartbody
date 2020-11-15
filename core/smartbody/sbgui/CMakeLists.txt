@@ -1,9 +1,6 @@
 include_directories(./src)
 include_directories(../SmartBody/src)
 
-
-
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     find_library(COREAUDIO_LIBRARY CoreAudio)
     find_library(AUDIOUNIT_LIBRARY AudioUnit)
@@ -211,23 +208,10 @@ set(SBM_FLTK_SRC
         )
 
 add_executable(sbgui
-
         ${SBM_FLTK_SRC}
         )
 
-
-if (${GOOGLE_PROFILER})
-    set(PROFILER_LIBS
-            tcmalloc
-            profiler
-            )
-else ()
-    set(PROFILER_LIBS "")
-endif ()
-
 target_link_libraries(sbgui
-
-        ${PROFILER_LIBS}
         SmartBody
         pinocchio
         ${MORE_LIBS}
@@ -239,11 +223,6 @@ if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     conan_target_link_libraries(sbgui)
 endif ()
 
-
-set(EXEC_LIST
-
-        sbgui
-        )
 
 install(TARGETS sbgui DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
 
