@@ -717,7 +717,7 @@ int main( int argc, char **argv )	{
 	Fl::scheme("gtk+");
 #endif
 	
-	std::string python_lib_path = "/usr/lib64/python3.8/";
+	std::string python_lib_path;
 	std::string festivalLibDir = "../../../../lib/festival/festival/lib/";
 	std::string festivalCacheDir = "../../../../data/cache/festival/";
 	std::string mediaPath = SMARTBODY_DATADIR "/smartbody/data";
@@ -850,12 +850,6 @@ int main( int argc, char **argv )	{
 #endif
 							SmartBody::util::log("mediapath = %s", absPath.c_str());
 							mediaPath = absPath;
-							SmartBody::SBScene::setSystemParameter("mediapath", absPath);
-						}
-						else
-						{
-							SmartBody::util::log("mediapath = %s", mediaPath.c_str());
-							SmartBody::SBScene::setSystemParameter("mediapath", mediaPath);
 						}
 						t++;
 					}
@@ -896,6 +890,7 @@ int main( int argc, char **argv )	{
 			}
 		}
 	}
+	SmartBody::SBScene::setSystemParameter("mediapath", mediaPath);
 	settingsFile.close();
 	// EDF - taken from tre_main.cpp, a fancier command line parser can be put here if desired.
 	//	check	command line parameters:
@@ -1189,14 +1184,14 @@ int main( int argc, char **argv )	{
 
 // change the default font size
 	FL_NORMAL_SIZE = 11;
-	FltkViewerFactory* viewerFactory = new FltkViewerFactory();
-	viewerFactory->setDefaultSize(locX, locY, locW, locH);
-	viewerFactory->setUseEditor(useEditor);
-	viewerFactory->setMaximize(maximize);
-	viewerFactory->setWindowName(windowName);
+	FltkViewerFactory viewerFactory;
+	viewerFactory.setDefaultSize(locX, locY, locW, locH);
+	viewerFactory.setUseEditor(useEditor);
+	viewerFactory.setMaximize(maximize);
+	viewerFactory.setWindowName(windowName);
 	//viewerFactory->setFltkViewer(sbmWindow->getFltkViewer());
 	//viewerFactory->setFltkViewer(viewer);
-	SmartBody::SBScene::getScene()->setViewerFactory(viewerFactory);
+	SmartBody::SBScene::getScene()->setViewerFactory(&viewerFactory);
 
 	SmartBody::SBScene::getScene()->getSpeechManager()->festivalRelay()->initSpeechRelay(festivalLibDir,festivalCacheDir);
 	SmartBody::SBScene::getScene()->getSpeechManager()->cereprocRelay()->initSpeechRelay(cereprocLibDir,festivalCacheDir);
@@ -1204,11 +1199,11 @@ int main( int argc, char **argv )	{
 #if LINK_VHMSG_CLIENT
 	char * vhmsg_server = getenv( "VHMSG_SERVER" );
 	char * vhmsg_port = getenv("VHMSG_PORT");
-	bool vhmsg_disabled = ( vhmsg_server != NULL && strcasecmp( vhmsg_server, "none" ) == 0 );  // hope there is no valid server named "none"
-	std::string vhmsgServerStr = "";
+	bool vhmsg_disabled = ( vhmsg_server != nullptr && strcasecmp( vhmsg_server, "none" ) == 0 );  // hope there is no valid server named "none"
+	std::string vhmsgServerStr;
 	if (vhmsg_server)
 		vhmsgServerStr = vhmsg_server;
-	std::string vhmsgPortStr = "";
+	std::string vhmsgPortStr;
 	if (vhmsg_port)
 		vhmsgPortStr = vhmsg_port;
 
@@ -1216,9 +1211,9 @@ int main( int argc, char **argv )	{
 	SmartBody::SBVHMsgManager* vhmsgManager = SmartBody::SBScene::getScene()->getVHMsgManager();
 	if( !vhmsg_disabled)
 	{
-		if (vhmsgServerStr != "")
+		if (!vhmsgServerStr.empty())
 			vhmsgManager->setServer(vhmsgServerStr);
-		if (vhmsgPortStr != "")
+		if (!vhmsgPortStr.empty())
 			vhmsgManager->setPort(vhmsgPortStr);
 		
 		vhmsgManager->setEnable(true);
@@ -1246,13 +1241,13 @@ int main( int argc, char **argv )	{
 
 	// Sets up the network connection for sending bone rotations over to the renderer
 	
-	if( net_host != "" )
+	if( !net_host.empty() )
 	{
 		SmartBody::SBScene::getScene()->getBoneBusManager()->setHost(net_host);
 		SmartBody::SBScene::getScene()->getBoneBusManager()->setEnable(true);
 	}
 
-	if( proc_id != "" )
+	if( !proc_id.empty() )
 	{
 		SmartBody::SBScene::getScene()->setProcessId( proc_id );
 
@@ -1377,15 +1372,6 @@ int main( int argc, char **argv )	{
 
 	scene->getSimulationManager()->start();
 
-	class MyController : public SmartBody::SBController
-	{
-	public:
-		MyController() {}
-		~MyController() {}
-
-	};	
-
-
 #if ENABLE_808_TEST
 	return( 0 );
 #endif
@@ -1406,9 +1392,9 @@ int main( int argc, char **argv )	{
 	while((SmartBody::SBScene::getScene()->getSimulationManager()->isRunning()))	{
 
 
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+		SmartBody::SBScene* theScene = SmartBody::SBScene::getScene();
 //		mcu.update_profiler( SBM_get_real_time() );
-		bool update_sim = scene->getSimulationManager()->updateTimer();
+		bool update_sim = theScene->getSimulationManager()->updateTimer();
 //		bool update_sim = mcu.update_timer( SBM_get_real_time() );
 
 	//	mcu.mark( "main", 0, "fltk-check" );
@@ -1420,7 +1406,7 @@ int main( int argc, char **argv )	{
 			Fl::check();
 		}*/
 
-		scene = SmartBody::SBScene::getScene();
+		theScene = SmartBody::SBScene::getScene();
 
 #if LINK_VHMSG_CLIENT
 		if (SmartBody::SBScene::getScene()->getVHMsgManager()->isEnable())
@@ -1434,7 +1420,7 @@ int main( int argc, char **argv )	{
 
 		vector<string> commands;// = mcu.bonebus.GetCommand();
 		for ( size_t i = 0; i < commands.size(); i++ ) {
-			scene->command( (char *)commands[i].c_str() );
+			theScene->command( (char *)commands[i].c_str() );
 		}
 
 		if (isInteractive)
@@ -1460,13 +1446,12 @@ int main( int argc, char **argv )	{
 		}
 
 		if( update_sim )	{
-			scene->update();
+			theScene->update();
 		}
 	}	
 	
 	cleanup();
-	delete viewerFactory;
-	
+
 	//vhcl::Log::g_log.RemoveAllListeners();
 	//delete listener;
 //	delete sbmWindow;
