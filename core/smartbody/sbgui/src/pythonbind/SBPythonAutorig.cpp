@@ -906,17 +906,17 @@ BOOST_PYTHON_MODULE(Misc)
 
 void initGUIInterfacePythonModule()
 {
-	PyInit_GUIInterface();
+	PyImport_AppendInittab("GUIInterface", &PyInit_GUIInterface);
 }
 
 void initMiscPythonModule()
 {
-	PyInit_Misc();
+	PyImport_AppendInittab("Misc", &PyInit_Misc);
 }
 
 void initAutoRigPythonModule()
 {
-	PyInit_AutoRig();
+	PyImport_AppendInittab("AutoRig", &PyInit_AutoRig);
 }
 
 
