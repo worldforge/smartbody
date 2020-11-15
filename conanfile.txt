@@ -1,4 +1,6 @@
 [requires]
+ois/1.5
+ogre/1.12.4@smartbody/stable
 ticpp/2.5.3@smartbody/stable
 recastnavigation/cci.20200511
 lapack/3.7.1@smartbody/stable

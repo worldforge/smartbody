@@ -23,7 +23,6 @@ find_library (OGREMAIN_17_r Ogre /Users/feng/SmartBodyDev/ogre_src_v1-7-4/build/
 find_library (OISLIB OIS /Users/feng/SmartBodyDev/ogre_src_v1-8-0/build/lib/relwithdebinfo/)
 endif()
 
-set (BUILD_OGRE TRUE)
 if (${BUILD_OGRE})
 set (OGRE_LIBS
 	${OGREMAIN_17}

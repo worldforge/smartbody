@@ -1,56 +1,10 @@
-#add_subdirectory ( external/Pinocchio)
-#add_subdirectory ( external/polyvox)
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED on)
-
 include_directories(./src)
 include_directories(../SmartBody/src)
-include_directories(./external/Pinocchio)
-include_directories(./external/polyvox/library/PolyVoxCore/include)
-link_directories(/usr/lib)
-
-set(BUILD_OGRE FALSE)
-# never build ogre if in osx
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(BUILD_OGRE FALSE)
-endif ()
-
-
-find_package(OpenGL REQUIRED)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     find_library(COREAUDIO_LIBRARY CoreAudio)
     find_library(AUDIOUNIT_LIBRARY AudioUnit)
     find_library(CORESERVICES_LIBRARY CoreServices)
-    #find_library (GLEW GLEW)
-    #find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (BOOSTPYTHONLIB boost_python PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
-    find_library(FLTKLIB fltk PATHS ${CMAKE_SOURCE_DIR}/lib)
-    find_library(FLTKIMAGESLIB fltk_images PATHS ${CMAKE_SOURCE_DIR}/lib)
-    find_library(FLTKGLLIB fltk_gl PATHS ${CMAKE_SOURCE_DIR}/lib)
-
-else ()
-
-    #find_library (ACTIVEMQLIB activemq-cpp PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (XERCESLIB xerces-c PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (BOOSTPYTHONLIB boost_python PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (BOOSTFILESYSTEMLIB boost_filesystem PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (BOOSTSYSTEMLIB boost_system PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (BOOSTREGEXLIB boost_regex PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (ODELIB ode PATHS ${CMAKE_SOURCE_DIR}/lib )
-    find_library(FLTKLIB fltk)
-    find_library(FLTKIMAGESLIB fltk_images)
-    find_library(FLTKGLLIB fltk_gl)
-
-    #find_library (PROTOCLIB protoc PATHS ${CMAKE_SOURCE_DIR}/lib )
-    #find_library (PROTOBUFLIB protobuf PATHS ${CMAKE_SOURCE_DIR}/lib )
-
 endif ()
 
 

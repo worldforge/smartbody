@@ -2,17 +2,23 @@ cmake_minimum_required(VERSION 3.2)
 project(SmartBody)
 
 include(GNUInstallDirs)
+include(CMakeDependentOption)
 
+if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    message(STATUS "Using Conan for dependency resolution.")
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
+    #We need to copy all .dll files that Conan installed too.
+    #TODO: make sure that Conan only builds static libraries on Windows.
+    if (WIN32)
+        file(GLOB DLL_FILES "${CMAKE_BINARY_DIR}/bin/*.dll")
+        install(FILES ${DLL_FILES} DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
+    endif ()
 
-message(STATUS "Using Conan for dependency resolution.")
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-#We need to copy all .dll files that Conan installed too.
-#TODO: make sure that Conan only builds static libraries on Windows.
-if (WIN32)
-    file(GLOB DLL_FILES "${CMAKE_BINARY_DIR}/bin/*.dll")
-    install(FILES ${DLL_FILES} DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
-endif ()
+    set(PROTOC_CMD ${CONAN_BIN_DIRS_PROTOBUF}/protoc)
+else ()
+    message(FATAL_ERROR "Building without Conan is currently not supported.")
+endif (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 
 #We don't provide Python though Conan (currently), since the user must have Python in their system to
 # run Conan anyway. However, we might look into perhaps doing it anyways (as we then could pin the Python version)
@@ -22,22 +28,24 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 link_libraries(${PYTHON_LIBRARIES})
 
 
-
 #Make external libs available everywhere.
 include_directories(
         ${PROJECT_SOURCE_DIR}/external/boost-numeric-bindings
         ${PROJECT_SOURCE_DIR}/external
-        )
-
-set(PROTOC_CMD ${CONAN_BIN_DIRS_PROTOBUF}/protoc)
-
+)
 
 option(BUILD_STATIC "build static library" ON)
 option(BUILD_DYNAMIC "build dynamic library" ON)
 
 
-#set( CMAKE_INSTALL_PREFIX "../" )
-set(BUILD_OGRE TRUE)
+#TODO: upgrade code to handle newer version of Ogre.
+option(BUILD_OGRE "Build OGRE renderer." FALSE)
+if (BUILD_OGRE)
+    MESSAGE(STATUS "OGRE renderer will be built.")
+else ()
+    MESSAGE(STATUS "OGRE renderer will not be built.")
+endif (BUILD_OGRE)
+
 set(GOOGLE_PROFILER FALSE)
 set(BUILD_FESTIVAL FALSE)
 
@@ -55,19 +63,6 @@ set(BUILD_FESTIVAL FALSE)
 
 # uses the Open Dynamics Engine (ODE) physics library
 #set( SB_NO_ODE_PHYSICS TRUE)
-
-
-##add_definitions(	-D__linux__	-fPIC -m32 -Ignore -fpermissive -g3 )
-##add_definitions(	-g3 -fPIC -fpermissive -std=c++11)
-#if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-#    add_definitions(-O3 -D__APPLE__ -fPIC -fpermissive)
-#    #add_definitions(	-g3 -D__APPLE__ -fPIC -fpermissive )
-#else ()
-#    add_definitions(-O3 -D__linux__ -fPIC -fpermissive -std=c++11)
-#endif ()
-##add_definitions(	-v -W -Wall -Wextra -pedantic )
-
-
 
 
 if (${SB_NO_VHMSG})
