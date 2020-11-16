@@ -1,7 +1,3 @@
-include_directories(src
-        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/steerlib/include
-        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/pprAI/include)
-
 add_definitions("-DdDOUBLE")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -116,8 +112,6 @@ else ()
 endif ()
 
 
-find_package(OpenGL REQUIRED)
-
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.pb.cc
         COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
@@ -128,15 +122,6 @@ add_custom_command(
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto
 )
 
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(SBDLL)
-    set(GCCLIBS)
-else ()
-    set(SBDLL ./src/sb/smartbody-c-dll.cpp)
-    set(GCCLIBS gcc gcc_s)
-
-endif ()
 
 
 set(SMARTBODY_LIB_ME_SRC
@@ -465,18 +450,18 @@ set(SMARTBODY_LIB_SBM_SRC
         ./src/sb/SBCommandManager.cpp
         ./src/sb/SBNavigationMeshManager.cpp
 
-        ./src/sb/SBPython.cpp
-        ./src/sb/SBPythonAnimation.cpp
-        ./src/sb/SBPythonAttribute.cpp
-        ./src/sb/SBPythonCharacter.cpp
-        ./src/sb/SBPythonMath.cpp
-        ./src/sb/SBPythonMesh.cpp
-        ./src/sb/SBPythonMotion.cpp
-        ./src/sb/SBPythonScene.cpp
-        ./src/sb/SBPythonSimulation.cpp
-        ./src/sb/SBPythonSkeleton.cpp
-        ./src/sb/SBPythonSystem.cpp
-        ./src/sb/SBPythonClass.cpp
+#        ./src/sb/SBPython.cpp
+#        ./src/sb/SBPythonAnimation.cpp
+#        ./src/sb/SBPythonAttribute.cpp
+#        ./src/sb/SBPythonCharacter.cpp
+#        ./src/sb/SBPythonMath.cpp
+#        ./src/sb/SBPythonMesh.cpp
+#        ./src/sb/SBPythonMotion.cpp
+#        ./src/sb/SBPythonScene.cpp
+#        ./src/sb/SBPythonSimulation.cpp
+#        ./src/sb/SBPythonSkeleton.cpp
+#        ./src/sb/SBPythonSystem.cpp
+#        ./src/sb/SBPythonClass.cpp
 
         ./src/sb/SBAssetHandler.cpp
         ./src/sb/SBAssetHandlerHDR.cpp
@@ -501,8 +486,6 @@ set(SMARTBODY_LIB_SBM_SRC
         ./src/sbm/SteerPath.cpp
         ./src/sbm/MiscCommands.cpp
 
-        ${SBDLL}
-
         ./src/protocols/sbmotion.pb.cc
         ./src/protocols/sbutilities.pb.cc
         ./src/protocols/sbmesh.pb.cc
@@ -516,6 +499,11 @@ add_library(
         ${SMARTBODY_LIB_SR_SRC}
         ${SMARTBODY_LIB_SBM_SRC}
 )
+
+target_include_directories(SmartBody PUBLIC
+        src
+        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/steerlib/include
+        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/pprAI/include)
 
 #if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 #    conan_target_link_libraries(SmartBody)

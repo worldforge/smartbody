@@ -24,9 +24,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
 
-#ifndef __native_client__
-#include <sb/SBPythonClass.h>
-#endif
 
 #include <sb/SBSceneListener.h>
 #include <sb/SBBoneBusManager.h>

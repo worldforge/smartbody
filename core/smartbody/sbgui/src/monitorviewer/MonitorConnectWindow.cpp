@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSimulationManager.h>
 #include <sb/SBDebuggerClient.h>
 #include <sb/SBDebuggerServer.h>
-#include <sb/SBPythonClass.h>
+#include "SBPythonClass.h"
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBUtilities.h>
 

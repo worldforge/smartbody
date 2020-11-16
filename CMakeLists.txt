@@ -33,13 +33,11 @@ link_directories(${PYTHON_LIBRARY_DIRS})
 include_directories(${PYTHON_INCLUDE_DIRS})
 link_libraries(${PYTHON_LIBRARIES})
 
-find_package(Gperftools 2.5)
-
 #Gperftools should only be used when developing locally, so we don't provide this through Conan.
-cmake_dependent_option(GOOGLE_PROFILER "Use GPerftools for profiling." TRUE "GPERFTOOLS_FOUND" FALSE)
+find_package(Gperftools 2.5)
+cmake_dependent_option(GOOGLE_PROFILER "Use GPerftools for profiling." FALSE "GPERFTOOLS_FOUND" FALSE)
 if (GOOGLE_PROFILER)
     message(STATUS "Using GPerftools for profiling")
-    message(STATUS ${GPERFTOOLS_LIBRARIES})
     include_directories(${GPERFTOOLS_INCLUDE_DIRS})
     link_libraries(${GPERFTOOLS_LIBRARIES})
 endif()

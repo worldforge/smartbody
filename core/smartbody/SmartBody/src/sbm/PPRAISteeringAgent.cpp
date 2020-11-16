@@ -23,9 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBScene.h>
 #include <sb/sbm_character.hpp>
-#ifndef __native_client__
-#include <sb/SBPythonClass.h>
-#endif
+
 
 #include <controllers/me_ct_param_animation.h>
 #include <controllers/me_ct_basic_locomotion.h>

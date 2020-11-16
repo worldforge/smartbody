@@ -5,9 +5,9 @@
 #include "controllers/me_ct_gaze.h"
 #include "controllers/me_ct_eyelid.h"
 #include "controllers/me_ct_curve_writer.hpp"
-#include "SBFaceDefinition.h"
+#include "sb/SBFaceDefinition.h"
 #include <sb/nvbg.h>
-#include "SBBehavior.h"
+#include "sb/SBBehavior.h"
 #include <sb/SBMotion.h>
 #include <sb/SBParseNode.h>
 
@@ -54,7 +54,7 @@
 #include <sb/SBUtilities.h>
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <sbm/GenericViewer.h>
 #include <controllers/me_ct_motion.h>
 #include <controllers/me_ct_new_locomotion.h>

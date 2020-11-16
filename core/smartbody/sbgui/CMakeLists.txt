@@ -1,6 +1,3 @@
-include_directories(./src)
-include_directories(../SmartBody/src)
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     find_library(COREAUDIO_LIBRARY CoreAudio)
     find_library(AUDIOUNIT_LIBRARY AudioUnit)
@@ -8,11 +5,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif ()
 
 
-if (${BUILD_OGRE})
-    find_library(OGREMAIN Ogre)
-    find_library(OISLIB OIS)
-    #find_library (RTSHADERLIB OgreRTShaderSystem)
-endif ()
 if (${BUILD_OGRE})
     find_path(OGRE_INCLUDE_PATH Ogre.h)
     include_directories(${OGRE_INCLUDE_PATH})
@@ -62,9 +54,6 @@ endif ()
 
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    #find_library (LIBSNDFILE sndfile PATHS ${PROJECT_DOURCE_DIR}/lib)
-    #find_library (ALUT alut PATHS ${PROJECT_DOURCE_DIR}/lib)
-    #find_library (OPENAL openal PATHS ${PROJECT_DOURCE_DIR}/lib)
 
     link_directories(/usr/X11R6/lib)
     if (${BUILD_FESTIVAL})
@@ -75,11 +64,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
                 ${ESTOOLS}
                 )
     else ()
-        set(FESTIVAL_LIBS
-                )
-        #find_library (LIBSNDFILE sndfile )
-        #find_library (ALUT alut )
-        #find_library (OPENAL openal)
+        set(FESTIVAL_LIBS)
     endif ()
     set(MORE_LIBS
             ${COREAUDIO_LIBRARY}
@@ -90,8 +75,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             ${COCOA_LIBRARY}
             )
 else ()
-    set(MORE_LIBS
-            )
+    set(MORE_LIBS)
 
 endif ()
 
@@ -213,11 +197,17 @@ add_executable(sbgui
 
 target_link_libraries(sbgui
         SmartBody
+        SmartBody-bindings-python
         pinocchio
         ${MORE_LIBS}
         ${OGRE_LIBS}
         pthread
         )
+
+target_include_directories(sbgui PUBLIC
+        src
+        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>)
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     conan_target_link_libraries(sbgui)
@@ -225,22 +215,4 @@ endif ()
 
 
 install(TARGETS sbgui DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
-
-
-#set_target_properties(
-#
-#	${EXEC_LIST}
-#
-#	PROPERTIES
-#
-#	INSTALL_RPATH				.:${CMAKE_SOURCE_DIR}/lib
-#
-#	BUILD_WITH_INSTALL_RPATH	TRUE
-#)
-
-#install(
-#
-#  	TARGETS ${EXEC_LIST}
-#	RUNTIME DESTINATION core/smartbody/sbgui/bin
-#)
 

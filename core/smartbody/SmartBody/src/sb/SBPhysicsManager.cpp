@@ -21,10 +21,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <vhcl.h>
 
 #include "SBPhysicsManager.h"
-#ifndef __native_client__
-#include <sb/SBPythonClass.h>
-#endif
-
+#include "SBPawn.h"
+#include "SBCharacter.h"
+#include "SBSkeleton.h"
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
 #include <sb/SBPhysicsSim.h>

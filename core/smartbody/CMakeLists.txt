@@ -13,6 +13,8 @@ include_directories(
 )
 
 add_subdirectory(SmartBody)
+add_subdirectory(SmartBody-bindings-python)
+add_subdirectory(Smartbody-dll)
 add_subdirectory(simplesmartbody)
 add_subdirectory(sbgui)
 

@@ -35,10 +35,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sr/sr_camera.h>
 
 
-#ifndef __native_client__
-#include <sb/SBPythonClass.h>
-#endif
-
 bool QueryResourcesCB(void* caller, NetRequest* req);
 
 SBDebuggerUtility::SBDebuggerUtility()

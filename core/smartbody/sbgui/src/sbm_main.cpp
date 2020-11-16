@@ -51,7 +51,7 @@
 #include <sbm/time_regulator.h>
 //#include "SBMWindow.h"
 #include "CommandWindow.h"
-#include <sb/SBPython.h>
+#include "SBPython.h"
 #include <sb/SBSteerManager.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBVHMsgManager.h>

@@ -23,7 +23,7 @@
 #include <sb/SBVHMsgManager.h>
 #include <sbm/Heightfield.h>
 #include <sbm/KinectProcessor.h>
-#include <sb/SBPython.h>
+#include "SBPython.h"
 #include <sb/SBVersion.hpp>
 #include <sb/SBBehaviorSetManager.h>
 #include <sb/SBUtilities.h>
