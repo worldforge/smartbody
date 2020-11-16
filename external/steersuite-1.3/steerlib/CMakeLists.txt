@@ -1,4 +1,4 @@
-add_definitions(-DENABLE_GUI)
+#add_definitions(-DENABLE_GUI)
 
 # osx c++ version >= clang 4.2.0
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
