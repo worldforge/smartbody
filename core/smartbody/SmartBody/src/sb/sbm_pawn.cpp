@@ -41,11 +41,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/sbm_deformable_mesh.h"
 #include <sb/SBPawn.h>
 
-#if defined(__ANDROID__) || defined(SB_IPHONE) || defined(__native_client__) || defined(__FLASHPLAYER__)
-#include <sbm/sbm_deformable_mesh.h>
-#else
-#include <sbm/GPU/SbmDeformableMeshGPU.h>
-#endif
 
 #include <string.h>
 #include <iostream>

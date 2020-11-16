@@ -20,10 +20,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-#include <sb/SBTypes.h>
 #include "sb/sbm_character.hpp"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <iostream>
 #include <string>
@@ -49,7 +48,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/sbm_speech.hpp"
 #include "sbm/general_param_setting.h"
 #include <sbm/PPRAISteeringAgent.h>
-#include <boost/filesystem/operations.hpp>
 #include <sb/SBSkeleton.h>
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
@@ -91,10 +89,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_data_receiver.h>
 #include <controllers/me_ct_physics_controller.h>
 
-// android does not use GPU shader for now
-#if !defined(__ANDROID__) && !defined(__FLASHPLAYER__) && !defined(SB_IPHONE)
-#include <sbm/GPU/SbmDeformableMeshGPU.h>
-#endif
 
 #define USE_NEW_LOCOMOTION 1
 #define USE_REACH 1
