@@ -3,7 +3,7 @@
 #include <sb/SBBehaviorSetManager.h>
 #include <sb/SBBehaviorSet.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <FL/Fl_Check_Button.H>
 #include <sstream>
 #include <cstring>

@@ -34,7 +34,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBTypes.h>
 #include <sb/SBAttribute.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 //#include "imdebug/imdebug.h"
 #include <sr/sr_gl.h>
 

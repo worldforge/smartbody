@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "bml_exception.hpp"
 #include "bml_xml_consts.hpp"
 #include "sbm/BMLDefs.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 using namespace std;

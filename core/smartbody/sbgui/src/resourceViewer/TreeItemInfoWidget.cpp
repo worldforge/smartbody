@@ -29,7 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBEvent.h>
 #include <sb/SBAnimationStateManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include "ResourceWindow.h"
 #include "channelbufferviewer/GlChartViewArchive.hpp"

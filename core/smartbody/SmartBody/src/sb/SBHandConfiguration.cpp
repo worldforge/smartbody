@@ -22,7 +22,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBMotion.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 namespace SmartBody {

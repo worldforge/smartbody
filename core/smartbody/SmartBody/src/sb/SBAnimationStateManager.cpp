@@ -26,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBCharacter.h>
 #include <sb/SBScene.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/me_ct_param_animation.h>
 
 namespace SmartBody {

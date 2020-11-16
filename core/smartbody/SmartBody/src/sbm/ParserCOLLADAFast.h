@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sk/sk_motion.h"
 #include <sr/sr_material.h>
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include <sbm/sbm_deformable_mesh.h>
 
 typedef std::map<std::string, std::vector<SrVec> > VecListMap;

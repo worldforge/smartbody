@@ -18,7 +18,7 @@
 #include <vhcl.h>
 #include <sb/SBScene.h>
 #include <sb/SBPawn.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_camera.h>
 #include <boost/filesystem/operations.hpp>
 #include <boost/algorithm/string/predicate.hpp>

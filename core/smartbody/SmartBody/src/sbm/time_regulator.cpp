@@ -22,7 +22,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #ifndef WIN32
 #include <unistd.h>
 #endif

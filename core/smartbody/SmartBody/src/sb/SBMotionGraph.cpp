@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBRetarget.h>
 #include <sb/SBRetargetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/me_ct_motion_timewarp.hpp>
 #include <controllers/me_ct_param_animation_utilities.h>
 #include <controllers/me_ct_jacobian_IK.hpp>

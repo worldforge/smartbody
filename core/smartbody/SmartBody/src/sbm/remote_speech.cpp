@@ -38,7 +38,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBCommandManager.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/local_speech.h>
 
 #include "sbm/xercesc_utils.hpp"

@@ -38,7 +38,7 @@
 #include <sb/SBCommandManager.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCharacter.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/sbm_speech_audiofile.hpp>
 #include <controllers/me_ct_scheduler2.h>
 #include <controllers/me_ct_blend.hpp>

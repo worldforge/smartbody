@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <GLES3/gl3.h>
 #endif
 #include "SbmShader.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

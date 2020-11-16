@@ -31,7 +31,7 @@
 #include <sk/sk_skeleton.h>
 #include <sb/SBController.h>
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 
 /*
 SBM commands:

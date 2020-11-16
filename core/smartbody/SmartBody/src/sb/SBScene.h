@@ -24,7 +24,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBTypes.h>
 #include <sb/SBObject.h>
 #include <sb/SBScript.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <map>
 #include <sstream>
 #include <sr/sr_viewer.h>

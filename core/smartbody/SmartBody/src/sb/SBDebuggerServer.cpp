@@ -36,7 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBAnimationState.h>
 #include <sb/SBAnimationTransition.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_camera.h>
 
 using std::string;

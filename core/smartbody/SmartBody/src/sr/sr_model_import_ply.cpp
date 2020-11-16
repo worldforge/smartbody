@@ -22,8 +22,8 @@
 
 #include <sr/sr_string_array.h>
 #include <sr/sr_model.h>
-#include <sb/SBTypes.h>
-#include <sb/SBUtilities.h>
+#include "SBABI.h"
+#include "SBUtilities.h"
 #include "rply/rply.h"
 
 #if !defined(EMSCRIPTEN)

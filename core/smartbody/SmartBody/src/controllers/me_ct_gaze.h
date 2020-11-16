@@ -26,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sk/sk_skeleton.h>
 #include <sb/SBController.h>
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "controllers/me_ct_gaze_joint.h"
 #include "me_blend_cover.h"
 

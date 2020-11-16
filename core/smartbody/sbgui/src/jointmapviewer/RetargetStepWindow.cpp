@@ -16,7 +16,7 @@
 #include <sb/SBBehaviorSet.h>
 #include <sb/SBBehaviorSetManager.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <SBSelectionManager.h>
 #include <sbm/ParserOpenCOLLADA.h>
 

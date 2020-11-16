@@ -27,7 +27,7 @@
 #include <sb/SBAnimationState.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBMotion.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include "ParamAnimBlock.h"
 #include "ParamAnimStateCreatorWidget.h"

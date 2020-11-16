@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttribute.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 const int MaxPolys = 255;
 

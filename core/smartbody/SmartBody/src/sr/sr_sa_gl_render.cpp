@@ -23,7 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sr/sr_gl_render_funcs.h>
 # include <sr/sr_sa_render_mode.h>
 # include <sr/sr_sa_gl_render.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 //# define SR_USE_TRACE1 // constructor / destructor
 //# define SR_USE_TRACE2 // render

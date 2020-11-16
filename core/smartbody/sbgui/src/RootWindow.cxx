@@ -26,7 +26,7 @@
 #include "SBPython.h"
 #include <sb/SBVersion.hpp>
 #include <sb/SBBehaviorSetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "SBRenderer.h" 
 #include"resourceViewer/AttributeEditor.h"
 #include "FLTKOgreViewer.h"

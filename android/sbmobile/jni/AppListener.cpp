@@ -12,7 +12,7 @@
 #include <sb/SBBmlProcessor.h>
 #include <sb/SBAttribute.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
 

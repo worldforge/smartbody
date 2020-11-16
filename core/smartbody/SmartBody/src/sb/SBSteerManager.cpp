@@ -26,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttribute.h>
 #include <PPRAgent.h>
 #include <sb/SBSteerAgent.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/PPRAISteeringAgent.h>
 #include <sbm/SteerSuiteEngineDriver.h>
 #include <SteerLib.h>

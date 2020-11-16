@@ -25,7 +25,7 @@
 #include "controllers/me_ct_locomotion.hpp"
 #include "sbm/mcontrol_util.h"
 #include "sbm/sbm_character.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "limits.h"
 
 #include <iostream>

@@ -21,7 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBReach.h"
 #include <sb/SBCharacter.h>
 #include <sb/SBMotion.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/MeCtBodyReachState.h>
 #include <controllers/MeCtReachEngine.h>
 

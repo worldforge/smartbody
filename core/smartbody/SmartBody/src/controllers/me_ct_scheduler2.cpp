@@ -35,7 +35,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_interpolator.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/me_prune_policy.hpp>
 
 

@@ -9,7 +9,7 @@
 #include <sr/sr_sa_gl_render.h>
 #include <sr/sr_gl_render_funcs.h>
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 
 /************************************************************************/
 /* Rotation Control Widget                                              */

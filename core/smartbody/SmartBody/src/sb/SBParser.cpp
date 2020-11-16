@@ -41,7 +41,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <parser/InputTree.h>
 
 #include <sb/SBParseNode.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #define log2(x) (log (x) / M_LN2)
 

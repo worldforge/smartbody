@@ -24,7 +24,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sr_arg_buff.h"
 
 #include <string.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #define MAX_CMD_ARGL 8192
 

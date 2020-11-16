@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <string.h>
 #include <sb/SBJoint.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace std;
 #ifdef WIN32

@@ -24,7 +24,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBCommandManager.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <bml/bml_processor.hpp>
 #include <sbm/rapidxml_utils.hpp>
 #include <bml/BMLObject.h>

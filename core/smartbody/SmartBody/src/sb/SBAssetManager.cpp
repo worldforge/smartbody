@@ -37,7 +37,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAssetHandlerPly.h>
 #include <sb/SBAssetHandlerHDR.h>
 #include <sb/SBAssetHandlerSBMeshBinary.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <boost/version.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>

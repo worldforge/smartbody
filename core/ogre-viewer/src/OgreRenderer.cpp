@@ -3,7 +3,7 @@
 #include "OgreRenderer.h"
 #include "OgreFrameListener.h"
 #include "BoneBusHandler.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 OgreRenderer::OgreRenderer() : ExampleApplication()
 {

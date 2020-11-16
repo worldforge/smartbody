@@ -7,7 +7,7 @@
 #include <sb/SBSimulationManager.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "CommandWindow.h"
 #include <RootWindow.h>
 #include <fltk_viewer.h>

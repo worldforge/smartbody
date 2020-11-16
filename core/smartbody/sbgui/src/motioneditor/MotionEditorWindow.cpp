@@ -3,7 +3,7 @@
 #include <sb/SBBmlProcessor.h>
 #include <sb/SBJointMapManager.h>
 #include <sb/SBJointMap.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <FL/Fl_File_Chooser.H>
 #include <boost/version.hpp>
 #include <boost/filesystem/operations.hpp>

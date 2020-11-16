@@ -31,7 +31,7 @@
 # define ME_CT_BREATHING_INTERFACE_H
 
 # include <sk/sk_motion.h>
-# include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 #include <controllers/me_spline_1d.hpp>
 
 #include <vector>

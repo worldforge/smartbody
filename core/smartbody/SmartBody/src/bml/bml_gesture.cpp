@@ -44,7 +44,7 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_scheduler2.h>
 #include <sbm/PPRAISteeringAgent.h>
 #include <sb/SBMotion.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace std;
 using namespace BML;

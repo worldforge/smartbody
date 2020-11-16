@@ -34,7 +34,7 @@
 #include <sbm/action_unit.hpp>
 #include <sbm/sr_path_list.h>
 #include <sb/sbm_character.hpp>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "FLTKListener.h"
 
 

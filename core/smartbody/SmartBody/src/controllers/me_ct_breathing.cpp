@@ -19,12 +19,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 # include <controllers/me_ct_breathing.h>
-# include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 # include <sr/sr_output.h>
 #include <cstdio>
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 std::string MeCtBreathing::type_name = "Breathing";
 

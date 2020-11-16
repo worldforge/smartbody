@@ -2,7 +2,7 @@
 #include "VoxelizerWindow.h"
 #include "GL/glew.h"
 #include <sr/sr_gl.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 //#include <imdebug/imdebug.h>
 #include <queue>
 

@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include	<stdio.h>
 #include	<string.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include "sr_hash_map.h"
 

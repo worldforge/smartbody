@@ -23,7 +23,7 @@
 #include "controllers/me_ct_locomotion_simple.hpp"
 #include "sbm/sbm_character.hpp"
 #include "limits.h"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 
 #if 0
 using namespace gwiz;

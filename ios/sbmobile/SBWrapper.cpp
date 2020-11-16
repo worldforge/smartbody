@@ -23,7 +23,7 @@
 #include <sb/SBAttribute.h>
 #include <sb/SBSceneListener.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include <sbm/mcontrol_callbacks.h>
 #include <sbm/sbm_deformable_mesh.h>
@@ -37,7 +37,7 @@
 #include <sr/sr_camera.h>
 #include <sr/sr_gl_render_funcs.h>
 #include <sr/sr_euler.h>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 
 
 #include <boost/filesystem/operations.hpp>

@@ -23,7 +23,7 @@
 # ifndef SR_GL_RENDER_FUNCS_H
 # define SR_GL_RENDER_FUNCS_H
 
-#include <sb/SBTypes.h>
+#include "SBABI.h"
 
 /** \file sr_gl_render_funcs.h 
  * OpenGL render functions of SR shapes

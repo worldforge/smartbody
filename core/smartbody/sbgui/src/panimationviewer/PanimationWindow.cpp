@@ -36,7 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 PanimationWindowListener::PanimationWindowListener(PanimationWindow* window)

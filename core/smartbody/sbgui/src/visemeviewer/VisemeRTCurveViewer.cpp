@@ -3,7 +3,7 @@
 #include <sr/sr_gl.h>
 #include <sr/sr_light.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 #ifdef WIN32

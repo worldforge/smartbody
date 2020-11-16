@@ -12,6 +12,9 @@ include_directories(
         ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/pprAI/include
 )
 
+add_subdirectory(util)
+add_subdirectory(math)
+add_subdirectory(sr)
 add_subdirectory(SmartBody)
 add_subdirectory(SmartBody-bindings-python)
 add_subdirectory(Smartbody-dll)

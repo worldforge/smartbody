@@ -5,7 +5,7 @@
 #include <sr/sr_alg.h>
 #include <algorithm>
 #include <boost/foreach.hpp>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 #include <sb/SBScene.h>
 
 const float PI_CONST = 3.14159265358979323846f;

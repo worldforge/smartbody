@@ -21,7 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sr/sr_vec.h>
 #include <sb/SBAttribute.h>
 #include <sb/SBAttributeManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 namespace SmartBody {

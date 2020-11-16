@@ -46,7 +46,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationTransition.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBCommandManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/me_ct_param_animation.h>
 #include <controllers/me_ct_data_receiver.h>
 #include <controllers/me_ct_scheduler2.h>

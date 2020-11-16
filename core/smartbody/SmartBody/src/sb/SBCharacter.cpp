@@ -42,7 +42,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSceneListener.h>
 #include <sb/SBMotionGraph.h>
 #include <sb/SBParser.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/MeCtReachEngine.h>
 #include <controllers/me_ct_motion_recorder.h>
 #include <controllers/me_ct_scheduler2.h>

@@ -35,7 +35,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "controllers/me_ct_example_body_reach.hpp"
 #include "controllers/me_controller_tree_root.hpp"
 #include <sb/SBCharacter.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "bml_target.hpp"
 #include "bml_xml_consts.hpp"
 #include "sbm/xercesc_utils.hpp"

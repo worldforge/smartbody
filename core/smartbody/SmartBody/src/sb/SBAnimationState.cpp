@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBEvent.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBJointMap.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <set>
 #include <boost/algorithm/string.hpp>
 #include <controllers/me_ct_param_animation.h>

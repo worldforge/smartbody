@@ -29,7 +29,7 @@
 #include "me_ct_limb.hpp"
 #include "me_ct_jacobian_IK.hpp"
 #include "me_ct_ccd_IK.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 
 
 class MeCtPosePostProcessing : public MeCtConstraint

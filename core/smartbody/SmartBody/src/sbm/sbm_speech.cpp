@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "sbm/sbm_speech.hpp"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace std;
 using namespace SmartBody;

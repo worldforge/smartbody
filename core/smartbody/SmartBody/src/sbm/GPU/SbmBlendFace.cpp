@@ -37,11 +37,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 #include "SbmBlendFace.h"
-#include <sr/jpge.h>
+#include "jpge/jpge.h"
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>
 #include <sb/SBPawn.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>

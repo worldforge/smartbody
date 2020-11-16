@@ -1,6 +1,6 @@
 #pragma once
 #include "me_ct_IK_scenario.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include <sk/sk_motion.h>
 
 // Contains the joint chains and rotation info for IK

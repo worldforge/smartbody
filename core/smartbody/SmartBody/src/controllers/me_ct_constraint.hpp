@@ -29,7 +29,7 @@
 #include <sb/SBCharacter.h>
 #include "me_ct_limb.hpp"
 #include "me_ct_jacobian_IK.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 
 class EffectorJointConstraint : public EffectorConstraint
 {

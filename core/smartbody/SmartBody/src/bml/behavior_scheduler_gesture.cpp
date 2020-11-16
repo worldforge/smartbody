@@ -19,7 +19,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "bml.hpp"
 #include "behavior_scheduler_gesture.hpp"
 

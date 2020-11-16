@@ -31,7 +31,7 @@
 # include <sk/sk_scene.h>
 # include <sk/sk_skeleton.h>
 # include <sk/sk_joint.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 

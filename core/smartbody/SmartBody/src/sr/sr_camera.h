@@ -27,7 +27,7 @@
  * Keeps camera parameters
  */
 
-#include <sb/SBTypes.h>
+#include "SBABI.h"
 #include <sr/sr_vec.h>
 #include <sr/sr_quat.h>
 #include <sr/sr_plane.h>

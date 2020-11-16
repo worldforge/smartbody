@@ -5,7 +5,7 @@
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBSkeleton.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sb/SBPawn.h>
 #include <sr/sr_camera.h>
 #include <sr/sr_light.h>

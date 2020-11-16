@@ -13,7 +13,7 @@
 #include "MeCtBodyReachState.h"
 #include <sb/sbm_character.hpp>
 #include <sb/SBCharacter.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 

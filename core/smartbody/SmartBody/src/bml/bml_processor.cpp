@@ -71,7 +71,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBBmlProcessor.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace BML;
 using namespace SmartBody;

@@ -1,5 +1,5 @@
 #include "SBMobile.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <boost/foreach.hpp>
 #include <boost/optional.hpp>
 #include <boost/filesystem/path.hpp>

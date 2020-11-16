@@ -5,7 +5,7 @@
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBMotion.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "ParamAnimEditorWidget.h"
 #include "ParamAnimStateEditor.h"
 

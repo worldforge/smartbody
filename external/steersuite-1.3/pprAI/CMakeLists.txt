@@ -7,7 +7,9 @@ add_library(
         src/PPRAgent.cpp
 )
 
-
+target_include_directories(pprAI PUBLIC
+        include
+        $<TARGET_PROPERTY:steerlib,INCLUDE_DIRECTORIES>)
 
 target_link_libraries(pprAI
         steerlib
@@ -15,18 +17,4 @@ target_link_libraries(pprAI
 
 install(TARGETS pprAI DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
-
-#set_target_properties(
-#        ${EXEC_LIST}
-#        PROPERTIES
-#        ## link with install tree:
-#        INSTALL_RPATH "${APP_LIBRARY_SOURCE_PATHS}"
-#        BUILD_WITH_INSTALL_RPATH TRUE
-#)
-#
-#install(
-#        TARGETS ${EXEC_LIST}
-#        DESTINATION core/smartbody/sbgui/bin
-#
-#)
 

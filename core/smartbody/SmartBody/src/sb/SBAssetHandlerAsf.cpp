@@ -26,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/algorithm/string.hpp>
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/ParserASFAMC.h>
 
 namespace SmartBody {

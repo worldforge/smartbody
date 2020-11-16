@@ -32,7 +32,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBPawn.h>
 #include <sb/SBSkeleton.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include "sbm/lin_win.h"
 using namespace std;

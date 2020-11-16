@@ -25,10 +25,10 @@
 #include <controllers/me_ct_param_animation_utilities.h>
 #include <controllers/me_ct_scheduler2.h>
 #include <sb/SBScene.h>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 #include <sb/SBRetargetManager.h>
 #include <sb/SBRetarget.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 std::string MeCtNewLocomotion::_type_name = "NewLocomotion";
 

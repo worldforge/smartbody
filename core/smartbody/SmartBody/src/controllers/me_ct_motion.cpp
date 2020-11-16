@@ -27,7 +27,7 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBRetarget.h>
 #include <sb/SBMotion.h>
 #include <sb/SBSkeleton.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "controllers/me_ct_generic_hand.h"
 #include <perlin/perlin.h>
 

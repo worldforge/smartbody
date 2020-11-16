@@ -25,9 +25,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBCharacter.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBAttribute.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_output.h>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 #include <controllers/me_ct_ublas.hpp>
 
 

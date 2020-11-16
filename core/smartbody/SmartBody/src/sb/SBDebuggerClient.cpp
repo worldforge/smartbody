@@ -24,7 +24,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBDebuggerClient.h"
 #include "SBDebuggerUtility.h"
 #include <sb/SBSimulationManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include <string>
 #include <vector>

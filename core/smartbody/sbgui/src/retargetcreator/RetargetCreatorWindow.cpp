@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <FL/Fl_Device.H>
 #include <FL/fl_draw.H>
 #include <FL/Fl_File_Chooser.H>

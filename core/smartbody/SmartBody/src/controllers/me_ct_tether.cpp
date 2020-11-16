@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "sbm/lin_win.h"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 using namespace gwiz;
 
 #include "controllers/me_ct_tether.h"

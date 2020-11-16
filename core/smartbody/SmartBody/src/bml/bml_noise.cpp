@@ -4,7 +4,7 @@
 #include <string>
 
 #include <xercesc/util/XMLStringTokenizer.hpp>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "bml_noise.hpp"
 
 

@@ -26,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSimulationManager.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBEvent.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/ODEPhysicsSim.h>
 #include <boost/lexical_cast.hpp>
 #include <sr/sr_color.h>

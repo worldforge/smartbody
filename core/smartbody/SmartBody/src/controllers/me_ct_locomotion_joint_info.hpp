@@ -25,7 +25,7 @@
 
 #include "sbm/lin_win.h"
 #include <controllers/me_controller.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 //#include "controllers/me_ct_locomotion_limb.hpp"
 

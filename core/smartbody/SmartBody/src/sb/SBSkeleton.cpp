@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBCharacter.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_string.h>
 #include <controllers/me_controller_tree_root.hpp>
 

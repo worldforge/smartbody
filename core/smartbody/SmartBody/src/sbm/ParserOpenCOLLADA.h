@@ -29,7 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBJoint.h>
 #include <sr/sr_material.h>
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 
 typedef std::map<std::string, std::vector<SrVec> > VecListMap;
 class DeformableMesh;

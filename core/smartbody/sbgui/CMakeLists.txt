@@ -198,6 +198,7 @@ add_executable(sbgui
 target_link_libraries(sbgui
         SmartBody
         SmartBody-bindings-python
+        jpge
         pinocchio
         ${MORE_LIBS}
         ${OGRE_LIBS}
@@ -206,6 +207,7 @@ target_link_libraries(sbgui
 
 target_include_directories(sbgui PUBLIC
         src
+        $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>)
 

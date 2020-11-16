@@ -21,8 +21,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sr/sr_string_array.h>
 #include <sr/sr_model.h>
-#include <sb/SBTypes.h>
-#include <sb/SBUtilities.h>
+#include "SBABI.h"
+#include "SBUtilities.h"
 
 #include <boost/algorithm/string.hpp>
 #include <iostream>

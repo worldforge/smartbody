@@ -31,7 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_controller_context_proxy.hpp>
 #include <controllers/me_controller_context_proxy.hpp>
 #include <controllers/me_evaluation_logger.hpp>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 using namespace std;

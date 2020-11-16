@@ -17,9 +17,9 @@
 #include <CEGUI/RendererModules/OpenGL/GLRenderer.h>
 #include <FL/Fl.H>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_gl_render_funcs.h>
-#include <sr/jpge.h>
+#include "jpge/jpge.h"
 
 #endif
 

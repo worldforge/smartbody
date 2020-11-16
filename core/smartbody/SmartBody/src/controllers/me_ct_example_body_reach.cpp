@@ -31,7 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBEvent.h>
 #include <sb/sbm_character.hpp>
 #include <sb/SBCharacter.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "me_ct_example_body_reach.hpp"
 #include "me_ct_barycentric_interpolation.h"
 

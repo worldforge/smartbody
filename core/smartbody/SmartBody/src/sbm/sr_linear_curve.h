@@ -23,8 +23,8 @@
 #ifndef SR_LINEAR_CURVE_H
 #define SR_LINEAR_CURVE_H
 
-#include <stdio.h>
-#include "sbm/gwiz_math.h"
+#include <cstdio>
+#include "gwiz_math.h"
 #include "sr_spline_curve.h"
 
 #define ENABLE_OBJ_KEY_CT	0

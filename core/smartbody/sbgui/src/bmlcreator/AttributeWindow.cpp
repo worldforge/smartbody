@@ -39,7 +39,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttributeManager.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBCharacter.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "TextEditor.h"
 #include "../flu/Flu_Collapsable_Group.h"
 #include "sb/SBTypes.h"

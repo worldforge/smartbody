@@ -63,7 +63,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationState.h>
 #include <sb/SBSceneListener.h>
 #include <sb/SBFaceDefinition.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/me_ct_examples.h>
 #include <controllers/me_ct_motion_player.h>
 #include <controllers/me_ct_pose.h>

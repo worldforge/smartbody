@@ -23,7 +23,7 @@
 #include "controllers/me_ct_locomotion_speed_accelerator.hpp"
 
 #include "sbm/sbm_character.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "limits.h"
 
 

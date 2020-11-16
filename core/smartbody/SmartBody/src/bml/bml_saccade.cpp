@@ -34,7 +34,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "bml_event.hpp"
 #include "sbm/xercesc_utils.hpp"
 #include "sbm/BMLDefs.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace std;
 using namespace BML;

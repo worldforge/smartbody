@@ -51,7 +51,7 @@
 #include <sb/SBEvent.h>
 #include <sb/SBSceneListener.h>
 #include <sb/SBNavigationMesh.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>
 #include <cstdlib>

@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sr/sr_euler.h>
 #include "controllers/me_ct_motion_parameter.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 MotionParameter::MotionParameter(SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints)
 {

@@ -16,7 +16,7 @@
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBBmlProcessor.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "BehaviorBlock.h"
 #include <bml/bml_types.hpp>
 #include <sbm/text_speech.h>

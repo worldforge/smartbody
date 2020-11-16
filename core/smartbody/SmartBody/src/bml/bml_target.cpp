@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "bml_target.hpp"
 #include "sbm/BMLDefs.h"
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #define DEBUG_BML_TARGET				(0)
 

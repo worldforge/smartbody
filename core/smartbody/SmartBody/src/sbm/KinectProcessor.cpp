@@ -25,7 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAssetManager.h>
 #include <sb/SBRetargetManager.h>
 #include <sb/SBRetarget.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 KinectProcessor::KinectProcessor()
 {

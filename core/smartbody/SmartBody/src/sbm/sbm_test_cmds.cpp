@@ -37,7 +37,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBBmlProcessor.h>
 #include <sb/SBAttribute.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <boost/filesystem.hpp>
 #include <boost/version.hpp>
 #include <bml/bml_processor.hpp>

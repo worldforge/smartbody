@@ -30,7 +30,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBMotion.h>
 
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <bml/bml.hpp>
 #include <controllers/me_controller_tree_root.hpp>
 

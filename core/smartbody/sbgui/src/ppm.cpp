@@ -5,7 +5,7 @@
 #include <cstring>
 #include <cstdlib>
 #include "pic.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 /*
  * ppm: subroutines for reading PPM picture files

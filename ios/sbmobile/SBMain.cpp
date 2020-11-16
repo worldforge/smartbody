@@ -17,7 +17,7 @@
 #include <jni.h>
 #include <vhcl.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <boost/filesystem/operations.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <sbm/GPU/SbmTexture.h>

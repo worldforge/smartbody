@@ -21,7 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "nvbg.h"
 
 #include <sb/SBAttribute.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 namespace SmartBody 
 {

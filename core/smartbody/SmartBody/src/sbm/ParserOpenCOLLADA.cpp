@@ -35,7 +35,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAssetManager.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBMotion.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/sbm_deformable_mesh.h>
 
 

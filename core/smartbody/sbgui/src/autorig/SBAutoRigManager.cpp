@@ -19,7 +19,7 @@
 #include <sb/SBSkeleton.h>
 #include <sb/SBJoint.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/sbm_deformable_mesh.h>
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
 #include <boost/foreach.hpp>

@@ -167,62 +167,62 @@ set(SMARTBODY_LIB_SK_SRC
 
 set(SMARTBODY_LIB_SR_SRC
 
-        ./src/sr/sr_alg.cpp
-        ./src/sr/sr_array.cpp
-        ./src/sr/sr_box.cpp
-        ./src/sr/sr_buffer.cpp
+#        ./src/sr/sr_alg.cpp
+#        ./src/sr/sr_array.cpp
+#        ./src/sr/sr_box.cpp
+#        ./src/sr/sr_buffer.cpp
         ./src/sr/sr_camera.cpp
-        ./src/sr/sr_color.cpp
-        ./src/sr/sr.cpp
-        ./src/sr/sr_cylinder.cpp
-        ./src/sr/sr_euler.cpp
-        ./src/sr/sr_event.cpp
-        ./src/sr/sr_geo2.cpp
-        ./src/sr/sr_gl.cpp
+#        ./src/sr/sr_color.cpp
+#        ./src/sr/sr.cpp
+#        ./src/sr/sr_cylinder.cpp
+#        ./src/sr/sr_euler.cpp
+#        ./src/sr/sr_event.cpp
+#        ./src/sr/sr_geo2.cpp
+#        ./src/sr/sr_gl.cpp
         ./src/sr/sr_gl_render_funcs.cpp
-        ./src/sr/sr_hash_table.cpp
-        ./src/sr/sr_input.cpp
-        ./src/sr/sr_light.cpp
-        ./src/sr/sr_line.cpp
-        ./src/sr/sr_lines.cpp
-        ./src/sr/sr_mat.cpp
-        ./src/sr/sr_material.cpp
-        ./src/sr/sr_model.cpp
-        ./src/sr/sr_model_export_iv.cpp
+#        ./src/sr/sr_hash_table.cpp
+#        ./src/sr/sr_input.cpp
+#        ./src/sr/sr_light.cpp
+#        ./src/sr/sr_line.cpp
+#        ./src/sr/sr_lines.cpp
+#        ./src/sr/sr_mat.cpp
+#        ./src/sr/sr_material.cpp
+#        ./src/sr/sr_model.cpp
+#        ./src/sr/sr_model_export_iv.cpp
         ./src/sr/sr_model_import_obj.cpp
         ./src/sr/sr_model_import_ply.cpp
-        ./src/sr/sr_output.cpp
-        ./src/sr/sr_path_array.cpp
-        ./src/sr/sr_plane.cpp
-        ./src/sr/sr_points.cpp
-        ./src/sr/sr_polygon.cpp
-        ./src/sr/sr_polygons.cpp
-        ./src/sr/sr_quat.cpp
-        ./src/sr/sr_sa_bbox.cpp
-        ./src/sr/sr_sa.cpp
-        ./src/sr/sr_random.cpp
-        ./src/sr/sr_sa_event.cpp
-        ./src/sr/sr_sa_gl_render.cpp
-        ./src/sr/sr_sa_render_mode.cpp
-        ./src/sr/sr_shared_ptr.cpp
-        ./src/sr/sr_sn.cpp
-        ./src/sr/sr_sn_editor.cpp
-        ./src/sr/sr_sn_group.cpp
-        ./src/sr/sr_sn_matrix.cpp
-        ./src/sr/sr_sn_shape.cpp
-        ./src/sr/sr_sn_colorsurf.cpp
-        ./src/sr/sr_sphere.cpp
-        ./src/sr/sr_spline.cpp
-        ./src/sr/sr_string_array.cpp
-        ./src/sr/sr_string.cpp
-        ./src/sr/sr_timer.cpp
-        ./src/sr/sr_trackball.cpp
-        ./src/sr/sr_tree.cpp
-        ./src/sr/sr_triangle.cpp
-        ./src/sr/sr_vec2.cpp
-        ./src/sr/sr_vec.cpp
-        ./src/sr/sr_viewer.cpp
-        ./src/sr/jpge.cpp
+#        ./src/sr/sr_output.cpp
+#        ./src/sr/sr_path_array.cpp
+#        ./src/sr/sr_plane.cpp
+#        ./src/sr/sr_points.cpp
+#        ./src/sr/sr_polygon.cpp
+#        ./src/sr/sr_polygons.cpp
+#        ./src/sr/sr_quat.cpp
+#        ./src/sr/sr_sa_bbox.cpp
+#        ./src/sr/sr_sa.cpp
+#        ./src/sr/sr_random.cpp
+#        ./src/sr/sr_sa_event.cpp
+       ./src/sr/sr_sa_gl_render.cpp
+#        ./src/sr/sr_sa_render_mode.cpp
+#        ./src/sr/sr_shared_ptr.cpp
+#        ./src/sr/sr_sn.cpp
+#        ./src/sr/sr_sn_editor.cpp
+#        ./src/sr/sr_sn_group.cpp
+#        ./src/sr/sr_sn_matrix.cpp
+#        ./src/sr/sr_sn_shape.cpp
+#        ./src/sr/sr_sn_colorsurf.cpp
+#        ./src/sr/sr_sphere.cpp
+#        ./src/sr/sr_spline.cpp
+#        ./src/sr/sr_string_array.cpp
+#        ./src/sr/sr_string.cpp
+#        ./src/sr/sr_timer.cpp
+#        ./src/sr/sr_trackball.cpp
+#        ./src/sr/sr_tree.cpp
+#        ./src/sr/sr_triangle.cpp
+#        ./src/sr/sr_vec2.cpp
+#        ./src/sr/sr_vec.cpp
+#        ./src/sr/sr_viewer.cpp
+#        ./src/sr/jpge.cpp
         ./src/sr/planner/sk_blend_cfg.cpp
         ./src/sr/planner/sk_pos_planner.cpp
         ./src/sr/planner/sk_blend_cfg_manager.cpp
@@ -282,9 +282,6 @@ set(SMARTBODY_LIB_SBM_SRC
         ./src/bml/BMLNoiseObject.cpp
 
         ./src/sbm/GenericViewer.cpp
-        ./src/sbm/gwiz_cmdl.cpp
-        ./src/sbm/gwiz_math.cpp
-        ./src/sbm/gwiz_spline.cpp
         ./src/sbm/Heightfield.cpp
         ./src/sbm/lin_win.cpp
         ./src/sbm/mcontrol_callbacks.cpp
@@ -450,19 +447,6 @@ set(SMARTBODY_LIB_SBM_SRC
         ./src/sb/SBCommandManager.cpp
         ./src/sb/SBNavigationMeshManager.cpp
 
-#        ./src/sb/SBPython.cpp
-#        ./src/sb/SBPythonAnimation.cpp
-#        ./src/sb/SBPythonAttribute.cpp
-#        ./src/sb/SBPythonCharacter.cpp
-#        ./src/sb/SBPythonMath.cpp
-#        ./src/sb/SBPythonMesh.cpp
-#        ./src/sb/SBPythonMotion.cpp
-#        ./src/sb/SBPythonScene.cpp
-#        ./src/sb/SBPythonSimulation.cpp
-#        ./src/sb/SBPythonSkeleton.cpp
-#        ./src/sb/SBPythonSystem.cpp
-#        ./src/sb/SBPythonClass.cpp
-
         ./src/sb/SBAssetHandler.cpp
         ./src/sb/SBAssetHandlerHDR.cpp
         ./src/sb/SBAssetHandlerCOLLADA.cpp
@@ -482,7 +466,6 @@ set(SMARTBODY_LIB_SBM_SRC
         ./src/sb/SBDebuggerUtility.cpp
         ./src/sb/SBRealtimeManager.cpp
         ./src/sb/SBRigNode.cpp
-        ./src/sb/SBUtilities.cpp
         ./src/sbm/SteerPath.cpp
         ./src/sbm/MiscCommands.cpp
 
@@ -502,8 +485,11 @@ add_library(
 
 target_include_directories(SmartBody PUBLIC
         src
-        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/steerlib/include
-        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/pprAI/include)
+        $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:math,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:steerlib,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:pprAI,INCLUDE_DIRECTORIES>)
 
 #if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 #    conan_target_link_libraries(SmartBody)
@@ -512,6 +498,7 @@ target_include_directories(SmartBody PUBLIC
 target_link_libraries(SmartBody
         ${BONEBUS_LIB}
         ${VHMSG_LIB}
+        sr
         vhcl
         steerlib
         pprAI
@@ -520,5 +507,7 @@ target_link_libraries(SmartBody
         parser
         perlin
         rply
+        math
+        util
         ${MORE_LIBS}
         )

@@ -36,7 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/xercesc_utils.hpp"
 #include "sbm/BMLDefs.h"
 #include "controllers/me_controller_tree_root.hpp"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 #define LOG_GAZE_PARAMS				(0)

@@ -20,12 +20,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "controllers/me_ct_examples.h"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 using namespace gwiz;
 
 #include "sbm/sbm_constants.h"
 #include <bml/bml.hpp>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 ///////////////////////////////////////////////////////////////////////////
 

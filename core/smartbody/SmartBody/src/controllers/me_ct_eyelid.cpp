@@ -18,7 +18,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 using namespace gwiz;
 
 #include "controllers/me_ct_eyelid.h"
@@ -26,7 +26,7 @@ using namespace gwiz;
 #include <sb/SBCharacter.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBJoint.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 

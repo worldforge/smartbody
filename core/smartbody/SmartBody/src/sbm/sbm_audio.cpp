@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "vhcl_audio.h"
 #include <sstream>
 #include <cstdlib>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #define USEAUDIODURATION 1
 

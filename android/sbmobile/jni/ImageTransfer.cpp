@@ -1,7 +1,7 @@
 #include "ImageTransfer.h"
 #include <algorithm>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sb/SBAssetManager.h>
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
 #include <sbm/GPU/SbmTexture.h>

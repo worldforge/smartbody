@@ -26,7 +26,7 @@ using namespace gwiz;
 #include <sb/SBScene.h>
 #include <sb/SBPawn.h>
 #include <sb/SBSkeleton.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sb/sbm_pawn.hpp>
 
 //#define DFL_GAZE_HEAD_SPEED 180.0

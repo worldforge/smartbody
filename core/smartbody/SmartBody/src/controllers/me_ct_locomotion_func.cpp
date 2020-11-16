@@ -21,9 +21,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "controllers/me_ct_locomotion_func.hpp"
 
 //#include "sb/sbm_character.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "limits.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 SrMat get_gmat(SkJoint* from_joint, int depth, SrArray<SrQuat>& quat)
 {

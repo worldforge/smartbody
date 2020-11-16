@@ -23,7 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 using namespace gwiz;
 
 #include <sr/sr_alg.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #define ENABLE_FORWARD_RAY  		1
 #define USE_OLD_GAZE 0

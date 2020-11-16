@@ -29,13 +29,13 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 # include <sk/sk_posture.h>
 # include <sk/sk_skeleton.h>
 #include <sb/SBEvent.h>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <sb/SBMotion.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBRetarget.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sb/SBScene.h>
 #include <perlin/perlin.h>
 

@@ -31,11 +31,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSimulationManager.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/sbm_deformable_mesh.h>
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
 #include <sr/sr_model.h>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 
 
 namespace SmartBody {

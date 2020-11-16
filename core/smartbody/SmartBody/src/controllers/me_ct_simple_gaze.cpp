@@ -22,9 +22,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "controllers/me_ct_simple_gaze.h"
 #include "sbm/lin_win.h"
 #include "sb/sbm_pawn.hpp"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 using namespace gwiz;
 
 #include <sr/sr_alg.h>

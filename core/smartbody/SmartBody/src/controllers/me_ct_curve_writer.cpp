@@ -21,7 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <controllers/me_ct_curve_writer.hpp>
 #include <sb/SBPawn.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 std::string MeCtCurveWriter::TYPE = "MeCtCurveWriter";
 

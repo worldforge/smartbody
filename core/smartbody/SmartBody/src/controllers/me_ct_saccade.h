@@ -26,7 +26,7 @@
 #include <sb/SBController.h>
 #include <sb/sbm_character.hpp>
 #include <sk/sk_skeleton.h>
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "sbm/sr_linear_curve.h"
 
 class MeCtSaccade : public SmartBody::SBController

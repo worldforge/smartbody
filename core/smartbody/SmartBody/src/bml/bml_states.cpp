@@ -7,7 +7,7 @@
 #include <sb/SBScene.h>
 #include <sb/SBAnimationState.h>
 #include <sb/SBAnimationStateManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/me_ct_param_animation.h>
 #include "bml_states.hpp"
 

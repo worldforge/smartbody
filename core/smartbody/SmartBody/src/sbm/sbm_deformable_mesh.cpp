@@ -32,10 +32,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_sn_group.h>
 #include <sr/sr_random.h>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 #include <sbm/GPU/SbmTexture.h>
 
 #include <google/protobuf/io/zero_copy_stream.h>

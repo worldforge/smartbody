@@ -26,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 
 #include "sbm/xercesc_utils.hpp"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include <xercesc/framework/MemBufInputSource.hpp>
 

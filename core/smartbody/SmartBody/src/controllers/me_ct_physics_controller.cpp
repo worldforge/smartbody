@@ -5,7 +5,7 @@
 #include <sb/SBEvent.h>
 #include <sb/SBScene.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 std::string MeCtPhysicsController::CONTROLLER_TYPE = "PhysicsController";
 

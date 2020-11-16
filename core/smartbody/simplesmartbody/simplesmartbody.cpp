@@ -5,7 +5,7 @@
 #include <sb/SBSimulationManager.h>
 #include <sb/SBBmlProcessor.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 class SimpleListener : public SmartBody::SBSceneListener
 {

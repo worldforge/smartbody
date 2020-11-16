@@ -38,7 +38,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBCommandManager.h>
 #include <sb/SBBmlProcessor.h>
 #include <sb/SBReach.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sb/SBTypes.h>
 #include <bml/bml_processor.hpp>
 #include <controllers/me_ct_scheduler2.h>

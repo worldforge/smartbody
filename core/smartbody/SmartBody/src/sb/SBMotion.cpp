@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBEvent.h>
 #include <sb/SBJointMapManager.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/me_ct_jacobian_IK.hpp>
 #include <controllers/me_ct_ccd_IK.hpp>
 #include <boost/lexical_cast.hpp>

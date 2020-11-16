@@ -57,7 +57,7 @@
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBSpeechManager.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #ifdef SB_NO_BONEBUS
 #include <sb/SBBoneBusManager.h>
 #endif
@@ -74,7 +74,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <sbm/sr_cmd_line.h>
-#include <sbm/gwiz_cmdl.h>
+#include "gwiz_cmdl.h"
 
 #ifdef WIN32
 #ifndef NOMINMAX

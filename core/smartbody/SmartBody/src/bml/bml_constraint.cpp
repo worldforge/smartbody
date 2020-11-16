@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sr/sr_vec.h>
 #include <sr/sr_alg.h>
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 
 #include "bml_constraint.hpp"
 
@@ -40,7 +40,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "bml_xml_consts.hpp"
 #include "sbm/xercesc_utils.hpp"
 #include "sbm/BMLDefs.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace std;
 using namespace BML;

@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "controllers/me_ct_param_animation_utilities.h"
 #include "controllers/me_ct_param_animation.h"
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 
 #include <sr/sr_euler.h>
 #include <sb/SBAnimationState.h>
@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBEvent.h>
 #include <sb/SBScene.h>
 #include <sb/SBMotion.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <math.h>
 
 const double timeThreshold = 0.05;

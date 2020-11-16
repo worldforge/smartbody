@@ -21,7 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <math.h>
 #include "sbm/time_profiler.h"
 #include "sbm/lin_win.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationState.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 std::string MeCtInterpolator::Context::CONTEXT_TYPE = "MeCtInterpolator::Context";
 std::string MeCtInterpolator::CONTROLLER_TYPE = "MeCtInterpolator";

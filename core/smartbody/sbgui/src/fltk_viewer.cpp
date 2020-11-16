@@ -93,7 +93,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sb/SBAssetManager.h>
 # include <sb/SBBmlProcessor.h>
 # include <sb/SBNavigationMesh.h>
-# include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include <boost/version.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -119,7 +119,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/GPU/SbmBlendFace.h>
 #include <sbm/GPU/SbmTexture.h>
 
-#include <sr/jpge.h>
+#include "jpge/jpge.h"
 
 /*
 #define USE_CEGUI 1

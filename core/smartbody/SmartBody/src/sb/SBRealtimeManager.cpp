@@ -25,7 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBJoint.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBAttribute.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include <iostream>
 #include <sstream>

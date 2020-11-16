@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBAttributeManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace gwiz;
 std::string MeCtSaccade::CONTROLLER_TYPE = "Saccade";

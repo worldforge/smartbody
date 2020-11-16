@@ -19,7 +19,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "controllers/me_ct_gaze_alg.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace gwiz;
 

@@ -31,7 +31,7 @@
 #include <sb/SBSceneListener.h>
 #include <sb/SBRetargetManager.h>
 #include <sb/SBRetarget.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_euler.h>
 #include <sr/sr_mat.h>
 #include "controllers/MotionAnalysis.h"

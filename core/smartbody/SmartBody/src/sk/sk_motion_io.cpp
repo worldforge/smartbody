@@ -25,7 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 #include <sb/SBMotion.h>
 #include <sb/SBJointMap.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 using namespace std;
 

@@ -26,7 +26,7 @@
 
 #include "sbm/sbm_character.hpp"
 #include "sbm/me_utilities.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "limits.h"
 
 

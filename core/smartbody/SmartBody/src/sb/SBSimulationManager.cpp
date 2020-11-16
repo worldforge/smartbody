@@ -22,7 +22,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttribute.h>
 #include <sb/SBScene.h>
 #include <sb/SBScript.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sb/SBSteerManager.h>
 #include <sbm/time_regulator.h>
 #include <sbm/time_profiler.h>

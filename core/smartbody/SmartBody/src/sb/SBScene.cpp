@@ -81,7 +81,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBDebuggerUtility.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBMotionGraph.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/sbm_audio.h>
 #include <boost/version.hpp>
 #include <boost/filesystem/operations.hpp>

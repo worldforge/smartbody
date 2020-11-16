@@ -41,7 +41,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBRetargetManager.h>
 #include <sb/SBRetarget.h>
 
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/Heightfield.h>
 
 #define DebugInfo 0

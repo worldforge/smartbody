@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
 #include <sb/SBPhysicsSim.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sbm/ODEPhysicsSim.h>
 
 #if defined(__ANDROID__) || defined(SB_IPHONE)

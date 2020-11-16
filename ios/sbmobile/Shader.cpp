@@ -18,7 +18,7 @@
 #include "Shader.h"
 #include "sb/SBScene.h"
 #include "sb/SBAttribute.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "sbm/GPU/SbmTexture.h"
 #include "sr/sr_camera.h"
 #include "sr/sr_light.h"

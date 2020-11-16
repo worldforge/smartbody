@@ -42,7 +42,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBReach.h>
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #define TEST_GAZE_LOCOMOTION 0 // set to 1 if want to test gaze+locomotion control when reaching
 

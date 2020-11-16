@@ -25,7 +25,7 @@
 /** \file sr_gl_render_action.h 
  * OpenGL render action
  */
-#include <sb/SBTypes.h>
+#include "SBABI.h"
 # include <sr/sr_sa.h>
 # include <sr/sr_sn_shape.h>
 

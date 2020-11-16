@@ -30,7 +30,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBDebuggerServer.h>
 #include "SBPythonClass.h"
 #include <sb/SBVHMsgManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 MonitorConnectWindow::MonitorConnectWindow(int x, int y, int w, int h, char* label, bool quickConnect) : Fl_Double_Window(x, y, w, h, label)
 {

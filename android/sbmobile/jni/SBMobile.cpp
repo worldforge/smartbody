@@ -1,7 +1,7 @@
 #include "SBMobile.h"
 #include "SBWrapper.h"
 #include <vhcl.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sb/SBScene.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBSkeleton.h>

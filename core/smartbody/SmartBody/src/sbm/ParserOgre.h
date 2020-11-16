@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sk/sk_skeleton.h"
 #include "sk/sk_motion.h"
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 
 namespace SmartBody {
 

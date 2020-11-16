@@ -21,7 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_motion_recorder.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 std::string MeCtMotionRecorder::CONTROLLER_TYPE = "MeCtMotionRecorder";
 

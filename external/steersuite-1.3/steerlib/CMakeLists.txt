@@ -1,7 +1,5 @@
 add_definitions(-DENABLE_GUI)
 
-find_package(OpenGL REQUIRED)
-
 # osx c++ version >= clang 4.2.0
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
@@ -11,7 +9,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     endif ()
 endif ()
 
-include_directories("include")
 
 add_library(
         steerlib
@@ -48,3 +45,6 @@ add_library(
         src/SimulationRecorderModule.cpp
         src/XMLParser.cpp
 )
+
+target_include_directories(steerlib PUBLIC
+        include)

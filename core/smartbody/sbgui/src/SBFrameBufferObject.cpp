@@ -4,7 +4,7 @@
 #endif
 
 #include "SBFrameBufferObject.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 

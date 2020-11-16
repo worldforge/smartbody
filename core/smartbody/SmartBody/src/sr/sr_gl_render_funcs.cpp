@@ -21,7 +21,7 @@
  */
 
 
-#include <sb/SBTypes.h>
+#include "SBABI.h"
 
 #ifdef __ANDROID__
 //#include <GLES/gl.h>
@@ -58,7 +58,7 @@
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>
 #include <sb/SBPawn.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sr/sr_sn.h>
 #include <sr/sr_sn_shape.h>
 #include <sr/sr_gl_render_funcs.h>
@@ -71,7 +71,7 @@
 #include <boost/filesystem/convenience.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include <sr/jpge.h>
+#include "jpge/jpge.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"

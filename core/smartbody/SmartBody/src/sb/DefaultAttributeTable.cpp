@@ -19,7 +19,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "DefaultAttributeTable.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 DefaultAttributeTable::DefaultAttributeTable(void)
 {

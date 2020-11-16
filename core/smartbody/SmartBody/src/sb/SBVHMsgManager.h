@@ -23,7 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sb/SBService.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <string>
 
 namespace vhcl {

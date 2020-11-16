@@ -10,7 +10,7 @@
 #include <sb/SBPhonemeManager.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBBmlProcessor.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <bml/bml_speech.hpp>
 #include <bml/bml_processor.hpp>
 #include <boost/version.hpp>

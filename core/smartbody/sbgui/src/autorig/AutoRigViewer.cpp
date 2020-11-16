@@ -10,7 +10,7 @@
 #include <sb/SBJointMap.h>
 #include <sb/SBBehaviorSetManager.h>
 #include <sb/SBBehaviorSet.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <autorig/SBAutoRigManager.h>
 #include <sbm/sbm_deformable_mesh.h>
 #include <sk/sk_joint.h>
@@ -25,7 +25,7 @@
 #include <sr/sr_gl_render_funcs.h>
 #include <sr/sr_sphere.h>
 #include <sr/sr_sn_shape.h>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 
 #include <boost/filesystem.hpp>
 

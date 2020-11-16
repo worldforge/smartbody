@@ -24,7 +24,7 @@
 #include <iostream>
 #include <string>
 
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "locomotion_cmds.hpp"
 #include "controllers/me_ct_locomotion.hpp"
 

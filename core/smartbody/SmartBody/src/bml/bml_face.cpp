@@ -23,7 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include "bml_face.hpp"
 
 

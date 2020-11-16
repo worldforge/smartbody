@@ -25,7 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
 #include <sb/SBEvent.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sb/SBScene.h>
 
 #ifdef USE_TETGEN

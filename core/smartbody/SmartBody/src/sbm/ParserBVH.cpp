@@ -23,7 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <stack>
 #include <sstream>
 #include <cstdlib>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>

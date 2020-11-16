@@ -1,7 +1,7 @@
 #include "BMLObject.h"
 #include <sstream>
 #include <sb/SBAttribute.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <boost/lexical_cast.hpp>
 
 BMLObject::BMLObject()

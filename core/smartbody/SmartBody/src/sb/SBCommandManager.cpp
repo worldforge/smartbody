@@ -23,7 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttribute.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <sstream>
 #include <sbm/mcontrol_callbacks.h>
 #include <sbm/MiscCommands.h>

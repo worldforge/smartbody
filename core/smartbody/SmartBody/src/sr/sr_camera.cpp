@@ -25,12 +25,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sr/sr_mat.h>
 #include <sstream>
 
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 #include <sb/SBSubject.h>
 #include <sb/SBAttribute.h>
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #ifdef WIN32
 	//#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>

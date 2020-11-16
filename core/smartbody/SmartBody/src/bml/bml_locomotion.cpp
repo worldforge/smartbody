@@ -44,7 +44,7 @@
 #include <boost/lexical_cast.hpp>
 #include <sb/SBSteerManager.h>
 #include <sb/SBCommandManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 ////// XML ATTRIBUTES
 

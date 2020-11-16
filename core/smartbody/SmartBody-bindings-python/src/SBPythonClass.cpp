@@ -8,7 +8,7 @@
 #include <sbm/sbm_test_cmds.hpp>
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <controllers/me_ct_param_animation.h>
 #include <controllers/me_ct_scheduler2.h>
 #include <controllers/me_ct_gaze.h>

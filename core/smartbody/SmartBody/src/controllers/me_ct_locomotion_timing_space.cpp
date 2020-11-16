@@ -23,7 +23,7 @@
 #include "controllers/me_ct_locomotion_timing_space.hpp"
 
 #include "sbm/sbm_character.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "limits.h"
 #include <vhcl_log.h>
 

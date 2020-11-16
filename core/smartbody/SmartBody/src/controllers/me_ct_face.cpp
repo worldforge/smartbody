@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 //#include "sbm_pawn.hpp"
-#include "sbm/gwiz_math.h"
+#include "gwiz_math.h"
 #include "controllers/me_ct_face.h"
 #include <sstream>
 #include <sbm/action_unit.hpp>
@@ -29,7 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sbm/sbm_deformable_mesh.h>
 #include <sb/SBPawn.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 //////////////////////////////////////////////////////////////////////////////////
 
 std::string MeCtFace::type_name = "Face";

@@ -23,7 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <FL/Fl_Hold_Browser.H>
 #include "sb/SBScene.h"
 #include "sb/SBMotion.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include "ParamAnimBlock.h"
 #include "ParamAnimEditorWidget.h"

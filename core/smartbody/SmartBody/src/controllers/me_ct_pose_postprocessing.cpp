@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <boost/foreach.hpp>
 #include <sr/sr_timer.h>
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 using namespace gwiz;
 
 std::string MeCtPosePostProcessing::CONTROLLER_TYPE = "PostProcessing";

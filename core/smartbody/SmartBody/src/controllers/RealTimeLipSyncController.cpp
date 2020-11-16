@@ -3,7 +3,7 @@
 #include <sb/SBMotion.h>
 #include <sb/SBPhonemeManager.h>
 #include <sb/SBPhoneme.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 #include <bml/bml_speech.hpp>
 #include <vector>
 

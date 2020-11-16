@@ -33,7 +33,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/GPU/SbmTexture.h>
 #include <sb/SBScene.h>
 #include <sbm/sbm_deformable_mesh.h>
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 
 class TextLineSplitterFast

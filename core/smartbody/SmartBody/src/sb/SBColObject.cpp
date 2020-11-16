@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBColObject.h"
 #include "SBPhysicsSim.h"
-#include <sbm/gwiz_math.h>
+#include "gwiz_math.h"
 #include <sbm/ODEPhysicsSim.h>
 #include <ode/collision.h>
 #include <sb/SBCollisionManager.h>

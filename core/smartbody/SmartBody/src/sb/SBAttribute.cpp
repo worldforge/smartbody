@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBAttribute.h"
 #include "sb/SBObject.h"
-#include <sb/SBUtilities.h>
+#include "SBUtilities.h"
 
 #include <sstream>
 #include <limits>
