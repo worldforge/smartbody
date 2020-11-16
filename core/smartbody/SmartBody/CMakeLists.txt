@@ -43,12 +43,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             add_definitions(-Wno-unused-value)
         endif ()
     endif ()
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
-        if (NOT (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.7.3))
-            add_definitions(-Wno-format)
-        endif ()
-    endif ()
 endif ()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -178,7 +172,7 @@ set(SMARTBODY_LIB_SR_SRC
 #        ./src/sr/sr_euler.cpp
 #        ./src/sr/sr_event.cpp
 #        ./src/sr/sr_geo2.cpp
-#        ./src/sr/sr_gl.cpp
+        ./src/sr/sr_gl.cpp
         ./src/sr/sr_gl_render_funcs.cpp
 #        ./src/sr/sr_hash_table.cpp
 #        ./src/sr/sr_input.cpp
@@ -210,7 +204,7 @@ set(SMARTBODY_LIB_SR_SRC
 #        ./src/sr/sr_sn_group.cpp
 #        ./src/sr/sr_sn_matrix.cpp
 #        ./src/sr/sr_sn_shape.cpp
-#        ./src/sr/sr_sn_colorsurf.cpp
+        ./src/sr/sr_sn_colorsurf.cpp
 #        ./src/sr/sr_sphere.cpp
 #        ./src/sr/sr_spline.cpp
 #        ./src/sr/sr_string_array.cpp
