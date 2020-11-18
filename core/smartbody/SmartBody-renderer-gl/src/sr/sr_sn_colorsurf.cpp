@@ -21,8 +21,6 @@
 *      David Huang
 */
 
-#include "SBABI.h"
-
 # include <sr/sr_sn_colorsurf.h>
 #if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 # include <sr/sr_gl.h>

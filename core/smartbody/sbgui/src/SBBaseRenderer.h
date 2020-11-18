@@ -3,7 +3,7 @@
 #include <sbm/GPU/SbmTexture.h>
 #include <sbm/sbm_deformable_mesh.h>
 #include <sr/sr_light.h>
-
+#include "sbm/Heightfield.h"
 
 
 class SBBaseRenderer
@@ -23,6 +23,8 @@ public:
 	bool isInitialized() { return rendererInitialized;  }
 	void resetRenderer();
 	void setBackgroundColor(SrColor& bg) { backgroundColor = bg;  }
+
+	void render(Heightfield& heightfield, int renderMode) const;
 
 protected:
 	void drawFloor(bool deferrredRender = true);

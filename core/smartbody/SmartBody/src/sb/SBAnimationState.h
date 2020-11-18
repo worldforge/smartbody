@@ -22,7 +22,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define _SBSTATE_H
 
 #include <sb/SBTypes.h>
-#include <sr/sr_sn_colorsurf.h>
 #include <sb/PABlend.h>
 #include <sr/sr_lines.h>
 #include <sb/SBCharacter.h>

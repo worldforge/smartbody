@@ -42,9 +42,26 @@ class Heightfield
 		SBAPI void set_auto_origin( void );
 		
 //		void paste_img( void );
-		SBAPI void render( int renderMode ); 
 		SBAPI float get_elevation( float x, float z, float *normal_p = NULL );
 
+		struct MeshData {
+			int 	mesh_resx;
+			int 	mesh_resz;
+			float	mesh_scale[ 3 ];
+			float	mesh_origin[ 3 ];
+
+			float *vertex_arr;
+			float *normal_arr;
+			unsigned char *color_arr;
+
+			bool dirty_normals;
+		};
+
+		const MeshData& getMeshData() const {
+			return mesh_data;
+		}
+
+		void load_normals( );
 	private:
 		void clear( void );
 		void defaults( void );
@@ -58,8 +75,7 @@ class Heightfield
 		void initializeTerrain( unsigned char* terrain );
 		void calc_normal( float *N_out, float *A, float *B, float *C, float *S );
 		void normalize_arr3( float V[ 3 ] );
-		void load_normals( void );
-		
+
 		float get_raw_elevation( int i, int j );
 
 #ifdef WIN32
@@ -71,15 +87,7 @@ class Heightfield
 		int image_height;
 		int num_color_comps;
 
-		int 	mesh_resx;
-		int 	mesh_resz;
-		float	mesh_scale[ 3 ];
-		float	mesh_origin[ 3 ];
+		MeshData mesh_data;
 
-		float *vertex_arr;
-		float *normal_arr;
-		unsigned char *color_arr;
-		
-		bool dirty_normals;
 };
 #endif

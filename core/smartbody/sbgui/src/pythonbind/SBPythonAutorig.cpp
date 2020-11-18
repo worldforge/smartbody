@@ -771,19 +771,19 @@ std::vector<std::string> checkVisibility_current_view()
 
 	// make current
 	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window && window->curViewer)
-		window->curViewer->make_current(); // make sure the OpenGL context is current
-	
-	std::vector<std::string> visible	= scene->checkVisibility_current_view();
-
-	if(DEBUG_CHECK_VISIBILITY) {
-		SmartBody::util::log("Visible pawns: ");
-		for( std::vector<std::string>::const_iterator i = visible.begin(); i != visible.end(); ++i)  {
-			SmartBody::util::log("%s, ", i);
+	if (window && window->curViewer) {
+		std::vector<std::string> visible = window->curViewer->checkVisibility_current_view();
+		if(DEBUG_CHECK_VISIBILITY) {
+			SmartBody::util::log("Visible pawns: ");
+			for( std::vector<std::string>::const_iterator i = visible.begin(); i != visible.end(); ++i)  {
+				SmartBody::util::log("%s, ", i);
+			}
 		}
-	}
 
-	return visible;
+		return visible;
+	} else {
+		return {};
+	}
 }
 
 void addPoint(const std::string& pointName, SrVec point, SrVec color, int size)

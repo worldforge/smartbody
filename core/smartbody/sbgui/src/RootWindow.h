@@ -28,6 +28,10 @@
 #include "resourceViewer/AttributeEditor.h"
 #include "posecreator/PoseCreator.h"
 
+namespace SmartBody {
+	class SBRenderScene;
+}
+
 class SbmCharacter;
 
 class CharacterCreatorWindow;
@@ -84,6 +88,9 @@ class  BaseWindow : public SrViewer, public Fl_Double_Window
 		//RetargetViewer* behaviorSetViewer;
 		//JointMapViewer* jointMapViewer;
 		RetargetStepWindow* retargetStepWindow;
+
+		std::unique_ptr<SmartBody::SBScene> mScene;
+		std::unique_ptr<SmartBody::SBRenderScene> mRenderScene;
 		
 		Fl_Group* _mainGroup;
 		Fl_Menu_Bar* menubar;

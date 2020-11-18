@@ -43,8 +43,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 class SBDebuggerUtility;
-class SrCamera;
-class CameraTrack;
 class SrSnGroup;
 class SbmPawn;
 class SbmCharacter;
@@ -94,8 +92,8 @@ class SBDebuggerClient;
 class SBScene : public SBObject
 {
 	public:
-		SBAPI SBScene(void);
-		SBAPI ~SBScene(void);
+		SBAPI SBScene();
+		SBAPI ~SBScene();
 
 		SBAPI void setProcessId(const std::string& id);
 		SBAPI const std::string& getProcessId();
@@ -108,13 +106,13 @@ class SBScene : public SBObject
 		SBAPI std::string getStringFromObject(SmartBody::SBObject* object);
 		SBAPI SmartBody::SBObject* getObjectFromString(const std::string& value);
 
-		SBAPI std::string save(bool remoteSetup = false, std::string mediaPath = "");
-		SBAPI std::string saveSceneSetting();
-		SBAPI std::string exportScene(const std::vector<std::string>& aspects, std::string mediaPath = "", bool remoteSetup = false);
+//		SBAPI std::string save(bool remoteSetup = false, std::string mediaPath = "");
+//		SBAPI std::string saveSceneSetting();
+//		SBAPI std::string exportScene(const std::vector<std::string>& aspects, std::string mediaPath = "", bool remoteSetup = false);
 
 #if !defined(__FLASHPLAYER__) && !defined(EMSCRIPTEN)
-		SBAPI void exportScenePackage(std::string outDir, std::string outZipArchiveName = "");
-		SBAPI void exportCharacter(std::string charName, std::string outDir);
+//		SBAPI void exportScenePackage(std::string outDir, std::string outZipArchiveName = "");
+//		SBAPI void exportCharacter(std::string charName, std::string outDir);
 #endif
 
 		SBAPI static SBScene* getScene();		
@@ -137,6 +135,7 @@ class SBScene : public SBObject
 		SBAPI void removeCharacter(const std::string& charName);
 		SBAPI void removePawn(const std::string& pawnName);
 		SBAPI void removeAllPawns();
+		SBPawn* insertPawn(SBPawn* pawn);
 		SBAPI int getNumCharacters();
 		SBAPI int getNumPawns();
 		SBAPI SBCharacter* getCharacter(const std::string& name);
@@ -222,30 +221,29 @@ class SBScene : public SBObject
 		SBAPI static void removeAllSystemParameters();
 		SBAPI static std::vector<std::string> getSystemParameterNames();
 
-		SBAPI SrCamera* createCamera(const std::string& name);
-		SBAPI void removeCamera(SrCamera* camera);
-		SBAPI void setActiveCamera(SrCamera* camera);
-		SBAPI SrCamera* getActiveCamera();
-		SBAPI SrCamera* getCamera(const std::string& name);
-		SBAPI void SetCameraLocked(bool locked);
-		SBAPI bool IsCameraLocked();
-		SBAPI int getNumCameras();
-		SBAPI std::vector<std::string> getCameraNames();
-		SBAPI std::vector<SBController*>& getDefaultControllers();
-		SBAPI bool hasCameraTrack();
-		SBAPI void setCameraTrack(const std::string& characterName, const std::string& jointName);
-		SBAPI void removeCameraTrack();
-		SBAPI void updateTrackedCameras();
+//		SBAPI SrCamera* createCamera(const std::string& name);
+//		SBAPI void removeCamera(SrCamera* camera);
+//		SBAPI void setActiveCamera(SrCamera* camera);
+//		SBAPI SrCamera* getActiveCamera();
+//		SBAPI SrCamera* getCamera(const std::string& name);
+//		SBAPI void SetCameraLocked(bool locked);
+//		SBAPI bool IsCameraLocked();
+//		SBAPI int getNumCameras();
+//		SBAPI std::vector<std::string> getCameraNames();
+//		SBAPI bool hasCameraTrack();
+//		SBAPI void setCameraTrack(const std::string& characterName, const std::string& jointName);
+//		SBAPI void removeCameraTrack();
+//		SBAPI void updateTrackedCameras();
 
-		SBAPI void updateConeOfSight();
-		SBAPI bool setCameraConeOfSight(const std::string& characterName);
-		SBAPI bool hasConeOfSight();
-		SBAPI void removeConeOfSight();
-
-		SBAPI std::vector<std::string> checkVisibility(const std::string& characterName);
-		SBAPI std::vector<std::string> checkVisibility_current_view();
-		std::vector<std::string> occlusionTest(const std::vector<std::string>& testPawns);
-		std::vector<std::string> frustumTest(const std::vector<std::string>& testPawnNames);
+//		SBAPI void updateConeOfSight();
+//		SBAPI bool setCameraConeOfSight(const std::string& characterName);
+//		SBAPI bool hasConeOfSight();
+//		SBAPI void removeConeOfSight();
+//
+//		SBAPI std::vector<std::string> checkVisibility(const std::string& characterName);
+//		SBAPI std::vector<std::string> checkVisibility_current_view();
+//		std::vector<std::string> occlusionTest(const std::vector<std::string>& testPawns);
+//		std::vector<std::string> frustumTest(const std::vector<std::string>& testPawnNames);
 
 		// deprecated
 		SBAPI SBSkeleton* createSkeleton(const std::string&char_name);
@@ -311,28 +309,39 @@ class SBScene : public SBObject
 		SBAPI SrViewerFactory* getViewerFactory();
 		SBAPI SrViewerFactory* getOgreViewerFactory();
 
+		/**
+		 * Registers a provider which allows lookup of object through the "prefix/suffix" notation.
+		 */
+		void registerObjectProvider(std::string prefix, std::function<SmartBody::SBObject*(const std::string&)> provider);
 
+		//HACK: emitted when all pawns are removed. Used to allow SBRenderScene to know when to clear all cameras. For now.
+		std::function<void()> _removeAllPawnsCallback;
+
+		struct OcclusionTester {
+
+		};
 				
 	protected:
 
 		void initialize();
 		void cleanup();
-		void saveScene(std::stringstream& strstr, bool remoteSetup);
-		void saveAssets(std::stringstream& strstr, bool remoteSetup, std::string mediaPath);
-		void saveCameras(std::stringstream& strstr, bool remoteSetup);
-		void savePawns(std::stringstream& strstr, bool remoteSetup);
-		void saveCharacters(std::stringstream& strstr, bool remoteSetup);
-		void saveLights(std::stringstream& strstr, bool remoteSetup);
-		void saveRetargets(std::stringstream& strstr, bool remoteSetup);
-		void saveBlends(std::stringstream& strstr, bool remoteSetup);
-		void saveJointMaps(std::stringstream& strstr, bool remoteSetup);
-		void saveFaceDefinitions(std::stringstream& strstr, bool remoteSetup);
-		void saveGestureMaps(std::stringstream& strstr, bool remoteSetup);
-		void saveLipSyncing(std::stringstream& strstr, bool remoteSetup);
-		void saveServices(std::stringstream& strstr, bool remoteSetup);
-		void savePositions(std::stringstream& strstr, bool remoteSetup);
+//		void saveScene(std::stringstream& strstr, bool remoteSetup);
+//		void saveAssets(std::stringstream& strstr, bool remoteSetup, std::string mediaPath);
+//		void saveCameras(std::stringstream& strstr, bool remoteSetup);
+//		void savePawns(std::stringstream& strstr, bool remoteSetup);
+//		void saveCharacters(std::stringstream& strstr, bool remoteSetup);
+//		void saveLights(std::stringstream& strstr, bool remoteSetup);
+//		void saveRetargets(std::stringstream& strstr, bool remoteSetup);
+//		void saveBlends(std::stringstream& strstr, bool remoteSetup);
+//		void saveJointMaps(std::stringstream& strstr, bool remoteSetup);
+//		void saveFaceDefinitions(std::stringstream& strstr, bool remoteSetup);
+//		void saveGestureMaps(std::stringstream& strstr, bool remoteSetup);
+//		void saveLipSyncing(std::stringstream& strstr, bool remoteSetup);
+//		void saveServices(std::stringstream& strstr, bool remoteSetup);
+//		void savePositions(std::stringstream& strstr, bool remoteSetup);
 		void createDefaultControllers();
 		void removeDefaultControllers();
+		SBAPI std::vector<SBController*>& getDefaultControllers();
 
 
 		SBSimulationManager* _sim;
@@ -368,20 +377,15 @@ class SBScene : public SBObject
 		std::map<std::string, SBScript*> _scripts;
 		float _scale;
 		bool _isRemoteMode;
-		bool _isCameraLocked;
+//		bool _isCameraLocked;
 		static bool _firstTime;
 
 		SBDebuggerServer*	_debuggerServer;
 		SBDebuggerClient*	_debuggerClient;
 		SBDebuggerUtility*	_debuggerUtility;
-		std::map<std::string, SrCamera*> _cameras;
-		std::string _activeCamera;
-		std::vector<CameraTrack*> _cameraTracking;
-
-		bool		_coneOfSight;
-		SkJoint *	_coneOfSight_leftEye;
-		SkJoint *	_coneOfSight_rightEye;
-		std::string	_coneOfSight_character;
+//		std::map<std::string, SrCamera*> _cameras;
+//		std::string _activeCamera;
+//		std::vector<CameraTrack*> _cameraTracking;
 
 		std::map<std::string, SmartBody::SBFaceDefinition*> _faceDefinitions;
 
@@ -411,6 +415,11 @@ class SBScene : public SBObject
 		std::map<std::string, GeneralParam*> _generalParams;
 
 		std::string _lastScriptDirectory;
+
+		/**
+		 * Allows for lookup of objects through the "prefix/suffix" notation.
+		 */
+		std::map<std::string, std::function<SmartBody::SBObject*(const std::string&)>> _objectProviders;
 
 #ifndef SB_NO_PYTHON
 #ifndef __native_client__

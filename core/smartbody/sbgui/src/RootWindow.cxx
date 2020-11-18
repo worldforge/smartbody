@@ -30,8 +30,11 @@
 #include"resourceViewer/AttributeEditor.h"
 #include "FLTKOgreViewer.h"
 
+#include "sbm/SceneExporter.h"
+
 
 #include "SBGUIManager.h"
+#include "sbm/SBRenderScene.h"
 
 #define TEST_EXPORT_SMARTBODY_PACKAGE 1
 
@@ -297,7 +300,7 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 	std::string renderer = "custom";
 	
 #ifndef  NO_OGRE_VIEWER_CMD
-	renderer = SmartBody::SBScene::getScene()->getSystemParameter("renderer");
+	renderer = mScene->getSystemParameter("renderer");
 	if (renderer == "ogre" || renderer == "OGRE")
 	{
 		if (!useEditor)
@@ -588,7 +591,7 @@ void BaseWindow::root(SrSn* r)
 
 SrSn* BaseWindow::root()
 {
-	return SmartBody::SBScene::getScene()->getRootGroup();
+	return mScene->getRootGroup();
 }
 
 void BaseWindow::resetWindow()
@@ -691,21 +694,21 @@ void BaseWindow::ResetScene()
 	curViewer->resetViewer();
 
 	std::vector<SmartBody::SBSceneListener*> listeners;
-	std::vector<SmartBody::SBSceneListener*>& currentListeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SmartBody::SBSceneListener*>& currentListeners = mScene->getSceneListeners();
 	for (auto & currentListener : currentListeners)
 	{
 		listeners.push_back(currentListener);
 	}
-	SmartBody::SBScene::destroyScene();
+	mScene = std::make_unique<SmartBody::SBScene>();
+	mRenderScene = std::make_unique<SmartBody::SBRenderScene>(*mScene);
 
 	SBBaseRenderer::singleton().resetRenderer();
 	SBRenderer::singleton().resetRenderer();
-	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	scene->startFileLogging("./smartbody.log");
+
+	mScene->startFileLogging("./smartbody.log");
 	for (auto & listener : listeners)
 	{
-		scene->addSceneListener(listener);
+		mScene->addSceneListener(listener);
 	}
 
 	for (auto & listener : listeners)
@@ -713,31 +716,31 @@ void BaseWindow::ResetScene()
 		listener->OnSimulationStart();
 	}
 	
-	SmartBody::SBScene::getScene()->setViewer(this);
-	SmartBody::SBScene::getScene()->getViewer()->root(SmartBody::SBScene::getScene()->getRootGroup());
+	mScene->setViewer(this);
+	mScene->getViewer()->root(mScene->getRootGroup());
 	SbmShaderManager::singleton().setViewer(this);
 
-	scene->getSimulationManager()->setupTimer();
+	mScene->getSimulationManager()->setupTimer();
 
-	SrCamera* camera = SmartBody::SBScene::getScene()->createCamera("cameraDefault");
+	SrCamera* camera = mRenderScene->createCamera("cameraDefault");
 	camera->reset();
 
 	// setup python
 #ifndef SB_NO_PYTHON
 	boost::python::object module = boost::python::import("__main__");
-	scene->setPythonMainModule(module);
+	mScene->setPythonMainModule(module);
 	boost::python::object dict  = module.attr("__dict__");
-	scene->setPythonMainDict(dict);
+	mScene->setPythonMainDict(dict);
 	std::string pythonLibPath = SmartBody::SBScene::getSystemParameter("pythonlibpath");
 	setupPython();
 #endif
 	if (!mediaPath.empty()) {
-		SmartBody::SBScene::getScene()->setMediaPath(mediaPath);
+		mScene->setMediaPath(mediaPath);
 	} else {
-		SmartBody::SBScene::getScene()->setMediaPath(SMARTBODY_DATADIR "/smartbody/data");
+		mScene->setMediaPath(SMARTBODY_DATADIR "/smartbody/data");
 	}
 
-	scene->getVHMsgManager()->setEnable(true);		
+	mScene->getVHMsgManager()->setEnable(true);
 	updateObjectList();
 
 	this->curViewer->registerUIControls();
@@ -760,10 +763,9 @@ void BaseWindow::LoadPackageCB( Fl_Widget* widget, void* data )
 	}
 	
 	window->ResetScene();
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	scene->setMediaPath(dirName);
-	scene->addAssetPath("script", dirName);
-	scene->runScript("initScene");	
+	window->mScene->setMediaPath(dirName);
+	window->mScene->addAssetPath("script", dirName);
+	window->mScene->runScript("initScene");
 }
 
 void BaseWindow::LoadCB(Fl_Widget* widget, void* data)
@@ -787,8 +789,8 @@ void BaseWindow::LoadCB(Fl_Widget* widget, void* data)
 
 	std::string path = fullfilename.substr(0, fullfilename.size() - filenameSize);
 	SmartBody::util::log("Path = %s, script = %s", path.c_str(), filebasename.c_str());
-	SmartBody::SBScene::getScene()->addAssetPath("script", path);
-	SmartBody::SBScene::getScene()->runScript(filebasename);
+	window->mScene->addAssetPath("script", path);
+	window->mScene->runScript(filebasename);
 }
 
 void BaseWindow::SaveCB(Fl_Widget* widget, void* data)
@@ -801,9 +803,7 @@ void BaseWindow::SaveCB(Fl_Widget* widget, void* data)
 	if (saveFile.empty())
 		return;
 	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::string fileString = scene->save();
-
+	auto& scene = window->mScene;
 	std::ofstream file(saveFile.c_str());
 	if (!file.good())
 	{
@@ -811,9 +811,9 @@ void BaseWindow::SaveCB(Fl_Widget* widget, void* data)
 		message.append(saveFile);
 		message.append("'");
 		fl_alert(message.c_str());
-		file.close();
+	} else {
+		SmartBody::save(*window->mRenderScene, file);
 	}
-	file << fileString;
 	file.close();
 	
 	std::string scenePrompt = "Scene saved to file '";
@@ -827,7 +827,7 @@ void BaseWindow::ExportPackageCB( Fl_Widget* widget, void* data )
 	auto* window = (BaseWindow*) data;
 	int useZip = (long)data;
 	std::string mediaPath = SmartBody::SBScene::getSystemParameter("mediapath");
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = window->mScene;
 
 	std::string chooserTitle = "Choose Output Directory";
 	std::string fileName; 
@@ -878,8 +878,8 @@ void BaseWindow::SaveSceneSettingCB( Fl_Widget* widget, void* data )
 	if (saveFile.empty())
 		return;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::string fileString = scene->saveSceneSetting();
+	auto& scene = window->mScene;
+	std::stringstream ss;
 
 	std::ofstream file(saveFile.c_str());
 	if (!file.good())
@@ -888,9 +888,9 @@ void BaseWindow::SaveSceneSettingCB( Fl_Widget* widget, void* data )
 		message.append(saveFile);
 		message.append("'");
 		fl_alert(message.c_str());
-		file.close();
+	} else {
+		SmartBody::saveSceneSettings(*window->mRenderScene, file);
 	}
-	file << fileString;
 	file.close();
 
 	std::string scenePrompt = "Scene saved to file '";
@@ -902,8 +902,8 @@ void BaseWindow::SaveSceneSettingCB( Fl_Widget* widget, void* data )
 void BaseWindow::LoadSceneSettingCB( Fl_Widget* widget, void* data )
 {
 	auto* window = (BaseWindow*) data;
-	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+
+	auto& scene = window->mScene;
 	std::string mediaPath = scene->getMediaPath();
 
 	std::string file = window->chooseFile("Load File:", "Python\t*.py\n", mediaPath);
@@ -1032,12 +1032,12 @@ void BaseWindow::NewCB(Fl_Widget* widget, void* data)
 #if 1
 		window->ResetScene(); // should call the same function to be consistent
 #else
-		SmartBody::SBSceneListener* listener = SmartBody::SBScene::getScene()->getCharacterListener();
+		SmartBody::SBSceneListener* listener = mScene->getCharacterListener();
 		window->resetWindow();
 		
 		SmartBody::SBScene::destroyScene();
 
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+		SmartBody::SBScene* scene = mScene;
 		scene->setViewer(window);
 		scene->getViewer()->root(scene->getRootGroup());
 		//mcu.kinectProcessor->initKinectSkeleton();
@@ -1068,7 +1068,8 @@ void BaseWindow::QuitCB(Fl_Widget* widget, void* data)
 	int confirm = fl_choice("This will quit SmartBody.\nContinue?", "No", "Yes", nullptr);
 	if (confirm == 1)
 	{
-		SmartBody::SBScene::getScene()->run("quit()");
+		auto* window = (BaseWindow*) data;
+		window->mScene->run("quit()");
 	}
 }
 
@@ -1094,8 +1095,8 @@ void BaseWindow::LaunchConnectCB(Fl_Widget* widget, void* data)
 
 void BaseWindow::DisconnectRemoteCB(Fl_Widget* widget, void* data)
 {
-   auto* rootWindow = static_cast<BaseWindow*>(data);
-	SmartBody::SBScene::getScene()->getDebuggerClient()->Disconnect();
+    auto* rootWindow = static_cast<BaseWindow*>(data);
+	rootWindow->mScene->getDebuggerClient()->Disconnect();
 	rootWindow->ResetScene();
 }
 
@@ -1149,7 +1150,8 @@ void BaseWindow::LaunchRetargetCreatorCB(Fl_Widget* widget, void* data)
 void BaseWindow::LaunchJointMapViewerCB( Fl_Widget* widget, void* data )
 {
 	// console doesn't receive commands - why?
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 	SmartBody::SBBehaviorSetManager* manager = scene->getBehaviorSetManager();
 	if (manager->getNumBehaviorSets() == 0)
 	{
@@ -1166,7 +1168,6 @@ void BaseWindow::LaunchJointMapViewerCB( Fl_Widget* widget, void* data )
 			SmartBody::util::log("Found %d behavior sets under path %s/behaviorsets", manager->getNumBehaviorSets(), scene->getMediaPath().c_str());
 		}
 	}
-	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer && !rootWindow->curViewer->_retargetStepWindow)
 	{
 		rootWindow->curViewer->_retargetStepWindow = new RetargetStepWindow(150, 150, 1024, 500, "Rigging and Retargeting");
@@ -1216,12 +1217,14 @@ void BaseWindow::StepCB(Fl_Widget* widget, void* data)
 
 void BaseWindow::PauseCB(Fl_Widget* widget, void* data)
 {
-	SmartBody::SBScene::getScene()->command((char*)"time pause");
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+	scene->command((char*)"time pause");
 }
 
 void BaseWindow::ResetCB(Fl_Widget* widget, void* data)
 {
-	//SmartBody::SBScene::getScene()->command((char*)"reset");
+	//mScene->command((char*)"reset");
 	auto* window = (BaseWindow*) data;
 	//window->resetWindow();	
 	window->ResetScene();
@@ -1229,7 +1232,8 @@ void BaseWindow::ResetCB(Fl_Widget* widget, void* data)
 
 void BaseWindow::CameraResetCB(Fl_Widget* widget, void* data)
 {
-	SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	SrCamera* camera = rootWindow->mRenderScene->getActiveCamera();
 	if (!camera)
 		return;
 	camera->reset();	
@@ -1237,28 +1241,31 @@ void BaseWindow::CameraResetCB(Fl_Widget* widget, void* data)
 
 void BaseWindow::CameraFrameCB(Fl_Widget* widget, void* data)
 {
-	//SmartBody::SBScene::getScene()->command((char*)"camera frame");
+	//mScene->command((char*)"camera frame");
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+	auto& renderScene = rootWindow->mRenderScene;
 	SrBox sceneBox;
-	SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* camera = renderScene->getActiveCamera();
 	if (!camera) return;
 
-	const std::vector<std::string>& pawnNames =  SmartBody::SBScene::getScene()->getPawnNames();
+	const std::vector<std::string>& pawnNames =  scene->getPawnNames();
 	for (const auto & pawnName : pawnNames)
 	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+		SmartBody::SBPawn* pawn = scene->getPawn(pawnName);
 		bool visible = pawn->getBoolAttribute("visible");
 		if (!visible)
 			continue;
 		SrBox box = pawn->getSkeleton()->getBoundingBox();
 		if (box.volume() < .0001)
 		{
-			double val = 1.0 / SmartBody::SBScene::getScene()->getScale() * .5;
+			double val = 1.0 / scene->getScale() * .5;
 			box.grows((float) val, (float) val, (float) val);
 		}
 		sceneBox.extend(box);
 	}
 	camera->view_all(sceneBox, camera->getFov());	
-	float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+	float scale = 1.f/scene->getScale();
 	float znear = 0.01f*scale;
 	float zfar = 1000.0f*scale;
 	camera->setNearPlane(znear);
@@ -1267,7 +1274,9 @@ void BaseWindow::CameraFrameCB(Fl_Widget* widget, void* data)
 
 void BaseWindow::CameraFrameObjectCB(Fl_Widget* widget, void* data)
 {
-	auto* rootWindow = (BaseWindow*) data;
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+	auto& renderScene = rootWindow->mRenderScene;
 	SbmPawn* pawn = rootWindow->curViewer->getObjectManipulationHandle().get_selected_pawn();
 	if (!pawn)
 	{
@@ -1276,22 +1285,22 @@ void BaseWindow::CameraFrameObjectCB(Fl_Widget* widget, void* data)
 			return;
 	}
 
-	//SmartBody::SBScene::getScene()->command((char*)"camera frame");
+	//mScene->command((char*)"camera frame");
 	SrBox sceneBox;
-	SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* camera = renderScene->getActiveCamera();
 	if (!camera) return;
 
 	SrBox box = pawn->getSkeleton()->getBoundingBox();
 	if (box.volume() < .0001)
 	{
-			double val = 1.0 / SmartBody::SBScene::getScene()->getScale() * .5;
+			double val = 1.0 / scene->getScale() * .5;
 			box.grows((float) val, (float) val, (float) val);
 	}
 
 	sceneBox.extend(box);
 
 	camera->view_all(sceneBox, camera->getFov());	
-	float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+	float scale = 1.f/scene->getScale();
 	float znear = 0.01f*scale;
 	float zfar = 1000.0f*scale;
 	camera->setNearPlane(znear);
@@ -1312,13 +1321,13 @@ void BaseWindow::RotateSelectedCB(Fl_Widget* widget, void* data)
 			return;
 	}
 
-	SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* camera = mScene->getActiveCamera();
 	if (!camera)
 		return;
 	float x,y,z,h,p,r;
 	pawn->get_world_offset(x, y, z, h, p, r);
 	camera->setCenter(x, y, z);
-	float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+	float scale = 1.f/mScene->getScale();
 	float znear = 0.01f*scale;
 	float zfar = 1000.0f*scale;
 	camera->setNearPlane(znear);
@@ -1331,7 +1340,7 @@ void BaseWindow::SetDefaultCamera(Fl_Widget* widget, void* data)
 #if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->getData()->cameraMode = FltkViewer::Default;
-   SmartBody::SBScene::getScene()->SetCameraLocked(false);
+   mScene->SetCameraLocked(false);
 #endif
 }
 
@@ -1340,18 +1349,18 @@ void BaseWindow::SetFreeLookCamera(Fl_Widget* widget, void* data)
 #if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->getData()->cameraMode = FltkViewer::FreeLook;
-   SmartBody::SBScene::getScene()->SetCameraLocked(false);
+   mScene->SetCameraLocked(false);
 #endif
 }
 
 void BaseWindow::SetFollowRendererCamera(Fl_Widget* widget, void* data)
 {
 #if !NO_OGRE_VIEWER_CMD
-   if (SmartBody::SBScene::getScene()->isRemoteMode())
+   if (mScene->isRemoteMode())
    {
       auto* rootWindow = static_cast<BaseWindow*>(data);
 	  rootWindow->curViewer->getData()->cameraMode = FltkViewer::FollowRenderer;
-      SmartBody::SBScene::getScene()->SetCameraLocked(true);
+      mScene->SetCameraLocked(true);
    }
 #endif
 }
@@ -1360,13 +1369,15 @@ void BaseWindow::SetFollowRendererCamera(Fl_Widget* widget, void* data)
 void BaseWindow::CameraCharacterShightCB(Fl_Widget* widget, void* data) 
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+	auto& renderScene = rootWindow->mRenderScene;
 
-	SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* camera = renderScene->getActiveCamera();
 	if (!camera)
 		return;
 
 	// If coneOfSight is being disabled
-	if (SmartBody::SBScene::getScene()->hasConeOfSight()) {
+	if (renderScene->hasConeOfSight()) {
 		SbmCharacter* character = rootWindow->getSelectedCharacter();
 		// If an object is selected, camera frames it
 		if(character)
@@ -1374,12 +1385,12 @@ void BaseWindow::CameraCharacterShightCB(Fl_Widget* widget, void* data)
 		// If non object is selected, camera frames all scene
 		else
 			CameraFrameCB(widget, data);
-		SmartBody::SBScene::getScene()->removeConeOfSight();
+		renderScene->removeConeOfSight();
 		SmartBody::util::log("Camera sight: OFF");
 	} else {
 		SbmCharacter* character = rootWindow->getSelectedCharacter();
 		if(character) {
-			if(SmartBody::SBScene::getScene()->setCameraConeOfSight(character->getName())) {
+			if(renderScene->setCameraConeOfSight(character->getName())) {
 				// Renders eye beams
 				rootWindow->curViewer->getData()->eyeBeamMode = FltkViewer::ModeEyeBeams;
 				SmartBody::util::log("Camera sight: ON");
@@ -1393,14 +1404,16 @@ void BaseWindow::CameraCharacterShightCB(Fl_Widget* widget, void* data)
 void BaseWindow::FaceCameraCB(Fl_Widget* widget, void* data)
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
-	
+	auto& scene = rootWindow->mScene;
+	auto& renderScene = rootWindow->mRenderScene;
+
 	SbmCharacter* character = rootWindow->getSelectedCharacter();
 	if (!character)
 		return;
 	
 	// position the camera such that the character's face appears in the frame
 	SrBox faceBox;
-	SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* camera = renderScene->getActiveCamera();
 	if (!camera)
 		return;
 
@@ -1438,7 +1451,7 @@ void BaseWindow::FaceCameraCB(Fl_Widget* widget, void* data)
 		camera->setCenter(tmpCenter.x, tmpCenter.y, tmpCenter.z);
 		SrVec tmp = camera->getCenter() + height / 4.0f * facingVector;
 		camera->setEye(tmp.x, tmp.y, tmp.z);
-		float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+		float scale = 1.f/scene->getScale();
 		float znear = 0.01f*scale;
 		float zfar = 1000.0f*scale;
 		camera->setNearPlane(znear);
@@ -1556,7 +1569,7 @@ void BaseWindow::runScript(std::string filename)
 		boost::replace_all(lineStr, "$CHARACTER", selectedCharacterName);
 		boost::replace_all(lineStr, "$TARGET", selectedTargetName);
 
-		SmartBody::SBScene::getScene()->command((char*)lineStr.c_str());
+		mScene->command((char*)lineStr.c_str());
 	}
 	file.close();
 #endif	
@@ -1674,7 +1687,8 @@ void BaseWindow::reloadScriptsByDir(std::string scriptsDir, std::string parentSt
 
 void BaseWindow::ModeBonesCB(Fl_Widget* w, void* data)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 
 	const std::vector<std::string>& characters = scene->getCharacterNames();
 	for (size_t c = 0; c < characters.size(); c++)
@@ -1691,7 +1705,8 @@ void BaseWindow::ModeBonesCB(Fl_Widget* w, void* data)
 
 void BaseWindow::ModeGeometryCB(Fl_Widget* w, void* data)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 
 	const std::vector<std::string>& characters = scene->getCharacterNames();
 	for (size_t c = 0; c < characters.size(); c++)
@@ -1703,7 +1718,8 @@ void BaseWindow::ModeGeometryCB(Fl_Widget* w, void* data)
 
 void BaseWindow::ModeCollisionGeometryCB( Fl_Widget* w, void* data )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 
 	const std::vector<std::string>& characters = scene->getCharacterNames();
 	for (size_t c = 0; c < characters.size(); c++)
@@ -1716,7 +1732,8 @@ void BaseWindow::ModeCollisionGeometryCB( Fl_Widget* w, void* data )
 
 void BaseWindow::ModeSkinWeightCB( Fl_Widget* w, void* data )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 
 	const std::vector<std::string>& characters = scene->getCharacterNames();
 	for (size_t c = 0; c < characters.size(); c++)
@@ -1732,7 +1749,8 @@ void BaseWindow::ModeSkinWeightCB( Fl_Widget* w, void* data )
 
 void BaseWindow::ModeDeformableGeometryCB(Fl_Widget* w, void* data)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 
 	const std::vector<std::string>& characters = scene->getCharacterNames();
 	for (size_t c = 0; c < characters.size(); c++)
@@ -1749,7 +1767,8 @@ void BaseWindow::ModeDeformableGeometryCB(Fl_Widget* w, void* data)
 
 void BaseWindow::ModeGPUDeformableGeometryCB(Fl_Widget* w, void* data)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 
 	const std::vector<std::string>& characters = scene->getCharacterNames();
 	for (size_t c = 0; c < characters.size(); c++)
@@ -1766,7 +1785,8 @@ void BaseWindow::ModeGPUDeformableGeometryCB(Fl_Widget* w, void* data)
 
 void BaseWindow::ModeAxisCB(Fl_Widget* w, void* data)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 
 	const std::vector<std::string>& characters = scene->getCharacterNames();
 	for (size_t c = 0; c < characters.size(); c++)
@@ -1981,8 +2001,7 @@ void BaseWindow::ShowBoundingVolumeCB( Fl_Widget* w, void* data )
 void BaseWindow::SettingsDefaultMediaPathCB(Fl_Widget* w, void* data)
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
-	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = rootWindow->mScene;
 	std::string path = scene->getSystemParameter("mediapath");
 
 	const char* result = fl_input("Default Media Path", path.c_str());
@@ -1995,7 +2014,8 @@ void BaseWindow::SettingsDefaultMediaPathCB(Fl_Widget* w, void* data)
 void BaseWindow::AudioCB(Fl_Widget* w, void* data)
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = rootWindow->mScene;
+
 	const bool val = scene->getBoolAttribute("internalAudio");
 	scene->setBoolAttribute("internalAudio", !val);
 }
@@ -2003,8 +2023,9 @@ void BaseWindow::AudioCB(Fl_Widget* w, void* data)
 void BaseWindow::CreateCharacterCB(Fl_Widget* w, void* data)
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
 
-	std::vector<std::string> skeletonNames = SmartBody::SBScene::getScene()->getSkeletonNames();
+	std::vector<std::string> skeletonNames = scene->getSkeletonNames();
 	
 	if (!rootWindow->characterCreator)
 		rootWindow->characterCreator = new CharacterCreatorWindow(rootWindow->x() + 20, rootWindow->y() + 20, 480, 150, strdup("Create a Character"));
@@ -2029,14 +2050,14 @@ void BaseWindow::CreatePawnFromModelCB(Fl_Widget* w, void* data)
 #if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	std::string pawnName = rootWindow->curViewer->create_pawn();
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+	SmartBody::SBPawn* pawn = mScene->getPawn(pawnName);
 	if (!pawn)
 		return;
 
 	const std::string& currentSelection = SBSelectionManager::getSelectionManager()->getCurrentSelection();
 	SmartBody::util::log(currentSelection.c_str());
 	// get the first model
-	std::vector<std::string> meshes = SmartBody::SBScene::getScene()->getAssetManager()->getDeformableMeshNames();
+	std::vector<std::string> meshes = mScene->getAssetManager()->getDeformableMeshNames();
 	if (meshes.size() > 0)
 	{
 		pawn->setStringAttribute("mesh", meshes[0]);	
@@ -2053,7 +2074,7 @@ void BaseWindow::CreateLightCB(Fl_Widget* w, void* data)
 #if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = mScene;
 	int highestLightNum = 0;
 	const std::vector<std::string>& pawnNames = scene->getPawnNames();
 	for (std::vector<std::string>::const_iterator iter =  pawnNames.begin();
@@ -2094,6 +2115,8 @@ void BaseWindow::CreateLightCB(Fl_Widget* w, void* data)
 void BaseWindow::CreateCameraCB(Fl_Widget* w, void* data)
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+	auto& renderScene = rootWindow->mRenderScene;
 	std::string cameraName = "camera";
 	cameraName += boost::lexical_cast<std::string>(rootWindow->cameraCount++);
 	const char* userCamName = fl_input("Camera name:", cameraName.c_str());
@@ -2104,14 +2127,14 @@ void BaseWindow::CreateCameraCB(Fl_Widget* w, void* data)
 	}
 
 	std::string cameraNameStr = userCamName;
-	SrCamera* camera = SmartBody::SBScene::getScene()->createCamera(cameraNameStr);
+	SrCamera* camera = renderScene->createCamera(cameraNameStr);
 
 	if (!camera)
 	{
 		fl_alert("Camera with name '%s' cannot be created.", cameraNameStr.c_str());
 		return;
 	}
-	float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+	float scale = 1.f/scene->getScale();
 	SrVec camEye = SrVec(0,1.66f,1.85f)*scale;
 	SrVec camCenter = SrVec(0,0.92f,0)*scale;	
 	float znear = 0.01f*scale;
@@ -2121,25 +2144,27 @@ void BaseWindow::CreateCameraCB(Fl_Widget* w, void* data)
 	camera->setNearPlane(znear);
 	camera->setFarPlane(zfar);
 
-	if (!SmartBody::SBScene::getScene()->getActiveCamera())
-		SmartBody::SBScene::getScene()->setActiveCamera(camera);
+	if (!renderScene->getActiveCamera())
+		renderScene->setActiveCamera(camera);
 }
 
 void BaseWindow::CreateTerrainCB(Fl_Widget* w, void* data)
 {
-	BaseWindow* window = static_cast<BaseWindow*>(data);
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+
 	std::string mediaPath = SmartBody::SBScene::getSystemParameter("mediapath");
-	std::string terrainFile = window->chooseFile("Load Terrain:", "PPM files\t*.ppm\n", mediaPath);
+	std::string terrainFile = rootWindow->chooseFile("Load Terrain:", "PPM files\t*.ppm\n", mediaPath);
 	if (terrainFile == "")
 		return;
 
 	std::string terrainCommand = "terrain load ";
 	terrainCommand.append(terrainFile);
-	SmartBody::SBScene::getScene()->command((char*)terrainCommand.c_str());
-	if (SmartBody::SBScene::getScene()->getHeightfield())
+	scene->command((char*)terrainCommand.c_str());
+	if (scene->getHeightfield())
 	{
-		SmartBody::SBScene::getScene()->getHeightfield()->set_scale( 5000.0f, 300.0f, 5000.0f );
-		SmartBody::SBScene::getScene()->getHeightfield()->set_auto_origin();
+		scene->getHeightfield()->set_scale( 5000.0f, 300.0f, 5000.0f );
+		scene->getHeightfield()->set_auto_origin();
 	}
 }
 
@@ -2189,10 +2214,12 @@ void BaseWindow::SetTakeSnapshot_tgaCB(Fl_Widget* w, void* data)
 void BaseWindow::TrackCharacterCB(Fl_Widget* w, void* data)
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+	auto& renderScene = rootWindow->mRenderScene;
 
-	if (SmartBody::SBScene::getScene()->hasCameraTrack())
+	if (renderScene->hasCameraTrack())
 	{
-		SmartBody::SBScene::getScene()->removeCameraTrack();
+		renderScene->removeCameraTrack();
 		return;
 	}
 
@@ -2210,8 +2237,8 @@ void BaseWindow::TrackCharacterCB(Fl_Widget* w, void* data)
 // 	trackCommand.append(character->getName());
 // 	trackCommand.append(" ");
 // 	trackCommand.append(joint->name());
-	//SmartBody::SBScene::getScene()->command((char*)trackCommand.c_str());	
-	SmartBody::SBScene::getScene()->setCameraTrack(character->getName(), joint->jointName());
+	//mScene->command((char*)trackCommand.c_str());	
+	renderScene->setCameraTrack(character->getName(), joint->jointName());
 }
 
 void BaseWindow::KinematicFootstepsCB(Fl_Widget* w, void* data)
@@ -2305,7 +2332,7 @@ void BaseWindow::VelocityCB(Fl_Widget* w, void* data)
 void BaseWindow::GridCB(Fl_Widget* w, void* data)
 {
 #if !NO_OGRE_VIEWER_CMD
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = mScene;
 	bool value = scene->getBoolAttribute("GUI.ShowGrid");
 	scene->setBoolAttribute("GUI.ShowGrid", !value);
 #endif
@@ -2324,10 +2351,12 @@ void BaseWindow::ShowPoseExamples( Fl_Widget* w, void* data )
 
 void BaseWindow::CreatePythonAPICB(Fl_Widget* widget, void* data)
 {
-	BaseWindow* window = static_cast<BaseWindow*>(data);
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+
 	std::string mediaPath = SmartBody::SBScene::getSystemParameter("mediapath");
 	
-	std::string docFile = window->chooseFile("Save documentation to:", "HTML files\t*.{html,htm}\n", mediaPath);
+	std::string docFile = rootWindow->chooseFile("Save documentation to:", "HTML files\t*.{html,htm}\n", mediaPath);
 	if (docFile == "")
 		return;
 
@@ -2349,7 +2378,6 @@ void BaseWindow::CreatePythonAPICB(Fl_Widget* widget, void* data)
 	strstr << "f.write(unicode(content))\n";
 	strstr << "f.close()\n";
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	scene->run(strstr.str());
 }
 
@@ -2415,13 +2443,14 @@ void BaseWindow::SwitchRendererCB(Fl_Widget* widget, void* data)
 void BaseWindow::DocumentationCB(Fl_Widget* widget, void* data)
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+	auto& renderScene = rootWindow->mRenderScene;
 
 	std::stringstream strstr;
 	strstr << "import webbrowser\n";
 	strstr << "url = \"http://smartbody.ict.usc.edu/documentation\"\n";
 	strstr << "webbrowser.open(url)\n";
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	scene->run(strstr.str());
 }
 
@@ -2489,28 +2518,30 @@ void BaseWindow::ResizeWindowCB(Fl_Widget* widget, void* data)
 
 void BaseWindow::SaveCameraCB( Fl_Widget* widget, void* data )
 {
-	BaseWindow* window = (BaseWindow*)data;	
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+	auto& renderScene = rootWindow->mRenderScene;
 	
 	std::string cameraName = "camera";
-	cameraName += boost::lexical_cast<std::string>(window->cameraCount++);
+	cameraName += boost::lexical_cast<std::string>(rootWindow->cameraCount++);
 	const char* userCamName = fl_input("Camera name:", cameraName.c_str());
 	if (!userCamName)
 	{
-		window->cameraCount--;
+		rootWindow->cameraCount--;
 		return;
 	}
 
 	std::string cameraNameStr = userCamName;
-	SrCamera* camera = SmartBody::SBScene::getScene()->createCamera(cameraNameStr);
+	SrCamera* camera = renderScene->createCamera(cameraNameStr);
 	if (!camera)
 	{
 		fl_alert("Camera with name '%s' cannot be created.", cameraNameStr.c_str());
 		return;
 	}
 
-	camera->copyCamera(SmartBody::SBScene::getScene()->getActiveCamera());
-	
-	window->updateCameraList();
+	camera->copyCamera(renderScene->getActiveCamera());
+
+	rootWindow->updateCameraList();
 	//window->cameraList.push_back(camera);
 	//window->updateCameraList();
 }
@@ -2519,15 +2550,17 @@ void BaseWindow::DeleteCameraCB( Fl_Widget* widget, void* data )
 {
 	const Fl_Menu_Item* menuItem = ((Fl_Menu_*)widget)->mvalue();
 	std::string camName = menuItem->label();
-	BaseWindow* window = (BaseWindow*)data;	
-	SrCamera* camera = SmartBody::SBScene::getScene()->getCamera(camName);
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& renderScene = rootWindow->mRenderScene;
+
+	SrCamera* camera = renderScene->getCamera(camName);
 	if (!camera)
 	{
 		fl_alert("No camera named '%s' found, cannot remove it.", camName.c_str());
 		return;
 	}
-	SmartBody::SBScene::getScene()->removeCamera(camera);
-	window->updateCameraList();
+	renderScene->removeCamera(camera);
+	rootWindow->updateCameraList();
 }
 
 
@@ -2535,9 +2568,11 @@ void BaseWindow::DeleteObjectCB( Fl_Widget* widget, void* data )
 {
 	const Fl_Menu_Item* menuItem = ((Fl_Menu_*)widget)->mvalue();
 	std::string objName = menuItem->label();
-	BaseWindow* window = (BaseWindow*)data;	
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(objName);
-	SmartBody::SBCharacter* sbChar = SmartBody::SBScene::getScene()->getCharacter(objName);
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mScene;
+
+	SmartBody::SBPawn* pawn = scene->getPawn(objName);
+	SmartBody::SBCharacter* sbChar = scene->getCharacter(objName);
 	if (!pawn && !sbChar)
 	{
 		fl_alert("No object named '%s' found, cannot remove it.", objName.c_str());
@@ -2548,11 +2583,11 @@ void BaseWindow::DeleteObjectCB( Fl_Widget* widget, void* data )
 	if (confirm == 0)
 		return ;
 	if (sbChar)
-		SmartBody::SBScene::getScene()->removeCharacter(objName);
+		scene->removeCharacter(objName);
 	else if (pawn)
-		SmartBody::SBScene::getScene()->removePawn(objName);
-	//SmartBody::SBScene::getScene()->removeCamera(camera);
-	window->updateObjectList();
+		scene->removePawn(objName);
+	//mScene->removeCamera(camera);
+	rootWindow->updateObjectList();
 }
 
 void BaseWindow::ChooseCameraCB( Fl_Widget* widget, void* data )
@@ -2560,15 +2595,17 @@ void BaseWindow::ChooseCameraCB( Fl_Widget* widget, void* data )
 	const Fl_Menu_Item* menuItem = ((Fl_Menu_*)widget)->mvalue();
 	//LOG("load camera %s", menuItem->label());
 	std::string camName = menuItem->label();
- 	BaseWindow* window = (BaseWindow*)data;	
-	SrCamera* cam = SmartBody::SBScene::getScene()->getCamera(camName);
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& renderScene = rootWindow->mRenderScene;
+
+	SrCamera* cam = renderScene->getCamera(camName);
 	if (!cam)
 	{
 		fl_alert("No camera with name '%s' found.", camName.c_str());
 		return;
 	}
-	
-	SmartBody::SBScene::getScene()->setActiveCamera(cam);
+
+	renderScene->setActiveCamera(cam);
 // 	Fl_Choice* choice = (Fl_Choice*)widget;
 // 	int cameraIdx = choice->value() - 1;	
 // 	if (cameraIdx >=0 && cameraIdx < (int)window->cameraList.size())
@@ -2585,7 +2622,7 @@ void BaseWindow::updateObjectList(std::string deleteObjectName)
 	Fl_Menu_Item* menuList = const_cast<Fl_Menu_Item*>(menubar->menu());
 	Fl_Menu_Item& deleteobjSubMenu = menuList[deleteObjectMenuIndex];	
 	deleteObjectList.clear();
-	std::vector<std::string> characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	std::vector<std::string> characterNames = mScene->getCharacterNames();
 	for (unsigned int i=0;i<characterNames.size();i++)
 	{		
 		const std::string charName = characterNames[i];
@@ -2596,11 +2633,11 @@ void BaseWindow::updateObjectList(std::string deleteObjectName)
 		deleteObjectList.push_back(temp_DeleteObj);		
 	}
 
-	std::vector<std::string> pawnNames = SmartBody::SBScene::getScene()->getPawnNames();
+	std::vector<std::string> pawnNames = mScene->getPawnNames();
 	for (unsigned int i=0;i<pawnNames.size();i++)
 	{		
 		const std::string pawnName = pawnNames[i];
-		SmartBody::SBCharacter* sbChar = SmartBody::SBScene::getScene()->getCharacter(pawnName);
+		SmartBody::SBCharacter* sbChar = mScene->getCharacter(pawnName);
 		if (sbChar)
 			continue;
 
@@ -2628,24 +2665,22 @@ void BaseWindow::updateCameraList()
 		cameraChoice->add(cameraName.c_str());
 	}
 	*/
-	Fl_Menu_Item* menuList = const_cast<Fl_Menu_Item*>(menubar->menu());
+	auto* menuList = const_cast<Fl_Menu_Item*>(menubar->menu());
 	Fl_Menu_Item& loadCameraSubMenu = menuList[loadCameraMenuIndex];	
 	Fl_Menu_Item& deleteCameraSubMenu = menuList[deleteCameraMenuIndex];	
 	loadCameraList.clear();
 	deleteCameraList.clear();
-	std::vector<std::string> cameraNames = SmartBody::SBScene::getScene()->getCameraNames();
-	for (std::vector<std::string>::iterator iter = cameraNames.begin();
-		  iter != cameraNames.end();
-		  iter++)
+	std::vector<std::string> cameraNames = mRenderScene->getCameraNames();
+	for (auto & cameraName : cameraNames)
 	{		
-		const std::string camName = (*iter);
+		const std::string camName = cameraName;
 		Fl_Menu_Item temp_LoadCam = { strdup(camName.c_str()), 0, ChooseCameraCB, this };		
 		loadCameraList.push_back(temp_LoadCam);		
 
 		Fl_Menu_Item temp_DeleteCam = { strdup(camName.c_str()), 0, DeleteCameraCB, this };		
 		deleteCameraList.push_back(temp_DeleteCam);		
 	}
-	Fl_Menu_Item temp = {0};
+	Fl_Menu_Item temp = {nullptr};
 	loadCameraList.push_back(temp);
 	deleteCameraList.push_back(temp);
 
@@ -2656,7 +2691,7 @@ void BaseWindow::updateCameraList()
 void BaseWindow::ShowCamerasCB( Fl_Widget* w, void* data )
 {
 #if !NO_OGRE_VIEWER_CMD
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = mScene;
 	bool value = scene->getBoolAttribute("GUI.ShowCameras");
 	scene->setBoolAttribute("GUI.ShowCameras", !value);
 #endif
@@ -2666,7 +2701,7 @@ void BaseWindow::ShowCamerasCB( Fl_Widget* w, void* data )
 void BaseWindow::ShowLightsCB( Fl_Widget* w, void* data )
 {
 #if !NO_OGRE_VIEWER_CMD
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = mScene;
 	bool value = scene->getBoolAttribute("GUI.ShowLights");
 	scene->setBoolAttribute("GUI.ShowLights", !value);
 #endif

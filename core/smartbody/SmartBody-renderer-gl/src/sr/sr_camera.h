@@ -44,9 +44,8 @@ namespace SmartBody {
 	class SBSubject;
 }
 
-class CameraTrack
+struct CameraTrack
 {
-	public:
 		SkJoint* joint;
 		SrVec jointToCamera;
 		SrVec targetToCamera;

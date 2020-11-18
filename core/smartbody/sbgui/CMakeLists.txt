@@ -101,94 +101,95 @@ endif ()
 
 set(SBM_FLTK_SRC
 
-        ./src/sbm_main.cpp
-        ./src/ppm.cpp
-        ./src/pic.cpp
-        #	./src/glfont2.cpp
-        ./src/CommandWindow.cpp
-        ./src/ObjectManipulationHandle.cpp
-        ./src/PawnPosControl.cpp
-        ./src/PositionControl.cpp
-        ./src/RotationControl.cpp
-        ./src/RootWindow.cxx
-        ./src/ExportWindow.cpp
-        ./src/fltk_viewer.cpp
-        ./src/SBWindowListener.cpp
-        ./src/SBSelectionManager.cpp
-        ./src/SBInterfaceListener.cpp
+        src/sbm_main.cpp
+        src/ppm.cpp
+        src/pic.cpp
+        #	src/glfont2.cpp
+        src/CommandWindow.cpp
+        src/ObjectManipulationHandle.cpp
+        src/PawnPosControl.cpp
+        src/PositionControl.cpp
+        src/RotationControl.cpp
+        src/RootWindow.cxx
+        src/ExportWindow.cpp
+        src/fltk_viewer.cpp
+        src/SBWindowListener.cpp
+        src/SBSelectionManager.cpp
+        src/SBInterfaceListener.cpp
+        src/SceneExporter.cpp
         ${OGRE_SRCS}
-        ./src/pic.cpp
-        ./src/ppm.cpp
-        ./src/bmlviewer/BehaviorBlock.cpp
-        ./src/bmlviewer/BehaviorEditorWidget.cpp
-        ./src/bmlviewer/BehaviorWindow.cpp
-        ./src/channelbufferviewer/GlChartView.cpp
-        ./src/channelbufferviewer/GlChartViewArchive.cpp
-        ./src/channelbufferviewer/GlChartViewCoordinate.cpp
-        ./src/channelbufferviewer/channelbufferWindow.cpp
-        ./src/nle/NonLinearEditor.cpp
-        ./src/nle/NonLinearEditorWidget.cpp
-        ./src/panimationviewer/ErrorVisualization.cpp
-        ./src/panimationviewer/PanimationWindow.cpp
-        ./src/panimationviewer/ParamAnimBlock.cpp
-        ./src/panimationviewer/ParamAnimEditorWidget.cpp
-        ./src/panimationviewer/ParamAnimRunTimeEditor.cpp
-        ./src/panimationviewer/ParamAnimScriptEditor.cpp
-        ./src/panimationviewer/ParamAnimStateEditor.cpp
-        ./src/panimationviewer/ParamAnimTransitionEditor.cpp
-        ./src/panimationviewer/ParamAnimTransitionEditor2.cpp
-        ./src/panimationviewer/ParamAnimTransitionCreatorWidget.cpp
-        ./src/panimationviewer/ParameterGroup.cpp
-        ./src/panimationviewer/ParameterVisualization.cpp
-        ./src/panimationviewer/Parameter3DVisualization.cpp
-        ./src/panimationviewer/ParamAnimStateCreatorWidget.cpp
-        ./src/panimationviewer/ParamAnimAutoMarkingEditor.cpp
-        ./src/panimationviewer/ParamAnimParameterEditor.cpp
-        ./src/panimationviewer/VisualizationView.cpp
-        ./src/CharacterCreatorWindow.cpp
-        ./src/bmlcreator/AttributeWindow.cpp
-        ./src/bmlcreator/TextEditor.cpp
-        ./src/bmlcreator/BMLCreatorWindow.cpp
+        src/pic.cpp
+        src/ppm.cpp
+        src/bmlviewer/BehaviorBlock.cpp
+        src/bmlviewer/BehaviorEditorWidget.cpp
+        src/bmlviewer/BehaviorWindow.cpp
+        src/channelbufferviewer/GlChartView.cpp
+        src/channelbufferviewer/GlChartViewArchive.cpp
+        src/channelbufferviewer/GlChartViewCoordinate.cpp
+        src/channelbufferviewer/channelbufferWindow.cpp
+        src/nle/NonLinearEditor.cpp
+        src/nle/NonLinearEditorWidget.cpp
+        src/panimationviewer/ErrorVisualization.cpp
+        src/panimationviewer/PanimationWindow.cpp
+        src/panimationviewer/ParamAnimBlock.cpp
+        src/panimationviewer/ParamAnimEditorWidget.cpp
+        src/panimationviewer/ParamAnimRunTimeEditor.cpp
+        src/panimationviewer/ParamAnimScriptEditor.cpp
+        src/panimationviewer/ParamAnimStateEditor.cpp
+        src/panimationviewer/ParamAnimTransitionEditor.cpp
+        src/panimationviewer/ParamAnimTransitionEditor2.cpp
+        src/panimationviewer/ParamAnimTransitionCreatorWidget.cpp
+        src/panimationviewer/ParameterGroup.cpp
+        src/panimationviewer/ParameterVisualization.cpp
+        src/panimationviewer/Parameter3DVisualization.cpp
+        src/panimationviewer/ParamAnimStateCreatorWidget.cpp
+        src/panimationviewer/ParamAnimAutoMarkingEditor.cpp
+        src/panimationviewer/ParamAnimParameterEditor.cpp
+        src/panimationviewer/VisualizationView.cpp
+        src/CharacterCreatorWindow.cpp
+        src/bmlcreator/AttributeWindow.cpp
+        src/bmlcreator/TextEditor.cpp
+        src/bmlcreator/BMLCreatorWindow.cpp
 
-        ./src/resourceViewer/Fl_Tree_Horizontal.cpp
-        ./src/resourceViewer/TreeItemInfoWidget.cpp
-        ./src/resourceViewer/ResourceWindow.cpp
-        ./src/resourceViewer/TreeInfoObject.cpp
-        ./src/resourceViewer/AttributeEditor.cpp
+        src/resourceViewer/Fl_Tree_Horizontal.cpp
+        src/resourceViewer/TreeItemInfoWidget.cpp
+        src/resourceViewer/ResourceWindow.cpp
+        src/resourceViewer/TreeInfoObject.cpp
+        src/resourceViewer/AttributeEditor.cpp
 
-        ./src/visemeviewer/VisemeCurve.cpp
-        ./src/visemeviewer/VisemeCurveEditor.cpp
-        ./src/visemeviewer/VisemeViewerWindow.cpp
-        ./src/visemeviewer/VisemeRunTimeWindow.cpp
-        ./src/visemeviewer/VisemeRTCurveViewer.cpp
-        ./src/visemeviewer/ImageSequencePlayer.cpp
+        src/visemeviewer/VisemeCurve.cpp
+        src/visemeviewer/VisemeCurveEditor.cpp
+        src/visemeviewer/VisemeViewerWindow.cpp
+        src/visemeviewer/VisemeRunTimeWindow.cpp
+        src/visemeviewer/VisemeRTCurveViewer.cpp
+        src/visemeviewer/ImageSequencePlayer.cpp
 
-        ./src/retargetviewer/RetargetViewer.cpp
-        ./src/retargetcreator/RetargetCreatorWindow.cpp
-        ./src/autorig/SBAutoRigManager.cpp
-        ./src/autorig/VoxelizerWindow.cpp
-        ./src/autorig/AutoRigViewer.cpp
+        src/retargetviewer/RetargetViewer.cpp
+        src/retargetcreator/RetargetCreatorWindow.cpp
+        src/autorig/SBAutoRigManager.cpp
+        src/autorig/VoxelizerWindow.cpp
+        src/autorig/AutoRigViewer.cpp
 
-        ./src/monitorviewer/MonitorConnectWindow.cpp
-        ./src/motioneditor/MotionEditorWindow.cpp
-        ./src/jointmapviewer/JointMapViewer.cpp
-        ./src/jointmapviewer/RetargetStepWindow.cpp
+        src/monitorviewer/MonitorConnectWindow.cpp
+        src/motioneditor/MotionEditorWindow.cpp
+        src/jointmapviewer/JointMapViewer.cpp
+        src/jointmapviewer/RetargetStepWindow.cpp
 
-        ./src/posecreator/PoseCreator.cpp
+        src/posecreator/PoseCreator.cpp
 
-        ./src/faceviewer/FaceViewer.cpp
-        ./src/faceshiftviewer/FaceShiftViewer.cpp
-        ./src/FLTKListener.cpp
-        ./src/SBGUIManager.cpp
-        ./src/SBBaseRenderer.cpp
-        ./src/SBRenderer.cpp
-        ./src/SBFrameBufferObject.cpp
+        src/faceviewer/FaceViewer.cpp
+        src/faceshiftviewer/FaceShiftViewer.cpp
+        src/FLTKListener.cpp
+        src/SBGUIManager.cpp
+        src/SBBaseRenderer.cpp
+        src/SBRenderer.cpp
+        src/SBFrameBufferObject.cpp
 
-        ./src/flu/Flu_Button.cpp
-        ./src/flu/Flu_Collapsable_Group.cpp
-        ./src/flu/FluSimpleString.cpp
+        src/flu/Flu_Button.cpp
+        src/flu/Flu_Collapsable_Group.cpp
+        src/flu/FluSimpleString.cpp
 
-        ./src/pythonbind/SBPythonAutorig.cpp
+        src/pythonbind/SBPythonAutorig.cpp
         )
 
 add_executable(sbgui
@@ -197,6 +198,7 @@ add_executable(sbgui
 
 target_link_libraries(sbgui
         SmartBody
+        SmartBody-renderer-gl
         SmartBody-bindings-python
         jpge
         pinocchio
@@ -209,6 +211,7 @@ target_include_directories(sbgui PUBLIC
         src
         $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>)
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")

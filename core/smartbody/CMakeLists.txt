@@ -19,6 +19,7 @@ add_subdirectory(SmartBody)
 add_subdirectory(SmartBody-bindings-python)
 add_subdirectory(SmartBody-bindings-javascript)
 add_subdirectory(Smartbody-dll)
+add_subdirectory(SmartBody-renderer-gl)
 add_subdirectory(simplesmartbody)
 add_subdirectory(sbgui)
 

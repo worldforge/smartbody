@@ -41,6 +41,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotionBlendBase.h>
 #include <sb/SBEvent.h>
 #include "ObjectManipulationHandle.h"
+#include "SBBaseRenderer.h"
 #include <SBSelectionManager.h>
 //#include <CEGUI.h>
 
@@ -343,10 +344,12 @@ class FltkViewer : public Fl_Gl_Window, public SmartBody::SBObserver, public Sel
         To draw the window contents, use render() instead. */
     virtual void draw ();	
 
-	void drawInteraction(SrCamera* cam);
+	void drawInteraction(SrCamera* cam, SBBaseRenderer& renderer);
     /*! Called to initialize opengl and to set the viewport to (w,h). This
         method is called also each time the window is reshaped. */
     virtual void init_opengl ( int w, int h );
+
+
 
 	void initShadowMap();
 	void makeShadowMap();
@@ -433,9 +436,10 @@ class FltkViewer : public Fl_Gl_Window, public SmartBody::SBObserver, public Sel
 
 	SrVec interactivePoint;
 
-	FLTKListener* fltkListener;	
+	FLTKListener* fltkListener;
 
-	
+
+
 	virtual void notify(SmartBody::SBSubject* subject);
 
 	virtual void label_viewer(const char* str);
@@ -485,8 +489,8 @@ protected:
  };
 
 
- class FltkViewerData
- { public :
+ struct FltkViewerData
+ {
 	FltkViewerData();
 	void setupData();
 
@@ -562,7 +566,6 @@ protected:
 
    unsigned int  shadowMapID, depthMapID, depthFB, rboID;
    float shadowCPM[16];
-   
  };
 
 class GestureVisualizationHandler : public SmartBody::SBEventHandler

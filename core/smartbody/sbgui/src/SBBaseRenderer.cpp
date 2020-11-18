@@ -658,3 +658,131 @@ void SBBaseRenderer::GPUBlendShapeUpdate(DeformableMeshInstance* meshInstance)
 	gpuMeshInstance->gpuBlendShape(); // copy the static blendshape results to VBO buffer
 }
 
+void SBBaseRenderer::render(Heightfield& heightfield, int renderMode) const {
+#if defined (__ANDROID__) || defined (SB_IPHONE) || defined(__native_client__) || defined(EMSCRIPTEN)
+#else
+	auto& meshData = heightfield.getMeshData();
+	if (meshData.vertex_arr && meshData.color_arr) {
+
+		if (dirty_normals) {
+			heightfield.load_normals();
+		}
+
+		glPushAttrib(GL_POLYGON_BIT);
+		if (renderMode == 0)
+			glPolygonMode(GL_FRONT, GL_FILL);
+		else
+			glPolygonMode(GL_FRONT, GL_LINE);
+
+		glPushMatrix();
+		glTranslatef(meshData.mesh_origin[0], meshData.mesh_origin[1], meshData.mesh_origin[2]);
+		glScalef(meshData.mesh_scale[0], meshData.mesh_scale[1], meshData.mesh_scale[2]);
+
+#if 0
+		for( int j = 0; j < mesh_resz - 1; j++ )	{
+
+			glBegin( GL_TRIANGLE_STRIP );
+			for( int i = 0; i < mesh_resx - 1; i++ )	{
+
+				int index = ( j * mesh_resx + i ) * 3;
+				glColor3ubv( color_arr + index );
+				glVertex3fv( vertex_arr + index );
+
+				index = ( ( j + 1 ) * mesh_resx + i ) * 3;
+				glColor3ubv( color_arr + index );
+				glVertex3fv( vertex_arr + index );
+
+				index = ( j * mesh_resx + i + 1 ) * 3;
+				glColor3ubv( color_arr + index );
+				glVertex3fv( vertex_arr + index );
+
+				index = ( ( j + 1 ) * mesh_resx + i + 1 ) * 3;
+				glColor3ubv( color_arr + index );
+				glVertex3fv( vertex_arr + index );
+			}
+			glEnd();
+		}
+
+#elif 1
+		int norm_index = 0;
+		glBegin(GL_TRIANGLES);
+		for (int j = 0; j < meshData.mesh_resz - 1; j++) {
+
+			for (int i = 0; i < meshData.mesh_resx - 1; i++) {
+
+				glNormal3fv(meshData.normal_arr + norm_index);
+				int index = (j * meshData.mesh_resx + i) * 3;
+				glColor3ubv(meshData.color_arr + index);
+				glVertex3fv(meshData.vertex_arr + index);
+
+				index = ((j + 1) * meshData.mesh_resx + i) * 3;
+				glColor3ubv(meshData.color_arr + index);
+				glVertex3fv(meshData.vertex_arr + index);
+
+				index = (j * meshData.mesh_resx + i + 1) * 3;
+				glColor3ubv(meshData.color_arr + index);
+				glVertex3fv(meshData.vertex_arr + index);
+
+				norm_index += 3;
+
+				glNormal3fv(meshData.normal_arr + norm_index);
+				index = (j * meshData.mesh_resx + i + 1) * 3;
+				glColor3ubv(meshData.color_arr + index);
+				glVertex3fv(meshData.vertex_arr + index);
+
+				index = ((j + 1) * meshData.mesh_resx + i) * 3;
+				glColor3ubv(meshData.color_arr + index);
+				glVertex3fv(meshData.vertex_arr + index);
+
+				index = ((j + 1) * meshData.mesh_resx + i + 1) * 3;
+				glColor3ubv(meshData.color_arr + index);
+				glVertex3fv(meshData.vertex_arr + index);
+
+				norm_index += 3;
+			}
+		}
+		glEnd();
+#else
+		int norm_index = 0;
+		glBegin( GL_TRIANGLES );
+	glColor3ub( 127, 127, 127 );
+//	glColor3ub( 255, 255, 255 );
+		for( int j = 0; j < meshData.mesh_resz - 1; j++ )	{
+
+			for( int i = 0; i < meshData.mesh_resx - 1; i++ )	{
+
+				glNormal3fv( meshData.normal_arr + meshData.norm_index );
+				int index = ( j * meshData.mesh_resx + i ) * 3;
+				glVertex3fv( meshData.vertex_arr + index );
+
+				index = ( ( j + 1 ) * meshData.mesh_resx + i ) * 3;
+				glVertex3fv( meshData.vertex_arr + index );
+
+				index = ( j * meshData.mesh_resx + i + 1 ) * 3;
+				glVertex3fv( meshData.vertex_arr + index );
+
+				norm_index += 3;
+
+				glNormal3fv( meshData.normal_arr + norm_index );
+				index = ( j * meshData.mesh_resx + i + 1 ) * 3;
+				glVertex3fv( meshData.vertex_arr + index );
+
+				index = ( ( j + 1 ) * meshData.mesh_resx + i ) * 3;
+				glVertex3fv( meshData.vertex_arr + index );
+
+				index = ( ( j + 1 ) * meshData.mesh_resx + i + 1 ) * 3;
+				glVertex3fv( vmeshData.ertex_arr + index );
+
+				norm_index += 3;
+			}
+		}
+		glEnd();
+#endif
+
+		glPopMatrix();
+		glPopAttrib();
+
+	}
+#endif
+}
+

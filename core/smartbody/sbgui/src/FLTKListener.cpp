@@ -13,14 +13,11 @@
 #include <fltk_viewer.h>
 
 
-FLTKListener::FLTKListener() : SmartBody::SBSceneListener(), SmartBody::SBObserver()
+FLTKListener::FLTKListener(FltkViewer& viewer) : SmartBody::SBSceneListener(), SmartBody::SBObserver(), mViewer(viewer), otherListener(nullptr)
 {
-	otherListener = NULL;
 }
 
-FLTKListener::~FLTKListener()
-{
-}
+FLTKListener::~FLTKListener() = default;
 
 void FLTKListener::OnCharacterCreate( const std::string & name, const std::string & objectClass )
 {
@@ -666,21 +663,16 @@ void FLTKListener::OnSimulationUpdate()
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
 	const std::vector<std::string>& pawns = scene->getPawnNames();
-	for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-		pawnIter != pawns.end();
-		pawnIter++)
+	for (const auto & pawnIter : pawns)
 	{
-		SmartBody::SBPawn* pawn = scene->getPawn((*pawnIter));
+		SmartBody::SBPawn* pawn = scene->getPawn(pawnIter);
  		if (pawn->scene_p)
  			pawn->scene_p->update();	
 	}
 
 	scene->updateTrackedCameras();
-		
-	if (scene->getViewer())
-		scene->getViewer()->render();
-	if (scene->getOgreViewer())
-		scene->getOgreViewer()->render();
+
+	mViewer.render();
 
 	SrCamera * camera = scene->getActiveCamera();
 

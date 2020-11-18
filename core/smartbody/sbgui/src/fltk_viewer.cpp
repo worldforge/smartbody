@@ -1676,7 +1676,7 @@ void FltkViewer::drawSBRender(bool useDeferredShading)
 		_data->render_action.apply(SmartBody::SBScene::getScene()->getRootGroup());
 	}
 
-	drawInteraction(cam);
+	drawInteraction(cam, *renderer);
 	//drawFloor();
 
 }
@@ -1697,235 +1697,238 @@ void FltkViewer::draw()
 		drawSBRender(false);
 		return;
 	}
-
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
-	SbmShaderManager& ssm = SbmShaderManager::singleton();
-	SbmTextureManager& texm = SbmTextureManager::singleton();
-
-	
-	bool hasShaderSupport = false;
-	if (!context_valid())
-	{			
-		hasShaderSupport = ssm.initGLExtension();
-		if (hasShaderSupport)
-			initShadowMap();		
-	}
-
-	if ( !valid() ) 
-	{
-		// window resize				
-		init_opengl ( w(), h() ); // valid() is turned on by fltk after draw() returns
-		//hasShaderSupport = SbmShaderManager::initGLExtension();	   
-		SBGUIManager::singleton().resize(w(),h());
-		SBInterfaceManager::getInterfaceManager()->resize(w(),h());
-	} 	
-	//make_current();
-	//wglMakeCurrent(fl_GetDC(fl_xid(this)),(HGLRC)context());
-	//SmartBody::util::log("viewer GL context = %d, current context = %d",context(), wglGetCurrentContext());	
-   
-   bool hasOpenGL = ssm.initOpenGL();   
-   // init OpenGL extension
-   if (hasOpenGL)
-   {
-	   hasShaderSupport = ssm.initGLExtension();		
-   }   
-   // update the shader map  
-   if (hasShaderSupport)
-   {
-	   ssm.buildShaders();
-	   texm.updateTexture();
-   }	
-   
-   if (_objManipulator.hasPicking())
-   {
-		SrVec2 pick_loc = _objManipulator.getPickLoc();
-		_objManipulator.picking(pick_loc.x,pick_loc.y, cam);	   
-   }  
-
-   
-   glViewport ( 0, 0, w(), h() );
-   SrLight &light = _data->light;
-  
-   SrMat mat ( SrMat::NotInitialized );
-
-
-   //----- Clear Background --------------------------------------------
-   glClearColor ( _data->bcolor );
-   glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-   // if there is no active camera, then only show the blank screen
-   if (!cam)
-	   return;
-
-   //----- Set Projection ----------------------------------------------
-   cam->setAspectRatio((float)w()/(float)h());
-
-   glMatrixMode ( GL_PROJECTION );
-   glLoadMatrix ( cam->get_perspective_mat(mat) );
-
-   //----- Set Visualisation -------------------------------------------
-   glMatrixMode ( GL_MODELVIEW );
-   glLoadMatrix ( cam->get_view_mat(mat) );
-
-   glScalef ( cam->getScale(), cam->getScale(), cam->getScale() );
-
-	updateLights();
-	glEnable ( GL_LIGHTING );
-	int maxLight = -1;
-	for (size_t x = 0; x < _lights.size(); x++)
-	{
-		glLight ( x, _lights[x] );	
-		maxLight++;
-	}
-
-	if (maxLight < 0)
-	{
-		glDisable(GL_LIGHT0);
-	}
-	if (maxLight < 1)
-	{
-		glDisable(GL_LIGHT1);
-	}
-	if (maxLight < 2)
-	{
-		glDisable(GL_LIGHT2);
-	}
-	if (maxLight < 3)
-	{
-		glDisable(GL_LIGHT3);
-	}
-	if (maxLight < 4)
-	{
-		glDisable(GL_LIGHT4);
-	}
-	if (maxLight < 5)
-	{
-		glDisable(GL_LIGHT5);
-	}
-
-	if (maxLight > 0)
-	{
-		glEnable(GL_LIGHT0);
-	}
-	if (maxLight > 1)
-	{
-		glEnable(GL_LIGHT1);
-	}
-	if (maxLight > 2)
-	{
-		glEnable(GL_LIGHT2);
-	}
-	if (maxLight > 3)
-	{
-		glEnable(GL_LIGHT3);
-	}
-	if (maxLight > 4)
-	{
-		glEnable(GL_LIGHT4);
-	}
-	if (maxLight > 5)
-	{
-		glEnable(GL_LIGHT5);
-	}
-
-	static GLfloat mat_emissin[] = { 0.0,  0.0,    0.0,    1.0 };
-	static GLfloat mat_ambient[] = { 0.0,  0.0,    0.0,    1.0 };
-	static GLfloat mat_diffuse[] = { 1.0,  1.0,    1.0,    1.0 };
-	static GLfloat mat_speclar[] = { 0.0,  0.0,    0.0,    1.0 };
-	glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, mat_emissin );
-	glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
-	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse );
-	glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_speclar );
-	glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, 0.0 );
-	glColorMaterial( GL_FRONT_AND_BACK, GL_DIFFUSE );
-	glEnable( GL_COLOR_MATERIAL );
-	glEnable( GL_NORMALIZE );
-   //----- Render user scene -------------------------------------------
-	glDisable( GL_COLOR_MATERIAL );
-	//glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-	//if (_data->shadowmode == ModeShadows && hasShaderSupport)
-	//	makeShadowMap();
-
-	/* // draw skeleton
-	const std::vector<std::string> names = SmartBody::SBScene::getScene()->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = names.begin();
-		 iter != names.end();
-		 iter++)
-	{
-		glBegin(GL_LINES);     
-		SmartBody::SBCharacter* cur =  SmartBody::SBScene::getScene()->getCharacter(*iter);
-		SmartBody::SBSkeleton* skeleton = cur->getSkeleton();
-		int numJoints = skeleton->getNumJoints();
-		for (int j = 0; j < numJoints; j++)
-		{
-			SmartBody::SBJoint* joint = skeleton->getJoint(j);
-			SmartBody::SBJoint* parent = joint->getParent();
-			if (parent)
-			{
-				const SrMat& gmat = joint->gmat();
-				glVertex3f(gmat[12], gmat[13], gmat[14]);  
-				const SrMat& pgmat = parent->gmat();
-				glVertex3f(pgmat[12], pgmat[13], pgmat[14]);  
-			}
-			
-		}
-		glEnd();
-		
-	}
-*/
-	printOglError2("draw()", 2);
-	// real surface geometries
-	drawAllGeometries();	
-
-	printOglError2("draw()", 3);
-
-	drawInteraction(cam);
-
-
-	_data->fcounter.stop();
-
-	if ( !_data->message.empty() )
-	{
-		gl_draw_string ( _data->message.c_str(), -1, -1 );
-	}
-	else if ( _data->statistics )
-	{
-		_data->message = SmartBody::util::format( "FPS:%5.2f frame(%2.0f):%4.1fms render:%4.1fms",
-				  _data->fcounter.mps(),
-				  _data->fcounter.measurements(),
-				  _data->fcounter.loopdt()*1000.0,
-				  _data->fcounter.meandt()*1000.0 );
-		gl_draw_string ( _data->message.c_str(), -1.0f, -1.0f );
-		_data->message = "";
-	}
-
-   if (_retargetStepWindow)
-   {
-	   _retargetStepWindow->redraw();
-   }
-
-
-   // draw UI
-   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-   SBGUIManager::singleton().update();
-
-   //----- Fltk will then flush and swap buffers -----------------------------
-   
-	
-	if(getData()->saveSnapshot)
-	{
-		snapshot(w(), h(), static_cast<int>(_data->fcounter.measurements()));
-	}
-
-	if(getData()->saveSnapshot_tga)
-	{
-		snapshot_tga(w(), h(), static_cast<int>(_data->fcounter.measurements()));
-	}
-		
+//
+//	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+//	SbmShaderManager& ssm = SbmShaderManager::singleton();
+//	SbmTextureManager& texm = SbmTextureManager::singleton();
+//
+//
+//	bool hasShaderSupport = false;
+//	if (!context_valid())
+//	{
+//		hasShaderSupport = ssm.initGLExtension();
+//		if (hasShaderSupport)
+//			initShadowMap();
+//	}
+//
+//	if ( !valid() )
+//	{
+//		// window resize
+//		init_opengl ( w(), h() ); // valid() is turned on by fltk after draw() returns
+//		//hasShaderSupport = SbmShaderManager::initGLExtension();
+//		SBGUIManager::singleton().resize(w(),h());
+//		SBInterfaceManager::getInterfaceManager()->resize(w(),h());
+//	}
+//	//make_current();
+//	//wglMakeCurrent(fl_GetDC(fl_xid(this)),(HGLRC)context());
+//	//SmartBody::util::log("viewer GL context = %d, current context = %d",context(), wglGetCurrentContext());
+//
+//   bool hasOpenGL = ssm.initOpenGL();
+//   // init OpenGL extension
+//   if (hasOpenGL)
+//   {
+//	   hasShaderSupport = ssm.initGLExtension();
+//   }
+//   // update the shader map
+//   if (hasShaderSupport)
+//   {
+//	   ssm.buildShaders();
+//	   texm.updateTexture();
+//   }
+//
+//   if (_objManipulator.hasPicking())
+//   {
+//		SrVec2 pick_loc = _objManipulator.getPickLoc();
+//		_objManipulator.picking(pick_loc.x,pick_loc.y, cam);
+//   }
+//
+//
+//   glViewport ( 0, 0, w(), h() );
+//   SrLight &light = _data->light;
+//
+//   SrMat mat ( SrMat::NotInitialized );
+//
+//
+//   //----- Clear Background --------------------------------------------
+//   glClearColor ( _data->bcolor );
+//   glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+//
+//   // if there is no active camera, then only show the blank screen
+//   if (!cam)
+//	   return;
+//
+//   //----- Set Projection ----------------------------------------------
+//   cam->setAspectRatio((float)w()/(float)h());
+//
+//   glMatrixMode ( GL_PROJECTION );
+//   glLoadMatrix ( cam->get_perspective_mat(mat) );
+//
+//   //----- Set Visualisation -------------------------------------------
+//   glMatrixMode ( GL_MODELVIEW );
+//   glLoadMatrix ( cam->get_view_mat(mat) );
+//
+//   glScalef ( cam->getScale(), cam->getScale(), cam->getScale() );
+//
+//	updateLights();
+//	glEnable ( GL_LIGHTING );
+//	int maxLight = -1;
+//	for (size_t x = 0; x < _lights.size(); x++)
+//	{
+//		glLight ( x, _lights[x] );
+//		maxLight++;
+//	}
+//
+//	if (maxLight < 0)
+//	{
+//		glDisable(GL_LIGHT0);
+//	}
+//	if (maxLight < 1)
+//	{
+//		glDisable(GL_LIGHT1);
+//	}
+//	if (maxLight < 2)
+//	{
+//		glDisable(GL_LIGHT2);
+//	}
+//	if (maxLight < 3)
+//	{
+//		glDisable(GL_LIGHT3);
+//	}
+//	if (maxLight < 4)
+//	{
+//		glDisable(GL_LIGHT4);
+//	}
+//	if (maxLight < 5)
+//	{
+//		glDisable(GL_LIGHT5);
+//	}
+//
+//	if (maxLight > 0)
+//	{
+//		glEnable(GL_LIGHT0);
+//	}
+//	if (maxLight > 1)
+//	{
+//		glEnable(GL_LIGHT1);
+//	}
+//	if (maxLight > 2)
+//	{
+//		glEnable(GL_LIGHT2);
+//	}
+//	if (maxLight > 3)
+//	{
+//		glEnable(GL_LIGHT3);
+//	}
+//	if (maxLight > 4)
+//	{
+//		glEnable(GL_LIGHT4);
+//	}
+//	if (maxLight > 5)
+//	{
+//		glEnable(GL_LIGHT5);
+//	}
+//
+//	static GLfloat mat_emissin[] = { 0.0,  0.0,    0.0,    1.0 };
+//	static GLfloat mat_ambient[] = { 0.0,  0.0,    0.0,    1.0 };
+//	static GLfloat mat_diffuse[] = { 1.0,  1.0,    1.0,    1.0 };
+//	static GLfloat mat_speclar[] = { 0.0,  0.0,    0.0,    1.0 };
+//	glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, mat_emissin );
+//	glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
+//	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse );
+//	glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_speclar );
+//	glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, 0.0 );
+//	glColorMaterial( GL_FRONT_AND_BACK, GL_DIFFUSE );
+//	glEnable( GL_COLOR_MATERIAL );
+//	glEnable( GL_NORMALIZE );
+//   //----- Render user scene -------------------------------------------
+//	glDisable( GL_COLOR_MATERIAL );
+//	//glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+//	//if (_data->shadowmode == ModeShadows && hasShaderSupport)
+//	//	makeShadowMap();
+//
+//	/* // draw skeleton
+//	const std::vector<std::string> names = SmartBody::SBScene::getScene()->getCharacterNames();
+//	for (std::vector<std::string>::const_iterator iter = names.begin();
+//		 iter != names.end();
+//		 iter++)
+//	{
+//		glBegin(GL_LINES);
+//		SmartBody::SBCharacter* cur =  SmartBody::SBScene::getScene()->getCharacter(*iter);
+//		SmartBody::SBSkeleton* skeleton = cur->getSkeleton();
+//		int numJoints = skeleton->getNumJoints();
+//		for (int j = 0; j < numJoints; j++)
+//		{
+//			SmartBody::SBJoint* joint = skeleton->getJoint(j);
+//			SmartBody::SBJoint* parent = joint->getParent();
+//			if (parent)
+//			{
+//				const SrMat& gmat = joint->gmat();
+//				glVertex3f(gmat[12], gmat[13], gmat[14]);
+//				const SrMat& pgmat = parent->gmat();
+//				glVertex3f(pgmat[12], pgmat[13], pgmat[14]);
+//			}
+//
+//		}
+//		glEnd();
+//
+//	}
+//*/
+//	printOglError2("draw()", 2);
+//	// real surface geometries
+//	drawAllGeometries();
+//
+//	printOglError2("draw()", 3);
+//
+//	drawInteraction(cam);
+//
+//
+//	_data->fcounter.stop();
+//
+//	if ( !_data->message.empty() )
+//	{
+//		gl_draw_string ( _data->message.c_str(), -1, -1 );
+//	}
+//	else if ( _data->statistics )
+//	{
+//		_data->message = SmartBody::util::format( "FPS:%5.2f frame(%2.0f):%4.1fms render:%4.1fms",
+//				  _data->fcounter.mps(),
+//				  _data->fcounter.measurements(),
+//				  _data->fcounter.loopdt()*1000.0,
+//				  _data->fcounter.meandt()*1000.0 );
+//		gl_draw_string ( _data->message.c_str(), -1.0f, -1.0f );
+//		_data->message = "";
+//	}
+//
+//   if (_retargetStepWindow)
+//   {
+//	   _retargetStepWindow->redraw();
+//   }
+//
+//
+//   // draw UI
+//   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//   SBGUIManager::singleton().update();
+//
+//   //----- Fltk will then flush and swap buffers -----------------------------
+//
+//
+//	if(getData()->saveSnapshot)
+//	{
+//		snapshot(w(), h(), static_cast<int>(_data->fcounter.measurements()));
+//	}
+//
+//	if(getData()->saveSnapshot_tga)
+//	{
+//		snapshot_tga(w(), h(), static_cast<int>(_data->fcounter.measurements()));
+//	}
+//
  }
 
 
- void FltkViewer::drawInteraction(SrCamera* cam)
+
+
+
+void FltkViewer::drawInteraction(SrCamera* cam, SBBaseRenderer& renderer)
  {
 	 drawPawns();
 	 // draw the grid
@@ -1959,14 +1962,16 @@ void FltkViewer::draw()
 	 if (_data->terrainMode == FltkViewer::ModeTerrain)
 	 {
 		 Heightfield* h = SmartBody::SBScene::getScene()->getHeightfield();
-		 if (h)
-			 h->render(0);
+		 if (h) {
+			 renderer.render(*h, 0);
+		 }
 	 }
 	 else if (_data->terrainMode == FltkViewer::ModeTerrainWireframe)
 	 {
 		 Heightfield* h = SmartBody::SBScene::getScene()->getHeightfield();
-		 if (h)
-			 h->render(1);
+		 if (h) {
+			 renderer.render(*h, 1);
+		 }
 	 }
 
 
@@ -6171,6 +6176,9 @@ void FltkViewerData::setupData()
 
 	scenebox = new SrSnLines;
 	sceneaxis = new SrSnLines;
+
+	_coneOfSight			= false;
+	_coneOfSight_leftEye	= nullptr;
 }
 
 //================================ End of File =================================================
