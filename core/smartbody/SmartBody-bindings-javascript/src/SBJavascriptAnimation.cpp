@@ -92,7 +92,7 @@ namespace SmartBody
 			.function("getNumEvents", &SBAnimationBlend::getNumEvents)
 			.function("getEvent", &SBAnimationBlend::getEvent, emscripten::allow_raw_pointers())
 			.function("removeEvent", &SBAnimationBlend::removeEvent) 
-			.function("buildVisSurfaces", &SBAnimationBlend::buildVisSurfaces)
+			//.function("buildVisSurfaces", &SBAnimationBlend::buildVisSurfaces)
 			.function("createMotionVectorFlow", &SBAnimationBlend::createMotionVectorFlow)
 			.function("clearMotionVectorFlow", &SBAnimationBlend::clearMotionVectorFlow)
 			.function("plotMotion", &SBAnimationBlend::plotMotion)

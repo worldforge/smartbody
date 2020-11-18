@@ -32,7 +32,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "ParamAnimTransitionEditor2.h"
 #include "ParamAnimRunTimeEditor.h"
 #include "ParamAnimScriptEditor.h"
-#include "VisualizationView.h"
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
@@ -125,11 +124,6 @@ PanimationWindow::PanimationWindow(int x, int y, int w, int h, char* name) : Fl_
 			runTimeEditor = new PARunTimeEditor(childGroupX + tabGroupX, childGroupY + tabGroupY, childGroupW, childGroupH, this);
 			runTimeEditor->begin();
 			runTimeEditor->end();
-#if 0
-			visView = new VisualizationView(childGroupX + tabGroupX, childGroupY + tabGroupY, childGroupW, childGroupH, this);
-			visView->begin();
-			visView->end();
-#endif
 		tabGroup->end();
 	this->end();
 	this->resizable(tabGroup);
@@ -187,9 +181,7 @@ void PanimationWindow::update_viewer()
 //		scriptEditor->update();
 	if (tabGroup->value() == runTimeEditor)
 		runTimeEditor->update();
-	if (tabGroup->value() == visView)
-		visView->update();
-		
+
 }
 
 void PanimationWindow::show()

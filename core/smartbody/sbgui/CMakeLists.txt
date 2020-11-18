@@ -129,7 +129,6 @@ set(SBM_FLTK_SRC
         src/channelbufferviewer/channelbufferWindow.cpp
         src/nle/NonLinearEditor.cpp
         src/nle/NonLinearEditorWidget.cpp
-        src/panimationviewer/ErrorVisualization.cpp
         src/panimationviewer/PanimationWindow.cpp
         src/panimationviewer/ParamAnimBlock.cpp
         src/panimationviewer/ParamAnimEditorWidget.cpp
@@ -145,7 +144,6 @@ set(SBM_FLTK_SRC
         src/panimationviewer/ParamAnimStateCreatorWidget.cpp
         src/panimationviewer/ParamAnimAutoMarkingEditor.cpp
         src/panimationviewer/ParamAnimParameterEditor.cpp
-        src/panimationviewer/VisualizationView.cpp
         src/CharacterCreatorWindow.cpp
         src/bmlcreator/AttributeWindow.cpp
         src/bmlcreator/TextEditor.cpp

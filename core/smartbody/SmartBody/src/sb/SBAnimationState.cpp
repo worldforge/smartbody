@@ -62,87 +62,87 @@ void SBAnimationBlend::setIncrementWorldOffsetY(bool flag)
 	incrementWorldOffsetY = flag;
 }
 
-SrSnColorSurf* SBAnimationBlend::createFlatSurface( float depth, unsigned int dimension, SrVec2 topLeft, SrVec2 lowerRight )
-{
-	SrSnColorSurf* surf = new SrSnColorSurf(); surf->ref();	
-	SrModel* surf_model = surf->model();
-
-	float xPos, yPos, zPos = depth;
-	const int dim = dimension;
-	const int size = dim * dim;	
-	SrVec pnt;
-	float xSize = lowerRight[0] - topLeft[0];
-	float ySize = lowerRight[1] - topLeft[1];
-	SrColor temp_c;
-	SrMaterial mtl;
-
-	SrArray<SrVec> grid_array;
-	// generate vertices for grid edges/surf
-	for (int i=0; i<dim; i++)
-	{		
-		yPos = topLeft[1] + float(ySize/dim*i);
-		for (int j=0; j<dim; j++)
-		{			
-			xPos = topLeft[0] + float(xSize/dim*j);
-			pnt = SrVec(xPos, yPos, zPos);
-			grid_array.push(pnt);
-		}
-	}
-
-	// build surf
-	surf_model->init();
-	surf_model->culling = false; // !!! back-face culling can be enabled/disabled here !!!
-	for(int i=0; i<dim; i++)
-	{
-		//theta = -(float)(SR_PI/9) + (float)(SR_PI*4/3/ dim * i);
-		yPos = topLeft[1] + float(ySize/dim*i);
-		for(int j=0; j<dim; j++)
-		{
-			//phi = (float)(SR_PI/3.5) + (float)(SR_PI/2 / dim * j); 
-			xPos = topLeft[0] + float(xSize/dim*j);
-			//pnt = SrVec( float(ctr.x+r*sin(phi)*cos(theta)),float(ctr.y+r*cos(phi)-j/2.2), ctr.z-r*sin(phi)*sin(theta) );
-			pnt = SrVec( xPos, yPos, zPos );
-
-			//surf_model->V.push(pnt); // set sphere as surf
-			SrVec tempV; tempV.set(grid_array[i*dim + j]);
-			surf_model->V.push_back(tempV);
-			//surf_model->V.push().set(grid_array[i*dim + j]);
-			VecOfInt adjs;
-			for (int x=-1;x<=1;x++) // get adjacent vertices
-			{
-				for (int y=-1;y<=1;y++)
-				{
-					if (x==0 && y==0) continue;
-					int nx = (i+x); int ny = (j+y);
-					if (nx < 0 || nx >= dim || ny < 0 || ny >= dim) continue;
-					int adjIdx = nx*dim + (ny);
-					adjs.push_back(adjIdx);
-				}
-			}
-			surf->vtxAdjList.push_back(adjs);
-			temp_c = SrColor::interphue((float)i / dim);
-			mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)255);
-			surf_model->M.push_back(mtl);
-		}
-	}
-
-	// make faces out of vertex
-	for (int i=0; i<dim-1; i++)
-	{
-		for (int j=0; j<dim-1; j++)
-		{
-			//surf_model->F.push().set( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 );
-			//surf_model->F.push().set( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j );
-			surf_model->F.push_back(SrVec3i(i*dim+j, i*dim+j+1, (i+1)*dim+j+1 ));
-			surf_model->F.push_back(SrVec3i(i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j ));
-			
-		}
-	}
-	surf->changed(true); // force update surf
-	//surf->render_mode(srRenderMode::srRenderModeDefault);
-	//surf->render_mode(srRenderMode::srRenderModeFlat);
-	return surf;
-}
+//SrSnColorSurf* SBAnimationBlend::createFlatSurface( float depth, unsigned int dimension, SrVec2 topLeft, SrVec2 lowerRight )
+//{
+//	SrSnColorSurf* surf = new SrSnColorSurf(); surf->ref();
+//	SrModel* surf_model = surf->model();
+//
+//	float xPos, yPos, zPos = depth;
+//	const int dim = dimension;
+//	const int size = dim * dim;
+//	SrVec pnt;
+//	float xSize = lowerRight[0] - topLeft[0];
+//	float ySize = lowerRight[1] - topLeft[1];
+//	SrColor temp_c;
+//	SrMaterial mtl;
+//
+//	SrArray<SrVec> grid_array;
+//	// generate vertices for grid edges/surf
+//	for (int i=0; i<dim; i++)
+//	{
+//		yPos = topLeft[1] + float(ySize/dim*i);
+//		for (int j=0; j<dim; j++)
+//		{
+//			xPos = topLeft[0] + float(xSize/dim*j);
+//			pnt = SrVec(xPos, yPos, zPos);
+//			grid_array.push(pnt);
+//		}
+//	}
+//
+//	// build surf
+//	surf_model->init();
+//	surf_model->culling = false; // !!! back-face culling can be enabled/disabled here !!!
+//	for(int i=0; i<dim; i++)
+//	{
+//		//theta = -(float)(SR_PI/9) + (float)(SR_PI*4/3/ dim * i);
+//		yPos = topLeft[1] + float(ySize/dim*i);
+//		for(int j=0; j<dim; j++)
+//		{
+//			//phi = (float)(SR_PI/3.5) + (float)(SR_PI/2 / dim * j);
+//			xPos = topLeft[0] + float(xSize/dim*j);
+//			//pnt = SrVec( float(ctr.x+r*sin(phi)*cos(theta)),float(ctr.y+r*cos(phi)-j/2.2), ctr.z-r*sin(phi)*sin(theta) );
+//			pnt = SrVec( xPos, yPos, zPos );
+//
+//			//surf_model->V.push(pnt); // set sphere as surf
+//			SrVec tempV; tempV.set(grid_array[i*dim + j]);
+//			surf_model->V.push_back(tempV);
+//			//surf_model->V.push().set(grid_array[i*dim + j]);
+//			VecOfInt adjs;
+//			for (int x=-1;x<=1;x++) // get adjacent vertices
+//			{
+//				for (int y=-1;y<=1;y++)
+//				{
+//					if (x==0 && y==0) continue;
+//					int nx = (i+x); int ny = (j+y);
+//					if (nx < 0 || nx >= dim || ny < 0 || ny >= dim) continue;
+//					int adjIdx = nx*dim + (ny);
+//					adjs.push_back(adjIdx);
+//				}
+//			}
+//			surf->vtxAdjList.push_back(adjs);
+//			temp_c = SrColor::interphue((float)i / dim);
+//			mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)255);
+//			surf_model->M.push_back(mtl);
+//		}
+//	}
+//
+//	// make faces out of vertex
+//	for (int i=0; i<dim-1; i++)
+//	{
+//		for (int j=0; j<dim-1; j++)
+//		{
+//			//surf_model->F.push().set( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 );
+//			//surf_model->F.push().set( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j );
+//			surf_model->F.push_back(SrVec3i(i*dim+j, i*dim+j+1, (i+1)*dim+j+1 ));
+//			surf_model->F.push_back(SrVec3i(i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j ));
+//
+//		}
+//	}
+//	surf->changed(true); // force update surf
+//	//surf->render_mode(srRenderMode::srRenderModeDefault);
+//	//surf->render_mode(srRenderMode::srRenderModeFlat);
+//	return surf;
+//}
 
 void SBAnimationBlend::backupMotionKey()
 {
@@ -161,333 +161,333 @@ void SBAnimationBlend::backupMotionKey()
 		}
 	}
 }
-
-SrSnColorSurf* SBAnimationBlend::createCurveSurface( float radius, unsigned int dimension, SrVec center, SrVec2 phiRange, SrVec2 thetaRange )
-{
-	SrSnColorSurf* surf = new SrSnColorSurf(); surf->ref(); // color surf
-	SrModel* surf_model = surf->model();
-
-	float phi, theta, r = radius;
-	const int dim = dimension;
-	const int size = dim * dim;
-	const SrVec ctr = center;
-	SrVec pnt;
-
-	SrColor temp_c;
-	SrMaterial mtl;
-
-	SrArray<SrVec> grid_array;
-
-	// generate vertices for grid edges/surf
-	for (int i=0; i<dim; i++)
-	{
-		//theta = -(float)(SR_PI/9) + (float)(SR_PI*4/3 / dim * i);
-		theta = thetaRange[0] + float(thetaRange[1]/dim*i);
-		for (int j=0; j<dim; j++)
-		{
-			//phi = (float)(SR_PI/3.5) + (float)(SR_PI/2 / dim * j); 
-			phi = phiRange[0] + float(phiRange[1]/dim*j);
-
-			//pnt = SrVec( float(ctr.x+r*sin(phi)*cos(theta)), float(ctr.y+r*cos(phi)-j/2.2), float(ctr.z-r*sin(phi)*sin(theta)) );
-			pnt = SrVec( float(ctr.x+r*sin(phi)*sin(theta)), float(ctr.y+r*cos(phi)), float(ctr.z+r*sin(phi)*cos(theta)) );
-			grid_array.push(pnt);
-		}
-	}
-
-	// build surf
-	surf_model->init();
-	surf_model->culling = false; // !!! back-face culling can be enabled/disabled here !!!
-	for(int i=0; i<dim; i++)
-	{
-		//theta = -(float)(SR_PI/9) + (float)(SR_PI*4/3/ dim * i);
-		theta = thetaRange[0] + float(thetaRange[1]/dim*i) ;
-		for(int j=0; j<dim; j++)
-		{
-			//phi = (float)(SR_PI/3.5) + (float)(SR_PI/2 / dim * j); 
-			phi = phiRange[0] + float(phiRange[1]/dim*j);
-			//pnt = SrVec( float(ctr.x+r*sin(phi)*cos(theta)),float(ctr.y+r*cos(phi)-j/2.2), ctr.z-r*sin(phi)*sin(theta) );
-			pnt = SrVec( float(ctr.x+r*sin(phi)*sin(theta)), float(ctr.y+r*cos(phi)), float(ctr.z+r*sin(phi)*cos(theta)) );
-
-			//surf_model->V.push(pnt); // set sphere as surf
-			//surf_model->V.push().set(grid_array[i*dim + j]);
-			SrVec tempV; tempV.set(grid_array[i*dim + j]);
-			surf_model->V.push_back(tempV);
-			VecOfInt adjs;
-			for (int x=-1;x<=1;x++) // get adjacent vertices
-			{
-				for (int y=-1;y<=1;y++)
-				{
-					if (x==0 && y==0) continue;
-					int nx = (i+x); int ny = (j+y);
-					if (nx < 0 || nx >= dim || ny < 0 || ny >= dim) continue;
-					int adjIdx = nx*dim + (ny);
-					adjs.push_back(adjIdx);
-				}
-			}
-			surf->vtxAdjList.push_back(adjs);
-
-			temp_c = SrColor::interphue((float)i / dim);
-			mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)255);
-			surf_model->M.push_back(mtl);
-		}
-	}
-
-	// make faces out of vertex
-	for (int i=0; i<dim-1; i++)
-	{
-		for (int j=0; j<dim-1; j++)
-		{
-			//surf_model->F.push().set( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 );
-			//surf_model->F.push().set( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j );
-
-			surf_model->F.push_back(SrVec3i( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 ));
-			surf_model->F.push_back(SrVec3i( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j  ));
-		}
-	}
-	surf->changed(true); // force update surf
-	//surf->render_mode(srRenderMode::srRenderModeDefault);
-	//surf->render_mode(srRenderMode::srRenderModeFlat);
-	return surf;
-}
-
-void SBAnimationBlend::createErrorSurfaces( const std::string& type, SrVec center, int segments, int dimensions, std::vector<SrSnColorSurf*>& surfList )
-{
-	if (type == "curve")
-	{
-		float minDist = 1e30f, maxDist = -1e30f;
-		float minPhi = 1e30f, maxPhi = -1e30f;
-		float minTheta = 1e30f, maxTheta = -1e30f;
-		float toDegree = 180.f/(float)SR_PI;
-		for (unsigned int i=0;i<parameters.size();i++)
-		{		
-			SrVec offset = parameters[i] - center;
-			//SmartBody::util::log("parameter = %f %f %f",parameters[i][0],parameters[i][1],parameters[i][2]);
-			//offset.y = 0.f; // ignore y distance		
-			float curDist = offset.norm();
-			if (curDist < minDist)
-				minDist = curDist;
-			if (curDist > maxDist)
-				maxDist = curDist;
-			SrVec offsetDir = parameters[i] - center;		
-			offsetDir.normalize();
-			float cosValue = offsetDir.y;		
-			float tanValue = offsetDir.x/offsetDir.z;
-			//float phi = acosf(offsetDir.y);//asinf(sqrtf(1.f-offsetDir.y*offsetDir.y));
-			float phi = atan2f(sqrtf(offsetDir.x*offsetDir.x+offsetDir.z*offsetDir.z),offsetDir.y);
-			//if (offsetDir.y < 0) phi = -phi;
-			float theta = atan2f(offsetDir.x, offsetDir.z);//SR_PI - atan2f(offsetDir.x,offsetDir.z);
-			if (theta > (float)SR_PI*3.f/4.f) theta = theta - (float)SR_PI*2;
-			//float theta = atan2f(offsetDir.z,offsetDir.x);
-
-			//SmartBody::util::log("tan = %f, theta = %f, cos = %f, phi = %f",tanValue, theta*toDegree, cosValue, phi*toDegree);
-			if (theta < minTheta) minTheta = theta;
-			if (theta > maxTheta) maxTheta = theta;
-			if (phi < minPhi) minPhi = phi;
-			if (phi > maxPhi) maxPhi = phi;
-		}	 
-		minDist = (minDist+maxDist)*0.5f; // make sure "near surf" is not too close
-		//SmartBody::util::log("maxPhi = %f, minPhi = %f, maxTheta = %f, minTheta = %f",maxPhi*toDegree, minPhi*toDegree, maxTheta*toDegree, minTheta*toDegree);
-		SrVec2 thetaRange = SrVec2(minTheta, maxTheta-minTheta);
-		SrVec2 phiRange = SrVec2(minPhi, maxPhi-minPhi);
-		if(segments==0 || maxDist-minDist<srtiny) // creat only one surface in the middle
-		{
-			float radius = (minDist+maxDist)*0.5f;
-			SrSnColorSurf* Surf = createCurveSurface(radius, dimensions, center, phiRange, thetaRange);
-			surfList.push_back(Surf);
-		}
-		else
-		{
-			float distOffset = (maxDist - minDist)/segments;
-			for (float radius = minDist; radius <= maxDist + distOffset*0.05f; radius+= distOffset)
-			{
-				SrSnColorSurf* Surf = createCurveSurface(radius, dimensions, center, phiRange, thetaRange);
-				surfList.push_back(Surf);
-				//updateErrorSurace(Surf, center);
-			}
-		}
-	}
-	else if ( type == "flat")
-	{
-		SrVec bboxMin = SrVec(1e30f, 1e30f, 1e30f);
-		SrVec bboxMax = SrVec(-1e30f, -1e30f, -1e30f);
-		for (unsigned int i=0;i<parameters.size();i++)
-		{
-			SrVec& pos = parameters[i];
-			for (int k=0;k<3;k++)
-			{
-				if (pos[k] < bboxMin[k])
-					bboxMin[k] = pos[k];
-				if (pos[k] > bboxMax[k])
-					bboxMax[k] = pos[k];
-			}
-		}
-		SrVec2 topLeft = SrVec2(bboxMin[0],bboxMin[1]);
-		SrVec2 lowerRight = SrVec2(bboxMax[0],bboxMax[1]);
-		SrVec2 surfSize = lowerRight - topLeft;
-		float surfaceScale = max(surfSize[0],surfSize[1]);
-
-		float minDist = bboxMin[2];
-		float maxDist = bboxMax[2];
-		if (segments == 0)
-		{
-			minDist = (minDist+maxDist)*0.5f;
-		}
-		if(segments==0 || maxDist-minDist<srtiny) // creat only one surface in the middle
-		{
-			float depth = (minDist+maxDist)*0.5f;
-			SrSnColorSurf* Surf = createFlatSurface(depth, dimensions, topLeft, lowerRight);
-			surfList.push_back(Surf);
-		}
-		else
-		{
-			float distOffset = (maxDist - minDist)/segments;
-			for (float depth = minDist; depth <= maxDist; depth+= distOffset)
-			{
-				SrSnColorSurf* Surf = createFlatSurface(depth, dimensions, topLeft, lowerRight);
-				surfList.push_back(Surf);
-				Surf->surfaceScale = SrVec(surfaceScale/surfSize[0], surfaceScale/surfSize[1], 1.f);
-				//updateErrorSurace(Surf, center);
-			}
-		}
-	}	
-}
-
-void SBAnimationBlend::updateSmoothSurface( SrSnColorSurf* surf )
-{
-	SrModel* surfModel = surf->model();	
-	std::vector<VecOfDouble> weightList;
-	float maxError = 1e-30f;
-	float totalError = 0.f;
-	for (size_t i=0;i<surfModel->V.size();i++)
-	{
-		SrVec para = surfModel->V[i];
-		std::vector<double> weights;
-		PABlend::getWeightsFromParameters(para[0],para[1],para[2],weights);		
-		weightList.push_back(weights);		
-	}
-
-
-	// compute the smoothness factor based on parameter weights
-	std::vector<float> smoothList;
-	float maxSmooth = 1e-30f;
-	float totalSmooth = 0.f;
-	for (size_t i=0;i<surfModel->V.size();i++)
-	{
-		const VecOfInt& adjIdx = surf->vtxAdjList[i];
-		VecOfDouble laplacian = weightList[i];
-		float ratio = 1.f/adjIdx.size();
-		for (unsigned int k=0;k<adjIdx.size();k++)
-		{
-			const VecOfDouble& adjWeight = weightList[adjIdx[k]];
-			for (unsigned int idx=0;idx<laplacian.size();idx++)
-			{
-				laplacian[idx] -= adjWeight[idx]*ratio;
-			}			
-		}
-		float smooth = 0.f;
-		for (unsigned int idx=0;idx<laplacian.size();idx++)
-		{
-			smooth += (float)(laplacian[idx]*laplacian[idx]);
-		}
-		smooth = sqrtf(smooth);
-		totalSmooth += smooth;
-		if (smooth > maxSmooth) maxSmooth = smooth;
-		smoothList.push_back(smooth);
-	}
-
-	totalSmooth /= smoothList.size();
-	SmartBody::util::log("total avg smooth = %f",totalSmooth);
-	SrColor temp_c;
-	SrMaterial mtl;
-	//surfModel->M.remove(0,smoothList.size());
-	surfModel->M.clear();
-	for (unsigned int i=0;i<smoothList.size();i++)
-	{
-		//surfModel->M.push()		
-		float curError = (float)(smoothList[i]/maxSmooth);
-		if (curError > 1.f) curError = 1.f;
-
-		temp_c = SrColor::interphue(curError);
-		mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)160);
-		surfModel->M.push_back(mtl);	
-	}
-	surf->changed(true);
-}
-
-
-void SBAnimationBlend::updateErrorSurace( SrSnColorSurf* errorSurf, SrVec center )
-{
-	SrModel* surfModel = errorSurf->model();
-	std::vector<float> errorList;
-	std::vector<VecOfDouble> weightList;
-	float maxError = 1e-30f;
-	float totalError = 0.f;
-	for (size_t i=0;i<surfModel->V.size();i++)
-	{
-		SrVec para = surfModel->V[i];
-		std::vector<double> weights;
-		PABlend::getWeightsFromParameters(para[0],para[1],para[2],weights);
-		float x,y,z;
-		getParametersFromWeights(x,y,z,weights);
-
-		float paraError = (para - SrVec(x,y,z)).norm();
-		if (paraError > maxError)
-			maxError = paraError;
-		errorList.push_back(paraError);
-		weightList.push_back(weights);
-		totalError += paraError;
-	}
-
-	totalError /= errorList.size();
-	SmartBody::util::log("total avg error = %f",totalError);
-	SrColor temp_c;
-	SrMaterial mtl;
-	//maxError = 0.4f;
-	//surfModel->M.remove(0,errorList.size());
-	surfModel->M.clear();
-	for (unsigned int i=0;i<errorList.size();i++)
-	{
-		//surfModel->M.push()		
-		float curError = (float)(errorList[i]/maxError);
-		if (curError > 1.f) curError = 1.f;
-
-		temp_c = SrColor::interphue(curError);
-		mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)160);
-		surfModel->M.push_back(mtl);	
-	}
-	errorSurf->changed(true);
-}
-
-
-
-
-void SBAnimationBlend::buildVisSurfaces( const std::string& errorType, const std::string& surfaceType, int segments, int dimensions )
-{
-	if (errorType != "error" && errorType != "smooth")
-	{
-		SmartBody::util::log("Warning : errorType must be 'error' or 'smooth'");
-		return;
-	}
-	if (_dimension != "3D")
-	{
-		SmartBody::util::log("Warning : build Vis Surface only works for 3D parameterization state");
-	}
-
-	std::vector<SrSnColorSurf*>& surfaces = (errorType == "error") ? errorSurfaces : smoothSurfaces;
-	//SBSkeleton* sbSkel = SBScene::getScene()->getSkeleton(skeletonName);
-	SrVec center = SrVec(0,0,0);
-	//if (sbSkel && surfaceType == "curve")
-	//	center = sbSkel->getJointByMappedName("base")->gmat().get_translation();
-	createErrorSurfaces(surfaceType, center, segments, dimensions, surfaces);
-	for (unsigned int i=0;i<surfaces.size();i++)
-	{
-		SrSnColorSurf* surf = surfaces[i];
-		if (errorType == "error")
-			updateErrorSurace(surf, center);
-		else if (errorType == "smooth")
-			updateSmoothSurface(surf);
-	}	
-}
+//
+//SrSnColorSurf* SBAnimationBlend::createCurveSurface( float radius, unsigned int dimension, SrVec center, SrVec2 phiRange, SrVec2 thetaRange )
+//{
+//	SrSnColorSurf* surf = new SrSnColorSurf(); surf->ref(); // color surf
+//	SrModel* surf_model = surf->model();
+//
+//	float phi, theta, r = radius;
+//	const int dim = dimension;
+//	const int size = dim * dim;
+//	const SrVec ctr = center;
+//	SrVec pnt;
+//
+//	SrColor temp_c;
+//	SrMaterial mtl;
+//
+//	SrArray<SrVec> grid_array;
+//
+//	// generate vertices for grid edges/surf
+//	for (int i=0; i<dim; i++)
+//	{
+//		//theta = -(float)(SR_PI/9) + (float)(SR_PI*4/3 / dim * i);
+//		theta = thetaRange[0] + float(thetaRange[1]/dim*i);
+//		for (int j=0; j<dim; j++)
+//		{
+//			//phi = (float)(SR_PI/3.5) + (float)(SR_PI/2 / dim * j);
+//			phi = phiRange[0] + float(phiRange[1]/dim*j);
+//
+//			//pnt = SrVec( float(ctr.x+r*sin(phi)*cos(theta)), float(ctr.y+r*cos(phi)-j/2.2), float(ctr.z-r*sin(phi)*sin(theta)) );
+//			pnt = SrVec( float(ctr.x+r*sin(phi)*sin(theta)), float(ctr.y+r*cos(phi)), float(ctr.z+r*sin(phi)*cos(theta)) );
+//			grid_array.push(pnt);
+//		}
+//	}
+//
+//	// build surf
+//	surf_model->init();
+//	surf_model->culling = false; // !!! back-face culling can be enabled/disabled here !!!
+//	for(int i=0; i<dim; i++)
+//	{
+//		//theta = -(float)(SR_PI/9) + (float)(SR_PI*4/3/ dim * i);
+//		theta = thetaRange[0] + float(thetaRange[1]/dim*i) ;
+//		for(int j=0; j<dim; j++)
+//		{
+//			//phi = (float)(SR_PI/3.5) + (float)(SR_PI/2 / dim * j);
+//			phi = phiRange[0] + float(phiRange[1]/dim*j);
+//			//pnt = SrVec( float(ctr.x+r*sin(phi)*cos(theta)),float(ctr.y+r*cos(phi)-j/2.2), ctr.z-r*sin(phi)*sin(theta) );
+//			pnt = SrVec( float(ctr.x+r*sin(phi)*sin(theta)), float(ctr.y+r*cos(phi)), float(ctr.z+r*sin(phi)*cos(theta)) );
+//
+//			//surf_model->V.push(pnt); // set sphere as surf
+//			//surf_model->V.push().set(grid_array[i*dim + j]);
+//			SrVec tempV; tempV.set(grid_array[i*dim + j]);
+//			surf_model->V.push_back(tempV);
+//			VecOfInt adjs;
+//			for (int x=-1;x<=1;x++) // get adjacent vertices
+//			{
+//				for (int y=-1;y<=1;y++)
+//				{
+//					if (x==0 && y==0) continue;
+//					int nx = (i+x); int ny = (j+y);
+//					if (nx < 0 || nx >= dim || ny < 0 || ny >= dim) continue;
+//					int adjIdx = nx*dim + (ny);
+//					adjs.push_back(adjIdx);
+//				}
+//			}
+//			surf->vtxAdjList.push_back(adjs);
+//
+//			temp_c = SrColor::interphue((float)i / dim);
+//			mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)255);
+//			surf_model->M.push_back(mtl);
+//		}
+//	}
+//
+//	// make faces out of vertex
+//	for (int i=0; i<dim-1; i++)
+//	{
+//		for (int j=0; j<dim-1; j++)
+//		{
+//			//surf_model->F.push().set( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 );
+//			//surf_model->F.push().set( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j );
+//
+//			surf_model->F.push_back(SrVec3i( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 ));
+//			surf_model->F.push_back(SrVec3i( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j  ));
+//		}
+//	}
+//	surf->changed(true); // force update surf
+//	//surf->render_mode(srRenderMode::srRenderModeDefault);
+//	//surf->render_mode(srRenderMode::srRenderModeFlat);
+//	return surf;
+//}
+//
+//void SBAnimationBlend::createErrorSurfaces( const std::string& type, SrVec center, int segments, int dimensions, std::vector<SrSnColorSurf*>& surfList )
+//{
+//	if (type == "curve")
+//	{
+//		float minDist = 1e30f, maxDist = -1e30f;
+//		float minPhi = 1e30f, maxPhi = -1e30f;
+//		float minTheta = 1e30f, maxTheta = -1e30f;
+//		float toDegree = 180.f/(float)SR_PI;
+//		for (unsigned int i=0;i<parameters.size();i++)
+//		{
+//			SrVec offset = parameters[i] - center;
+//			//SmartBody::util::log("parameter = %f %f %f",parameters[i][0],parameters[i][1],parameters[i][2]);
+//			//offset.y = 0.f; // ignore y distance
+//			float curDist = offset.norm();
+//			if (curDist < minDist)
+//				minDist = curDist;
+//			if (curDist > maxDist)
+//				maxDist = curDist;
+//			SrVec offsetDir = parameters[i] - center;
+//			offsetDir.normalize();
+//			float cosValue = offsetDir.y;
+//			float tanValue = offsetDir.x/offsetDir.z;
+//			//float phi = acosf(offsetDir.y);//asinf(sqrtf(1.f-offsetDir.y*offsetDir.y));
+//			float phi = atan2f(sqrtf(offsetDir.x*offsetDir.x+offsetDir.z*offsetDir.z),offsetDir.y);
+//			//if (offsetDir.y < 0) phi = -phi;
+//			float theta = atan2f(offsetDir.x, offsetDir.z);//SR_PI - atan2f(offsetDir.x,offsetDir.z);
+//			if (theta > (float)SR_PI*3.f/4.f) theta = theta - (float)SR_PI*2;
+//			//float theta = atan2f(offsetDir.z,offsetDir.x);
+//
+//			//SmartBody::util::log("tan = %f, theta = %f, cos = %f, phi = %f",tanValue, theta*toDegree, cosValue, phi*toDegree);
+//			if (theta < minTheta) minTheta = theta;
+//			if (theta > maxTheta) maxTheta = theta;
+//			if (phi < minPhi) minPhi = phi;
+//			if (phi > maxPhi) maxPhi = phi;
+//		}
+//		minDist = (minDist+maxDist)*0.5f; // make sure "near surf" is not too close
+//		//SmartBody::util::log("maxPhi = %f, minPhi = %f, maxTheta = %f, minTheta = %f",maxPhi*toDegree, minPhi*toDegree, maxTheta*toDegree, minTheta*toDegree);
+//		SrVec2 thetaRange = SrVec2(minTheta, maxTheta-minTheta);
+//		SrVec2 phiRange = SrVec2(minPhi, maxPhi-minPhi);
+//		if(segments==0 || maxDist-minDist<srtiny) // creat only one surface in the middle
+//		{
+//			float radius = (minDist+maxDist)*0.5f;
+//			SrSnColorSurf* Surf = createCurveSurface(radius, dimensions, center, phiRange, thetaRange);
+//			surfList.push_back(Surf);
+//		}
+//		else
+//		{
+//			float distOffset = (maxDist - minDist)/segments;
+//			for (float radius = minDist; radius <= maxDist + distOffset*0.05f; radius+= distOffset)
+//			{
+//				SrSnColorSurf* Surf = createCurveSurface(radius, dimensions, center, phiRange, thetaRange);
+//				surfList.push_back(Surf);
+//				//updateErrorSurace(Surf, center);
+//			}
+//		}
+//	}
+//	else if ( type == "flat")
+//	{
+//		SrVec bboxMin = SrVec(1e30f, 1e30f, 1e30f);
+//		SrVec bboxMax = SrVec(-1e30f, -1e30f, -1e30f);
+//		for (unsigned int i=0;i<parameters.size();i++)
+//		{
+//			SrVec& pos = parameters[i];
+//			for (int k=0;k<3;k++)
+//			{
+//				if (pos[k] < bboxMin[k])
+//					bboxMin[k] = pos[k];
+//				if (pos[k] > bboxMax[k])
+//					bboxMax[k] = pos[k];
+//			}
+//		}
+//		SrVec2 topLeft = SrVec2(bboxMin[0],bboxMin[1]);
+//		SrVec2 lowerRight = SrVec2(bboxMax[0],bboxMax[1]);
+//		SrVec2 surfSize = lowerRight - topLeft;
+//		float surfaceScale = max(surfSize[0],surfSize[1]);
+//
+//		float minDist = bboxMin[2];
+//		float maxDist = bboxMax[2];
+//		if (segments == 0)
+//		{
+//			minDist = (minDist+maxDist)*0.5f;
+//		}
+//		if(segments==0 || maxDist-minDist<srtiny) // creat only one surface in the middle
+//		{
+//			float depth = (minDist+maxDist)*0.5f;
+//			SrSnColorSurf* Surf = createFlatSurface(depth, dimensions, topLeft, lowerRight);
+//			surfList.push_back(Surf);
+//		}
+//		else
+//		{
+//			float distOffset = (maxDist - minDist)/segments;
+//			for (float depth = minDist; depth <= maxDist; depth+= distOffset)
+//			{
+//				SrSnColorSurf* Surf = createFlatSurface(depth, dimensions, topLeft, lowerRight);
+//				surfList.push_back(Surf);
+//				Surf->surfaceScale = SrVec(surfaceScale/surfSize[0], surfaceScale/surfSize[1], 1.f);
+//				//updateErrorSurace(Surf, center);
+//			}
+//		}
+//	}
+//}
+//
+//void SBAnimationBlend::updateSmoothSurface( SrSnColorSurf* surf )
+//{
+//	SrModel* surfModel = surf->model();
+//	std::vector<VecOfDouble> weightList;
+//	float maxError = 1e-30f;
+//	float totalError = 0.f;
+//	for (size_t i=0;i<surfModel->V.size();i++)
+//	{
+//		SrVec para = surfModel->V[i];
+//		std::vector<double> weights;
+//		PABlend::getWeightsFromParameters(para[0],para[1],para[2],weights);
+//		weightList.push_back(weights);
+//	}
+//
+//
+//	// compute the smoothness factor based on parameter weights
+//	std::vector<float> smoothList;
+//	float maxSmooth = 1e-30f;
+//	float totalSmooth = 0.f;
+//	for (size_t i=0;i<surfModel->V.size();i++)
+//	{
+//		const VecOfInt& adjIdx = surf->vtxAdjList[i];
+//		VecOfDouble laplacian = weightList[i];
+//		float ratio = 1.f/adjIdx.size();
+//		for (unsigned int k=0;k<adjIdx.size();k++)
+//		{
+//			const VecOfDouble& adjWeight = weightList[adjIdx[k]];
+//			for (unsigned int idx=0;idx<laplacian.size();idx++)
+//			{
+//				laplacian[idx] -= adjWeight[idx]*ratio;
+//			}
+//		}
+//		float smooth = 0.f;
+//		for (unsigned int idx=0;idx<laplacian.size();idx++)
+//		{
+//			smooth += (float)(laplacian[idx]*laplacian[idx]);
+//		}
+//		smooth = sqrtf(smooth);
+//		totalSmooth += smooth;
+//		if (smooth > maxSmooth) maxSmooth = smooth;
+//		smoothList.push_back(smooth);
+//	}
+//
+//	totalSmooth /= smoothList.size();
+//	SmartBody::util::log("total avg smooth = %f",totalSmooth);
+//	SrColor temp_c;
+//	SrMaterial mtl;
+//	//surfModel->M.remove(0,smoothList.size());
+//	surfModel->M.clear();
+//	for (unsigned int i=0;i<smoothList.size();i++)
+//	{
+//		//surfModel->M.push()
+//		float curError = (float)(smoothList[i]/maxSmooth);
+//		if (curError > 1.f) curError = 1.f;
+//
+//		temp_c = SrColor::interphue(curError);
+//		mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)160);
+//		surfModel->M.push_back(mtl);
+//	}
+//	surf->changed(true);
+//}
+//
+//
+//void SBAnimationBlend::updateErrorSurace( SrSnColorSurf* errorSurf, SrVec center )
+//{
+//	SrModel* surfModel = errorSurf->model();
+//	std::vector<float> errorList;
+//	std::vector<VecOfDouble> weightList;
+//	float maxError = 1e-30f;
+//	float totalError = 0.f;
+//	for (size_t i=0;i<surfModel->V.size();i++)
+//	{
+//		SrVec para = surfModel->V[i];
+//		std::vector<double> weights;
+//		PABlend::getWeightsFromParameters(para[0],para[1],para[2],weights);
+//		float x,y,z;
+//		getParametersFromWeights(x,y,z,weights);
+//
+//		float paraError = (para - SrVec(x,y,z)).norm();
+//		if (paraError > maxError)
+//			maxError = paraError;
+//		errorList.push_back(paraError);
+//		weightList.push_back(weights);
+//		totalError += paraError;
+//	}
+//
+//	totalError /= errorList.size();
+//	SmartBody::util::log("total avg error = %f",totalError);
+//	SrColor temp_c;
+//	SrMaterial mtl;
+//	//maxError = 0.4f;
+//	//surfModel->M.remove(0,errorList.size());
+//	surfModel->M.clear();
+//	for (unsigned int i=0;i<errorList.size();i++)
+//	{
+//		//surfModel->M.push()
+//		float curError = (float)(errorList[i]/maxError);
+//		if (curError > 1.f) curError = 1.f;
+//
+//		temp_c = SrColor::interphue(curError);
+//		mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)160);
+//		surfModel->M.push_back(mtl);
+//	}
+//	errorSurf->changed(true);
+//}
+//
+//
+//
+//
+//void SBAnimationBlend::buildVisSurfaces( const std::string& errorType, const std::string& surfaceType, int segments, int dimensions )
+//{
+//	if (errorType != "error" && errorType != "smooth")
+//	{
+//		SmartBody::util::log("Warning : errorType must be 'error' or 'smooth'");
+//		return;
+//	}
+//	if (_dimension != "3D")
+//	{
+//		SmartBody::util::log("Warning : build Vis Surface only works for 3D parameterization state");
+//	}
+//
+//	std::vector<SrSnColorSurf*>& surfaces = (errorType == "error") ? errorSurfaces : smoothSurfaces;
+//	//SBSkeleton* sbSkel = SBScene::getScene()->getSkeleton(skeletonName);
+//	SrVec center = SrVec(0,0,0);
+//	//if (sbSkel && surfaceType == "curve")
+//	//	center = sbSkel->getJointByMappedName("base")->gmat().get_translation();
+//	createErrorSurfaces(surfaceType, center, segments, dimensions, surfaces);
+//	for (unsigned int i=0;i<surfaces.size();i++)
+//	{
+//		SrSnColorSurf* surf = surfaces[i];
+//		if (errorType == "error")
+//			updateErrorSurace(surf, center);
+//		else if (errorType == "smooth")
+//			updateSmoothSurface(surf);
+//	}
+//}
 
 // Motion Vector Flow visualization, added by David Huang  June 2012
 void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, const std::string& chrName,

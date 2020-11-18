@@ -82,15 +82,15 @@ class SBAnimationBlend : public PABlend
 
 		SBAPI virtual std::string saveToString();
 
-		// Functions to build visualization surface
-		SBAPI void buildVisSurfaces(const std::string& errorType, const std::string& surfaceType, int segments, int dimensions);
-		SBAPI SrSnColorSurf* createCurveSurface(float radius, unsigned int dimension, SrVec center, SrVec2 phi, SrVec2 theta);		
-		SBAPI SrSnColorSurf* createFlatSurface(float depth, unsigned int dimension, SrVec2 topLeft, SrVec2 lowerRight);
-		SBAPI void createErrorSurfaces(const std::string& type, SrVec center, int segments, int dimensions, std::vector<SrSnColorSurf*>& surfList);
-		SBAPI void updateErrorSurace(SrSnColorSurf* surf, SrVec center);
-		SBAPI void updateSmoothSurface(SrSnColorSurf* surf);
-		SBAPI std::vector<SrSnColorSurf*>& getErrorSurfaces() { return errorSurfaces; }
-		SBAPI std::vector<SrSnColorSurf*>& getSmoothSurfaces() { return smoothSurfaces; }
+//		// Functions to build visualization surface
+//		SBAPI void buildVisSurfaces(const std::string& errorType, const std::string& surfaceType, int segments, int dimensions);
+//		SBAPI SrSnColorSurf* createCurveSurface(float radius, unsigned int dimension, SrVec center, SrVec2 phi, SrVec2 theta);
+//		SBAPI SrSnColorSurf* createFlatSurface(float depth, unsigned int dimension, SrVec2 topLeft, SrVec2 lowerRight);
+//		SBAPI void createErrorSurfaces(const std::string& type, SrVec center, int segments, int dimensions, std::vector<SrSnColorSurf*>& surfList);
+//		SBAPI void updateErrorSurace(SrSnColorSurf* surf, SrVec center);
+//		SBAPI void updateSmoothSurface(SrSnColorSurf* surf);
+//		SBAPI std::vector<SrSnColorSurf*>& getErrorSurfaces() { return errorSurfaces; }
+//		SBAPI std::vector<SrSnColorSurf*>& getSmoothSurfaces() { return smoothSurfaces; }
 
 
 		/* motion vector flow for motion smoothness visualize: each vector is the abs. movement of a particular joint
@@ -141,8 +141,8 @@ class SBAnimationBlend : public PABlend
 		bool _isFinalized;
 		int parameterDim;
 
-		std::vector<SrSnColorSurf*> errorSurfaces;
-		std::vector<SrSnColorSurf*> smoothSurfaces;
+//		std::vector<SrSnColorSurf*> errorSurfaces;
+//		std::vector<SrSnColorSurf*> smoothSurfaces;
 		std::vector<KeyTagMap> keyTagList;
 		SrMat plotMotionTransform;
 		SrMat plotVectorFlowTransform;

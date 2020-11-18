@@ -52,7 +52,6 @@ class PATransitionEditor;
 class PATransitionEditor2;
 class PAScriptEditor;
 class PARunTimeEditor;
-class VisualizationView;
 
 namespace nle {
 	class NonLinearEditorModel;
@@ -144,7 +143,6 @@ class PanimationWindow : public Fl_Double_Window, public GenericViewer
 		PABlendEditor*		stateEditor;
 		PAScriptEditor*		scriptEditor;
 		PARunTimeEditor*	runTimeEditor;
-		VisualizationView*  visView;
 
 		Fl_Choice*		characterList;
 		Fl_Button*		refresh;
