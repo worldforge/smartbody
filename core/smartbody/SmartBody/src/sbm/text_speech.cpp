@@ -107,7 +107,7 @@ RequestId text_speech::requestSpeechAudio( const char* agentName, std::string vo
 	DOMNode* speechNode = textXml->getFirstChild();
 	DOMNode* markNode = speechNode->getFirstChild();
 	float currentTime = 0.0;
-	while (markNode != NULL)
+	while (markNode != nullptr)
 	{
 		// check for a mark
 		if (markNode->hasAttributes()) {
@@ -150,7 +150,7 @@ RequestId text_speech::requestSpeechAudio( const char* agentName, std::string vo
 
 std::vector<VisemeData*>* text_speech::extractVisemes(DOMNode* node, vector<VisemeData*>* visemes, const SbmCharacter* character) {
 	//this is used to recursively search the DOM tree and return a vector containing the visemes and the appropriate viseme resets (before a subsequent viseme is set the previous one must be reset)
-	VisemeData *singleViseme= NULL;
+	VisemeData *singleViseme= nullptr;
 	float startTime=0;
 	if(node->getNodeType()==1){ //node is an element node
 		DOMElement *element= (DOMElement *)node; //instantiate an element using this node
@@ -201,7 +201,7 @@ std::vector<VisemeData*>* text_speech::getVisemes( RequestId requestId, SbmChara
 
 	/**
         *  If the request has been processed, returns the time ordered vector 
-        *  of VisemeData for the requestId.  Otherwise return NULL.
+        *  of VisemeData for the requestId.  Otherwise return nullptr.
         */
 	
 	ostringstream myStream; //creates an ostringstream object
@@ -210,15 +210,15 @@ std::vector<VisemeData*>* text_speech::getVisemes( RequestId requestId, SbmChara
 	const char *Id= temp.c_str();
 	
 	//if dom document exists finds it and then extracts visemes from it placing them in vecto along with the appropriate viseme resets
-	if (uttLookUp.lookup(Id) !=NULL)
+	if (uttLookUp.lookup(Id) !=nullptr)
 	{
 		DOMNode* docElement= uttLookUp.lookup(Id);  
 		vector<VisemeData *> *visemeVector= new vector<VisemeData *>;  
 		visemeVector = extractVisemes(docElement, visemeVector, character); //recursively extracts visemes from domdocument
 		return (visemeVector);
 	}
-	else //if viseme isn't found returns NULL
-	{return(NULL); 
+	else //if viseme isn't found returns nullptr
+	{return(nullptr);
 	}
 }
 
@@ -289,7 +289,7 @@ void text_speech::startSchedule( SmartBody::RequestId requestId ) {
 	myStream << requestId << flush;
 	srCmdSeq* seq = scheduleLookUp.lookup(myStream.str().c_str());
 
-	if (seq != NULL) {
+	if (seq != nullptr) {
 		
 		seq->offset((float)SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
 		string seqname = "text_speech_" + myStream.str();
@@ -314,7 +314,7 @@ int text_speech::text_speech_func( srArgBuffer& args, SmartBody::SBCommandManage
 }
 
 char* text_speech::getSpeechAudioFilename( RequestId requestId ){
-	return NULL;
+	return nullptr;
 }
 
 char* text_speech::getSpeechPlayCommand( RequestId requestId,  SbmCharacter* character ){

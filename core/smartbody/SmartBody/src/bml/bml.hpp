@@ -170,6 +170,9 @@ namespace BML {
 		// this function takes scheduled speech request behaviors and hand the information over to Cerebella
 		void speechRequestProcess();
 
+		double getLastScheduledSpeechBehavior(Processor* bp);
+
+
 	public:
 		virtual ~BmlRequest();
 

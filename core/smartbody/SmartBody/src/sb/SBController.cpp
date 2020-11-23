@@ -338,7 +338,7 @@ void SBController::removeAllControllerModifiers()
 
 SmartBody::SBControllerModifier* SBController::getControllerModifier(const std::string& name)
 {
-	return NULL;
+	return nullptr;
 }
 
 std::vector<SmartBody::SBControllerModifier*>& SBController::getControllerModifiers()

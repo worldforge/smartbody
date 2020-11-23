@@ -7,6 +7,9 @@
 #include <sr/sr_light.h>
 #include "SBBaseRenderer.h"
 
+namespace SmartBody {
+class SBRenderScene;
+}
 
 class FltkViewerData;
 
@@ -46,15 +49,15 @@ public:
 
 	virtual void initRenderer(int w, int h);
 	virtual void resize(int w, int h);
-	virtual void draw(std::vector<SrLight>& lights, bool isDrawFloor);
+	virtual void draw(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor);
 	
 
 	SbmTexture* getCurEnvMap(bool diffuseMap = false);
 	
 	void initSSAO(int w, int h);
 
-	void drawDeferredRendering(std::vector<SrLight>& lights, bool isDrawFloor);
-	void drawForwardRendering(std::vector<SrLight>& lights, bool isDrawFloor);
+	void drawDeferredRendering(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor);
+	void drawForwardRendering(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor);
 	void drawSSAOPass();	
 	void drawLightPass(std::vector<SrLight>& lights);
 	void drawIBLPass(std::vector<SrLight>& lights);

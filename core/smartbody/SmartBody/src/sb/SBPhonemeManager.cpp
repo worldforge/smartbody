@@ -164,7 +164,7 @@ SBPhonemeManager::~SBPhonemeManager()
 		for (size_t i = 0; i < diphones.size(); i++)
 		{
 			delete diphones[i];
-			diphones[i] = NULL;
+			diphones[i] = nullptr;
 		}
 		diphones.clear();
 	}
@@ -241,7 +241,7 @@ SBDiphone* SBPhonemeManager::getDiphone(const std::string& fromPhoneme, const st
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	/*
@@ -257,7 +257,7 @@ SBDiphone* SBPhonemeManager::getDiphone(const std::string& fromPhoneme, const st
 	}
 	*/
 
-	return NULL;
+	return nullptr;
 }
 
 int SBPhonemeManager::getNumDiphoneMap()

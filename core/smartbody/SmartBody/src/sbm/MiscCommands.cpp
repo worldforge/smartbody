@@ -52,11 +52,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/filesystem/operations.hpp>
 #include <boost/version.hpp>
 
-// android does not use GPU shader for now
-#if !defined(__ANDROID__) && !defined(__FLASHPLAYER__) && !defined(SB_IPHONE)
-#include <sbm/GPU/SbmDeformableMeshGPU.h>
-#endif
-
 
 int set_attribute( SbmPawn* pawn, std::string& attribute, srArgBuffer& args)
 {
@@ -123,7 +118,7 @@ int pawn_set_cmd_funcx( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	
 
 	SbmPawn* pawn =  SmartBody::SBScene::getScene()->getPawn( pawn_id );
-	if( pawn==NULL ) {
+	if( pawn==nullptr ) {
 		SmartBody::util::log("ERROR: SbmPawn::set_cmd_func(..): Unknown pawn id \"%s\".", pawn_id.c_str());
 		return CMD_FAILURE;
 	}
@@ -146,7 +141,7 @@ int set_voice_cmd_func( SbmCharacter* character, srArgBuffer& args)
 	const char* impl_id = args.read_token();
 
 	if( strlen( impl_id )==0 ) {
-		character->set_speech_impl( NULL );
+		character->set_speech_impl( nullptr );
 		std::string s( "" );
 		character->set_voice_code( s );
 
@@ -209,7 +204,7 @@ int set_voicebackup_cmd_func( SbmCharacter* character, srArgBuffer& args)
 	const char* impl_id = args.read_token();
 
 	if( strlen( impl_id )==0 ) {
-		character->set_speech_impl_backup( NULL );
+		character->set_speech_impl_backup( nullptr );
 		std::string s("");
 		character->set_voice_code_backup( s );
 
@@ -291,7 +286,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	{
 		// pawn <name> init [loc <x> <y> <z>] [geom <shape name>] [color <color hex>] [size <size>]
 		SbmPawn* pawn_p =  SmartBody::SBScene::getScene()->getPawn(pawn_name);
-		if( pawn_p != NULL ) {
+		if( pawn_p != nullptr ) {
 			SmartBody::util::log("ERROR: Pawn \"%s\" already exists.", pawn_name.c_str());
 			return CMD_FAILURE;
 		}
@@ -423,7 +418,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	}
 
 	bool all_pawns = false;
-	SbmPawn* pawn_p = NULL;
+	SbmPawn* pawn_p = nullptr;
 	if( pawn_name== "*" )
 	{
 		std::vector<std::string> pawns;
@@ -507,7 +502,7 @@ int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	}
 
 	bool all_characters = false;
-	SmartBody::SBCharacter* character = NULL;
+	SmartBody::SBCharacter* character = nullptr;
 	if( char_name == "*" ) {
 
 		all_characters = true;
@@ -589,11 +584,11 @@ int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 		return CMD_FAILURE;
 	}
 
-	SbmPawn* pawn_p = NULL;
+	SbmPawn* pawn_p = nullptr;
 
 	pawn_p =  SmartBody::SBScene::getScene()->getPawn( pawn_and_attribute );
 
-	if( pawn_p != NULL ) {
+	if( pawn_p != nullptr ) {
 		SmartBody::util::log("ERROR: Pawn \"%s\" already exists.", pawn_and_attribute.c_str() );
 		return CMD_FAILURE;
 	}
@@ -642,7 +637,7 @@ int character_set_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdM
 	}
 
 	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter( character_id );
-	if( character==NULL ) {
+	if( character==nullptr ) {
 		SmartBody::util::log("ERROR: SbmCharacter::set_cmd_func(..): Unknown character \"%s\" to set.", character_id.c_str());
 		return CMD_FAILURE;
 	}
@@ -988,7 +983,7 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 					{ 
 							char* viseme = args.read_token();
 							char* next = args.read_token();
-							//		float* curveInfo = NULL;
+							//		float* curveInfo = nullptr;
 							//		float weight = 0.0f;
 							//		float rampin_duration = 0.0;
 							//		int numKeys = 0;
@@ -1434,7 +1429,7 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 								else
 									if( cmd == "softeyes" )
 									{
-										if(character->eyelid_ct == NULL )
+										if(character->eyelid_ct == nullptr )
 										{
 											SmartBody::util::log("ERROR: SbmCharacter::parse_character_command(..): character \"%s\" has no eyelid_ct.", character->getName().c_str() );
 											return CMD_FAILURE;
@@ -1550,7 +1545,7 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 												delete miniBrain;
 											}
 											
-											character->setMiniBrain(NULL);
+											character->setMiniBrain(nullptr);
 											SmartBody::util::log("Minibrain for character %s is now off", character->getName().c_str());
 										}
 										else

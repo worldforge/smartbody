@@ -115,7 +115,7 @@ SmartBody::SBParseNode* SBParser::parse(const std::string& input)
 	if (!_initialized)
 	{
 		SmartBody::util::log("Cannot parse until parser has been initialized.");
-		return NULL;
+		return nullptr;
 	}
 
 	std::string result;
@@ -137,7 +137,7 @@ SmartBody::SBParseNode* SBParser::parse(const std::string& input)
 	std::ostringstream oss (ostringstream::out);
 
 	ECString flnm = "dummy";
-	ewDciTokStrm* tokStream = NULL;
+	ewDciTokStrm* tokStream = nullptr;
 
 	iss.str(string_to_parse);				
 
@@ -147,11 +147,11 @@ SmartBody::SBParseNode* SBParser::parse(const std::string& input)
 
 	int len = srp->length();
 	if(len > params.maxSentLen) 
-		return NULL;
+		return nullptr;
 	if(len == 0) 
-		return NULL;
+		return nullptr;
 	if( !params.field().in(sentenceCount) ) 
-		return NULL;
+		return nullptr;
 
 	MeChart*	chart = new MeChart( *srp );
 	curChart = chart;
@@ -162,7 +162,7 @@ SmartBody::SBParseNode* SBParser::parse(const std::string& input)
 	catch(...)
 	{ 
 		SmartBody::util::log("Error: parsing error from natural language parser");
-		return NULL;
+		return nullptr;
 	}	
 
 	Item* topS = chart->topS();
@@ -175,7 +175,7 @@ SmartBody::SBParseNode* SBParser::parse(const std::string& input)
 			cerr << *srp << endl;
 		}
 		delete chart;
-		return NULL;
+		return nullptr;
 	}
 
 	// compute the outside probabilities on the items so that we can
@@ -192,7 +192,7 @@ SmartBody::SBParseNode* SBParser::parse(const std::string& input)
 			cerr << *srp << endl;
 		}
 		delete chart;
-		return NULL;
+		return nullptr;
 	}
 
 	int numVersions = 0;
@@ -230,7 +230,7 @@ SmartBody::SBParseNode* SBParser::parse(const std::string& input)
 	if(Bchart::Nth > 1)
 		std::cout << numDiff << "\t" << ind <<"\n";
 
-	SBParseNode* sbParseNode = NULL;
+	SBParseNode* sbParseNode = nullptr;
 	for(int i = 0 ; i < numDiff ; i++)
 	{
 		short pos = 0;
@@ -284,7 +284,7 @@ void SBParser::createParseTree(InputTree* inputTree, SBParseNode* node)
 		node->setTerm(strstr.str());
 
 		ConstInputTreesIter subTreeIter = inputTree->subTrees().begin();
-		InputTree* subTree = NULL;
+		InputTree* subTree = nullptr;
 		for( ; subTreeIter != inputTree->subTrees().end() ; subTreeIter++ )
 		{
 			subTree = *subTreeIter;

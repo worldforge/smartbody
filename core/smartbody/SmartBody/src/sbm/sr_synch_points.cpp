@@ -447,7 +447,7 @@ double srSynchPoints::get_interval_from( int fr_tag )	{
 
 double srSynchPoints::get_prev( int *tag_p, bool global )	{
 
-	if( tag_p == NULL )	{
+	if( tag_p == nullptr )	{
 		return( -1.0 );
 	}
 	int tag = *tag_p;
@@ -480,7 +480,7 @@ double srSynchPoints::get_prev( int *tag_p, bool global )	{
 
 double srSynchPoints::get_next( int *tag_p, bool global )	{
 
-	if( tag_p == NULL )	{
+	if( tag_p == nullptr )	{
 		return( -1.0 );
 	}
 	int tag = *tag_p;

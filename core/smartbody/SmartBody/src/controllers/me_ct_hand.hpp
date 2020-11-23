@@ -21,7 +21,7 @@ public:
 	SrVec           fingerTarget;
 	bool            isLock;
 public:
-	FingerChain() { isLock = false; fingerTip = NULL; fingerTarget = SrVec(); }
+	FingerChain() { isLock = false; fingerTip = nullptr; fingerTarget = SrVec(); }
 	~FingerChain() {}
 	void init(MeCtIKTreeNode* figTip);	
 	void unlockChain();

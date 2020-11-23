@@ -166,7 +166,7 @@ class srCurveBuilder	{
 						double t = in_range_fr;
 						for( int i = 0; i< num_keys; i++ ) {
 						
-							double v = source.evaluate( t, NULL );
+							double v = source.evaluate( t, nullptr );
 
 							// check against out_range_fr, out_range_to:
 
@@ -203,7 +203,7 @@ class srCurveBuilder	{
 						
 						for( int i = 0; i< num_keys; i++ ) {
 							
-							double v = spline.evaluate( t, NULL );
+							double v = spline.evaluate( t, nullptr );
 
 							// check against out_range_fr, out_range_to:
 							// no constructor! never set...

@@ -27,7 +27,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/sbm_pawn.hpp>
 #include <sb/sbm_character.hpp>
 #include <sb/SBScene.h>
-#include <sbm/sbm_deformable_mesh.h>
 #include <sb/SBPawn.h>
 #include "SBUtilities.h"
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,11 +36,11 @@ std::string MeCtFace::type_name = "Face";
 MeCtFace::MeCtFace( void )	{
 
    _duration = -1.0;
-   _base_pose_p = NULL;
-   _skeleton_ref_p = NULL;
+   _base_pose_p = nullptr;
+   _skeleton_ref_p = nullptr;
    _useVisemeClamping = true;
 
-   _customized_motion = NULL;
+   _customized_motion = nullptr;
    _motionStartTime = -1;
 }
 
@@ -53,10 +52,10 @@ MeCtFace::~MeCtFace( void )	{
 void MeCtFace::clear( void )	{
 	
    _duration = -1.0;
-   _skeleton_ref_p = NULL;
+   _skeleton_ref_p = nullptr;
 
 	if( _base_pose_p )	{
-		_base_pose_p = NULL;
+		_base_pose_p = nullptr;
 	}
 	_key_pose_map.reset();
 
@@ -90,7 +89,7 @@ void MeCtFace::customizeMotion(const std::string& motionName, double startTime)
 void MeCtFace::init (SmartBody::SBPawn* pawn) {
 	
 	clear();
-	MeController::init(NULL);
+	MeController::init(nullptr);
 
 	SbmCharacter* sbmCharacter = dynamic_cast<SbmCharacter*>(pawn);
 	_character = dynamic_cast<SmartBody::SBCharacter*>(pawn);
@@ -174,11 +173,11 @@ void MeCtFace::remove_joint( const char *joint_name ) {
 			}
 		}
 		else	{
-			SmartBody::util::log( "MeCtFace::remove_joint ERR: _base_pose_p is NULL\n" );
+			SmartBody::util::log( "MeCtFace::remove_joint ERR: _base_pose_p is nullptr\n" );
 		}
 	}
 	else	{
-		SmartBody::util::log( "MeCtFace::remove_joint ERR: joint_name is NULL\n" );
+		SmartBody::util::log( "MeCtFace::remove_joint ERR: joint_name is nullptr\n" );
 	}
 }
 
@@ -202,11 +201,11 @@ void MeCtFace::remove_channel( const char *joint_name, SkChannel::Type ch_type )
 			}
 		}
 		else	{
-			SmartBody::util::log( "MeCtFace::remove_channel ERR: _base_pose_p is NULL\n" );
+			SmartBody::util::log( "MeCtFace::remove_channel ERR: _base_pose_p is nullptr\n" );
 		}
 	}
 	else	{
-		SmartBody::util::log( "MeCtFace::remove_channel ERR: joint_name is NULL\n" );
+		SmartBody::util::log( "MeCtFace::remove_channel ERR: joint_name is nullptr\n" );
 	}
 }
 
@@ -277,12 +276,12 @@ void MeCtFace::context_updated( void ) {
 #if 0
 	if( _context ) {
 		_skeleton_ref_p = _context->channels().skeleton(); // WHY HERE?
-		if( _skeleton_ref_p == NULL )	{
-			SmartBody::util::log( "MeCtFace::context_updated ERR: _skeleton_ref_p is NULL\n" );
+		if( _skeleton_ref_p == nullptr )	{
+			SmartBody::util::log( "MeCtFace::context_updated ERR: _skeleton_ref_p is nullptr\n" );
 		}
 	}
 	else	{
-		SmartBody::util::log( "MeCtFace::context_updated ERR: context is NULL\n" );
+		SmartBody::util::log( "MeCtFace::context_updated ERR: context is nullptr\n" );
 	}
 #endif
 }
@@ -333,13 +332,13 @@ void MeCtFace::controller_start( void )	{
 
 bool MeCtFace::updateMotion(double t, MeFrameData& frame)
 {
-	if (_customized_motion == NULL)
+	if (_customized_motion == nullptr)
 		return false;
 
 	double localTime = t - _motionStartTime;
 	if (localTime > _customized_motion->duration())
 	{
-		_customized_motion = NULL;
+		_customized_motion = nullptr;
 		return false;
 	}
 
@@ -365,7 +364,7 @@ bool MeCtFace::controller_evaluate( double t, MeFrameData& frame ) {
 
 	float *fbuffer = &( frame.buffer()[0] );
 	SkChannelArray& base_channels = _base_pose_p->channels();
-	if (_base_pose_p == NULL)
+	if (_base_pose_p == nullptr)
 	{
 		continuing = false;
 		return continuing;
@@ -431,7 +430,7 @@ bool MeCtFace::controller_evaluate( double t, MeFrameData& frame ) {
 #endif
 
 	int nchan = base_channels.size();
-	float * base_pose_buff_p = NULL;
+	float * base_pose_buff_p = nullptr;
 	if (_base_pose_p->frames() > 0)
 		base_pose_buff_p = _base_pose_p->posture( 0 );
 

@@ -46,7 +46,7 @@ public:
 	public:
 		///////////////////////////////////////////////////////////////
 		//  Constructors
-		Context( MeCtContainer* container, MeControllerContext* context = NULL );
+		Context( MeCtContainer* container, MeControllerContext* context = nullptr );
 
 		/**
 		 *  Adds/Registers a child with the container context.

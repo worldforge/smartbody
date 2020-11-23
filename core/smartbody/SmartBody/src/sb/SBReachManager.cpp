@@ -43,7 +43,7 @@ SBAPI SBReach* SBReachManager::createReachWithTag( std::string characterName, st
 	if (!character)
 	{
 		SmartBody::util::log("Character named %s does not exist.", characterName.c_str());
-		return NULL;
+		return nullptr;
 	}
 	std::string charReachTag = characterName + "_" + reachTag;
 	std::map<std::string, SBReach*>::iterator iter = _reaches.find(charReachTag);
@@ -94,7 +94,7 @@ SBReach* SBReachManager::getReach(std::string characterName, std::string reachTa
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

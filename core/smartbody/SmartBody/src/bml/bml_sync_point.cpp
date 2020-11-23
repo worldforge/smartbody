@@ -77,7 +77,7 @@ SyncPointPtr TriggerEvent::addSyncPoint( SyncPointPtr par, float off ) {
 SyncPoint::SyncPoint( const TriggerEventPtr trigger )
 :	trigger(trigger),
 	time(TIME_UNSET),
-	offset( 0 )  // not used if parent is NULL
+	offset( 0 )  // not used if parent is nullptr
 {}
 
 SyncPoint::SyncPoint( const TriggerEventPtr trigger, SyncPointPtr par, float off )
@@ -250,7 +250,7 @@ BehaviorSpan BehaviorSyncPoints::getBehaviorSpan( time_sec persistent_threshold 
 void BehaviorSyncPoints::parseStandardSyncPoints( DOMElement* elem, BmlRequestPtr request, const string& behavior_id ) {
 	
 
-	// DOM functions never return NULL
+	// DOM functions never return nullptr
 //	const wstring tag = elem->getTagName();
 	const wstring id  = xml_utils::xml_translate_wide( BMLDefs::ATTR_ID );
 
@@ -262,7 +262,7 @@ void BehaviorSyncPoints::parseStandardSyncPoints( DOMElement* elem, BmlRequestPt
 	//	// count preceeding element siblings
 	//	int count = 0;
 	//	DOMNode* sibling = elem->getPreviousSibling();
-	//	while( sibling != NULL ) {
+	//	while( sibling != nullptr ) {
 	//		++count;
 	//		sibling = sibling->getPreviousSibling();
 	//	}
@@ -320,7 +320,7 @@ BehaviorSyncPoints::iterator BehaviorSyncPoints::parseSyncPointAttr( DOMElement*
 	xml_utils::xmlch_release( & xml_ch_p );
 
 	SyncPointPtr sync;  // unset by default
-	if( sync_ref!=NULL && sync_ref[0]!=0 ) {
+	if( sync_ref!=nullptr && sync_ref[0]!=0 ) {
 		// Has sync reference.
 		sync = request->getSyncByReference( xml_utils::xml_translate_wide( sync_ref ) );  // Parses the sync reference notation
 

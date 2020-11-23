@@ -31,6 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
 #include "SBUtilities.h"
+#include "sbm/SBRenderScene.h"
 #ifdef WIN32
 	//#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
@@ -65,7 +66,8 @@ const int SrFrustum::INSIDE = 3;
 
 //=================================== SrCamera ===================================
 
-SrCamera::SrCamera () : SBPawn()
+SrCamera::SrCamera (SmartBody::SBRenderScene& renderScene) : SBPawn(),
+_renderScene(renderScene)
  {
 	setAttributeGroupPriority("Camera", 50);
 	createDoubleAttribute("centerX", 0.0, true, "Camera", 200, false, false, false, "");
@@ -84,17 +86,18 @@ SrCamera::SrCamera () : SBPawn()
  }
 
 SrCamera::SrCamera ( const SrCamera* c )
-         : SBPawn()
+         : SrCamera(c->_renderScene)
  {
-   SrCamera();
    copyCamera(c);
  }
 
-SrCamera::SrCamera ( const SrPnt& e, const SrPnt& c, const SrVec& u )
-         :  SBPawn(), eye(e), center(c), up(u)
+SrCamera::SrCamera (SmartBody::SBRenderScene& renderScene, const SrPnt& e, const SrPnt& c, const SrVec& u )
+         :  SrCamera(renderScene)
  {
+	eye = e;
+	center = c;
+	up = u;
 
-   SrCamera();
    setEye(eye.x, eye.y, eye.z);
    setCenter(c.x, c.y, c.z);
    setUpVector(up);
@@ -630,11 +633,12 @@ void SrCamera::notify(SmartBody::SBSubject* subject)
 }
 
 SBAPI  void SrCamera::afterUpdate( double time )
-{	
+{
+	//TODO: put this somewhere outside of the camera, so we don't need to depend on SBScene or SBRenderScene
 	if (smoothTargetCam)
 	{
-		SrCamera* cam = SmartBody::SBScene::getScene()->getCamera(targetCam);
-		if (!cam) 
+		SrCamera* cam = _renderScene.getCamera(targetCam);
+		if (!cam)
 		{
 			//SmartBody::util::log("Target camera '%s' does not exists.",camName.c_str());
 			return;
@@ -662,7 +666,8 @@ SBAPI  void SrCamera::afterUpdate( double time )
 
 SBAPI void SrCamera::setCameraParameterSmooth( std::string camName, float smoothTime )
 {
-	SrCamera* cam = SmartBody::SBScene::getScene()->getCamera(camName);
+	//TODO: put this somewhere outside of the camera, so we don't need to depend on SBScene or SBRenderScene
+	SrCamera* cam = _renderScene.getCamera(camName);
 	if (!cam) 
 	{
 		SmartBody::util::log("Target camera '%s' does not exists.",camName.c_str());

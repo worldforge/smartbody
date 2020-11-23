@@ -63,7 +63,7 @@ srHashMapBase::sr_map_entry_t *srHashMapBase::new_table_entry( const char *key, 
 		sprintf( entry_p->key, "%s", key );
 		entry_p->data = data;
 		entry_p->claim_data = claim;
-		entry_p->prev = NULL;
+		entry_p->prev = nullptr;
 		entry_p->next = next;
 		if( entry_p->next )	{
 			entry_p->next->prev = entry_p;
@@ -74,12 +74,12 @@ srHashMapBase::sr_map_entry_t *srHashMapBase::new_table_entry( const char *key, 
 void *srHashMapBase::find_table_data( sr_map_entry_t *bucket_p, const char *key )	{
 		
 		if( !bucket_p ) { 
-			SmartBody::util::log( "srHashMapBase::find_table_data ERR: bucket_p is NULL \n" ); 
-			return( NULL ); 
+			SmartBody::util::log( "srHashMapBase::find_table_data ERR: bucket_p is nullptr \n" );
+			return( nullptr );
 		}
 		if( !key ) { 
-			SmartBody::util::log( "srHashMapBase::find_table_data ERR: key is NULL \n" ); 
-			return( NULL ); 
+			SmartBody::util::log( "srHashMapBase::find_table_data ERR: key is nullptr \n" );
+			return( nullptr );
 		}
 		if( strcmp( bucket_p->key, key ) == 0 )	{
 			return( bucket_p->data );
@@ -87,7 +87,7 @@ void *srHashMapBase::find_table_data( sr_map_entry_t *bucket_p, const char *key 
 		if( bucket_p->next )	{
 			return( find_table_data( bucket_p->next, key ) );
 		}
-		return( NULL );
+		return( nullptr );
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -103,10 +103,10 @@ srHashMapBase::srHashMapBase( unsigned int size )	{
 		bucket_count = size;
 		entry_count = 0;
 		curr_bucket = NULL_BUCKET; 
-		iterator_p = NULL;
+		iterator_p = nullptr;
 		bucket_pp = new sr_map_entry_t * [ bucket_count ];
 		for( i=0;i<bucket_count;i++ )	{
-			bucket_pp[ i ] = NULL;
+			bucket_pp[ i ] = nullptr;
 		}
 		shallow_copy = false;
 }
@@ -125,7 +125,7 @@ srHashMapBase::~srHashMapBase( void )	{
 		}
 		delete [] bucket_pp;
 	}
-	bucket_pp = NULL;
+	bucket_pp = nullptr;
 }
 
 void srHashMapBase::print( int reverse )	{
@@ -136,7 +136,7 @@ void srHashMapBase::print( int reverse )	{
 		for( i=0;i<bucket_count;i++ )	{
 			if( bucket_pp[i] )	{
 				sprintf( label, "[%u]:", i );
-				last = NULL;
+				last = nullptr;
 				entry_p = bucket_pp[i];
 				while( entry_p )	{
 					if( entry_p == iterator_p )
@@ -167,12 +167,12 @@ void srHashMapBase::print( int reverse )	{
  
 int srHashMapBase::insert( const char *key, void *data, int claim )	{
 		
-		if( bucket_pp == NULL ) {
-			SmartBody::util::log( "srHashMapBase::insert ERR: bucket_pp is NULL \n" ); 
+		if( bucket_pp == nullptr ) {
+			SmartBody::util::log( "srHashMapBase::insert ERR: bucket_pp is nullptr \n" );
 			return( CMD_FAILURE );
 		}
-		if( key == NULL ) { 
-			SmartBody::util::log( "srHashMapBase::insert ERR: NULL key \n" ); 
+		if( key == nullptr ) {
+			SmartBody::util::log( "srHashMapBase::insert ERR: nullptr key \n" );
 			return( CMD_FAILURE );
 		}
 		
@@ -192,33 +192,33 @@ int srHashMapBase::insert( const char *key, void *data, int claim )	{
 
 void *srHashMapBase::lookup( const char *key )	{
 	
-		if( bucket_pp == NULL ) {
-			SmartBody::util::log("srHashMapBase::lookup ERR: bucket_pp is NULL \n" ); 
-			return( NULL );
+		if( bucket_pp == nullptr ) {
+			SmartBody::util::log("srHashMapBase::lookup ERR: bucket_pp is nullptr \n" );
+			return( nullptr );
 		}
-		if( key == NULL ) {
-			SmartBody::util::log("srHashMapBase::lookup ERR: key is NULL \n" ); 
-			return( NULL );
+		if( key == nullptr ) {
+			SmartBody::util::log("srHashMapBase::lookup ERR: key is nullptr \n" );
+			return( nullptr );
 		}
 
 		sr_map_entry_t *head_entry_p = bucket_pp[ unsigned_hash_string( key, bucket_count ) ];
 		if( head_entry_p )	{
 			return( find_table_data( head_entry_p, key ) );
 		}
-		return( NULL );
+		return( nullptr );
 }
 
 void *srHashMapBase::remove( const char *key, int *claimed_p )	{
 	sr_map_entry_t *entry_p;
 	void *data;
 	
-		if( bucket_pp == NULL ) {
-			SmartBody::util::log( "srHashMapBase::remove ERR: bucket_pp is NULL \n" ); 
-			return( NULL );
+		if( bucket_pp == nullptr ) {
+			SmartBody::util::log( "srHashMapBase::remove ERR: bucket_pp is nullptr \n" );
+			return( nullptr );
 		}
-		if( key == NULL ) {
-			SmartBody::util::log( "srHashMapBase::remove ERR: key is NULL \n" ); 
-			return(NULL);
+		if( key == nullptr ) {
+			SmartBody::util::log( "srHashMapBase::remove ERR: key is nullptr \n" );
+			return(nullptr);
 		}
 
 		unsigned int i = unsigned_hash_string( key, bucket_count );
@@ -253,7 +253,7 @@ void *srHashMapBase::remove( const char *key, int *claimed_p )	{
 			}
 			entry_p = entry_p->next;
 		}
-		return( NULL );
+		return( nullptr );
 }
 
 #if 0
@@ -274,44 +274,44 @@ void srHashMapBase::removeAll()	{
  
 void srHashMapBase::reset(void)	{
 		curr_bucket = NULL_BUCKET; 
-		iterator_p = NULL;
+		iterator_p = nullptr;
 }
 
 void *srHashMapBase::next( char** key_ref_p )	{
 
-		if( bucket_pp == NULL ) {
-			SmartBody::util::log( "srHashMapBase::next ERR: bucket_pp is NULL \n" ); 
-			return( NULL );
+		if( bucket_pp == nullptr ) {
+			SmartBody::util::log( "srHashMapBase::next ERR: bucket_pp is nullptr \n" );
+			return( nullptr );
 		}
 		increment_iterator();
-		if( iterator_p != NULL )	{
+		if( iterator_p != nullptr )	{
 			if( key_ref_p ) {
 				*key_ref_p = iterator_p->key;
 			}
 			return( iterator_p->data );
 		}
-		return( NULL );
+		return( nullptr );
 }
  
 void *srHashMapBase::pull( int *claimed_p )	{
 
-		if( bucket_pp == NULL ) {
-			SmartBody::util::log( "srHashMapBase::pull ERR: bucket_pp is NULL \n" ); 
-			return( NULL );
+		if( bucket_pp == nullptr ) {
+			SmartBody::util::log( "srHashMapBase::pull ERR: bucket_pp is nullptr \n" );
+			return( nullptr );
 		}
 		increment_iterator();
-		if( iterator_p != NULL )	{
+		if( iterator_p != nullptr )	{
 			return( remove( iterator_p->key, claimed_p ) );
 		}
-		return( NULL );
+		return( nullptr );
 }
  
 ////////////////////////////////////////////////////////////
 
 void srHashMapBase::increment_iterator(void)	{
 
-		if( bucket_pp == NULL ) {
-			SmartBody::util::log( "srHashMapBase::increment_iterator ERR: bucket_pp is NULL \n" ); 
+		if( bucket_pp == nullptr ) {
+			SmartBody::util::log( "srHashMapBase::increment_iterator ERR: bucket_pp is nullptr \n" );
 			return;
 		}
 		if( iterator_p )	{
@@ -324,8 +324,8 @@ void srHashMapBase::increment_iterator(void)	{
 
 void srHashMapBase::decrement_iterator(void)	{
 
-		if( bucket_pp == NULL ) {
-			SmartBody::util::log( "srHashMapBase::decrement_iterator ERR: bucket_pp is NULL \n" ); 
+		if( bucket_pp == nullptr ) {
+			SmartBody::util::log( "srHashMapBase::decrement_iterator ERR: bucket_pp is nullptr \n" );
 			return;
 		}
 		if( iterator_p )	{
@@ -335,7 +335,7 @@ void srHashMapBase::decrement_iterator(void)	{
 
 			curr_bucket -= 1;
 			if( curr_bucket < 0 )	{
-				iterator_p = NULL;
+				iterator_p = nullptr;
 			}
 			else	{
 				iterator_p = bucket_pp[ curr_bucket ];

@@ -21,8 +21,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SR_FLAG_H
 #define SR_FLAG_H
 
-#ifndef NULL
-#define NULL 0x0
+#ifndef nullptr
+#define nullptr 0x0
 #endif
 #ifndef TRUE
 #define TRUE 1

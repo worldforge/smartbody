@@ -106,11 +106,11 @@ namespace BML {
 		 SmartBody::SBScene* scene )
 	{
 		//  Let's not error on our error messages.  Be thorough.
-		if( agent_id==NULL || agent_id[0]=='\0' )
+		if( agent_id==nullptr || agent_id[0]=='\0' )
 			agent_id = "?";
-		if( message_id==NULL || message_id[0]=='\0' )
+		if( message_id==nullptr || message_id[0]=='\0' )
 			message_id = "?";
-		if( error_msg==NULL || error_msg[0]=='\0' )
+		if( error_msg==nullptr || error_msg[0]=='\0' )
 			error_msg = "INVALID_ERROR_MESSAGE";
 
 		////SmartBody::util::log("WARNING: bml_error(..): %s (agent \"%s\", message id \"%s\")", error_msg, agent_id, message_id);
@@ -147,7 +147,7 @@ BML::Processor::BMLProcessorMsg::BMLProcessorMsg( const char *actorId, const cha
 	actor(actor),
 	xml(xml),
 	requestId( buildRequestId( actor, msgId ) ),
-	args( args )  // constructor does handle NULL
+	args( args )  // constructor does handle nullptr
 {}
 
 #if USE_RECIPIENT
@@ -187,7 +187,7 @@ BML::Processor::Processor()
 	bml_feedback( false ),
 	ct_speed_min( CONTROLLER_SPEED_MIN_DEFAULT ),
 	ct_speed_max( CONTROLLER_SPEED_MAX_DEFAULT ),
-	requestcb(NULL),
+	requestcb(nullptr),
 	idCounter(1)
 {
 	//BMLDefs* bmlDefs = new BMLDefs();
@@ -224,10 +224,10 @@ BML::Processor::~Processor()
 	/*
 	if (xmlErrorHandler)
 		delete xmlErrorHandler;
-	xmlErrorHandler = NULL;	
+	xmlErrorHandler = nullptr;
 	if (xmlParser)
 		delete xmlParser; 
-	xmlParser = NULL;
+	xmlParser = nullptr;
 	*/
 }
 
@@ -297,8 +297,8 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 
 
 	DOMElement* child = xml_utils::getFirstChildElement( root );
-	DOMElement* bmlElem = NULL;
-	while( child!=NULL ) {
+	DOMElement* bmlElem = nullptr;
+	while( child!=nullptr ) {
 		const XMLCh *tag = child->getTagName();
 		if( XMLString::compareString( tag, BMLDefs::TAG_BML )==0 ) {
 			bmlElem = child;
@@ -386,7 +386,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 
 	// look for BML behavior command tags
 	DOMElement*  child = xml_utils::getFirstChildElement( group );
-	while( child!=NULL ) {
+	while( child!=nullptr ) {
 		const XMLCh *tag = child->getTagName();  // Grand Child (behavior) Tag
 		if( XMLString::compareString( tag, BMLDefs::TAG_REQUIRED )==0 ) {
 			parseBehaviorGroup( child, request, scene, behavior_ordinal, true );
@@ -507,7 +507,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 
 			
 
-			if( behavior != NULL ) {
+			if( behavior != nullptr ) {
 				const XMLCh* groupIdAttr = child->getAttribute(BMLDefs::ATTR_GROUP);
 				std::string group_id;
 				xml_utils::xml_translate(&group_id, groupIdAttr);
@@ -559,7 +559,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 			else
 			{
 				#if !defined(__FLASHPLAYER__)
-				// Added by Yuyu 10-01-2013, if the behavior is NULL, filter out
+				// Added by Yuyu 10-01-2013, if the behavior is nullptr, filter out
 				child->setAttribute(BMLDefs::ATTR_FILTERED, BMLDefs::ATTR_TRUE);
 				#endif
 			}
@@ -620,14 +620,14 @@ BehaviorRequestPtr BML::Processor::parse_bml_body( DOMElement* elem, std::string
 //				std::wstringstream wstrstr;
 //				wstrstr<<"WARNING: BML::Processor::parse_bml_body(): <body>: posture=\""<<postureName<<"\" not loaded; ignoring <body>.";
 //				SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-				return BehaviorRequestPtr();  // a.k.a., NULL
+				return BehaviorRequestPtr();  // a.k.a., nullptr
 			}
 		}
 	} else {
 		SmartBody::util::log("WARNING: BML::Processor::parse_bml_body(): <body> missing posture = attribute; ignoring <body>.");
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
-	return BehaviorRequestPtr();  // a.k.a., NULL
+	return BehaviorRequestPtr();  // a.k.a., nullptr
 }
 
 BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) {
@@ -744,12 +744,12 @@ BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string
 				std::string stateName = xml_utils::xml_parse_string(BMLDefs::ATTR_STATENAME, elem);
 				std::string characterName = request->actor->getName();
 				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
-				if (character == NULL)
+				if (character == nullptr)
 				{
 					SmartBody::util::log("parse_bml_states ERR: cannot find character with name %s.", characterName.c_str());
 					return BehaviorRequestPtr();
 				}
-				if (character->head_param_anim_ct == NULL)
+				if (character->head_param_anim_ct == nullptr)
 				{
 					SmartBody::util::log("parse_bml_states ERR: cannot find head_param_anim_ct inside character %s.", characterName.c_str());
 					return BehaviorRequestPtr();					
@@ -773,61 +773,61 @@ BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string
 					std::wstringstream wstrstr;
 					wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<<BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> using a target.  Ignoring behavior.";
 					SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-					return BehaviorRequestPtr();  // a.k.a., NULL
+					return BehaviorRequestPtr();  // a.k.a., nullptr
 				} else if( direction && *direction != 0 ) {
 					if( XMLString::compareIString( direction, BMLDefs::DIR_RIGHT )==0 ) {
 						// TODO
 						std::wstringstream wstrstr;
 						wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<<BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> using a direction=\""<< BMLDefs::DIR_RIGHT<<"\".  Ignoring behavior.";
 						SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-						return BehaviorRequestPtr();  // a.k.a., NULL
+						return BehaviorRequestPtr();  // a.k.a., nullptr
 					} else if( XMLString::compareIString( direction, BMLDefs::DIR_LEFT )==0 ) {
 						// TODO
 						std::wstringstream wstrstr;
 						wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<<BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> using a direction=\""<< BMLDefs::DIR_LEFT<<"\".  Ignoring behavior.";
 						SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-						return BehaviorRequestPtr();  // a.k.a., NULL
+						return BehaviorRequestPtr();  // a.k.a., nullptr
 					} else if( XMLString::compareIString( direction, BMLDefs::DIR_UP )==0 ) {
 						// TODO
 						std::wstringstream wstrstr;
 						wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<<BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> using a direction=\""<< BMLDefs::DIR_UP<<"\".  Ignoring behavior.";
 						SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-						return BehaviorRequestPtr();  // a.k.a., NULL
+						return BehaviorRequestPtr();  // a.k.a., nullptr
 					} else if( XMLString::compareIString( direction, BMLDefs::DIR_DOWN )==0 ) {
 						// TODO
 						std::wstringstream wstrstr;
 						wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<<BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> using a direction=\""<< BMLDefs::DIR_DOWN<<"\".  Ignoring behavior.";
 						SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-						return BehaviorRequestPtr();  // a.k.a., NULL
+						return BehaviorRequestPtr();  // a.k.a., nullptr
 					} else if( XMLString::compareIString( direction, BMLDefs::DIR_ROLLRIGHT )==0 ) {
 						// TODO
 						std::wstringstream wstrstr;
 						wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<<BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> using a direction=\""<< BMLDefs::DIR_ROLLRIGHT<<"\".  Ignoring behavior.";
 						SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-						return BehaviorRequestPtr();  // a.k.a., NULL
+						return BehaviorRequestPtr();  // a.k.a., nullptr
 					} else if( XMLString::compareIString( direction, BMLDefs::DIR_ROLLRIGHT )==0 ) {
 						// TODO
 						std::wstringstream wstrstr;
 						wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<<BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> using a direction=\""<< BMLDefs::DIR_ROLLRIGHT<<"\".  Ignoring behavior.";
 						SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-						return BehaviorRequestPtr();  // a.k.a., NULL
+						return BehaviorRequestPtr();  // a.k.a., nullptr
 					} else {
 						std::wstringstream wstrstr;
 						wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unrecognized direction \""<<direction<<"\" in <"<<tag<<" "<< BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\">.  Ignoring behavior.";
 						SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-						return BehaviorRequestPtr();  // a.k.a., NULL
+						return BehaviorRequestPtr();  // a.k.a., nullptr
 					}
 
 					// TODO
 //          std::wstringstream wstrstr;
 //          wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<< BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> using a direction.  Ignoring behavior.";
 //          SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-//          return BehaviorRequestPtr();  // a.k.a., NULL
+//          return BehaviorRequestPtr();  // a.k.a., nullptr
 				} else {
 					std::wstringstream wstrstr;
 					wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<< BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\"> requires a target or a direction attribute.  Ignoring behavior.";
 					SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-					return BehaviorRequestPtr();  // a.k.a., NULL
+					return BehaviorRequestPtr();  // a.k.a., nullptr
 				}
 			}
 
@@ -836,7 +836,7 @@ BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string
 				std::wstringstream wstrstr;
 				wstrstr << "WARNING: BML::Processor::parse_bml_head(): Unimplemented: <"<<tag<<" "<< BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\">.  Ignoring behavior.";
 				SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-				return BehaviorRequestPtr();  // a.k.a., NULL
+				return BehaviorRequestPtr();  // a.k.a., nullptr
 				}
 				*/
 			case BML::HEAD_WIGGLE:
@@ -891,16 +891,16 @@ BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string
 				std::wstringstream wstrstr;
                 wstrstr << "WARNING: BML::Processor::parse_bml_head(): <"<<tag<<" "<< BMLDefs::ATTR_TYPE<<"=\""<<attrType<<"\">: Unknown type value, ignore command";
 				SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-				return BehaviorRequestPtr();  // a.k.a., NULL
+				return BehaviorRequestPtr();  // a.k.a., nullptr
 				}
         }
     } else {
 		std::wstringstream wstrstr;
         wstrstr << "WARNING: BML::Processor::parse_bml_head(): <"<<tag<<"> BML tag missing "<< BMLDefs::ATTR_TYPE<<"= attribute.";
 		SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
     }
-	return BehaviorRequestPtr();  // a.k.a., NULL
+	return BehaviorRequestPtr();  // a.k.a., nullptr
 }
 
 void BML::Processor::speechReply( SbmCharacter* actor, SmartBody::RequestId requestId, srArgBuffer& response_args, SmartBody::SBScene* scene ) {
@@ -917,17 +917,17 @@ void BML::Processor::speechReply( SbmCharacter* actor, SmartBody::RequestId requ
 
 					// Success!!  Let's Realize it!
 #if USE_RECIPIENT
-					BMLProcessorMsg msg( request->actor->name, request->recipientId.c_str(), request->msgId.c_str(), request->actor, NULL, NULL );
+					BMLProcessorMsg msg( request->actor->name, request->recipientId.c_str(), request->msgId.c_str(), request->actor, nullptr, nullptr );
 #else
-					BMLProcessorMsg msg( request->actor->getName().c_str(), request->msgId.c_str(), request->actor, NULL, NULL );
+					BMLProcessorMsg msg( request->actor->getName().c_str(), request->msgId.c_str(), request->actor, nullptr, nullptr );
 #endif
 					
 					// check for negative times and change all times if needed
 					/*SyncPoint * temp = request->first;
-					while(temp != NULL){
+					while(temp != nullptr){
 						if(temp->time < 0){
 							SyncPoint * temp2 = request->first->next;
-							while(temp2 != NULL){
+							while(temp2 != nullptr){
 								temp2->time = temp2->time - temp->time;
 								wcout << "changed TimeMaker : " << temp2->name << " into : " << temp2->time << endl;					
 								temp2 = temp2->next;
@@ -1093,6 +1093,25 @@ MapOfBmlRequest& BML::Processor::getBMLRequestMap()
 	return bml_requests;
 }
 
+std::string BML::Processor::hasSpeechBehavior(SbmCharacter& character)
+{
+	BML::MapOfBmlRequest& bmlRequestMap = getBMLRequestMap();
+	for (auto & iter : bmlRequestMap)
+	{
+		std::string requestName = iter.first;
+		BML::BmlRequestPtr bmlRequestPtr = iter.second;
+		if (bmlRequestPtr->actor->getName() == character.getName())
+		{
+			if (bmlRequestPtr->speech_request)
+			{
+				return (*bmlRequestPtr).msgId;
+			}
+		}
+	}
+
+	return "";
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Static Command and Message Hooks
@@ -1111,7 +1130,7 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 
 	const char   *character_id     = args.read_token();
 	SmartBody::SBCharacter *character        = SmartBody::SBScene::getScene()->getCharacter( character_id );
-	if( character == NULL ) {
+	if( character == nullptr ) {
 		//  Character is not managed by this SBM process
 		if( bp->warn_unknown_agents )
 		{
@@ -1154,8 +1173,8 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 
 		try {
 			DOMDocument *xmlDoc = xml_utils::parseMessageXml( bp->xmlParser, xml );
-			if( xmlDoc == NULL ) {
-				bml_error( character_id, message_id, "XML parser returned NULL document.", SmartBody::SBScene::getScene() );
+			if( xmlDoc == nullptr ) {
+				bml_error( character_id, message_id, "XML parser returned nullptr document.", SmartBody::SBScene::getScene() );
 				return CMD_FAILURE;
 			}
 
@@ -1197,9 +1216,9 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 	} else if( _stricmp( command, "end" )==0 ) {
 		try {
 #if USE_RECIPIENT
-			return bp.bml_end( BMLProcessorMsg( character_id, recipient_id, message_id, character, NULL, args ), mcu );
+			return bp.bml_end( BMLProcessorMsg( character_id, recipient_id, message_id, character, nullptr, args ), mcu );
 #else
-			BMLProcessorMsg msg( character_id, message_id, character, NULL, args );
+			BMLProcessorMsg msg( character_id, message_id, character, nullptr, args );
 			int ret = bp->bml_end( msg, SmartBody::SBScene::getScene() );
 
 			SmartBody::Nvbg* nvbg = character->getNvbg();
@@ -1280,7 +1299,7 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 		}
 
 		SmartBody::SBCharacter* agent = scene->getCharacter( agent_id );
-		if( agent==NULL ) {
+		if( agent==nullptr ) {
 			//  Agent is not managed by this SBM process
 			if( bp->warn_unknown_agents )
 			{
@@ -1299,7 +1318,7 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 			return CMD_FAILURE;
 		}
 
-		DOMDocument* xmlDoc = NULL;
+		DOMDocument* xmlDoc = nullptr;
 		// check the cache to see if it exists first
 		if (scene->getBoolAttribute("useXMLCache"))
 		{
@@ -1319,8 +1338,8 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 			xmlDoc = xml_utils::parseMessageXml( bp->xmlParser, xml );
 		}
 
-		if( xmlDoc == NULL ) {
-			bml_error( agent_id, message_id, "XML parser returned NULL document.", scene );
+		if( xmlDoc == nullptr ) {
+			bml_error( agent_id, message_id, "XML parser returned nullptr document.", scene );
 			return CMD_FAILURE;
 		}
 
@@ -1367,15 +1386,15 @@ int BML::Processor::vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager
 		//cout << "DEBUG: vrSpoke " << agent_id << " " << recipientId << " " << message_id << endl;
 
 		SmartBody::SBCharacter* agent = scene->getCharacter( agent_id );
-		if( agent==NULL ) {
+		if( agent==nullptr ) {
 			// Ignore unknown agent.  Probably managed by other SBM process.
 			return CMD_SUCCESS;
 		}
 
 #if VRAGENTBML_USES_RECIPIENT
-		BMLProcessorMsg bpMsg( agent_id, recipient_id, message_id, agent, NULL, args );
+		BMLProcessorMsg bpMsg( agent_id, recipient_id, message_id, agent, nullptr, args );
 #else
-		BMLProcessorMsg bpMsg( agent_id, message_id, agent, NULL, args );
+		BMLProcessorMsg bpMsg( agent_id, message_id, agent, nullptr, args );
 #endif
 		return bp->bml_end( bpMsg, scene );
 	} catch( BmlException& e ) {
@@ -1409,7 +1428,7 @@ int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager*
 		// bp speech_ready <CharacterId> <RequestId> SUCCESS/ERROR reason
 		char* actorId = args.read_token();
 		SmartBody::SBCharacter* actor = scene->getCharacter( actorId );
-		if( actor==NULL ) {
+		if( actor==nullptr ) {
 			std::stringstream strstr;
 			strstr << "WARNING: BML::Processor::bp_cmd_func(): Unknown actor \"" << actorId << "\".  This is probably an error since the command \"bp speech_reply\" is not supposed to be sent over the network, thus it should not be coming from another SBM process." << std::endl;
 			SmartBody::util::log(strstr.str().c_str());
@@ -1430,7 +1449,7 @@ int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager*
 		}
 
 		SmartBody::SBCharacter* actor = scene->getCharacter( actor_id );
-		if( actor==NULL ) {
+		if( actor==nullptr ) {
 			// Unknown actor.  ignore and 
 			std::cout << "WARNING: bp interrupt: Unknown actor \""<<actor_id<<"\"." << std::endl;
 			return CMD_SUCCESS;  // ignored

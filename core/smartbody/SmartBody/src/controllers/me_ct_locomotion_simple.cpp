@@ -67,7 +67,7 @@ SkChannelArray& MeCtLocomotionSimple::controller_channels() {
 
 // Implements MeController::context_updated(..)
 void MeCtLocomotionSimple::context_updated() {
-	if( _context == NULL ) {
+	if( _context == nullptr ) {
 		is_valid = false;
 		last_time = std::numeric_limits<double>::quiet_NaN();
 	}
@@ -81,7 +81,7 @@ void MeCtLocomotionSimple::context_updated() {
 void MeCtLocomotionSimple::controller_map_updated() {
 	is_valid = true;
 
-	if( _context != NULL ) {
+	if( _context != nullptr ) {
 		// request_channel indices (second param) come from the order of request_channels.add(..) calls in controller_channels()
 		LOOKUP_BUFFER_INDEX( bi_world_x,    0 );
 		LOOKUP_BUFFER_INDEX( bi_world_y,    1 );

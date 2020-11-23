@@ -76,7 +76,7 @@ bool SBAnimationBlendManager::addTransitionEdgeToGraph( const std::string& sourc
 SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& name)
 {
 #if __FLASHPLAYER__
-	return NULL;
+	return nullptr;
 #endif
 
 	SBAnimationBlend0D* blend = new SBAnimationBlend0D(name);
@@ -95,7 +95,7 @@ SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& na
 SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& name)
 {
 #if __FLASHPLAYER__
-	return NULL;
+	return nullptr;
 #endif
 
 	SBAnimationBlend1D* blend = new SBAnimationBlend1D(name);
@@ -114,7 +114,7 @@ SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& na
 SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& name)
 {
 #if __FLASHPLAYER__
-	return NULL;
+	return nullptr;
 #endif
 
 	SBAnimationBlend2D* blend = new SBAnimationBlend2D(name);
@@ -134,7 +134,7 @@ SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& na
 SBAnimationBlend3D* SBAnimationBlendManager::createBlend3D(const std::string& name)
 {
 #if __FLASHPLAYER__
-	return NULL;
+	return nullptr;
 #endif
 
 	SBAnimationBlend3D* blend = new SBAnimationBlend3D(name);
@@ -173,13 +173,13 @@ SBAnimationTransition* SBAnimationBlendManager::createTransition(const std::stri
 	if (!sourceBlend)
 	{
 		SmartBody::util::log("Source state %s does not exist. No transition created.", source.c_str());
-		return NULL;
+		return nullptr;
 	}
 	SBAnimationBlend* destBlend = getBlend(dest);
 	if (!destBlend)
 	{
 		SmartBody::util::log("Destination state %s does not exist. No transition created.", dest.c_str());
-		return NULL;
+		return nullptr;
 	}
 	SBAnimationTransition* transition = new SBAnimationTransition(source + "/" + dest);
 	transition->set(sourceBlend, destBlend);
@@ -203,7 +203,7 @@ SBAnimationBlend* SBAnimationBlendManager::getBlend(const std::string& name)
 		if ((*iter)->stateName == name)
 			return (*iter);
 	}
-	return NULL;
+	return nullptr;
 }
 
 int SBAnimationBlendManager::getNumBlends()
@@ -243,7 +243,7 @@ SBAnimationTransition* SBAnimationBlendManager::getTransition(const std::string&
 			return _transitions[i];
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 SBAnimationTransition* SBAnimationBlendManager::getTransitionByName( const std::string& transitionName )
@@ -254,7 +254,7 @@ SBAnimationTransition* SBAnimationBlendManager::getTransitionByName( const std::
 			return _transitions[i];
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 SBAnimationTransition* SBAnimationBlendManager::getTransitionByIndex(int id)
@@ -265,7 +265,7 @@ SBAnimationTransition* SBAnimationBlendManager::getTransitionByIndex(int id)
 		return animTransition;
 	}
 	
-	return NULL;
+	return nullptr;
 }
 
 

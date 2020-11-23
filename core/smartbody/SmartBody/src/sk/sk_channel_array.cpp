@@ -125,7 +125,7 @@ bool SkChannelArray::insert ( int pos, std::string name, SkChannel::Type t )
 		return false;
 
 	Channel channel;
-	channel.set(NULL, t);
+	channel.set(nullptr, t);
 	channel.name = name;	
 	channel.mappedName = name;
 	int counter = 0;
@@ -164,12 +164,12 @@ SkSkeleton* SkChannelArray::skeleton () const
 {
 	if (_channelList.size() == 0)
 	{
-		return NULL;
+		return nullptr;
 	}
 	else
 	{
 		if (!_channelList[0].joint)
-			return NULL;
+			return nullptr;
 		else
 			return _channelList[0].joint->skeleton();
 	}
@@ -431,12 +431,12 @@ int SkChannelArray::connect(SkSkeleton* s)
 {
 	int count = 0;
 	int chsize = _channelList.size();
-	SkJoint* joint = NULL;
+	SkJoint* joint = nullptr;
 
 	if (!s)
 	{ 
 		for (int i=0; i < chsize; i++ ) 
-			_channelList[i].joint = NULL;
+			_channelList[i].joint = nullptr;
 		return 0;
 	}
 

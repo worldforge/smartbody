@@ -68,15 +68,15 @@ MeCtGenericHand::MeCtGenericHand() : SmartBody::SBController()
 	_valid = false;
 	_lastTime = 0.0;
 	_motionTime = 0.0;
-	_handMotion = NULL;
-	_bodyMotion = NULL;
-	_handDatabase = NULL;
-	_bodyDatabase = NULL;
-	_finalMotion = NULL;
+	_handMotion = nullptr;
+	_bodyMotion = nullptr;
+	_handDatabase = nullptr;
+	_bodyDatabase = nullptr;
+	_finalMotion = nullptr;
 	currentSegment = 0;
 	_maxLevels = 100;
 	_k = 5;
-	_sk = NULL;
+	_sk = nullptr;
 	
 	_enableHand = true;
 	_enableBody = true;
@@ -97,15 +97,15 @@ MeCtGenericHand::MeCtGenericHand( SmartBody::SBSkeleton* skeleton, SbmCharacter*
 	_valid = false;
 	_lastTime = 0.0;
 	_motionTime = 0.0;
-	_handMotion = NULL;
-	_bodyMotion = NULL;
-	_handDatabase = NULL;
-	_bodyDatabase = NULL;
-	_finalMotion = NULL;
+	_handMotion = nullptr;
+	_bodyMotion = nullptr;
+	_handDatabase = nullptr;
+	_bodyDatabase = nullptr;
+	_finalMotion = nullptr;
 	currentSegment = 0;
 	_maxLevels = 100;
 	_k = 5;
-	_sk = NULL;
+	_sk = nullptr;
 
 	_enableHand = true;
 	_enableBody = true;
@@ -275,7 +275,7 @@ void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame)
 {
 	SrBuffer<float>& buffer=frame.buffer();
 
-	SmartBody::SBRetarget* retarget = NULL;
+	SmartBody::SBRetarget* retarget = nullptr;
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();		
 		retarget = scene->getRetargetManager()->getRetarget(_bodyMotion->getMotionSkeletonName(),_character->getSkeleton()->getName());	

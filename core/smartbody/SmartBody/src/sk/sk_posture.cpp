@@ -57,11 +57,11 @@ int SkPostureDfJoints::search ( const char* jname )
 //============================= SkPosture ============================
 
  SkPosture::SkPosture () :
-	_channels( NULL ),
-	_dfjoints( NULL ),
+	_channels( nullptr ),
+	_dfjoints( nullptr ),
 	_syncpoints( false ),
-	_name( NULL ),
-	_filename( NULL )
+	_name( nullptr ),
+	_filename( nullptr )
 {}
 
 SkPosture::SkPosture ( const SkPosture& p )
@@ -95,8 +95,8 @@ SkPosture::SkPosture ( SkSkeleton* s )
  {
    _dfjoints = 0;
    _syncpoints = false;
-   _name = NULL;
-   _filename = NULL;
+   _name = nullptr;
+   _filename = nullptr;
 
    _channels = &s->channels();
    _channels->ref();
@@ -107,9 +107,9 @@ SkPosture::~SkPosture ()
  {
    init ();
    delete [] _name;
-   _name = NULL;
+   _name = nullptr;
    delete [] _filename;
-   _filename = NULL;
+   _filename = nullptr;
  }
 
 void SkPosture::init ()

@@ -54,8 +54,8 @@ wstring xml_utils::xml_s2w( string s ) {
 
 bool xml_utils::xml_translate( string *str_p, const XMLCh* xml_str )	{
 
-	if( str_p == NULL ) return( false );
-	if( xml_str == NULL ) return( false );
+	if( str_p == nullptr ) return( false );
+	if( xml_str == nullptr ) return( false );
 
 	char *tmp_cp = XMLString::transcode( xml_str );
 	*str_p = string( tmp_cp );
@@ -108,22 +108,22 @@ bool xml_utils::xml_parse_string(
 	bool verbose
 )	{
 
-	if( str_p == NULL ) {
-		SmartBody::util::log( "xml_parse_string ERR: NULL str_p" );
+	if( str_p == nullptr ) {
+		SmartBody::util::log( "xml_parse_string ERR: nullptr str_p" );
 		return( false );
 	}
-	if( attr == NULL ) {
-		SmartBody::util::log( "xml_parse_string ERR: NULL XMLCh attribute ptr" );
+	if( attr == nullptr ) {
+		SmartBody::util::log( "xml_parse_string ERR: nullptr XMLCh attribute ptr" );
 		return( false );
 	}
-	if( elem == NULL ) {
-		SmartBody::util::log( "xml_parse_string ERR: NULL DOMElement ptr" );
+	if( elem == nullptr ) {
+		SmartBody::util::log( "xml_parse_string ERR: nullptr DOMElement ptr" );
 		return( false );
 	}
 
 	const XMLCh* value = elem->getAttribute( attr );
-	if( value == NULL ) {
-		SmartBody::util::log( "xml_parse_string ERR: NULL value" );
+	if( value == nullptr ) {
+		SmartBody::util::log( "xml_parse_string ERR: nullptr value" );
 		return( false );
 	}
 	if( value[ 0 ] == chNull ) {
@@ -141,8 +141,8 @@ bool xml_utils::xml_parse_double(
 	bool verbose
  )	{
 
-	if( d_p == NULL )	{
-		SmartBody::util::log( "xml_parse_double ERR: NULL d_p" );
+	if( d_p == nullptr )	{
+		SmartBody::util::log( "xml_parse_double ERR: nullptr d_p" );
 		return( false );
 	}
 
@@ -161,8 +161,8 @@ bool xml_utils::xml_parse_float(
 	bool verbose
  )	{
 
-	if( f_p == NULL )	{
-		SmartBody::util::log( "xml_parse_double ERR: NULL f_p" );
+	if( f_p == nullptr )	{
+		SmartBody::util::log( "xml_parse_double ERR: nullptr f_p" );
 		return( false );
 	}
 
@@ -181,8 +181,8 @@ bool xml_utils::xml_parse_int(
 	bool verbose
  )	{
 
-	if( i_p == NULL )	{
-		SmartBody::util::log( "xml_parse_double ERR: NULL i_p" );
+	if( i_p == nullptr )	{
+		SmartBody::util::log( "xml_parse_double ERR: nullptr i_p" );
 		return( false );
 	}
 
@@ -208,8 +208,8 @@ int xml_utils::xml_parse_double(
 	}
 #endif
 
-	if( d_arr == NULL )	{
-		SmartBody::util::log( "xml_parse_double ERR: NULL d_arr" );
+	if( d_arr == nullptr )	{
+		SmartBody::util::log( "xml_parse_double ERR: nullptr d_arr" );
 		return( 0 );
 	}
 
@@ -236,8 +236,8 @@ int xml_utils::xml_parse_float(
 	bool verbose
 )	{
 
-	if( f_arr == NULL )	{
-		SmartBody::util::log( "xml_parse_float ERR: NULL f_arr" );
+	if( f_arr == nullptr )	{
+		SmartBody::util::log( "xml_parse_float ERR: nullptr f_arr" );
 		return( 0 );
 	}
 
@@ -264,8 +264,8 @@ int xml_utils::xml_parse_int(
 	bool verbose
 )	{
 
-	if( i_arr == NULL )	{
-		SmartBody::util::log( "xml_parse_int ERR: NULL i_arr" );
+	if( i_arr == nullptr )	{
+		SmartBody::util::log( "xml_parse_int ERR: nullptr i_arr" );
 		return( 0 );
 	}
 
@@ -321,7 +321,7 @@ bool xml_utils::XMLStringCmp::operator() (const XMLCh* x, const XMLCh* y ) const
 DOMElement* xml_utils::getFirstChildElement( const DOMNode* node ) {
     node=node->getFirstChild();
 
-    if( node!=NULL &&
+    if( node!=nullptr &&
 		node->getNodeType()!=DOMNode::ELEMENT_NODE ) {
         node=getNextElement( node );
     }
@@ -332,7 +332,7 @@ DOMElement* xml_utils::getFirstChildElement( const DOMNode* node ) {
 DOMElement* xml_utils::getNextElement( const DOMNode* node ) {
     node=node->getNextSibling();
 
-    while( node!=NULL &&
+    while( node!=nullptr &&
 		   node->getNodeType()!=DOMNode::ELEMENT_NODE ) {
         node=node->getNextSibling();
     }
@@ -495,7 +495,7 @@ DOMDocument* xml_utils::parseMessageXml( XercesDOMParser* xmlParser, const char 
 			stringstream strstr;
 			strstr << "xml_utils::parseMessageXml(): "<<errorCount<<" errors while parsing xml: ";
 			SmartBody::util::log(strstr.str().c_str());
-			return NULL;
+			return nullptr;
 		}
 		return xmlParser->getDocument();
 	} catch( const XMLException& e ) {
@@ -504,7 +504,7 @@ DOMDocument* xml_utils::parseMessageXml( XercesDOMParser* xmlParser, const char 
 		std::stringstream strstr;
 		strstr << "xml_utils::parseMessageXml(): XMLException while parsing xml: " << message;
 		SmartBody::util::log(strstr.str().c_str());
-		return NULL;
+		return nullptr;
 	} catch( const SAXParseException& e ) {
 		std::string message = "";
 		xml_utils::xml_translate(&message, e.getMessage());
@@ -512,21 +512,21 @@ DOMDocument* xml_utils::parseMessageXml( XercesDOMParser* xmlParser, const char 
 		strstr << "xml_utils::parseMessageXml(): SAXException while parsing xml: [" << str << "] "<< message
 				<< " (line "<< e.getLineNumber()<<", col "<< e.getColumnNumber()<<")";
 		SmartBody::util::log(strstr.str().c_str());
-		return NULL;
+		return nullptr;
 	} catch( const SAXException& e ) {
 		std::string message = "";
 		xml_utils::xml_translate(&message, e.getMessage());
 		std::stringstream strstr;
 		strstr << "xml_utils::parseMessageXml(): SAXException while parsing xml: [" << str << "] "<<message;
 		SmartBody::util::log(strstr.str().c_str());
-		return NULL;
+		return nullptr;
 	} catch( const DOMException& e ) {
 		std::string message = "";
 		xml_utils::xml_translate(&message, e.getMessage());
 		std::stringstream strstr;
 		strstr << "xml_utils::parseMessageXml(): DOMException while parsing xml: "<<message;
 		SmartBody::util::log(strstr.str().c_str());
-		return NULL;
+		return nullptr;
 	}
 }
 		

@@ -22,8 +22,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
-#include <sb/SBVHMsgManager.h>
-#include <sb/SBScene.h>
+#include "sb/SBScene.h"
+#include "sb/SBCharacter.h"
 #include "SBUtilities.h"
 #include <bml/bml_processor.hpp>
 #include <sbm/rapidxml_utils.hpp>
@@ -122,7 +122,7 @@ SBBmlProcessor::SBBmlProcessor()
 {
 	_bmlProcessor = new BML::Processor();
 	
-	BMLObject* obj = NULL;
+	BMLObject* obj = nullptr;
 	obj = new BMLAnimationObject();
 	_bmlHandlers[obj->getName()] = obj;
 
@@ -522,12 +522,10 @@ void SBBmlProcessor::scheduleBML(std::vector<BMLObject*>& behaviors)
 
 void SBBmlProcessor::processBML(double time)
 {
-	for (std::map<std::string, SBBMLSchedule*>::iterator iter = _bmlSchedules.begin();
-		 iter != _bmlSchedules.end();
-		 iter++)
+	for (auto & _bmlSchedule : _bmlSchedules)
 	{
-		SBBMLSchedule* schedule = (*iter).second;
-		std::string characterName = (*iter).first;
+		SBBMLSchedule* schedule = _bmlSchedule.second;
+		std::string characterName = _bmlSchedule.first;
 		SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 		if (!character)
 		{
@@ -540,6 +538,9 @@ void SBBmlProcessor::processBML(double time)
 
 	}
 }
+
+
+
 
 } // namespace
 

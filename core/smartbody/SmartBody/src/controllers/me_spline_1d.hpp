@@ -41,7 +41,7 @@
  *
  *  Member names assume left is negative domain and right is positive domain.
  *
- *  Knots are refered by their pointers (and several methods may return NULL),
+ *  Knots are refered by their pointers (and several methods may return nullptr),
  *  but their memory is considered owned by the MeSpline1D and should not be
  *  externally deleted.
  *
@@ -171,9 +171,9 @@ public:
 		 */
 		range get_right_control() const { return r_control; }
 
-		/**  Preceding knot.  NULL if this is the first Knot. */
+		/**  Preceding knot.  nullptr if this is the first Knot. */
 		Knot* get_prev() const { return prev; }
-		/**  Following knot.  NULL if this is the last Knot. */
+		/**  Following knot.  nullptr if this is the last Knot. */
 		Knot* get_next() const { return next; }
 
 		//  The following public convience methods call other implementations.

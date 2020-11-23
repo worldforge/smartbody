@@ -64,7 +64,7 @@ namespace rapidxml
 			else
 			if( method == 1 )	{
 				FILE *fp = fopen( filename, "r" );
-				if( fp != NULL )	{
+				if( fp != nullptr )	{
 					int ret = fseek( fp, 0L, SEEK_END );
 					if( ret == 0 )	{
 						long len = ftell( fp );

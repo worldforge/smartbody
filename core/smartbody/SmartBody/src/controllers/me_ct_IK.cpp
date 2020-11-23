@@ -430,7 +430,7 @@ SBM_INLINE void MeCtIK::get_next_support_joint()
 		}
 	}
 
-	if(manipulated_joint == NULL)// in case the user sets no support joint. set the manipulated joint the last joint
+	if(manipulated_joint == nullptr)// in case the user sets no support joint. set the manipulated joint the last joint
 	{
 		manipulated_joint_index = scenario->joint_info_list.size()-1;
 		manipulated_joint = &(scenario->joint_info_list.get(manipulated_joint_index));
@@ -439,7 +439,7 @@ SBM_INLINE void MeCtIK::get_next_support_joint()
 
 void MeCtIK::init()
 {
-	manipulated_joint = NULL;
+	manipulated_joint = nullptr;
 	recrod_endmat = 0;
 	end_mat.identity();
 

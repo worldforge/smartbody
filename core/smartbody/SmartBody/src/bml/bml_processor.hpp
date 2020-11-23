@@ -219,6 +219,8 @@ namespace BML {
 		void setExportXMLCounter(int i)	{ exportXMLCounter = i; }
 		int getExportXMLCounter()	{ return exportXMLCounter; }
 
+		std::string hasSpeechBehavior(SbmCharacter& character);
+
 	protected:
 		//////////////////////////////////////////////////////////////////////////
 		// Protected Methods

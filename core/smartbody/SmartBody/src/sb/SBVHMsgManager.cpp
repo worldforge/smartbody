@@ -20,8 +20,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBVHMsgManager.h"
 #include <sb/SBScene.h>
-#include <sb/SBDebuggerServer.h>
-#include <sb/SBDebuggerClient.h>
+//#include "sb/SBDebuggerServer.h"
+//#include "sb/SBDebuggerClient.h"
 #include <sb/SBCommandManager.h>
 #include "SBUtilities.h"
 
@@ -29,6 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 #include <sbm/sr_arg_buff.h>
 #include <sbm/sbm_constants.h>
+#include "vhcl_socket.h"
 
 
 #ifdef __ANDROID__
@@ -80,11 +81,15 @@ SBVHMsgManager::SBVHMsgManager() : SBService()
 		_scope = getenv("VHMSG_SCOPE");
 	else
 		_scope = "DEFAULT_SCOPE";
-	_logListener = NULL;
+	_logListener = nullptr;
 }
 
 SBVHMsgManager::~SBVHMsgManager()
 {
+	if (isEnable() && isConnected()) {
+		send("vrProcEnd sbm");
+	}
+
 #ifndef SB_NO_VHMSG
 	if (vhmsg::ttu_is_open())
 		vhmsg::ttu_close();
@@ -333,15 +338,16 @@ void SBVHMsgManager::vhmsgCallback( const char *op, const char *args, void * use
 {
 	if (SmartBody::SBScene::getScene()->getVHMsgManager()->getBoolAttribute("showMessages"))
 		SmartBody::util::log("[%s] %s", op, args);
-	if (SmartBody::SBScene::getScene()->isRemoteMode())
-	{
-		SmartBody::SBScene::getScene()->getDebuggerClient()->ProcessVHMsgs(op, args);
-		return;
-	}
-	else
-	{
-		SmartBody::SBScene::getScene()->getDebuggerServer()->ProcessVHMsgs(op, args);
-	}
+	//FIXME: expose the callback so that the debugger can listen to it
+//	if (SmartBody::SBScene::getScene()->isRemoteMode())
+//	{
+//		SmartBody::SBScene::getScene()->getDebuggerClient()->ProcessVHMsgs(op, args);
+//		return;
+//	}
+//	else
+//	{
+//		SmartBody::SBScene::getScene()->getDebuggerServer()->ProcessVHMsgs(op, args);
+//	}
 
 	//SmartBody::util::log("Get VHMSG , op = %s, args = %s", op, args);
 	switch( SmartBody::SBScene::getScene()->getCommandManager()->execute( op, (char *)args ) )
@@ -380,6 +386,13 @@ SBAPI int SBVHMsgManager::sendMessage( const std::string& message )
 SBAPI int SBVHMsgManager::sendOpMessage( const std::string& op, const std::string& message )
 {
 	return send2(op.c_str(), message.c_str());
+}
+
+
+void SBVHMsgManager::onCharacterDelete(SBCharacter* character) {
+	std::string vrProcEnd_msg = "vrProcEnd sbm ";
+	vrProcEnd_msg += getName();
+	send( vrProcEnd_msg.c_str() );
 }
 
 }

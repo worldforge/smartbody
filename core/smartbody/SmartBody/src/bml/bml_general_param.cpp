@@ -106,22 +106,22 @@ BehaviorRequestPtr BML::parse_bml_param( DOMElement* elem, const std::string& un
 	char* pch =strtok((char *)valueStr.c_str(), " ");
 	for(int i = 0; i < channel_size ; i++)
 	{
-		if(pch == NULL) 
+		if(pch == nullptr)
 		{
 			flag = 0; 
 			SmartBody::util::log("WARNING: The input value size is invalid! Size is smaller than required");
 			return BehaviorRequestPtr();
 		}
 		Data_Array[i] = (float)atof(pch);
-		pch =(strtok(NULL," "));
+		pch =(strtok(nullptr," "));
 		std::stringstream joint_name;
 		joint_name << char_name << "_" << Index << "_" << ( i + 1 );
 		std::string channel_name = joint_name.str();
 		Param_Channel.add(channel_name,SkChannel::XPos);
 	}
 	
-	pch = (strtok(NULL, " "));
-	if(pch != NULL) 
+	pch = (strtok(nullptr, " "));
+	if(pch != nullptr)
 	{
 		flag = 0; 
 		SmartBody::util::log("WARNING: The input value size is invalid! Size is larger than required");

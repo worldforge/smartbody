@@ -31,7 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 /************************************************************************/
 EffectorState::EffectorState()
 {
-	//attachedPawn = NULL;
+	//attachedPawn = nullptr;
 	attachedPawnName = "";
 }
 
@@ -117,7 +117,7 @@ bool ReachTarget::targetHasGeometry()
 	//SmartBody::util::log("target pawn name = %s",targetPawn->getName().c_str());
 	SbmPawn* targetPawn = getTargetPawn();
 	if (!targetPawn) return false;
-	if (targetPawn->getGeomObject() == NULL) return false;
+	if (targetPawn->getGeomObject() == nullptr) return false;
 	SBGeomNullObject* nullObject = dynamic_cast<SBGeomNullObject*>(targetPawn->getGeomObject());
 	if (nullObject) return false;
 	return true;
@@ -139,7 +139,7 @@ SmartBody::SBPawn* ReachTarget::getTargetPawn()
 	{
 		return targetPawn;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -159,7 +159,7 @@ SRT ReachTarget::getGrabTargetState( SRT& naturalState, float offset )
 ReachTarget::ReachTarget()
 {
 	targetPawnName ="";
-	targetJoint = NULL;
+	targetJoint = nullptr;
 	useTargetPawn = false;
 	useTargetJoint = false;
 }
@@ -169,7 +169,7 @@ void ReachTarget::setTargetState( SRT& ts )
 	targetState = ts;
 	paraTargetState = ts;
 	targetPawnName = "";
-	targetJoint = NULL;
+	targetJoint = nullptr;
 	useTargetPawn = false;
 	useTargetJoint = false;
 }
@@ -180,7 +180,7 @@ void ReachTarget::setTargetPawnName( std::string pawnName )
 	SmartBody::SBPawn* tpawn = getTargetPawn();
 	useTargetPawn = true;	
 	useTargetJoint = false;
-	targetJoint = NULL;
+	targetJoint = nullptr;
 }
 
 void ReachTarget::setTargetJoint( SkJoint* tjoint )
@@ -361,7 +361,7 @@ bool ReachHandAction::isPickingUpNewPawn( ReachStateData* rd )
 	else if (rd->startReach && !rtarget.targetIsPawn() && !rtarget.targetIsJoint()) // a new target position
 	//else if (!rtarget.targetIsPawn() && !rtarget.targetIsJoint()) // a new target position
 	{
-		return (estate.getAttachedPawn() != NULL);
+		return (estate.getAttachedPawn() != nullptr);
 	}
 
 	return false;
@@ -639,10 +639,10 @@ ReachStateData::ReachStateData()
 	autoReturnTime = -1.f;
 	reachType = MeCtReachEngine::RIGHT_ARM;
 
-	interpMotion = NULL;
-	motionParameter = NULL; 
-	dataInterpolator = NULL;
-	curHandAction = NULL;
+	interpMotion = nullptr;
+	motionParameter = nullptr;
+	dataInterpolator = nullptr;
+	curHandAction = nullptr;
 
 	linearVel = 70.f;
 	grabSpeed = 80.f;
@@ -653,22 +653,22 @@ ReachStateData::~ReachStateData()
 	if (interpMotion)
 	{
 		delete interpMotion;
-		interpMotion = NULL;
+		interpMotion = nullptr;
 	}
 	if (motionParameter)
 	{
 		delete motionParameter; 
-		motionParameter = NULL;
+		motionParameter = nullptr;
 	}
 	if (dataInterpolator)
 	{
 		delete dataInterpolator;
-		dataInterpolator = NULL;
+		dataInterpolator = nullptr;
 	}
 	if (curHandAction)
 	{
 		delete curHandAction;
-		curHandAction = NULL;
+		curHandAction = nullptr;
 	}
 }
 
@@ -722,7 +722,7 @@ bool ReachStateData::useInterpolation()
 
 bool ReachStateData::hasAttachedPawn()
 {
-	return (effectorState.getAttachedPawn() != NULL);
+	return (effectorState.getAttachedPawn() != nullptr);
 }
 
 float ReachStateData::XZDistanceToTarget(SrVec& pos)

@@ -62,12 +62,12 @@ SkScene::~SkScene ()
 static SrSnGroup* make_joint_group ( const SkJoint* j, SkSkeleton* s, SrArray<SrSnGroup*>& _jgroup )
  {
 	 if (!j)
-		 return NULL;
+		 return nullptr;
    int i;
    if (j->index() < 0)
    {
 	   SmartBody::util::log("Joint %s cannot be added to scene graph since joint index is %d", j->jointName().c_str(), j->index());
-	   return NULL;
+	   return nullptr;
    }
    SrSnGroup* g = new SrSnGroup;
    g->separator ( true );
@@ -83,7 +83,7 @@ static SrSnGroup* make_joint_group ( const SkJoint* j, SkSkeleton* s, SrArray<Sr
 
    for (int i=0;i<_jgroup.size();i++)
    {
-	   if (_jgroup[i] == NULL)
+	   if (_jgroup[i] == nullptr)
 		   _jgroup[i] = new SrSnGroup; // create dummy group for dangling joints
    }
 
@@ -122,7 +122,7 @@ void SkScene::initInternal()
 
    const std::vector<SkJoint*>& joints = _skeleton->joints ();
    _jgroup.size ( joints.size() );
-   _jgroup.setall(NULL);
+   _jgroup.setall(nullptr);
 
    SkJoint* root = _skeleton->root();
    if (!root)

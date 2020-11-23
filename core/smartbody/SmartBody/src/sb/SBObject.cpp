@@ -159,7 +159,7 @@ void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
  }
 
@@ -612,7 +612,7 @@ void SBObject::stop()
 
 void SBObject::addDependency(SBObject* object)
 {
-	if (object == NULL)
+	if (object == nullptr)
 		return;
 	addDependencyOnly(object);
 	object->addDependencyReverse(this);
@@ -620,7 +620,7 @@ void SBObject::addDependency(SBObject* object)
 
 void SBObject::addDependencyOnly(SBObject* object)
 {
-	if (object == NULL)
+	if (object == nullptr)
 		return;
 	std::set<SBObject*>::iterator iter = _dependencies.find(object);
 	if (iter == _dependencies.end())
@@ -630,7 +630,7 @@ void SBObject::addDependencyOnly(SBObject* object)
 
 void SBObject::removeDependency(SBObject* object)
 {
-	if (object == NULL)
+	if (object == nullptr)
 		return;
 	removeDependencyOnly(object);
 	this->onDependencyRemoval(object);
@@ -639,7 +639,7 @@ void SBObject::removeDependency(SBObject* object)
 
 void SBObject::removeDependencyOnly(SBObject* object)
 {
-	if (object == NULL)
+	if (object == nullptr)
 		return;
 	std::set<SBObject*>::iterator iter = _dependencies.find(object);
 	if (iter != _dependencies.end())

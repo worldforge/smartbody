@@ -169,8 +169,8 @@ void srSplineCurve::clear( void )	{
 		printf( "key_count ERR: %d\n", key_count );
 	}
 	clear_nodes();
-	curr_edit_key_p = NULL;
-	curr_query_key_p = NULL;
+	curr_edit_key_p = nullptr;
+	curr_query_key_p = nullptr;
 	init();
 }
 
@@ -186,9 +186,9 @@ void srSplineCurve::clear_nodes( void )	{
 	if( node_count != 0 )	{
 		printf( "node_count ERR: %d\n", node_count );
 	}
-	head_node_p = NULL;
-	tail_node_p = NULL;
-	curr_query_node_p = NULL;
+	head_node_p = nullptr;
+	tail_node_p = nullptr;
+	curr_query_node_p = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -249,7 +249,7 @@ bool srSplineCurve::insert( double p, double v )	{
 			}
 			else	{
 				printf( "srSplineCurve::insert WARN: head:%d tail:%d\n", 
-					(int)(head_node_p!=NULL), (int)(tail_node_p!=NULL) );
+					(int)(head_node_p!=nullptr), (int)(tail_node_p!=nullptr) );
 			}
 		}
 		else	{
@@ -354,7 +354,7 @@ srSplineCurve::Key *srSplineCurve::find_floor_key( double t )	{
 	Key *key_p = head_key_p;
 	if( key_p ) {
 		if( t < key_p->p() )	{
-			return( NULL );
+			return( nullptr );
 		}
 	}
 	while( key_p )	{
@@ -371,7 +371,7 @@ srSplineCurve::Key *srSplineCurve::find_floor_key( double t )	{
 			return( key_p );
 		}
 	}
-	return( NULL );
+	return( nullptr );
 }
 
 srSplineCurve::Node *srSplineCurve::find_floor_node( double t )	{
@@ -383,7 +383,7 @@ srSplineCurve::Node *srSplineCurve::find_floor_node( double t )	{
 #if DEBUG_END_COND
 printf( "find: t:%f -clip-\n", t );
 #endif
-			return( NULL );
+			return( nullptr );
 		}
 	}
 	while( node_p )	{
@@ -403,7 +403,7 @@ printf( "find: t:%f -clip-\n", t );
 #if DEBUG_END_COND
 printf( "find: t:%f =drop=\n", t );
 #endif
-	return( NULL );
+	return( nullptr );
 }
 
 //////////////////////////////////////////////////////////////////
@@ -438,7 +438,7 @@ void srSplineCurve::build_tail( void ) {
 		Key *key1_p = head_key_p->next();
 		Key *key2_p = key1_p->next();
 
-		if( key2_p == NULL )	{
+		if( key2_p == nullptr )	{
 
 			double p = key1_p->p();
 			double v = key1_p->v();
@@ -451,7 +451,7 @@ void srSplineCurve::build_tail( void ) {
 			}
 			insert_tail = false;
 			key2_p = key1_p->next();
-			if( key2_p == NULL )	{
+			if( key2_p == nullptr )	{
 				printf( "srSplineCurve::build_tail major ERROR\n" );
 				return;
 			}
@@ -464,7 +464,7 @@ void srSplineCurve::build_tail( void ) {
 			key1_p = key2_p;
 			key2_p = key2_p->next();
 
-			if( key2_p == NULL )	{
+			if( key2_p == nullptr )	{
 			
 				double p = key1_p->p();
 				double v = key1_p->v();
@@ -477,7 +477,7 @@ void srSplineCurve::build_tail( void ) {
 				}
 				insert_tail = false;
 				key2_p = key1_p->next();
-				if( key2_p == NULL )	{
+				if( key2_p == nullptr )	{
 					printf( "srSplineCurve::build_tail minor ERROR\n" );
 				}
 			}
@@ -500,7 +500,7 @@ bool srSplineCurve::extend_head( void )	{
 			if( k2_p )	{
 
 #if 1
-				if( k2_p->next() == NULL )	{
+				if( k2_p->next() == nullptr )	{
 					return( edit_head( k1_p->p() - 1.0, k1_p->v() ) );
 				}
 #endif
@@ -532,17 +532,17 @@ bool srSplineCurve::extend_head( void )	{
 				return( false );
 			}
 #if DEBUG_EXTEND_COND
- printf( "extend_head: <drop=:c: head-XX is NULL\n" );
+ printf( "extend_head: <drop=:c: head-XX is nullptr\n" );
 #endif
 			return( false );
 		}
 #if DEBUG_EXTEND_COND
- printf( "extend_head: <drop=:b: head-X is NULL\n" );
+ printf( "extend_head: <drop=:b: head-X is nullptr\n" );
 #endif
 		return( false );
 	}
 #if DEBUG_EXTEND_COND
- printf( "extend_head: <drop=:A: head is NULL\n" );
+ printf( "extend_head: <drop=:A: head is nullptr\n" );
 #endif
 	return( false );
 }
@@ -553,7 +553,7 @@ bool srSplineCurve::extend_tail( void )	{
 
 	if( ! tail_key_p )	{
 #if DEBUG_EXTEND_COND
-		printf( "srSplineCurve::extend_tail ERR: tail_key_p is NULL\n" );
+		printf( "srSplineCurve::extend_tail ERR: tail_key_p is nullptr\n" );
 #endif
 		return( false );
 	}
@@ -570,7 +570,7 @@ bool srSplineCurve::extend_tail( void )	{
 
 				// k0, k1, k2, next...
 				Key *next_p = k2_p->next();
-				if( next_p == NULL )	{
+				if( next_p == nullptr )	{
 
 #if 1
 					return( edit_tail( k1_p->p() + 1.0, k1_p->v() ) );
@@ -593,7 +593,7 @@ bool srSplineCurve::extend_tail( void )	{
 						return( edit_tail( new_p, new_v ) );
 					}
 
-// printf( "srSplineCurve::extend_tail ERR: next_p == NULL\n" );
+// printf( "srSplineCurve::extend_tail ERR: next_p == nullptr\n" );
 					// back up a step:
 //						k2_p = k1_p;
 //						k1_p = k0_p;
@@ -608,7 +608,7 @@ bool srSplineCurve::extend_tail( void )	{
 					k1_p = k2_p;
 					k2_p = next_p;
 					next_p = next_p->next();
-					if( next_p == NULL )	{
+					if( next_p == nullptr )	{
 						printf( "srSplineCurve::extend_tail ERR: tail NOT FOUND!\n" );
 						return( false );
 					}
@@ -638,17 +638,17 @@ bool srSplineCurve::extend_tail( void )	{
 				return( false );
 			}
 #if DEBUG_EXTEND_COND
-			printf( "extend_tail: =drop>:c: head-XX is NULL\n" );
+			printf( "extend_tail: =drop>:c: head-XX is nullptr\n" );
 #endif
 			return( false );
 		}
 #if DEBUG_EXTEND_COND
-		printf( "extend_tail: =drop>:b: head-X is NULL\n" );
+		printf( "extend_tail: =drop>:b: head-X is nullptr\n" );
 #endif
 		return( false );
 	}
 #if DEBUG_EXTEND_COND
-	printf( "extend_tail: =drop>:A: head is NULL\n" );
+	printf( "extend_tail: =drop>:A: head is nullptr\n" );
 #endif
 	return( false );
 }
@@ -700,9 +700,9 @@ void srSplineCurve::update_key_order( void )	{
 			key_p = head_key_p;
 			tail_key_p = key_p;
 			
-			curr_edit_key_p = NULL;
-			curr_query_key_p = NULL;
-			head_key_p = NULL;
+			curr_edit_key_p = nullptr;
+			curr_query_key_p = nullptr;
+			head_key_p = nullptr;
 //			key_count = 0;
 //			clear();
 //			clear_nodes();
@@ -726,7 +726,7 @@ void srSplineCurve::update_key_order( void )	{
 			}
 
 /*
-	curr_query_node_p = NULL;
+	curr_query_node_p = nullptr;
 			Node *n_query_p = curr_query_node_p;
 			
 			Node *node_p = head_node_p;
@@ -819,8 +819,8 @@ void srSplineCurve::update( void ) {
 			key1_p = key2_p;
 			key2_p = key2_p->next();
 
-			if( key2_p == NULL )	{
-				node_p = NULL;
+			if( key2_p == nullptr )	{
+				node_p = nullptr;
 			}
 			else	{
 			

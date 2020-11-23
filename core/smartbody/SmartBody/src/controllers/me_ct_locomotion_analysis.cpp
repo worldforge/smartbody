@@ -36,10 +36,10 @@ const char* MeCtLocomotionAnalysis::TYPE = "MeCtLocomotionAnalysis";
 /** Constructor */
 MeCtLocomotionAnalysis::MeCtLocomotionAnalysis() {
 	//is_valid = true;
-	_ct_locomotion_pawn = NULL;
-	walking_skeleton = NULL;
-	standing_skeleton = NULL;
-	motion_standing = NULL;
+	_ct_locomotion_pawn = nullptr;
+	walking_skeleton = nullptr;
+	standing_skeleton = nullptr;
+	motion_standing = nullptr;
 	standing_initialized = false;
 }
 
@@ -83,7 +83,7 @@ bool MeCtLocomotionAnalysis::get_standing_initialized()
 
 void MeCtLocomotionAnalysis::init(SkMotion* standing, srPathList &me_paths) //temp hard-coded init for human characters
 {
-	if(_ct_locomotion_pawn == NULL) 
+	if(_ct_locomotion_pawn == nullptr)
 	{
 		SmartBody::util::log("Error: no locomotion controller attached.");
 		return;
@@ -147,9 +147,9 @@ void MeCtLocomotionAnalysis::init(SkMotion* standing, srPathList &me_paths) //te
 
 	get_ct_pawn()->init_nonlimb_joint_info();
 
-	limb = NULL;
+	limb = nullptr;
 
-	MeCtLocomotionAnimGlobalInfo* info = NULL;
+	MeCtLocomotionAnimGlobalInfo* info = nullptr;
 
 	count = get_ct_pawn()->get_anim_global_info()->size();
 
@@ -167,11 +167,11 @@ void MeCtLocomotionAnalysis::init(SkMotion* standing, srPathList &me_paths) //te
 		limb = get_ct_pawn()->get_limb_list()->get(i);
 		limb->set_height_bound(0.5f);
 		analyze_standing(limb, standing);
-		//analyze_standing(limb, NULL);
+		//analyze_standing(limb, nullptr);
 		limb->walking_list.get(limb->walking_list.size()-1)->global_info = info;
 	}
-	SkJoint* joint = NULL;
-	SkJoint* tjoint = NULL;
+	SkJoint* joint = nullptr;
+	SkJoint* tjoint = nullptr;
 	for(int i = 0; i < get_ct_pawn()->get_limb_list()->size(); ++i)
 	{
 		limb = get_ct_pawn()->get_limb_list()->get(i);
@@ -228,9 +228,9 @@ void MeCtLocomotionAnalysis::analyze_standing(MeCtLocomotionLimb* limb, SkMotion
 	SkSkeleton* skeleton = standing_skeleton;
 	if(standing) standing->connect(skeleton);
 
-	SkJoint* joint = NULL;
+	SkJoint* joint = nullptr;
 	SrMat mat;
-	float* pos = NULL;
+	float* pos = nullptr;
 
 	if(standing) // if standard standing motion is available
 	{
@@ -282,15 +282,15 @@ int MeCtLocomotionAnalysis::get_translation_base_joint_name(SkSkeleton* skeleton
 		joint = joint->child(0);
 	}
 
-	get_ct_pawn()->set_translation_joint_name(NULL);
+	get_ct_pawn()->set_translation_joint_name(nullptr);
 	return -1;
 }
 
 void MeCtLocomotionAnalysis::analyze_standing_core(MeCtLocomotionLimb* limb, SkSkeleton* skeleton)
 {
-	SkJoint* joint = NULL;
+	SkJoint* joint = nullptr;
 	SrMat mat;
-	float* pos = NULL;
+	float* pos = nullptr;
 
 	float ground_height = 0.0f;
 
@@ -348,11 +348,11 @@ void MeCtLocomotionAnalysis::analyze_limb_anim(MeCtLocomotionLimbAnim* anim, SkM
 
 	walking->connect(skeleton);
 
-	SkJoint* joint = NULL;
-	SkJoint* base_joint = NULL;
-	SrVec* velocity = NULL;
-	float* pos = NULL;
-	float* base_pos = NULL;
+	SkJoint* joint = nullptr;
+	SkJoint* base_joint = nullptr;
+	SrVec* velocity = nullptr;
+	float* pos = nullptr;
+	float* base_pos = nullptr;
 	int mode = 0;
 	int j;
 	SrVec walking_direction(0,0,0);
@@ -485,11 +485,11 @@ void MeCtLocomotionAnalysis::analyze_limb_anim(MeCtLocomotionLimbAnim* anim, SkM
 
 	walking->connect(skeleton);
 
-	SkJoint* joint = NULL;
-	SkJoint* base_joint = NULL;
-	SrVec* velocity = NULL;
-	float* pos = NULL;
-	float* base_pos = NULL;
+	SkJoint* joint = nullptr;
+	SkJoint* base_joint = nullptr;
+	SrVec* velocity = nullptr;
+	float* pos = nullptr;
+	float* base_pos = nullptr;
 	int mode = 0;
 	int i,j;
 	SrVec walking_direction(0,0,0);
@@ -829,8 +829,8 @@ void MeCtLocomotionAnalysis::analyze_walking_limb(MeCtLocomotionLimb* limb, SkMo
 
 void MeCtLocomotionAnalysis::init_blended_anim()
 {
-	MeCtLocomotionLimb* limb = NULL;
-	MeCtLocomotionLimbAnim* anim = NULL;
+	MeCtLocomotionLimb* limb = nullptr;
+	MeCtLocomotionLimbAnim* anim = nullptr;
 	for(int i = 0; i < get_ct_pawn()->get_limb_list()->size();++i)
 	{
 		limb = get_ct_pawn()->get_limb_list()->get(i);
@@ -844,7 +844,7 @@ void MeCtLocomotionAnalysis::init_blended_anim()
 
 void MeCtLocomotionAnalysis::print_info()
 {
-	MeCtLocomotionLimb* limb = NULL;
+	MeCtLocomotionLimb* limb = nullptr;
 	for(int i = 0; i < get_ct_pawn()->get_limb_list()->size();++i)
 	{
 		limb = get_ct_pawn()->get_limb_list()->get(i);
@@ -854,7 +854,7 @@ void MeCtLocomotionAnalysis::print_info()
 
 void MeCtLocomotionAnalysis::add_locomotion(SkMotion* motion_locomotion, float l_land_time, float l_stance_time, float l_lift_time, float r_land_time, float r_stance_time, float r_lift_time, float translation_scale)
 {
-	MeCtLocomotionLimb* limb = NULL;
+	MeCtLocomotionLimb* limb = nullptr;
 	float lower_bound = 0.0f;
 	int i = 0;
 	float land_time, lift_time, stance_time;
@@ -884,7 +884,7 @@ void MeCtLocomotionAnalysis::add_locomotion(SkMotion* motion_locomotion, float l
 	}
 
 	//calculate direction & complete velocity list
-	SrVec* vel = NULL;
+	SrVec* vel = nullptr;
 	SrVec sum(0.0f, 0.0f, 0.0f);
 	SrVec presum(0.0f, 0.0f, 0.0f);
 	SrVec direction(0.0f, 0.0f, 0.0f);
@@ -932,7 +932,7 @@ void MeCtLocomotionAnalysis::add_locomotion(SkMotion* motion_locomotion, float l
 // temp function to setup keytimes for an animation
 void MeCtLocomotionAnalysis::add_locomotion(SkMotion* motion_locomotion, int type, int walking_style, float translation_scale, float base_height_offset)
 {
-	MeCtLocomotionLimb* limb = NULL;
+	MeCtLocomotionLimb* limb = nullptr;
 	float lower_bound = 0.0f;
 	int i = 0;
 	for(i = 0; i < get_ct_pawn()->get_limb_list()->size();++i)
@@ -950,7 +950,7 @@ void MeCtLocomotionAnalysis::add_locomotion(SkMotion* motion_locomotion, int typ
 	}
 
 	//calculate direction & complete velocity list
-	SrVec* vel = NULL;
+	SrVec* vel = nullptr;
 	SrVec sum(0.0f, 0.0f, 0.0f);
 	SrVec presum(0.0f, 0.0f, 0.0f);
 	SrVec direction(0.0f, 0.0f, 0.0f);

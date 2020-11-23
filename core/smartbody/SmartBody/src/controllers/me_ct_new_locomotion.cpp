@@ -43,13 +43,13 @@ MeCtNewLocomotion::MeCtNewLocomotion() :  SmartBody::SBController()
 	_lastTime = -1.0f;
 	_prevTime = -1.0f;
 	startTime = -1.0;
-	dataCycle = smoothCycle = NULL;
+	dataCycle = smoothCycle = nullptr;
 	LeftFading.prev_time = -1.0f;
 	RightFading.prev_time = -1.0f;
 	_duration = -1.0f;
 	useIKRt = false;
 	useIKLf = false;
-	sk = NULL;
+	sk = nullptr;
 	walkScale = 1.0f;
 	walkSpeedGain = 1.0f;
 	motionSpeed = 0.0f;
@@ -529,7 +529,7 @@ void MeCtNewLocomotion::addPawn(SrVec& pos, std::string name)
 {
 	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
 	float maxerror = 0.30f;
-	if(pawn == NULL)
+	if(pawn == nullptr)
 		pawn = SmartBody::SBScene::getScene()->createPawn(name);
 	pawn->setStringAttribute("collisionShape","sphere");
 	pawn->setVec3Attribute("collisionShapeScale",0.025f,0.025f,0.025f);

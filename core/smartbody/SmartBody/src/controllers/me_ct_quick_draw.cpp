@@ -37,19 +37,19 @@ std::string MeCtQuickDraw::type_name = "QuickDraw";
 
 MeCtQuickDraw::MeCtQuickDraw( void )	{
 
-	_gundraw_motion = NULL;
-	_holster_motion = NULL;
-	_curr_motion_p = NULL;
+	_gundraw_motion = nullptr;
+	_holster_motion = nullptr;
+	_curr_motion_p = nullptr;
 	
 	_play_mode = SkMotion::Linear;
 	_duration = -1.0;
 	_last_apply_frame = 0;
 
-	skeleton_ref_p = NULL;
-	target_ref_joint_str = NULL;
-	target_ref_joint_p = NULL;
+	skeleton_ref_p = nullptr;
+	target_ref_joint_str = nullptr;
+	target_ref_joint_p = nullptr;
 
-	interim_pose_buff_p = NULL;
+	interim_pose_buff_p = nullptr;
 	
 	smooth = 0.75;
 	start = 0;
@@ -76,7 +76,7 @@ MeCtQuickDraw::~MeCtQuickDraw( void )	{
 
 	if( interim_pose_buff_p )	{
 		delete [] interim_pose_buff_p;
-		interim_pose_buff_p = NULL;
+		interim_pose_buff_p = nullptr;
 	}
 }
 
@@ -125,7 +125,7 @@ void MeCtQuickDraw::init( SbmPawn* pawn, SkMotion* mot_p, SkMotion* mot2_p ) {
 	raw_gundraw_dur = _gundraw_motion->duration();
 	set_gundraw_duration( raw_gundraw_dur );
 
-	_holster_motion = NULL;
+	_holster_motion = nullptr;
 	if( mot2_p ) {
 		if( 
 			( _gundraw_motion->channels().size() == mot2_p->channels().size() )&&
@@ -253,7 +253,7 @@ void MeCtQuickDraw::set_aim_offset( float p, float h, float r ) {
 void MeCtQuickDraw::set_target_coord_joint( SkJoint* joint_p )	{
 
 	if( target_ref_joint_str ) free( target_ref_joint_str );
-	target_ref_joint_str = NULL;
+	target_ref_joint_str = nullptr;
 	target_ref_joint_p = joint_p;
 }
 
@@ -344,13 +344,13 @@ quat_t MeCtQuickDraw::rotation_to_target( vector_t l_forward_dir, vector_t w_tar
 SkJoint* MeCtQuickDraw::find_joint( char *joint_str, SkJoint **joint_pp )	{
 
 	if( joint_str )	{
-		if( *joint_pp == NULL )	{
+		if( *joint_pp == nullptr )	{
 			if( skeleton_ref_p )	{
 				*joint_pp = skeleton_ref_p->search_joint( joint_str );
-				if( *joint_pp == NULL )	{
+				if( *joint_pp == nullptr )	{
 					fprintf( stderr, "MeCtQuickDraw::find_joint ERR: joint '%s' NOT FOUND in skeleton\n", joint_str );
 					free( joint_str );
-					joint_str = NULL;
+					joint_str = nullptr;
 				}
 			}
 			else	{
@@ -396,12 +396,12 @@ void MeCtQuickDraw::context_updated( void ) {
 #if 0
 	if( _context ) {
 		skeleton_ref_p = _context->channels().skeleton(); // WHY HERE?
-		if( skeleton_ref_p == NULL )	{
-			SmartBody::util::log( "MeCtQuickDraw::context_updated ERR: skeleton_ref_p is NULL\n" );
+		if( skeleton_ref_p == nullptr )	{
+			SmartBody::util::log( "MeCtQuickDraw::context_updated ERR: skeleton_ref_p is nullptr\n" );
 		}
 	}
 	else	{
-		SmartBody::util::log( "MeCtQuickDraw::context_updated ERR: context is NULL\n" );
+		SmartBody::util::log( "MeCtQuickDraw::context_updated ERR: context is nullptr\n" );
 	}
 #endif
 }
@@ -642,7 +642,7 @@ else	{
 	_curr_motion_p->apply( 
 		float( motion_time * curr_motion_scale ),
 		interim_pose_buff_p,
-		NULL, // same order in interim_buffer
+		nullptr, // same order in interim_buffer
 		_play_mode, 
 		&_last_apply_frame 
 	);
@@ -720,8 +720,8 @@ else	{
 		euler_t in_e = in_q;
 
 		SkJoint* joint_p = _context->channels().joint( _toContextCh[ _arm_chan_indices[ j ] ] );
-		if( joint_p == NULL ) 
-			SmartBody::util::log( "MeCtQuickDraw::controller_evaluate: joint is NULL\n" );
+		if( joint_p == nullptr )
+			SmartBody::util::log( "MeCtQuickDraw::controller_evaluate: joint is nullptr\n" );
 		joint_state_t joint_state = capture_joint_state( joint_p );
 
 		quat_t out_q;

@@ -602,17 +602,17 @@ typedef std::pair<int,int> IntPair;
 SbmDeformableMeshGPU::SbmDeformableMeshGPU(void) : DeformableMesh()
 {
 	useGPU = false;	
-	VBOPos = NULL;
-	VBONormal = NULL;
-	VBOTangent = NULL;
-	VBOBiNormal = NULL;
-	VBOTexCoord = NULL;
-	VBOTri = NULL;
-	VBOBoneID1 = NULL;
-	VBOBoneID2 = NULL;
-	VBOWeight1 = NULL;
-	VBOWeight2 = NULL;
-	TBOTran = NULL; 
+	VBOPos = nullptr;
+	VBONormal = nullptr;
+	VBOTangent = nullptr;
+	VBOBiNormal = nullptr;
+	VBOTexCoord = nullptr;
+	VBOTri = nullptr;
+	VBOBoneID1 = nullptr;
+	VBOBoneID2 = nullptr;
+	VBOWeight1 = nullptr;
+	VBOWeight2 = nullptr;
+	TBOTran = nullptr;
 	initGPUVertexBuffer = false;
 }
 
@@ -804,7 +804,7 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 		//printf("shineness = %d\n",mesh->material.shininess);
 		glUniform1f(shinenessLoc,mesh->material.shininess);
 		//SmartBody::util::log("mat color = %f %f %f\n",color[0],color[1],color[2]);
-		SbmTexture* tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE,mesh->texName.c_str());
+		auto tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE,mesh->texName.c_str());
 
 		if (mesh->material.useAlphaBlend)
 		{
@@ -833,7 +833,7 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 			glUniform1i(useTextureLoc,0);
 		}
 
-		SbmTexture* texNormal = texManager.findTexture(SbmTextureManager::TEXTURE_NORMALMAP,mesh->normalMapName.c_str());			
+		auto texNormal = texManager.findTexture(SbmTextureManager::TEXTURE_NORMALMAP,mesh->normalMapName.c_str());
 		if (texNormal)
 		{
 			//SmartBody::util::log("use texture normal, id = %d", texNormal->getID());
@@ -847,7 +847,7 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 			glUniform1i(useNormalMapLoc,0);
 		}
 
-		SbmTexture* texSpecular = texManager.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP,mesh->specularMapName.c_str());		
+		auto texSpecular = texManager.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP,mesh->specularMapName.c_str());
 		if (texSpecular)
 		{
 			//SmartBody::util::log("use texture specualr, id = %d",texSpecular->getID());
@@ -985,7 +985,7 @@ void SbmDeformableMeshGPU::initShaderProgram()
 	fsPathName += FSName;
 
 	initShader = true;
-	//shaderProgram.initShaderProgram(vsPathName.c_str(),NULL);	
+	//shaderProgram.initShaderProgram(vsPathName.c_str(),nullptr);
 	//SbmShaderManager::singleton().addShader(shaderName.c_str(),vsPathName.c_str(),fsPathName.c_str());
 	if (SbmShaderManager::getShaderSupport() == SbmShaderManager::SUPPORT_OPENGL_3_0)
 	{
@@ -1639,11 +1639,11 @@ bool SbmDeformableMeshGPU::initBuffer()
 
 SbmDeformableMeshGPUInstance::SbmDeformableMeshGPUInstance()
 {
-	_mesh = NULL;
-	TBOTran = NULL;
-	VBODeformPos = NULL;
-	VBODeformNormal = NULL;
-	VBODeformTangent = NULL;
+	_mesh = nullptr;
+	TBOTran = nullptr;
+	VBODeformPos = nullptr;
+	VBODeformNormal = nullptr;
+	VBODeformTangent = nullptr;
 	bufferReady = false;
 }
 
@@ -1718,8 +1718,8 @@ void SbmDeformableMeshGPUInstance::gpuBlendShape()
 		mIter != gpuMesh->blendShapeMap.end();
 		mIter++)
 	{
-		SrSnModel* writeToBaseModel = NULL;
-		SkinWeight* skinWeight = NULL;
+		SrSnModel* writeToBaseModel = nullptr;
+		SkinWeight* skinWeight = nullptr;
 		int vtxBaseIdx = 0;
 		std::vector<SrSnModel*>& targets = (*mIter).second;
 		//SmartBody::util::log("gpuBlendShape::gpuMesh->dMeshStatic_p.size() = %d", gpuMesh->dMeshStatic_p.size());
@@ -1731,7 +1731,7 @@ void SbmDeformableMeshGPUInstance::gpuBlendShape()
 				if (gpuMesh->skinWeights.size() > i)
 					skinWeight = gpuMesh->skinWeights[i];
 				else
-					skinWeight = NULL;
+					skinWeight = nullptr;
 				break;
 			}
 			else

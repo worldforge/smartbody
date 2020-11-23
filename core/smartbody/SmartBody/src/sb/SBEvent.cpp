@@ -215,7 +215,7 @@ SBEventHandler* SBEventManager::getEventHandlerByIndex(int num)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 SBEventHandler* SBEventManager::getEventHandler(const std::string& type)
@@ -227,7 +227,7 @@ SBEventHandler* SBEventManager::getEventHandler(const std::string& type)
 		return handler;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 std::map<std::string, SBEventHandler*>& SBEventManager::getEventHandlers()

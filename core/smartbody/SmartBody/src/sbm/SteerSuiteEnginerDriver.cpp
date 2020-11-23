@@ -32,9 +32,9 @@ using namespace Util;
 SteerSuiteEngineDriver::SteerSuiteEngineDriver() : SBObject()
 {
 	_alreadyInitialized = false;
-	_engine = NULL;
+	_engine = nullptr;
 	_done = false;
-	_options = NULL;
+	_options = nullptr;
 	_startTime = 0;
 
 
@@ -139,7 +139,7 @@ void SteerSuiteEngineDriver::finish()
 {
 	_engine->finish();
 	delete _engine;
-	_engine = NULL;
+	_engine = nullptr;
 	_alreadyInitialized = false;
 }
 

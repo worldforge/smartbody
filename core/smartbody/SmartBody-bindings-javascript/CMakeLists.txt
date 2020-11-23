@@ -16,9 +16,12 @@ add_library(
 
 target_include_directories(SmartBody-bindings-javascript PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>)
+        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
+        )
 
 
 target_link_libraries(SmartBody-bindings-javascript
         SmartBody
+        SmartBody-renderer-gl
         )

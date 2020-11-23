@@ -56,7 +56,7 @@ void MeControllerContext::remove_controller( MeController* ct ) {
 	if( ct->active() )
 		ct->stop(SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
 
-	ct->_context = NULL;
+	ct->_context = nullptr;
 	// No unref().  Contexts refs controllers, not vice versa.
 	// Having both would create circle references
 	ct->context_updated();

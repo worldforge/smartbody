@@ -67,12 +67,12 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 	char line[4096];
 	int state = 0;
 	char* str;
-	SkJoint* cur = NULL;
+	SkJoint* cur = nullptr;
 	int curFrame = -1;
 	double frameTime = 0.016777f;	// assume fps = 60
 	bool useDegrees = true;
 	vector<JointInfo*> jointInfoList;
-	JointInfo* curJointInfo = NULL;
+	JointInfo* curJointInfo = nullptr;
 	char frameStr[128];
 
 	while(!metaFile.eof() && metaFile.good())
@@ -105,8 +105,8 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				str = strtok(line, " ");
 				if (strcmp(str, ":name") == 0)
 				{
-					str = strtok(NULL, " ");
-					if (str != NULL)
+					str = strtok(nullptr, " ");
+					if (str != nullptr)
 						skeleton.setName(str);
 					state = 2;
 				}
@@ -138,8 +138,8 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				}
 				else
 				{
-					char *value = strtok(NULL, " ");
-					if (value != NULL)
+					char *value = strtok(nullptr, " ");
+					if (value != nullptr)
 					{
 						SmartBody::util::log("Found parameter %s = %s.", str, value);
 					}
@@ -180,7 +180,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				{
 					if (strcmp(str, "order") == 0)
 					{
-						while ((str = strtok(NULL, " ")) != NULL)
+						while ((str = strtok(nullptr, " ")) != nullptr)
 						{
 							curJointInfo->dof.push_back(str);
 							if (strcasecmp(str, "tx") == 0)
@@ -235,7 +235,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 					{
 						SrVec pos;
 						int posCount = 0;
-						while ((str = strtok(NULL, " ")) != NULL)
+						while ((str = strtok(nullptr, " ")) != nullptr)
 						{
 							if (posCount == 0)	pos.x = (float)atof(str);
 							if (posCount == 1)	pos.y = (float)atof(str);
@@ -286,8 +286,8 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				str = strtok(line, " ");
 				if (strcmp(str, "name") == 0)
 				{
-					str = strtok(NULL, " ");
-					if (str != NULL)
+					str = strtok(nullptr, " ");
+					if (str != nullptr)
 					{
 						JointInfo* newJointInfo = new JointInfo();
 						curJointInfo = newJointInfo;
@@ -315,7 +315,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				{
 					SrVec dir;
 					int posCount = 0;
-					while ((str = strtok(NULL, " ")) != NULL)
+					while ((str = strtok(nullptr, " ")) != nullptr)
 					{
 						if (posCount == 0)	dir.x = (float)atof(str);
 						if (posCount == 1)	dir.y = (float)atof(str);
@@ -337,7 +337,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				str = strtok(line, " ");
 				if (strcmp(str, "length") == 0)
 				{
-					str = strtok(NULL, " ");
+					str = strtok(nullptr, " ");
 					double length = atof(str);
 					curJointInfo->length = (float)length;
 					state = 11;
@@ -355,7 +355,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				{
 					SrVec axis;
 					int axisCount = 0;
-					while ((str = strtok(NULL, " ")) != NULL && axisCount < 3)
+					while ((str = strtok(nullptr, " ")) != nullptr && axisCount < 3)
 					{
 						if (axisCount == 0) axis.x = (float)atof(str);
 						if (axisCount == 1) axis.y = (float)atof(str);
@@ -378,7 +378,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				str = strtok(line, " ");
 				if (strcmp(str, "dof") == 0)
 				{
-					while ((str = strtok(NULL, " ")) != NULL)
+					while ((str = strtok(nullptr, " ")) != nullptr)
 					{
 						curJointInfo->dof.push_back(str);
 					}
@@ -453,7 +453,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				else
 				{
 					SkJoint* parent = skeleton.search_joint(str);
-					if (parent == NULL)
+					if (parent == nullptr)
 					{
 						SmartBody::util::log("Unknown parent '%s' when determining joint hierarchy...\n", str);
 						metaFile.close();
@@ -461,18 +461,18 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 					}
 					int parentId = parent->index();
 					JointInfo* parentInfo = getJointInfo(str, jointInfoList);
-					if (parentInfo == NULL)
+					if (parentInfo == nullptr)
 					{
 						SmartBody::util::log("Unknown parent '%s' when determining joint hierarchy...\n", str);
 						metaFile.close();
 						return false;
 					}
 
-					JointInfo* childInfo = NULL;
-					while ((str = strtok(NULL, " ")) != NULL)
+					JointInfo* childInfo = nullptr;
+					while ((str = strtok(nullptr, " ")) != nullptr)
 					{
 						childInfo = getJointInfo(str, jointInfoList);
-						if (childInfo == NULL)
+						if (childInfo == nullptr)
 						{
 							SmartBody::util::log("Unknown child '%s' when determining joint hierarchy...\n", str);
 							metaFile.close();
@@ -590,7 +590,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 				// get the data
 				float frames[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 				int curChannel = 0;
-				while ((str = strtok(NULL, " ")) != NULL)
+				while ((str = strtok(nullptr, " ")) != nullptr)
 				{
 					frames[curChannel] = (float)atof(str);
 					curChannel++;
@@ -627,7 +627,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 	// Get rot order 
 	// Here assume all the joints are the same order with root joint, maybe there's case where each joint has independent rotation order
 	int order = -1;
-	JointInfo* rootInfo = NULL;
+	JointInfo* rootInfo = nullptr;
 	if (jointInfoList.size() > 0)
 		rootInfo = jointInfoList[0];
 	if (rootInfo)
@@ -685,7 +685,7 @@ bool ParserASFAMC::parse(SkSkeleton& skeleton, SkMotion& motion, std::ifstream& 
 
 			// Matrix C
 			const std::string& jName = motion.channels().name(quatIndices[i]);
-			JointInfo* jointInfo = NULL;
+			JointInfo* jointInfo = nullptr;
 			for (unsigned int cnum = 0; cnum < jointInfoList.size(); cnum++)
 			{
 				std::string jointName =  jointInfoList[cnum]->name;
@@ -758,7 +758,7 @@ int ParserASFAMC::getMotionChannelId(SkChannelArray& mChannels, std::string sour
 
 JointInfo* ParserASFAMC::getJointInfo(std::string jointName, std::vector<JointInfo*>& jointInfoList)
 {
-	JointInfo* jointInfo = NULL;
+	JointInfo* jointInfo = nullptr;
 	for (unsigned int cnum = 0; cnum < jointInfoList.size(); cnum++)
 	{
 		std::string jName =  jointInfoList[cnum]->name;

@@ -46,8 +46,8 @@ using namespace gwiz;
 SkMotion::SkMotion() : SBAsset(),
 	_postsize( 0 ),
 	_filename( "" ),
-	_skeleton( NULL ),
-	_floatbuffer( NULL ),
+	_skeleton( nullptr ),
+	_floatbuffer( nullptr ),
 	_last_apply_frame( 0 )
 #if 0
 	,
@@ -67,7 +67,7 @@ SkMotion::~SkMotion()
    {
       //free( _frames[f].posture );
 	   delete [] _frames[f].posture;
-      _frames[f].posture = NULL;
+      _frames[f].posture = nullptr;
    }
 
    for (size_t x = 0; x < _motionEvents.size(); x++)
@@ -187,7 +187,7 @@ void SkMotion::connect ( float* buffer )
  }
 
 void SkMotion::apply_frame ( int f ) {
-	apply_frame( f, _floatbuffer, NULL );
+	apply_frame( f, _floatbuffer, nullptr );
 }
 
 
@@ -303,7 +303,7 @@ inline float _cubic ( float t, float tmin, float tmax ) {
 
 
 void SkMotion::apply ( float t, SkMotion::InterpType itype, int* lastframe, SmartBody::SBRetarget* retarget ) {
-	apply( t, _floatbuffer, NULL, itype, lastframe, false, retarget );
+	apply( t, _floatbuffer, nullptr, itype, lastframe, false, retarget );
 }
 
 #define DEBUG_T 0
@@ -584,7 +584,7 @@ void SkMotion::apply ( float t,
 	
 	float outValue[4], origValue[4], newValue[4]; // at most 4 
 	// Apply to float* buffer
-	float* v = NULL;
+	float* v = nullptr;
 	int sum = 0;		
 	for ( int i=0; i<csize; i++ ) {
 	// Channel size
@@ -1860,7 +1860,7 @@ SkMotion* SkMotion::buildPrestrokeHoldMotion(float holdTime, SkMotion* idleMotio
 */
 SkMotion* SkMotion::buildPoststrokeHoldMotion(float holdTime, std::vector<std::string>& joints, float scale, float freq, SkMotion* idleMotion)
 {
-	bool insertIdleMotion = (idleMotion != NULL) ? true : false;
+	bool insertIdleMotion = (idleMotion != nullptr) ? true : false;
 
 	int numHoldFrames = int(holdTime * this->frames() / this->duration());
 	int strokeEndFrameId = int(synch_points.get_time(srSynchPoints::STROKE_STOP) * this->frames() / this->duration());

@@ -91,7 +91,7 @@ SBMotion* SBHandConfiguration::getMotion(int i)
 	if (i >= _motions.size())
 	{
 		SmartBody::util::log("i is greater than motion vector size");
-		return NULL;
+		return nullptr;
 	}
 
 	return _motions[i];

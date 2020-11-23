@@ -6,6 +6,8 @@ add_library(
 target_include_directories(SmartBody-c-dll PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-debugger,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>)
 
 #if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
@@ -13,6 +15,8 @@ target_include_directories(SmartBody-c-dll PUBLIC
 #endif ()
 
 target_link_libraries(SmartBody-c-dll
-        Smartbody
-        Smartbody-bindings-python
+        SmartBody
+        SmartBody-renderer-gl
+        SmartBody-debugger
+        SmartBody-bindings-python
         )

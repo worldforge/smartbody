@@ -66,6 +66,9 @@ class SBVHMsgManager : public SBService
 		SBAPI virtual void setEnableLogging(bool val);
 		SBAPI virtual bool isEnableLogging();
 
+		void onCharacterDelete(SBCharacter* character) override;
+
+
 
 	protected:
 		static void vhmsgCallback( const char *op, const char *args, void * user_data );

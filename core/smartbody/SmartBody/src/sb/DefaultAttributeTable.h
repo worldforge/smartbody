@@ -51,14 +51,14 @@ public:
 	void setDefaultAttributeGroupPriority(const std::string& groupName, int priority);
 	int setDefaultAttributeGroupPriority(const std::string& groupName);
 
-	void addDefaultAttributeDouble(const std::string& name, double defaultValue, const std::string& attributeGroup, double* varPtr = NULL);
-	void addDefaultAttributeFloat(const std::string& name, float defaultValue, const std::string& attributeGroup, float* varPtr = NULL);
-	void addDefaultAttributeInt(const std::string& name, int defaultValue, const std::string& attributeGroup, int* varPtr = NULL);
-	void addDefaultAttributeBool(const std::string& name, bool defaultValue, const std::string& attributeGroup, bool* varPtr = NULL);
-	void addDefaultAttributeString(const std::string& name, const std::string& defaultValue, const std::string& attributeGroup, std::string* varPtr = NULL);
-	void addDefaultAttributeVec3(const std::string&name, SrVec& defaultValue, const std::string& attributeGroup, SrVec* varPtr = NULL);
-	void addDefaultAttributeMatrix(const std::string& name, SrMat& defaultValue, const std::string& attributeGroup, SrMat* varPtr = NULL);
-	void addDefaultAttributeAction(const std::string& name, const std::string& attributeGroup, bool* varPtr = NULL);
+	void addDefaultAttributeDouble(const std::string& name, double defaultValue, const std::string& attributeGroup, double* varPtr = nullptr);
+	void addDefaultAttributeFloat(const std::string& name, float defaultValue, const std::string& attributeGroup, float* varPtr = nullptr);
+	void addDefaultAttributeInt(const std::string& name, int defaultValue, const std::string& attributeGroup, int* varPtr = nullptr);
+	void addDefaultAttributeBool(const std::string& name, bool defaultValue, const std::string& attributeGroup, bool* varPtr = nullptr);
+	void addDefaultAttributeString(const std::string& name, const std::string& defaultValue, const std::string& attributeGroup, std::string* varPtr = nullptr);
+	void addDefaultAttributeVec3(const std::string&name, SrVec& defaultValue, const std::string& attributeGroup, SrVec* varPtr = nullptr);
+	void addDefaultAttributeMatrix(const std::string& name, SrMat& defaultValue, const std::string& attributeGroup, SrMat* varPtr = nullptr);
+	void addDefaultAttributeAction(const std::string& name, const std::string& attributeGroup, bool* varPtr = nullptr);
 
 	std::vector<AttributeVarPair>& getDefaultAttributes();
 	std::map<std::string, SmartBody::SBAttributeGroup*>& getDefaultGroups();	

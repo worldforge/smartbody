@@ -35,19 +35,17 @@ namespace SmartBody {
 
 SBAssetHandlerBvh::SBAssetHandlerBvh()
 {
-	assetTypes.push_back("bvh");
+	assetTypes.emplace_back("bvh");
 }
 
-SBAssetHandlerBvh::~SBAssetHandlerBvh()
-{
-}
+SBAssetHandlerBvh::~SBAssetHandlerBvh() = default;
 
-std::vector<SBAsset*> SBAssetHandlerBvh::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerBvh::getAssets(const std::string& path)
 {
-	std::vector<SBAsset*> assets;
+	std::vector<std::unique_ptr<SBAsset>> assets;
 
 	std::string convertedPath = checkPath(path);
-	if (convertedPath == "")
+	if (convertedPath.empty())
 		return assets;
 	
 	boost::filesystem::path p(convertedPath);
@@ -59,18 +57,16 @@ std::vector<SBAsset*> SBAssetHandlerBvh::getAssets(const std::string& path)
 
 	std::ifstream filestream(convertedPath.c_str());
 
-	SmartBody::SBSkeleton* skeleton = new SmartBody::SBSkeleton();
+	auto skeleton = std::make_unique<SmartBody::SBSkeleton>();
 	double scale = 1.0;
 	if (SmartBody::SBScene::getScene()->getAttribute("globalSkeletonScale"))
 		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalSkeletonScale");
 
-	SmartBody::SBMotion* motion = new SmartBody::SBMotion();
+	auto motion = std::make_unique<SmartBody::SBMotion>();
 
 	bool ok = ParserBVH::parse(*skeleton, *motion, convertedPath, filestream, float(scale));
 	if (!ok)
 	{
-		delete motion;
-		delete skeleton;
 		SmartBody::util::log("Could not .bvh file %s", convertedPath.c_str());
 	}
 	else
@@ -78,8 +74,8 @@ std::vector<SBAsset*> SBAssetHandlerBvh::getAssets(const std::string& path)
 		motion->setName(fileName + extension);
 		skeleton->setName(fileName + extension);
 		skeleton->setFileName(convertedPath);
-		assets.push_back(motion);
-		assets.push_back(skeleton);
+		assets.emplace_back(std::move(motion));
+		assets.emplace_back(std::move(skeleton));
 	}
 	
 	return assets;

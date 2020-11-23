@@ -38,9 +38,9 @@ Heightfield::~Heightfield() {
 void Heightfield::defaults( ) {
 
 #ifdef WIN32
-	_header = NULL;
+	_header = nullptr;
 #endif
-	_imageData = NULL;
+	_imageData = nullptr;
 	
 	image_width = 0;
 	image_height = 0;
@@ -57,9 +57,9 @@ void Heightfield::defaults( ) {
 	mesh_data.mesh_origin[ 1 ] = 0.0f;
 	mesh_data.mesh_origin[ 2 ] = 0.0f;
 	
-	mesh_data.vertex_arr = NULL;
-	mesh_data.normal_arr = NULL;
-	mesh_data.color_arr = NULL;
+	mesh_data.vertex_arr = nullptr;
+	mesh_data.normal_arr = nullptr;
+	mesh_data.color_arr = nullptr;
 	mesh_data.dirty_normals = true;
 }
 
@@ -290,7 +290,7 @@ unsigned char* Heightfield::parse_ppm( FILE *stream )	{
 	char ppm_key[256];
 	if( fscanf( stream, "%s", ppm_key ) != 1 )	{
 		printf( "Heightfield::parse_ppm ERR: could not scan ppm_key\n" );
-		return( NULL );
+		return( nullptr );
 	}
 
 	int binary;
@@ -301,7 +301,7 @@ unsigned char* Heightfield::parse_ppm( FILE *stream )	{
 		binary = 1;
 	else	{
 		printf( "Heightfield::parse_ppm ERR: key '%s' not recognized\n", ppm_key );
-		return( NULL );
+		return( nullptr );
 	}
 
 	char tmp_buffer[1024];
@@ -313,7 +313,7 @@ unsigned char* Heightfield::parse_ppm( FILE *stream )	{
 			}
 			else	{
 				printf( "Heightfield::parse_ppm ERR: could not read size\n" );
-				return( NULL );
+				return( nullptr );
 			}
 		}
 		else
@@ -332,13 +332,13 @@ unsigned char* Heightfield::parse_ppm( FILE *stream )	{
 			if( max > 0.0 )	{
 				if( binary && ( max != 255.0f ) )	{
 					printf( "Heightfield::parse_ppm ERR: maxval '%f' not supported\n", max );
-					return( NULL );
+					return( nullptr );
 				}
 				found_max = 1;
 			}
 			else	{
 				printf( "Heightfield::parse_ppm ERR: could not read maxval\n" );
-				return( NULL );
+				return( nullptr );
 			}
 		}
 		else
@@ -346,16 +346,16 @@ unsigned char* Heightfield::parse_ppm( FILE *stream )	{
 	}
 
 	unsigned char* buff = new unsigned char [ image_bytes ];
-	if( buff == NULL )	{
+	if( buff == nullptr )	{
 		printf( "Heightfield::Heightfield ERR: new [%d] bytes FAILED\n", (int)image_bytes );
-		return( NULL );
+		return( nullptr );
 	}
 
 	int i, j, k;
 	long n = 0;
-	if( buff == NULL )	{
+	if( buff == nullptr )	{
 		printf( "Heightfield::write_ppm ERR: no pixels\n" );
-		return( NULL );
+		return( nullptr );
 	}
 	if( binary )	{
 		unsigned char new_line;
@@ -363,7 +363,7 @@ unsigned char* Heightfield::parse_ppm( FILE *stream )	{
 		if( new_line != '\n' )	{
 			printf( "Heightfield::parse_ppm ERR: read byte: %d: not a newline\n", (int)new_line );
 			delete [] buff;
-			return( NULL );
+			return( nullptr );
 		}
 		int err = 0;
 		for( j=image_height-1;j>=0 && !err;j-- )	{
@@ -394,7 +394,7 @@ unsigned char* Heightfield::parse_ppm( FILE *stream )	{
 	if( n != image_bytes )	{
 		printf( "Heightfield::parse_ppm ERR: read %d of %d components\n", (int)n, (int)image_bytes );
 		delete [] buff;
-		return( NULL );
+		return( nullptr );
 	}
 	return( buff );
 }
@@ -402,9 +402,9 @@ unsigned char* Heightfield::parse_ppm( FILE *stream )	{
 unsigned char* Heightfield::read_ppm( const char* filename )	{
 
 	FILE *stream = fopen( filename, "rb" );
-	if( stream == NULL )	{
+	if( stream == nullptr )	{
 		printf( "Heightfield::read_ppm ERR: fopen '%s' FAILED\n", filename );
-		return( NULL );
+		return( nullptr );
 	}
 	unsigned char* buff = parse_ppm( stream );
 	fclose( stream );
@@ -465,9 +465,9 @@ unsigned char* Heightfield::LoadBitmapFile(char *filename, BITMAPINFOHEADER * bi
 
 	//open filename in "read binary" mode
 	filePtr = fopen( filename, "rb" );
-	if( filePtr == NULL)	{
+	if( filePtr == nullptr)	{
 		printf( "Heightfield::LoadBitmapFile ERR: fopen '%s' FAILED\n", filename );
-		return NULL;
+		return nullptr;
 	}
 	
 	//read the bitmap file header
@@ -483,7 +483,7 @@ unsigned char* Heightfield::LoadBitmapFile(char *filename, BITMAPINFOHEADER * bi
 	if( bitmapFileHeader.bfType != BITMAP_ID )
 	{
 		fclose(filePtr);
-		return NULL;
+		return nullptr;
 	}
 
 	//read the bitmap information header
@@ -522,10 +522,10 @@ unsigned char* Heightfield::LoadBitmapFile(char *filename, BITMAPINFOHEADER * bi
 	bitmapImage = new unsigned char [ image_bytes ];
 
 	//verify memory allocation
-	if( bitmapImage == NULL )	{
+	if( bitmapImage == nullptr )	{
 		printf( "Heightfield::LoadBitmapFile ERR: malloc %d bytes FAILED\n", image_bytes );
 		fclose(filePtr);
-		return NULL;
+		return nullptr;
 	}
 
 	//read in the bitmap image data
@@ -536,7 +536,7 @@ unsigned char* Heightfield::LoadBitmapFile(char *filename, BITMAPINFOHEADER * bi
 	//make sure bitmap image data was read
 	if( (int)( bytes_read ) < image_bytes )	{
 		printf( "Heightfield::LoadBitmapFile ERR: file '%s': read %d of %d bytes\n", bytes_read, image_bytes );
-		return NULL;
+		return nullptr;
 	}
 
 #if 0
@@ -575,7 +575,7 @@ float Heightfield::get_elevation( float px, float pz, float *normal_p )	{
 		float nz = ( pz - mesh_data.mesh_origin[ 2 ] ) / mesh_data.mesh_scale[ 2 ];
 
 		if( ( nx < 0.0 )||( nz < 0.0 )||( nx >= 1.0 )||( nz >= 1.0 ) )	{
-			if( normal_p != NULL )	{
+			if( normal_p != nullptr )	{
 				normal_p[ 0 ] = 0.0;
 				normal_p[ 1 ] = 1.0;
 				normal_p[ 2 ] = 0.0;
@@ -601,7 +601,7 @@ float Heightfield::get_elevation( float px, float pz, float *normal_p )	{
 				+ ( get_raw_elevation( i + 1, j ) - y0 ) * dx
 				+ ( get_raw_elevation( i, j + 1 ) - y0 ) * dz;
 
-			if( normal_p != NULL )	{
+			if( normal_p != nullptr )	{
 				int ni = ( ( j * ( mesh_data.mesh_resx - 1 ) + i ) * 2 ) * 3;
 				float *np = mesh_data.normal_arr + ni;
 				normal_p[ 0 ] = np[ 0 ];
@@ -616,7 +616,7 @@ float Heightfield::get_elevation( float px, float pz, float *normal_p )	{
 				+ ( get_raw_elevation( i + 1, j ) - y0 ) * ( 1.0f - dz )
 				+ ( get_raw_elevation( i, j + 1 ) - y0 ) * ( 1.0f - dx );
 
-			if( normal_p != NULL )	{
+			if( normal_p != nullptr )	{
 				int ni = ( ( j * ( mesh_data.mesh_resx - 1 ) + i ) * 2 + 1 ) * 3;
 				float *np = mesh_data.normal_arr + ni;
 				normal_p[ 0 ] = np[ 0 ];
@@ -629,7 +629,7 @@ float Heightfield::get_elevation( float px, float pz, float *normal_p )	{
 		return( py );
 	}
 	else
-	if( normal_p != NULL )	{
+	if( normal_p != nullptr )	{
 		normal_p[ 0 ] = 0.0;
 		normal_p[ 1 ] = 1.0;
 		normal_p[ 2 ] = 0.0;

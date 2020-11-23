@@ -46,7 +46,7 @@ DefaultAttributeTable::~DefaultAttributeTable(void)
 
 void DefaultAttributeTable::setDefaultAttributeGroupPriority(const std::string& groupName, int priority)
 {
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(groupName);
 	if (iter == _defaultGroups.end())
 	{
@@ -62,7 +62,7 @@ void DefaultAttributeTable::setDefaultAttributeGroupPriority(const std::string& 
 
 int DefaultAttributeTable::setDefaultAttributeGroupPriority(const std::string& groupName)
 {
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(groupName);
 	if (iter == _defaultGroups.end())
 	{
@@ -82,7 +82,7 @@ void DefaultAttributeTable::addDefaultAttributeDouble( const std::string& name, 
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
@@ -108,7 +108,7 @@ void DefaultAttributeTable::addDefaultAttributeFloat( const std::string& name, f
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
@@ -134,7 +134,7 @@ void DefaultAttributeTable::addDefaultAttributeInt( const std::string& name, int
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
@@ -160,7 +160,7 @@ void DefaultAttributeTable::addDefaultAttributeBool( const std::string& name, bo
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
@@ -186,7 +186,7 @@ void DefaultAttributeTable::addDefaultAttributeString( const std::string& name, 
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
@@ -212,7 +212,7 @@ void DefaultAttributeTable::addDefaultAttributeVec3( const std::string& name, Sr
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
@@ -238,7 +238,7 @@ void DefaultAttributeTable::addDefaultAttributeMatrix( const std::string& name, 
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
@@ -262,7 +262,7 @@ void DefaultAttributeTable::addDefaultAttributeAction( const std::string& name, 
 {
 	SmartBody::ActionAttribute* hf = new SmartBody::ActionAttribute(name);
 
-	SmartBody::SBAttributeGroup* curGroup = NULL;
+	SmartBody::SBAttributeGroup* curGroup = nullptr;
 	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{

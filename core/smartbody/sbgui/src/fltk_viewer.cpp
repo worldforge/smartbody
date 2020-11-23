@@ -464,7 +464,8 @@ static void _callback_func ( Fl_Widget* win, void* pt )
 
 FltkViewer::FltkViewer ( int x, int y, int w, int h, const char *label )
 //         : SrViewer(x, y, w, h) , Fl_Gl_Window ( x, y, w, h, label )
-		 : Fl_Gl_Window ( x, y, w, h, label ), SelectionListener()
+		 : Fl_Gl_Window ( x, y, w, h, label ), SelectionListener(),
+		   mRenderScene(nullptr)
  {
 	 Fl::gl_visual( FL_RGB | FL_DOUBLE | FL_DEPTH | FL_MULTISAMPLE);//| FL_ALPHA );
 
@@ -601,23 +602,23 @@ void FltkViewer::OnSelect(const std::string& value)
 
 void FltkViewer::applyToCharacters()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	const std::vector<std::string>& characterNames = scene->getCharacterNames();
-	for (std::vector<std::string> ::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
-	{
-		SmartBody::SBCharacter* character = scene->getCharacter(*iter);
-		// set the visibility parameters of the scene
-		//character->scene_p->set_visibility(_data->showbones,_data->showgeometry, _data->showcollisiongeometry, _data->showaxis);
-
-		// feng : never show the collision mesh, instead we will show the bounding volumes as capsules
-		if (character->scene_p && character->dMeshInstance_p)
-		{
-//			character->scene_p->set_visibility(_data->showbones,_data->showgeometry, false, _data->showaxis);
-	//		character->dMeshInstance_p->setVisibility(_data->showdeformablegeometry);
-		}
-	}
+//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	const std::vector<std::string>& characterNames = scene->getCharacterNames();
+//	for (std::vector<std::string> ::const_iterator iter = characterNames.begin();
+//		iter != characterNames.end();
+//		iter++)
+//	{
+//		SmartBody::SBCharacter* character = scene->getCharacter(*iter);
+//		// set the visibility parameters of the scene
+//		//character->scene_p->set_visibility(_data->showbones,_data->showgeometry, _data->showcollisiongeometry, _data->showaxis);
+//
+//		// feng : never show the collision mesh, instead we will show the bounding volumes as capsules
+//		if (character->scene_p && character->dMeshInstance_p)
+//		{
+////			character->scene_p->set_visibility(_data->showbones,_data->showgeometry, false, _data->showaxis);
+//	//		character->dMeshInstance_p->setVisibility(_data->showdeformablegeometry);
+//		}
+//	}
 }
 
 void FltkViewer::menu_cmd ( MenuCmd s, const char* label  )
@@ -1656,7 +1657,7 @@ void FltkViewer::drawSBRender(bool useDeferredShading)
 	}
 	updateLights();
 	renderer->setBackgroundColor(_data->bcolor);
-	renderer->draw(_lights, _data->showFloor);
+	renderer->draw(mRenderScene,_lights, _data->showFloor);
 	
 	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
 	cam->setAspectRatio((float)w() / (float)h());

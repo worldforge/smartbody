@@ -48,12 +48,12 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 	char line[4096];
 	int state = 0;
 	char* str;
-	SmartBody::SBJoint* cur = NULL;
+	SmartBody::SBJoint* cur = nullptr;
 	int curFrame = -1;
 	double frameTime = 0.016777f;	// assume fps = 60
 	bool useDegrees = true;
 	vector<JointInfo*> jointInfoList;
-	JointInfo* curJointInfo = NULL;
+	JointInfo* curJointInfo = nullptr;
 
 	while(!metaFile.eof() && metaFile.good())
 	{
@@ -85,8 +85,8 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				str = strtok(line, " ");
 				if (strcmp(str, ":name") == 0)
 				{
-					str = strtok(NULL, " ");
-					if (str != NULL)
+					str = strtok(nullptr, " ");
+					if (str != nullptr)
 						skeleton.setName(str);
 					state = 2;
 				}
@@ -118,8 +118,8 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				}
 				else
 				{
-					char *value = strtok(NULL, " ");
-					if (value != NULL)
+					char *value = strtok(nullptr, " ");
+					if (value != nullptr)
 					{
 						SmartBody::util::log("Found parameter %s = %s.", str, value);
 					}
@@ -160,7 +160,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				{
 					if (strcmp(str, "order") == 0)
 					{
-						while ((str = strtok(NULL, " ")) != NULL)
+						while ((str = strtok(nullptr, " ")) != nullptr)
 						{
 							curJointInfo->dof.push_back(str);
 							if (strcasecmp(str, "tx") == 0)
@@ -218,7 +218,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 					{
 						SrVec pos;
 						int posCount = 0;
-						while ((str = strtok(NULL, " ")) != NULL)
+						while ((str = strtok(nullptr, " ")) != nullptr)
 						{
 							if (posCount == 0)	pos.x = (float)atof(str);
 							if (posCount == 1)	pos.y = (float)atof(str);
@@ -269,8 +269,8 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				str = strtok(line, " ");
 				if (strcmp(str, "name") == 0)
 				{
-					str = strtok(NULL, " ");
-					if (str != NULL)
+					str = strtok(nullptr, " ");
+					if (str != nullptr)
 					{
 						JointInfo* newJointInfo = new JointInfo();
 						curJointInfo = newJointInfo;
@@ -298,7 +298,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				{
 					SrVec dir;
 					int posCount = 0;
-					while ((str = strtok(NULL, " ")) != NULL)
+					while ((str = strtok(nullptr, " ")) != nullptr)
 					{
 						if (posCount == 0)	dir.x = (float)atof(str);
 						if (posCount == 1)	dir.y = (float)atof(str);
@@ -320,7 +320,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				str = strtok(line, " ");
 				if (strcmp(str, "length") == 0)
 				{
-					str = strtok(NULL, " ");
+					str = strtok(nullptr, " ");
 					double length = atof(str);
 					curJointInfo->length = (float)length;
 					state = 11;
@@ -338,7 +338,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				{
 					SrVec axis;
 					int axisCount = 0;
-					while ((str = strtok(NULL, " ")) != NULL && axisCount < 3)
+					while ((str = strtok(nullptr, " ")) != nullptr && axisCount < 3)
 					{
 						if (axisCount == 0) axis.x = (float)atof(str);
 						if (axisCount == 1) axis.y = (float)atof(str);
@@ -361,7 +361,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				str = strtok(line, " ");
 				if (strcmp(str, "dof") == 0)
 				{
-					while ((str = strtok(NULL, " ")) != NULL)
+					while ((str = strtok(nullptr, " ")) != nullptr)
 					{
 						curJointInfo->dof.push_back(str);
 					}
@@ -436,7 +436,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				else
 				{
 					SkJoint* parent = skeleton.search_joint(str);
-					if (parent == NULL)
+					if (parent == nullptr)
 					{
 						SmartBody::util::log("Unknown parent '%s' when determining joint hierarchy...\n", str);
 						metaFile.close();
@@ -444,18 +444,18 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 					}
 					int parentId = parent->index();
 					JointInfo* parentInfo = getJointInfo(str, jointInfoList);
-					if (parentInfo == NULL)
+					if (parentInfo == nullptr)
 					{
 						SmartBody::util::log("Unknown parent '%s' when determining joint hierarchy...\n", str);
 						metaFile.close();
 						return false;
 					}
 
-					JointInfo* childInfo = NULL;
-					while ((str = strtok(NULL, " ")) != NULL)
+					JointInfo* childInfo = nullptr;
+					while ((str = strtok(nullptr, " ")) != nullptr)
 					{
 						childInfo = getJointInfo(str, jointInfoList);
-						if (childInfo == NULL)
+						if (childInfo == nullptr)
 						{
 							SmartBody::util::log("Unknown child '%s' when determining joint hierarchy...\n", str);
 							metaFile.close();
@@ -533,7 +533,7 @@ bool ParserASFAMC::parseAmc(SmartBody::SBMotion& motion, SmartBody::SBSkeleton* 
 	char line[4096];
 
 	int state = 17;
-	char* str = NULL;
+	char* str = nullptr;
 	bool useDegrees = true;
 	double frameTime = 0.016777f;
 	char frameStr[128];
@@ -600,7 +600,7 @@ bool ParserASFAMC::parseAmc(SmartBody::SBMotion& motion, SmartBody::SBSkeleton* 
 					break;
 				}
 				// find the joint
-				JointInfo* jointInfo = NULL;//getJointInfo(str, jointInfoList);
+				JointInfo* jointInfo = nullptr;//getJointInfo(str, jointInfoList);
 				std::map<std::string, JointInfo*>::iterator iter = jointInfoMap.find(str);
 				if (iter != jointInfoMap.end())
 				{
@@ -615,7 +615,7 @@ bool ParserASFAMC::parseAmc(SmartBody::SBMotion& motion, SmartBody::SBSkeleton* 
 				// get the data
 				float frames[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 				int curChannel = 0;
-				while ((str = strtok(NULL, " ")) != NULL)
+				while ((str = strtok(nullptr, " ")) != nullptr)
 				{
 					frames[curChannel] = (float)atof(str);
 					curChannel++;
@@ -652,7 +652,7 @@ bool ParserASFAMC::parseAmc(SmartBody::SBMotion& motion, SmartBody::SBSkeleton* 
 	// Get rot order 
 	// Here assume all the joints are the same order with root joint, maybe there's case where each joint has independent rotation order
 	int order = -1;
-	JointInfo* rootInfo = NULL;
+	JointInfo* rootInfo = nullptr;
 	if (jointInfoMap.size() > 0)
 	{
 		std::map<std::string, JointInfo*>::iterator iter = jointInfoMap.find("root");
@@ -717,7 +717,7 @@ bool ParserASFAMC::parseAmc(SmartBody::SBMotion& motion, SmartBody::SBSkeleton* 
 
 			// Matrix C
 			const std::string& jName = motion.channels().name(quatIndices[i]);
-			JointInfo* jointInfo = NULL;
+			JointInfo* jointInfo = nullptr;
 
 			std::map<std::string, JointInfo*>::iterator iter = jointInfoMap.find(jName);
 			if (iter != jointInfoMap.end())
@@ -796,7 +796,7 @@ int ParserASFAMC::getMotionChannelId(SkChannelArray& mChannels, std::string sour
 
 JointInfo* ParserASFAMC::getJointInfo(std::string jointName, std::vector<JointInfo*>& jointInfoList)
 {
-	JointInfo* jointInfo = NULL;
+	JointInfo* jointInfo = nullptr;
 	for (unsigned int cnum = 0; cnum < jointInfoList.size(); cnum++)
 	{
 		std::string jName =  jointInfoList[cnum]->name;

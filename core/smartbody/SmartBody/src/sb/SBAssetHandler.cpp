@@ -28,22 +28,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBAssetHandler::SBAssetHandler()
-{
-}
+SBAssetHandler::SBAssetHandler() = default;
 
-SBAssetHandler::~SBAssetHandler()
-{
-}
+SBAssetHandler::~SBAssetHandler() = default;
 
 std::vector<std::string> SBAssetHandler::getAssetTypes()
 {
 	return assetTypes;
 }
 
-std::vector<SBAsset*> SBAssetHandler::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandler::getAssets(const std::string& path)
 {
-	return std::vector<SBAsset*>();
+	return {};
 }
 
 std::string SBAssetHandler::checkPath(const std::string& path)

@@ -59,7 +59,7 @@ MeCtBlend::Context::Context( MeCtBlend* blend )
 {}
 
 void MeCtBlend::Context::remap_channels() {
-	if( _container == NULL )  // parent has been deleted
+	if( _container == nullptr )  // parent has been deleted
 		return;
 
 	MeCtBlend* blend = static_cast<MeCtBlend*>(_container);
@@ -125,7 +125,7 @@ int MeCtBlend::Context::toBufferIndex( int chanIndex ) {
 }
 
 void MeCtBlend::Context::child_channels_updated( MeController* child ) {
-	if( _container == NULL )
+	if( _container == nullptr )
 		return;  // MeCtContainer deleted
 
 	MeCtBlend* blend = static_cast<MeCtBlend*>(_container);
@@ -135,7 +135,7 @@ void MeCtBlend::Context::child_channels_updated( MeController* child ) {
 }
 
 MeCtBlend::FrameData::FrameData( MeCtBlend* blend )
-:	MeFrameDataProxy( NULL ),
+:	MeFrameDataProxy( nullptr ),
 	_blend( *blend )
 {
 	//_blend->ref();
@@ -159,7 +159,7 @@ int MeCtBlend::FrameData::toBufferIndex( int chanIndex ) const {
 
 
 void MeCtBlend::FrameData::channelUpdated( unsigned int n ) {
-	//if( _blend == NULL )
+	//if( _blend == nullptr )
 	//	return;  // MeCtContainer deleted
 
 	//  TODO: the following is wrong (Years later I ask myself "Why is it wrong?")
@@ -169,7 +169,7 @@ void MeCtBlend::FrameData::channelUpdated( unsigned int n ) {
 }
 
 bool MeCtBlend::FrameData::isChannelUpdated( unsigned int n ) const {
-	//if( _blend == NULL )
+	//if( _blend == nullptr )
 	//	return;  // MeCtContainer deleted
 
 	//  TODO: the following is wrong (Years later I ask myself "Why is it wrong?")

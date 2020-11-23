@@ -41,13 +41,6 @@ class srArgBuffer;
 class MeCtChannelWriter;
 class MeControllerTreeRoot;
 
-#if !defined(__FLASHPLAYER__)
-class DeformableMesh;
-class DeformableMeshInstance;
-#else
-#include <sbm/sbm_deformable_mesh.h>
-#endif
-
 
 #define SBM_PAWN_USE_WORLD_OFFSET_WRITER	(1)
 
@@ -74,10 +67,10 @@ protected:
 	std::string collisionObjName;
 
 public:  // TODO - properly encapsulate / privatize the following
-	SkSkeleton*	_skeleton;  // MAY BE NULL!!!
-	SkScene*		scene_p;	 // Skeleton Scene and Rigid Mesh		
-	DeformableMeshInstance* dMeshInstance_p;
-	DeformableMeshInstance* dStaticMeshInstance_p;
+	SkSkeleton*	_skeleton;  // MAY BE nullptr!!!
+//	SkScene*		scene_p;	 // Skeleton Scene and Rigid Mesh
+//	DeformableMeshInstance* dMeshInstance_p;
+//	DeformableMeshInstance* dStaticMeshInstance_p;
 	SrSnGroup* blendMeshGroup;
 	SteerLib::ObstacleInterface* steeringSpaceObj_p;
 	SrVec			steeringSpaceObjSize;

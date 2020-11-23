@@ -35,7 +35,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 namespace SmartBody 
 {
 
-SBPhysicsSim::SBPhysicsSim(void)
+SBPhysicsSim::SBPhysicsSim()
 {
 	SBObject::createDoubleAttribute("dT",0.0003, true, "Basic", 20, false, false, false, "?");
 	SBObject::createDoubleAttribute("gravity",980, true, "Basic", 20, false, false, false, "?");
@@ -52,7 +52,7 @@ SBPhysicsSim::SBPhysicsSim(void)
 	SBObject::createBoolAttribute("enable",false,true, "Basic", 20, false, false, false, "?");	
 }
 
-SBPhysicsSim::~SBPhysicsSim(void)
+SBPhysicsSim::~SBPhysicsSim()
 {
 }
 
@@ -90,7 +90,7 @@ void SBPhysicsSim::addPhysicsObj( SBPhysicsObj* obj )
 	if (physicsObjList.find(obj->getID()) == physicsObjList.end())
 	{
 		physicsObjList[obj->getID()] = obj;
-		if (dynamic_cast<SbmJointObj*>(obj) == NULL) // is not a joint obj
+		if (dynamic_cast<SbmJointObj*>(obj) == nullptr) // is not a joint obj
 			pawnObjMap[obj->getName()] = obj;
 	}
 }
@@ -110,7 +110,7 @@ void SBPhysicsSim::removePhysicsObj( SBPhysicsObj* obj )
 	if (physicsObjList.find(obj->getID()) != physicsObjList.end())
 	{
 		physicsObjList.erase(obj->getID());
-		if (dynamic_cast<SbmJointObj*>(obj) == NULL) // is not a joint obj
+		if (dynamic_cast<SbmJointObj*>(obj) == nullptr) // is not a joint obj
 			pawnObjMap.erase(obj->getName());
 	}
 }
@@ -136,7 +136,7 @@ SBPhysicsObj* SBPhysicsSim::getPhysicsPawn( const std::string& pawnName )
 {
 	SBPhysicsPawnMap::iterator iter = pawnObjMap.find(pawnName);
 	if (iter == pawnObjMap.end())
-		return NULL;
+		return nullptr;
 	else
 		return (*iter).second;
 }
@@ -145,7 +145,7 @@ SBPhysicsCharacter* SBPhysicsSim::getPhysicsCharacter( const std::string& charNa
 {
 	SBPhysicsCharacterMap::iterator iter = characterMap.find(charName);
 	if (iter == characterMap.end())
-		return NULL;
+		return nullptr;
 	else
 		return (*iter).second;
 }
@@ -198,7 +198,7 @@ SBPhysicsSim* SBPhysicsSim::getPhysicsEngine()
 	if ( SmartBody::SBScene::getScene())
 		return SmartBody::SBScene::getScene()->getPhysicsManager()->getPhysicsEngine();
 	else
-		return NULL;
+		return nullptr;
 }
 
 /************************************************************************/
@@ -238,7 +238,7 @@ unsigned long SBPhysicsObjInterface::getID()
 
 SBPhysicsObj::SBPhysicsObj()
 {
-	colObj = NULL;		
+	colObj = nullptr;
 	objDensity = 0.01f;
 	bHasPhysicsSim = false;
 	bHasCollisionSim = true;	
@@ -393,8 +393,8 @@ SBPhysicsJoint::SBPhysicsJoint( SBJoint* joint ) : SBObject()
 	sbmJoint = joint;
 	jointTorque = SrVec(0,0,0);
 	totalSupportMass = 0.f;
-	parentObj = NULL;
-	childObj = NULL;
+	parentObj = nullptr;
+	childObj = nullptr;
 	SBObject::createDoubleAttribute("KScale",1.0, true, "Basic", 20, false, false, false, "?");
 }
 
@@ -439,7 +439,7 @@ void SBPhysicsJoint::notify( SBSubject* subject )
 
 SbmJointObj::SbmJointObj(SBPhysicsCharacter* phyc) : SBPhysicsObj()
 {
-	phyJoint = NULL;
+	phyJoint = nullptr;
 	phyChar = phyc;	
 }
 
@@ -456,7 +456,7 @@ SBPhysicsJoint* SbmJointObj::getChildJoint( int i )
 		return phyChar->getPhyJoint(joint->getChild(i)->getName());		
 	}
 	else
-		return NULL;
+		return nullptr;
 }
 
 int SbmJointObj::getNumChildJoints()
@@ -590,7 +590,7 @@ void SbmJointObj::handleCollision( SrVec contactPt, SBPhysicsObj* colObj )
 
 SBPhysicsCharacter::SBPhysicsCharacter()
 {
-	root = NULL;
+	root = nullptr;
 
 	SBObject::createBoolAttribute("enable",false,true, "Basic", 20, false, false, false, "?");	
 	SBObject::createBoolAttribute("kinematicRoot",false,true, "Basic", 20, false, false, false, "?");	
@@ -603,7 +603,7 @@ SbmJointObj* SBPhysicsCharacter::getJointObj(const std::string& jointName )
 	{
 		return jointObjMap[jointName];
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -613,7 +613,7 @@ SBPhysicsJoint* SBPhysicsCharacter::getPhyJoint(const std::string& jointName )
 	{
 		return jointMap[jointName];
 	}
-	return NULL;
+	return nullptr;
 }
 
 std::vector<SbmJointObj*> SBPhysicsCharacter::getJointObjList()
@@ -737,7 +737,7 @@ void SBPhysicsCharacter::cleanUpJoints()
 
 SBGeomObject* SBPhysicsCharacter::createJointGeometry( SBJoint* joint, float radius )
 {
-	SBGeomObject* newGeomObj = NULL;
+	SBGeomObject* newGeomObj = nullptr;
 	SmartBody::SBCharacter* curCharacter = SmartBody::SBScene::getScene()->getCharacter(characterName);
 	if (radius < 0.0)
 		radius = curCharacter->getHeight()*0.03f;
@@ -1044,7 +1044,7 @@ void SBPhysicsCharacter::notify( SBSubject* subject )
 
 // SBGeomObject* SBPhysicsCharacter::createJointGeometry( SBJoint* joint, float radius )
 // {
-// 	SBGeomObject* newGeomObj = NULL;
+// 	SBGeomObject* newGeomObj = nullptr;
 // 	SbmCharacter* curCharacter = mcuCBHandle::singleton().getCharacter(characterName);
 // 	if (joint->getParent() && joint->getParent()->getParent())
 // 	{

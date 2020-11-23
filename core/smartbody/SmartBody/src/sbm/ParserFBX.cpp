@@ -55,8 +55,8 @@ bool ParserFBX::parse(SkSkeleton& skeleton, SkMotion& motion, const std::string&
        FBxMetaData metaData;
        for (int i = 0; i < pRootNode->GetChildCount(); i++)
        {
-          parseJoints(pRootNode->GetChild(i), skeleton, motion, scale, order, metaData, NULL);
-          //parseSkinRecursive(pRootNode->GetChild(i), "", 1.0f, std::string(""), NULL, NULL);
+          parseJoints(pRootNode->GetChild(i), skeleton, motion, scale, order, metaData, nullptr);
+          //parseSkinRecursive(pRootNode->GetChild(i), "", 1.0f, std::string(""), nullptr, nullptr);
        }
 
        // go through all the animation data and add it
@@ -382,7 +382,7 @@ void ParserFBX::Shutdown(KFbxSdkManager* pSdkManager, KFbxImporter* pImporter)
 void ParserFBX::parseJoints(KFbxNode* pNode, SkSkeleton& skeleton, SkMotion& motion, float scale, int& order, FBxMetaData& metaData, SkJoint* parent)
 {
    SkJoint* joint = parent;
-   if (pNode->GetNodeAttribute() != NULL 
+   if (pNode->GetNodeAttribute() != nullptr
       && pNode->GetNodeAttribute()->GetAttributeType() == KFbxNodeAttribute::eSKELETON)
    {
       // we only create joints for nodes flagged as having the eSKELETON attribute
@@ -407,7 +407,7 @@ void ParserFBX::parseJoints(KFbxNode* pNode, SkSkeleton& skeleton, SkMotion& mot
 SkJoint* ParserFBX::createJoint(KFbxNode* pNode, SkSkeleton& skeleton, SkMotion& motion, float scale, int& order, SkJoint* parent)
 {
    int index = -1;
-   if (parent != NULL)	
+   if (parent != nullptr)
    {
       index = parent->index();
    }
@@ -446,7 +446,7 @@ SkJoint* ParserFBX::createJoint(KFbxNode* pNode, SkSkeleton& skeleton, SkMotion&
 
    SrVec offset, rot, jointRot; 
 
-   if (parent == NULL)
+   if (parent == nullptr)
       skeleton.root(joint);
 
    order = 123;//getRotationOrder(orderVec);
@@ -602,7 +602,7 @@ void ParserFBX::AddAnimationRecursive(KFbxAnimLayer* pAnimLayer, KFbxNode* pNode
 {
    // get the joint name
    std::string jointName = pNode->LclTranslation.GetParent().GetName();
-   KFbxAnimCurve *pCurve = NULL;
+   KFbxAnimCurve *pCurve = nullptr;
    
    bool bHasChannelProperty = false;
 

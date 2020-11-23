@@ -55,7 +55,7 @@ public:
 		///////////////////////////////////////////////////////////////
 		//  Private Data
 	protected:
-		// Owned by these instances.. never NULL
+		// Owned by these instances.. never nullptr
 		MeCtBlend&      _blend;
 		SrBuffer<float> _buffer;
 
@@ -147,7 +147,7 @@ protected:
 
 public:
 	/** Constructor */
-	MeCtBlend( MeController* child = NULL );
+	MeCtBlend( MeController* child = nullptr );
 
 	/** Destructor */
 	virtual ~MeCtBlend();

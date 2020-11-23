@@ -52,8 +52,8 @@ PPRAISteeringAgent::PPRAISteeringAgent(SmartBody::SBCharacter* c) : SmartBody::S
 {
 	character = c;
 	
-	agent = NULL;
-	target = NULL;
+	agent = nullptr;
+	target = nullptr;
 
 	forward = Util::Vector(0.0f, 0.0f, 1.0f);
 	rightSide = rightSideInXZPlane(forward);
@@ -712,7 +712,7 @@ void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float
 	float pathSpeedThreshold = speedThreshold*sceneScale;	
 	float smallDistThreshold = 0.05f*sceneScale;
 
-	SmartBody::SBAnimationBlend* blend = NULL;
+	SmartBody::SBAnimationBlend* blend = nullptr;
 	if (curStateData)
 		blend = dynamic_cast<SmartBody::SBAnimationBlend*>(curStateData->state);
 
@@ -911,7 +911,7 @@ void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float
 	{
 		locomotionHalt();
 		facingAdjust = true;		
-		//character->param_animation_ct->schedule(NULL, weights);		
+		//character->param_animation_ct->schedule(nullptr, weights);
 		//SmartBody::util::log("path following end");			
 	}
 	// adjust facing angle 			
@@ -1609,7 +1609,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 		if (goalList.size() == 0)
 		{
 			std::vector<double> weights;
-			character->param_animation_ct->schedule(NULL, weights);
+			character->param_animation_ct->schedule(nullptr, weights);
 			if (!sentLocomotionEvent)
 				sendLocomotionEvent("success");	
 			//SmartBody::util::log("locomotion complete:numGoals = 0");
@@ -1663,7 +1663,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 		inControl = true;
 
 	
-	SmartBody::SBAnimationBlend* blend = NULL;
+	SmartBody::SBAnimationBlend* blend = nullptr;
 	if (curStateData)
 		blend = dynamic_cast<SmartBody::SBAnimationBlend*>(curStateData->state);
 
@@ -1994,7 +1994,7 @@ void PPRAISteeringAgent::locomotionHalt()
 	if (character->param_animation_ct)
 	{		
 		sc.schedule = PABlendData::Now;
-		character->param_animation_ct->schedule(NULL, weights,sc);		
+		character->param_animation_ct->schedule(nullptr, weights,sc);
 	}
 	sendLocomotionEvent("success");
 	character->trajectoryGoalList.clear();

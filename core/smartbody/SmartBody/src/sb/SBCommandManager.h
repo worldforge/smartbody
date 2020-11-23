@@ -64,7 +64,7 @@ class SBCommandManager : public SBObject
 		SBAPI int execute( char *cmd );
 		SBAPI int execute_seq( srCmdSeq *seq );
 		SBAPI int execute_seq( srCmdSeq *seq, const char* seq_name );
-		SBAPI int execute_seq_chain( const std::vector<std::string>& seq_names, const char* error_prefix = NULL );
+		SBAPI int execute_seq_chain( const std::vector<std::string>& seq_names, const char* error_prefix = nullptr );
 		SBAPI int execute_later( const char* command, float seconds );
 		SBAPI int execute_later( const char* command );
 		SBAPI srCmdSeq* lookup_seq( const char* );
@@ -74,7 +74,7 @@ class SBCommandManager : public SBObject
 		SBAPI int insert_set_cmd( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp );
 		SBAPI int insert_print_cmd( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp );
 		SBAPI int insert_test_cmd( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp );
-		SBAPI int insert( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp, char* description = NULL );
+		SBAPI int insert( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp, char* description = nullptr );
 
 		SBAPI SequenceManager* getPendingSequences();
 		SBAPI SequenceManager* getActiveSequences();

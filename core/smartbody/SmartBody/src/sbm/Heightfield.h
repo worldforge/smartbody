@@ -42,7 +42,7 @@ class Heightfield
 		SBAPI void set_auto_origin( void );
 		
 //		void paste_img( void );
-		SBAPI float get_elevation( float x, float z, float *normal_p = NULL );
+		SBAPI float get_elevation( float x, float z, float *normal_p = nullptr );
 
 		struct MeshData {
 			int 	mesh_resx;

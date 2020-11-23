@@ -37,12 +37,12 @@ SkJoint::SkJoint()
 
    _coldetid = -1;
 
-   _parent = NULL;
+   _parent = nullptr;
 
    _lmat_uptodate = 0;
    _name = "";
    _index = -1;
-   _skeleton = NULL;
+   _skeleton = nullptr;
 
    _pos._joint = this; // as we initialized it with null (to avoid a warning)
    _quat = 0;

@@ -36,7 +36,7 @@ protected:
 	srLinearCurve	_curve;
 
 public:
-	MeCtTimeShiftWarp( MeController* child = NULL );
+	MeCtTimeShiftWarp( MeController* child = nullptr );
 	// virtual ~MeCtTimeShiftWarp(); // Default destructor call ~MeCtUnary to delete child
 
 	srLinearCurve& get_curve() { return _curve; }

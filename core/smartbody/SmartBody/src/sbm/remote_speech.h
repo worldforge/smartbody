@@ -62,12 +62,12 @@ class remote_speech: public SmartBody::SpeechInterface {
 		virtual SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, const DOMNode* node, const char* callbackCmd ); //accepts dom document of which sound will be created from, returns Request ID
 		virtual SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, std::string text, const char* callbackCmd ); //accepts char* of above and returns request ID
 		virtual std::vector<SmartBody::VisemeData *>* getVisemes( SmartBody::RequestId requestId,  SbmCharacter* character ); //returns visemes  for given request
-		virtual char* getSpeechPlayCommand( SmartBody::RequestId requestId, SbmCharacter* character = NULL ); //returns the command to play speech
-		virtual char* getSpeechStopCommand( SmartBody::RequestId requestId, SbmCharacter* character = NULL ); //''                     stop
+		virtual char* getSpeechPlayCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //returns the command to play speech
+		virtual char* getSpeechStopCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //''                     stop
 		virtual char* getSpeechAudioFilename( SmartBody::RequestId requestId ); // gets the fileName of speech
 		virtual float getMarkTime( SmartBody::RequestId requestId, const XMLCh* markId ); //gets time value for a given marker
-		virtual std::vector<float> getEmotionCurve(SmartBody::RequestId requestId, const std::string& emotionType, SbmCharacter* character = NULL);
-		virtual std::vector<std::string> getEmotionNames(SmartBody::RequestId requestId, SbmCharacter* character = NULL);
+		virtual std::vector<float> getEmotionCurve(SmartBody::RequestId requestId, const std::string& emotionType, SbmCharacter* character = nullptr);
+		virtual std::vector<std::string> getEmotionNames(SmartBody::RequestId requestId, SbmCharacter* character = nullptr);
 
 		virtual void requestComplete( SmartBody::RequestId requestId );
 

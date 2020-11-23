@@ -24,12 +24,12 @@ MeCtBlendEngine::MeCtBlendEngine(SmartBody::SBSkeleton* sk, std::string rootName
 	skeletonCopy->ref();
 	skeletonRef  = sk;
 	rootJointName = rootName;
-	dataInterpolator = NULL;
-	refMotion = NULL;
+	dataInterpolator = nullptr;
+	refMotion = nullptr;
 	valid = false;	
-	interpMotion = NULL;
-	motionParameter = NULL;
-	simplexList = NULL;
+	interpMotion = nullptr;
+	motionParameter = nullptr;
+	simplexList = nullptr;
 	
 }
 
@@ -203,7 +203,7 @@ void MeCtBlendEngine::updateSkeletonCopy()
 
 DataInterpolator* MeCtBlendEngine::createInterpolator(std::string interpolatorType)
 {
-	DataInterpolator* interpolator = NULL;
+	DataInterpolator* interpolator = nullptr;
 	
 	if (interpolatorType == "KNN")
 	{
@@ -215,18 +215,18 @@ DataInterpolator* MeCtBlendEngine::createInterpolator(std::string interpolatorTy
 	else if (interpolatorType == "Inverse")
 	{
 		interpolator = new InverseInterpolation();
-		resampleData = NULL;
+		resampleData = nullptr;
 	}
 	else if (interpolatorType == "RBF")
 	{
 		interpolator = new RBFInterpolator();
-		resampleData = NULL;
+		resampleData = nullptr;
 	}
 	else if (interpolatorType == "Barycentric")
 	{
 		BarycentricInterpolator* baryInterpolator = new BarycentricInterpolator();
 		interpolator = baryInterpolator;
-		resampleData = NULL;
+		resampleData = nullptr;
 		simplexList = &baryInterpolator->simplexList;
 	}
 	//RBFInterpolator* interpolator = new RBFInterpolator();
@@ -239,7 +239,7 @@ ResampleMotion* MeCtBlendEngine::createInterpMotion()
 {
 	ResampleMotion* ex = new ResampleMotion(motionExamples.getMotionData());
 	ex->motionParameterFunc = motionParameter;
-	ex->motionProfile = NULL;
+	ex->motionProfile = nullptr;
 	return ex;
 }
 

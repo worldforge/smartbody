@@ -59,7 +59,7 @@ class srSplineCurve {
 			public:
 				Key( double p, double v ) 
 				:	ctrl_key( p, v ) {
-					next_p = NULL;
+					next_p = nullptr;
 				}
 				~Key( void )	{}
 				
@@ -74,8 +74,8 @@ class srSplineCurve {
 
 			public:
 				Node( void ) {
-					next_p = NULL;
-					ref_key_p = NULL;
+					next_p = nullptr;
+					ref_key_p = nullptr;
 				}
 				~Node( void )	{}
 				
@@ -118,14 +118,14 @@ class srSplineCurve {
 
 			algorithm = ALG_CATMULL;
 
-			head_key_p = NULL;
-			tail_key_p = NULL;
-			head_node_p = NULL;
-			tail_node_p = NULL;
+			head_key_p = nullptr;
+			tail_key_p = nullptr;
+			head_node_p = nullptr;
+			tail_node_p = nullptr;
 
-			curr_edit_key_p = NULL;
-			curr_query_key_p = NULL;
-			curr_query_node_p = NULL;
+			curr_edit_key_p = nullptr;
+			curr_query_key_p = nullptr;
+			curr_query_node_p = nullptr;
 		}
 
 	public:
@@ -167,7 +167,7 @@ class srSplineCurve {
 
 		bool insert( double p, double v );
 
-		double evaluate( double t, bool *cropped_p = NULL );
+		double evaluate( double t, bool *cropped_p = nullptr );
 
 	protected:
 

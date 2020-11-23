@@ -66,7 +66,7 @@ srLinearCurve::Key::Key( double p, double v ) {
 	value = v;
 	dp = 0.0; inv_dp = 0.0;
 	dv = 0.0;
-	next_p = NULL;
+	next_p = nullptr;
 #if ENABLE_OBJ_KEY_CT
 	objective_key_count++;
 	if( objective_key_count > objective_key_count_max ) objective_key_count_max = objective_key_count;
@@ -183,17 +183,17 @@ void srLinearCurve::clear( void )	{
 
 void srLinearCurve::clear_after( double t )	{
 
-	if( head_p == NULL )	{
+	if( head_p == nullptr )	{
 		return;
 	}
 	Key *floor_p = find_floor_key( t );
-	if( floor_p == NULL )	{
+	if( floor_p == nullptr )	{
 		clear();
 		return;
 	}
 
 	Key *del_p = floor_p->next();
-	floor_p->next( NULL );
+	floor_p->next( nullptr );
 
 	while( del_p ) {
 		Key *tmp_p = del_p;
@@ -285,10 +285,10 @@ double srLinearCurve::get_key_value(int index)
 
 double srLinearCurve::get_next_nonzero_value( double after )	{
 
-	if( head_p == NULL )	{
+	if( head_p == nullptr )	{
 		return( -1.0 );
 	}
-	Key *key_p = NULL;
+	Key *key_p = nullptr;
 	Key *floor_p = find_floor_key( after );
 	if( floor_p )	{
 		key_p = floor_p->next();
@@ -307,10 +307,10 @@ double srLinearCurve::get_next_nonzero_value( double after )	{
 
 double srLinearCurve::get_next_nonzero_slope( double after )	{
 
-	if( head_p == NULL )	{
+	if( head_p == nullptr )	{
 		return( -1.0 );
 	}
-	Key *key_p = NULL;
+	Key *key_p = nullptr;
 	Key *floor_p = find_floor_key( after );
 	if( floor_p )	{
 		key_p = floor_p->next();
@@ -330,10 +330,10 @@ double srLinearCurve::get_next_nonzero_slope( double after )	{
 #if 0
 double srLinearCurve::get_last_nonzero_param( double after )	{
 
-	if( head_p == NULL )	{
+	if( head_p == nullptr )	{
 		return( -1.0 );
 	}
-	Key *key_p = NULL;
+	Key *key_p = nullptr;
 	Key *floor_p = find_floor_key( after );
 	if( floor_p )	{
 		key_p = floor_p->next();
@@ -369,7 +369,7 @@ srLinearCurve::Key* srLinearCurve::find_floor_key( double t )	{
 	}
 	if( key_p )	{
 		if( t < key_p->param )	{
-			return( NULL );
+			return( nullptr );
 		}
 	}
 	while( key_p )	{
@@ -388,7 +388,7 @@ srLinearCurve::Key* srLinearCurve::find_floor_key( double t )	{
 			return( key_p );
 		}
 	}
-	return( NULL );
+	return( nullptr );
 }
 
 double srLinearCurve::head_boundary( double t, bool *cropped_p ) {
@@ -541,7 +541,7 @@ double srLinearCurve::evaluate( double t, bool *cropped_p )	{
 		// before head:
 		return( head_boundary( t, cropped_p ) );
 	}
-	curr_p = NULL;
+	curr_p = nullptr;
 	if( cropped_p ) 
 	{
 		*cropped_p = true;
@@ -566,7 +566,7 @@ int srLinearCurve::insert_key( Key *key_p ) {
 		curr_p = key_p;
 		return( false );
 	}
-	curr_p = NULL;
+	curr_p = nullptr;
 	return( true );
 }
 
@@ -602,10 +602,10 @@ void srLinearCurve::update( void )	{
 //G_update_count++;
 
 	reset();
-	curr_p = NULL;
-	tail_p = NULL;
+	curr_p = nullptr;
+	tail_p = nullptr;
 	int c = 0;
-	Key *prev_p = NULL;
+	Key *prev_p = nullptr;
 	Key *key_p = head_p;
 	while( key_p ) {
 

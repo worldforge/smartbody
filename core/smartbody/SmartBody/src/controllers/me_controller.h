@@ -88,7 +88,7 @@ protected :
 	 *  Pointer to the current evaluation context.
 	 *  This variable is managed by MeControllerContext::add_controller() and ::remove_controller().
 	 *  (The variable should be made private and accessed only via context().)
-	 *  If no context is set, the value will be NULL.
+	 *  If no context is set, the value will be nullptr.
 	 *  MeController::context_updated() is called immediately after the _context value changes.
 	 */
     MeControllerContext* _context;
@@ -174,10 +174,10 @@ public :
     /**
      *  Get Nth child.
 	 *
-     *  Returns NULL for invalid n.
+     *  Returns nullptr for invalid n.
      */
 	virtual MeController* child( size_t n )
-	{	return NULL; }
+	{	return nullptr; }
 
 	/**
 	 *  Removes child from this controller.
@@ -200,7 +200,7 @@ public :
 	SBAPI virtual void remove_all_children();
 
     /**
-     *  Sets the evaluation context, or unset if context is NULL.
+     *  Sets the evaluation context, or unset if context is nullptr.
      */
     MeControllerContext* const context()
 	{	return _context; }
@@ -236,10 +236,10 @@ public :
     SBAPI virtual void init (SmartBody::SBPawn* pawn);
 
 
-	/*! Returns the controller's prune policy, if set.  Otherwise, NULL. */
+	/*! Returns the controller's prune policy, if set.  Otherwise, nullptr. */
 	MePrunePolicy* prune_policy();
 
-	/*! Sets the controller's prune policy.  If set to NULL, previous policy is removed. */
+	/*! Sets the controller's prune policy.  If set to nullptr, previous policy is removed. */
 	void prune_policy( MePrunePolicy* prune_policy );
 
     /*! This method is to be called before starting to evaluate the controller. */

@@ -209,18 +209,18 @@ public :
 	serves as a starting point for the search, resulting in maximum efficiency.
 	To optimize evaluations from several controllers sharing a same motion file,
 	parameter lastframe can be used and will store the last frame used per controller. */
-	SBAPI void apply ( float t, InterpType=Linear, int* lastframe=NULL, SmartBody::SBRetarget* retarget = NULL );
+	SBAPI void apply ( float t, InterpType=Linear, int* lastframe=nullptr, SmartBody::SBRetarget* retarget = nullptr );
 
-	/*! Evaluates and apply the motion at time t to any float* buffer (or channel joints if NULL).
+	/*! Evaluates and apply the motion at time t to any float* buffer (or channel joints if nullptr).
 	Unless map_p is specified, the buffer is assumed to be in motion's channel order with all channels present.
 	The search for the 2 keyframes to be interpolated (adjacent to t) is done linearly,
 	however as 99% of the cases the evaluation is monotone, the last frame applied
 	serves as a starting point for the search, resulting in maximum efficiency.
 	To optimize evaluations from several controllers sharing a same motion file,
 	parameter lastframe can be used and will store the last frame used per controller. */
-	SBAPI void apply ( float t, float* buffer, SrBuffer<int>* map_p, InterpType=Linear, int* lastframe=NULL, bool isAdditive = false, SmartBody::SBRetarget* retarget = NULL );
+	SBAPI void apply ( float t, float* buffer, SrBuffer<int>* map_p, InterpType=Linear, int* lastframe=nullptr, bool isAdditive = false, SmartBody::SBRetarget* retarget = nullptr );
 
-	void applyNew ( float t, float* buffer, SrBuffer<int>* map_p, InterpType=Linear, int* lastframe=NULL, bool isAdditive = false, SmartBody::SBRetarget* retarget = NULL );
+	void applyNew ( float t, float* buffer, SrBuffer<int>* map_p, InterpType=Linear, int* lastframe=nullptr, bool isAdditive = false, SmartBody::SBRetarget* retarget = nullptr );
 
 
 	/*! Returns a string describing the interpolation type */
@@ -237,8 +237,8 @@ public :
 	
 	SkMotion* copyMotion();
 
-	SkMotion* buildPrestrokeHoldMotion(float holdTime, SkMotion* idleMotion = NULL);
-	SkMotion* buildPoststrokeHoldMotion(float holdTime, std::vector<std::string>& joints, float scale = 1.0f, float freq = -1.0f, SkMotion* idleMotion = NULL);
+	SkMotion* buildPrestrokeHoldMotion(float holdTime, SkMotion* idleMotion = nullptr);
+	SkMotion* buildPoststrokeHoldMotion(float holdTime, std::vector<std::string>& joints, float scale = 1.0f, float freq = -1.0f, SkMotion* idleMotion = nullptr);
 	
 	void smoothAtFrame(int frameId, int interval, int maskSize = 3, int maskType = 0);
 	void smoothByMask(std::vector<int>& frameIds, std::vector<float>& mask);

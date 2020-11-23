@@ -32,7 +32,7 @@ std::string MeCtTether::type_name = "Tether";
 MeCtTether::MeCtTether( void )	{
 
    _duration = -1.0;
-   _skeleton_ref_p = NULL;
+   _skeleton_ref_p = nullptr;
 }
 
 MeCtTether::~MeCtTether( void )	{
@@ -43,11 +43,11 @@ MeCtTether::~MeCtTether( void )	{
 void MeCtTether::clear( void )	{
 	
    _duration = -1.0;
-   _skeleton_ref_p = NULL;
+   _skeleton_ref_p = nullptr;
 
 	if( source_ref_joint_str ) {
 		free( source_ref_joint_str );
-		source_ref_joint_str = NULL;
+		source_ref_joint_str = nullptr;
 	}
 }
 
@@ -69,13 +69,13 @@ void MeCtTether::set_source_joint( char *joint_name )	{
 	
 	if( source_ref_joint_str ) free( source_ref_joint_str );
 	source_ref_joint_str = _strdup( joint_name );
-	source_ref_joint_p = NULL;
+	source_ref_joint_p = nullptr;
 }
 
 void MeCtTether::set_source_joint( SkJoint* joint_p )	{
 
 	if( source_ref_joint_str ) free( source_ref_joint_str );
-	source_ref_joint_str = NULL;
+	source_ref_joint_str = nullptr;
 	source_ref_joint_p = joint_p;
 }
 
@@ -105,13 +105,13 @@ void MeCtTether::set_offset_polar( float d, float a, float r ) {
 SkJoint* MeCtTether::get_joint( char *joint_str, SkJoint *joint_p )	{
 
 	if( joint_str )	{
-		if( joint_p == NULL )	{
+		if( joint_p == nullptr )	{
 			if( _skeleton_ref_p )	{
 				joint_p = _skeleton_ref_p->search_joint( joint_str );
-				if( joint_p == NULL )	{
+				if( joint_p == nullptr )	{
 					fprintf( stderr, "MeCtTether::get_joint ERR: joint '%s' NOT FOUND in skeleton\n", joint_str );
 					free( joint_str );
-					joint_str = NULL;
+					joint_str = nullptr;
 				}
 			}
 			else	{

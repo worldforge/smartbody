@@ -112,8 +112,8 @@ SrArray<SrQuat>* get_blended_quat_buffer(MeCtLocomotionJointInfo* joint_info, fl
 
 SrArray<SrQuat>* get_blended_quat_buffer(SrArray<SrQuat>* dest, SrArray<SrQuat>* quat_buffer1, SrArray<SrQuat>* quat_buffer2, float weight)
 {
-	if(quat_buffer1->size() != quat_buffer2->size()) return NULL;
-	if(dest == NULL)
+	if(quat_buffer1->size() != quat_buffer2->size()) return nullptr;
+	if(dest == nullptr)
 	{
 		SmartBody::util::log("Error. buffer size = 0");
 	}

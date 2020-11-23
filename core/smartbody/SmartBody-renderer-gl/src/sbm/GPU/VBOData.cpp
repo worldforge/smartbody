@@ -109,11 +109,11 @@ VBOData::VBOData( char* name, int type, std::vector<SrVec2>& Data )
 	strcpy(m_Name,name);
 
 	data_Vec2f = &Data;	
-	data_Vec3f = NULL;
-	data_Vec3i = NULL;
-	data_Vec4f = NULL;
-	data_Vec4i = NULL;
-	data_float = NULL;
+	data_Vec3f = nullptr;
+	data_Vec3i = nullptr;
+	data_Vec4f = nullptr;
+	data_Vec4i = nullptr;
+	data_float = nullptr;
 
 	m_bUpdate = true;
 	m_iVBO_ID = 0;
@@ -125,11 +125,11 @@ VBOData::VBOData( char* name, int type, std::vector<float>& Data )
 	m_UsageType = GL_STATIC_DRAW;
 	strcpy(m_Name,name);
 	data_float = &Data;
-	data_Vec3f = NULL;
-	data_Vec3i = NULL;
-	data_Vec4f = NULL;
-	data_Vec4i = NULL;
-	data_Vec2f = NULL;
+	data_Vec3f = nullptr;
+	data_Vec3i = nullptr;
+	data_Vec4f = nullptr;
+	data_Vec4i = nullptr;
+	data_Vec2f = nullptr;
 
 	m_bUpdate = true;
 	m_iVBO_ID = 0;
@@ -140,12 +140,12 @@ VBOData::VBOData( char* name, int type, std::vector<SrVec>& Data )
 	m_ArrayType=type;
 	m_UsageType = GL_STATIC_DRAW;
 	strcpy(m_Name,name);
-	data_Vec2f = NULL;
+	data_Vec2f = nullptr;
 	data_Vec3f = &Data;
-	data_Vec3i = NULL;
-	data_Vec4f = NULL;
-	data_Vec4i = NULL;
-	data_float = NULL;
+	data_Vec3i = nullptr;
+	data_Vec4f = nullptr;
+	data_Vec4i = nullptr;
+	data_float = nullptr;
 
 	m_bUpdate = true;
 	m_iVBO_ID = 0;
@@ -156,12 +156,12 @@ VBOData::VBOData( char* name, int type, std::vector<SrVec3i>& Data )
 	m_ArrayType=type;
 	m_UsageType = GL_STATIC_DRAW;
 	strcpy(m_Name,name);
-	data_Vec2f = NULL;
-	data_Vec3f = NULL;
+	data_Vec2f = nullptr;
+	data_Vec3f = nullptr;
 	data_Vec3i = &Data;
-	data_Vec4f = NULL;
-	data_Vec4i = NULL;
-	data_float = NULL;
+	data_Vec4f = nullptr;
+	data_Vec4i = nullptr;
+	data_float = nullptr;
 
 	m_bUpdate = true;
 	m_iVBO_ID = 0;
@@ -172,12 +172,12 @@ VBOData::VBOData( char* name, int type, std::vector<SrVec4>& Data )
 	m_ArrayType=type;
 	m_UsageType = GL_STATIC_DRAW;
 	strcpy(m_Name,name);
-	data_Vec2f = NULL;
-	data_Vec3f = NULL;
-	data_Vec3i = NULL;
+	data_Vec2f = nullptr;
+	data_Vec3f = nullptr;
+	data_Vec3i = nullptr;
 	data_Vec4f = &Data;
-	data_Vec4i = NULL;
-	data_float = NULL;
+	data_Vec4i = nullptr;
+	data_float = nullptr;
 
 	m_bUpdate = true;
 	m_iVBO_ID = 0;
@@ -189,12 +189,12 @@ VBOData::VBOData( char* name, int type, std::vector<SrVec4i>& Data )
 	m_ArrayType=type;
 	m_UsageType = GL_STATIC_DRAW;
 	strcpy(m_Name,name);
-	data_Vec2f = NULL;
-	data_Vec3f = NULL;
-	data_Vec3i = NULL;
-	data_Vec4f = NULL;
+	data_Vec2f = nullptr;
+	data_Vec3f = nullptr;
+	data_Vec3i = nullptr;
+	data_Vec4f = nullptr;
 	data_Vec4i = &Data;
-	data_float = NULL;
+	data_float = nullptr;
 
 	m_bUpdate = true;
 	m_iVBO_ID = 0;

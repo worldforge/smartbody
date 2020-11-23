@@ -74,7 +74,7 @@ SBAttributeGroup* SBAttributeManager::getGroup(const std::string& name, bool cre
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

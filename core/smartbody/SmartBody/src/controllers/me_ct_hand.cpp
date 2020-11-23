@@ -22,7 +22,7 @@ void FingerChain::init( MeCtIKTreeNode* figTip )
 	fingerTip = figTip;
 	MeCtIKTreeNode* node = fingerTip;
 	fingerNodes.clear();
-	while (node->parent != NULL)
+	while (node->parent != nullptr)
 	{
 		fingerNodes.push_back(node);
 		node = node->parent;
@@ -309,7 +309,7 @@ void MeCtHand::init(std::string grabType, const MotionDataSet& reachPose, const 
 // 		SrVec vec(-8,-6,0);
 // 		getPinchFrame(grabFrame,vec);
 // 	}
-	grabTargetName = "";//NULL;//new ColSphere(); // hard coded to sphere for now		
+	grabTargetName = "";//nullptr;//new ColSphere(); // hard coded to sphere for now
 }
 
 void MeCtHand::getPinchFrame( BodyMotionFrame& pinchFrame, SrVec& wristOffset )

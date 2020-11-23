@@ -63,8 +63,8 @@ void MeCtParamAnimation::Context::child_channels_updated( MeController* child )
 
 MeCtParamAnimation::MeCtParamAnimation() : MeCtContainer(new MeCtParamAnimation::Context(this))
 {
-	character = NULL;
-	woWriter = NULL;
+	character = nullptr;
+	woWriter = nullptr;
 	smoothAngVel = 0.f;
 	smoothVel = SrVec();
 }
@@ -73,9 +73,9 @@ MeCtParamAnimation::MeCtParamAnimation(SbmCharacter* c, MeCtChannelWriter* wo) :
 {
 	character = dynamic_cast<SmartBody::SBCharacter*>(c);
 	baseJointName = "base";
-	curStateData = NULL;
-	nextStateData = NULL;
-	transitionManager = NULL;
+	curStateData = nullptr;
+	nextStateData = nullptr;
+	transitionManager = nullptr;
 	waitingList.clear();
 	prevGlobalTime = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
 	smoothAngVel = 0.f;
@@ -127,7 +127,7 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 		if (!hasPABlend(PseudoIdleState))
 		{			
 			std::vector<double> weights;
-			schedule(NULL, weights);
+			schedule(nullptr, weights);
 			return true;
 		}
 	}	
@@ -135,16 +135,16 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 	{
 		if (curStateData->state && // the state exist
 			curStateData->state->stateName != PseudoIdleState &&  // not a idle state
-			nextStateData == NULL && (curStateData->wrapMode == PABlendData::Once) && // only played once
+			nextStateData == nullptr && (curStateData->wrapMode == PABlendData::Once) && // only played once
 			curStateData->timeManager->getNormalizeLocalTime() >= (curStateData->timeManager->getDuration() - curStateData->transitionLength)) // about to finish
 		{			
 			if (!hasPABlend(PseudoIdleState))
 			{
-				//SmartBody::util::log("no current state, and the state is about to finish, scedule NULL state");
+				//SmartBody::util::log("no current state, and the state is about to finish, scedule nullptr state");
 				std::vector<double> weights;
 				ScheduleType scType;
 				scType.transitionLen = curStateData->transitionLength;
-				schedule(NULL, weights, scType);
+				schedule(nullptr, weights, scType);
 			}
 		}
 			
@@ -155,7 +155,7 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 	
 	if (transitionManager)
 	{
-		if (curStateData == NULL || nextStateData == NULL)
+		if (curStateData == nullptr || nextStateData == nullptr)
 		{
 			std::string errorInfo;
 			errorInfo = character->getName() + "'s animation state transition warning. ";
@@ -173,18 +173,18 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
       }
 			SmartBody::util::log("%s", errorInfo.c_str());
 
-			if (curStateData == NULL && nextStateData != NULL)
+			if (curStateData == nullptr && nextStateData != nullptr)
 			{
 				if (nextStateData->state)
 					SmartBody::util::log("would start state %s now", nextStateData->state->stateName.c_str());
 				curStateData = nextStateData;
 				curStateData->active = true;
-				nextStateData = NULL;
+				nextStateData = nullptr;
 				delete transitionManager;
-				transitionManager = NULL;
+				transitionManager = nullptr;
 				return true;
 			}
-			if (curStateData != NULL && nextStateData == NULL)
+			if (curStateData != nullptr && nextStateData == nullptr)
 			{
 				SmartBody::util::log("scheduling problem, please check the corresponding time marks for two states.");
 				reset();
@@ -339,10 +339,10 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 				//	character->setJointTrajBlendWeight(0.f);
 
 				delete transitionManager;
-				transitionManager = NULL;
+				transitionManager = nullptr;
 				delete curStateData;
 				curStateData = nextStateData;
-				nextStateData = NULL;
+				nextStateData = nullptr;
 			}			
 		}
 	} 
@@ -412,7 +412,7 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 		else
 		{
 			delete curStateData;
-			curStateData = NULL;
+			curStateData = nullptr;
 		}
 	}
 	return true;
@@ -532,7 +532,7 @@ void MeCtParamAnimation::schedule( PABlend* state, const std::vector<double>& we
 	}
 	unit.transitionLength = unitTransitionLen;
 	// make sure the weights are valid for non-pseudoidle state
-	if (unit.weights.size() == 0 && unit.data != NULL)
+	if (unit.weights.size() == 0 && unit.data != nullptr)
 	{
 		if (unit.data->stateName != PseudoIdleState)
 		{
@@ -548,7 +548,7 @@ void MeCtParamAnimation::schedule( PABlend* state, const std::vector<double>& we
 		}
 	}
 	// make sure there's motion for non-pseudoidle state
-	if (unit.data != NULL)
+	if (unit.data != nullptr)
 	{
 		if (unit.data->stateName != PseudoIdleState && unit.data->getNumMotions() == 0)
 		{
@@ -615,7 +615,7 @@ void MeCtParamAnimation::schedule(PABlend* blendData, const std::vector<double>&
 	
 
 	// make sure the weights are valid for non-pseudoidle state
-	if (unit.weights.size() == 0 && unit.data != NULL)
+	if (unit.weights.size() == 0 && unit.data != nullptr)
 	{
 		if (unit.data->stateName != PseudoIdleState)
 		{
@@ -632,7 +632,7 @@ void MeCtParamAnimation::schedule(PABlend* blendData, const std::vector<double>&
 	}
 
 	// make sure there's motion for non-pseudoidle state
-	if (unit.data != NULL)
+	if (unit.data != nullptr)
 	{
 		if (unit.data->stateName != PseudoIdleState && unit.data->getNumMotions() == 0)
 		{
@@ -652,7 +652,7 @@ void MeCtParamAnimation::unschedule()
 
 void MeCtParamAnimation::updateWeights(std::vector<double>& w)
 {
-	if (curStateData == NULL)
+	if (curStateData == nullptr)
 		return;
 	if (curStateData->state->getNumMotions() != w.size())
 		return;
@@ -676,7 +676,7 @@ void MeCtParamAnimation::updateWeights(std::vector<double>& w)
 
 void MeCtParamAnimation::updateWeights()
 {
-	if (curStateData == NULL)
+	if (curStateData == nullptr)
 		return;
 	std::vector<double>& w = curStateData->weights;
 	updateWeights(w);
@@ -714,7 +714,7 @@ PABlendData* MeCtParamAnimation::getCurrentPABlendData()
 	if (curStateData)
 		return curStateData;
 	else
-		return NULL;
+		return nullptr;
 }
 
 bool MeCtParamAnimation::hasPABlend(const std::string& name)
@@ -768,11 +768,11 @@ void MeCtParamAnimation::autoScheduling(double time)
 		return;
 
 	// if current state is pseudo idle & next state is also pseudo idle, ignore
-	if (curStateData != NULL)
+	if (curStateData != nullptr)
 	{
 		if (curStateData->getStateName() == PseudoIdleState)
 		{
-			if (nextUnit.data == NULL)
+			if (nextUnit.data == nullptr)
 			{
 				waitingList.pop_front();
 				return;
@@ -785,11 +785,11 @@ void MeCtParamAnimation::autoScheduling(double time)
 		}
 	}
 
-	if (curStateData == NULL)
+	if (curStateData == nullptr)
 	{
 		if (nextStateData)
 			delete nextStateData;
-		nextStateData = NULL;
+		nextStateData = nullptr;
 		curStateData = createStateModule(nextUnit);
 		if (!curStateData)
 		{
@@ -802,7 +802,7 @@ void MeCtParamAnimation::autoScheduling(double time)
 	{
 		if (transitionManager)
 			delete transitionManager;
-		SmartBody::SBAnimationTransition* data = NULL;
+		SmartBody::SBAnimationTransition* data = nullptr;
 		if (nextUnit.data)
 			data = SmartBody::SBScene::getScene()->getBlendManager()->getTransition(curStateData->state->stateName, nextUnit.data->stateName);
 		nextStateData = createStateModule(nextUnit);
@@ -855,7 +855,7 @@ void MeCtParamAnimation::autoScheduling(double time)
 
 PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 {
-	PABlendData* module = NULL;
+	PABlendData* module = nullptr;
 	if (su.data)
 	{
 		module = new PABlendData(this, su.data, su.weights, su.blend, su.wrap, su.schedule, su.stateTimeOffset, su.stateTimeTrim, su.directPlay);		
@@ -867,7 +867,7 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 			if (retarget && character->getBoolAttribute("onlineRetarget"))
 				module->retarget = retarget;
 			else
-				module->retarget = NULL;
+				module->retarget = nullptr;
 		}
 
 		module->blendStartOffset = su.stateTimeOffset;
@@ -916,7 +916,7 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 		{
 			if (module)
 				delete module;
-			return NULL;
+			return nullptr;
 		}
 		module->interpolator->initPreRotation(baseJoint->quat()->orientation()*baseJoint->quat()->prerot());
 		module->woManager->setMotionContextMaps(_context);
@@ -929,7 +929,7 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 	{
 		if (module)
 			delete module;
-		return NULL;
+		return nullptr;
 	}
 
 	/*
@@ -956,13 +956,13 @@ void MeCtParamAnimation::reset()
 {
 	if (curStateData)
 		delete curStateData;
-	curStateData = NULL;
+	curStateData = nullptr;
 	if (nextStateData)
 		delete nextStateData;
-	nextStateData = NULL;
+	nextStateData = nullptr;
 	if (transitionManager)
 		delete transitionManager;
-	transitionManager = NULL;
+	transitionManager = nullptr;
 	waitingList.clear();
 }
 
@@ -1082,7 +1082,7 @@ void MeCtParamAnimation::updateJointTrajectory( PABlendData* blendData )
 
 	SmartBody::SBAnimationBlend* animBlend = dynamic_cast<SmartBody::SBAnimationBlend*>(blendData->state);
 
-	SmartBody::SBRetarget* retarget = NULL;
+	SmartBody::SBRetarget* retarget = nullptr;
 	if (animBlend)
 	{
 		SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();

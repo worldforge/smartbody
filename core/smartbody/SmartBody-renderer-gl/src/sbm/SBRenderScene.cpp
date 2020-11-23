@@ -1,19 +1,19 @@
 /*
  Copyright (C) 2020 Erik Ogenvik
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+ SmartBody-lib is free software: you can redistribute it and/or
+ modify it under the terms of the Lesser GNU General Public License
+ as published by the Free Software Foundation, version 3 of the
+ license.
 
- This program is distributed in the hope that it will be useful,
+ SmartBody-lib is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ Lesser GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ You should have received a copy of the Lesser GNU General Public
+ License along with SmarBody-lib.  If not, see:
+     http://www.gnu.org/licenses/lgpl-3.0.txt
  */
 
 #include "SBRenderScene.h"
@@ -27,23 +27,125 @@
 
 #include "sbm/GPU/SbmShader.h"
 #include "sbm/GPU/SbmTexture.h"
+#include "SBRenderSceneListener.h"
+#include "sb/SBRenderAssetManager.h"
+#include "sb/SBAssetManager.h"
+
+namespace {
+bool blendScalePos(SrVec &v, SrVec &rootPos, int rootIdx, int headIdx, SrVec4i& boneIdx, SrVec4& boneWeight, float blendThreshold, float scaleRatio)
+{
+	if (v.y > rootPos.y + blendThreshold)
+		return false;
+
+	float rootHeadSkinWeightMax = 0.9f;
+	float rootHeadSkinWeightMin = 0.7f;
+	float rootSkinWeightMin = 0.1f;
+	float headSkinWeight = -1.f;
+	float rootSkinWeight = -1.f;
+	for (int k = 0; k < 4; k++)
+	{
+		if (boneIdx[k] == rootIdx)
+		{
+			rootSkinWeight = boneWeight[k];
+			//SmartBody::util::log("neck skin weight = %f", rootSkinWeight);
+		}
+		else if (boneIdx[k] == headIdx)
+		{
+			headSkinWeight = boneWeight[k];
+			//SmartBody::util::log("head skin weight = %f", headSkinWeight);
+		}
+	}
+	if (headSkinWeight > rootHeadSkinWeightMax) return false; // don't scale the part when head weight is larger than threshold
+	//if (v.y > rootPos.y && rootSkinWeight < rootSkinWeightMin) return false;
+	//float blendRatio = (v.y - rootPos.y + blendThreshold) / (blendThreshold*2.0);
+	float blendRatio = (v.y - rootPos.y) / (blendThreshold);
+	//float blendRatio = 0.f;
+	if (blendRatio < 0.f) blendRatio = 0.0;
+// 	if (headSkinWeight > rootHeadSkinWeightMin)
+// 	{
+// 		blendRatio = (headSkinWeight - rootHeadSkinWeightMin) / (rootHeadSkinWeightMax - rootHeadSkinWeightMin);
+// 		SmartBody::util::log("head skin weight = %f, root skin weight = %f, blendRatio = %f", headSkinWeight, rootSkinWeight, blendRatio);
+// 	}
+
+	float blendScaleRatio = (blendRatio)+(1.0f - blendRatio)*scaleRatio;
+	v = rootPos + (v - rootPos)*blendScaleRatio;
+	return true;
+}
+
+bool blendScalePos2(SrVec &v, SrVec &rootPos, SrVec &neckPos, int rootIdx, int neckIdx, SrVec4i& boneIdx, SrVec4& boneWeight, float blendThreshold, float scaleRatio)
+{
+	if (v.y > rootPos.y) // don't change anything
+		return false;
+
+	float rootHeadSkinWeightMax = 0.9f;
+	float rootHeadSkinWeightMin = 0.7f;
+	float rootSkinWeightMin = 0.1f;
+	float neckSkinWeight = -1.f;
+	float rootSkinWeight = -1.f;
+	for (int k = 0; k < 4; k++)
+	{
+		if (boneIdx[k] == rootIdx)
+		{
+			rootSkinWeight = boneWeight[k];
+			//SmartBody::util::log("neck skin weight = %f", rootSkinWeight);
+		}
+		else if (boneIdx[k] == neckIdx)
+		{
+			neckSkinWeight = boneWeight[k];
+			//SmartBody::util::log("head skin weight = %f", headSkinWeight);
+		}
+	}
+	if (rootSkinWeight > rootHeadSkinWeightMax) return false; // don't scale the part when head weight is larger than threshold
+	if (v.y > neckPos.y && neckSkinWeight < 0.1f) return false;
+
+	//float blendRatio = (v.y - rootPos.y + blendThreshold) / (blendThreshold*2.0);
+	float blendRatio = (rootPos.y - v.y) / (blendThreshold);
+	//float blendRatio = 0.f;
+	if (blendRatio > 1.f) blendRatio = 1.f;
+	//if (v.y < neckPos.y) blendRatio = 1.f;
+	//if (rootPos.y < neckPos.y) blendRatio = 0.f
+	// 	if (headSkinWeight > rootHeadSkinWeightMin)
+	// 	{
+	// 		blendRatio = (headSkinWeight - rootHeadSkinWeightMin) / (rootHeadSkinWeightMax - rootHeadSkinWeightMin);
+	// 		SmartBody::util::log("head skin weight = %f, root skin weight = %f, blendRatio = %f", headSkinWeight, rootSkinWeight, blendRatio);
+	// 	}
+
+	float blendScaleRatio = (1.0f - blendRatio)+(blendRatio)*scaleRatio;
+	v = rootPos + (v - rootPos)*blendScaleRatio;
+	return true;
+}
+
+}
 
 namespace SmartBody {
-SBRenderScene::SBRenderScene(SBScene& scene) : mScene(scene),
-											   _isCameraLocked(false),
-											   _coneOfSight(false),
-											   _coneOfSight_leftEye(nullptr),
-											   _coneOfSight_rightEye(nullptr) {
+SBRenderScene::SBRenderScene(SBScene& scene, SBRenderAssetManager& renderAssetManager) :
+		mScene(scene),
+		_renderAssetManager(renderAssetManager),
+		_isCameraLocked(false),
+		_coneOfSight(false),
+		_coneOfSight_leftEye(nullptr),
+		_coneOfSight_rightEye(nullptr),
+		mListener(std::make_unique<SBRenderSceneListener>(*this)) {
 	//TODO is this needed?
 	SbmShaderManager::singleton().setViewer(nullptr);
 
-	mScene.registerObjectProvider("envmap", [&](const std::string& suffix) {
-		SbmTextureManager& texManager = SbmTextureManager::singleton();
-		SbmTexture* texture = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, suffix.c_str());
-		return texture;
+	mScene.registerObjectProvider("envmap", SBScene::Provider{
+			[&](const std::string& suffix)->SmartBody::SBObject* {
+				//TODO: allow getting envmap texture
+//				SbmTextureManager& texManager = SbmTextureManager::singleton();
+//				auto texture = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, suffix.c_str());
+//				if (texture) {
+//					return texture.get();
+//				}
+				return nullptr;
+			},
+			[](SmartBody::SBObject&) {
+				return "";
+			}
+
 	});
 	//HACK until we can refactor this setup
-	mScene._removeAllPawnsCallback = [&](){
+	mScene._removeAllPawnsCallback = [&]() {
 		// clear the cameras
 		_cameras.clear();
 	};
@@ -519,7 +621,7 @@ SrCamera* SBRenderScene::createCamera(const std::string& name) {
 		SmartBody::util::log("A pawn with name '%s' already exists. Camera will not be created.", name.c_str());
 		return nullptr;
 	}
-	auto camera = new SrCamera();
+	auto camera = new SrCamera(*this);
 	camera->setName(name);
 	//SBSkeleton* skeleton = new SBSkeleton();
 	//camera->setSkeleton(skeleton);
@@ -677,5 +779,161 @@ void SBRenderScene::updateTrackedCameras() {
 	}
 }
 
+SBAPI void SBRenderScene::rescalePartialMeshSkeleton(const std::string& meshName, const std::string& skelName, const std::string& rootJointName, const std::vector<std::string>& skipMeshNames, float scaleRatio, float blendRatio) {
+	SmartBody::util::log("Rescale mesh and skeleton");
+	auto mesh = _renderAssetManager.getDeformableMesh(meshName);
+
+
+	SmartBody::SBSkeleton* skel = mScene.getAssetManager()->getSkeleton(skelName);
+	if (!mesh || !skel) {
+		SmartBody::util::log("Warning, can't find mesh '%s' or skeleton '%s'.", meshName.c_str(), skelName.c_str());
+		return;
+	}
+
+	SmartBody::SBJoint* rootJoint = skel->getJointByName(rootJointName);
+	if (!rootJoint) {
+		SmartBody::util::log("Warning, can't find joint '%s'.", rootJointName.c_str());
+		return;
+	}
+	SmartBody::util::log("before build skin vertex buffer");
+	mesh->buildSkinnedVertexBuffer();
+	SmartBody::util::log("after build skin vertex buffer");
+
+	SmartBody::util::log("before skeleton update global matrices");
+	skel->update_global_matrices();
+	SrVec rootPos = rootJoint->gmat().get_translation();
+	std::vector<std::string> belowJointNames;
+	std::string headJointName = "none";
+	belowJointNames.push_back(rootJointName);
+	int rootJointIdx = mesh->boneJointIdxMap[rootJointName];
+	int headJointIdx = -1;
+	int neckJointIdx = -1;
+	SmartBody::util::log("before find head joints");
+	for (int i = 0; i < skel->getNumJoints(); i++) {
+		SmartBody::SBJoint* joint = skel->getJoint(i);
+#if 1
+		//if (joint->getParent() == rootJoint) // children of root joint
+		{
+			std::string jointName = joint->getName();
+			std::transform(jointName.begin(), jointName.end(), jointName.begin(), ::tolower);
+			if (jointName.find("head") != std::string::npos) {
+				SmartBody::util::log("Head Joint = %s", joint->getMappedJointName().c_str());
+				headJointName = joint->getMappedJointName();
+				headJointIdx = mesh->boneJointIdxMap[headJointName];
+			}
+		}
+#endif
+
+		SrVec jpos = joint->gmat().get_translation();
+		if (jpos.y < rootPos.y) // lower than root position
+		{
+			belowJointNames.push_back(joint->getMappedJointName());
+		}
+	}
+	SrVec neckPos = rootJoint->getParent()->gmat().get_translation();
+	neckJointIdx = mesh->boneJointIdxMap[rootJoint->getParent()->getMappedJointName()];
+	SmartBody::util::log("Head Joint name = %s, idx = %d, Root Joint name = %s, idx = %d", headJointName.c_str(), headJointIdx, rootJointName.c_str(), rootJointIdx);
+
+	float blendThreshold = skel->getBoundingBox().size().y * blendRatio;
+
+	//rootPos = rootPos + SrVec(0, blendThreshold, 0);
+	std::map<std::string, bool> skipMeshMap;
+	for (const auto & skipMeshName : skipMeshNames)
+		skipMeshMap[skipMeshName] = true;
+
+	for (unsigned int i = 0; i < mesh->dMeshStatic_p.size(); i++) {
+		SrModel& model = mesh->dMeshStatic_p[i]->shape();
+		SrModel& dynModel = mesh->dMeshDynamic_p[i]->shape();
+		SkinWeight* skinWeight = mesh->skinWeights[i];
+		skinWeight->buildSkinWeightBuf();
+		std::string modelName = (const char*) model.name;
+		if (skipMeshMap.find(modelName) != skipMeshMap.end()) // skip the mesh
+			continue;
+		//std::map<std::string, std::vector<SrSnModel*> > blendShapeMap;
+		for (unsigned int k = 0; k < model.V.size(); k++) {
+			SrVec& v = model.V[k];
+			SrVec4i gboneIdx;
+			SrVec4i& lboneIdx = skinWeight->boneIDs[k];
+			for (int b = 0; b < 4; b++) {
+				gboneIdx[b] = mesh->boneJointIdxMap[skinWeight->infJointName[lboneIdx[b]]];
+			}
+			//LOG("old bone idx = %d %d %d %d", lboneIdx[0], lboneIdx[1], lboneIdx[2], lboneIdx[3]);
+			//LOG("global bone idx = %d %d %d %d", gboneIdx[0], gboneIdx[1], gboneIdx[2], gboneIdx[3]);
+			bool willScale = blendScalePos(v, rootPos, rootJointIdx, headJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
+			//bool willScale = blendScalePos2(v, rootPos, neckPos, rootJointIdx, neckJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
+			if (!willScale) continue;
+
+			model.V[k] = v; // update the new position
+			dynModel.V[k] = v;
+			//model.VOrig[k] = v;
+		}
+		model.computeNormals();
+		dynModel.computeNormals();
+		//std::string modelName = (const char*)model.name;
+		if (mesh->blendShapeMap.find(modelName) != mesh->blendShapeMap.end()) // the shape is associated with blendshape
+		{
+			std::vector<SrSnModel*>& blendShapes = mesh->blendShapeMap[modelName];
+			for (auto & blendShape : blendShapes) {
+				SrModel& faceModel = blendShape->shape();
+				for (unsigned int k = 0; k < faceModel.V.size(); k++) {
+					SrVec v = faceModel.V[k];
+#if 0
+					if (v.y > rootPos.y + blendThreshold)
+						continue;
+
+					float blendRatio = (v.y - rootPos.y) / (blendThreshold);
+					if (blendRatio < 0.f) blendRatio = 0.0;
+					float blendScaleRatio = (blendRatio)+(1.0 - blendRatio)*scaleRatio;
+					v = rootPos + (v - rootPos)*blendScaleRatio;
+#else
+					SrVec4i gboneIdx;
+					SrVec4i& lboneIdx = skinWeight->boneIDs[k];
+					for (int b = 0; b < 4; b++) {
+						gboneIdx[b] = mesh->boneJointIdxMap[skinWeight->infJointName[lboneIdx[b]]];
+					}
+					bool willScale = blendScalePos(v, rootPos, rootJointIdx, headJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
+					//bool willScale = blendScalePos2(v, rootPos, neckPos, rootJointIdx, neckJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
+					if (!willScale) continue;
+#endif
+
+					//v = rootPos + (v - rootPos)*scaleRatio;
+					//faceModel.V[k] = v; // update the new position
+					faceModel.V[k] = model.V[k];
+				}
+			}
+
+		}
+	}
+
+	// rescale the offset for each joint below root joint
+	for (auto& belowJointName : belowJointNames) {
+		SmartBody::SBJoint* joint = skel->getJointByMappedName(belowJointName);
+		joint->setOffset(joint->getOffset() * scaleRatio);
+	}
+
+	skel->invalidate_global_matrices();
+	skel->update_global_matrices();
+	SrVec newRootPos = rootJoint->gmat().get_translation();
+	SrVec rootOffset = rootPos - newRootPos;
+	auto* skelRoot = dynamic_cast<SmartBody::SBJoint*>(skel->root());
+	skelRoot->setOffset(skelRoot->getOffset() + rootOffset);
+
+	skel->invalidate_global_matrices();
+	skel->update_global_matrices();
+	skel->updateGlobalMatricesZero();
+
+	// update bind pose matrices
+	for (auto sw : mesh->skinWeights) {
+			for (unsigned int k = 0; k < sw->infJointName.size(); k++) {
+			// manually add all joint names
+			SmartBody::SBJoint* joint = skel->getJointByName(sw->infJointName[k]);
+
+			SrMat gmatZeroInv = joint->gmatZero().rigidInverse();
+			sw->bindPoseMat[k] = gmatZeroInv;
+		}
+	}
+
+	mesh->rebuildVertexBuffer(true);
+}
 
 }

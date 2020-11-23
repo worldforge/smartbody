@@ -30,11 +30,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBPhysicsSim.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBScene.h>
 #include "SBUtilities.h"
-#include <sbm/sbm_deformable_mesh.h>
-#include <sbm/GPU/SbmDeformableMeshGPU.h>
-#include <sr/sr_model.h>
 #include "gwiz_math.h"
 
 
@@ -477,7 +473,7 @@ SBPhysicsObj* SBPawn::getPhysicsObject()
 	SBPhysicsSim* phyEngine = SBPhysicsSim::getPhysicsEngine();
 	return phyEngine->getPhysicsPawn(getName());	
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -487,121 +483,122 @@ void SBPawn::copy( SBPawn* orignalPawn )
 	SBObject::copyAllAttributes(orignalPawn);		
 }
 
-DeformableMeshInstance* SBPawn::getActiveMesh()
-{
-	bool showStaticMesh = getBoolAttribute("showStaticMesh");
-	if (showStaticMesh)
-	{
-		return dStaticMeshInstance_p;
-	}
-	else
-	{
-		return dMeshInstance_p;
-	}
-}
+//DeformableMeshInstance* SBPawn::getActiveMesh()
+//{
+//	bool showStaticMesh = getBoolAttribute("showStaticMesh");
+//	if (showStaticMesh)
+//	{
+//		return dStaticMeshInstance_p;
+//	}
+//	else
+//	{
+//		return dMeshInstance_p;
+//	}
+//}
 
 void SBPawn::createMeshFromCollisionSurface(std::string name, SrVec color)
 {
-	SBGeomObject* geomObject = getGeomObject();
-
-	SBGeomBox* boxObject = dynamic_cast<SBGeomBox*>(geomObject);
-	if (!boxObject)
-		return;
-
-	SrVec boxSize = boxObject->getGeomSize();
-#if !defined (__ANDROID__) && !defined(SB_IPHONE) &&  !defined(__FLASHPLAYER__) && !defined(__native_client__)
-	SbmDeformableMeshGPU* mesh = new SbmDeformableMeshGPU();
-#else
-	DeformableMesh* mesh = new DeformableMesh();
-#endif	
-	mesh->setName(name);
-
-	SrModel* model = new SrModel();
-
-	model->V.push_back(SrPnt(  1.0f * boxSize[0], -1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 0
-	model->V.push_back(SrPnt(  1.0f * boxSize[0],  1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 1
-	model->V.push_back(SrPnt(  1.0f * boxSize[0],  1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 2
-	model->V.push_back(SrPnt(  1.0f * boxSize[0], -1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 3
-
-	model->V.push_back(SrPnt( -1.0f * boxSize[0], -1.0f * boxSize[1],  1.0f * boxSize[2] ));  // 4
-	model->V.push_back(SrPnt( -1.0f * boxSize[0],  1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 5
-	model->V.push_back(SrPnt( -1.0f * boxSize[0],  1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 6
-	model->V.push_back(SrPnt( -1.0f * boxSize[0], -1.0f * boxSize[1], -1.0f * boxSize[2] ));  // 7
-
-	
-	// CW
-	model->F.push_back(SrVec3i( 7, 1, 0));
-	model->F.push_back(SrVec3i(6, 1, 7));
-	model->F.push_back(SrVec3i(1, 2, 3));
-	model->F.push_back(SrVec3i(0, 1, 3));
-	model->F.push_back(SrVec3i(6, 2, 1));
-	model->F.push_back(SrVec3i(5, 2, 6));
-	model->F.push_back(SrVec3i(7, 5, 6));
-	model->F.push_back(SrVec3i(5, 7, 4));
-	model->F.push_back(SrVec3i(2, 4, 3));
-	model->F.push_back(SrVec3i(2, 5, 4));
-	model->F.push_back(SrVec3i(7, 0, 3));
-	model->F.push_back(SrVec3i(4, 7, 3));
-
-	// edges
-	SrArray<int> edges;
-	edges.push(0);
-	edges.push(1);
-	edges.push(6);
-	edges.push(7);
-	edges.push(3);
-	edges.push(2);
-	edges.push(4);
-	edges.push(5);
-	edges.push(6);
-	edges.push(5);
-	edges.push(5);
-	edges.push(2);
-	edges.push(2);
-	edges.push(1);
-	edges.push(1);
-	edges.push(6);
-	edges.push(7);
-	edges.push(0);
-	edges.push(0);
-	edges.push(3);
-	edges.push(3);
-	edges.push(4);
-	edges.push(4);
-	edges.push(7);
-	model->make_edges(edges);
-
-
-	int numFaces = model->F.size();
-	model->Fm.resize(numFaces);
-
-	model->computeNormals(); 
-
-	model->M.resize(1);
-	model->M[0] = SrMaterial();
-	model->M[0].diffuse.set(color[0], color[1], color[2], 1.0f);
-	model->mtlnames.push_back("unknown");
-	model->set_one_material(model->M[0]);
-	
-	SrSnModel* srSnModelStatic = new SrSnModel();
-	srSnModelStatic->shape(*model);
-	if (model->name.len() > 0)
-		srSnModelStatic->shape().name = model->name;
-	mesh->dMeshStatic_p.push_back(srSnModelStatic);
-	srSnModelStatic->ref();
-
-	SrSnModel* srSnModelDynamic = new SrSnModel();
-	srSnModelDynamic->shape(*model);
-	srSnModelDynamic->changed(true);
-	srSnModelDynamic->visible(false);
-	srSnModelDynamic->shape().name = model->name;
-	mesh->dMeshDynamic_p.push_back(srSnModelDynamic);
-	srSnModelDynamic->ref();
-
-
-
-	SmartBody::SBScene::getScene()->getAssetManager()->addDeformableMesh(name, mesh);
-	
+	//TODO: either remove or put in other place in the render component
+//	SBGeomObject* geomObject = getGeomObject();
+//
+//	SBGeomBox* boxObject = dynamic_cast<SBGeomBox*>(geomObject);
+//	if (!boxObject)
+//		return;
+//
+//	SrVec boxSize = boxObject->getGeomSize();
+//#if !defined (__ANDROID__) && !defined(SB_IPHONE) &&  !defined(__FLASHPLAYER__) && !defined(__native_client__)
+//	SbmDeformableMeshGPU* mesh = new SbmDeformableMeshGPU();
+//#else
+//	DeformableMesh* mesh = new DeformableMesh();
+//#endif
+//	mesh->setName(name);
+//
+//	SrModel* model = new SrModel();
+//
+//	model->V.push_back(SrPnt(  1.0f * boxSize[0], -1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 0
+//	model->V.push_back(SrPnt(  1.0f * boxSize[0],  1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 1
+//	model->V.push_back(SrPnt(  1.0f * boxSize[0],  1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 2
+//	model->V.push_back(SrPnt(  1.0f * boxSize[0], -1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 3
+//
+//	model->V.push_back(SrPnt( -1.0f * boxSize[0], -1.0f * boxSize[1],  1.0f * boxSize[2] ));  // 4
+//	model->V.push_back(SrPnt( -1.0f * boxSize[0],  1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 5
+//	model->V.push_back(SrPnt( -1.0f * boxSize[0],  1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 6
+//	model->V.push_back(SrPnt( -1.0f * boxSize[0], -1.0f * boxSize[1], -1.0f * boxSize[2] ));  // 7
+//
+//
+//	// CW
+//	model->F.push_back(SrVec3i( 7, 1, 0));
+//	model->F.push_back(SrVec3i(6, 1, 7));
+//	model->F.push_back(SrVec3i(1, 2, 3));
+//	model->F.push_back(SrVec3i(0, 1, 3));
+//	model->F.push_back(SrVec3i(6, 2, 1));
+//	model->F.push_back(SrVec3i(5, 2, 6));
+//	model->F.push_back(SrVec3i(7, 5, 6));
+//	model->F.push_back(SrVec3i(5, 7, 4));
+//	model->F.push_back(SrVec3i(2, 4, 3));
+//	model->F.push_back(SrVec3i(2, 5, 4));
+//	model->F.push_back(SrVec3i(7, 0, 3));
+//	model->F.push_back(SrVec3i(4, 7, 3));
+//
+//	// edges
+//	SrArray<int> edges;
+//	edges.push(0);
+//	edges.push(1);
+//	edges.push(6);
+//	edges.push(7);
+//	edges.push(3);
+//	edges.push(2);
+//	edges.push(4);
+//	edges.push(5);
+//	edges.push(6);
+//	edges.push(5);
+//	edges.push(5);
+//	edges.push(2);
+//	edges.push(2);
+//	edges.push(1);
+//	edges.push(1);
+//	edges.push(6);
+//	edges.push(7);
+//	edges.push(0);
+//	edges.push(0);
+//	edges.push(3);
+//	edges.push(3);
+//	edges.push(4);
+//	edges.push(4);
+//	edges.push(7);
+//	model->make_edges(edges);
+//
+//
+//	int numFaces = model->F.size();
+//	model->Fm.resize(numFaces);
+//
+//	model->computeNormals();
+//
+//	model->M.resize(1);
+//	model->M[0] = SrMaterial();
+//	model->M[0].diffuse.set(color[0], color[1], color[2], 1.0f);
+//	model->mtlnames.push_back("unknown");
+//	model->set_one_material(model->M[0]);
+//
+//	SrSnModel* srSnModelStatic = new SrSnModel();
+//	srSnModelStatic->shape(*model);
+//	if (model->name.len() > 0)
+//		srSnModelStatic->shape().name = model->name;
+//	mesh->dMeshStatic_p.push_back(srSnModelStatic);
+//	srSnModelStatic->ref();
+//
+//	SrSnModel* srSnModelDynamic = new SrSnModel();
+//	srSnModelDynamic->shape(*model);
+//	srSnModelDynamic->changed(true);
+//	srSnModelDynamic->visible(false);
+//	srSnModelDynamic->shape().name = model->name;
+//	mesh->dMeshDynamic_p.push_back(srSnModelDynamic);
+//	srSnModelDynamic->ref();
+//
+//
+//
+//	SmartBody::SBScene::getScene()->getAssetManager()->addDeformableMesh(name, mesh);
+//
 }
 
 

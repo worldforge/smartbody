@@ -28,10 +28,10 @@ EffectorConstantConstraint& EffectorConstantConstraint::operator=( const Effecto
 
 MeCtIKTreeNode::MeCtIKTreeNode()
 {
-	joint = NULL;
-	parent = NULL;
-	child = NULL;
-	brother = NULL;
+	joint = nullptr;
+	parent = nullptr;
+	child = nullptr;
+	brother = nullptr;
 	active = true;
 
 	// a temporary hack for testing
@@ -105,7 +105,7 @@ void MeCtIKTreeNode::setNodeName( const std::string& nodeName )
 
 MeCtIKTreeScenario::MeCtIKTreeScenario()
 {
-	ikTreeRoot = NULL;	
+	ikTreeRoot = nullptr;
 	ikTreeRootPos = SrVec(0,0,0);
 }
 
@@ -245,7 +245,7 @@ void MeCtIKTreeScenario::buildIKTreeFromJointRoot( SkJoint* root, std::vector<st
 int MeCtIKTreeScenario::traverseJoint(SkJoint* joint, MeCtIKTreeNode* jointNode, std::vector<MeCtIKTreeNode*>& nodeList, std::vector<std::string>& stopJoints )
 {
 	int nNodes = 1;
-	MeCtIKTreeNode* prevNode = NULL;
+	MeCtIKTreeNode* prevNode = nullptr;
 	for (int i=0;i<joint->num_children();i++)
 	{
 		SkJoint* child = joint->child(i);
@@ -323,7 +323,7 @@ MeCtIKTreeNode* MeCtIKTreeScenario::findIKTreeNode( const char* jointName )
 {
 	int idx = findIKTreeNodeInList(jointName,ikTreeNodes);	
 	if (idx == -1)
-		return NULL;
+		return nullptr;
 	return ikTreeNodes[idx];
 }
 
@@ -347,7 +347,7 @@ void MeCtIKTreeScenario::clearNodes()
 		delete node;
 	}
 	ikTreeNodes.clear();
-	ikTreeRoot = NULL;
+	ikTreeRoot = nullptr;
 }
 
 void MeCtIKTreeScenario::setTreeNodeQuat( const std::vector<SrQuat>& inQuatList, NodeQuatType type )

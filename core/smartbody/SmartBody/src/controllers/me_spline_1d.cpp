@@ -129,8 +129,8 @@ Knot* MeSpline1D::make_disjoint( domain x, range y, range left_y, range l_slope,
 // Generic smooth knot constructor
 Knot::Knot( MeSpline1D* spline, domain x, range y )
 :	spline( spline ),
-	prev( NULL ),
-	next( NULL ),
+	prev( nullptr ),
+	next( nullptr ),
 	type( SMOOTH ),
 	x( x ),
 	y( y ),
@@ -186,7 +186,7 @@ void Knot::update() {
 	//       making sure their x's don't overlap.
 	//       See get_left_control() comment for details.
 
-	if( prev==NULL ) {
+	if( prev==nullptr ) {
 		offset = 0;
 		c1 = c2 = c3 = 0;
 		c0 = left_y;
@@ -236,14 +236,14 @@ int MeSpline1D::count_knots() {
 
 Knot* MeSpline1D::knot_first() {
 	if( knots.empty() )
-		return NULL;
+		return nullptr;
 	else
 		return (*(knots.begin())).second;
 }
 
 Knot* MeSpline1D::knot_last() {
 	if( knots.empty() )
-		return NULL;
+		return nullptr;
 	else
 		return (--(knots.end()))->second;
 }
@@ -259,7 +259,7 @@ Knot* MeSpline1D::make_knot( domain x, range y, update_knot_algo& update_knot ) 
 	//  Must be called AFTER neighbor Knots are set.
 
 	const float EPSILON = 0.005f; // within 200th of a second
-	Knot* knot = NULL;
+	Knot* knot = nullptr;
 
 	if( knots.empty() ) {
 		knot = new_knot( x, y );
@@ -281,7 +281,7 @@ Knot* MeSpline1D::make_knot( domain x, range y, update_knot_algo& update_knot ) 
 			knots_iterator pos = knots.insert( --i, p );
 
 			if( pos==knots.begin() ) {
-				// first knot, left remains NULL
+				// first knot, left remains nullptr
 			} else {
 				// has left, use previously decremented i
 				Knot* prev = (*i).second;
@@ -353,7 +353,7 @@ void MeSpline1D::clear() {
 	knots_iterator end = knots.end();
 	for( ; it != end; ++it ) {
 		delete ( it->second );
-		it->second = NULL;
+		it->second = nullptr;
 	}
 	knots.clear();
 }
@@ -383,12 +383,12 @@ void MeSpline1D::erase( knots_iterator range1, knots_iterator range2 ) {
 	knots_iterator it = range1;
 	for( ; it != range2 && it != end; ++it ) {
 		delete ( it->second );
-		it->second = NULL;
+		it->second = nullptr;
 	}
 
 	if( it == end ) {
 		if( prev )
-			prev->next = NULL;
+			prev->next = nullptr;
 		knots.erase( range1, end );
 	} else {
 		Knot* next = range2->second->next;
@@ -399,12 +399,12 @@ void MeSpline1D::erase( knots_iterator range1, knots_iterator range2 ) {
 				next->prev = prev;
 			} else {
 				// has only next
-				next->prev = NULL;
+				next->prev = nullptr;
 			}
 		} else {
 			if( prev ) {
 				// has only prev
-				prev->next = NULL;
+				prev->next = nullptr;
 			}  // else has neither
 		}
 

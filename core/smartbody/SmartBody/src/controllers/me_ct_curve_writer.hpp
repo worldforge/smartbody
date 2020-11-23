@@ -32,19 +32,19 @@ class MeCtCurveWriter : public SmartBody::SBController {
 		static std::string TYPE;
 
 		MeCtCurveWriter( void )	{
-			curve_arr = NULL;
+			curve_arr = nullptr;
 			num_curves = 0;
-			write_once_arr = NULL;
+			write_once_arr = nullptr;
 			tail_bound_mode = 0;
 		}
 		~MeCtCurveWriter( void )	{
 			if( curve_arr ) {
 				delete [] curve_arr;
-				curve_arr = NULL;
+				curve_arr = nullptr;
 			}
 			if( write_once_arr ) {
 				delete [] write_once_arr;
-				write_once_arr = NULL;
+				write_once_arr = nullptr;
 			}
 		}
 	

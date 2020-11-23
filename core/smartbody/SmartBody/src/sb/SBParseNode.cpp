@@ -82,7 +82,7 @@ SBParseNode* SBParseNode::getChild(int num)
 	if (num >= 0 && _children.size() > (size_t) num)
 		return _children[num];
 	else
-		return NULL;
+		return nullptr;
 }
 
 }

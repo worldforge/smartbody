@@ -79,7 +79,7 @@ const MeCtIKJointLimit limb_joint_limit_l[] = {
 
 MeCtReach::MeCtReach( ) 
 {
-	MeCtReach(NULL);
+	MeCtReach(nullptr);
 }
 
 MeCtReach::MeCtReach( SkSkeleton* skeleton ) 
@@ -87,7 +87,7 @@ MeCtReach::MeCtReach( SkSkeleton* skeleton )
 	reach_mode = TARGET_POS;
 	target_pos = SrVec(0.f,150.f,0.f);
 	_skeleton = skeleton;
-	target_joint_ref = NULL;
+	target_joint_ref = nullptr;
 	limb_length = 0.0;
 	prev_time = -1.0;
 	//_duration = 10.0;

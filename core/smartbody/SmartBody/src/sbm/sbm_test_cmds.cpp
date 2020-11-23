@@ -71,7 +71,7 @@ bool normalize_character_id( const string& module, const string& role, const str
 		// Lookup character
 		if( char_id!="*" ) {
 			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter( char_id );
-			if( character == NULL ) {
+			if( character == nullptr ) {
 				std::stringstream strstr;
 				strstr << "WARNING: "<<module<<": Unknown "<<role<<" id \""<<char_id<<"\".";
 				SmartBody::util::log(strstr.str().c_str());
@@ -837,7 +837,7 @@ int test_bone_pos_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	}
 
 	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter( character_id );
-	if( character == NULL ) {
+	if( character == nullptr ) {
 		SmartBody::util::log("ERROR: Unknown test character \"%s\"", character_id.c_str());
 		return CMD_FAILURE;
 	}

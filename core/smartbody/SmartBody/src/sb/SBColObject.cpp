@@ -143,7 +143,7 @@ SBTransform& SBGeomObject::getCombineTransform()
 
 SBGeomObject* SBGeomObject::createGeometry(const std::string& type, SrVec size, SrVec from, SrVec to)
 {
-	SBGeomObject* geomObj = NULL;
+	SBGeomObject* geomObj = nullptr;
 	if (type == "sphere")
 	{
 		geomObj = new SBGeomSphere(size[0]);		

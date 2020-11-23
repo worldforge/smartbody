@@ -40,14 +40,14 @@ template <class X> class srCmdMap	{
 
 		virtual ~srCmdMap( void )	{
 			cmdToCallback.reset();
-			while( cmdToCallback.pull() != NULL )	{}
+			while( cmdToCallback.pull() != nullptr )	{}
 		}
 		
 		int insert( const char *key, sr_cmd_callback_fp fp )	{
 			return( cmdToCallback.insert( key, (void*)fp, FALSE ) );
 		}
 		
-		int execute( const char *key, srArgBuffer& argb, X *x_p = NULL )	{
+		int execute( const char *key, srArgBuffer& argb, X *x_p = nullptr )	{
 			if( key )	{
 				int keySize = strlen( key );
 				if( keySize > 0 )	{
@@ -63,7 +63,7 @@ template <class X> class srCmdMap	{
 			return( CMD_FAILURE );
 		}
 
-		int execute( char *cmd, X *x_p = NULL )	{
+		int execute( char *cmd, X *x_p = nullptr )	{
 			if( cmd )	{
 				srArgBuffer argb( cmd );
 				char *key = argb.read_token();
@@ -76,7 +76,7 @@ template <class X> class srCmdMap	{
 //			sr_cmd_callback_fp fp = static_cast<sr_cmd_callback_fp>( cmdToCallback.lookup( cmd_key ) );
 			sr_cmd_callback_fp fp = (sr_cmd_callback_fp)( cmdToCallback.lookup( cmd_key ) );
 
-			return( fp != NULL );
+			return( fp != nullptr );
 		}
 
 		void reset( ) {

@@ -45,7 +45,7 @@ MeCtIKScenarioJointInfo::MeCtIKScenarioJointInfo()
 {
 	type = JOINT_TYPE_UNKNOWN; // JOINT_TYPE_HINGE or JOINT_TYPE_BALL
 	//index = 0;
-	sk_joint = NULL;
+	sk_joint = nullptr;
 	is_support_joint = 0;
 	support_joint_height = 0.0f;
 	support_joint_comp = 0.0f;

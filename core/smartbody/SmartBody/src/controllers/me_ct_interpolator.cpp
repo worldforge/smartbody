@@ -74,13 +74,13 @@ MeCtInterpolator::~MeCtInterpolator()
 	{
 		_sub_context->remove_controller(child1);
 		child1->unref();
-		child1 = NULL;
+		child1 = nullptr;
 	}
 	if (child2)
 	{
 		_sub_context->remove_controller(child2);
 		child2->unref();
-		child2 = NULL;
+		child2 = nullptr;
 	}
 }
 
@@ -91,7 +91,7 @@ MeController* MeCtInterpolator::child(size_t n)
 	else
 	{
 		SmartBody::util::log("MeCtInterpolator Error: No accessable Controller!");
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -170,7 +170,7 @@ void MeCtInterpolator::initKeys()
 	key2.clear();
 
 	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(this->getName());
-	if (state != NULL)
+	if (state != nullptr)
 	{
 		for (int i = 0; i < state->getNumMotions(); i++)
 		{
@@ -358,7 +358,7 @@ void MeCtInterpolator::adjustStartTime(double origW, double newW)
 
 void MeCtInterpolator::getFrame(int index, double t, SrBuffer<float>& buffer)
 {
-	MeCtMotion* motionCt = NULL;
+	MeCtMotion* motionCt = nullptr;
 	if (index == 1)
 		motionCt = dynamic_cast<MeCtMotion*> (child1);
 	else if (index == 2)

@@ -52,6 +52,13 @@ include_directories(
 option(BUILD_STATIC "build static library" ON)
 option(BUILD_DYNAMIC "build dynamic library" ON)
 
+
+#Temporarily disable the boost warning messages, as they spam the output.
+add_compile_definitions(BOOST_ALLOW_DEPRECATED_HEADERS)
+add_compile_definitions(BOOST_BIND_GLOBAL_PLACEHOLDERS)
+add_compile_definitions(BOOST_NO_AUTO_PTR)
+
+
 #We need to load plugins
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 

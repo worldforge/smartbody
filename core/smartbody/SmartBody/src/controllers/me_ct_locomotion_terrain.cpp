@@ -38,9 +38,9 @@ MeCtLocomotionTerrain::~MeCtLocomotionTerrain()
 float MeCtLocomotionTerrain::get_height(float x, float z, float* normal)
 {
 	mcuCBHandle& mcu = mcuCBHandle::singleton();
-	if(mcu.height_field_p == NULL)
+	if(mcu.height_field_p == nullptr)
 	{
-		if(normal != NULL)
+		if(normal != nullptr)
 		{
 			normal[0] = 0.0f;
 			normal[1] = 1.0f;

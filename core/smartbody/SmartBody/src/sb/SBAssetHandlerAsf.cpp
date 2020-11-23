@@ -33,16 +33,14 @@ namespace SmartBody {
 
 SBAssetHandlerAsf::SBAssetHandlerAsf()
 {
-	assetTypes.push_back("asf");
+	assetTypes.emplace_back("asf");
 }
 
-SBAssetHandlerAsf::~SBAssetHandlerAsf()
-{
-}
+SBAssetHandlerAsf::~SBAssetHandlerAsf() = default;
 
-std::vector<SBAsset*> SBAssetHandlerAsf::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAsf::getAssets(const std::string& path)
 {
-	std::vector<SBAsset*> assets;
+	std::vector<std::unique_ptr<SBAsset>> assets;
 
 	boost::filesystem::path pathname(path);
 	if( !boost::filesystem::exists( pathname ) )
@@ -79,17 +77,16 @@ std::vector<SBAsset*> SBAssetHandlerAsf::getAssets(const std::string& path)
 	if (SmartBody::SBScene::getScene()->getAttribute("globalSkeletonScale"))
 		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalSkeletonScale");
 
-	SmartBody::SBSkeleton* skeleton = new SmartBody::SBSkeleton();
+	auto skeleton = std::make_unique<SmartBody::SBSkeleton>();
 	bool ok = ParserASFAMC::parseAsf(*skeleton, filestream, float(scale));
 	if (ok)
 	{
 		skeleton->setName(fileName + extension);
 		skeleton->setFileName(convertedPath);
-		assets.push_back(skeleton);
+		assets.emplace_back(std::move(skeleton));
 	}
 	else
 	{
-		delete skeleton;
 		SmartBody::util::log("Could not load skeleton from file %s", convertedPath.c_str());
 	}
 

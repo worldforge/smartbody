@@ -75,7 +75,7 @@ MeCtSaccade::MeCtSaccade(SbmCharacter* c) : SmartBody::SBController()
 
 MeCtSaccade::~MeCtSaccade()
 {
-	_character = NULL;
+	_character = nullptr;
 }
 
 /*

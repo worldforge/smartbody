@@ -34,16 +34,14 @@ namespace SmartBody {
 
 SBAssetHandlerAmc::SBAssetHandlerAmc()
 {
-	assetTypes.push_back("amc");
+	assetTypes.emplace_back("amc");
 }
 
-SBAssetHandlerAmc::~SBAssetHandlerAmc()
-{
-}
+SBAssetHandlerAmc::~SBAssetHandlerAmc() = default;
 
-std::vector<SBAsset*> SBAssetHandlerAmc::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAmc::getAssets(const std::string& path)
 {
-	std::vector<SBAsset*> assets;
+	std::vector<std::unique_ptr<SBAsset>> assets;
 
 	boost::filesystem::path pathname(path);
 	if( !boost::filesystem::exists( pathname ) )
@@ -82,7 +80,7 @@ std::vector<SBAsset*> SBAssetHandlerAmc::getAssets(const std::string& path)
 	if (SmartBody::SBScene::getScene()->getAttribute("globalMotionScale"))
 		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalMotionScale");
 
-	SmartBody::SBSkeleton* skeleton = NULL;
+	SmartBody::SBSkeleton* skeleton = nullptr;
 	// find a skeleton with a prefix that matches the first part of this motion file
 	int pos = fileName.find_first_of("_");
 	if (pos != std::string::npos)
@@ -105,16 +103,15 @@ std::vector<SBAsset*> SBAssetHandlerAmc::getAssets(const std::string& path)
 	}
 
 	
-	SmartBody::SBMotion* motion = new SmartBody::SBMotion();
+	auto motion = std::make_unique<SmartBody::SBMotion>();
 	bool ok = ParserASFAMC::parseAmc(*motion, skeleton, filestream, float(scale));
 	if (ok)
 	{
 		motion->setName(fileName);
-		assets.push_back(motion);
+		assets.emplace_back(std::move(motion));
 	}
 	else
 	{
-		delete motion;
 		SmartBody::util::log("Could not load .amc file %s", convertedPath.c_str());
 	}
 

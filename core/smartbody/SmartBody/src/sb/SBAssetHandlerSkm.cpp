@@ -33,22 +33,20 @@ namespace SmartBody {
 
 SBAssetHandlerSkm::SBAssetHandlerSkm()
 {
-	assetTypes.push_back("skm");
+	assetTypes.emplace_back("skm");
 }
 
-SBAssetHandlerSkm::~SBAssetHandlerSkm()
-{
-}
+SBAssetHandlerSkm::~SBAssetHandlerSkm() = default;
 
-std::vector<SBAsset*> SBAssetHandlerSkm::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkm::getAssets(const std::string& path)
 {
-	std::vector<SBAsset*> assets;
+	std::vector<std::unique_ptr<SBAsset>> assets;
 
 	std::string convertedPath = checkPath(path);
-	if (convertedPath == "")
+	if (convertedPath.empty())
 		return assets;
 
-	SmartBody::SBMotion* motion = new SmartBody::SBMotion();
+	auto motion = std::make_unique<SmartBody::SBMotion>();
 	bool parseSuccessful = false;
 
 	SrInput in( convertedPath.c_str(), "rt" );
@@ -63,7 +61,7 @@ std::vector<SBAsset*> SBAssetHandlerSkm::getAssets(const std::string& path)
 	if (parseSuccessful)
 	{
 		motion->filename(convertedPath.c_str());
-		assets.push_back(motion);
+		assets.emplace_back(std::move(motion));
 	}
 	else
 		SmartBody::util::log("Could not read .skm file %s", convertedPath.c_str());

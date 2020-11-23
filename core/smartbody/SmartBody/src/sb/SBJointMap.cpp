@@ -240,7 +240,7 @@ void SBJointMap::applySkeletonInverse( SmartBody::SBSkeleton* skeleton )
 	SmartBody::SBPawn* pawn = skeleton->getPawn();
 	if (pawn)
 	{
-		pawn->ct_tree_p->child_channels_updated(NULL);
+		pawn->ct_tree_p->child_channels_updated(nullptr);
 	}
 }
 
@@ -290,7 +290,7 @@ void SBJointMap::applySkeleton(SmartBody::SBSkeleton* skeleton)
 	SmartBody::SBPawn* pawn = skeleton->getPawn();
 	if (pawn)
 	{
-		pawn->ct_tree_p->child_channels_updated(NULL);
+		pawn->ct_tree_p->child_channels_updated(nullptr);
 	}
 	_mappedSkeletons.push_back(skeleton->getName());
 }

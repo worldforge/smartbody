@@ -3,7 +3,7 @@
 
 MeCtCCDIK::MeCtCCDIK( void )
 {
-	ikScenario = NULL;
+	ikScenario = nullptr;
 
 }
 

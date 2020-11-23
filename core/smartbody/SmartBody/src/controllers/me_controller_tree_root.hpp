@@ -135,7 +135,7 @@ public:
 	 *  Returns a pointer to a controller currently in the tree.
 	 */
     virtual MeController* controller( unsigned int n ) = 0;
-    //{ return (0<=n && n<_controllers.size())? _controllers[n].get(): NULL; }
+    //{ return (0<=n && n<_controllers.size())? _controllers[n].get(): nullptr; }
 
 	/**
 	 *  Evaluates all the controllers.

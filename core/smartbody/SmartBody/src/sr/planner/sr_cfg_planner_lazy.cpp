@@ -92,7 +92,7 @@ bool SrCfgPlannerBase::_test_bridge ( SrCfgNode* n1, SrCfgNode* n2, float prec )
 
    // test and increment the level of the edges in the heap
    int level;
-   HeapEdge e = { NULL, NULL, NULL };
+   HeapEdge e = { nullptr, nullptr, nullptr };
    while ( _heap.size()>0 )
     { level = _heap.lowest_cost();
       e = _heap.top();

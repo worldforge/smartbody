@@ -38,9 +38,9 @@ int locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )
 {
 	// should this function be removed?
 
-/*	SkMotion* walking1_p = NULL;
-	SkMotion* walking2_p = NULL;
-	SkMotion* standing_p = NULL;
+/*	SkMotion* walking1_p = nullptr;
+	SkMotion* walking2_p = nullptr;
+	SkMotion* standing_p = nullptr;
 	
 	std::map<std::string, SkMotion*>::iterator walkIter = mcu_p->motion_map.find("Step_WalkForward");
 	if (walkIter != mcu_p->motion_map.end())
@@ -97,7 +97,7 @@ int test_locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )	{
 		return CMD_FAILURE;
 	}
 
-	SbmCharacter* actor = NULL;
+	SbmCharacter* actor = nullptr;
 	if(arg == "status")
 	{
 		for (std::map<std::string, SbmCharacter*>::iterator iter = mcu_p->getCharacterMap().begin();
@@ -112,7 +112,7 @@ int test_locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )	{
 	if( arg=="character" || arg=="char" ) {
 		string name = args.read_token();
 		actor = mcu_p->getCharacter( name );
-		if( actor == NULL ) {
+		if( actor == nullptr ) {
 			SmartBody::util::log("ERROR: Could not find character \"%s\".", name.c_str());
 			return CMD_FAILURE;
 		}
@@ -124,7 +124,7 @@ int test_locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )	{
 			return CMD_FAILURE;
 		}
 		actor = mcu_p->getCharacter( mcu_p->test_character_default );
-		if( actor == NULL ) {
+		if( actor == nullptr ) {
 			SmartBody::util::log("ERROR: Could not find default character \"%s\".", mcu_p->test_character_default.c_str());
 			return CMD_FAILURE;
 		}
@@ -145,7 +145,7 @@ int test_locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )	{
 	if(arg == "anim")
 	{
 		std::string type = args.read_token();
-		SkMotion* anim_p = NULL;
+		SkMotion* anim_p = nullptr;
 		bool motionsNotLoaded = false;
 		arg = args.read_token();
 		std::map<std::string, SkMotion*>::iterator animIter = mcu_p->motion_map.find(arg);
@@ -168,7 +168,7 @@ int test_locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )	{
 		{
 			if(!actor->get_locomotion_ct()->get_analyzer()->get_standing_initialized())
 			{
-				actor->get_locomotion_ct()->get_analyzer()->init(NULL, mcu_p->me_paths);
+				actor->get_locomotion_ct()->get_analyzer()->init(nullptr, mcu_p->me_paths);
 				actor->get_locomotion_ct()->get_analyzer()->init_blended_anim();
 			}
 
@@ -229,7 +229,7 @@ int test_locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )	{
 	{
 		if(!actor->get_locomotion_ct()->get_analyzer()->get_standing_initialized())
 		{
-			actor->get_locomotion_ct()->get_analyzer()->init(NULL, mcu_p->me_paths);
+			actor->get_locomotion_ct()->get_analyzer()->init(nullptr, mcu_p->me_paths);
 			if(!actor->get_locomotion_ct()->is_valid()) 
 			{
 				SmartBody::util::log("Locomotion not valid, can not be enabled.");
@@ -274,7 +274,7 @@ int test_locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )	{
 	MeCtNavigationCircle* nav_circle = actor->get_locomotion_ct()->get_navigation_circle();
 	//MeCtNavigationCircle* nav_circle = new MeCtNavigationCircle();
 	nav_circle->set( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1);
-//	actor->posture_sched_p->create_track( NULL, NULL, nav_circle);
+//	actor->posture_sched_p->create_track( nullptr, nullptr, nav_circle);
 	
 	if( arg=="stop" )
 	{
@@ -727,7 +727,7 @@ int test_locomotion_cmd_func( srArgBuffer& args, mcuCBHandle *mcu_p  )	{
 		//nav_circle->ref();
 
 		//nav_circle->initByRadius( forward_velocity, radius );
-		//actor->posture_sched_p->create_track( NULL, NULL, nav_circle );
+		//actor->posture_sched_p->create_track( nullptr, nullptr, nav_circle );
 
 		//actor->init_locomotion_analyzer("common.sk", mcu_p);
 

@@ -208,7 +208,7 @@ namespace SmartBody {
      *  the object on a call to requestComplete(..), or in its destructor.
      *
      *  If any get*(RequestId) method has been called on an invalid RequestId
-     *  or prior to the availability of the data, the method should return NULL.
+     *  or prior to the availability of the data, the method should return nullptr.
      */
     class SpeechInterface {
     public:
@@ -231,7 +231,7 @@ namespace SmartBody {
 
         /**
          *  If the request has been processed, returns the time ordered vector 
-         *  of VisemeData for the requestId.  Otherwise return NULL.
+         *  of VisemeData for the requestId.  Otherwise return nullptr.
          *
          *  Visemes in this list are actually morph targets, and multiple
          *  visemes with different weights can be added together.  Because of
@@ -244,22 +244,22 @@ namespace SmartBody {
 		/**
 		 *	Returns the emotion curve for given speech request.
 		 */
-		virtual std::vector<float> getEmotionCurve(RequestId requestId, const std::string& emotionType, SbmCharacter* character = NULL) = 0;
+		virtual std::vector<float> getEmotionCurve(RequestId requestId, const std::string& emotionType, SbmCharacter* character = nullptr) = 0;
 
 		/**
 		 *	Returns number of emotions for given speech request.
 		 */
-		virtual std::vector<std::string> getEmotionNames(RequestId requestId, SbmCharacter* character = NULL) = 0;
+		virtual std::vector<std::string> getEmotionNames(RequestId requestId, SbmCharacter* character = nullptr) = 0;
 
         /**
          *  Returns the sbm command used to play the speech audio.
          */
-        virtual char* getSpeechPlayCommand( RequestId requestId, SbmCharacter* character = NULL ) = 0;
+        virtual char* getSpeechPlayCommand( RequestId requestId, SbmCharacter* character = nullptr ) = 0;
 
         /**
          *  Returns the sbm command used to stop the speech audio.
          */
-        virtual char* getSpeechStopCommand( RequestId requestId, SbmCharacter* character = NULL ) = 0;
+        virtual char* getSpeechStopCommand( RequestId requestId, SbmCharacter* character = nullptr ) = 0;
 
         /**
          *  Returns the filename of the audio.

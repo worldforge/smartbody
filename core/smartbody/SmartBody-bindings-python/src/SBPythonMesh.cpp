@@ -1,6 +1,7 @@
 
 #include "SBPython.h"
 #include <sbm/sbm_deformable_mesh.h>
+#include "sb/SBRenderAssetManager.h"
 
 #ifndef SB_NO_PYTHON
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp> 

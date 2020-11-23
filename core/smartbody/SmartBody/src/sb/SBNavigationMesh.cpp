@@ -36,10 +36,10 @@ namespace SmartBody {
 
 SBAPI SBNavigationMesh::SBNavigationMesh()
 {
-	rawMesh = NULL;
-	naviMesh = NULL;
-	m_navMesh = NULL;
-	m_navQuery = NULL;
+	rawMesh = nullptr;
+	naviMesh = nullptr;
+	m_navMesh = nullptr;
+	m_navQuery = nullptr;
 	
 	createStringAttribute("meshSource", "", true, "Navigation Mesh", 400, false, false, false, "Geometry/mesh");
 
@@ -61,10 +61,10 @@ void SBNavigationMesh::cleanUp()
 	if (m_navQuery)
 		dtFreeNavMeshQuery(m_navQuery);
 
-	rawMesh = NULL;
-	naviMesh = NULL;
-	m_navMesh = NULL;
-	m_navQuery = NULL;
+	rawMesh = nullptr;
+	naviMesh = nullptr;
+	m_navMesh = nullptr;
+	m_navQuery = nullptr;
 }
 
 
@@ -455,20 +455,20 @@ SBAPI bool SBNavigationMesh::buildNavigationMeshFromModel( SrModel& inMesh )
 	return true;
 }
 
-SBAPI bool SBNavigationMesh::buildNavigationMesh( std::string meshName )
-{
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	DeformableMesh* mesh = assetManager->getDeformableMesh(meshName);
-	if (!mesh)
-		return false;
-
-	if (mesh->dMeshStatic_p.size() == 0)
-		return false;
-	SrModel& inMesh = mesh->dMeshStatic_p[0]->shape();
-	// this is a quick hack to get the API working, but should have a more robust way 
-	// to build the navigation from all meshes inside a deformable model.
-	return buildNavigationMeshFromModel(inMesh);
-}
+//SBAPI bool SBNavigationMesh::buildNavigationMesh( std::string meshName )
+//{
+//	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+//	DeformableMesh* mesh = assetManager->getDeformableMesh(meshName);
+//	if (!mesh)
+//		return false;
+//
+//	if (mesh->dMeshStatic_p.size() == 0)
+//		return false;
+//	SrModel& inMesh = mesh->dMeshStatic_p[0]->shape();
+//	// this is a quick hack to get the API working, but should have a more robust way
+//	// to build the navigation from all meshes inside a deformable model.
+//	return buildNavigationMeshFromModel(inMesh);
+//}
 
 SBAPI float SBNavigationMesh::queryFloorHeight( SrVec pos, SrVec searchSize )
 {
@@ -550,7 +550,8 @@ void SBNavigationMesh::notify( SBSubject* subject )
 		if (attribute->getName() == "meshSource")
 		{
 			std::string meshName = this->getStringAttribute(attribute->getName());
-			buildNavigationMesh(meshName);			
+			//TODO: make it possible to hook into so that the nav mesh can be built from mesh (which in turn relies on OpenGL stuff)
+			//buildNavigationMesh(meshName);
 		}
 	}
 }

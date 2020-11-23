@@ -41,14 +41,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 /************************************************************************/
 /* Sbm Texture Manager                                                  */
 /************************************************************************/
-SbmTextureManager* SbmTextureManager::_singleton = NULL;
+SbmTextureManager* SbmTextureManager::_singleton = nullptr;
 
-SbmTextureManager::SbmTextureManager( void )
+SbmTextureManager::SbmTextureManager( )
 {
 	
 }
 
-SbmTextureManager::~SbmTextureManager( void )
+SbmTextureManager::~SbmTextureManager( )
 {
     releaseAllTextures();
 }
@@ -69,12 +69,11 @@ void SbmTextureManager::updateEnvMaps()
 SBAPI void SbmTextureManager::deleteTexture(int type, const char* textureName)
 {
 	StrTextureMap& texMap = findMap(type);
-	if (texMap.find(textureName) != texMap.end())
+	auto I = texMap.find(textureName);
+	if (I != texMap.end())
 	{
-		SbmTexture* tex = texMap[textureName];
-		texMap.erase(textureName);
-    SmartBody::util::log("Delete texture '%s'", tex->getName().c_str());
-		delete tex;
+		SmartBody::util::log("Delete texture '%s'", I->second->textureName.c_str());
+		texMap.erase(I);
 	}
 }
 
@@ -82,45 +81,11 @@ SBAPI void SbmTextureManager::deleteTexture(int type, const char* textureName)
 
 void SbmTextureManager::releaseAllTextures()
 {
-    StrTextureMap::iterator vi;
-    for ( vi  = textureMap.begin();
-          vi != textureMap.end();
-          vi++)
-    {
-        SbmTexture* tex = vi->second;
-        delete tex;		
-    }
-
-    for ( vi  = normalTexMap.begin();
-          vi != normalTexMap.end();
-          vi++)
-    {
-        SbmTexture* tex = vi->second;
-        delete tex;		
-    }
-
-    for ( vi  = specularTexMap.begin();
-        vi != specularTexMap.end();
-        vi++)
-    {
-        SbmTexture* tex = vi->second;
-        delete tex;
-    }
-
-	for (vi = glossyTexMap.begin();
-		vi != glossyTexMap.end();
-		vi++)
-	{
-		SbmTexture* tex = vi->second;
-		delete tex;
-	}
-
-
-
-    textureMap.clear();
-    normalTexMap.clear();
-    specularTexMap.clear();	
+	textureMap.clear();
+	normalTexMap.clear();
+	specularTexMap.clear();
 	glossyTexMap.clear();
+
 	
 #if USE_CUBE_MAP
     StrCubeTextureMap::iterator it;
@@ -188,17 +153,16 @@ void SbmTextureManager::loadTexture(int iType, const char* textureName, const ch
 	}
 	else //*/if (texMap.find(strTex) == texMap.end()) 
     {
-        SbmTexture* texture = new SbmTexture(textureName);
+        auto texture = std::make_shared<SbmTextureData>();
+        texture->textureName = textureName;
         if(!texture->loadImage(fileName))
         {
             SmartBody::util::log("ERROR: Can't load image %s from %s. Invalid path? Is it an 8-bit image?", textureName, fileName);
-			delete texture;
 			return;
         }		
-		else
-		{
-			SmartBody::util::log("Just loaded texture %s from %s type %d", textureName, fileName, iType);
-		}
+
+        SmartBody::util::log("Just loaded texture %s from %s type %d", textureName, fileName, iType);
+
         texMap[strTex] = texture;
     }
 
@@ -234,23 +198,25 @@ SBAPI void SbmTextureManager::createColorTexture(const char* textureName, SrColo
 	// If the texture does not exist in the texture map, create a new one
 	if (texMap.find(std::string(textureName)) == texMap.end())
 	{
-		SbmTexture* texture = new SbmTexture(textureName);
+		auto texture = std::make_shared<SbmTextureData>();
 		texture->createEmptyTexture(width, height, 4, GL_UNSIGNED_BYTE, initColor);
 		texMap[std::string(textureName)] = texture;
 		texture->buildTexture(false);
 	}
 }
 
-SBAPI SbmTexture* SbmTextureManager::createTexture(int type, const char* textureName)
+SBAPI std::unique_ptr<SbmTexture> SbmTextureManager::createTexture(int type, const char* textureName)
 {
 	std::string strTex = textureName;
 	StrTextureMap& texMap = findMap(type);
-	if (texMap.find(strTex) != texMap.end())
-		return texMap[strTex];
+	auto I = texMap.find(strTex);
+	if (I != texMap.end())
+		return std::make_unique<SbmTexture>(I->second);
 	
-	SbmTexture* tex = new SbmTexture(textureName);
+	auto tex = std::make_shared<SbmTextureData>();
+	tex->textureName = textureName;
 	texMap[strTex] = tex;
-	return tex;
+	return std::make_unique<SbmTexture>(tex);
 }
 
 SBAPI GLuint SbmTextureManager::createFBO( const char* fboName, bool recreateFBO )
@@ -279,41 +245,25 @@ SBAPI GLuint SbmTextureManager::findFBO( const char* fboName )
 
 void SbmTextureManager::updateTexture()
 {
-    StrTextureMap::iterator vi;
-    for ( vi  = textureMap.begin();
-          vi != textureMap.end();
-          vi++)
-    {
-        SbmTexture* tex = vi->second;
-        if (!tex->hasBuild())
-            tex->buildTexture();
-    }
-
-    for ( vi  = normalTexMap.begin();
-          vi != normalTexMap.end();
-          vi++)
-    {
-        SbmTexture* tex = vi->second;
-        if (!tex->hasBuild())
-            tex->buildTexture();
-        }
-
-    for ( vi  = specularTexMap.begin();
-        vi != specularTexMap.end();
-        vi++)
-    {
-        SbmTexture* tex = vi->second;
-        if (!tex->hasBuild())
-            tex->buildTexture();
-    }
-
-	for (vi = hdrTexMap.begin();
-		vi != hdrTexMap.end();
-		vi++)
-	{
-		SbmTexture* tex = vi->second;
-		if (!tex->hasBuild())
-			tex->buildTexture(true);
+	for (auto& entry: textureMap) {
+		if (!entry.second->finishBuild) {
+			entry.second->buildTexture();
+		}
+	}
+	for (auto& entry: normalTexMap) {
+		if (!entry.second->finishBuild) {
+			entry.second->buildTexture();
+		}
+	}
+	for (auto& entry: specularTexMap) {
+		if (!entry.second->finishBuild) {
+			entry.second->buildTexture();
+		}
+	}
+	for (auto& entry: hdrTexMap) {
+		if (!entry.second->finishBuild) {
+			entry.second->buildTexture();
+		}
 	}
 
 #if USE_CUBE_MAP
@@ -329,50 +279,27 @@ void SbmTextureManager::updateTexture()
 
 SBAPI void SbmTextureManager::reloadTexture()
 {
-    StrTextureMap::iterator vi;
-    for ( vi  = textureMap.begin();
-        vi != textureMap.end();
-        vi++)
-    {
-        SbmTexture* tex = vi->second;
-        tex->buildTexture();
-    }
+	for (auto& entry: textureMap) {
+		entry.second->buildTexture();
+	}
+	for (auto& entry: normalTexMap) {
+		entry.second->buildTexture();
+	}
+	for (auto& entry: specularTexMap) {
+		entry.second->buildTexture();
+	}
+	for (auto& entry: hdrTexMap) {
+		entry.second->buildTexture();
+	}
 
-    for ( vi  = normalTexMap.begin();
-        vi != normalTexMap.end();
-        vi++)
-    {
-        SbmTexture* tex = vi->second;
-        tex->buildTexture();
-    }
-
-    for ( vi  = specularTexMap.begin();
-        vi != specularTexMap.end();
-        vi++)
-    {
-        SbmTexture* tex = vi->second;
-        tex->buildTexture();
-    }
-
-	for (vi = hdrTexMap.begin();
-		vi != hdrTexMap.end();
-		vi++)
-	{
-		SbmTexture* tex = vi->second;
-		tex->buildTexture(true);
+	// recreate FBO when reloading texture
+	for (auto& entry: FBOMap) {
+		GLuint fboID;
+		glGenFramebuffers(1, &fboID);
+		entry.second = fboID;
 	}
 
 
-    // recreate FBO when reloading texture
-    std::map<std::string, GLuint>::iterator mi;
-    for ( mi  = FBOMap.begin();
-          mi != FBOMap.end();
-          mi++)
-    {
-        GLuint fboID;
-        glGenFramebuffers(1, &fboID);
-        mi->second = fboID;
-    }
 #if USE_CUBE_MAP
     StrCubeTextureMap::iterator it;
     for(it = cubeTextureMap.begin(); it != cubeTextureMap.end(); ++it){
@@ -386,21 +313,23 @@ SBAPI void SbmTextureManager::reloadTexture()
 
 
 
-SbmTexture* SbmTextureManager::findTexture(int type, const char* textureName )
+std::unique_ptr<SbmTexture> SbmTextureManager::findTexture(int type, const char* textureName )
 {
     std::string strTex = textureName;
     //SmartBody::util::log("Tex name: %s\tType: %d", strTex.c_str(), type);
     StrTextureMap& texMap = findMap(type);
-    if (texMap.find(strTex) != texMap.end())
-        return texMap[strTex];
-    return NULL;
+    auto I = texMap.find(strTex);
+    if (I != texMap.end()) {
+		return std::make_unique<SbmTexture>(I->second);
+	}
+    return {};
 }
 #if USE_CUBE_MAP
 SbmCubeMapTexture* SbmTextureManager::findCubeMapTexture(const char* cubeMapName){
     std::string strTex = cubeMapName;
     if(cubeTextureMap.find(strTex) != cubeTextureMap.end())
         return cubeTextureMap[strTex];
-    return NULL;
+    return nullptr;
 }
 
 void SbmTextureManager::loadCubeMapTextures(const std::string cubeMapName, const std::vector<std::string> &textureNames, const std::vector<std::string> &textureFileNames){
@@ -429,50 +358,40 @@ void SbmTextureManager::loadCubeMapTextures(const std::string cubeMapName, const
 /* Sbm Texture                                                          */
 /************************************************************************/
 
-SbmTexture::SbmTexture( const char* texName )
-{
-    textureName			= texName;
-    texID				= 0;
-    buffer				= NULL;
-    finishBuild			= false;
-    transparentTexture	= false;
-	setBuildMipMap(false);
-    width				= 1;
-    height				= 1;
-    channels			= 4;
-	dataType = GL_UNSIGNED_BYTE;
-	internal_format = GL_RGBA8;
-	texture_format = GL_RGBA;
-	texRotate = ROTATE_NONE;
-}
-
-
-SbmTexture::~SbmTexture(void)
-{
-    if (buffer)
-           delete [] buffer;
-    imgBuffer.clear();
-	cleanTexture();
-
-}
-
-void SbmTexture::cleanTexture()
-{
+SbmTextureData::~SbmTextureData() {
 	if (texID != 0)
 		glDeleteTextures(1, &texID);
 }
 
-bool SbmTexture::loadHDRImage(const char* fileName)
+
+SbmTexture::SbmTexture(std::shared_ptr<SbmTextureData> data) : data(std::move(data)) {
+	
+}
+
+
+SbmTexture::SbmTexture( const char* texName )
+: data(std::make_shared<SbmTextureData>())
+{
+	data->textureName = texName;
+}
+
+
+SbmTexture::~SbmTexture()= default;
+
+
+bool SbmTextureData::loadHDRImage(const char* fileName)
 {
 	stbi_set_flip_vertically_on_load(true);
-	int width, height, nrComponents;
-	float *data = stbi_loadf(fileName, &width, &height, &nrComponents, 0);
+	int tmpWidth, tmpHeight, nrComponents;
+	float *data = stbi_loadf(fileName, &tmpWidth, &tmpHeight, &nrComponents, 0);
 	if (!data) return false;
 
+	width = tmpWidth;
+	height = tmpHeight;
 	dataType = GL_FLOAT;
 	int dataSize = width*height*nrComponents * 4;
 	imgBuffer.resize(dataSize);
-	unsigned char* ucdata = (unsigned char*)data;
+	auto* ucdata = (unsigned char*)data;
 	for (unsigned int i = 0; i < dataSize; i++)
 	{
 		imgBuffer[i] = ucdata[i];
@@ -481,7 +400,7 @@ bool SbmTexture::loadHDRImage(const char* fileName)
 	return true;
 }
 
-bool SbmTexture::loadImage( const char* fileName )
+bool SbmTextureData::loadImage( const char* fileName )
 {
 #if 0
 	if (stbi_is_hdr(fileName)) // is an HDR image, load into float point buffer
@@ -494,12 +413,15 @@ bool SbmTexture::loadImage( const char* fileName )
 	stbi_hdr_to_ldr_scale(1.0f);
 	int transparentPixel = 0;
 	stbi_set_flip_vertically_on_load(true);
-	buffer = stbi_load(fileName, &width, &height, &channels, 0);
-	if (!buffer)
+	std::unique_ptr<unsigned char[]> tmpBuffer(stbi_load(fileName, &width, &height, &channels, 0));
+	if (!tmpBuffer)
 	{
 		SmartBody::util::log("Image %s failed to load.", fileName);
 		return false;
 	}
+	std::vector<unsigned char> buffer;
+	buffer.resize(width*height*channels);
+	std::memcpy(buffer.data(), tmpBuffer.get(), buffer.size());
 #if 0
     buffer = SOIL_load_image(fileName, &width, &height, &channels, SOIL_LOAD_AUTO);	
 	if (width < 0 || height < 0 || channels < 0)
@@ -548,7 +470,7 @@ bool SbmTexture::loadImage( const char* fileName )
 
     if (transparentPixel*50 > height*width)
     {
-        transparentTexture = true;
+		transparentTexture = true;
         SmartBody::util::log("Texture %s is transparent.",fileName);
     }
     else
@@ -556,18 +478,10 @@ bool SbmTexture::loadImage( const char* fileName )
         SmartBody::util::log("Texture %s is opaque",fileName);
     }
 
-    imgBuffer.resize(width*height*channels);
-
-    for (int i=0;i<width*height*channels;i++)
-    {
-        imgBuffer[i] = buffer[i];
-    }
+	imgBuffer = buffer;
 
     // set the texture file name
-    textureFileName = fileName;	
-	  stbi_image_free(buffer);
-    //SOIL_free_image_data(buffer);
-    buffer = NULL;
+	textureFileName = fileName;	
 	finishBuild = false;
 
 
@@ -575,11 +489,10 @@ bool SbmTexture::loadImage( const char* fileName )
     return true;
 }
 
-void SbmTexture::buildTexture(bool buildMipMap, bool recreateTexture)
+void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 {	
 	//SmartBody::util::log("Building texture '%s'", this->getName().c_str());
     //SmartBody::util::log("Start Build Texture");
-    if (!getBuffer()) return;
 #if !defined(__native_client__)
     //SbmShaderProgram::printOglError("SbmTexture.cpp:10");		
     GLuint iType = GL_TEXTURE_2D;
@@ -593,7 +506,7 @@ void SbmTexture::buildTexture(bool buildMipMap, bool recreateTexture)
 
 	if (texID == 0 || recreateTexture)
 	{
-		cleanTexture();
+		glDeleteTextures(1, &texID);
 		glGenTextures(1, &texID);
 	}
 
@@ -661,9 +574,9 @@ void SbmTexture::buildTexture(bool buildMipMap, bool recreateTexture)
 		internal_format = isFloatTexture ? GL_DEPTH_COMPONENT32F : GL_R8;
 		texture_format = GL_DEPTH_COMPONENT;
 	}
-	unsigned char* buffer = 0;
-	if (imgBuffer.size() > 0)
-		buffer = &imgBuffer[0];
+	unsigned char* buffer = nullptr;
+	if (!imgBuffer.empty())
+		buffer = imgBuffer.data();
     //glTexImage2D(iType,0,texture_format,width,height,0,texture_format,GL_UNSIGNED_BYTE,buffer);	
 #if !defined (__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(__linux__) &!defined(EMSCRIPTEN)
     //if (buildMipMap)
@@ -696,7 +609,7 @@ void SbmTexture::buildTexture(bool buildMipMap, bool recreateTexture)
 #endif
 }
 
-SBAPI void SbmTexture::rotateTexture(RotateEnum rotate)
+SBAPI void SbmTextureData::rotateTexture(RotateEnum rotate)
 {
 	if (rotate == ROTATE_NONE) return; // do nothing if there is no rotation
 
@@ -711,8 +624,8 @@ SBAPI void SbmTexture::rotateTexture(RotateEnum rotate)
 		bytesPerChannel = 4; // set to float for g-buffer application
 	int pixelSize = bytesPerChannel*channels;
 	int ti = 0, tj = 0;
-	for (unsigned i=0; i<newHeight;i++)
-		for (unsigned j = 0; j < newWidth; j++)
+	for (int i=0; i<newHeight;i++)
+		for (int j = 0; j < newWidth; j++)
 		{
 			if (rotate == ROTATE_270)
 			{
@@ -740,33 +653,33 @@ SBAPI void SbmTexture::rotateTexture(RotateEnum rotate)
 
 unsigned char* SbmTexture::getBuffer()
 {
-    if (imgBuffer.size() == 0) return NULL;
+    if (data->imgBuffer.size() == 0) return nullptr;
     
-    return &imgBuffer[0];
+    return data->imgBuffer.data();
 }
 
 int SbmTexture::getBufferSize()
 {
-    return imgBuffer.size();
+    return data->imgBuffer.size();
 }
 
 void SbmTexture::setBuffer(unsigned char* buffer, int size)
 {
-    imgBuffer.clear();
+	data->imgBuffer.clear();
     for (int i = 0; i < size; ++i)
     {
-        imgBuffer.push_back(buffer[i]);
+		data->imgBuffer.push_back(buffer[i]);
     }
 }
 
-void SbmTexture::setTextureSize(int w, int h, int numChannels)
+void SbmTextureData::setTextureSize(int w, int h, int numChannels)
 {
     width		= w;
     height		= h;
     channels	= numChannels;
 }
 
-void SbmTexture::createWhiteTexture(int w, int h)
+void SbmTextureData::createWhiteTexture(int w, int h)
 {
 #if 0
     unsigned char* data;
@@ -795,7 +708,7 @@ void SbmTexture::createWhiteTexture(int w, int h)
 }
 
 
-void SbmTexture::createEmptyTexture(int w /*= 1*/, int h /*= 1*/, int numChannels /*= 1*/, GLenum type /*= GL_UNSIGNED_BYTE*/, SrColor initColor)
+void SbmTextureData::createEmptyTexture(int w /*= 1*/, int h /*= 1*/, int numChannels /*= 1*/, GLenum type /*= GL_UNSIGNED_BYTE*/, SrColor initColor)
 {
 	unsigned char* data;
 
@@ -847,25 +760,25 @@ void SbmTexture::createEmptyTexture(int w /*= 1*/, int h /*= 1*/, int numChannel
 
 
 
-void SbmTexture::bakeAlphaIntoTexture(SbmTexture* alphaTex, bool useAlphaBlend)
+void SbmTextureData::bakeAlphaIntoTexture(SbmTexture* alphaTex, bool useAlphaBlend)
 {
 	unsigned char* alphaBuf = alphaTex->getBuffer();	
 	
-	if (alphaTex->getWidth() != getWidth() || alphaTex->getHeight() != getHeight())
+	if (alphaTex->getWidth() != width || alphaTex->getHeight() != height)
 	{
-		SmartBody::util::log("Warning! Alpha texture size (%d, %d) do not match diffuse texture '%s' size (%d, %d)", alphaTex->getWidth(), alphaTex->getHeight(), this->getName().c_str(), getWidth(), getHeight());
+		SmartBody::util::log("Warning! Alpha texture size (%d, %d) do not match diffuse texture '%s' size (%d, %d)", alphaTex->getWidth(), alphaTex->getHeight(), textureName.c_str(), width, height);
 		return;
 	}
 
-	if (getNumChannels() != 4) // set back to 4 channel texture
+	if (channels != 4) // set back to 4 channel texture
 	{
 		std::vector<unsigned char> tempBuffer;
-		tempBuffer.resize(getWidth()*getHeight() * 4);
+		tempBuffer.resize(width*height * 4);
 		for (int j = 0; j < height; j++)
 		{
 			for (int i = 0; i < width; i++)
 			{
-				for (int k=0;k<getNumChannels();k++)
+				for (int k=0;k<channels;k++)
 					tempBuffer[j*width*4 + i*4 + k] = imgBuffer[j*width*channels + i*channels + k];				
 			}
 		}
@@ -945,7 +858,7 @@ SbmCubeMapTexture::SbmCubeMapTexture(const std::vector<std::string>& texNames, c
     textureNames = texNames;
     textureFileNames = fileNames;
     texID				= 0;
-    buffer				= NULL;
+    buffer				= nullptr;
     finishBuild			= false;
     transparentTexture	= false;
     width				= -1;
@@ -1016,7 +929,7 @@ bool SbmCubeMapTexture::loadImage(const char* fileName){
     //TODO: set the texture file name
 
     SOIL_free_image_data(buffer);
-    buffer = NULL;
+    buffer = nullptr;
     return true;
 }
 void SbmCubeMapTexture::buildCubeMapTexture(bool buildMipMap){
@@ -1050,7 +963,7 @@ void SbmCubeMapTexture::buildCubeMapTexture(bool buildMipMap){
 }
 unsigned char* SbmCubeMapTexture::getBuffer()
 {
-    if (imgBuffer.size() == 0) return NULL;
+    if (imgBuffer.size() == 0) return nullptr;
 
     return &imgBuffer[0];
 }

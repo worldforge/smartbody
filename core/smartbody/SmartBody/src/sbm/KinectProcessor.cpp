@@ -161,7 +161,7 @@ void KinectProcessor::inferJointOffsets( std::vector<SrVec>& gPos, std::vector<S
 
 void KinectProcessor::initKinectSkeleton(std::vector<SrVec>& gPos, std::vector<SrQuat>& gRot)
 {
-	SmartBody::SBSkeleton* kinectSk = new SmartBody::SBSkeleton();
+	auto kinectSk = std::make_unique<SmartBody::SBSkeleton>();
 	kinectSk->setName("kinect.sk");
 	kinectSk->setFileName("kinect.sk");
 	// only use the first 20 joints to build the skeleton
@@ -198,7 +198,7 @@ void KinectProcessor::initKinectSkeleton(std::vector<SrVec>& gPos, std::vector<S
 			kinectSk->root(sbJoint);
 	}		
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	assetManager->addSkeleton(kinectSk);	
+	assetManager->addSkeleton(std::move(kinectSk));
 }
 
 KinectProcessor::~KinectProcessor()

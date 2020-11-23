@@ -191,11 +191,11 @@ void BML::Gaze::parse_gaze_key_element( DOMElement* elem, Gaze::KeyData* key_dat
 bool BML::Gaze::parse_children( DOMElement* elem, Gaze::KeyData* key_data[] ) {
 	bool has_data = false;
 
-	DOMElement* description = NULL;
+	DOMElement* description = nullptr;
 	int description_level = -1;
 	DOMElement* child = getFirstChildElement( elem );
 
-	while( child != NULL ) {  // TODO: Need BML function to order all description levels of a behavior tag.
+	while( child != nullptr ) {  // TODO: Need BML function to order all description levels of a behavior tag.
 		std::string child_tag = xml_translate_string( child->getTagName() );
 
 		if( child_tag == xml_translate_string( BMLDefs::TAG_DESCRIPTION ) ) {
@@ -230,7 +230,7 @@ bool BML::Gaze::parse_children( DOMElement* elem, Gaze::KeyData* key_data[] ) {
 
 			if( key != -1 ) {
 				has_data = true;
-				if( key_data[key] == NULL ) {
+				if( key_data[key] == nullptr ) {
 					key_data[key] = new Gaze::KeyData();
 				} else {
 					std::stringstream strstr;
@@ -253,10 +253,10 @@ bool BML::Gaze::parse_children( DOMElement* elem, Gaze::KeyData* key_data[] ) {
 		child = getNextElement( child );
 	}
 
-	if( description != NULL ) {
+	if( description != nullptr ) {
 		
 		child = getFirstChildElement( description );
-		while( child != NULL ) {
+		while( child != nullptr ) {
 			// Lazily parse this by directly treating the tag name as the gaze key,
 			// regardless of capitalization, etc.
 			std::string child_tag = xml_utils::xml_translate_string( child->getTagName() );
@@ -264,7 +264,7 @@ bool BML::Gaze::parse_children( DOMElement* elem, Gaze::KeyData* key_data[] ) {
 
 			if( key != -1 ) {
 				has_data = true;
-				if( key_data[key] == NULL ) {
+				if( key_data[key] == nullptr ) {
 					key_data[key] = new Gaze::KeyData();
 				} else {
 					std::stringstream strm;
@@ -304,7 +304,7 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 		return BehaviorRequestPtr();
 	}
 
-	MeCtGaze* gaze_ct = NULL;
+	MeCtGaze* gaze_ct = nullptr;
 
 	std::string handle = xml_parse_string( BMLDefs::ATTR_HANDLE, elem );
 	if( !handle.empty() )	{
@@ -341,7 +341,7 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
         wstrstr << "WARNING: BML::parse_bml_gaze(): <"<<tag<<"> BML tag missing "<< BMLDefs::ATTR_TARGET <<"= attribute.";
 		std::string str = convertWStringToString(wstrstr.str());
 		SmartBody::util::log(str.c_str());
-		//return BehaviorRequestPtr();  // a.k.a., NULL
+		//return BehaviorRequestPtr();  // a.k.a., nullptr
     }
 
 	const XMLCh* attrTargetPos = elem->getAttribute( BMLDefs::ATTR_TARGET_POS );
@@ -349,13 +349,13 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 	xml_parse_float(targetPos.data(),3,BMLDefs::ATTR_TARGET_POS,elem,false);
 	bool validTargetPos = (attrTargetPos && XMLString::stringLen( attrTargetPos ));
 
-	const SkJoint* target_joint = NULL;
+	const SkJoint* target_joint = nullptr;
 	if (attrTarget && XMLString::stringLen( attrTarget ))
 	{
 		target_joint = parse_target( tag, attrTarget, scene );
 	}
-	if (target_joint == NULL && !gaze_ct && !validTargetPos) {  // Invalid target.  Assume parse_target(..) printed error.
-		return BehaviorRequestPtr();  // a.k.a., NULL
+	if (target_joint == nullptr && !gaze_ct && !validTargetPos) {  // Invalid target.  Assume parse_target(..) printed error.
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
 
 
@@ -363,12 +363,12 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 	//  Parse <description type="ISI.SBM"> and gaze key elements if present
 	Gaze::KeyData* key_data[ MeCtGaze::NUM_GAZE_KEYS ];
 	for( int i=0; i<MeCtGaze::NUM_GAZE_KEYS; ++i )  // necessary?
-		key_data[i] = NULL;
+		key_data[i] = nullptr;
 	bool has_key_data = Gaze::parse_children( elem, key_data );
 
 #if DEBUG_GAZE_KEYS
 		for( int key=0; key<MeCtGaze::NUM_GAZE_KEYS; ++key ) {
-			if( key_data[key] != NULL ) {
+			if( key_data[key] != nullptr ) {
 			  cout << "BML::parse_bml_gaze(..): Gaze key "<<key<<": " << *( key_data[key] ) << endl;
 			}
 		}
@@ -513,7 +513,7 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 	float gaze_time_hint = xml_utils::xml_parse_float( BMLDefs::ATTR_TIME_HINT, elem, -1.0f );
 
 	// parse sbm:joint-speed
-	// NOTE: getAttribute() returns an empty, non-NULL string
+	// NOTE: getAttribute() returns an empty, non-nullptr string
 	{
 		XMLStringTokenizer tokenizer( elem->getAttribute( BMLDefs::ATTR_JOINT_SPEED ) );
 		int num_toks = tokenizer.countTokens();
@@ -667,10 +667,10 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 	float pitch_minimum, pitch_maximum;
 
 	if( has_key_data &&  !usesHandle) {    //if there is key data
-		if( key_data[ low_key_index ]==NULL ) {  
+		if( key_data[ low_key_index ]==nullptr ) {
 			key_data[ low_key_index ] = new Gaze::KeyData();  
 		}
-		if( key_data[ high_key_index ]==NULL ) { 
+		if( key_data[ high_key_index ]==nullptr ) {
 			key_data[ high_key_index ] = new Gaze::KeyData(); 
 		} else if( high_key_index == MeCtGaze::GAZE_KEY_EYES ) {  
 			key_data[ MeCtGaze::GAZE_KEY_EYES ]->bias_roll = 0;  
@@ -684,7 +684,7 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 			Gaze::KeyData* next_data; 
 			while( next_key < high_key_index ) 
 			{  
-				if( key_data[next_key] != NULL ) 
+				if( key_data[next_key] != nullptr )
 				{  
 					next_data = key_data[next_key];
 
@@ -706,7 +706,7 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 
 					key  = next_key;
 					data = next_data;
-				} // if( key_data[next_key] != NULL )
+				} // if( key_data[next_key] != nullptr )
 				++next_key;
 			} // while( next_key < high_key_index ) 
 

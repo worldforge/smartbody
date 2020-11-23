@@ -90,7 +90,7 @@ SBAPI SBHandConfiguration* SBHandConfigurationManager::getHandConfiguration(std:
 		return iter->second;
 	}else{
 		SmartBody::util::log("Unable to find hand configuration named %s",configName.c_str());
-		return NULL;
+		return nullptr;
 	}
 }
 

@@ -42,6 +42,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #endif
 
+#include <memory>
+
 class SBDebuggerUtility;
 class SrSnGroup;
 class SbmPawn;
@@ -86,12 +88,19 @@ class SBCommandManager;
 class SBNavigationMesh;
 class SBMotionGraphManager;
 class SBHandConfigurationManager;
-class SBDebuggerServer;
-class SBDebuggerClient;
+//class SBDebuggerServer;
+//class SBDebuggerClient;
+class SBAssetStore;
 
 class SBScene : public SBObject
 {
 	public:
+
+		struct Provider {
+			std::function<SmartBody::SBObject*(const std::string&)> objectProvider;
+			std::function<std::string(SmartBody::SBObject&)> stringProvider;
+		};
+
 		SBAPI SBScene();
 		SBAPI ~SBScene();
 
@@ -202,9 +211,9 @@ class SBScene : public SBObject
 
 		SBAPI SBParser* getParser();
 
-		SBAPI SBDebuggerServer * getDebuggerServer();
-		SBAPI SBDebuggerClient * getDebuggerClient();
-		SBAPI SBDebuggerUtility* getDebuggerUtility();
+		//SBAPI SBDebuggerServer * getDebuggerServer();
+		//SBAPI SBDebuggerClient * getDebuggerClient();
+		//SBAPI SBDebuggerUtility* getDebuggerUtility();
 		SBAPI bool isRemoteMode();
 		SBAPI void setRemoteMode(bool val);
 
@@ -308,11 +317,12 @@ class SBScene : public SBObject
 		SBAPI void setOgreViewerFactory(SrViewerFactory* viewerFactory);
 		SBAPI SrViewerFactory* getViewerFactory();
 		SBAPI SrViewerFactory* getOgreViewerFactory();
+		SBAPI std::vector<SBController*>& getDefaultControllers();
 
 		/**
 		 * Registers a provider which allows lookup of object through the "prefix/suffix" notation.
 		 */
-		void registerObjectProvider(std::string prefix, std::function<SmartBody::SBObject*(const std::string&)> provider);
+		void registerObjectProvider(std::string prefix, Provider provider);
 
 		//HACK: emitted when all pawns are removed. Used to allow SBRenderScene to know when to clear all cameras. For now.
 		std::function<void()> _removeAllPawnsCallback;
@@ -320,6 +330,10 @@ class SBScene : public SBObject
 		struct OcclusionTester {
 
 		};
+
+		SBAssetStore& getAssetStore() {
+			return *_assetStore;
+		}
 				
 	protected:
 
@@ -341,8 +355,8 @@ class SBScene : public SBObject
 //		void savePositions(std::stringstream& strstr, bool remoteSetup);
 		void createDefaultControllers();
 		void removeDefaultControllers();
-		SBAPI std::vector<SBController*>& getDefaultControllers();
 
+		std::unique_ptr<SBAssetStore> _assetStore;
 
 		SBSimulationManager* _sim;
 		SBProfiler* _profiler;
@@ -380,9 +394,9 @@ class SBScene : public SBObject
 //		bool _isCameraLocked;
 		static bool _firstTime;
 
-		SBDebuggerServer*	_debuggerServer;
-		SBDebuggerClient*	_debuggerClient;
-		SBDebuggerUtility*	_debuggerUtility;
+//		SBDebuggerServer*	_debuggerServer;
+//		SBDebuggerClient*	_debuggerClient;
+//		SBDebuggerUtility*	_debuggerUtility;
 //		std::map<std::string, SrCamera*> _cameras;
 //		std::string _activeCamera;
 //		std::vector<CameraTrack*> _cameraTracking;
@@ -419,7 +433,7 @@ class SBScene : public SBObject
 		/**
 		 * Allows for lookup of objects through the "prefix/suffix" notation.
 		 */
-		std::map<std::string, std::function<SmartBody::SBObject*(const std::string&)>> _objectProviders;
+		std::map<std::string, Provider> _objectProviders;
 
 #ifndef SB_NO_PYTHON
 #ifndef __native_client__

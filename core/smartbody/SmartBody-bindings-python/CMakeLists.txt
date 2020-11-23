@@ -16,9 +16,14 @@ add_library(
 
 target_include_directories(SmartBody-bindings-python PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>)
+        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-debugger,INCLUDE_DIRECTORIES>
+        )
 
 
 target_link_libraries(SmartBody-bindings-python
         SmartBody
+        SmartBody-renderer-gl
+        SmartBody-debugger
         )

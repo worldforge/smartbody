@@ -266,14 +266,14 @@ void SBRenderer::resize(int w, int h)
 	height = h;
 }
 
-void SBRenderer::draw(std::vector<SrLight>& lights, bool isDrawFloor)
+void SBRenderer::draw(SmartBody::SBRenderScene& renderScene,  std::vector<SrLight>& lights, bool isDrawFloor)
 {
 	if (!isInitialized()) return;
 
 	this->drawDeferredRendering(lights, isDrawFloor);
 }
 
-void SBRenderer::drawDeferredRendering(std::vector<SrLight>& lights, bool isDrawFloor)
+void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor)
 {	
 	// update skinning transform
 
@@ -354,7 +354,7 @@ void SBRenderer::drawDeferredRendering(std::vector<SrLight>& lights, bool isDraw
 }
 
 
-void SBRenderer::drawForwardRendering(std::vector<SrLight>& lights, bool isDrawFloor)
+void SBRenderer::drawForwardRendering(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor)
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 

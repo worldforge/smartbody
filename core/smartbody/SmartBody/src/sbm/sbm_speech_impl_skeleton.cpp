@@ -57,7 +57,7 @@ RequestId SpeechImplementation::requestSpeechAudio( const char* agentName, const
 
 /**
  *  If the request has been processed, returns the time ordered vector 
- *  of VisemeData for the requestId.  Otherwise return NULL.
+ *  of VisemeData for the requestId.  Otherwise return nullptr.
  *
  *  Visemes in this list are actually morph targets, and multiple
  *  visemes with different weights can be added together.  Because of
@@ -67,7 +67,7 @@ RequestId SpeechImplementation::requestSpeechAudio( const char* agentName, const
  */
 //const std::vector<VisemeData *>* SpeechImplementation::getVisemes( RequestId requestId ) {
 //	// TODO
-//	return NULL;
+//	return nullptr;
 //}
 
 /**
@@ -75,7 +75,7 @@ RequestId SpeechImplementation::requestSpeechAudio( const char* agentName, const
  */
 char* SpeechImplementation::getSpeechPlayCommand( RequestId requestId ) {
 	// TODO
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -83,7 +83,7 @@ char* SpeechImplementation::getSpeechPlayCommand( RequestId requestId ) {
  */
 char* SpeechImplementation::getSpeechStopCommand( RequestId requestId ) {
 	// TODO
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -91,7 +91,7 @@ char* SpeechImplementation::getSpeechStopCommand( RequestId requestId ) {
  */
 char* SpeechImplementation::getSpeechAudioFilename( RequestId requestId ) {
 	// TODO
-	return NULL;
+	return nullptr;
 }
 
 /**

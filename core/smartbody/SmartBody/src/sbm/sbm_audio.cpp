@@ -32,7 +32,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #define USEAUDIODURATION 1
 
-static vhcl::Audio * g_audio = NULL;
+static vhcl::Audio * g_audio = nullptr;
 
 bool AUDIO_Init()
 {
@@ -90,7 +90,7 @@ void AUDIO_Close()
 		return;
 	g_audio->Close();
 	delete g_audio;
-	g_audio = NULL;
+	g_audio = nullptr;
 }
 
 #else

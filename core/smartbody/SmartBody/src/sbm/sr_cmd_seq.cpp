@@ -36,10 +36,10 @@ srCmdSeq::srCmdSeq( void )	{
 	event_count = 0;
 	event_offset = 0.0;
 	handle = new sr_command_event_t;
-	handle->next = NULL;
+	handle->next = nullptr;
 	handle->time = 0.0;
-	handle->cmd = NULL;
-	iterator = NULL;
+	handle->cmd = nullptr;
+	iterator = nullptr;
 	_valid = true;
 }
 
@@ -49,7 +49,7 @@ srCmdSeq::~srCmdSeq( void )	{
 		//SmartBody::util::log( "srCmdSeq::~srCmdSeq NOTE: deleting %d events\n", event_count );
 		char *cmd;
 		reset();
-		while( ( cmd = pull() ) != NULL )	{
+		while( ( cmd = pull() ) != nullptr )	{
 			delete [] cmd;
 		}
 	}
@@ -60,7 +60,7 @@ void srCmdSeq::print( FILE *fp )	{
 	sr_command_event_t *event;
 	
 	event = handle->next;
-	while( event != NULL )	{
+	while( event != nullptr )	{
 		fprintf( fp, "%f  %s\n", event->time, event->cmd );
 		event = event->next;
 	}
@@ -71,12 +71,12 @@ void srCmdSeq::print( FILE *fp )	{
 int srCmdSeq::write_file( char *seq_file )	{
 	FILE *out_fp;
 
-	if( seq_file == NULL )	{
-	    SmartBody::util::log("srCmdSeq::write_file ERR: NULL filename\n" ); 
+	if( seq_file == nullptr )	{
+	    SmartBody::util::log("srCmdSeq::write_file ERR: nullptr filename\n" );
 		return( CMD_FAILURE );
 	}
 
-	if( ( out_fp = fopen( seq_file, "w" ) ) == NULL ) { 
+	if( ( out_fp = fopen( seq_file, "w" ) ) == nullptr ) {
 	    SmartBody::util::log("srCmdSeq::write_file ERR: file '%s' not opened\n", seq_file ); 
 		return( CMD_FAILURE );
 	}
@@ -91,8 +91,8 @@ int srCmdSeq::write_file( char *seq_file )	{
 #if 1
 int srCmdSeq::read_file( FILE *seq_fp )	{
 
-	if( seq_fp == NULL )	{
-	    SmartBody::util::log("srCmdSeq::read_file ERR: NULL fp\n" ); 
+	if( seq_fp == nullptr )	{
+	    SmartBody::util::log("srCmdSeq::read_file ERR: nullptr fp\n" );
 		return( CMD_FAILURE );
 	}
 	
@@ -101,7 +101,7 @@ int srCmdSeq::read_file( FILE *seq_fp )	{
 	char ext_line_buff[ MAX_CMD_ARGL * 10 ] = "";
 	int line_count = 0;
 	float t = 0.0;
-	char *cmd_buff = NULL;
+	char *cmd_buff = nullptr;
 	bool extended_cmd = false; // <t> begin <cmd> \n end
 	
 	int done = FALSE;
@@ -191,8 +191,8 @@ int srCmdSeq::read_file( FILE *seq_fp )	{
 #else
 int srCmdSeq::read_file( FILE *seq_fp )	{
 
-	if( seq_fp == NULL )	{
-	    SmartBody::util::log("srCmdSeq::read_file ERR: NULL fp\n" ); 
+	if( seq_fp == nullptr )	{
+	    SmartBody::util::log("srCmdSeq::read_file ERR: nullptr fp\n" );
 		return( CMD_FAILURE );
 	}
 	char fill_buff[ MAX_CMD_ARGL ] = "";
@@ -237,12 +237,12 @@ int srCmdSeq::read_file( FILE *seq_fp )	{
 int srCmdSeq::read_file( char *seq_file, int report_open_fail )	{
 	FILE *in_fp;
 	
-	if( seq_file == NULL )	{
-	    SmartBody::util::log("srCmdSeq::read_file ERR: NULL filename\n" ); 
+	if( seq_file == nullptr )	{
+	    SmartBody::util::log("srCmdSeq::read_file ERR: nullptr filename\n" );
 		return( CMD_FAILURE );
 	}
 	
-	if( ( in_fp = fopen( seq_file, "r" ) ) == NULL ) { 
+	if( ( in_fp = fopen( seq_file, "r" ) ) == nullptr ) {
 		if( report_open_fail )	{
 		    SmartBody::util::log("srCmdSeq::read_file ERR: file '%s' not found\n", seq_file ); 
 		}
@@ -264,7 +264,7 @@ int srCmdSeq::insert( float time, const char *cmd_ref )	{
 	sr_command_event_t *eventSeq;
 
 	eventSeq = new sr_command_event_t;
-	eventSeq->next = NULL;
+	eventSeq->next = nullptr;
 	eventSeq->time = time;
 	eventSeq->cmd = new char[ strlen( cmd_ref ) + 1 ];
 	sprintf( eventSeq->cmd, "%s", cmd_ref );
@@ -275,7 +275,7 @@ int srCmdSeq::insert_ref( float time, char *cmd_ref )	{
 	sr_command_event_t *event;
 
 	event = new sr_command_event_t;
-	event->next = NULL;
+	event->next = nullptr;
 	event->time = time;
 	event->cmd = cmd_ref;
 	return( insert( event ) );
@@ -285,7 +285,7 @@ std::string srCmdSeq::pop( float time )	{
 	sr_command_event_t *event;
 	float offset_time = time - event_offset;
 	event = handle->next;
-	if( event != NULL )	{
+	if( event != nullptr )	{
 		//SmartBody::util::log("event time = %f, time = %f",event->time, time);
 		if( event->time <= offset_time )	{
 			handle->next = event->next;
@@ -308,7 +308,7 @@ float srCmdSeq::duration() {
 	float last_time = 0;
 
 	sr_command_event_t *i = handle;
-	while( i != NULL ) {
+	while( i != nullptr ) {
 		if( i->time > last_time )
 			last_time = i->time;
 		i = i->next;
@@ -330,7 +330,7 @@ char *srCmdSeq::next( float *t )	{
 			return( iterator->cmd );
 		}
 	}
-	return( NULL );
+	return( nullptr );
 }
 
 char *srCmdSeq::pull( float *t )	{
@@ -344,7 +344,7 @@ char *srCmdSeq::pull( float *t )	{
 		delete event;
 		return( cmd );
 	}
-	return( NULL );
+	return( nullptr );
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -353,14 +353,14 @@ int srCmdSeq::insert( sr_command_event_t *event )	{
 	sr_command_event_t *prev, *tmp;
 	float time;
 		
-	if( event == NULL )	{
+	if( event == nullptr )	{
 		return( CMD_FAILURE );
 	}
 	prev = handle;
 	tmp = handle->next;
 	time = event->time;
 	
-	while( tmp != NULL )	{
+	while( tmp != nullptr )	{
 		if( time < tmp->time )	{ // add after, if same time
 			prev->next = event;
 			event->next = tmp;
@@ -371,7 +371,7 @@ int srCmdSeq::insert( sr_command_event_t *event )	{
 		tmp = tmp->next;
 	}
 	prev->next = event;
-	event->next = NULL;
+	event->next = nullptr;
 	event_count++;
 	return( CMD_SUCCESS );
 }
@@ -380,9 +380,9 @@ srCmdSeq::sr_command_event_t *srCmdSeq::remove( void )	{
 	sr_command_event_t *event;
 
 	event = handle->next;
-	if( event != NULL )	{
+	if( event != nullptr )	{
 		handle->next = event->next;
-		event->next = NULL;
+		event->next = nullptr;
 		event_count--;
 	}
 	return( event );

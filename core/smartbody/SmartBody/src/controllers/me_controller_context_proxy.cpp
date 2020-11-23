@@ -44,7 +44,7 @@ MeControllerContextProxy::MeControllerContextProxy( MeControllerContext* context
 MeControllerContextProxy::~MeControllerContextProxy() {
 	if( _context ) {
 		_context->unref();
-		_context = NULL;
+		_context = nullptr;
 	}
 }
 
@@ -72,7 +72,7 @@ int MeControllerContextProxy::toBufferIndex( int chanIndex ) {
 
 MeFrameDataProxy::MeFrameDataProxy( MeControllerContextProxy* context )
 	:	_context( context ),
-		_frame( NULL )
+		_frame( nullptr )
 {}
 
 

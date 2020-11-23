@@ -156,31 +156,31 @@ posture_sched_p( CreateSchedulerCt( character_name, "posture" ) ),
 motion_sched_p( CreateSchedulerCt( character_name, "motion" ) ),
 breathing_p( ),
 gaze_sched_p( CreateSchedulerCt( character_name, "gaze" ) ),
-eyelid_reg_ct_p( NULL ),
+eyelid_reg_ct_p( nullptr ),
 #ifdef USE_REACH
 constraint_sched_p( CreateSchedulerCt( character_name, "constraint" ) ),
 reach_sched_p( CreateSchedulerCt( character_name, "reach" ) ),
 grab_sched_p( CreateSchedulerCt( character_name, "grab" ) ),
 #else
-reach_sched_p( NULL ),
+reach_sched_p( nullptr ),
 #endif
 head_sched_p( CreateSchedulerCt( character_name, "head" ) ),
 param_sched_p( CreateSchedulerCt( character_name, "param" ) ),
-param_animation_ct( NULL ),
-param_animation_ct_layer1(NULL),
-param_animation_ct_layer2(NULL),
-motiongraph_ct(NULL),
-head_param_anim_ct( NULL ),
-face_ct( NULL ),
+param_animation_ct( nullptr ),
+param_animation_ct_layer1(nullptr),
+param_animation_ct_layer2(nullptr),
+motiongraph_ct(nullptr),
+head_param_anim_ct( nullptr ),
+face_ct( nullptr ),
 eyelid_ct( new MeCtEyeLid() ),
-motionplayer_ct( NULL ),	
-noise_ct(NULL),
-record_ct(NULL),
-basic_locomotion_ct(NULL),
-generic_hand_ct(NULL),
-new_locomotion_ct(NULL),
-face_neutral( NULL ),
-realTimeLipSyncCt(NULL),
+motionplayer_ct( nullptr ),
+noise_ct(nullptr),
+record_ct(nullptr),
+basic_locomotion_ct(nullptr),
+generic_hand_ct(nullptr),
+new_locomotion_ct(nullptr),
+face_neutral( nullptr ),
+realTimeLipSyncCt(nullptr),
 overlayMotion_sched_p(CreateSchedulerCt(character_name, "overlay") ),
 _soft_eyes_enabled( ENABLE_EYELID_CORRECTIVE_CT )
 {
@@ -268,7 +268,7 @@ SbmCharacter::~SbmCharacter( void )	{
 	
 	if( viseme_history_arr )	{
 		delete [] viseme_history_arr;
-		viseme_history_arr = NULL;
+		viseme_history_arr = nullptr;
 	}
 
 	if (_miniBrain)
@@ -466,7 +466,7 @@ void SbmCharacter::createStandardControllers()
 
 	if (!sbChar)
 	{
-		SmartBody::util::log("Error! SbChar = NULL");
+		SmartBody::util::log("Error! SbChar = nullptr");
 	}
 	this->record_ct = new MeCtMotionRecorder(sbChar);
 	std::string recordCtName = getName() + "_recorderController";
@@ -666,7 +666,7 @@ void SbmCharacter::createMinimalControllers()
 
 	// get the default attributes from the default controllers
 	
-	std::vector<SmartBody::SBController*>& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
+	auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
 	for (size_t x = 0; x < defaultControllers.size(); x++)
 	{
 		MeController* controller = defaultControllers[x];
@@ -708,38 +708,38 @@ void SbmCharacter::createMinimalControllers()
 
 void SbmCharacter::initData()
 {
-	posture_sched_p = NULL;
-	motion_sched_p = NULL;
-	gaze_sched_p = NULL;
-	reach_sched_p = NULL;
-	head_sched_p = NULL;
-	param_sched_p = NULL;
-	breathing_p = NULL;
-	grab_sched_p = NULL;
-	constraint_sched_p = NULL;
-	param_animation_ct = NULL;
-	param_animation_ct_layer1 = NULL;
-	param_animation_ct_layer2 = NULL;
-	head_param_anim_ct = NULL;
-	saccade_ct = NULL;	
-	noise_ct = NULL;
-	record_ct = NULL;
-	physics_ct = NULL;
-	postprocess_ct = NULL;
-	motiongraph_ct = NULL;
-	new_locomotion_ct = NULL;
-	basic_locomotion_ct = NULL;
-	generic_hand_ct = NULL;
+	posture_sched_p = nullptr;
+	motion_sched_p = nullptr;
+	gaze_sched_p = nullptr;
+	reach_sched_p = nullptr;
+	head_sched_p = nullptr;
+	param_sched_p = nullptr;
+	breathing_p = nullptr;
+	grab_sched_p = nullptr;
+	constraint_sched_p = nullptr;
+	param_animation_ct = nullptr;
+	param_animation_ct_layer1 = nullptr;
+	param_animation_ct_layer2 = nullptr;
+	head_param_anim_ct = nullptr;
+	saccade_ct = nullptr;
+	noise_ct = nullptr;
+	record_ct = nullptr;
+	physics_ct = nullptr;
+	postprocess_ct = nullptr;
+	motiongraph_ct = nullptr;
+	new_locomotion_ct = nullptr;
+	basic_locomotion_ct = nullptr;
+	generic_hand_ct = nullptr;
 
-	speech_impl = NULL;
-	speech_impl_backup = NULL;
-	eyelid_reg_ct_p = NULL;
-	face_ct = NULL;
-	motionplayer_ct = NULL;
+	speech_impl = nullptr;
+	speech_impl_backup = nullptr;
+	eyelid_reg_ct_p = nullptr;
+	face_ct = nullptr;
+	motionplayer_ct = nullptr;
 	_soft_eyes_enabled = ENABLE_EYELID_CORRECTIVE_CT;
 	_height = 1.0f;
 #ifndef SB_NO_BONEBUS
-	bonebusCharacter = NULL;
+	bonebusCharacter = nullptr;
 #endif
 
 	param_map = new std::map<std::string, GeneralParam*>();
@@ -751,13 +751,13 @@ void SbmCharacter::initData()
 	viseme_channel_count = 0;
 	viseme_channel_start_pos = 0;
 	viseme_channel_end_pos = 0;
-	viseme_history_arr = NULL;
+	viseme_history_arr = nullptr;
 	_diphoneSetName = "";
 	_minVisemeTime = 0.0f;
 	_isControllerPruning = true;
 	_classType = "";
 	_minVisemeTime = 0.0f;
-	_faceDefinition = NULL;
+	_faceDefinition = nullptr;
 	_reachTarget = false;
 	_lastReachStatus = true;
 	_height = 1.0f; 
@@ -767,8 +767,8 @@ void SbmCharacter::initData()
 	_diphoneSplineCurve = true;
 	_diphoneSmoothWindow = 0.2f;
 	_diphoneSpeedLimit = 20.0f;
-	_nvbg = NULL;
-	_miniBrain = NULL;
+	_nvbg = nullptr;
+	_miniBrain = nullptr;
 
 	locomotion_type = Basic;
 	statePrefix = "";
@@ -841,11 +841,11 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 
 	this->param_map = param_map;
 
-	if (!scene_p)
-	{
-		scene_p = new SkScene();
-		scene_p->ref();
-	}
+//	if (!scene_p)
+//	{
+//		scene_p = new SkScene();
+//		scene_p->ref();
+//	}
 
 	int init_result = SbmPawn::init( new_skeleton_p );  // Indirectly calls init_skeleton 
 	if( init_result!=CMD_SUCCESS ) {
@@ -911,7 +911,7 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 
 	posture_sched_p->init(this);
 	motion_sched_p->init(this);
-	if( locomotion_ct != NULL )
+	if( locomotion_ct != nullptr )
 	locomotion_ct->init(this);
 	gaze_sched_p->init(this);
 
@@ -985,7 +985,7 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 
 	*/
 
-	scene_p->init( _skeleton ); 
+	//scene_p->init( _skeleton );
 
 	SmartBody::SBCharacter* sbcharacter = dynamic_cast<SmartBody::SBCharacter*>(this);
 	SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
@@ -1154,9 +1154,9 @@ bool test_ct_for_pruning( MeCtScheduler2::TrackPtr track ) {
 	bool prune_ok = true;
 
 	MeController* ct = track->animation_ct();
-	if( ct != NULL ) {
+	if( ct != nullptr ) {
 		MePrunePolicy* prune_policy = ct->prune_policy();
-		if( prune_policy != NULL ) {
+		if( prune_policy != nullptr ) {
 			prune_ok = prune_policy->shouldPrune( ct, track->animation_parent_ct() );
 
 			if( LOG_CONTROLLER_TREE_PRUNING && !prune_ok )
@@ -1218,12 +1218,12 @@ void prune_schedule( SbmCharacter*   actor,
 								MeCtTimeShiftWarp* timing_ct = dynamic_cast<MeCtTimeShiftWarp*>( track->timing_ct() );
 #else // Trying using manual runtime typing
 								MeCtUnary* unary_blend_ct = track->blending_ct();
-								MeCtBlend* blend_ct = NULL;
+								MeCtBlend* blend_ct = nullptr;
 								if( unary_blend_ct && unary_blend_ct->controller_type() == MeCtBlend::CONTROLLER_TYPE )
 									blend_ct = (MeCtBlend*)unary_blend_ct;
 
 								MeCtUnary*         unary_timing_ct = track->timing_ct();
-								MeCtTimeShiftWarp* timing_ct = NULL;
+								MeCtTimeShiftWarp* timing_ct = nullptr;
 								if( unary_timing_ct && unary_timing_ct->controller_type() == MeCtTimeShiftWarp::CONTROLLER_TYPE )
 									timing_ct = (MeCtTimeShiftWarp*)unary_timing_ct;
 #endif
@@ -1287,7 +1287,7 @@ void prune_schedule( SbmCharacter*   actor,
 
 											// Last knots are far in the future, beyond reasonable values of time
 											MeSpline1D::Knot* prev_knot = knot->get_prev();
-											while( prev_knot!=NULL && prev_knot->get_x()>END_OF_TIME ) {
+											while( prev_knot!=nullptr && prev_knot->get_x()>END_OF_TIME ) {
 												knot = prev_knot;
 												prev_knot = knot->get_prev();
 											}
@@ -1296,11 +1296,11 @@ void prune_schedule( SbmCharacter*   actor,
 												// This knot is flat, time to check others...
 												flat_blend_curve = true;
 
-												while( flat_blend_curve && prev_knot!=NULL && prev_knot->get_x() > time ) {
+												while( flat_blend_curve && prev_knot!=nullptr && prev_knot->get_x() > time ) {
 													flat_blend_curve = prev_knot->get_y()==y && prev_knot->get_left_y()==y;
 													prev_knot = prev_knot->get_prev();
 												}
-												if( flat_blend_curve && prev_knot!=NULL ) {
+												if( flat_blend_curve && prev_knot!=nullptr ) {
 													// prev_knot is knot just before time
 													flat_blend_curve = prev_knot->get_y()==y;
 												}
@@ -1353,11 +1353,11 @@ void prune_schedule( SbmCharacter*   actor,
 											//  by pretending there wasn't a higher priority controller
 											MeCtGaze**     gaze_key2_cts = new MeCtGaze*[ MeCtGaze::NUM_GAZE_KEYS ];
 											for( int key=0; key<MeCtGaze::NUM_GAZE_KEYS; ++key )
-												gaze_key2_cts[key] = NULL;
+												gaze_key2_cts[key] = nullptr;
 
-											MeCtSimpleNod* nod2_ct = NULL;
-											MeController*  motion2_ct = NULL;
-											MeCtPose*      pose2_ct = NULL;
+											MeCtSimpleNod* nod2_ct = nullptr;
+											MeController*  motion2_ct = nullptr;
+											MeCtPose*      pose2_ct = nullptr;
 											prune_schedule( actor, sched_ct, time_offset, posture_sched_p, gaze_key2_cts, nod2_ct, motion2_ct, pose2_ct, raw_channels );
 
 											delete[] gaze_key2_cts;
@@ -1372,8 +1372,8 @@ void prune_schedule( SbmCharacter*   actor,
 										}
 									} else if( anim_ct_type == MeCtSimpleNod::_type_name )
 									{
-										if (gaze_key_cts[MeCtGaze::GAZE_KEY_HEAD] != NULL && 
-											gaze_key_cts[MeCtGaze::GAZE_KEY_NECK] != NULL)
+										if (gaze_key_cts[MeCtGaze::GAZE_KEY_HEAD] != nullptr &&
+											gaze_key_cts[MeCtGaze::GAZE_KEY_NECK] != nullptr)
 										{
 											in_use = false;
 										}
@@ -1403,7 +1403,7 @@ void prune_schedule( SbmCharacter*   actor,
 											bool is_occluded = true;
 											for( int key=0; key<MeCtGaze::NUM_GAZE_KEYS; ++key ) {
 												if( gaze_ct->get_blend( key ) > 0 ) {  // gaze_ct has output for this key
-													if( gaze_key_cts[ key ]==NULL ) {
+													if( gaze_key_cts[ key ]==nullptr ) {
 														is_occluded = false;
 														if( gaze_ct->is_full_blend( key ) )
 															// Occludes lower priority controllers
@@ -1618,7 +1618,7 @@ void prune_schedule( SbmCharacter*   actor,
 							vec_tracks::iterator end = tracks_to_remove.begin();
 							for( ; it != end; ++it ) {
 								MeController* anim_ct = (*it)->animation_ct();
-								if( anim_ct != NULL ) {
+								if( anim_ct != nullptr ) {
 									// Inform character about the to-be-removed controller
 									actor->exec_controller_cleanup( anim_ct, mcu_p );
 								}
@@ -1652,10 +1652,10 @@ int SbmCharacter::prune_controller_tree( )
 	// Pointers to the most active controllers of each type.
 	MeCtGaze**     gaze_key_cts = new MeCtGaze*[ MeCtGaze::NUM_GAZE_KEYS ];
 	for( int key=0; key<MeCtGaze::NUM_GAZE_KEYS; ++key )
-		gaze_key_cts[key] = NULL;
-	MeCtSimpleNod* nod_ct    = NULL;
-	MeController*  motion_ct = NULL;  // also covers quickdraw
-	MeCtPose*      pose_ct   = NULL;
+		gaze_key_cts[key] = nullptr;
+	MeCtSimpleNod* nod_ct    = nullptr;
+	MeController*  motion_ct = nullptr;  // also covers quickdraw
+	MeCtPose*      pose_ct   = nullptr;
 	SkChannelArray raw_channels;
 
 	// Traverse the controller tree from highest priority down, most recent to earliest
@@ -1674,10 +1674,10 @@ int SbmCharacter::prune_controller_tree( )
 
 	// For the posture track, ignore prior controllers, as they should never be used to mark a posture as unused
 	for( int key=0; key<MeCtGaze::NUM_GAZE_KEYS; ++key )
-		gaze_key_cts[key] = NULL;
-	nod_ct    = NULL;
-	motion_ct = NULL;  // also covers quickdraw
-	pose_ct   = NULL;
+		gaze_key_cts[key] = nullptr;
+	nod_ct    = nullptr;
+	motion_ct = nullptr;  // also covers quickdraw
+	pose_ct   = nullptr;
 	raw_channels = SkChannelArray::empty_channel_array();
 	prune_schedule( this, posture_sched_p, time, posture_sched_p, gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
 
@@ -1707,12 +1707,12 @@ int SbmCharacter::set_speech_impl_backup( SmartBody::SpeechInterface *speech_imp
 	return CMD_SUCCESS;
 }
 
-//returns speech implementation if set or NULL if not
+//returns speech implementation if set or nullptr if not
 SmartBody::SpeechInterface* SbmCharacter::get_speech_impl() const {
 	return speech_impl;
 }
 
-//returns speech implementation if set or NULL if not
+//returns speech implementation if set or nullptr if not
 SmartBody::SpeechInterface* SbmCharacter::get_speech_impl_backup() const {
 	return speech_impl_backup;
 }
@@ -1735,12 +1735,12 @@ int SbmCharacter::set_voice_code_backup( const std::string& voice_code ) //allow
 
 const std::string& SbmCharacter::get_voice_code() const
 {
-	return voice_code; //if voice isn't NULL-- no error message; just returns the string
+	return voice_code; //if voice isn't nullptr-- no error message; just returns the string
 }
 
 const std::string& SbmCharacter::get_voice_code_backup() const
 {
-	return voice_code_backup; //if voice isn't NULL-- no error message; just returns the string
+	return voice_code_backup; //if voice isn't nullptr-- no error message; just returns the string
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2148,7 +2148,7 @@ void SbmCharacter::inspect_skeleton_world_transform( SkJoint* joint_p, int depth
 }
 
 bool SbmCharacter::is_face_controller_enabled() {
-	return (face_ct!=NULL && face_ct->context()!=NULL);
+	return (face_ct!=nullptr && face_ct->context()!=nullptr);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2476,7 +2476,7 @@ void SbmCharacter::addVisemeChannel(std::string visemeName, std::string motionNa
 	}
 	else
 	{
-		addVisemeChannel(visemeName, NULL);
+		addVisemeChannel(visemeName, nullptr);
 	}
 }
 
@@ -2496,7 +2496,7 @@ void SbmCharacter::addBlendShapeChannels(std::vector<std::string>& shapeNames)
 		return;
 	}
 
-	if (getFaceDefinition() == NULL)
+	if (getFaceDefinition() == nullptr)
 	{
 		SmartBody::util::log("Current character %s doesn't have a face definition, create a default one to support blend shape", this->getName().c_str());
 		SmartBody::SBFaceDefinition* defaultFaceDef = SmartBody::SBScene::getScene()->createFaceDefinition("default");
@@ -2536,7 +2536,7 @@ void SbmCharacter::addBlendShapeChannel(std::string bShapeName)
 		return;
 	}
 
-	if (getFaceDefinition() == NULL)
+	if (getFaceDefinition() == nullptr)
 	{
 		SmartBody::util::log("Current character %s doesn't have a face definition, create a default one to support blend shape", this->getName().c_str());
 		SmartBody::SBFaceDefinition* defaultFaceDef = SmartBody::SBScene::getScene()->createFaceDefinition("default");

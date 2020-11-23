@@ -159,14 +159,14 @@ class MeCtEyeLidRegulator : public SmartBody::SBController	{
 
 		void blink_now( void ) { new_blink = true; }
 
-		float get_upper_left( bool *changed_p = NULL ) { 
+		float get_upper_left( bool *changed_p = nullptr ) {
 			if( changed_p ) {
 				*changed_p = ( UL_value != prev_UL_value );
 			}
 			return( UL_value ); 
 		}
 		
-		float get_upper_right( bool *changed_p = NULL ) { 
+		float get_upper_right( bool *changed_p = nullptr ) {
 			if( changed_p ) {
 				*changed_p = ( UR_value != prev_UR_value );
 			}

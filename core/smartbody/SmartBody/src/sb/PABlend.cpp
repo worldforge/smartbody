@@ -96,7 +96,7 @@ PABlend::~PABlend()
 {
 	for (unsigned int i = 0; i < motions.size(); i++)
 	{
-		motions[i] = NULL;
+		motions[i] = nullptr;
 	}
 	motions.clear();
 }
@@ -150,8 +150,8 @@ PATransition::PATransition(PATransition* data, PABlend* from, PABlend* to)
 
 PATransition::~PATransition()
 {
-	fromState = NULL;
-	toState = NULL;
+	fromState = nullptr;
+	toState = nullptr;
 }
 
 int PATransition::getNumEaseOut()

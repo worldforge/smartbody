@@ -51,15 +51,15 @@ void MeCtAnkleLilt::init(SbmPawn* pawn,SkSkeleton* skeleton_p){ //attaches skele
 	SkJoint* lAnkle= skeleton_p->search_joint("l_ankle");
 	SkJoint* base= skeleton_p->search_joint("base"); //base must be defined because elevation of doctor must be done manually
 
-	if (rAnkle == NULL){
+	if (rAnkle == nullptr){
 		fprintf( stderr, "MeCtAnkleLilt:: init ERR: joint 'r_ankle' NOT FOUND\n" );
 		err=1;
 	}
-	if (lAnkle == NULL){
+	if (lAnkle == nullptr){
 		fprintf( stderr, "MeCtAnkleLilt:: init ERR: joint 'l_ankle' NOT FOUND\n" );
 		err=1;
 	}
-	if (base== NULL){
+	if (base== nullptr){
 		fprintf( stderr, "MeCtAnkleLilt:: init ERR: joint 'base' NOT FOUND\n" );
 	}
 	if ( err == 0 ){
@@ -97,7 +97,7 @@ bool MeCtAnkleLilt::controller_evaluate( double t, MeFrameData& frame ){ //add p
 	_currentAngle = angle;
 	SrQuat q( axis, _currentAngle * (float)0.333 );
 	
-	SR_ASSERT( _context != NULL );  // Since we only use the new controller APIS.
+	SR_ASSERT( _context != nullptr );  // Since we only use the new controller APIS.
 
 	//the global buffer accessed/written to by all controllers
 	SrBuffer<float>& buff = frame.buffer();

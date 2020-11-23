@@ -34,16 +34,16 @@ std::string MeCtStepTurn::type_name = "StepTurn";
 
 MeCtStepTurn::MeCtStepTurn( void )	{
 
-   _left_motion = NULL;
-   _right_motion = NULL;
-   _motion = NULL;
+   _left_motion = nullptr;
+   _right_motion = nullptr;
+   _motion = nullptr;
 
    _play_mode = SkMotion::Linear;
    _duration = -1.0;
    _last_apply_frame = 0;
    
-   skeleton_ref_p = NULL;
-   interim_pose_buff_p = NULL;
+   skeleton_ref_p = nullptr;
+   interim_pose_buff_p = nullptr;
    
    timing_mode = TASK_TIME;
    heading_mode = HEADING_LOCAL;
@@ -54,7 +54,7 @@ MeCtStepTurn::~MeCtStepTurn( void )	{
 
 	if( interim_pose_buff_p )	{
 		delete [] interim_pose_buff_p;
-		interim_pose_buff_p = NULL;
+		interim_pose_buff_p = nullptr;
 	}
 }
 
@@ -210,7 +210,7 @@ void MeCtStepTurn::capture_world_offset_state( void )	{
 	if( _context )	{
 		if( _context->channels().size() > 0 )	{
 
-			if( skeleton_ref_p == NULL )	{
+			if( skeleton_ref_p == nullptr )	{
 				skeleton_ref_p = _context->channels().skeleton(); // WHY HERE?
 			}
 			if( skeleton_ref_p )	{
@@ -234,16 +234,16 @@ void MeCtStepTurn::capture_world_offset_state( void )	{
 					world_offset_rot = M.quat( gwiz::COMP_M_TR );
 					return;
 				}
-				SmartBody::util::log( "MeCtStepTurn::capture_world_offset_state ERR: '%s' joint is NULL\n", SbmPawn::WORLD_OFFSET_JOINT_NAME );
+				SmartBody::util::log( "MeCtStepTurn::capture_world_offset_state ERR: '%s' joint is nullptr\n", SbmPawn::WORLD_OFFSET_JOINT_NAME );
 				return;
 			}
-			SmartBody::util::log( "MeCtStepTurn::capture_world_offset_state ERR: skeleton reference is still NULL\n" );
+			SmartBody::util::log( "MeCtStepTurn::capture_world_offset_state ERR: skeleton reference is still nullptr\n" );
 			return;
 		}
 		SmartBody::util::log( "MeCtStepTurn::capture_world_offset_state ERR: context channels have no size\n" );
 		return;
 	}
-	SmartBody::util::log( "MeCtStepTurn::capture_world_offset_state ERR: context is NULL\n" );
+	SmartBody::util::log( "MeCtStepTurn::capture_world_offset_state ERR: context is nullptr\n" );
 }
 
 void MeCtStepTurn::update_action_params( void )	{
@@ -317,12 +317,12 @@ void MeCtStepTurn::context_updated( void ) {
 #if 0
 	if( _context ) {
 		skeleton_ref_p = _context->channels().skeleton(); // WHY HERE?
-		if( skeleton_ref_p == NULL )	{
-			SmartBody::util::log( "MeCtStepTurn::context_updated ERR: skeleton_ref_p is NULL\n" );
+		if( skeleton_ref_p == nullptr )	{
+			SmartBody::util::log( "MeCtStepTurn::context_updated ERR: skeleton_ref_p is nullptr\n" );
 		}
 	}
 	else	{
-		SmartBody::util::log( "MeCtStepTurn::context_updated ERR: context is NULL\n" );
+		SmartBody::util::log( "MeCtStepTurn::context_updated ERR: context is nullptr\n" );
 	}
 #endif
 }
@@ -401,7 +401,7 @@ bool MeCtStepTurn::controller_evaluate( double t, MeFrameData& frame ) {
 	_motion->apply( 
 		float( t * turn_time_scale ),
 		interim_pose_buff_p,
-		NULL, // same order in interim_buffer
+		nullptr, // same order in interim_buffer
 		_play_mode, 
 		&_last_apply_frame 
 	);
@@ -552,7 +552,7 @@ void MeCtStepTurn::print_state( int tabCount ) {
 			SmartBody::util::log(" file \"%s\"", str );
 	} 
 	else {
-		SmartBody::util::log("=NULL" );
+		SmartBody::util::log("=nullptr" );
 	}
 	SmartBody::util::log("\n" );
 }

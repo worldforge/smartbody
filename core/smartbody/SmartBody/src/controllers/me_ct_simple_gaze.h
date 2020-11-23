@@ -95,10 +95,10 @@ class MeCtSimpleGaze : public SmartBody::SBController	{
 		
 		void init(SmartBody::SBPawn* pawn );
 
-		void set_target_joint( float x, float y, float z, SkJoint* ref_joint_p = NULL );
-		void set_target( float x, float y, float z, char *ref_joint_name = NULL ); // world-coord if NULL
-		void set_orient_joint( float p, float h, float r, SkJoint* ref_joint_p = NULL );
-		void set_orient( float p, float h, float r, char *ref_joint_name = NULL );
+		void set_target_joint( float x, float y, float z, SkJoint* ref_joint_p = nullptr );
+		void set_target( float x, float y, float z, char *ref_joint_name = nullptr ); // world-coord if nullptr
+		void set_orient_joint( float p, float h, float r, SkJoint* ref_joint_p = nullptr );
+		void set_orient( float p, float h, float r, char *ref_joint_name = nullptr );
 
 		void set_offset_swing( float off_p, float off_h, float off_r ); // swing-twist: pitch, heading, roll
 		void set_offset_polar( float off_d, float off_a, float off_r ); // direction, radial angle, roll

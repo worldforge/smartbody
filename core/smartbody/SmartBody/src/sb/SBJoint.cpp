@@ -81,7 +81,7 @@ SBJoint* SBJoint::getChild(int index)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

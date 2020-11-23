@@ -82,7 +82,7 @@ SBService* SBServiceManager::getService(const std::string& name)
 	if (iter == _services.end())
 	{
 		SmartBody::util::log("Service named %s does not exist.", name.c_str());
-		return NULL;
+		return nullptr;
 	}
 
 	return (*iter).second;

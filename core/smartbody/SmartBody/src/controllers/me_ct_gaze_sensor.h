@@ -49,8 +49,8 @@ class MeCtGazeSensor	{
 			threshold = 0.0;
 			timeout = 0.0;
 			id = -1;
-			gaze_p = NULL;
-			callback_fn = NULL;
+			gaze_p = nullptr;
+			callback_fn = nullptr;
 			pending = false;
 		}
 		~MeCtGazeSensor( void );

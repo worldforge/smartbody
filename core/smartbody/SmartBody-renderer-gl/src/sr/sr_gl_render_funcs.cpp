@@ -219,8 +219,8 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 			SbmTextureManager::singleton().loadTexture(SbmTextureManager::TEXTURE_DIFFUSE, "Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png", "Z:\\casas\\gale_expressions\\v1.00\\Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png");
 			
 			SbmTexture* tex;
-			SbmTexture* tex0	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, testMesh->subMeshList[i]->texName.c_str());
-			SbmTexture* tex1	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png");
+			auto tex0	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, testMesh->subMeshList[i]->texName.c_str());
+			auto tex1	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png");
 
 			float weight = SmartBody::SBScene::getScene()->getPawn("defaultPawn0")->getBoundingBox().getCenter().x;
 			glUniform1f(weightLocation, weight);
@@ -500,7 +500,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 				//SmartBody::util::log("textureType = %s", texturesType.c_str());
 				if( texturesType == "static" || texturesType == "dynamic")
 				{
-					SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());		
+					auto tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
 					//SmartBody::util::log("texName = %s, tex = %d", subMesh->texName.c_str(), tex->getID());
 					if (tex && !showSkinWeight)
 					{
@@ -522,7 +522,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 						} 
 						else if (texturesType == "dynamic" && blendShapeMesh)
 						{
-							if(shape->_tempTexPairs != NULL)
+							if(shape->_tempTexPairs != nullptr)
 							{
 								glBindTexture(GL_TEXTURE_2D, shape->_tempTexPairs[0]);
 								//std::cerr << "Using tex: " << shape->_tempTexPairs[0] << "\n";
@@ -737,7 +737,7 @@ void SrGlRenderFuncs::render_model ( SrSnShapeBase* shape )
 		   if (model.mtlTextureNameMap.find(mtlName) != model.mtlTextureNameMap.end())
 			   texName = model.mtlTextureNameMap[mtlName];
 
-		   SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE,texName.c_str());
+		   auto tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE,texName.c_str());
 		   if ( fsize > Fn.size() || flat ) // no normal
 		   {
 			   //SmartBody::util::log("No normal\n");

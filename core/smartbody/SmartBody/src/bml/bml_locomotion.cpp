@@ -55,11 +55,11 @@ using namespace xml_utils;
 BehaviorRequestPtr BML::parse_bml_locomotion( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) {
     const XMLCh* tag      = elem->getTagName();
 
-	DOMElement* child = NULL;
-	const XMLCh* attrType = NULL;
-	const XMLCh* attrEnable = NULL;
-	const XMLCh* attrID = NULL;
-	const char * ascii_enable = NULL;
+	DOMElement* child = nullptr;
+	const XMLCh* attrType = nullptr;
+	const XMLCh* attrEnable = nullptr;
+	const XMLCh* attrID = nullptr;
+	const char * ascii_enable = nullptr;
 	string enable;
 	int type = BML_LOCOMOTION_TARGET_TYPE_UNKNOWN;
 
@@ -442,7 +442,7 @@ void BML::Locomotion::parse_routine(DOMElement* elem, BmlRequestPtr request, int
 	float pos[3];
 	memset(pos, 0, sizeof(float)*3);
 
-	const XMLCh* tag = NULL;
+	const XMLCh* tag = nullptr;
 	DOMElement* child = elem;
 
 	while(child)
@@ -453,7 +453,7 @@ void BML::Locomotion::parse_routine(DOMElement* elem, BmlRequestPtr request, int
 			if(type != BML_LOCOMOTION_TARGET_TYPE_TARGET)
 			{
 				SmartBody::util::log("WARNING: BML::parse_routine(): locomotion routine type unmatched");
-				return;  // a.k.a., NULL
+				return;  // a.k.a., nullptr
 			}
 
 			pos[ 0 ] = xml_parse_float( BMLDefs::ATTR_X, child );
@@ -466,7 +466,7 @@ void BML::Locomotion::parse_routine(DOMElement* elem, BmlRequestPtr request, int
 			if(type != BML_LOCOMOTION_TARGET_TYPE_DIRECTION)
 			{
 				SmartBody::util::log("WARNING: BML::parse_routine(): locomotion routine type unmatched");
-				return;  // a.k.a., NULL
+				return;  // a.k.a., nullptr
 			}
 
 			pos[ 0 ] = xml_parse_float( BMLDefs::ATTR_X, child );
@@ -486,7 +486,7 @@ void BML::Locomotion::parse_routine(DOMElement* elem, BmlRequestPtr request, int
 			if(type != BML_LOCOMOTION_TARGET_TYPE_DIRECTION)
 			{
 				SmartBody::util::log("WARNING: BML::parse_routine(): locomotion routine type unmatched.");
-				return;  // a.k.a., NULL
+				return;  // a.k.a., nullptr
 			}
 
 			pos[ 0 ] = xml_parse_float( BMLDefs::ATTR_X, child );

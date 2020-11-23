@@ -101,7 +101,7 @@ class ParserFBX
 
       // joint parsing functions
       static void parseJoints(KFbxNode* pNode, SkSkeleton& skeleton, SkMotion& motion, float scale, int& order,
-         FBxMetaData& metaData, SkJoint* parent = NULL);
+         FBxMetaData& metaData, SkJoint* parent = nullptr);
       static SkJoint* createJoint(KFbxNode* pNode, SkSkeleton& skeleton, SkMotion& motion, float scale, int& order, SkJoint* parent);
       static void parseLibraryAnimations(KFbxNode* pNode, SkSkeleton& skeleton, SkMotion& motion, float scale, int& order);
       static void animationPostProcessByChannels(SkSkeleton& skeleton, SkMotion& motion, SkChannelArray& channels);

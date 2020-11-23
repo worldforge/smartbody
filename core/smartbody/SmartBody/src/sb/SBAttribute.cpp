@@ -108,7 +108,7 @@ SBAttribute* SBAttributeGroup::getAttribute(std::string name)
 	if (iter == m_attributeMap.end())
 	{
 		SmartBody::util::log("Attribute for %s does not exist in attribute group %s!", name.c_str(), this->getName().c_str());
-		return NULL;
+		return nullptr;
 	}
 	else
 	{
@@ -127,8 +127,8 @@ SBAttributeInfo::SBAttributeInfo()
 	m_readOnly = false;
 	m_locked = false;
 	m_hidden = false;
-	m_attr = NULL;
-	m_group = NULL;
+	m_attr = nullptr;
+	m_group = nullptr;
 }
 
 SBAttributeInfo::~SBAttributeInfo()
@@ -285,7 +285,7 @@ std::string SBAttributeInfo::write()
 SBAttribute::SBAttribute()
 {
 	m_name = "";
-	m_object = NULL;
+	m_object = nullptr;
 	m_info = new SBAttributeInfo();
 	m_info->setAttribute(this);
 }
@@ -339,7 +339,7 @@ void SBAttribute::read()
 
 SBAttribute* SBAttribute::copy()
 {
-	return NULL;
+	return nullptr;
 }
 
 
@@ -482,14 +482,14 @@ bool BoolAttribute::isDefaultValue()
 //////////////////////////////////////////////////
 IntAttribute::IntAttribute() : SBAttribute()
 {
-	m_min = -std::numeric_limits<int>::max();
+	m_min = std::numeric_limits<int>::lowest();
 	m_max = std::numeric_limits<int>::max();
 }
 
 IntAttribute::IntAttribute(const std::string& name, int val) : SBAttribute(name)
 {
 	m_value = val;
-	m_min = -std::numeric_limits<int>::min();
+	m_min = std::numeric_limits<int>::lowest();
 	m_max = std::numeric_limits<int>::max();
 }
 
@@ -648,14 +648,14 @@ bool IntAttribute::isDefaultValue()
 
 DoubleAttribute::DoubleAttribute() : SBAttribute()
 {
-	m_min = -std::numeric_limits<double>::max();
+	m_min = std::numeric_limits<double>::lowest();
 	m_max = std::numeric_limits<double>::max();
 }
 
 DoubleAttribute::DoubleAttribute(const std::string& name, double val) : SBAttribute(name)
 {
 	m_value = val;
-	m_min = -std::numeric_limits<double>::min();
+	m_min = std::numeric_limits<double>::lowest();
 	m_max = std::numeric_limits<double>::max();
 }
 

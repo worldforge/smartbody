@@ -25,6 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAsset.h>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace SmartBody {
 
@@ -35,7 +36,7 @@ class SBAssetHandler
 		SBAPI virtual ~SBAssetHandler();
 
 		SBAPI virtual std::vector<std::string> getAssetTypes();
-		SBAPI virtual std::vector<SBAsset*> getAssets(const std::string& path);
+		SBAPI virtual std::vector<std::unique_ptr<SBAsset>> getAssets(const std::string& path);
 
 	protected:
 		std::string checkPath(const std::string& path);

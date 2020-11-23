@@ -29,7 +29,7 @@ bool MeDefaultPrunePolicy::shouldPrune( MeController* ct, MeController *parent )
 	for( int i=0; i<children; ++i ) {
 		MeController* child = ct->child( i );
 		MePrunePolicy* prune_policy = child->prune_policy();
-		if( prune_policy != NULL ) {
+		if( prune_policy != nullptr ) {
 			if( !prune_policy->shouldPrune( child, ct ) )
 				return false;
 		}

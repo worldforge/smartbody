@@ -32,8 +32,8 @@ MeCtReachEngine::MeCtReachEngine( SbmCharacter* sbmChar, SmartBody::SBSkeleton* 
 	skeletonCopy = new SmartBody::SBSkeleton(sk); 
 	skeletonCopy->ref();
 	skeletonRef  = sk;
-	dataInterpolator = NULL;
-	refMotion = NULL;
+	dataInterpolator = nullptr;
+	refMotion = nullptr;
 
 	valid = false;
 	ikInit = false;
@@ -42,12 +42,12 @@ MeCtReachEngine::MeCtReachEngine( SbmCharacter* sbmChar, SmartBody::SBSkeleton* 
 	fadingWeight = 0.f;	
 	footIKFix = false;
 	initStart = true;
-	reachEndEffector = NULL;
+	reachEndEffector = nullptr;
 	curHandActionState  = TOUCH_OBJECT;		
-	interpMotion = NULL;
-	motionParameter = NULL;
-	curReachState = NULL;	
-	reachData = NULL;
+	interpMotion = nullptr;
+	motionParameter = nullptr;
+	curReachState = nullptr;
+	reachData = nullptr;
 }
 
 MeCtReachEngine::~MeCtReachEngine( void )
@@ -119,7 +119,7 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
 	SmartBody::SBJoint* fingerJoint = skeletonCopy->getJointByName(fingerName);
 	SmartBody::SBJoint* ringJoint = skeletonCopy->getJointByName(ringName);
 
-	SmartBody::SBJoint *pivotJoint = NULL, *firstJoint = NULL, *secondJoint = NULL;
+	SmartBody::SBJoint *pivotJoint = nullptr, *firstJoint = nullptr, *secondJoint = nullptr;
 	if (effectorParent && ringJoint) // ideal configuration
 	{
 		pivotJoint = effectorParent;
@@ -152,7 +152,7 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
  	for (unsigned int i=0;i<consJointList.size();i++)
  	{		
 		consRootName = preFix + consJointList[i];
-		if (skeletonCopy->search_joint(consRootName.c_str()) != NULL)
+		if (skeletonCopy->search_joint(consRootName.c_str()) != nullptr)
 			break;
  	}
 	
@@ -512,7 +512,7 @@ SmartBody::SBJoint* MeCtReachEngine::findRootJoint( SmartBody::SBSkeleton* sk )
 
 DataInterpolator* MeCtReachEngine::createInterpolator(std::string interpolatorType)
 {
-	DataInterpolator* interpolator = NULL;	
+	DataInterpolator* interpolator = nullptr;
 	if (interpolatorType == "KNN")
 	{
 		KNNInterpolator* knnInterpolator = new KNNInterpolator(500,ikReachRegion*1.f);
@@ -523,13 +523,13 @@ DataInterpolator* MeCtReachEngine::createInterpolator(std::string interpolatorTy
 	{
 		InverseInterpolation* ibinterpolator = new InverseInterpolation(); // Inverse Blending
 		interpolator = ibinterpolator;
-		resampleData = NULL;
+		resampleData = nullptr;
 	}
 	else if (interpolatorType == "RBF")
 	{
 		RBFInterpolator* rbfinterpolator = new RBFInterpolator();
 		interpolator = rbfinterpolator;
-		resampleData = NULL;
+		resampleData = nullptr;
 	}
   if (interpolator) {
     interpExampleData = interpolator->getInterpExamples();
@@ -541,7 +541,7 @@ ResampleMotion* MeCtReachEngine::createInterpMotion()
 {
 	ResampleMotion* ex = new ResampleMotion(motionExamples.getMotionData());
 	ex->motionParameterFunc = motionParameter;
-	ex->motionProfile = NULL;
+	ex->motionProfile = nullptr;
 	return ex;
 }
 

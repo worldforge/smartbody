@@ -54,11 +54,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_saccade.h>
 #include <controllers/me_ct_motion_graph.hpp>
 #include <controllers/me_ct_generic_hand.h>
-#include <sbm/remote_speech.h>
+//#include <sbm/remote_speech.h>
 #include <sbm/local_speech.h>
 #include <sbm/text_speech.h>
 #include <sbm/sbm_speech_audiofile.hpp>
-#include <bml/bml_processor.hpp>
+//#include <bml/bml_processor.hpp>
 #include <sk/sk_channel_array.h>
 #include <sr/sr_random.h>
 
@@ -251,12 +251,12 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 	createDoubleAttribute("saccadeTurnOnDelay", 2, true, "Speech", 502, false, false, false, "delay saccade turn on after utterance.");
 	jointTrajBlendWeight = 0.f;
 	useJointConstraint = false;
-	_reach = NULL;
+	_reach = nullptr;
 
 	// since this is a character, show the deformable mesh by default
 	setBoolAttribute("showStaticMesh",false);
 
-	frameDataMarshalFriendly = NULL;
+	frameDataMarshalFriendly = nullptr;
 	frameDataMarshalFriendly = new SBM_CharacterFrameDataMarshalFriendly();
 	InitFrameDataMarshalFriendly();
 	
@@ -269,7 +269,7 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 	
 	createBoolAttribute("useOptimizedBlendShapes", true, true, "Display", 720, false, false, false, "Enables faster blend shape computation by caching blend shape data.");
 	
-	_parserListener = NULL;
+	_parserListener = nullptr;
 	//setUseBlendFaceTextures(false);
 }
 
@@ -278,7 +278,7 @@ SBAPI SBCharacter::~SBCharacter()
 {
 	//FreeFrameDataMarshalFriendly();
 	delete frameDataMarshalFriendly;
-	frameDataMarshalFriendly = NULL;
+	frameDataMarshalFriendly = nullptr;
 }
 
 
@@ -405,12 +405,12 @@ void SBCharacter::setVisemeTimeOffset(float val)
 SBController* SBCharacter::getControllerByIndex(int index)
 {
 	if (!ct_tree_p)
-		return NULL;
+		return nullptr;
 
 	if (index < 0 || index >= (int)ct_tree_p->count_controllers())
 	{
 		SmartBody::util::log("Index %d out of range.", index);
-		return NULL;
+		return nullptr;
 	}
 
 	SBController* controller = getControllerByName(ct_tree_p->controller(index)->getName());
@@ -420,7 +420,7 @@ SBController* SBCharacter::getControllerByIndex(int index)
 SBController* SBCharacter::getControllerByName(const std::string& name)
 {
 	if (!ct_tree_p)
-		return NULL;
+		return nullptr;
 	
 	for (int i = 0; i < (int)ct_tree_p->count_controllers(); i++)
 	{
@@ -431,7 +431,7 @@ SBController* SBCharacter::getControllerByName(const std::string& name)
 			return controller;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 std::vector<std::string> SBCharacter::getControllerNames()
@@ -449,7 +449,7 @@ void SBCharacter::setVoice(const std::string& type)
 {
 	if (type == "")
 	{
-		set_speech_impl(NULL);
+		set_speech_impl(nullptr);
 	}
 	else if (type == "remote")
 	{
@@ -519,7 +519,7 @@ void SBCharacter::setVoiceBackup(const std::string& type)
 
 	if (type == "")
 	{
-		set_speech_impl_backup(NULL);
+		set_speech_impl_backup(nullptr);
 	}
 	else if (type == "remote")
 	{
@@ -567,166 +567,160 @@ const std::string& SBCharacter::getVoiceBackupCode()
 
 int SBCharacter::getNumBehaviors()
 {
-	std::vector<SBBehavior*>& behaviors = getBehaviors();
-	return behaviors.size();
+	//This doesn't seem to be used
+	return 0;
+//	std::vector<SBBehavior*>& behaviors = getBehaviors();
+//	return behaviors.size();
 }
 
 SBBehavior* SBCharacter::getBehavior(int num)
 {
-	if (num < (int) _curBehaviors.size())
-		return _curBehaviors[num];
-	else
-		return NULL;
+	//This doesn't seem to be used.
+//	if (num < (int) _curBehaviors.size())
+//		return _curBehaviors[num];
+//	else
+		return nullptr;
 }
 
-double SBCharacter::getLastScheduledSpeechBehavior()
-{
-	double lastTime =-1.0;
+//double SBCharacter::getLastScheduledSpeechBehavior()
+//{
+//	double lastTime =-1.0;
+//
+//	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
+//	for (auto & iter : bmlRequestMap)
+//	{
+//		std::string requestName = iter.first;
+//		BML::BmlRequestPtr bmlRequestPtr = iter.second;
+//		if (bmlRequestPtr->actor->getName() == this->getName())
+//		{
+//			if (bmlRequestPtr->speech_request)
+//			{
+//				if (lastTime < bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time())
+//					lastTime = bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time();
+//
+//			}
+//		}
+//	}
+//	return lastTime;
+//}
 
-	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
-	for (BML::MapOfBmlRequest::iterator iter = bmlRequestMap.begin(); 
-		 iter != bmlRequestMap.end();
-		 iter ++
-		)
-	{
-		std::string requestName = iter->first;
-		BML::BmlRequestPtr bmlRequestPtr = iter->second;
-		if (bmlRequestPtr->actor->getName() == this->getName())
-		{
-			if (bmlRequestPtr->speech_request)
-			{
-				if (lastTime < bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time())
-					lastTime = bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time();
+//std::string SBCharacter::hasSpeechBehavior()
+//{
+//	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
+//	for (auto & iter : bmlRequestMap)
+//	{
+//		std::string requestName = iter.first;
+//		BML::BmlRequestPtr bmlRequestPtr = iter.second;
+//		if (bmlRequestPtr->actor->getName() == this->getName())
+//		{
+//			if (bmlRequestPtr->speech_request)
+//			{
+//				return (*bmlRequestPtr).msgId;
+//			}
+//		}
+//	}
+//
+//	return "";
+//}
 
-			}
-		}
-	}
-	return lastTime;
-}
-
-std::string SBCharacter::hasSpeechBehavior()
-{
-	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
-	for (BML::MapOfBmlRequest::iterator iter = bmlRequestMap.begin(); 
-		 iter != bmlRequestMap.end();
-		 iter ++
-		)
-	{
-		std::string requestName = iter->first;
-		BML::BmlRequestPtr bmlRequestPtr = iter->second;
-		if (bmlRequestPtr->actor->getName() == this->getName())
-		{
-			if (bmlRequestPtr->speech_request)
-			{
-				return (*bmlRequestPtr).msgId;
-			}
-		}
-	}
-
-	return "";
-}
-
-std::vector<SBBehavior*>& SBCharacter::getBehaviors()
-{
-	for (size_t b = 0; b < _curBehaviors.size(); b++)
-	{
-		delete _curBehaviors[b];
-	}
-	_curBehaviors.clear();
-
-	// speech
-	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
-	for (BML::MapOfBmlRequest::iterator iter = bmlRequestMap.begin(); 
-		 iter != bmlRequestMap.end();
-		 iter ++
-		)
-	{
-		std::string requestName = iter->first;
-		BML::BmlRequestPtr bmlRequestPtr = iter->second;
-		if (bmlRequestPtr->actor->getName() == this->getName())
-		{
-			if (bmlRequestPtr->speech_request)
-			{
-				SpeechBehavior* speechBehavior = new SpeechBehavior();
-				// what information do we need here?
-				speechBehavior->setId((*bmlRequestPtr).msgId);
-				speechBehavior->setUtterance(bmlRequestPtr->speech_request->getSpeechText());
-
-				_curBehaviors.push_back(speechBehavior);
-			}
-		}
-	}
-
-	// posture
-	if (this->posture_sched_p)
-	{
-		MeCtScheduler2::VecOfTrack tracks = posture_sched_p->tracks();
-		for (size_t t = 0; t < tracks.size(); t++)
-		{
-			MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(tracks[t]->animation_ct());
-			if (motionCt)
-			{
-				const std::string& motionName = motionCt->motion()->getName();
-				PostureBehavior* postureBehavior = new PostureBehavior();
-				postureBehavior->setPosture(motionName);
-				_curBehaviors.push_back(postureBehavior);
-			}
-		}
-	}
-
-	// locomotion
-	SmartBody::SBSteerManager* manager = SmartBody::SBScene::getScene()->getSteerManager();
-	SmartBody::SBSteerAgent* steerAgent = manager->getSteerAgent(this->getName());
-	if (steerAgent)
-	{
-		LocomotionBehavior* locoBehavior = new LocomotionBehavior();
-		PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-		if (ppraiAgent->getAgent())
-		{
-			const SteerLib::AgentGoalInfo& goal = ppraiAgent->getAgent()->currentGoal();
-			Util::Point goalTarget = goal.targetLocation;
-		
-			SrVec target(goalTarget.x, 0.f, goalTarget.z);
-			bool reachTarget = _reachTarget && !_lastReachStatus;
-			locoBehavior->setLocomotionTarget(target);
-			locoBehavior->setReachTarget(reachTarget);
-		}
-		_curBehaviors.push_back(locoBehavior);
-	}
-
-	// gaze
-	if (this->gaze_sched_p)
-	{
-		MeCtScheduler2::VecOfTrack tracks = gaze_sched_p->tracks();
-		for (size_t t = 0; t < tracks.size(); t++)
-		{
-			MeCtGaze* gazeCt = dynamic_cast<MeCtGaze*>(tracks[t]->animation_ct());
-			if (gazeCt)
-			{
-				float x, y, z;
-				SkJoint* joint = gazeCt->get_target_joint(x, y, z);
-				if (joint)
-				{
-					SkSkeleton* skeleton = joint->skeleton();
-					SBSkeleton* sbSkel = dynamic_cast<SBSkeleton*> (skeleton);
-					SBPawn* sbPawn = sbSkel->getPawn();
-					
-					GazeBehavior* gazeBehavior = new GazeBehavior();
-					gazeBehavior->setGazeTarget(sbPawn->getName());
-					gazeBehavior->setFadingIn(gazeCt->isFadingIn());
-					gazeBehavior->setFadingOut(gazeCt->isFadingOut());
-					gazeBehavior->setFadedOut(gazeCt->isFadedOut());
-					gazeBehavior->setHandle(gazeCt->handle());
-
-					_curBehaviors.push_back(gazeBehavior);
-					break;
-				}
-			}
-		}
-	}
-
-	return _curBehaviors;
-}
+//std::vector<SBBehavior*>& SBCharacter::getBehaviors()
+//{
+//	for (size_t b = 0; b < _curBehaviors.size(); b++)
+//	{
+//		delete _curBehaviors[b];
+//	}
+//	_curBehaviors.clear();
+//
+//	// speech
+//	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
+//	for (auto & iter : bmlRequestMap)
+//	{
+//		std::string requestName = iter.first;
+//		BML::BmlRequestPtr bmlRequestPtr = iter.second;
+//		if (bmlRequestPtr->actor->getName() == this->getName())
+//		{
+//			if (bmlRequestPtr->speech_request)
+//			{
+//				SpeechBehavior* speechBehavior = new SpeechBehavior();
+//				// what information do we need here?
+//				speechBehavior->setId((*bmlRequestPtr).msgId);
+//				speechBehavior->setUtterance(bmlRequestPtr->speech_request->getSpeechText());
+//
+//				_curBehaviors.push_back(speechBehavior);
+//			}
+//		}
+//	}
+//
+//	// posture
+//	if (this->posture_sched_p)
+//	{
+//		MeCtScheduler2::VecOfTrack tracks = posture_sched_p->tracks();
+//		for (size_t t = 0; t < tracks.size(); t++)
+//		{
+//			MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(tracks[t]->animation_ct());
+//			if (motionCt)
+//			{
+//				const std::string& motionName = motionCt->motion()->getName();
+//				PostureBehavior* postureBehavior = new PostureBehavior();
+//				postureBehavior->setPosture(motionName);
+//				_curBehaviors.push_back(postureBehavior);
+//			}
+//		}
+//	}
+//
+//	// locomotion
+//	SmartBody::SBSteerManager* manager = SmartBody::SBScene::getScene()->getSteerManager();
+//	SmartBody::SBSteerAgent* steerAgent = manager->getSteerAgent(this->getName());
+//	if (steerAgent)
+//	{
+//		LocomotionBehavior* locoBehavior = new LocomotionBehavior();
+//		PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
+//		if (ppraiAgent->getAgent())
+//		{
+//			const SteerLib::AgentGoalInfo& goal = ppraiAgent->getAgent()->currentGoal();
+//			Util::Point goalTarget = goal.targetLocation;
+//
+//			SrVec target(goalTarget.x, 0.f, goalTarget.z);
+//			bool reachTarget = _reachTarget && !_lastReachStatus;
+//			locoBehavior->setLocomotionTarget(target);
+//			locoBehavior->setReachTarget(reachTarget);
+//		}
+//		_curBehaviors.push_back(locoBehavior);
+//	}
+//
+//	// gaze
+//	if (this->gaze_sched_p)
+//	{
+//		MeCtScheduler2::VecOfTrack tracks = gaze_sched_p->tracks();
+//		for (size_t t = 0; t < tracks.size(); t++)
+//		{
+//			MeCtGaze* gazeCt = dynamic_cast<MeCtGaze*>(tracks[t]->animation_ct());
+//			if (gazeCt)
+//			{
+//				float x, y, z;
+//				SkJoint* joint = gazeCt->get_target_joint(x, y, z);
+//				if (joint)
+//				{
+//					SkSkeleton* skeleton = joint->skeleton();
+//					SBSkeleton* sbSkel = dynamic_cast<SBSkeleton*> (skeleton);
+//					SBPawn* sbPawn = sbSkel->getPawn();
+//
+//					GazeBehavior* gazeBehavior = new GazeBehavior();
+//					gazeBehavior->setGazeTarget(sbPawn->getName());
+//					gazeBehavior->setFadingIn(gazeCt->isFadingIn());
+//					gazeBehavior->setFadingOut(gazeCt->isFadingOut());
+//					gazeBehavior->setFadedOut(gazeCt->isFadedOut());
+//					gazeBehavior->setHandle(gazeCt->handle());
+//
+//					_curBehaviors.push_back(gazeBehavior);
+//					break;
+//				}
+//			}
+//		}
+//	}
+//
+//	return _curBehaviors;
+//}
 
 
 SBFaceDefinition* SBCharacter::getFaceDefinition()
@@ -1110,7 +1104,7 @@ SBAPI TrajectoryRecord* SBCharacter::getJointTrajectoryConstraint( const std::st
 {
 	if (jointTrajMap.find(jointName) == jointTrajMap.end())
 	{
-		return NULL;
+		return nullptr;
 	}
 	return jointTrajMap[jointName];
 }
@@ -1285,14 +1279,14 @@ void SBCharacter::InitFrameDataMarshalFriendly()
    frameDataMarshalFriendly->rz = 0;
    frameDataMarshalFriendly->m_numJoints = 0;
 
-   frameDataMarshalFriendly->jname = NULL;
-   frameDataMarshalFriendly->jx  = NULL;
-   frameDataMarshalFriendly->jy  = NULL;
-   frameDataMarshalFriendly->jz  = NULL;
-   frameDataMarshalFriendly->jrw = NULL;
-   frameDataMarshalFriendly->jrx = NULL;
-   frameDataMarshalFriendly->jry = NULL;
-   frameDataMarshalFriendly->jrz = NULL;
+   frameDataMarshalFriendly->jname = nullptr;
+   frameDataMarshalFriendly->jx  = nullptr;
+   frameDataMarshalFriendly->jy  = nullptr;
+   frameDataMarshalFriendly->jz  = nullptr;
+   frameDataMarshalFriendly->jrw = nullptr;
+   frameDataMarshalFriendly->jrx = nullptr;
+   frameDataMarshalFriendly->jry = nullptr;
+   frameDataMarshalFriendly->jrz = nullptr;
 }
 
 
@@ -1321,14 +1315,14 @@ void SBCharacter::FreeFrameDataJointsMarshalFriendly()
    delete [] frameDataMarshalFriendly->jry;
    delete [] frameDataMarshalFriendly->jrz;
 
-   frameDataMarshalFriendly->jname = NULL;
-   frameDataMarshalFriendly->jx  = NULL;
-   frameDataMarshalFriendly->jy  = NULL;
-   frameDataMarshalFriendly->jz  = NULL;
-   frameDataMarshalFriendly->jrw = NULL;
-   frameDataMarshalFriendly->jrx = NULL;
-   frameDataMarshalFriendly->jry = NULL;
-   frameDataMarshalFriendly->jrz = NULL;
+   frameDataMarshalFriendly->jname = nullptr;
+   frameDataMarshalFriendly->jx  = nullptr;
+   frameDataMarshalFriendly->jy  = nullptr;
+   frameDataMarshalFriendly->jz  = nullptr;
+   frameDataMarshalFriendly->jrw = nullptr;
+   frameDataMarshalFriendly->jrx = nullptr;
+   frameDataMarshalFriendly->jry = nullptr;
+   frameDataMarshalFriendly->jrz = nullptr;
 }
 
 
@@ -1337,7 +1331,7 @@ void SBCharacter::FreeFrameDataMarshalFriendly()
    FreeFrameDataJointsMarshalFriendly();
 
    delete [] frameDataMarshalFriendly->m_name;
-   frameDataMarshalFriendly->m_name = NULL;
+   frameDataMarshalFriendly->m_name = nullptr;
 }
 
 
@@ -1429,7 +1423,7 @@ SBAPI const SBM_CharacterFrameDataMarshalFriendly & SBCharacter::GetFrameDataMar
 SBAPI std::string SBCharacter::getReachAttachedPawnName(const std::string& reachType)
 {
 	std::string result = "null";
-	//ReachEngineMap* reachEngineMap = NULL;
+	//ReachEngineMap* reachEngineMap = nullptr;
 	//getCurrentReachEngineMap();
 	if (getReach())
 	{
@@ -1477,7 +1471,7 @@ void SBCharacter::addParserListener(SBParserListener* parserListener)
 
 void SBCharacter::removeParserListener()
 {
-	_parserListener = NULL;
+	_parserListener = nullptr;
 }
 
 SBParserListener* SBCharacter::getParserListener()

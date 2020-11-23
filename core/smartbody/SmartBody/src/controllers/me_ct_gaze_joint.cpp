@@ -52,7 +52,7 @@ MeCtGazeJoint::MeCtGazeJoint( void )	{
 //	forward_rot = euler_t( 0.0, 45.0, 0.0 );
 //	forward_rot = euler_t( 0.0, 0.0, 45.0 );
 	
-	joint_p = NULL;
+	joint_p = nullptr;
 }
 
 void MeCtGazeJoint::init( SkJoint* j_p )	{

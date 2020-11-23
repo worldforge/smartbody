@@ -38,7 +38,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/sbm_constants.h"
 #include <sbm/SteerSuiteEngineDriver.h>
 #include <sbm/sr_arg_buff.h>
-#include "sbm/sbm_deformable_mesh.h"
 #include <sb/SBPawn.h>
 
 
@@ -65,13 +64,12 @@ SkChannelArray SbmPawn::WORLD_OFFSET_CHANNELS_P;
 
 
 SbmPawn::SbmPawn() : SBObject(),
-dMeshInstance_p(NULL),
-dStaticMeshInstance_p(NULL),
-_skeleton(NULL),
-scene_p( NULL ),
-ct_tree_p(NULL)
+//dMeshInstance_p(nullptr),
+//dStaticMeshInstance_p(nullptr),
+_skeleton(nullptr),
+ct_tree_p(nullptr)
 {
-	_skeleton = NULL;
+	_skeleton = nullptr;
 	SbmPawn::initData();
 
 	std::string validName =  SmartBody::SBScene::getScene()->getValidName("object");
@@ -81,16 +79,15 @@ ct_tree_p(NULL)
 
 // Constructor
 SbmPawn::SbmPawn( const char * name ) : SmartBody::SBObject(),
-scene_p( NULL ),
-#if defined(__ANDROID__) || defined(SB_IPHONE) // don't use the GPU version in android
-dMeshInstance_p(NULL),
-dStaticMeshInstance_p(NULL),
-#else
-dMeshInstance_p(NULL),
-dStaticMeshInstance_p(NULL),
-#endif
+//#if defined(__ANDROID__) || defined(SB_IPHONE) // don't use the GPU version in android
+//dMeshInstance_p(nullptr),
+//dStaticMeshInstance_p(nullptr),
+//#else
+//dMeshInstance_p(nullptr),
+//dStaticMeshInstance_p(nullptr),
+//#endif
 ct_tree_p( MeControllerTreeRoot::create() ),
-world_offset_writer_p( NULL ),
+world_offset_writer_p( nullptr ),
 wo_cache_timestamp( -std::numeric_limits<float>::max() )
 {
 	SmartBody::SBObject::setName( name );
@@ -109,7 +106,7 @@ wo_cache_timestamp( -std::numeric_limits<float>::max() )
 void SbmPawn::initData()
 {
 #ifndef SB_NO_BONEBUS
-	bonebusCharacter = NULL;
+	bonebusCharacter = nullptr;
 #endif
 	if (_skeleton)
 	{
@@ -129,9 +126,9 @@ void SbmPawn::initData()
 	wo_cache_timestamp = -std::numeric_limits<float>::max(); 
 	//skeleton_p->ref();
 	ct_tree_p->ref();
-	//colObj_p = NULL;
-	//phyObj_p = NULL;
-	steeringSpaceObj_p = NULL;
+	//colObj_p = nullptr;
+	//phyObj_p = nullptr;
+	steeringSpaceObj_p = nullptr;
 	steeringSpaceObjSize.x = 1.0f;
 	steeringSpaceObjSize.y = 1.0f;
 	steeringSpaceObjSize.z = 1.0f;
@@ -356,7 +353,7 @@ void SbmPawn::init_world_offset_channels()
 
 
 bool SbmPawn::is_initialized() {
-	return _skeleton != NULL;
+	return _skeleton != nullptr;
 }
 
 int SbmPawn::prune_controller_tree()
@@ -403,9 +400,6 @@ SbmPawn::~SbmPawn()
 
 	ct_tree_p->clear();  // Because controllers within reference back to tree root context
 
-	if (scene_p)
-		scene_p->unref();
-	
 	if (steeringSpaceObj_p)
 	{
 		if (SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->isInitialized())
@@ -422,10 +416,10 @@ SbmPawn::~SbmPawn()
 	}
 
 	
-	if (dMeshInstance_p)
-	{
-		delete dMeshInstance_p;
-	}
+//	if (dMeshInstance_p)
+//	{
+//		delete dMeshInstance_p;
+//	}
 
 	if( _skeleton )
 	{
@@ -451,7 +445,7 @@ const SkJoint* SbmPawn::get_joint( const char* joint_name ) const {
 	if (_skeleton)
 		return _skeleton->search_joint( joint_name );
 	else
-		return NULL;
+		return nullptr;
 }
 
 
@@ -560,7 +554,7 @@ void SbmPawn::set_world_offset( float x, float y, float z,
 
 void SbmPawn::wo_cache_update() {
 	const SkJoint* joint = get_world_offset_joint();
-	if( joint==NULL )
+	if( joint==nullptr )
 	{
 		//std::stringstream strstr;
 		//strstr << "ERROR: SbmPawn::wo_cache_update(..): \"" << getName() << "\" does not have a " << WORLD_OFFSET_JOINT_NAME << " joint.";

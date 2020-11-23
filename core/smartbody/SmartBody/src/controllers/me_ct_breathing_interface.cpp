@@ -63,8 +63,8 @@ MinMaxBreathCycle::MinMaxBreathCycle()
 
 	_min = 0.0;
 	_max = 1.0;
-	_min_key = NULL;
-	_max_key = NULL;
+	_min_key = nullptr;
+	_max_key = nullptr;
 }
 MinMaxBreathCycle::MinMaxBreathCycle(float min, float max)
 {
@@ -72,8 +72,8 @@ MinMaxBreathCycle::MinMaxBreathCycle(float min, float max)
 
 	_min = min;
 	_max = max;
-	_min_key = NULL;
-	_max_key = NULL;
+	_min_key = nullptr;
+	_max_key = nullptr;
 }
 void MinMaxBreathCycle::min(float value, float transitionDuration)
 {
@@ -87,7 +87,7 @@ void MinMaxBreathCycle::max(float value, float transitionDuration)
 }
 void MinMaxBreathCycle::updateInterpolationKeys(double realTime)
 {
-	if(_max_key != NULL)
+	if(_max_key != nullptr)
 	{
 		if(_max_key->getStartTime() == -1)
 		{
@@ -99,10 +99,10 @@ void MinMaxBreathCycle::updateInterpolationKeys(double realTime)
 		if(_max_key->isFinished())
 		{
 			delete _max_key;
-			_max_key = NULL;
+			_max_key = nullptr;
 		}
 	}
-	if(_min_key != NULL)
+	if(_min_key != nullptr)
 	{
 		if(_min_key->getStartTime() == -1)
 		{
@@ -114,7 +114,7 @@ void MinMaxBreathCycle::updateInterpolationKeys(double realTime)
 		if(_min_key->isFinished())
 		{
 			delete _min_key;
-			_min_key = NULL;
+			_min_key = nullptr;
 		}
 	}
 }
@@ -265,7 +265,7 @@ void SplineBreathCycle::update()
 		}
 		knot = knot->get_next();
 	}
-	while(knot != NULL);
+	while(knot != nullptr);
 #endif
 }
 float SplineBreathCycle::duration()

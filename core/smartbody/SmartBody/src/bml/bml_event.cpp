@@ -134,6 +134,6 @@ BehaviorRequestPtr BML::parse_bml_event( DOMElement* elem, const std::string& un
 	else
 	{
 		xml_parse_error( BMLDefs::ATTR_MESSAGE, elem );
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
 }

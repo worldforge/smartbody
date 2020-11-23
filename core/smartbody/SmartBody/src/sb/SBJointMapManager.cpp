@@ -41,7 +41,7 @@ SmartBody::SBJointMap* SBJointMapManager::getJointMap(const std::string& name)
 	if (iter != _jointMaps.end())
 		return (*iter).second;
 	else
-		return NULL;
+		return nullptr;
 }
 
 SmartBody::SBJointMap* SBJointMapManager::createJointMap(const std::string& name)
@@ -63,7 +63,7 @@ SmartBody::SBJointMap* SBJointMapManager::createJointMap(const std::string& name
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

@@ -33,6 +33,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #endif
 
+#include "sb/SBAssetStore.h"
 #include <sb/SBObject.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBMotion.h>
@@ -69,10 +70,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBParser.h>
 #include <sb/SBRetarget.h>
-#include <sb/SBDebuggerServer.h>
-#include <sb/SBDebuggerClient.h>
-#include <sb/SBDebuggerUtility.h>
-#include <sb/SBVHMsgManager.h>
+//#include <sb/SBVHMsgManager.h>
 #include <sb/SBMotionGraph.h>
 #include "SBUtilities.h"
 #include <sbm/sbm_audio.h>
@@ -87,9 +85,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSceneListener.h>
 #include <sb/SBNavigationMesh.h>
 #include <sbm/ParserBVH.h>
-#include <sbm/ParserCOLLADAFast.h>
-#include <sbm/ParserOpenCOLLADA.h>
-#include <sbm/ParserOgre.h>
+//#include <sbm/ParserCOLLADAFast.h>
+//#include <sbm/ParserOpenCOLLADA.h>
+//#include <sbm/ParserOgre.h>
 #include <sbm/Heightfield.h>
 #include <sbm/action_unit.hpp>
 #include <sbm/xercesc_utils.hpp>
@@ -159,7 +157,8 @@ class ForwardLogListener : public SmartBody::util::Listener
 };
 
 
-SBScene::SBScene() : SBObject()
+SBScene::SBScene() : SBObject(),
+_assetStore(std::make_unique<SBAssetStore>(*this))
 {
 	//initialize();
 }
@@ -196,14 +195,14 @@ void SBScene::initialize()
 	_behaviorSetManager = new SBBehaviorSetManager();
 	_retargetManager = new SBRetargetManager();
 	_eventManager = new SBEventManager();
-	_assetManager = new SBAssetManager();
+	_assetManager = new SBAssetManager(*_assetStore);
 	_speechManager = new SBSpeechManager();
-	_vhmsgManager = new SBVHMsgManager();
+	//_vhmsgManager = new SBVHMsgManager();
 	_commandManager = new SBCommandManager();
 	_naviMeshManager = new SBNavigationMeshManager();
 	_motionGraphManager = new SBMotionGraphManager();
 	_handConfigManager = new SBHandConfigurationManager();
-	_debuggerServer = new SBDebuggerServer();
+	//_debuggerServer = new SBDebuggerServer();
 
 	//_scale = .01f; // default scale is centimeters
 	_scale = 1.f;
@@ -213,16 +212,16 @@ void SBScene::initialize()
 	_serviceManager->addService(_physicsManager);
 	_serviceManager->addService(_boneBusManager);
 	_serviceManager->addService(_collisionManager);
-	_serviceManager->addService(_vhmsgManager);
+	//_serviceManager->addService(_vhmsgManager);
 	_serviceManager->addService(_realtimeManager);
 	_serviceManager->addService(_phonemeManager);
 	_serviceManager->addService(_profiler);
-	_serviceManager->addService(_debuggerServer);
+	//_serviceManager->addService(_debuggerServer);
 
 	_parser = new SBParser();
 
-	_debuggerClient = new SBDebuggerClient();
-	_debuggerUtility = new SBDebuggerUtility();
+	//_debuggerClient = new SBDebuggerClient();
+	//_debuggerUtility = new SBDebuggerUtility();
 	_isRemoteMode = false;
 
     createBoolAttribute("bmlstatus", false, true, "", 5, false, false, false, "Use BML status feedback events.");
@@ -425,7 +424,7 @@ void SBScene::cleanup()
 	delete _naviMeshManager;
 	delete _kinectProcessor;
 	delete _handConfigManager;
-	delete _debuggerServer;
+	//delete _debuggerServer;
 
 	_sim = nullptr;
 	_profiler = nullptr;
@@ -450,10 +449,10 @@ void SBScene::cleanup()
 	_kinectProcessor = nullptr;
 
 
-	if (_heightField)
-	{
-		delete _heightField;
-	}
+
+
+	delete _heightField;
+
 	_heightField = nullptr;
 
 #if 0 // this should be done in asset manager
@@ -477,8 +476,8 @@ void SBScene::cleanup()
 	AUDIO_Init();
 #endif
 
-	if (_vhmsgManager->isEnable() && _vhmsgManager->isConnected())
-		_vhmsgManager->send( "vrProcEnd sbm" );
+//	if (_vhmsgManager->isEnable() && _vhmsgManager->isConnected())
+//		_vhmsgManager->send( "vrProcEnd sbm" );
 	
 //	delete _vhmsgManager;	
 //	_vhmsgManager = nullptr;
@@ -552,29 +551,29 @@ SBScene::~SBScene()
 
 	delete _parser;
 
-	_debuggerClient->Disconnect();
-  // TODO: should delete these in reverse order?
-	delete _debuggerClient;
-	delete _debuggerUtility;
+//	_debuggerClient->Disconnect();
+//  // TODO: should delete these in reverse order?
+//	delete _debuggerClient;
+//	delete _debuggerUtility;
 //	
 	//mcu.reset();
 }
 
-SBDebuggerServer* SBScene::getDebuggerServer()
-{
-	return _debuggerServer; 
-}
-
-SBDebuggerClient* SBScene::getDebuggerClient()
-{
-	return _debuggerClient; 
-}
-
-
-SBDebuggerUtility* SBScene::getDebuggerUtility()
-{
-	return _debuggerUtility; 
-}
+//SBDebuggerServer* SBScene::getDebuggerServer()
+//{
+//	return _debuggerServer;
+//}
+//
+//SBDebuggerClient* SBScene::getDebuggerClient()
+//{
+//	return _debuggerClient;
+//}
+//
+//
+//SBDebuggerUtility* SBScene::getDebuggerUtility()
+//{
+//	return _debuggerUtility;
+//}
 
 SBScene* SBScene::getScene()
 {
@@ -618,22 +617,20 @@ void SBScene::update()
 	if (isRemoteMode())
 	{
 		// update client
-		getDebuggerClient()->Update();
+		//getDebuggerClient()->Update();
 		const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
-		for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-			pawnIter != pawns.end();
-			pawnIter++)
+		for (const auto & pawnIter : pawns)
 		{
-			SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn((*pawnIter));
+			SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
 			pawn->ct_tree_p->evaluate(getSimulationManager()->getTime());
 			pawn->ct_tree_p->applySkeletonToBuffer();
 		}
 
 		// update renderer as listener
 		std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
-		for (size_t i = 0; i < listeners.size(); i++)
+		for (auto & listener : listeners)
 		{
-			listeners[i]->OnSimulationUpdate( );
+			listener->OnSimulationUpdate( );
 		}
 
 		return;
@@ -643,42 +640,38 @@ void SBScene::update()
 	// scripts
 	this->getProfiler()->mark("scripts", 1, "beforeUpdate()");
 	std::map<std::string, SmartBody::SBScript*>& scripts = getScripts();
-	for (std::map<std::string, SmartBody::SBScript*>::iterator iter = scripts.begin();
-		iter != scripts.end();
-		iter++)
+	for (auto & script : scripts)
 	{
-		if ((*iter).second->isEnable())
-			(*iter).second->beforeUpdate(getSimulationManager()->getTime());
+		if (script.second->isEnable())
+			script.second->beforeUpdate(getSimulationManager()->getTime());
 	}
 	this->getProfiler()->mark("scripts");
 	//SmartBody::util::log("After script");
 	// services
 	this->getProfiler()->mark("services", 1, "beforeUpdate()");
 	std::map<std::string, SmartBody::SBService*>& services = getServiceManager()->getServices();
-	for (std::map<std::string, SmartBody::SBService*>::iterator iter = services.begin();
-		iter != services.end();
-		iter++)
+	for (auto & service : services)
 	{
-		if ((*iter).second->isEnable())
-			(*iter).second->beforeUpdate(getSimulationManager()->getTime());
+		if (service.second->isEnable())
+			service.second->beforeUpdate(getSimulationManager()->getTime());
 	}
 	this->getProfiler()->mark("services");
 	//SmartBody::util::log("After services");
 
 	this->getProfiler()->mark("allsequences", 1, "commands");
-	std::string seqName = "";
+	std::string seqName;
 	std::vector<std::string> sequencesToDelete;
 	SequenceManager* activeSequences = getCommandManager()->getActiveSequences();
 	int numSequences = activeSequences->getNumSequences();
 	for (int s = 0; s < numSequences; s++)
 	{
 		srCmdSeq* seq = activeSequences->getSequence(s, seqName);
-		std::string cmd = "";
+		std::string cmd;
 		if (seq && seq->isValid())
 		{
 			do {
 				cmd = seq->pop( (float) getSimulationManager()->getTime() );
-				if (cmd != "")			
+				if (!cmd.empty())
 				{
 					//SmartBody::util::log("execute command = %s",cmd.c_str());
 					this->getProfiler()->mark("commands", 1, cmd.c_str() );
@@ -689,7 +682,7 @@ void SBScene::update()
 					}
 					this->getProfiler()->mark("commands");
 				} 
-			} while( cmd != "" );
+			} while( !cmd.empty() );
 			if( seq->get_count() < 1 )
 			{
 				sequencesToDelete.push_back(seqName);
@@ -697,9 +690,9 @@ void SBScene::update()
 		}
 	}
 
-	for (size_t d = 0; d < sequencesToDelete.size(); d++)
+	for (auto & d : sequencesToDelete)
 	{
-		activeSequences->removeSequence(sequencesToDelete[d], true);
+		activeSequences->removeSequence(d, true);
 	}
 	activeSequences->cleanupMarkedSequences();
 	this->getProfiler()->mark("allsequences");
@@ -1094,6 +1087,7 @@ SBPawn* SBScene::insertPawn(SBPawn* pawn) {
 		SBService* service = entry.second;
 		service->onPawnCreate(pawn);
 	}
+	return pawn;
 }
 
 
@@ -1103,25 +1097,18 @@ void SBScene::removeCharacter(const std::string& charName)
 	const std::string& name = character->getName();
 	if (character)
 	{
-
-		string vrProcEnd_msg = "vrProcEnd sbm ";
-		vrProcEnd_msg += getName();
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send( vrProcEnd_msg.c_str() );
-
-		// notify the services
+				// notify the services
 		std::map<std::string, SmartBody::SBService*>& services = getServiceManager()->getServices();
-		for (std::map<std::string, SmartBody::SBService*>::iterator iter = services.begin();
-			iter != services.end();
-			iter++)
+		for (auto & iter : services)
 		{
-			SBService* service = (*iter).second;
+			SBService* service = iter.second;
 			service->onCharacterDelete(character);
 		}
 	
 		std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
-		for (size_t i = 0; i < listeners.size(); i++)
+		for (auto & listener : listeners)
 		{
-			listeners[i]->OnCharacterDelete( name);
+			listener->OnCharacterDelete( name);
 		}
 
 #ifndef SB_NO_BONEBUS
@@ -1132,7 +1119,7 @@ void SBScene::removeCharacter(const std::string& charName)
 		}
 #endif
 
-		std::map<std::string, SbmPawn*>::iterator iter = _pawnMap.find(name);
+		auto iter = _pawnMap.find(name);
 		if (iter != _pawnMap.end())
 		{
 			_pawnMap.erase(iter);
@@ -1369,16 +1356,16 @@ void SBScene::removePendingCommands()
 	SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->clear();
 }
 
-void SBScene::sendVHMsg(const std::string& message)
-{	 
-	SmartBody::SBScene::getScene()->getVHMsgManager()->send(message.c_str());
-}
-
-void SBScene::sendVHMsg2(const std::string& message, const std::string& message2)
-{
-	 
-	SmartBody::SBScene::getScene()->getVHMsgManager()->send2(message.c_str(), message2.c_str());
-}
+//void SBScene::sendVHMsg(const std::string& message)
+//{
+//	SmartBody::SBScene::getScene()->getVHMsgManager()->send(message.c_str());
+//}
+//
+//void SBScene::sendVHMsg2(const std::string& message, const std::string& message2)
+//{
+//
+//	SmartBody::SBScene::getScene()->getVHMsgManager()->send2(message.c_str(), message2.c_str());
+//}
 
 bool SBScene::run(const std::string& command)
 {
@@ -1992,56 +1979,56 @@ std::vector<std::string> SBScene::getAssetPaths(const std::string& type)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.getAssetPaths() instead.");
-	return getAssetManager()->getAssetPaths(type);
+	return _assetStore->getAssetPaths(type);
 }
 
 std::vector<std::string> SBScene::getLocalAssetPaths(const std::string& type)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.getLocalAssetPaths() instead.");
-	return getAssetManager()->getLocalAssetPaths(type);
+	return _assetStore->getLocalAssetPaths(type);
 }
 
 void SBScene::addAssetPath(const std::string& type, const std::string& path)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.addAssetPath() instead.");
-	getAssetManager()->addAssetPath(type, path);
+	_assetStore->addAssetPath(type, path);
 }
 
 void SBScene::removeAssetPath(const std::string& type, const std::string& path)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.addAssetPath() instead.");
-	getAssetManager()->removeAssetPath(type, path);
+	_assetStore->removeAssetPath(type, path);
 }
 
 void SBScene::removeAllAssetPaths(const std::string& type)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.removeAllAssetPaths() instead.");
-	getAssetManager()->removeAllAssetPaths(type);
+	_assetStore->removeAllAssetPaths(type);
 }
 
 void SBScene::loadAssets()
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.addAssetPath() instead.");
-	getAssetManager()->loadAssets();
+	_assetStore->loadAssets();
 }
 
 void SBScene::loadAsset(const std::string& assetPath)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.loadAsset() instead.");
-	getAssetManager()->loadAsset(assetPath);
+	_assetStore->loadAsset(assetPath);
 }
 
 void SBScene::loadAssetsFromPath(const std::string& assetPath)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.loadAssetsFromPath() instead.");
-	getAssetManager()->loadAssetsFromPath(assetPath);
+	_assetStore->loadAssetsFromPath(assetPath);
 }
 
 SBSkeleton* SBScene::addSkeletonDefinition(const std::string& skelName )
@@ -2211,265 +2198,183 @@ void SBScene::updateCharacterNames()
 	}
 }
 
-bool blendScalePos(SrVec &v, SrVec &rootPos, int rootIdx, int headIdx, SrVec4i& boneIdx, SrVec4& boneWeight, float blendThreshold, float scaleRatio)
-{
-	if (v.y > rootPos.y + blendThreshold)
-		return false;
-
-	float rootHeadSkinWeightMax = 0.9f;
-	float rootHeadSkinWeightMin = 0.7f;
-	float rootSkinWeightMin = 0.1f;
-	float headSkinWeight = -1.f;
-	float rootSkinWeight = -1.f;
-	for (int k = 0; k < 4; k++)
-	{
-		if (boneIdx[k] == rootIdx)
-		{
-			rootSkinWeight = boneWeight[k];
-			//SmartBody::util::log("neck skin weight = %f", rootSkinWeight);
-		}
-		else if (boneIdx[k] == headIdx)
-		{
-			headSkinWeight = boneWeight[k];
-			//SmartBody::util::log("head skin weight = %f", headSkinWeight);
-		}
-	}
-	if (headSkinWeight > rootHeadSkinWeightMax) return false; // don't scale the part when head weight is larger than threshold
-	//if (v.y > rootPos.y && rootSkinWeight < rootSkinWeightMin) return false;
-	//float blendRatio = (v.y - rootPos.y + blendThreshold) / (blendThreshold*2.0);
-	float blendRatio = (v.y - rootPos.y) / (blendThreshold);
-	//float blendRatio = 0.f;
-	if (blendRatio < 0.f) blendRatio = 0.0;
-// 	if (headSkinWeight > rootHeadSkinWeightMin)
-// 	{		
-// 		blendRatio = (headSkinWeight - rootHeadSkinWeightMin) / (rootHeadSkinWeightMax - rootHeadSkinWeightMin);
-// 		SmartBody::util::log("head skin weight = %f, root skin weight = %f, blendRatio = %f", headSkinWeight, rootSkinWeight, blendRatio);
-// 	}
-	
-	float blendScaleRatio = (blendRatio)+(1.0 - blendRatio)*scaleRatio;
-	v = rootPos + (v - rootPos)*blendScaleRatio;
-	return true;
-}
-
-bool blendScalePos2(SrVec &v, SrVec &rootPos, SrVec &neckPos, int rootIdx, int neckIdx, SrVec4i& boneIdx, SrVec4& boneWeight, float blendThreshold, float scaleRatio)
-{
-	if (v.y > rootPos.y) // don't change anything
-		return false;
-
-	float rootHeadSkinWeightMax = 0.9f;
-	float rootHeadSkinWeightMin = 0.7f;
-	float rootSkinWeightMin = 0.1f;
-	float neckSkinWeight = -1.f;
-	float rootSkinWeight = -1.f;
-	for (int k = 0; k < 4; k++)
-	{
-		if (boneIdx[k] == rootIdx)
-		{
-			rootSkinWeight = boneWeight[k];
-			//SmartBody::util::log("neck skin weight = %f", rootSkinWeight);
-		}
-		else if (boneIdx[k] == neckIdx)
-		{
-			neckSkinWeight = boneWeight[k];
-			//SmartBody::util::log("head skin weight = %f", headSkinWeight);
-		}
-	}
-	if (rootSkinWeight > rootHeadSkinWeightMax) return false; // don't scale the part when head weight is larger than threshold
-	if (v.y > neckPos.y && neckSkinWeight < 0.1f) return false;
-
-	//float blendRatio = (v.y - rootPos.y + blendThreshold) / (blendThreshold*2.0);
-	float blendRatio = (rootPos.y - v.y) / (blendThreshold);
-	//float blendRatio = 0.f;
-	if (blendRatio > 1.f) blendRatio = 1.f;
-	//if (v.y < neckPos.y) blendRatio = 1.f;
-	//if (rootPos.y < neckPos.y) blendRatio = 0.f
-	// 	if (headSkinWeight > rootHeadSkinWeightMin)
-	// 	{		
-	// 		blendRatio = (headSkinWeight - rootHeadSkinWeightMin) / (rootHeadSkinWeightMax - rootHeadSkinWeightMin);
-	// 		SmartBody::util::log("head skin weight = %f, root skin weight = %f, blendRatio = %f", headSkinWeight, rootSkinWeight, blendRatio);
-	// 	}
-
-	float blendScaleRatio = (1.0 - blendRatio)+(blendRatio)*scaleRatio;
-	v = rootPos + (v - rootPos)*blendScaleRatio;
-	return true;
-}
 
 
 
 
-SBAPI void SBScene::rescalePartialMeshSkeleton(const std::string& meshName, const std::string& skelName, const std::string& rootJointName, const std::vector<std::string>& skipMeshNames, float scaleRatio, float blendRatio)
-{
-	SmartBody::util::log("Rescale mesh and skeleton");
-	SBAssetManager* assetManager = getAssetManager();
-	DeformableMesh* mesh = assetManager->getDeformableMesh(meshName);
-	
-	
-	
-	SmartBody::SBSkeleton* skel = assetManager->getSkeleton(skelName);
-	if (!mesh || !skel)
-	{
-		SmartBody::util::log("Warning, can't find mesh '%s' or skeleton '%s'.", meshName.c_str(), skelName.c_str());
-		return;
-	}
-
-	SmartBody::SBJoint* rootJoint = skel->getJointByName(rootJointName);
-	if (!rootJoint)
-	{
-		SmartBody::util::log("Warning, can't find joint '%s'.", rootJointName.c_str());
-		return;
-	}
-	SmartBody::util::log("before build skin vertex buffer");
-	mesh->buildSkinnedVertexBuffer();
-	SmartBody::util::log("after build skin vertex buffer");
-
-	SmartBody::util::log("before skeleton update global matrices");
-	skel->update_global_matrices();
-	SrVec rootPos = rootJoint->gmat().get_translation();
-	std::vector<std::string> belowJointNames;
-	std::string headJointName = "none";
-	belowJointNames.push_back(rootJointName);
-	int rootJointIdx = mesh->boneJointIdxMap[rootJointName];
-	int headJointIdx = -1;
-	int neckJointIdx = -1;
-	SmartBody::util::log("before find head joints");
-	for (int i = 0; i < skel->getNumJoints(); i++)
-	{
-		SmartBody::SBJoint* joint = skel->getJoint(i);
-#if 1
-		//if (joint->getParent() == rootJoint) // children of root joint
-		{
-			std::string jointName = joint->getName();
-			std::transform(jointName.begin(), jointName.end(), jointName.begin(), ::tolower);
-			if (jointName.find("head") != std::string::npos)
-			{
-				SmartBody::util::log("Head Joint = %s", joint->getMappedJointName().c_str());
-				headJointName = joint->getMappedJointName();
-				headJointIdx = mesh->boneJointIdxMap[headJointName];
-			}
-		}
-#endif
-
-		SrVec jpos = joint->gmat().get_translation();
-		if (jpos.y < rootPos.y) // lower than root position
-		{
-			belowJointNames.push_back(joint->getMappedJointName());
-		}
-	}
-	SrVec neckPos = rootJoint->getParent()->gmat().get_translation();
-	neckJointIdx = mesh->boneJointIdxMap[rootJoint->getParent()->getMappedJointName()];
-	SmartBody::util::log("Head Joint name = %s, idx = %d, Root Joint name = %s, idx = %d", headJointName.c_str(), headJointIdx, rootJointName.c_str(), rootJointIdx);
-	
-	float blendThreshold = skel->getBoundingBox().size().y*blendRatio;	
-	
-	//rootPos = rootPos + SrVec(0, blendThreshold, 0);
-	std::map<std::string, bool> skipMeshMap;
-	for (unsigned int i = 0; i < skipMeshNames.size(); i++)
-		skipMeshMap[skipMeshNames[i]] = true;
-
-	for (unsigned int i = 0; i < mesh->dMeshStatic_p.size(); i++)
-	{
-		SrModel& model = mesh->dMeshStatic_p[i]->shape();
-		SrModel& dynModel = mesh->dMeshDynamic_p[i]->shape();
-		SkinWeight* skinWeight = mesh->skinWeights[i];
-		skinWeight->buildSkinWeightBuf();		
-		std::string modelName = (const char*)model.name;
-		if (skipMeshMap.find(modelName) != skipMeshMap.end()) // skip the mesh
-			continue;
-		//std::map<std::string, std::vector<SrSnModel*> > blendShapeMap;
-		for (unsigned int k = 0; k < model.V.size(); k++)
-		{		
-			SrVec& v = model.V[k];
-			SrVec4i gboneIdx;
-			SrVec4i& lboneIdx = skinWeight->boneIDs[k];
-			for (int b = 0; b < 4; b++)
-			{
-				gboneIdx[b] = mesh->boneJointIdxMap[skinWeight->infJointName[lboneIdx[b]]];
-			}
-			//LOG("old bone idx = %d %d %d %d", lboneIdx[0], lboneIdx[1], lboneIdx[2], lboneIdx[3]);
-			//LOG("global bone idx = %d %d %d %d", gboneIdx[0], gboneIdx[1], gboneIdx[2], gboneIdx[3]);
-			bool willScale = blendScalePos(v, rootPos, rootJointIdx, headJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
-			//bool willScale = blendScalePos2(v, rootPos, neckPos, rootJointIdx, neckJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
-			if (!willScale) continue;
-
-			model.V[k] = v; // update the new position
-			dynModel.V[k] = v;
-			//model.VOrig[k] = v;
-		}		
-		model.computeNormals();
-		dynModel.computeNormals();
-		//std::string modelName = (const char*)model.name;
-		if (mesh->blendShapeMap.find(modelName) != mesh->blendShapeMap.end()) // the shape is associated with blendshape
-		{
-			std::vector<SrSnModel*>& blendShapes = mesh->blendShapeMap[modelName];
-			for (unsigned int j = 0; j < blendShapes.size(); j++)
-			{
-				SrModel& faceModel = blendShapes[j]->shape();
-				for (unsigned int k = 0; k < faceModel.V.size(); k++)
-				{
-					SrVec v = faceModel.V[k];
-#if 0
-					if (v.y > rootPos.y + blendThreshold)
-						continue;
-
-					float blendRatio = (v.y - rootPos.y) / (blendThreshold);
-					if (blendRatio < 0.f) blendRatio = 0.0;
-					float blendScaleRatio = (blendRatio)+(1.0 - blendRatio)*scaleRatio;
-					v = rootPos + (v - rootPos)*blendScaleRatio;
-#else
-					SrVec4i gboneIdx;
-					SrVec4i& lboneIdx = skinWeight->boneIDs[k];
-					for (int b = 0; b < 4; b++)
-					{
-						gboneIdx[b] = mesh->boneJointIdxMap[skinWeight->infJointName[lboneIdx[b]]];
-					}
-					bool willScale = blendScalePos(v, rootPos, rootJointIdx, headJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
-					//bool willScale = blendScalePos2(v, rootPos, neckPos, rootJointIdx, neckJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
-					if (!willScale) continue;
-#endif
-
-					//v = rootPos + (v - rootPos)*scaleRatio;
-					//faceModel.V[k] = v; // update the new position					
-					faceModel.V[k] = model.V[k];
-				}
-			}
-
-		}
-	}
-	
-	// rescale the offset for each joint below root joint
-	for (unsigned int i = 0; i < belowJointNames.size(); i++)
-	{
-		SmartBody::SBJoint* joint = skel->getJointByMappedName(belowJointNames[i]);
-		joint->setOffset(joint->getOffset()*scaleRatio);
-	}
-
-	skel->invalidate_global_matrices();
-	skel->update_global_matrices();
-	SrVec newRootPos = rootJoint->gmat().get_translation();
-	SrVec rootOffset = rootPos - newRootPos;
-	SmartBody::SBJoint* skelRoot = dynamic_cast<SmartBody::SBJoint*>(skel->root());
-	skelRoot->setOffset(skelRoot->getOffset() + rootOffset);
-
-	skel->invalidate_global_matrices();
-	skel->update_global_matrices();
-	skel->updateGlobalMatricesZero();
-
-	// update bind pose matrices
-	for (unsigned int i = 0; i < mesh->skinWeights.size(); i++)
-	{
-		SkinWeight* sw = mesh->skinWeights[i];
-		for (unsigned int k = 0; k < sw->infJointName.size(); k++)
-		{
-			// manually add all joint names
-			SmartBody::SBJoint* joint = skel->getJointByName(sw->infJointName[k]);
-
-			SrMat gmatZeroInv = joint->gmatZero().rigidInverse();
-			sw->bindPoseMat[k] = gmatZeroInv;
-		}
-	}
-
-	mesh->rebuildVertexBuffer(true);
-}
+//SBAPI void SBScene::rescalePartialMeshSkeleton(const std::string& meshName, const std::string& skelName, const std::string& rootJointName, const std::vector<std::string>& skipMeshNames, float scaleRatio, float blendRatio)
+//{
+//	SmartBody::util::log("Rescale mesh and skeleton");
+//	SBAssetManager* assetManager = getAssetManager();
+//	DeformableMesh* mesh = assetManager->getDeformableMesh(meshName);
+//
+//
+//
+//	SmartBody::SBSkeleton* skel = assetManager->getSkeleton(skelName);
+//	if (!mesh || !skel)
+//	{
+//		SmartBody::util::log("Warning, can't find mesh '%s' or skeleton '%s'.", meshName.c_str(), skelName.c_str());
+//		return;
+//	}
+//
+//	SmartBody::SBJoint* rootJoint = skel->getJointByName(rootJointName);
+//	if (!rootJoint)
+//	{
+//		SmartBody::util::log("Warning, can't find joint '%s'.", rootJointName.c_str());
+//		return;
+//	}
+//	SmartBody::util::log("before build skin vertex buffer");
+//	mesh->buildSkinnedVertexBuffer();
+//	SmartBody::util::log("after build skin vertex buffer");
+//
+//	SmartBody::util::log("before skeleton update global matrices");
+//	skel->update_global_matrices();
+//	SrVec rootPos = rootJoint->gmat().get_translation();
+//	std::vector<std::string> belowJointNames;
+//	std::string headJointName = "none";
+//	belowJointNames.push_back(rootJointName);
+//	int rootJointIdx = mesh->boneJointIdxMap[rootJointName];
+//	int headJointIdx = -1;
+//	int neckJointIdx = -1;
+//	SmartBody::util::log("before find head joints");
+//	for (int i = 0; i < skel->getNumJoints(); i++)
+//	{
+//		SmartBody::SBJoint* joint = skel->getJoint(i);
+//#if 1
+//		//if (joint->getParent() == rootJoint) // children of root joint
+//		{
+//			std::string jointName = joint->getName();
+//			std::transform(jointName.begin(), jointName.end(), jointName.begin(), ::tolower);
+//			if (jointName.find("head") != std::string::npos)
+//			{
+//				SmartBody::util::log("Head Joint = %s", joint->getMappedJointName().c_str());
+//				headJointName = joint->getMappedJointName();
+//				headJointIdx = mesh->boneJointIdxMap[headJointName];
+//			}
+//		}
+//#endif
+//
+//		SrVec jpos = joint->gmat().get_translation();
+//		if (jpos.y < rootPos.y) // lower than root position
+//		{
+//			belowJointNames.push_back(joint->getMappedJointName());
+//		}
+//	}
+//	SrVec neckPos = rootJoint->getParent()->gmat().get_translation();
+//	neckJointIdx = mesh->boneJointIdxMap[rootJoint->getParent()->getMappedJointName()];
+//	SmartBody::util::log("Head Joint name = %s, idx = %d, Root Joint name = %s, idx = %d", headJointName.c_str(), headJointIdx, rootJointName.c_str(), rootJointIdx);
+//
+//	float blendThreshold = skel->getBoundingBox().size().y*blendRatio;
+//
+//	//rootPos = rootPos + SrVec(0, blendThreshold, 0);
+//	std::map<std::string, bool> skipMeshMap;
+//	for (unsigned int i = 0; i < skipMeshNames.size(); i++)
+//		skipMeshMap[skipMeshNames[i]] = true;
+//
+//	for (unsigned int i = 0; i < mesh->dMeshStatic_p.size(); i++)
+//	{
+//		SrModel& model = mesh->dMeshStatic_p[i]->shape();
+//		SrModel& dynModel = mesh->dMeshDynamic_p[i]->shape();
+//		SkinWeight* skinWeight = mesh->skinWeights[i];
+//		skinWeight->buildSkinWeightBuf();
+//		std::string modelName = (const char*)model.name;
+//		if (skipMeshMap.find(modelName) != skipMeshMap.end()) // skip the mesh
+//			continue;
+//		//std::map<std::string, std::vector<SrSnModel*> > blendShapeMap;
+//		for (unsigned int k = 0; k < model.V.size(); k++)
+//		{
+//			SrVec& v = model.V[k];
+//			SrVec4i gboneIdx;
+//			SrVec4i& lboneIdx = skinWeight->boneIDs[k];
+//			for (int b = 0; b < 4; b++)
+//			{
+//				gboneIdx[b] = mesh->boneJointIdxMap[skinWeight->infJointName[lboneIdx[b]]];
+//			}
+//			//LOG("old bone idx = %d %d %d %d", lboneIdx[0], lboneIdx[1], lboneIdx[2], lboneIdx[3]);
+//			//LOG("global bone idx = %d %d %d %d", gboneIdx[0], gboneIdx[1], gboneIdx[2], gboneIdx[3]);
+//			bool willScale = blendScalePos(v, rootPos, rootJointIdx, headJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
+//			//bool willScale = blendScalePos2(v, rootPos, neckPos, rootJointIdx, neckJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
+//			if (!willScale) continue;
+//
+//			model.V[k] = v; // update the new position
+//			dynModel.V[k] = v;
+//			//model.VOrig[k] = v;
+//		}
+//		model.computeNormals();
+//		dynModel.computeNormals();
+//		//std::string modelName = (const char*)model.name;
+//		if (mesh->blendShapeMap.find(modelName) != mesh->blendShapeMap.end()) // the shape is associated with blendshape
+//		{
+//			std::vector<SrSnModel*>& blendShapes = mesh->blendShapeMap[modelName];
+//			for (unsigned int j = 0; j < blendShapes.size(); j++)
+//			{
+//				SrModel& faceModel = blendShapes[j]->shape();
+//				for (unsigned int k = 0; k < faceModel.V.size(); k++)
+//				{
+//					SrVec v = faceModel.V[k];
+//#if 0
+//					if (v.y > rootPos.y + blendThreshold)
+//						continue;
+//
+//					float blendRatio = (v.y - rootPos.y) / (blendThreshold);
+//					if (blendRatio < 0.f) blendRatio = 0.0;
+//					float blendScaleRatio = (blendRatio)+(1.0 - blendRatio)*scaleRatio;
+//					v = rootPos + (v - rootPos)*blendScaleRatio;
+//#else
+//					SrVec4i gboneIdx;
+//					SrVec4i& lboneIdx = skinWeight->boneIDs[k];
+//					for (int b = 0; b < 4; b++)
+//					{
+//						gboneIdx[b] = mesh->boneJointIdxMap[skinWeight->infJointName[lboneIdx[b]]];
+//					}
+//					bool willScale = blendScalePos(v, rootPos, rootJointIdx, headJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
+//					//bool willScale = blendScalePos2(v, rootPos, neckPos, rootJointIdx, neckJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
+//					if (!willScale) continue;
+//#endif
+//
+//					//v = rootPos + (v - rootPos)*scaleRatio;
+//					//faceModel.V[k] = v; // update the new position
+//					faceModel.V[k] = model.V[k];
+//				}
+//			}
+//
+//		}
+//	}
+//
+//	// rescale the offset for each joint below root joint
+//	for (auto & belowJointName : belowJointNames)
+//	{
+//		SmartBody::SBJoint* joint = skel->getJointByMappedName(belowJointName);
+//		joint->setOffset(joint->getOffset()*scaleRatio);
+//	}
+//
+//	skel->invalidate_global_matrices();
+//	skel->update_global_matrices();
+//	SrVec newRootPos = rootJoint->gmat().get_translation();
+//	SrVec rootOffset = rootPos - newRootPos;
+//	SmartBody::SBJoint* skelRoot = dynamic_cast<SmartBody::SBJoint*>(skel->root());
+//	skelRoot->setOffset(skelRoot->getOffset() + rootOffset);
+//
+//	skel->invalidate_global_matrices();
+//	skel->update_global_matrices();
+//	skel->updateGlobalMatricesZero();
+//
+//	// update bind pose matrices
+//	for (unsigned int i = 0; i < mesh->skinWeights.size(); i++)
+//	{
+//		SkinWeight* sw = mesh->skinWeights[i];
+//		for (unsigned int k = 0; k < sw->infJointName.size(); k++)
+//		{
+//			// manually add all joint names
+//			SmartBody::SBJoint* joint = skel->getJointByName(sw->infJointName[k]);
+//
+//			SrMat gmatZeroInv = joint->gmatZero().rigidInverse();
+//			sw->bindPoseMat[k] = gmatZeroInv;
+//		}
+//	}
+//
+//	mesh->rebuildVertexBuffer(true);
+//}
 
 Heightfield* SBScene::getHeightfield()
 {
@@ -3216,12 +3121,12 @@ std::string SBScene::getStringFromObject(SmartBody::SBObject* object)
 		return strstr.str();
 	}
 
-	DeformableMesh* mesh = dynamic_cast<DeformableMesh*>(object);
-	if (mesh)
-	{
-		strstr << "model/" << mesh->getName();
-		return strstr.str();
-	}
+//	DeformableMesh* mesh = dynamic_cast<DeformableMesh*>(object);
+//	if (mesh)
+//	{
+//		strstr << "model/" << mesh->getName();
+//		return strstr.str();
+//	}
 
 	SmartBody::SBController* controller = dynamic_cast<SmartBody::SBController*>(object);
 	if (controller)
@@ -3279,15 +3184,18 @@ std::string SBScene::getStringFromObject(SmartBody::SBObject* object)
 		return strstr.str();
 	}
 
+	for (auto& provider : _objectProviders) {
+		auto providedString = provider.second.stringProvider(*object);
+		if (!providedString.empty()) {
+			return provider.first + "/" + providedString;
+		}
+	}
+
 	return "";
 }
 
-void SBScene::registerObjectProvider(std::string prefix, std::function<SmartBody::SBObject*(const std::string&)> provider) {
-	if (provider) {
-		_objectProviders.emplace(prefix, std::move(provider));
-	} else {
-		_objectProviders.erase(prefix);
-	}
+void SBScene::registerObjectProvider(std::string prefix, Provider provider) {
+	_objectProviders.emplace(prefix, std::move(provider));
 }
 
 
@@ -3369,11 +3277,11 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 		SmartBody::SBService* service = this->getServiceManager()->getService(suffix);
 		return service;
 	}
-	else if (prefix == "mesh")
-	{
-		DeformableMesh* mesh = this->getAssetManager()->getDeformableMesh(suffix);
-		return mesh;
-	}
+//	else if (prefix == "mesh")
+//	{
+//		DeformableMesh* mesh = this->getAssetManager()->getDeformableMesh(suffix);
+//		return mesh;
+//	}
 //	else if (prefix == "envmap")
 //	{
 //		SbmTextureManager& texManager = SbmTextureManager::singleton();
@@ -3431,7 +3339,7 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 	//Check if it can be provided by any registered "object provider".
 	auto I = _objectProviders.find(prefix);
 	if (I != _objectProviders.end()) {
-		return I->second(suffix);
+		return I->second.objectProvider(suffix);
 	}
 	return nullptr;
 }

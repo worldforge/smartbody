@@ -72,7 +72,7 @@ MeCtContainer::MeCtContainer( MeCtContainer::Context* sub_context )
 MeCtContainer::~MeCtContainer() {
 	remove_all_children();
 
-	_sub_context->_container = NULL;  // erase reverse reference
+	_sub_context->_container = nullptr;  // erase reverse reference
 	_sub_context->unref();
 }
 
@@ -133,6 +133,6 @@ MeController* MeCtContainer::findControllerByHandle(std::string handle)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 

@@ -48,8 +48,8 @@ SBProfiler::SBProfiler()
 
 	profiler_p = new TimeIntervalProfiler();
 
-	internal_profiler_p = NULL;
-	external_profiler_p = NULL;
+	internal_profiler_p = nullptr;
+	external_profiler_p = nullptr;
 	setEnable(false);
 }
 
@@ -91,7 +91,7 @@ void SBProfiler::setupProfiler()
 }
 
 void SBProfiler::switch_internal_profiler( void )	{
-	if( internal_profiler_p == NULL ) internal_profiler_p = new TimeIntervalProfiler;
+	if( internal_profiler_p == nullptr ) internal_profiler_p = new TimeIntervalProfiler;
 	profiler_p = internal_profiler_p;
 }
 
@@ -199,9 +199,9 @@ SBSimulationManager::SBSimulationManager()
 	_simStopped = false;
 
 	
-	internal_timer_p = NULL;
-	external_timer_p = NULL;
-	timer_p = NULL;
+	internal_timer_p = nullptr;
+	external_timer_p = nullptr;
+	timer_p = nullptr;
 	time = 0.0;
 	time_dt = 0.16;
 }
@@ -213,9 +213,9 @@ SBSimulationManager::~SBSimulationManager()
 		timer_p;
 	}
 
-	internal_timer_p = NULL;
-	external_timer_p = NULL;
-	timer_p = NULL;
+	internal_timer_p = nullptr;
+	external_timer_p = nullptr;
+	timer_p = nullptr;
 }
 
 void SBSimulationManager::printInfo()
@@ -496,7 +496,7 @@ void SBSimulationManager::register_timer( TimeRegulator& time_reg )	{
 	timer_p = external_timer_p;
 }
 void SBSimulationManager::switch_internal_timer( void )	{
-	if( internal_timer_p == NULL ) internal_timer_p = new TimeRegulator;
+	if( internal_timer_p == nullptr ) internal_timer_p = new TimeRegulator;
 	timer_p = internal_timer_p;
 }
 

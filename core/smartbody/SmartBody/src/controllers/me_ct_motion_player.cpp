@@ -38,7 +38,7 @@ void MeCtMotionPlayer::Context::child_channels_updated( MeController* child )
 MeCtMotionPlayer::MeCtMotionPlayer(SbmCharacter* c) : MeCtContainer(new MeCtMotionPlayer::Context(this)), character(c)
 {
 	motionName = "";
-	controller = NULL;
+	controller = nullptr;
 	frameNum = 0;
 	isActive = false;
 }
@@ -50,7 +50,7 @@ MeCtMotionPlayer::~MeCtMotionPlayer()
 		//controller->unref();
 		delete controller;
 	}
-	controller = NULL;
+	controller = nullptr;
 }
 
 void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, std::string name, double n)
@@ -60,14 +60,14 @@ void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, std::string name, double n)
 		frameNum = n;
 		return;
 	}
-	//SmartBody::util::log("controller != NULL");
-	if (controller != NULL)
+	//SmartBody::util::log("controller != nullptr");
+	if (controller != nullptr)
 	{
 		_sub_context->remove_controller(controller);
 		//controller->unref();
 		delete controller;
 	}
-	//SmartBody::util::log("after if (controller != NULL)");
+	//SmartBody::util::log("after if (controller != nullptr)");
 		 
 	SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(name);
 	if (!motion)
@@ -128,7 +128,7 @@ bool MeCtMotionPlayer::getActive()
 void MeCtMotionPlayer::controller_map_updated()
 {
 	channels.init();
-	if (controller == NULL)
+	if (controller == nullptr)
 		return;
 	channels.merge(controller->controller_channels());
 	controller->remap();
@@ -146,7 +146,7 @@ double MeCtMotionPlayer::controller_duration()
 
 bool MeCtMotionPlayer::controller_evaluate(double t, MeFrameData& frame)
 {
-	if (controller == NULL)
+	if (controller == nullptr)
 		return false;
 
 	if (!isActive)
@@ -155,7 +155,7 @@ bool MeCtMotionPlayer::controller_evaluate(double t, MeFrameData& frame)
 	MeCtMotion* mController = dynamic_cast<MeCtMotion*> (controller);
 	SkMotion* motion = mController->motion();
 
-	SmartBody::SBRetarget* retarget = NULL;
+	SmartBody::SBRetarget* retarget = nullptr;
 	SmartBody::SBCharacter* _character = dynamic_cast<SmartBody::SBCharacter*>(character);
 	if (_character)
 	{

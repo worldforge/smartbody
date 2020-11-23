@@ -168,7 +168,7 @@ namespace xml_utils {
     //  (returning a DOMDocument), otherwise assumes it is a filename 
     //  and parses the file contents as XML (again, returning the DOMDocument).
     //
-    //  Returns NULL if there was an error during parsing.
+    //  Returns nullptr if there was an error during parsing.
 	XERCES_CPP_NAMESPACE::DOMDocument* parseMessageXml( XercesDOMParser* xmlParser, const char *str );
 
 	//  STL Comparason operator for XMLCh* using XMLString::compareString(..)

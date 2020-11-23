@@ -52,9 +52,9 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 	skeleton.setName(baseName);
 	motion.filename(name.c_str());
 	int state = 0;
-	char* str = NULL;
+	char* str = nullptr;
 	stack<SkJoint*> stack;
-	SkJoint* cur = NULL;
+	SkJoint* cur = nullptr;
 	int numFrames = 0;
 	int curFrame = -1;
 	double frameTime = 0;
@@ -103,10 +103,10 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 1:	// looking for 'ROOT'
 				str = strtok(line, " \t");	
-				if (str != NULL && strncmp(str, "ROOT", strlen("ROOT")) == 0)
+				if (str != nullptr && strncmp(str, "ROOT", strlen("ROOT")) == 0)
 				{
-					str = strtok(NULL, " \t");
-					if (str != NULL)
+					str = strtok(nullptr, " \t");
+					if (str != nullptr)
 					{
 						std::string trimmedname = str;
 						boost::trim(trimmedname);
@@ -141,7 +141,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 2: // looking for '{'
 				str = strtok(line, " \t");
-				if (str != NULL && strncmp(str, "{", 1) == 0)
+				if (str != nullptr && strncmp(str, "{", 1) == 0)
 				{
 					stack.push(cur);
 					state = 3;
@@ -155,18 +155,18 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 3: // looking for 'OFFSET'
 				str = strtok(line, " \t");
-				if (str != NULL && strncmp(str, "OFFSET", strlen("OFFSET")) == 0)
+				if (str != nullptr && strncmp(str, "OFFSET", strlen("OFFSET")) == 0)
 				{
 					if (foundRoot == 0)
 						foundRoot = 1;
 					else if (foundRoot == 1)
 						foundRoot = 2;
 					double x = 0; double y = 0; double z = 0;
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					x = atof(str);
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					y = atof(str);
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					z = atof(str);
 					cur->offset(SrVec(float(x) * scale, float(y) * scale, float(z) * scale));
 					//cout << "Found offset of " << x << " " << y << " " << z << " " << endl;
@@ -181,9 +181,9 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 4: // looking for 'CHANNELS'
 				str = strtok(line, " \t");
-				if (str != NULL && strncmp(str, "CHANNELS", strlen("CHANNELS")) == 0)
+				if (str != nullptr && strncmp(str, "CHANNELS", strlen("CHANNELS")) == 0)
 				{
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					int numChannels = atoi(str);
 
 					// make sure that only the root has > 3 channels
@@ -200,7 +200,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 					bool hasRotation = false;
 					for (int c = 0; c < numChannels; c++)
 					{
-						str = strtok(NULL, " \t");
+						str = strtok(nullptr, " \t");
 						if (strncmp(str, "Xrotation", strlen("Xrotation")) == 0)
 						{
 							channelInfo->channels[c] = BVHXROTATION;
@@ -284,8 +284,8 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				str = strtok(line, " \t");
 				if (strncmp(str, "JOINT", strlen("JOINT")) == 0)
 				{
-					str = strtok(NULL, "");
-					if (str != NULL)
+					str = strtok(nullptr, "");
+					if (str != nullptr)
 					{
 						std::string trimmedname = str;
 						boost::trim(trimmedname);
@@ -312,7 +312,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				}
 				else if (strncmp(str, "End", strlen("End")) == 0)
 				{
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					if (strncmp(str, "Site", strlen("Site")) == 0)
 					{
 						state = 6;
@@ -327,7 +327,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				else if (strncmp(str, "}", 1) == 0)
 				{
 					str = strtok(line, " \t");
-					if (str != NULL && strncmp(str, "}", 1) == 0)
+					if (str != nullptr && strncmp(str, "}", 1) == 0)
 					{
 						stack.pop();
 						state = 5;
@@ -352,7 +352,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 6: // looking for 'OFFSET' within end effector
 				str = strtok(line, " \t");
-				if (str != NULL && strncmp(str, "{", 1) == 0)
+				if (str != nullptr && strncmp(str, "{", 1) == 0)
 				{
 					state = 7;
 				}
@@ -366,14 +366,14 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 7:
 				str = strtok(line, " \t");
-				if (str != NULL && strncmp(str, "OFFSET", strlen("OFFSET")) == 0)
+				if (str != nullptr && strncmp(str, "OFFSET", strlen("OFFSET")) == 0)
 				{
 					double x = 0; double y = 0; double z = 0;
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					x = atof(str);
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					y = atof(str);
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					z = atof(str);
 					cur->endEffectorOffset(SrVec(float(x) * scale, float(y)* scale, float(z) * scale));
  					endEffectorJoint.push_back(cur);
@@ -394,7 +394,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 8: // looking for '}' to finish the  end effector
 				str = strtok(line, " \t");
-				if (str != NULL && strncmp(str, "}", 1) == 0)
+				if (str != nullptr && strncmp(str, "}", 1) == 0)
 				{
 					state = 5;
 				}
@@ -407,9 +407,9 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 9: // found 'MOTION', looking for 'Frames'
 				str = strtok(line, ":");
-				if (str != NULL && strncmp(str, "Frames", strlen("Frames")) == 0)
+				if (str != nullptr && strncmp(str, "Frames", strlen("Frames")) == 0)
 				{
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					numFrames = atoi(str);
 					//SmartBody::util::log("Found %d frames of animation...\n", numFrames);
 					state = 10;
@@ -423,9 +423,9 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 				break;
 			case 10: // found 'Frames', looking for 'Frame time:'
 				str = strtok(line, ":");
-				if (str != NULL && strncmp(str, "Frame Time", strlen("Frame Time")) == 0)
+				if (str != nullptr && strncmp(str, "Frame Time", strlen("Frame Time")) == 0)
 				{
-					str = strtok(NULL, " \t");
+					str = strtok(nullptr, " \t");
 					frameTime = atof(str);
 					//SmartBody::util::log("Frame time is %f...\n", frameTime);
 					//curFrame = 0;
@@ -481,10 +481,10 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 						
 						int index = 0;
 						str = strtok(line, " \t");
-						SkJoint* oldJoint = NULL;
+						SkJoint* oldJoint = nullptr;
 						double frames[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 						// clean up any line feeds or carriage returns
-						while (str != NULL && str[0] != 13)
+						while (str != nullptr && str[0] != 13)
 						{
 							double val = atof(str);
 							int channelNum;
@@ -501,7 +501,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 							if (j != oldJoint)
 							{
 								// add the values to the old joint
-								if (oldJoint != NULL)
+								if (oldJoint != nullptr)
 								{
 //                  if (0)//oldJoint->isIgnoreChannels())
 //                  {
@@ -523,7 +523,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 							}
 
 							frames[channelNum] = val;
-							if (j != NULL)
+							if (j != nullptr)
 							{
 								// TODO: set the frame timing
 								//j->setFrameTime(frameTime);
@@ -534,11 +534,11 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 							}
 							index++;
 						
-							str = strtok(NULL, " \t");
+							str = strtok(nullptr, " \t");
 						}
 
 						// flush any values to the old joint
-						if (oldJoint != NULL)
+						if (oldJoint != nullptr)
 						{
 							// convert the BVH frame into the appropriate SmartBody frame
 							ChannelInfoPtr channelInfo = channelInfoMap[oldJoint->index()];

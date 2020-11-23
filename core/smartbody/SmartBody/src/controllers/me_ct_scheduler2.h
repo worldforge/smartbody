@@ -112,7 +112,7 @@ public:
 		MeCtUnary*      _blending_ct;  // blending controller (usually MeCtBlend)
 		MeCtUnary*      _timing_ct;    // timing controller (usually MeCtTimeShiftWarp)
         MeController*   _animation_ct; // source animation controller
-		MeController*   _root;         // First controller (ordered blending, timing, animation) that isn't NULL
+		MeController*   _root;         // First controller (ordered blending, timing, animation) that isn't nullptr
 
     public:
 		///////////////////////////////////////////////////////////////
@@ -128,9 +128,9 @@ public:
 		/*! Copy assignment opperator. */
 		Track& operator=( const Track& other );
 
-        /*! returns the blending controller for this Track, possibly NULL */
+        /*! returns the blending controller for this Track, possibly nullptr */
         MeCtUnary* blending_ct()  { return _blending_ct; }
-        /*! returns the timing controller for this Track, possibly NULL. */
+        /*! returns the timing controller for this Track, possibly nullptr. */
         MeCtUnary* timing_ct()    { return _timing_ct; }
         /*! returns the source animation controller for this Track */
 		MeController* animation_ct() { return _animation_ct; }
@@ -238,7 +238,7 @@ public:
     /**
      *  Get Nth child
 	 *
-     *  Returns NULL for invalid n.
+     *  Returns nullptr for invalid n.
      */
 	virtual MeController* child( size_t n );
 
@@ -282,10 +282,10 @@ public:
 	/**
 	 *  Schedules a new track at before Track before_pos.
 	 *
-	 *  If before_pos is NULL, created track will be appended after all existing tracks.
+	 *  If before_pos is nullptr, created track will be appended after all existing tracks.
 	 *
-	 *  If before_pos is not NULL and not an active track of this schedule,
-	 *  create_track(..) will return a NULL TrackPtr.
+	 *  If before_pos is not nullptr and not an active track of this schedule,
+	 *  create_track(..) will return a nullptr TrackPtr.
 	 */
 	TrackPtr create_track( MeCtUnary* blending, MeCtUnary* timing, MeController* ct, TrackPtr before_pos );
 

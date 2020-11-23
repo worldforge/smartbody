@@ -42,13 +42,13 @@ namespace SmartBody {
 SBAnimationBlend::SBAnimationBlend() : PABlend()
 {
 	_isFinalized = false;
-	motionAnalysis = NULL;
+	motionAnalysis = nullptr;
 }
 
 SBAnimationBlend::SBAnimationBlend(const std::string& name) : PABlend(name)
 {
 	_isFinalized = false;
-	motionAnalysis = NULL;
+	motionAnalysis = nullptr;
 }
 
 SBAnimationBlend::~SBAnimationBlend()
@@ -1066,7 +1066,7 @@ SBMotion* SBAnimationBlend::getSBMotion(int num)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1205,7 +1205,7 @@ void SBAnimationBlend::removeEvent(int index)
 SBMotionEvent* SBAnimationBlend::getEvent(int index)
 {
 	if (index < 0 || (int) _events.size() > index)
-		return NULL;
+		return nullptr;
 
 	return _events[index].first;
 }
@@ -1436,7 +1436,7 @@ void SBAnimationBlend::addKeyTagValue( const std::string& motionName, int iType,
 KeyTagMap* SBAnimationBlend::getKeyTagMap( const std::string& motionName )
 {
 	int motionIdx = getMotionId(motionName);
-	if (motionIdx < 0 || motionIdx >= (int)keyTagList.size()) return NULL;
+	if (motionIdx < 0 || motionIdx >= (int)keyTagList.size()) return nullptr;
 	return &keyTagList[motionIdx];
 }
 
@@ -1556,7 +1556,7 @@ bool SBAnimationBlend::addMotionRef( SBMotion* sbmotion)
 
 SBMotion* SBAnimationBlend::createMotionFromBlend(SrVec parameters, SBCharacter* character, std::string motionName, float fps)
 {
-	return NULL;
+	return nullptr;
 }
 
 void SBAnimationBlend::getAllChannels(SkChannelArray& channels)
@@ -1657,7 +1657,7 @@ SBMotion* SBAnimationBlend1D::createMotionFromBlend(SrVec parameters, SBCharacte
 	SBMotion* motion1 = SmartBody::SBScene::getScene()->getMotion(this->getMotion(0));
 	SBMotion* motion2 = SmartBody::SBScene::getScene()->getMotion(this->getMotion(1));
 	if (!motion1 || !motion2)
-		return NULL;
+		return nullptr;
 
 	double blendedMotionLength = (1.0 - amount) * motion1->getDuration() +  amount * motion2->getDuration();
 

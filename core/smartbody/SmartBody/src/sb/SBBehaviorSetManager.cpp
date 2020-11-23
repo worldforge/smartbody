@@ -56,7 +56,7 @@ SBBehaviorSet* SBBehaviorSetManager::getBehaviorSet(const std::string& name)
 {
 	std::map<std::string, SBBehaviorSet*>::iterator iter = _behaviorSets.find(name);
 	if (iter == _behaviorSets.end())
-		return NULL;
+		return nullptr;
 	return (*iter).second;
 }
 

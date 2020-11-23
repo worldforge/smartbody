@@ -28,7 +28,7 @@ const char* MeCtLocomotionAnimGlobalInfo::TYPE = "MeCtLocomotionAnimGlobalInfo";
 /** Constructor */
 MeCtLocomotionAnimGlobalInfo::MeCtLocomotionAnimGlobalInfo() 
 {
-	_motion = NULL;
+	_motion = nullptr;
 	direction.set(0.0f, 0.0f, 0.0f);		//global direction
 	speed = 0.0f;			//global average walking speed of the animation.
 	displacement = 0.0f;   //global displacement absolute value

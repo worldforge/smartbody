@@ -47,7 +47,7 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	//  Private Constructors
 
-	MeControllerContextProxy( MeControllerContext* context = NULL );
+	MeControllerContextProxy( MeControllerContext* context = nullptr );
 
 public:
 	virtual ~MeControllerContextProxy();

@@ -40,7 +40,7 @@ SBAPI SBRetarget* SBRetargetManager::createRetarget( std::string sourceSk, std::
 	if (getRetarget(sourceSk, targetSk))
 	{
 		SmartBody::util::log("Retarget for skeleton pair (%s,%s) already exist.", sourceSk.c_str(), targetSk.c_str());
-		return NULL;			
+		return nullptr;
 	}
 
 	SmartBody::SBRetarget* retarget = new SmartBody::SBRetarget(sourceSk,targetSk);
@@ -52,7 +52,7 @@ SBAPI SBRetarget* SBRetargetManager::createRetarget( std::string sourceSk, std::
 SBAPI SBRetarget* SBRetargetManager::getRetarget( std::string sourceSk, std::string targetSk )
 {
 	StringPair skNamePair = StringPair(sourceSk,targetSk);
-	SmartBody::SBRetarget* retarget = NULL;
+	SmartBody::SBRetarget* retarget = nullptr;
 	if (_retargets.find(skNamePair) != _retargets.end())
 	{
 		retarget = _retargets[skNamePair];

@@ -8,7 +8,7 @@
 #include <cstring>
 #include <cstdio>
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+#define BUFFER_OFFSET(i) ((char *)nullptr + (i))
 //Zengrui: For Smartbody Javascript, we use another project for the rendering part
 //thus, ifdef out the implementation
 #if !defined(EMSCRIPTEN) && !defined(__ANDROID__) && !defined(SB_IPHONE) 

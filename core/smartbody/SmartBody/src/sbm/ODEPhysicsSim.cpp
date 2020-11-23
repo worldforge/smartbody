@@ -69,8 +69,8 @@ void ODEPhysicsSim::nearCallBack(void *data, dGeomID o1, dGeomID o2)
 	int n =  dCollide(o1,o2,N,&contact[0].geom,sizeof(dContact));
 	if (n > 0) // handle collision event
 	{
-		SmartBody::SBPhysicsObj* obj1 = NULL; if (b1) obj1 = (SmartBody::SBPhysicsObj*)(dBodyGetData(b1));
-		SmartBody::SBPhysicsObj* obj2 = NULL; if (b2) obj2 = (SmartBody::SBPhysicsObj*)(dBodyGetData(b2));
+		SmartBody::SBPhysicsObj* obj1 = nullptr; if (b1) obj1 = (SmartBody::SBPhysicsObj*)(dBodyGetData(b1));
+		SmartBody::SBPhysicsObj* obj2 = nullptr; if (b2) obj2 = (SmartBody::SBPhysicsObj*)(dBodyGetData(b2));
  		dVector3& hpos = contact[0].geom.pos;
  		SrVec hitPt = SrVec((float)hpos[0],(float)hpos[1],(float)hpos[2]);		
  		if (obj1 && !collideFloor) obj1->handleCollision(hitPt,obj2);		
@@ -311,7 +311,7 @@ void ODEPhysicsSim::addPhysicsCharacter( SmartBody::SBPhysicsCharacter* phyChar 
 		updatePhyObjGeometry(obj,obj->getColObj());	
 		//SmartBody::util::log("joint obj name = %s",obj->getSBJoint()->getName().c_str());
 		
-// 		if (obj->getParentObj() == NULL || obj->getSBJoint()->getName() == "base")
+// 		if (obj->getParentObj() == nullptr || obj->getSBJoint()->getName() == "base")
 // 		{
 // 			obj->enableCollisionSim(false);
 // 		}			
@@ -411,7 +411,7 @@ SmartBody::SBPhysicsObj* ODEPhysicsSim::createPhyObj()
 
 ODEObj* ODEPhysicsSim::getODEObj( SmartBody::SBPhysicsObj* obj )
 {
-	ODEObj* odeObj = NULL;
+	ODEObj* odeObj = nullptr;
 	if (hasPhysicsObj(obj))
 	{
 		odeObj = odeObjMap[obj->getID()];
@@ -422,7 +422,7 @@ ODEObj* ODEPhysicsSim::getODEObj( SmartBody::SBPhysicsObj* obj )
 
 ODEJoint* ODEPhysicsSim::getODEJoint( SmartBody::SBPhysicsJoint* joint )
 {
-	ODEJoint* odeJoint = NULL;
+	ODEJoint* odeJoint = nullptr;
 	unsigned long jointID = (unsigned long)joint;
 	if (odeJointMap.find(jointID) != odeJointMap.end())
 	{
@@ -454,7 +454,7 @@ SrVec ODEPhysicsSim::getJointRotationAxis( SmartBody::SBPhysicsJoint* joint, int
 	return SrVec((float)jointAxis[0],(float)jointAxis[1],(float)jointAxis[2])*10.f;	
 }
 
-void ODEPhysicsSim::updatePhyObjGeometry( SmartBody::SBPhysicsObj* obj, SBGeomObject* geom /*= NULL*/ )
+void ODEPhysicsSim::updatePhyObjGeometry( SmartBody::SBPhysicsObj* obj, SBGeomObject* geom /*= nullptr*/ )
 {
 	ODEPhysicsSim* odeSim = ODEPhysicsSim::getODESim();
 	if (!odeSim)	return;
@@ -658,7 +658,7 @@ dGeomID ODEPhysicsSim::createODEGeometry( SmartBody::SBPhysicsObj* obj, float ma
 		odeObj->meshdataID = dGeomTriMeshDataCreate();
 		//dGeomTriMeshDataBuildSimple(meshdataID,(const dReal*)(&model->V[0]),model->V.size(),(const dTriIndex*)(&model->F[0]),model->F.size()*3);
 		dGeomTriMeshDataBuildSingle(odeObj->meshdataID,(const dReal*)(&model->V[0]),3*sizeof(float),model->V.size(),(const dTriIndex*)(&model->F[0]),model->F.size()*3,3*sizeof(int));
-		geomID = dCreateTriMesh(odeSim->getSpaceID(),odeObj->meshdataID,NULL,NULL,NULL);		
+		geomID = dCreateTriMesh(odeSim->getSpaceID(),odeObj->meshdataID,nullptr,nullptr,nullptr);
 		dMassSetTrimesh(&odeObj->odeMass,(dReal)mass,geomID);		
 		if (dMassCheck(&odeObj->odeMass) != 1) // set the default mass to its bounding box
 			dMassSetBox(&odeObj->odeMass,(dReal)mass,bbox.size().x*0.5f,bbox.size().y*0.5f,bbox.size().z*0.5f);		
@@ -680,7 +680,7 @@ ODEObj::ODEObj()
 	bodyID = 0;
 	geomID = 0;
 	meshdataID = 0;
-	physicsObj = NULL;
+	physicsObj = nullptr;
 }
 
 ODEObj::~ODEObj()
@@ -707,7 +707,7 @@ ODEJoint::ODEJoint()
 	jointID = 0;
 	aMotorID = 0;
 	parentID = childID = 0;
-	joint = NULL;
+	joint = nullptr;
 }
 
 ODEJoint::~ODEJoint()
@@ -761,7 +761,7 @@ void ODECollisionSpace::removeCollisionObjects( const std::string& objName )
 
 dGeomID ODECollisionSpace::getODEGeomID( const std::string& geomName )
 {
-	dGeomID geomID = NULL;
+	dGeomID geomID = nullptr;
 	if (odeGeomMap.find(geomName) != odeGeomMap.end())
 	{
 		geomID = odeGeomMap[geomName];

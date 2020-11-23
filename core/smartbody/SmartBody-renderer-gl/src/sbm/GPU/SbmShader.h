@@ -45,7 +45,7 @@ public:
 	void buildShader() {}
 	bool finishBuild() { return isBuilt; }
 public:
-  static char *textFileRead(const char *fn) { return NULL; } // text file reading
+  static char *textFileRead(const char *fn) { return nullptr; } // text file reading
 	static void printShaderInfoLog(GLuint obj) {}
 	static void printProgramInfoLog(GLuint obj) {}
 	static void printOglError(const char* tag) {}
@@ -77,7 +77,7 @@ public:
 	SBAPI bool initGLExtension() { return true;  }
 	SBAPI void setViewer(SrViewer* vw) {}
 	SBAPI void addShader(const char* entryName,const char* vsName, const char* fsName, bool shaderFile = true) {}
-  SBAPI SbmShaderProgram* getShader(const std::string& entryName) { return NULL; }
+  SBAPI SbmShaderProgram* getShader(const std::string& entryName) { return nullptr; }
 	SBAPI void buildShaders() {}
 	SBAPI static int getShaderSupport() {
 		return SUPPORT_OPENGL_2_0;

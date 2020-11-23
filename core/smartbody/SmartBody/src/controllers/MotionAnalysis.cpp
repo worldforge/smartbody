@@ -118,7 +118,7 @@ LocomotionLegCycle* LocomotionAnalyzer::getLegCycleByIndex( int iLeg, int cycleI
 	LegCycleVec& legCycleVec = legCycleMap[iLeg];
 	if (cycleIdx >= 0 && cycleIdx < (int)legCycleVec.size())
 		return &legCycleVec[cycleIdx];
-	return NULL;
+	return nullptr;
 }
 
 LocomotionLegCycle* LocomotionAnalyzer::getLegCycle( int iLeg, float motionTime )
@@ -140,7 +140,7 @@ LocomotionLegCycle* LocomotionAnalyzer::getLegCycle( int iLeg, float motionTime 
 				return &legCycleVec[i];
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 void LocomotionAnalyzer::initLegCycles( const std::string& name, SmartBody::SBAnimationBlend* locoBlend, KeyTagMap& keyTagMap, SmartBody::SBSkeleton* skelCopy )
@@ -269,7 +269,7 @@ MotionAnalysis::~MotionAnalysis(void)
 		if (legInfos[i])
 		{
 			delete legInfos[i];
-			legInfos[i] = NULL;
+			legInfos[i] = nullptr;
 		}
 	}
 	legInfos.clear();
@@ -279,7 +279,7 @@ MotionAnalysis::~MotionAnalysis(void)
 		if (locoAnalyzers[i])
 		{
 			delete locoAnalyzers[i];
-			locoAnalyzers[i] = NULL;
+			locoAnalyzers[i] = nullptr;
 		}
 	}
 	locoAnalyzers.clear();
@@ -287,7 +287,7 @@ MotionAnalysis::~MotionAnalysis(void)
 	if (skelCopy)
 	{
 		delete skelCopy;
-		skelCopy = NULL;
+		skelCopy = nullptr;
 	}
 }
 

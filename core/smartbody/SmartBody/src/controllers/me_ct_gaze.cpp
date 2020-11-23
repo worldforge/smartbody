@@ -191,14 +191,14 @@ MeCtGaze::MeCtGaze( void )	: SmartBody::SBController() {
 	
 	_duration = -1.0f;
 
-	skeleton_ref_p = NULL;
+	skeleton_ref_p = nullptr;
 
-	target_ref_joint_str = NULL;
-	target_ref_joint_p = NULL;
-	offset_ref_joint_str = NULL;
-	offset_ref_joint_p = NULL;
-	ref_joint_str = NULL;
-	ref_joint_p = NULL;
+	target_ref_joint_str = nullptr;
+	target_ref_joint_p = nullptr;
+	offset_ref_joint_str = nullptr;
+	offset_ref_joint_p = nullptr;
+	ref_joint_str = nullptr;
+	ref_joint_p = nullptr;
 	
 	timing_mode = TASK_SPEED;
 	head_speed = 1.0;
@@ -214,9 +214,9 @@ MeCtGaze::MeCtGaze( void )	: SmartBody::SBController() {
 	scheduled_fade_interval = 0.0f;
 
 	joint_key_count = 0;
-	joint_key_map = NULL;
-	joint_key_top_map = NULL;
-	joint_key_arr = NULL;
+	joint_key_map = nullptr;
+	joint_key_top_map = nullptr;
+	joint_key_arr = nullptr;
 	
 	key_smooth_dirty = 0;
 	key_bias_dirty = 0;
@@ -224,7 +224,7 @@ MeCtGaze::MeCtGaze( void )	: SmartBody::SBController() {
 	key_blend_dirty = 0;
 	
 	joint_count = 0;
-	joint_arr = NULL;
+	joint_arr = nullptr;
 
 	// gaze settings
 	setDefaultAttributeGroupPriority("Gaze", 400);
@@ -252,31 +252,31 @@ MeCtGaze::~MeCtGaze( void )	{
 	
 	if( joint_key_map )	{
 		delete [] joint_key_map;
-		joint_key_map = NULL;
+		joint_key_map = nullptr;
 	}
 	if( joint_key_top_map )	{
 		delete [] joint_key_top_map;
-		joint_key_top_map = NULL;
+		joint_key_top_map = nullptr;
 	}
 	if( joint_key_arr )	{
 		delete [] joint_key_arr;
-		joint_key_arr = NULL;
+		joint_key_arr = nullptr;
 	}
 	if( joint_arr )	{
 		delete [] joint_arr;
-		joint_arr = NULL;
+		joint_arr = nullptr;
 	}
 	if( target_ref_joint_str ) {
 		free( target_ref_joint_str );
-		target_ref_joint_str = NULL;
+		target_ref_joint_str = nullptr;
 	}
 	if( offset_ref_joint_str ) {
 		free( offset_ref_joint_str );
-		offset_ref_joint_str = NULL;
+		offset_ref_joint_str = nullptr;
 	}
 	if( ref_joint_str ) {
 		free( ref_joint_str );
-		ref_joint_str = NULL;
+		ref_joint_str = nullptr;
 	}
 }
 
@@ -365,9 +365,9 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 	initialEyeSpeed = DEFAULT_SPEED_EYES;
 	initialNeckSpeed = DEFAULT_SPEED_HEAD;
 
-	if (pawn->getAttribute("gaze.speedEyes") != NULL)
+	if (pawn->getAttribute("gaze.speedEyes") != nullptr)
 		initialEyeSpeed = (float) pawn->getDoubleAttribute("gaze.speedEyes");
-	if (pawn->getAttribute("gaze.speedNeck") != NULL)
+	if (pawn->getAttribute("gaze.speedNeck") != nullptr)
 		initialNeckSpeed = (float) pawn->getDoubleAttribute("gaze.speedNeck");
 
 	set_speed( initialNeckSpeed, initialEyeSpeed );
@@ -383,19 +383,19 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 	*/
 	float limitPitchUp, limitPitchDown, limitHeading, limitRoll;
 
-	if (pawn->getAttribute("gaze.limitPitchUpBack") != NULL)
+	if (pawn->getAttribute("gaze.limitPitchUpBack") != nullptr)
 		limitPitchUp = (float) pawn->getDoubleAttribute("gaze.limitPitchUpBack");
 	else
 		limitPitchUp = DEFAULT_LIMIT_PITCH_UP[GAZE_KEY_BACK];
-	if (pawn->getAttribute("gaze.limitPitchDownBack") != NULL)
+	if (pawn->getAttribute("gaze.limitPitchDownBack") != nullptr)
 		limitPitchDown = (float) pawn->getDoubleAttribute("gaze.limitPitchDownBack");
 	else
 		limitPitchDown = DEFAULT_LIMIT_PITCH_DOWN[GAZE_KEY_BACK];
-	if (pawn->getAttribute("gaze.limitHeadingBack") != NULL)
+	if (pawn->getAttribute("gaze.limitHeadingBack") != nullptr)
 		limitHeading = (float) pawn->getDoubleAttribute("gaze.limitHeadingBack");
 	else
 		limitHeading = DEFAULT_LIMIT_HEADING[GAZE_KEY_BACK];
-	if (pawn->getAttribute("gaze.limitRollBack") != NULL)
+	if (pawn->getAttribute("gaze.limitRollBack") != nullptr)
 		limitRoll = (float) pawn->getDoubleAttribute("gaze.limitRollBack");
 	else
 		limitRoll = DEFAULT_LIMIT_ROLL[GAZE_KEY_BACK];
@@ -406,19 +406,19 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 								limitRoll);
 
 	
-	if (pawn->getAttribute("gaze.limitPitchUpChest") != NULL)
+	if (pawn->getAttribute("gaze.limitPitchUpChest") != nullptr)
 		limitPitchUp = (float) pawn->getDoubleAttribute("gaze.limitPitchUpChest");
 	else
 		limitPitchUp = DEFAULT_LIMIT_PITCH_UP[GAZE_KEY_CHEST];
-	if (pawn->getAttribute("gaze.limitPitchDownChest") != NULL)
+	if (pawn->getAttribute("gaze.limitPitchDownChest") != nullptr)
 		limitPitchDown = (float) pawn->getDoubleAttribute("gaze.limitPitchDownChest");
 	else
 		limitPitchDown = DEFAULT_LIMIT_PITCH_DOWN[GAZE_KEY_CHEST];
-	if (pawn->getAttribute("gaze.limitHeadingChest") != NULL)
+	if (pawn->getAttribute("gaze.limitHeadingChest") != nullptr)
 		limitHeading = (float) pawn->getDoubleAttribute("gaze.limitHeadingChest");
 	else
 		limitHeading = DEFAULT_LIMIT_HEADING[GAZE_KEY_CHEST];
-	if (pawn->getAttribute("gaze.limitRollChest") != NULL)
+	if (pawn->getAttribute("gaze.limitRollChest") != nullptr)
 		limitRoll = (float) pawn->getDoubleAttribute("gaze.limitRollChest");
 	else
 		limitRoll = DEFAULT_LIMIT_ROLL[GAZE_KEY_CHEST];
@@ -430,19 +430,19 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 
 	
 
-	if (pawn->getAttribute("gaze.limitPitchUpNeck") != NULL)
+	if (pawn->getAttribute("gaze.limitPitchUpNeck") != nullptr)
 		limitPitchUp = (float) pawn->getDoubleAttribute("gaze.limitPitchUpNeck");
 	else
 		limitPitchUp = DEFAULT_LIMIT_PITCH_UP[GAZE_KEY_NECK];
-	if (pawn->getAttribute("gaze.limitPitchDownNeck") != NULL)
+	if (pawn->getAttribute("gaze.limitPitchDownNeck") != nullptr)
 		limitPitchDown = (float) pawn->getDoubleAttribute("gaze.limitPitchDownNeck");
 	else
 		limitPitchDown = DEFAULT_LIMIT_PITCH_DOWN[GAZE_KEY_NECK];
-	if (pawn->getAttribute("gaze.limitHeadingNeck") != NULL)
+	if (pawn->getAttribute("gaze.limitHeadingNeck") != nullptr)
 		limitHeading = (float) pawn->getDoubleAttribute("gaze.limitHeadingNeck");
 	else
 		limitHeading = DEFAULT_LIMIT_HEADING[GAZE_KEY_NECK];
-	if (pawn->getAttribute("gaze.limitRollNeck") != NULL)
+	if (pawn->getAttribute("gaze.limitRollNeck") != nullptr)
 		limitRoll = (float) pawn->getDoubleAttribute("gaze.limitRollNeck");
 	else
 		limitRoll = DEFAULT_LIMIT_ROLL[GAZE_KEY_NECK];
@@ -461,19 +461,19 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 #endif
 
 	
-	if (pawn->getAttribute("gaze.limitPitchUpEyes") != NULL)
+	if (pawn->getAttribute("gaze.limitPitchUpEyes") != nullptr)
 		limitPitchUp = (float) pawn->getDoubleAttribute("gaze.limitPitchUpEyes");
 	else
 		limitPitchUp = DEFAULT_LIMIT_PITCH_UP[GAZE_KEY_EYES];
-	if (pawn->getAttribute("gaze.limitPitchDownEyes") != NULL)
+	if (pawn->getAttribute("gaze.limitPitchDownEyes") != nullptr)
 		limitPitchDown = (float) pawn->getDoubleAttribute("gaze.limitPitchDownEyes");
 	else
 		limitPitchDown = DEFAULT_LIMIT_PITCH_DOWN[GAZE_KEY_EYES];
-	if (pawn->getAttribute("gaze.limitHeadingEyes") != NULL)
+	if (pawn->getAttribute("gaze.limitHeadingEyes") != nullptr)
 		limitHeading = (float) pawn->getDoubleAttribute("gaze.limitHeadingEyes");
 	else
 		limitHeading = DEFAULT_LIMIT_HEADING[GAZE_KEY_EYES];
-	if (pawn->getAttribute("gaze.limitRollEyes") != NULL)
+	if (pawn->getAttribute("gaze.limitRollEyes") != nullptr)
 		limitRoll = (float) pawn->getDoubleAttribute("gaze.limitRollEyes");
 	else
 		limitRoll = DEFAULT_LIMIT_ROLL[GAZE_KEY_EYES];
@@ -931,13 +931,13 @@ printf( "s1: %f\n", joint_arr[ GAZE_JOINT_SPINE1 ].local_pos.y() );
 SkJoint* MeCtGaze::get_joint( char *joint_str, SkJoint *joint_p )	{
 
 	if( joint_str )	{
-		if( joint_p == NULL )	{
+		if( joint_p == nullptr )	{
 			if( skeleton_ref_p )	{
 				joint_p = skeleton_ref_p->search_joint( joint_str );
-				if( joint_p == NULL )	{
+				if( joint_p == nullptr )	{
 					fprintf( stderr, "MeCtGaze::get_joint ERR: joint '%s' NOT FOUND in skeleton\n", joint_str );
 					free( joint_str );
-					joint_str = NULL;
+					joint_str = nullptr;
 				}
 			}
 			else	{
@@ -962,13 +962,13 @@ SkJoint* MeCtGaze::offset_ref_joint( void ) {
 SkJoint* MeCtGaze::reference_joint( void )	{
 
 	if( ref_joint_str )	{
-		if( ref_joint_p == NULL )	{
+		if( ref_joint_p == nullptr )	{
 			if( skeleton_ref_p )	{
 				ref_joint_p = skeleton_ref_p->search_joint( ref_joint_str );
-				if( ref_joint_p == NULL )	{
+				if( ref_joint_p == nullptr )	{
 					SmartBody::util::log("MeCtGaze::reference_joint ERR: joint '%s' NOT FOUND in skeleton", ref_joint_str );
 					free( ref_joint_str );
-					ref_joint_str = NULL;
+					ref_joint_str = nullptr;
 				}
 			}
 			else	{

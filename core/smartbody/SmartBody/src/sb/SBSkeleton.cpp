@@ -67,14 +67,14 @@ SBAPI SBJoint* SBSkeleton::createChannel(const std::string& name)
 	if (this->getJointByName(name))
 	{
 		SmartBody::util::log("Joint or channel %s already created.", name.c_str());
-		return NULL;
+		return nullptr;
 	}
 
 	SmartBody::SBJoint* rootJoint = this->getJoint(0);
 	if (!rootJoint)
 	{
 		SmartBody::util::log("Root joint not present. Please add root joint before adding channels.");
-		return NULL;
+		return nullptr;
 	}
 
 	SBJoint* joint = new SBJoint();
@@ -94,7 +94,7 @@ SBAPI SBJoint* SBSkeleton::createChannel(const std::string& name)
 
 	if (this->getPawn())
 	{
-		this->getPawn()->ct_tree_p->child_channels_updated(NULL);
+		this->getPawn()->ct_tree_p->child_channels_updated(nullptr);
 		this->getPawn()->ct_tree_p->applySkeletonToBuffer();
 	}
 	
@@ -106,7 +106,7 @@ SBAPI SBJoint* SBSkeleton::createJoint(const std::string& name, SBJoint* parent)
 	if (this->getJointByName(name))
 	{
 		SmartBody::util::log("Joint %s already created.", name.c_str());
-		return NULL;
+		return nullptr;
 	}
 	SBJoint* joint = new SBJoint();
 	joint->setName(name);
@@ -160,7 +160,7 @@ SBAPI SBJoint* SBSkeleton::createJoint(const std::string& name, SBJoint* parent)
 
 	if (this->getPawn())
 	{
-		this->getPawn()->ct_tree_p->child_channels_updated(NULL);
+		this->getPawn()->ct_tree_p->child_channels_updated(nullptr);
 		this->getPawn()->ct_tree_p->applySkeletonToBuffer();
 	}
 	
@@ -172,7 +172,7 @@ SBAPI SBJoint* SBSkeleton::createStaticJoint(const std::string& name, SBJoint* p
 	if (this->getJointByName(name))
 	{
 		SmartBody::util::log("Joint %s already created.", name.c_str());
-		return NULL;
+		return nullptr;
 	}
 	SBJoint* joint = new SBJoint();
 	joint->setName(name);
@@ -218,7 +218,7 @@ SBAPI SBJoint* SBSkeleton::createStaticJoint(const std::string& name, SBJoint* p
 
 	if (this->getPawn())
 	{
-		this->getPawn()->ct_tree_p->child_channels_updated(NULL);
+		this->getPawn()->ct_tree_p->child_channels_updated(nullptr);
 		this->getPawn()->ct_tree_p->applySkeletonToBuffer();
 	}
 	
@@ -246,9 +246,9 @@ bool SBSkeleton::load(const std::string& skeletonFile)
 	}
 	else
 	{
-		FILE *fp = NULL;
+		FILE *fp = nullptr;
 		fp = fopen(skeletonFile.c_str(), "rt");
-		if (fp == NULL )
+		if (fp == nullptr )
 		{
 			SmartBody::util::log("No skeleton found for file %s.", skeletonFile.c_str());
 			return false;
@@ -278,9 +278,9 @@ bool SBSkeleton::load(const std::string& skeletonFile)
 
 bool SBSkeleton::save(const std::string& skeletonFile)
 {
-	FILE *fp = NULL;
+	FILE *fp = nullptr;
 	fp = fopen(skeletonFile.c_str(), "w");
-	if (fp == NULL )
+	if (fp == nullptr )
 	{
 		SmartBody::util::log("Can't create skeleton file %s.", skeletonFile.c_str());
 		return false;
@@ -347,7 +347,7 @@ SBJoint* SBSkeleton::getJointByMappedName(const std::string& jointName)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -412,7 +412,7 @@ SBJoint* SBSkeleton::getJoint(int index)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -467,7 +467,7 @@ SBPawn* SBSkeleton::getPawn()
 		}
 }
 
-	return NULL;
+	return nullptr;
 }
 
 void SBSkeleton::update()

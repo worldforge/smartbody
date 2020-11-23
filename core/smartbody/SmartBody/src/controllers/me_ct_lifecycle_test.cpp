@@ -41,7 +41,7 @@ std::string MeCtLifecycleTest::CONTROLLER_TYPE = "MeCtLifecycleTest";
 
 MeCtLifecycleTest::MeCtLifecycleTest()
 :	MeCtUnary( new MeCtUnary::Context( this ) ),
-	out( NULL ),
+	out( nullptr ),
 	evaluate_count( 0 )
 {}
 
@@ -155,12 +155,12 @@ void MeCtLifecycleTest::print_method_entry( string method, bool reset_eval_count
 		if( _context ) {
 			state_descrip += "set";
 			if( _context->channels().skeleton() ) {
-				state_descrip += " but skeleton is NULL";
+				state_descrip += " but skeleton is nullptr";
 			} else {
 				state_descrip += " with skeleton";
 			}
 		} else {
-			state_descrip += "NULL";
+			state_descrip += "nullptr";
 		}
 
 	/*	(*out) << "MeCtLifecycleTest "

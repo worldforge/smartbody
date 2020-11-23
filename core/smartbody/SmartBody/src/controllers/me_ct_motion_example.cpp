@@ -39,7 +39,7 @@ void BodyMotionFrame::setMotionPose( float time, SmartBody::SBSkeleton* skel, co
 	if (jointQuat.size() != affectedJoints.size())
 		jointQuat.resize(affectedJoints.size());
 
-	SmartBody::SBRetarget* sbRetarget = NULL;
+	SmartBody::SBRetarget* sbRetarget = nullptr;
 	if (retarget)
 	{
 		SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();
@@ -70,15 +70,15 @@ void BodyMotionInterface::getMotionParameter( dVector& outPara )
 /************************************************************************/
 BodyMotion::BodyMotion()
 {
-	motion = NULL;
-	timeWarp = NULL;
+	motion = nullptr;
+	timeWarp = nullptr;
 }
 
 BodyMotion::~BodyMotion()
 {
 	if (timeWarp)
 		delete timeWarp;
-	timeWarp = NULL;
+	timeWarp = nullptr;
 }
 
 double BodyMotion::getRefDeltaTime( float u, float dt )
@@ -94,7 +94,7 @@ double BodyMotion::motionPercent( float time )
 
 void BodyMotion::updateRootOffset(SmartBody::SBSkeleton* skel, SmartBody::SBJoint* rootJoint)
 {	
-	SmartBody::SBRetarget* retarget = NULL;
+	SmartBody::SBRetarget* retarget = nullptr;
 	if (skel->getName() != motion->getMotionSkeletonName()) // set retarget ?
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -168,7 +168,7 @@ double BodyMotion::getMotionFrame( float time, SmartBody::SBSkeleton* skel, cons
 	
 	SkJoint* rootJoint = affectedJoints[0];
 
-	SmartBody::SBRetarget* retarget = NULL;
+	SmartBody::SBRetarget* retarget = nullptr;
 	if (skel->getName() != motion->getMotionSkeletonName()) // set retarget ?
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -381,7 +381,7 @@ double ResampleMotion::getRefDeltaTime( float u, float dt )
 MotionProfile* ResampleMotion::getValidMotionProfile()
 {
 	float maxWeight = -1.f;
-	MotionProfile* validProfile = NULL;
+	MotionProfile* validProfile = nullptr;
 	for (unsigned int i=0;i<weight.size();i++)
 	{		
 		int idx = weight[i].first;
@@ -554,7 +554,7 @@ MotionExample* MotionExampleSet::getMotionExample( const std::string& motionName
 		if (ex->motion->getName() == motionName)
 			return ex;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -563,7 +563,7 @@ InterpolationExample* MotionExampleSet::createPseudoExample()
 {
 	ResampleMotion* ex = new ResampleMotion(&motionData);
 	ex->motionParameterFunc = motionParameterFunc;
-	ex->motionProfile = NULL;
+	ex->motionProfile = nullptr;
 	return ex;
 }
 

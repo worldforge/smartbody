@@ -38,7 +38,7 @@ MeCtLocomotionLimb::MeCtLocomotionLimb() {
 	is_valid = false;
 	ground_height = 0.0f;
 	limb_base_name = "";
-	skeleton_name = NULL;
+	skeleton_name = nullptr;
 	space_time = 0.0f;
 	limb_joint_info.quat.capacity(0);
 	limb_joint_info.joint_index.capacity(0);
@@ -46,8 +46,8 @@ MeCtLocomotionLimb::MeCtLocomotionLimb() {
 	curr_rotation = 0.0f;
 	rotation_record = 0.0f;
 	blended_anim.global_info = new MeCtLocomotionAnimGlobalInfo();
-	walking_skeleton = NULL;
-	standing_skeleton = NULL;
+	walking_skeleton = nullptr;
+	standing_skeleton = nullptr;
 	ik_offset.set(0,0,0);
 	ik_terrain_normal.set(0.0f, 0.0f, 0.0f);
 	ik_terrain_target_normal.set(0.0f, 0.0f, 0.0f);
@@ -146,7 +146,7 @@ SrVec MeCtLocomotionLimb::get_orientation()
 int MeCtLocomotionLimb::set_limb_base(const std::string& name)
 {
 	SkJoint* joint = standing_skeleton->search_joint(name.c_str());
-	if(joint == NULL) 
+	if(joint == nullptr)
 	{
 		SmartBody::util::log("MeCtLocomotionLimb::set_limb_base(): Joint:%s does not exist", name.c_str());
 		return -1;
@@ -163,14 +163,14 @@ int MeCtLocomotionLimb::set_limb_base(const std::string& name)
 	{
 		limb_joint_info.quat.push(q);
 	}
-	limb_joint_info.Init(walking_skeleton, limb_base_name, NULL);
+	limb_joint_info.Init(walking_skeleton, limb_base_name, nullptr);
 	return 0;
 }
 
 int MeCtLocomotionLimb::add_support_joint(char* joint_name)
 {
 	SkJoint* joint = standing_skeleton->search_joint(joint_name);
-	if(joint == NULL) 
+	if(joint == nullptr)
 	{
 		printf("\nMeCtLocomotionLimb::add_support_joint(): Joint:%s does not exist", joint_name);
 		return -1;

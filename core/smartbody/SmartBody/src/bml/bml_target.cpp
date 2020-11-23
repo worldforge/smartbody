@@ -92,7 +92,7 @@ const SkJoint* BML::parse_target( const XMLCh* tagname, const XMLCh* attrTarget,
 						std::stringstream strstr;
 						strstr << "WARNING: BML::parse_target(): Gaze: Unknown target \""<<object_id<<"\". (TODO: Query WSP.) Behavior ignored."<< endl;
 						SmartBody::util::log(strstr.str().c_str());
-						return NULL;
+						return nullptr;
 					}
 				}
 			} else {
@@ -103,7 +103,7 @@ const SkJoint* BML::parse_target( const XMLCh* tagname, const XMLCh* attrTarget,
 					cout << "DEBUG: BML::parse_target(): Gaze:\tobject_id \""<<object_id<<"\",\tbone_id \""<<bone_id<<"\"." <<endl;
 #endif
 				target =  SmartBody::SBScene::getScene()->getPawn( object_id );
-				if( target==NULL ) {
+				if( target==nullptr ) {
 
 					// we've failed to find object:bone locally, now query wsp
 					target =  SmartBody::SBScene::getScene()->getPawn( object_id + ":" + bone_id );
@@ -123,21 +123,21 @@ const SkJoint* BML::parse_target( const XMLCh* tagname, const XMLCh* attrTarget,
 						std::stringstream strstr;
 						strstr << "WARNING: BML::parse_target(): Gaze: Unknown object id \""<<object_id<<"\". (TODO: Query WSP.) Behavior ignored."<< endl;
 						SmartBody::util::log(strstr.str().c_str());
-						return NULL;
+						return nullptr;
 					}
 				}
 			}
 
 			// Look up the joint
 			const SkJoint* joint = target->get_joint( bone_id.c_str() );
-			if( joint == NULL ) {				
+			if( joint == nullptr ) {
 				if (SmartBody::SBScene::getScene()->getCharacter( object_id )) // target is a character but does not have eye joint
 				{
 					return target->get_world_offset_joint();
 				}
 				strstr << "WARNING: BML::parse_target(): Gaze: Target \""<<object_id<<"\" does not have joint \""<<bone_id<<"\". Behavior ignored.";
 				SmartBody::util::log(strstr.str().c_str());
-				return NULL;
+				return nullptr;
 			}
 
 			return joint;
@@ -149,12 +149,12 @@ const SkJoint* BML::parse_target( const XMLCh* tagname, const XMLCh* attrTarget,
 			// TODO
 			strstr << "WARNING: BML::parse_target(): Unimplented <"<<tagname<<" "<< BMLDefs::ATTR_TARGET<<"=\"x, y, z\" ... />.  Behavior ignored.";
 			SmartBody::util::log(strstr.str().c_str());
-			return NULL;
+			return nullptr;
 		}
 		default: {
 			strstr << "WARNING: BML::parse_target(): Invalid token count in <"<<tagname<<" "<< BMLDefs::ATTR_TARGET<<"=\"x, y, z\" ... />.  Behavior ignored.";
 			SmartBody::util::log(strstr.str().c_str());
-			return NULL;
+			return nullptr;
 		}
 	}  // end switch( tokenizer.countTokens() )
 }
@@ -177,5 +177,5 @@ const SbmPawn* BML::parse_target_pawn( const XMLCh* tagname, const XMLCh* attrTa
 	{
 		return target;	   
 	}			
-	return NULL;
+	return nullptr;
 }

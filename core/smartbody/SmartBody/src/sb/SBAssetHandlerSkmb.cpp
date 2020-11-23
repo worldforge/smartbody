@@ -28,38 +28,33 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
-#include <sbm/GPU/SbmDeformableMeshGPU.h>
 #include <sr/sr_model.h>
 
 namespace SmartBody {
 
 SBAssetHandlerSkmb::SBAssetHandlerSkmb()
 {
-	assetTypes.push_back("skmb");
+	assetTypes.emplace_back("skmb");
 }
 
-SBAssetHandlerSkmb::~SBAssetHandlerSkmb()
-{
-}
+SBAssetHandlerSkmb::~SBAssetHandlerSkmb() = default;
 
-std::vector<SBAsset*> SBAssetHandlerSkmb::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkmb::getAssets(const std::string& path)
 {
-	std::vector<SBAsset*> assets;
+	std::vector<std::unique_ptr<SBAsset>> assets;
 
 	std::string convertedPath = checkPath(path);
-	if (convertedPath == "")
+	if (convertedPath.empty())
 		return assets;
 
 	boost::filesystem::path p(convertedPath);
 	std::string fileName = boost::filesystem::basename( p );
 	std::string extension =  boost::filesystem::extension( p );
 
-	SBMotion* motion = new SBMotion();
+	auto motion = std::make_unique<SBMotion>();
 	bool ok = motion->readFromSkb(convertedPath);
 	if (ok)
-		assets.push_back(motion);
-	else
-		delete motion;
+		assets.emplace_back(std::move(motion));
 
 	return assets;
 }

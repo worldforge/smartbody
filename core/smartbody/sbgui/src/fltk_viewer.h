@@ -72,6 +72,7 @@ class RetargetStepWindow;
 class PALocomotionData;
 class FLTKListener;
 class BaseWindow;
+class SBRenderScene;
 
 
 struct Point3D
@@ -566,6 +567,8 @@ protected:
 
    unsigned int  shadowMapID, depthMapID, depthFB, rboID;
    float shadowCPM[16];
+
+   SBRenderScene* mRenderScene;
  };
 
 class GestureVisualizationHandler : public SmartBody::SBEventHandler

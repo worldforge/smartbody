@@ -42,6 +42,7 @@ class SkJoint;
 
 namespace SmartBody {
 	class SBSubject;
+	class SBRenderScene;
 }
 
 struct CameraTrack
@@ -65,7 +66,7 @@ class SrCamera : public SmartBody::SBPawn
    public :
     
     /*! Initialize the camera with the default parameters, see init(). */
-    SBAPI SrCamera ();
+    SBAPI SrCamera (SmartBody::SBRenderScene&);
 
     /*! Copy constructor. */
     SBAPI SrCamera ( const SrCamera* c );
@@ -73,7 +74,7 @@ class SrCamera : public SmartBody::SBPawn
 	SBAPI ~SrCamera ();
 
     /*! Initialize the camera with the main parameters eye, center and up. */
-    SBAPI SrCamera ( const SrPnt& e, const SrPnt& c, const SrVec& u );
+    SBAPI SrCamera ( SmartBody::SBRenderScene&, const SrPnt& e, const SrPnt& c, const SrVec& u );
 
 	SBAPI void copyCamera(const SrCamera* c);
 	SBAPI void setScale(float scale);
@@ -181,6 +182,7 @@ class SrCamera : public SmartBody::SBPawn
 #endif
 
  protected:
+	SmartBody::SBRenderScene& _renderScene;
     SrPnt  eye;    //!< position of the eye, default is (0,0,2).
     SrPnt  center; //!< position where the eye is looking to, default is (0,0,0).
     SrVec  up;     //!< the up vector orients the camera around the eye-center vector, default is (0,1,0)

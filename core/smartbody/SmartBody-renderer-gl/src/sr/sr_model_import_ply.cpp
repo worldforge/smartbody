@@ -67,7 +67,7 @@ static int face_cb(p_ply_argument argument) {
 	long idx;
 	SrModel* model;
 	ply_get_argument_user_data(argument, (void**)&model, &idx);
-	ply_get_argument_property(argument, NULL, &length, &value_index);
+	ply_get_argument_property(argument, nullptr, &length, &value_index);
 	
 	if (value_index == -1) // first entry in the list
 	{
@@ -88,7 +88,7 @@ static int texCoord2_cb(p_ply_argument argument) {
 	long idx;
 	TexCoordData* model;
 	ply_get_argument_user_data(argument, (void**)&model, &idx);
-	ply_get_argument_property(argument, NULL, &length, &value_index);
+	ply_get_argument_property(argument, nullptr, &length, &value_index);
 
 	if (value_index == -1) // first entry in the list
 	{
@@ -120,7 +120,7 @@ static int texCoord_cb(p_ply_argument argument) {
 	long idx;
 	SrModel* model;
 	ply_get_argument_user_data(argument, (void**)&model, &idx);
-	ply_get_argument_property(argument, NULL, &length, &value_index);
+	ply_get_argument_property(argument, nullptr, &length, &value_index);
 
 	if (value_index == -1) // first entry in the list
 	{
@@ -151,7 +151,7 @@ static int texNumber_cb(p_ply_argument argument) {
 	long idx;
 	SrModel* model;
 	ply_get_argument_user_data(argument, (void**)&model, &idx);
-	ply_get_argument_property(argument, NULL, &length, &value_index);
+	ply_get_argument_property(argument, nullptr, &length, &value_index);
 
 	if (value_index == -1) // first entry in the list
 	{
@@ -278,12 +278,12 @@ bool SrModel::import_ply( const char* file )
 	M.back().diffuse = SrColor::gray;
 
 	mtlnames.push_back("noname");
-	p_ply ply = ply_open(file, NULL, 0, NULL);
+	p_ply ply = ply_open(file, nullptr, 0, nullptr);
 	if (!ply) return false;
 	if (!ply_read_header(ply)) return false;
 
 #if TEST_TEXTURE
-	const char* comment = ply_get_next_comment(ply, NULL);
+	const char* comment = ply_get_next_comment(ply, nullptr);
 	int materialNum =  1;
 	while (comment)
 	{

@@ -28,7 +28,7 @@ BML::BehaviorRequestPtr BML::parse_bml_states( DOMElement* elem, const std::stri
 	// get character
 	std::string characterName = request->actor->getName();
 	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
-	if (character == NULL)
+	if (character == nullptr)
 	{
 		SmartBody::util::log("parse_bml_states ERR: cannot find character with name %s.", characterName.c_str());
 		return BehaviorRequestPtr();

@@ -20,14 +20,14 @@ PoseExample& PoseExample::operator=( const PoseExample& rhs )
 /* Pose Example Set with KD-tree based KNN search                       */
 /************************************************************************/
 
-#define FREE_DATA(data) if (data) delete data; data=NULL;
-#define FREE_DATA_ARRAY(data) if (data) delete [] data; data=NULL;
+#define FREE_DATA(data) if (data) delete data; data=nullptr;
+#define FREE_DATA_ARRAY(data) if (data) delete [] data; data=nullptr;
 
 
 PoseExampleSet::PoseExampleSet()
 {
-	kdTree = NULL;
-	dataPts = NULL;
+	kdTree = nullptr;
+	dataPts = nullptr;
 
 }
 
@@ -383,7 +383,7 @@ void MeCtDataDrivenReach::buildResamplePoseData( int nExamples, float fMinDist /
 	PoseExample dummy;
 	dummy.poseParameter.resize(3);
 	// sampling new poses inside the bounding box by interpolating current pose data randomly
-	srand(int(time(NULL)));
+	srand(int(time(nullptr)));
 	vector<SrQuat> blendQuats;
 	while (nCount < nSamples)
 	{

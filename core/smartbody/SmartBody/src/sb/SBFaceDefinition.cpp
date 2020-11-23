@@ -33,12 +33,12 @@ namespace SmartBody {
 
 SBFaceDefinition::SBFaceDefinition() : SBObject()
 {
-	_faceNeutral = NULL;
+	_faceNeutral = nullptr;
 }
 
 SBFaceDefinition::SBFaceDefinition(const std::string& name)
 {
-	_faceNeutral = NULL;
+	_faceNeutral = nullptr;
 	_name = name;
 	setName(name);
 }
@@ -47,7 +47,7 @@ SBFaceDefinition::SBFaceDefinition(SBFaceDefinition* source)
 {
 	if (!source)
 	{
-		_faceNeutral = NULL;
+		_faceNeutral = nullptr;
 		return;
 	}
 	_faceNeutral = source->getFaceNeutral();
@@ -97,7 +97,7 @@ SBFaceDefinition::~SBFaceDefinition()
 
 void SBFaceDefinition::setFaceNeutral(const std::string& motionName)
 {
-	SmartBody::SBMotion* motion = NULL;
+	SmartBody::SBMotion* motion = nullptr;
 	if (motionName.length() > 0)
 	{
 		motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
@@ -169,7 +169,7 @@ ActionUnit* SBFaceDefinition::getAUByName(const std::string& auName)
 {
 	int index = auName.find("au_");
 	if (index == std::string::npos)
-		return NULL;
+		return nullptr;
 
 	std::string remainder = auName.substr(index + 3);
 
@@ -180,9 +180,9 @@ ActionUnit* SBFaceDefinition::getAUByName(const std::string& auName)
 		int num = atoi(numStr.c_str());
 		ActionUnit* au = this->getAU(num);
 		if (!au)
-			return NULL;
+			return nullptr;
 		if (!au->is_left())
-			return NULL;
+			return nullptr;
 		else
 			return au;
 	}
@@ -194,9 +194,9 @@ ActionUnit* SBFaceDefinition::getAUByName(const std::string& auName)
 		int num = atoi(numStr.c_str());
 		ActionUnit* au = this->getAU(num);
 		if (!au)
-			return NULL;
+			return nullptr;
 		if (!au->is_left())
-			return NULL;
+			return nullptr;
 		else
 			return au;
 	}
@@ -205,7 +205,7 @@ ActionUnit* SBFaceDefinition::getAUByName(const std::string& auName)
 	ActionUnit* au = this->getAU(num);
 	if (au->is_bilateral())
 		return au;
-	return NULL;
+	return nullptr;
 
 }
 
@@ -224,7 +224,7 @@ void SBFaceDefinition::setAU(int auNum, const std::string& side, const std::stri
 		return;
 	}
 
-	SmartBody::SBMotion*  motion = NULL;
+	SmartBody::SBMotion*  motion = nullptr;
 	if (motionName.length() > 0)
 	{
 		motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
@@ -246,13 +246,13 @@ void SBFaceDefinition::setAU(int auNum, const std::string& side, const std::stri
 		}
 		else if (side == "left" || side == "LEFT")
 		{
-			au = new ActionUnit( auNum, motion, NULL );
+			au = new ActionUnit( auNum, motion, nullptr );
 			au->reset_type();
 			au->set_left();
 		}
 		else if (side == "right" || side == "RIGHT")
 		{
-			au = new ActionUnit( auNum, NULL, motion );
+			au = new ActionUnit( auNum, nullptr, motion );
 			au->reset_type();
 			au->set_right();
 		}
@@ -352,7 +352,7 @@ void SBFaceDefinition::setViseme(const std::string& visemeName, const std::strin
 		// no motion given, add the viseme only
 		if (motionName == "")
 		{
-			_visemeMap.insert(std::pair<std::string, std::pair<SkMotion*, float> >(visemeName,std::pair<SkMotion*, float>((SkMotion*)NULL, 0.0f)));
+			_visemeMap.insert(std::pair<std::string, std::pair<SkMotion*, float> >(visemeName,std::pair<SkMotion*, float>((SkMotion*)nullptr, 0.0f)));
 			return;
 		}
 
@@ -377,7 +377,7 @@ void SBFaceDefinition::setViseme(const std::string& visemeName, const std::strin
 			if (motionName == "")
 			{
 				_visemeMap.erase(iter);
-				_visemeMap.insert(std::pair<std::string, std::pair<SkMotion*, float> >(visemeName, std::pair<SkMotion*, float>((SkMotion*)NULL, 1.0f)));
+				_visemeMap.insert(std::pair<std::string, std::pair<SkMotion*, float> >(visemeName, std::pair<SkMotion*, float>((SkMotion*)nullptr, 1.0f)));
 				SmartBody::util::log("Viseme '%s' with motion '%s' replaced with no motion.", visemeName.c_str(), motion->getName().c_str()); 
 				return;
 			}
@@ -460,7 +460,7 @@ SkMotion* SBFaceDefinition::getVisemeMotion(const std::string& viseme)
 		return (*iter).second.first;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 float SBFaceDefinition::getVisemeWeight(const std::string& viseme)
@@ -515,7 +515,7 @@ ActionUnit* SBFaceDefinition::getAU(int index)
 {
 	std::map<int, ActionUnit*>::iterator iter = _auMap.find(index);
 	if (iter == _auMap.end())
-		return NULL;
+		return nullptr;
 	else
 		return (*iter).second;
 }
@@ -559,10 +559,10 @@ SBMotion* SBFaceDefinition::getAUMotion(int num, std::string side)
 	if (iter == _auMap.end())
 	{
 		SmartBody::util::log("AU %d not found.", num);
-		return NULL;
+		return nullptr;
 	}
 
-	SkMotion* motion = NULL;
+	SkMotion* motion = nullptr;
 	ActionUnit* au = (*iter).second;
 	if (side == "LEFT" || side == "left")
 	{
@@ -573,7 +573,7 @@ SBMotion* SBFaceDefinition::getAUMotion(int num, std::string side)
 		else
 		{
 			SmartBody::util::log("Action Unit %d does not have a LEFT motion.", num);
-			return NULL;
+			return nullptr;
 		}
 	}
 	else if (side == "RIGHT" || side == "right")
@@ -585,7 +585,7 @@ SBMotion* SBFaceDefinition::getAUMotion(int num, std::string side)
 		else
 		{
 			SmartBody::util::log("Action Unit %d does not have a RIGHT motion.", num);
-			return NULL;
+			return nullptr;
 		}
 	}
 	else if (side == "BOTH" || side == "both")
@@ -597,13 +597,13 @@ SBMotion* SBFaceDefinition::getAUMotion(int num, std::string side)
 		else
 		{
 			SmartBody::util::log("Action Unit %d does not have a BOTH motion.", num);
-			return NULL;
+			return nullptr;
 		}
 	}
 	else
 	{
 		SmartBody::util::log("Use: LEFT, RIGHT, BOTH for Action Unit side.");
-		return NULL;
+		return nullptr;
 	}
 
 	SBMotion* sbmotion = dynamic_cast<SBMotion*>(motion);

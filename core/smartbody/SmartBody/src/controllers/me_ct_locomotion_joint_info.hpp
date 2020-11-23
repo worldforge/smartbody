@@ -59,7 +59,7 @@ struct MeCtLocomotionJointInfo
 	{
 		int sum = 0;
 		std::string name = joint->jointName();
-		if(limb_joint_name != NULL)
+		if(limb_joint_name != nullptr)
 		{
 			for(size_t i = 0; i < limb_joint_name->size(); ++i)
 			{

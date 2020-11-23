@@ -39,7 +39,7 @@ const std::string& MeCtNavigationWaypoint::controller_type() {
 
 // Implements MeController::context_updated(..)
 void MeCtNavigationWaypoint::context_updated() {
-	if( _context == NULL ) {
+	if( _context == nullptr ) {
 		is_valid = false;
 		last_time = std::numeric_limits<double>::quiet_NaN();
 	}

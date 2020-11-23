@@ -106,7 +106,7 @@ srCmdSeq* SequenceManager::getSequence(const std::string& name)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 srCmdSeq* SequenceManager::getSequence(int num, std::string& name)
@@ -118,7 +118,7 @@ srCmdSeq* SequenceManager::getSequence(int num, std::string& name)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -396,7 +396,7 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 	const std::string& first_seq_name = *it;  // convenience reference
 	std::string fullPath;
 	FILE* first_file_p = SmartBody::SBScene::getScene()->getAssetManager()->open_sequence_file( first_seq_name.c_str(), fullPath );
-	if( first_file_p == NULL ) {
+	if( first_file_p == nullptr ) {
 		if( error_prefix )
 			SmartBody::util::log("%s Cannot find sequence \"%s\". Aborting seq-chain.", error_prefix, first_seq_name.c_str());
 		return CMD_FAILURE;
@@ -410,7 +410,7 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 			SmartBody::util::log("%s Unable to parse sequence\"%s\".", error_prefix, first_seq_name.c_str());
 
 		delete seq_p;
-		seq_p = NULL;
+		seq_p = nullptr;
 
 		return CMD_FAILURE;
 	}
@@ -422,7 +422,7 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 
 		std::string fullPath;
 		FILE* file = SmartBody::SBScene::getScene()->getAssetManager()->open_sequence_file( next_seq.c_str(), fullPath );
-		if( file == NULL ) {
+		if( file == nullptr ) {
 			if( error_prefix )
 				SmartBody::util::log("%s Cannot find sequence \"%s\". Aborting seq-chain.", error_prefix, next_seq.c_str() );
 			return CMD_FAILURE;
@@ -451,7 +451,7 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 				SmartBody::util::log("%s Failed to insert seq-chain command at time %f", error_prefix, time);
 
 			delete seq_p;
-			seq_p = NULL;
+			seq_p = nullptr;
 
 			return CMD_FAILURE;
 		}
@@ -511,7 +511,7 @@ srCmdSeq* SBCommandManager::lookup_seq( const char* name )
 				SmartBody::util::log("ERROR: mcuCBHandle::lookup_seq(..): '%s' PARSE FAILED\n", name ); 
 
 				delete seq;
-				seq = NULL;
+				seq = nullptr;
 			}
 		} else {
 			SmartBody::util::log("ERROR: mcuCBHandle::lookup_seq(..): '%s' NOT FOUND\n", name ); 

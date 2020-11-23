@@ -33,6 +33,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBPhoneme.h"
 #include "sb/SBPhonemeManager.h"
 #include "sb/SBVHMsgManager.h"
+#include "sb/SBMotion.h"
+#include "sb/SBCharacter.h"
 #include "SBUtilities.h"
 #include "sbm/local_speech.h"
 #include "sbm/mcontrol_callbacks.h"

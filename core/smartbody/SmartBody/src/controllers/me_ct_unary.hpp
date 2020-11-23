@@ -50,7 +50,7 @@ protected:
 		static std::string CONTEXT_TYPE;
 
 	public:
-		Context( MeCtUnary* container, MeControllerContext* context = NULL )
+		Context( MeCtUnary* container, MeControllerContext* context = nullptr )
 			:	MeCtContainer::Context( container, context )
 		{}
 
@@ -93,7 +93,7 @@ protected:
 	 *  the local context probably doesn't exist when the superclass constructor
 	 *  is called.
 	 */
-	MeCtUnary( MeCtUnary::Context* sub_context, MeController* child = NULL, bool _copy_child_channels = true );
+	MeCtUnary( MeCtUnary::Context* sub_context, MeController* child = nullptr, bool _copy_child_channels = true );
 
 public:
 	//////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ protected:
 	 *  Overrides MeController::controller_duration().
 	 *
 	 *  Assumes that the unary controller will have the same duration as the
-	 *  child.  Returns 0 if the child is NULL.
+	 *  child.  Returns 0 if the child is nullptr.
 	 */
 	virtual double controller_duration();
 

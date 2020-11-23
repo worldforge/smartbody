@@ -52,8 +52,8 @@ std::string MeCtExampleBodyReach::CONTROLLER_TYPE = "BodyReach";
 
 MeCtExampleBodyReach::MeCtExampleBodyReach( SmartBody::SBReach* reach)  : SmartBody::SBController()
 {
-	currentReachData = NULL;
-	currentReachEngine = NULL;
+	currentReachData = nullptr;
+	currentReachEngine = nullptr;
 
 	_duration = -1.f;	
 	footIKFix = true;
@@ -91,7 +91,7 @@ MeCtExampleBodyReach::~MeCtExampleBodyReach( void )
 		{
 			// remove any notifications for existing target pawns
 			oldPawn->unregisterObserver(this);
-			t.setTargetPawn(NULL);
+			t.setTargetPawn(nullptr);
 			t.useTargetPawn = false;
 		}
 		*/
@@ -161,7 +161,7 @@ SbmPawn* MeCtExampleBodyReach::getAttachedPawn()
 	if (currentReachData->hasAttachedPawn())
 		return currentReachData->effectorState.getAttachedPawn();
 	else
-		return NULL;
+		return nullptr;
 }
 
 void MeCtExampleBodyReach::setReachTargetPawn( SbmPawn* targetPawn )

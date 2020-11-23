@@ -37,7 +37,7 @@ public:
 	protected:
 		static std::string CONTEXT_TYPE;
 	public:
-		Context( MeCtMotionPlayer* container, MeControllerContext* context = NULL )
+		Context( MeCtMotionPlayer* container, MeControllerContext* context = nullptr )
 			:	MeCtContainer::Context( container, context )
 		{}
 

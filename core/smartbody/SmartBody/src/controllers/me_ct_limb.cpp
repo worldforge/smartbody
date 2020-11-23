@@ -3,7 +3,7 @@
 
 MeCtLimb::MeCtLimb(void)
 {
-	skeleton = NULL;
+	skeleton = nullptr;
 }
 
 MeCtLimb::~MeCtLimb(void)
@@ -20,7 +20,7 @@ SkJoint* MeCtLimb::getChainRoot()
 	if (joint_chain.size() > 0)
 		return joint_chain[0];
 	else
-		return NULL;
+		return nullptr;
 }
 
 
@@ -29,7 +29,7 @@ SkJoint* MeCtLimb::getChainEndEffector()
 	if (joint_chain.size() > 0)
 		return joint_chain[joint_chain.size()-1];
 	else
-		return NULL;
+		return nullptr;
 }
 
 void MeCtLimb::updateQuatToJointChain( SrArray<SrQuat>& joint_quat )

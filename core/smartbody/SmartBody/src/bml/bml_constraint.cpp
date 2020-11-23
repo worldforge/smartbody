@@ -56,7 +56,7 @@ BehaviorRequestPtr BML::parse_bml_constraint( DOMElement* elem, const std::strin
 		return BehaviorRequestPtr();
 	}
 
-	MeCtConstraint* constraintCt = NULL; 
+	MeCtConstraint* constraintCt = nullptr;
 
 	std::string handle = xml_parse_string(BMLDefs::ATTR_HANDLE, elem, "", REQUIRED_ATTR);//"";
 	if( !handle.empty() ) {		
@@ -72,13 +72,13 @@ BehaviorRequestPtr BML::parse_bml_constraint( DOMElement* elem, const std::strin
 		}
 	}
 
-	const SkJoint* target_joint = NULL;
+	const SkJoint* target_joint = nullptr;
 	{
 		string val_str = xml_parse_string( BMLDefs::ATTR_TARGET, elem );
 		if( !constraintCt && ( val_str == "" ) ) {
 			
 			xml_parse_error( BMLDefs::ATTR_TARGET, elem );
-			return BehaviorRequestPtr();  // a.k.a., NULL
+			return BehaviorRequestPtr();  // a.k.a., nullptr
 		}
 		
 		XMLCh *tmp_ch_p = xmlch_translate( val_str );
@@ -91,8 +91,8 @@ BehaviorRequestPtr BML::parse_bml_constraint( DOMElement* elem, const std::strin
 	string rootJointName = xml_parse_string( BMLDefs::ATTR_ROOT, elem );
 	string typeName = xml_parse_string(  BMLDefs::ATTR_CONSTRAINT_TYPE, elem );
 
-	if( target_joint == NULL && !constraintCt ) {  // Invalid target.  Assume parse_target(..) printed error.
-		return BehaviorRequestPtr();  // a.k.a., NULL
+	if( target_joint == nullptr && !constraintCt ) {  // Invalid target.  Assume parse_target(..) printed error.
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
 
 	SrQuat rotOffset = SrQuat();

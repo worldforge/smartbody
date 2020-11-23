@@ -187,6 +187,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 	
 	DeformableMeshInstance* meshInstance = NULL;
 	if (sbChar)
+		sbChar->getAttribute()
 		meshInstance = sbChar->dMeshInstance_p;
 	if (!sbChar || !meshInstance || meshInstance->getDeformableMesh() == NULL)
 	{

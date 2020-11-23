@@ -1,7 +1,22 @@
 add_library(
         SmartBody-renderer-gl
 
+        src/sb/SBAssetHandlerObj.cpp
+        src/sb/SBAssetHandlerOgre.cpp
+        src/sb/SBAssetHandlerCOLLADA.cpp
+        src/sb/SBAssetHandlerHDR.cpp
+        src/sb/SBAssetHandlerPly.cpp
+        src/sb/SBAssetHandlerSBMeshBinary.cpp
+        src/sb/SBRenderAssetManager.cpp
+
+
         src/sbm/SBRenderScene.cpp
+        src/sbm/SBRenderSceneListener.cpp
+        src/sbm/sbm_deformable_mesh.cpp
+        src/sbm/ParserCOLLADAFast.cpp
+        src/sbm/ParserOpenCOLLADA.cpp
+        src/sbm/ParserOgre.cpp
+        src/sbm/SceneExporter.cpp
 
         src/sbm/GPU/SbmTexture.cpp
         src/sbm/GPU/SbmDeformableMeshGPU.cpp
@@ -23,6 +38,7 @@ target_include_directories(SmartBody-renderer-gl PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SOIL,INCLUDE_DIRECTORIES>
         )
 
 

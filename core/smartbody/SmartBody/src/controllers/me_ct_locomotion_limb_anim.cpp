@@ -108,7 +108,7 @@ void MeCtLocomotionLimbAnim::apply_frame(int frame)
 	walking->apply_frame(frame);
 	if(translation_scale != 1.0f)
 	{
-		SkJoint* joint = NULL;
+		SkJoint* joint = nullptr;
 		float val = 0.0f;
 		for(size_t i = 0; i < walking_skeleton->joints().size(); ++i)
 		{
@@ -125,7 +125,7 @@ void MeCtLocomotionLimbAnim::apply_frame(int frame)
 //temp function for test, to be deleted......
 void MeCtLocomotionLimbAnim::print_info()
 {
-	SrVec* velocity = NULL;
+	SrVec* velocity = nullptr;
 	SmartBody::util::log("\n Printing info for walking animation %s:", walking->getName().c_str());
 	/*for(int i = 0; i < get_support_joint_num(); ++i)
 	{

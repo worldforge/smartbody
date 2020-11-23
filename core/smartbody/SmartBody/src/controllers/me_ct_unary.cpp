@@ -39,7 +39,7 @@ using namespace std;
 std::string MeCtUnary::Context::CONTEXT_TYPE = "MeCtUnary::Context";
 
 void MeCtUnary::Context::child_channels_updated( MeController* child ) {
-	if( _container == NULL )  // parent has been deleted
+	if( _container == nullptr )  // parent has been deleted
 		return;
 
 	MeCtUnary* container = static_cast<MeCtUnary*>(_container);
@@ -99,7 +99,7 @@ MeController* MeCtUnary::child( size_t n ) {
 	if( n==0 )
 		return _child;
 	else
-		return NULL;
+		return nullptr;
 }
 
 
@@ -157,14 +157,14 @@ bool MeCtUnary::remove_child( MeController* child ) {
 	{
 		//_sub_context->remove_controller( child );
 		_child->unref();
-		_child = NULL;
+		_child = nullptr;
 	}
 	return is_child;
 }
 
 
 void MeCtUnary::update_timing_from_child() {
-	if( _child != NULL ) {
+	if( _child != nullptr ) {
 		inoutdt( _child->indt(), _child->outdt() );
 		emphasist( _child->emphasist() );
 	} else {

@@ -45,7 +45,7 @@ public:
 	protected:
 		static std::string CONTEXT_TYPE;
 	public:
-		Context( MeCtInterpolator* container, MeControllerContext* context = NULL )
+		Context( MeCtInterpolator* container, MeControllerContext* context = nullptr )
 			:	MeCtContainer::Context( container, context )
 		{}
 
@@ -55,7 +55,7 @@ public:
 
 public:
 	// constructor
-	MeCtInterpolator(MeController* child1 = NULL, MeController* child2 = NULL, double time = 0.0, double w = 0.0, bool loop = false, std::string controllerName = "");
+	MeCtInterpolator(MeController* child1 = nullptr, MeController* child2 = nullptr, double time = 0.0, double w = 0.0, bool loop = false, std::string controllerName = "");
 	~MeCtInterpolator();
 
 	// child accessor

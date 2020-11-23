@@ -31,8 +31,8 @@ namespace SmartBody
 class SBSceneListener
 {
 public:
-	SBAPI SBSceneListener() {}
-	virtual SBAPI ~SBSceneListener() {}
+	SBAPI SBSceneListener() = default;
+	virtual SBAPI ~SBSceneListener() = default;
 	virtual SBAPI void OnCharacterCreate( const std::string & name, const std::string & objectClass ) {}
 	virtual SBAPI void OnCharacterDelete( const std::string & name ) {}
 	virtual SBAPI void OnCharacterUpdate( const std::string & name ) {}

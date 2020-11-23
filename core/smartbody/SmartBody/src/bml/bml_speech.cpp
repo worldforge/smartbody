@@ -118,7 +118,7 @@ BML::SpeechRequestPtr BML::parse_bml_speech(
 #endif
 			// Search for <tm> sync_points
 			DOMElement* child = xml_utils::getFirstChildElement( xml );
-			while( child!=NULL ) {
+			while( child!=nullptr ) {
 				const XMLCh* tag = child->getTagName();
 
 #if ENABLE_BMLR_SPEECH_REQUEST_CODE
@@ -164,7 +164,7 @@ BML::SpeechRequestPtr BML::parse_bml_speech(
 #endif
 			// Search for <mark> sync_points
 			DOMElement* child = xml_utils::getFirstChildElement( xml );
-			while( child!=NULL ) {
+			while( child!=nullptr ) {
 				const XMLCh* tag = child->getTagName();
 				if( tag && XMLString::compareString( tag, BMLDefs::TAG_MARK )==0 ) {
 #if !defined(__ANDROID__)
@@ -203,7 +203,7 @@ BML::SpeechRequestPtr BML::parse_bml_speech(
 
 	if( !speech_impl && speech_impl_backup ) {
 		speech_impl = speech_impl_backup;
-		speech_impl_backup = NULL;
+		speech_impl_backup = nullptr;
 	}
 
 	SmartBody::SpeechInterface* cur_speech_impl = speech_impl;
@@ -241,7 +241,7 @@ BML::SpeechRequestPtr BML::parse_bml_speech(
 	} catch (...) {
 		if (cur_speech_impl_backup) {
 			cur_speech_impl = cur_speech_impl_backup;
-			cur_speech_impl_backup = NULL;
+			cur_speech_impl_backup = nullptr;
 			speech_request_id = cur_speech_impl->requestSpeechAudio( request->actorId.c_str(), request->actor->get_voice_code_backup(), xml, "bp speech_ready " );
 		}
 		else
@@ -251,7 +251,7 @@ BML::SpeechRequestPtr BML::parse_bml_speech(
 	{
 		if (cur_speech_impl_backup) {
 			cur_speech_impl = cur_speech_impl_backup;
-			cur_speech_impl_backup = NULL;
+			cur_speech_impl_backup = nullptr;
 			speech_request_id = cur_speech_impl->requestSpeechAudio( request->actorId.c_str(), request->actor->get_voice_code_backup(), xml, "bp speech_ready " );
 		}
 		else 
@@ -381,7 +381,7 @@ SyncPoint* SpeechRequest::addWordBreakSync( const std::wstring& wbId ) {
 		return sp;
 	} else {
 		delete [] tmId;
-		return NULL;
+		return nullptr;
 	}
 }
 */
@@ -435,16 +435,16 @@ std::string BML::SpeechRequest::getSpeechText()
 			rapidxml::xml_node<>* curNode = mystack.top();
 			mystack.pop();
 
-			rapidxml::xml_node<>* childNode = curNode->first_node(NULL);
+			rapidxml::xml_node<>* childNode = curNode->first_node(nullptr);
 			if (childNode)
 			{
 				std::vector<rapidxml::xml_node<>*> children;
 				children.push_back(childNode);
-				rapidxml::xml_node<>* siblingNode = childNode->next_sibling(NULL);
+				rapidxml::xml_node<>* siblingNode = childNode->next_sibling(nullptr);
 				while (siblingNode)
 				{
 					children.push_back(siblingNode);
-					siblingNode = siblingNode->next_sibling(NULL);
+					siblingNode = siblingNode->next_sibling(nullptr);
 				}
 				size_t numChildren = children.size();
 				size_t i = numChildren - 1;
@@ -469,11 +469,11 @@ std::string BML::SpeechRequest::getSpeechText()
 
 void BML::SpeechRequest::speech_response( srArgBuffer& response_args ) {
 	const char* status = response_args.read_token();
-	const char* error_msg = NULL;
+	const char* error_msg = nullptr;
 	if( strcmp( status, "SUCCESS" )!=0 ) {
 		if( strcmp( status, "ERROR" )==0 ) {
 			error_msg = response_args.read_remainder_raw();
-			if( error_msg == NULL ) {
+			if( error_msg == nullptr ) {
 				error_msg = "!!NO ERROR MESSAGE!!";
 			}
 		} else {
@@ -488,7 +488,7 @@ void BML::SpeechRequest::speech_response( srArgBuffer& response_args ) {
 
 void BML::SpeechRequest::processVisemes(std::vector<VisemeData*>* result_visemes, BmlRequestPtr request, float scale)
 {
-	if (result_visemes == NULL)
+	if (result_visemes == nullptr)
 		return;
 
 	// clean up debug data
@@ -605,9 +605,9 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 	}
 
 	const std::string& diphoneMap = mappingName;
-	VisemeData* curViseme = NULL;
-	VisemeData* prevViseme = NULL;
-	VisemeData* nextViseme = NULL;
+	VisemeData* curViseme = nullptr;
+	VisemeData* prevViseme = nullptr;
+	VisemeData* nextViseme = nullptr;
 	std::vector<float> visemeTimeMarkers;
 	std::vector<VisemeData*> visemeRawData;
 	int consecutiveUnfoundCurves = 0;
@@ -619,7 +619,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 			nextViseme = (*visemes)[i + 1];
 		curViseme = (*visemes)[i];
 		visemeTimeMarkers.push_back(curViseme->time());
-		if (prevViseme != NULL)
+		if (prevViseme != nullptr)
 		{
 			SBDiphone* diphone = SmartBody::SBScene::getScene()->getDiphoneManager()->getDiphone(prevViseme->id(), curViseme->id(), diphoneMap);
 			if (!diphone)
@@ -646,7 +646,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 			}
 			else
 			{
-				if (nextViseme != NULL)
+				if (nextViseme != nullptr)
 					blendIval = nextViseme->time() - prevViseme->time();
 				else
 					blendIval = 2.0f * (curViseme->time() - prevViseme->time());
@@ -739,7 +739,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 		if (visemeRawData[i]->getFloatCurve().size() == 0)
 		{
 			delete visemeRawData[i];
-			visemeRawData[i] = NULL;
+			visemeRawData[i] = nullptr;
 			visemeRawData.erase(visemeRawData.begin() + i);
 			i--;
 		}
@@ -1805,11 +1805,11 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 	vector<VisemeData*>* result_visemes = speech_impl->getVisemes( speech_request_id, actor );
 	if( !result_visemes ) {
 		if (speech_impl_backup) // run the backup speech server if available
-			result_visemes = speech_impl->getVisemes( speech_request_id, NULL );
+			result_visemes = speech_impl->getVisemes( speech_request_id, nullptr );
 	}
 
 #if 0
-	VisemeData* emotionViseme = NULL;
+	VisemeData* emotionViseme = nullptr;
 	if (result_visemes->size() > 0)
 	{
 		VisemeData* temp = (*result_visemes)[result_visemes->size() - 1];
@@ -1922,7 +1922,7 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 		if( BML::LOG_SPEECH )
 		{
 			std::stringstream strstr;
-			strstr << "WARNING: BodyPlannerImpl::speechReply(): speech.getVisemes( " << speech_request_id << " ) returned NULL.";
+			strstr << "WARNING: BodyPlannerImpl::speechReply(): speech.getVisemes( " << speech_request_id << " ) returned nullptr.";
 			SmartBody::util::log(strstr.str().c_str());
 		}
 	}
@@ -1979,7 +1979,7 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 			const wstring& wb_id = wb_it->first;
 			SyncPointPtr  cur   = wb_it->second;
 
-			if( cur->parent != NULL && !isTimeSet( cur->parent->time ) )
+			if( cur->parent != nullptr && !isTimeSet( cur->parent->time ) )
 			{
 				std::wstringstream wstrstr;
 				wstrstr << "ERROR: BodyPlannerImpl::speechReply(): Unhandled case of Wordbreak SyncPoint \"" << wb_id << "\" with scheduled parent SyncPoint.  Ignoring offset.";

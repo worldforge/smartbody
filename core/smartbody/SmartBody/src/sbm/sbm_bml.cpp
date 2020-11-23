@@ -51,13 +51,13 @@ namespace SmartBody {
 		const char* error_msg )
 	{
 		//  Let's not error on our error messages.  Be thorough.
-		if( agent_id==NULL || agent_id[0]=='\0' )
+		if( agent_id==nullptr || agent_id[0]=='\0' )
 			agent_id = "?";
-		if( recipient==NULL || recipient[0]=='\0' )
+		if( recipient==nullptr || recipient[0]=='\0' )
 			recipient = "?";
-		if( message_id==NULL || message_id[0]=='\0' )
+		if( message_id==nullptr || message_id[0]=='\0' )
 			message_id = "?";
-		if( error_msg==NULL || error_msg[0]=='\0' )
+		if( error_msg==nullptr || error_msg[0]=='\0' )
 			error_msg = "INVALID_ERROR_MESSAGE";
 
 		ostringstream buff;
@@ -81,7 +81,7 @@ SmartBody::BmlProcessor::BmlProcessor()
 	_warn_unknown_agents( true ),
 	_parser( BML_X::Parser::new_instance() )
 {
-	if( xmlParser.get()==NULL ) {
+	if( xmlParser.get()==nullptr ) {
 		try {
 			xmlParser = boost::shared_ptr<XercesDOMParser>( new XercesDOMParser() );
 
@@ -102,7 +102,7 @@ SmartBody::BmlProcessor::BmlProcessor()
 SmartBody::BmlProcessor::~BmlProcessor() {
 	if( _parser ) {
 		delete _parser;
-		_parser = NULL;
+		_parser = nullptr;
 	}
 }
 
@@ -148,7 +148,7 @@ int SmartBody::BmlProcessor::vrSpeak_func( srArgBuffer& args, mcuCBHandle *mcu )
 		}
 
 		SbmCharacter *agent = mcu->character_map.lookup( agent_id );
-		if( agent==NULL ) {
+		if( agent==nullptr ) {
 			//  Agent is not managed by this SBM process
 			if( bp.warn_unknown_agents() )
 				cerr << "WARNING: BmlProcessor: Unknown agent \"" << agent_id << "\"." << endl;
@@ -156,14 +156,14 @@ int SmartBody::BmlProcessor::vrSpeak_func( srArgBuffer& args, mcuCBHandle *mcu )
 			return CMD_SUCCESS;
 		}
 
-		if( agent->scheduler_p==NULL ) {
+		if( agent->scheduler_p==nullptr ) {
 			vrSpeakFailed( agent_id, recipient_id, message_id, "Uninitialized agent." );
 			return CMD_FAILURE;
 		}
 
         DOMDocument *xmlDoc = xml_utils::parseMessageXml( xmlParser.get(), xml );
-		if( xmlDoc == NULL ) {
-			vrSpeakFailed( agent_id, recipient_id, message_id, "XML parser returned NULL document." );
+		if( xmlDoc == nullptr ) {
+			vrSpeakFailed( agent_id, recipient_id, message_id, "XML parser returned nullptr document." );
 			return CMD_FAILURE;
 		}
 

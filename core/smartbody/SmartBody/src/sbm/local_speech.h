@@ -122,8 +122,8 @@ class local_speech: public remote_speech {
 		//SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, const DOMNode* node, const char* callbackCmd ); //accepts dom document of which sound will be created from, returns Request ID
 		//SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, std::string text, const char* callbackCmd ); //accepts char* of above and returns request ID
 		//std::vector<SmartBody::VisemeData *>* getVisemes( SmartBody::RequestId requestId,  SbmCharacter* character ); //returns visemes  for given request
-		//char* getSpeechPlayCommand( SmartBody::RequestId requestId, SbmCharacter* character = NULL ); //returns the command to play speech
-		//char* getSpeechStopCommand( SmartBody::RequestId requestId, SbmCharacter* character = NULL ); //''                     stop
+		//char* getSpeechPlayCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //returns the command to play speech
+		//char* getSpeechStopCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //''                     stop
 		//char* getSpeechAudioFilename( SmartBody::RequestId requestId ); // gets the fileName of speech
 		//float getMarkTime( SmartBody::RequestId requestId, const XMLCh* markId ); //gets time value for a given marker
 		

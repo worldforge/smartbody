@@ -54,16 +54,16 @@ class srHashMapBase {
 
 		void	print( int reverse = 0 );
 		int		get_num_entries( void )	{ return( entry_count ); }
-		bool	key_in_use( const char *key ) { return( lookup( key ) != NULL ); }
+		bool	key_in_use( const char *key ) { return( lookup( key ) != nullptr ); }
 
 		int		insert( const char *key, void *data, int claim = FALSE );
 		void	*lookup( const char *key );
-		void	*remove( const char *key, int *claimed_p = NULL );
+		void	*remove( const char *key, int *claimed_p = nullptr );
 		
 
 		void	reset( void );					  // start iterator
-		void	*next( char** key_ref_p = NULL ); // lookup iterator
-		void	*pull( int *claimed_p = NULL );	  // remove iterator
+		void	*next( char** key_ref_p = nullptr ); // lookup iterator
+		void	*pull( int *claimed_p = nullptr );	  // remove iterator
 
 		// checks for existence of KEY in hash table independent of the value it hashes to
 //		bool	does_key_exist(const char *key ) { return( key_in_use( key ) ); } 
@@ -112,7 +112,7 @@ template <class X> class srHashMap : public srHashMapBase	{
 			char * animation;
 			X* data;
 			data = next(&animation);
-			while(data!=NULL)
+			while(data!=nullptr)
 			{
 				stl_map.insert ( std::pair<char *, X *>(animation,data) );
 				data = next(&animation);
@@ -141,15 +141,15 @@ template <class X> class srHashMap : public srHashMapBase	{
 			return( lookup( key.c_str() ) );
 		}
 
-		X* remove( const char *key, int *claimed_p = NULL )	{
+		X* remove( const char *key, int *claimed_p = nullptr )	{
 			return( (X*)srHashMapBase::remove( key, claimed_p ) );
 		}
 
-		X* next( char** key_ref_p = NULL )	{
+		X* next( char** key_ref_p = nullptr )	{
 			return( (X*)srHashMapBase::next( key_ref_p ) );
 		}
 
-		X* pull( int *claimed_p = NULL )	{
+		X* pull( int *claimed_p = nullptr )	{
 			return( (X*)srHashMapBase::pull( claimed_p ) );
 		}
 		
@@ -157,7 +157,7 @@ template <class X> class srHashMap : public srHashMapBase	{
 			int claimed = FALSE;
 			X* xp;
 			reset();
-			while( ( xp = (X*)pull( &claimed ) )!= NULL )	{
+			while( ( xp = (X*)pull( &claimed ) )!= nullptr )	{
 				if( claimed )	{
 					delete xp;
 				}

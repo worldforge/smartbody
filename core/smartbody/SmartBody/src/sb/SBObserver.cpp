@@ -25,9 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBObserver::SBObserver()
-{
-}
+SBObserver::SBObserver() = default;
 
 SBObserver::~SBObserver()
 {

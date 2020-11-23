@@ -111,7 +111,7 @@ SBGestureMap* SBGestureMapManager::getGestureMap(std::string gestureName)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

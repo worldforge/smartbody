@@ -112,13 +112,13 @@ class srLinearCurve	{
 		void init( void )	{
 			key_count = 0;
 			dirty = false;
-			head_p = NULL;
-			tail_p = NULL;
+			head_p = nullptr;
+			tail_p = nullptr;
 			reset();
 		}
 		void reset( void )	{
-			curr_p = NULL;
-			curr_query_p = NULL;
+			curr_p = nullptr;
+			curr_query_p = nullptr;
 		}
 		
 	public:
@@ -174,7 +174,7 @@ class srLinearCurve	{
 		double get_next_nonzero_slope( double after );
 //		double get_last_nonzero_param( double after );
 
-		double evaluate( double t, bool *cropped_p = NULL );
+		double evaluate( double t, bool *cropped_p = nullptr );
 
 	protected:
 

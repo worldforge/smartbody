@@ -169,7 +169,7 @@ class SrSnShape : public SrSnShapeBase
     X& shape () { changed(true); return *_data; }
 
     /*! Set data using the copy constructor of X. */
-    void shape (  X& data ) { changed(true); *_data=data; }
+    void shape ( const X& data ) { changed(true); *_data=data; }
 
     /*! Deletes the internal data and starts using the new one pt.
         Pointer pt must not be null. Use with care. */

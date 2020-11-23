@@ -701,6 +701,7 @@ void BaseWindow::ResetScene()
 	}
 	mScene = std::make_unique<SmartBody::SBScene>();
 	mRenderScene = std::make_unique<SmartBody::SBRenderScene>(*mScene);
+	curViewer->setScene(mRenderScene.get());
 
 	SBBaseRenderer::singleton().resetRenderer();
 	SBRenderer::singleton().resetRenderer();

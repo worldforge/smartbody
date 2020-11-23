@@ -53,7 +53,7 @@ SbmShaderManager& SbmShaderManager::singleton()
 void SbmShaderManager::destroy_singleton() {
 	if( _singleton )
 		delete _singleton;
-	_singleton = NULL;
+	_singleton = nullptr;
 }
 
 int SbmShaderManager::getShaderSupport() { return shaderSupport; }
@@ -101,7 +101,7 @@ void SbmShaderProgram::initShaderProgram( const char* vsName, const char* fsName
 	if (vsName && strlen(vsName) > 0)
 	{
 		vsFilename = vsName;
-		char *vs = NULL;		
+		char *vs = nullptr;
 		vs = textFileRead(vsName);	
 		if (vs)
 			vsShaderStr = vs;		
@@ -111,7 +111,7 @@ void SbmShaderProgram::initShaderProgram( const char* vsName, const char* fsName
 	if (fsName && strlen(fsName) > 0)
 	{
 		fsFilename = fsName;
-		char *fs = NULL;		
+		char *fs = nullptr;
 		fs = textFileRead(fsName);	
 		if (fs)
 			fsShaderStr = fs;		
@@ -186,7 +186,7 @@ void SbmShaderProgram::buildShader()
 
 void SbmShaderProgram::loadShader(GLuint sID,  const char* shaderFileName )
 {
-	char *vs = NULL;		
+	char *vs = nullptr;
 	vs = textFileRead(shaderFileName);	
 	if (!vs) return;
 	const char* vv = vs;
@@ -197,7 +197,7 @@ void SbmShaderProgram::loadShader(GLuint sID,  const char* shaderFileName )
 
 void SbmShaderProgram::loadShaderStr( GLuint sID, const char* shaderStr )
 {		
-	glShaderSource(sID, 1, &shaderStr,NULL);	
+	glShaderSource(sID, 1, &shaderStr,nullptr);
 	//SmartBody::util::log("loadShaderStr, sdi = %d, shaderStr = %s", sID, shaderStr);
 	//printOglError("loadShaderStr::glShaderSource");
 	glCompileShader(sID);
@@ -209,12 +209,12 @@ void SbmShaderProgram::loadShaderStr( GLuint sID, const char* shaderStr )
 char * SbmShaderProgram::textFileRead(const char *fn )
 {
 	FILE *fp;
-	char *content = NULL;
+	char *content = nullptr;
 	int count=0;
 	SmartBody::util::log("Loading text files...%s", fn);
-	if (fn != NULL) {
+	if (fn != nullptr) {
 		fp = fopen(fn,"rt");
-		if (fp != NULL) {
+		if (fp != nullptr) {
 			fseek(fp, 0, SEEK_END);
 			count = ftell(fp);
 			rewind(fp);
@@ -297,12 +297,12 @@ void SbmShaderProgram::printOglError(const char* tag)
 /************************************************************************/
 /* Shader Manager                                                       */
 /************************************************************************/
-SbmShaderManager* SbmShaderManager::_singleton = NULL;
+SbmShaderManager* SbmShaderManager::_singleton = nullptr;
 int SbmShaderManager::shaderSupport = SUPPORT_OPENGL_2_0;
 
 SbmShaderManager::SbmShaderManager(void)
 {
-	viewer = NULL;
+	viewer = nullptr;
 	shaderInit = false;
 #if defined(__ANDROID__) || defined(SB_IPHONE)
 	shaderSupport = SUPPORT_OPENGL_2_0;
@@ -313,7 +313,7 @@ SbmShaderManager::SbmShaderManager(void)
 
 void SbmShaderManager::setViewer( SrViewer* vw )
 {
-	if (vw == NULL)
+	if (vw == nullptr)
 	{
 		shaderInit = false;
 	}
@@ -463,7 +463,7 @@ void SbmShaderManager::rebuildShaders()
 
 SbmShaderProgram* SbmShaderManager::getShader( const std::string& entryName )
 {
-	SbmShaderProgram* program = NULL;
+	SbmShaderProgram* program = nullptr;
 	if (shaderMap.find(entryName) != shaderMap.end())
 	{
 		program = shaderMap[entryName];		

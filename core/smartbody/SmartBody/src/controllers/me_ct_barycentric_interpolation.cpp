@@ -10,7 +10,7 @@
 #include <tetgen/tetgen.h>
 #endif
 
-#define FREE_DATA(data) if (data) delete data; data=NULL;
+#define FREE_DATA(data) if (data) delete data; data=nullptr;
 
 /************************************************************************/
 /* Simplex class                                                        */

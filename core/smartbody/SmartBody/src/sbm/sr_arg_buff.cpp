@@ -29,7 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////
 
 srArgBuffer::srArgBuffer( const char *arg )	{
-	if( arg == NULL )	{
+	if( arg == nullptr )	{
 		arg_len = 0;
 		tok_buff = new char[ 1 ];
 		tok_buff[0] = '\0';  // Empty string
@@ -39,7 +39,7 @@ srArgBuffer::srArgBuffer( const char *arg )	{
 		tok_buff = new char[ arg_len + 1 ];
         strcpy( tok_buff, arg );
 	}
-	token = NULL;
+	token = nullptr;
 }
 
 srArgBuffer::~srArgBuffer( void )	{
@@ -75,7 +75,7 @@ int srArgBuffer::calc_num_tokens( /*int quote_sensitive = FALSE*/ )	{
 //// Old read unquoted token
 //char* srArgBuffer::read_token( void )	{
 //	char *peek_buff = peek_string();
-//	if( token == NULL )	{
+//	if( token == nullptr )	{
 //		token = EMPTY_STRING;
 //	}
 //	return( token );
@@ -91,7 +91,7 @@ char* srArgBuffer::read_token( void )	{
     } else {
     	token = strtok( peek_buff, WHITE_SPACE );
     }
-	if( token == NULL )	{
+	if( token == nullptr )	{
 		token = (char*)EMPTY_STRING;
 	}
 	return( token );
@@ -105,7 +105,7 @@ char* srArgBuffer::read_remainder_raw( void )	{
 
 
 char* srArgBuffer::peek_string( void )	{
-	if( token == NULL )	{
+	if( token == nullptr )	{
 		return( tok_buff );
 	}
 	int tok_len = strlen( token );

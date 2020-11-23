@@ -20,6 +20,9 @@
 #define SMARTBODY_SBRENDERSCENE_H
 
 #include "SBABI.h"
+#include "sbm_deformable_mesh.h"
+
+#include "sr/sr_shared_ptr.hpp"
 
 #include <vector>
 #include <string>
@@ -32,11 +35,15 @@ struct CameraTrack;
 namespace SmartBody {
 class SBScene;
 class SBController;
+class SBPawn;
+class SBRenderSceneListener;
+class SBRenderAssetManager;
 
 class SBRenderScene {
-
 public:
-	explicit SBRenderScene(SBScene& scene);
+	friend class SBRenderSceneListener;
+
+	explicit SBRenderScene(SBScene& scene, SBRenderAssetManager& renderAssetManager);
 	~SBRenderScene();
 
 	std::vector<std::string> checkVisibility_current_view();
@@ -63,6 +70,14 @@ public:
 	SBAPI void removeCameraTrack();
 	SBAPI void updateTrackedCameras();
 
+	SBAPI void rescalePartialMeshSkeleton(const std::string& meshName,
+										  const std::string& skelName,
+										  const std::string& rootJointName,
+										  const std::vector<std::string>& skipMeshNames,
+										  float scaleRatio,
+										  float blendThreshold = 0.025f);
+
+	SBRenderAssetManager& _renderAssetManager;
 	SBScene& mScene;
 
 protected:
@@ -76,6 +91,16 @@ protected:
 	SkJoint *	_coneOfSight_leftEye;
 	SkJoint *	_coneOfSight_rightEye;
 	std::string	_coneOfSight_character;
+
+	struct Renderable {
+		SBPawn* pawn;
+		boost::intrusive_ptr<SkScene> scene_p;
+		std::unique_ptr<DeformableMeshInstance> meshInstance;
+		std::unique_ptr<DeformableMeshInstance> staticMeshInstance;
+	};
+
+	std::map<std::string, Renderable> mRenderables;
+	std::unique_ptr<SBRenderSceneListener> mListener;
 };
 }
 

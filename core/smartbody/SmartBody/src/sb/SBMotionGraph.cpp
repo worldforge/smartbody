@@ -648,7 +648,7 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromBlend( SBAnimationBlend* ble
 	if (node)
 	{
 		SmartBody::util::log("Motion Node '%s' already exists.", blend->getName().c_str());
-		return NULL;
+		return nullptr;
 	}
 	int nodeIdx = motionNodes.size();
 	node = new SBMotionNode(blend, nodeIdx);
@@ -668,7 +668,7 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromMotion( const std::string& n
 SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromMotionRef( const std::string& nodeName, SmartBody::SBMotion* sbMotion, int startFrame, int endFrame )
 {
 	if (!sbMotion)
-		return NULL; // no motion available
+		return nullptr; // no motion available
 	SmartBody::SBAnimationBlend1D* animBlend = new SBAnimationBlend1D(nodeName);
 	if (startFrame < 0 || startFrame >= sbMotion->getNumFrames())
 		startFrame = 0;
@@ -693,7 +693,7 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromMotionRef( const std::string
 
 SBMotionNode* SBMotionGraph::addMotionNodeFromMotionTransition( const std::string& nodeName, const std::string& motionName1, std::string& motionName2, int mo1EndFrme, int mo2StartFrame, int transitionLength )
 {
-	SBMotionNode* motionNode = NULL;
+	SBMotionNode* motionNode = nullptr;
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
 	SmartBody::SBMotion* motion1 = assetManager->getMotion(motionName1);
 	SmartBody::SBMotion* motion2 = assetManager->getMotion(motionName2);	
@@ -779,14 +779,14 @@ SBAPI SBMotionNode* SBMotionGraph::getMotionNode( const std::string& nodeName )
 	{
 		return mi->second;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
 SBAPI SBMotionTransitionEdge* SBMotionGraph::addMotionEdgeByIndex( int fromNodeIdx, int toNodeIdx )
 {
 	if (fromNodeIdx < 0 || fromNodeIdx >= (int)motionNodes.size() || toNodeIdx < 0 || toNodeIdx >= (int)motionNodes.size())
-		return NULL; // not valid edge
+		return nullptr; // not valid edge
 	SBMotionNode* fromNode = motionNodes[fromNodeIdx];
 	SBMotionNode* toNode = motionNodes[toNodeIdx];
 	return addMotionEdge(fromNode->getName(), toNode->getName());
@@ -798,17 +798,17 @@ SBAPI SBMotionTransitionEdge* SBMotionGraph::addMotionEdge( const std::string& f
 	if (edge)
 	{
 		SmartBody::util::log("Motion Edge '%s'->'%s' already exists.",fromNodeName.c_str(), toNodeName.c_str());
-		return NULL;
+		return nullptr;
 	}
 
-	SBMotionNode *fromNode = NULL, *toNode = NULL;
+	SBMotionNode *fromNode = nullptr, *toNode = nullptr;
 	fromNode = getMotionNode(fromNodeName);
 	toNode   = getMotionNode(toNodeName);
 
 	if (!fromNode || !toNode)
 	{
 		SmartBody::util::log("Can not create edge. Motion node '%s' or '%s' could not be found. ", fromNodeName.c_str(), toNodeName.c_str());
-		return NULL;
+		return nullptr;
 	}
 
 	std::string edgeName = fromNodeName + "_" + toNodeName;
@@ -829,7 +829,7 @@ SBAPI SBMotionTransitionEdge* SBMotionGraph::getMotionEdge( const std::string& s
 	mi = motionEdgeMap.find(edgeName);
 	if (mi != motionEdgeMap.end())
 		return mi->second;
-	return NULL;
+	return nullptr;
 }
 
 SBAPI void SBMotionGraph::synthesizePath( SteerPath& desiredPath, const std::string& skeletonName, std::vector<std::pair<std::string,std::string> >& graphTraverseEdges )
@@ -1333,7 +1333,7 @@ void SBMotionGraph::computeMotionTransitionFast( const std::string& moName1, con
 	SmartBody::SBSkeleton* moSkel = assetManager->getSkeleton(skelName);
 	if (!motion1 || !motion2 || !moSkel) return;
 	SmartBody::SBSkeleton* skelCopy1 = new SBSkeleton(moSkel);
-	SmartBody::SBSkeleton* skelCopy2 = NULL;
+	SmartBody::SBSkeleton* skelCopy2 = nullptr;
 	if (motion1 == motion2)
 		skelCopy2 = skelCopy1;
 	else
@@ -1508,7 +1508,7 @@ void SBMotionGraph::computeMotionTransition( const std::string& moName1, const s
 	SmartBody::SBSkeleton* moSkel = assetManager->getSkeleton(skelName);
 	if (!motion1 || !motion2 || !moSkel) return;
 	SmartBody::SBSkeleton* skelCopy1 = new SBSkeleton(moSkel);
-	SmartBody::SBSkeleton* skelCopy2 = NULL;
+	SmartBody::SBSkeleton* skelCopy2 = nullptr;
 	if (motion1 == motion2)
 		skelCopy2 = skelCopy1;
 	else
@@ -1731,9 +1731,9 @@ int SBMotionGraph::findClosestElement( const std::vector<int>& intList, int val 
 
 SBMotionNodeState::SBMotionNodeState()
 {
-	motionNode = NULL;
-	prevNode = NULL;
-	nextNode = NULL;
+	motionNode = nullptr;
+	prevNode = nullptr;
+	nextNode = nullptr;
 	currentRefTime = 0.f;
 	transitionLength = 0.5f;
 	graphWalkType = RANDOM_WALK;
@@ -1805,7 +1805,7 @@ float SBMotionNodeState::applyTransition( float dt, float curDu )
 	if (transitionQueue.empty()) // no available transition
 		return newDu;
 	bool hasTransition = false;
-	SBMotionTransitionEdge* transEdge = NULL;
+	SBMotionTransitionEdge* transEdge = nullptr;
 	std::vector<float> transWeight;
 	while (!hasTransition && !transitionQueue.empty())
 	{
@@ -1876,7 +1876,7 @@ void SBMotionNodeState::updateNextStateBufferCache()
 	}
 	else
 	{
-		nextNode = NULL; // don't have a valid next node ?
+		nextNode = nullptr; // don't have a valid next node ?
 	}
 }
 
@@ -1971,8 +1971,8 @@ bool SBMotionNodeState::isRunning()
 /************************************************************************/
 SBMotionTransitionEdge::SBMotionTransitionEdge(int idx)
 {
-	srcNode = NULL;
-	tgtNode = NULL;
+	srcNode = nullptr;
+	tgtNode = nullptr;
 	srcRefTime = 0.f;
 	tgtRefTime = 0.f;
 	index = idx;
@@ -2046,7 +2046,7 @@ SBAPI SBMotionGraph* SBMotionGraphManager::createMotionGraph( const std::string&
 	if (moGraph)
 	{
 		SmartBody::util::log("Warning, Can't Create Motion Graph '%s', already exists.");
-		return NULL;
+		return nullptr;
 	}
 
 	moGraph = new SBMotionGraph();
@@ -2060,7 +2060,7 @@ SBAPI SBMotionGraph* SBMotionGraphManager::getMotionGraph( const std::string& mo
 	mi = _motionGraphMap.find(moGraphName);
 	if (mi != _motionGraphMap.end())
 		return mi->second;
-	return NULL;
+	return nullptr;
 }
 
 SBAPI std::vector<std::string> SBMotionGraphManager::getMotionGraphNames()

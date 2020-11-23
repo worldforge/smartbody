@@ -54,19 +54,19 @@ BehaviorRequestPtr BML::parse_bml_quickdraw(
 
 	string target = xml_parse_string( BMLDefs::ATTR_TARGET, elem, "", REQUIRED_ATTR );
 	if( target.empty() )	{
-		return BehaviorRequestPtr();  // NULL
+		return BehaviorRequestPtr();  // nullptr
 	}
 
 	SkJoint* joint = parse_target( BMLDefs::ATTR_TARGET, elem, scene );
-	if( joint == NULL ) {  // invalid target (parse_target should have printed something)
-		return BehaviorRequestPtr();  // NULL
+	if( joint == nullptr ) {  // invalid target (parse_target should have printed something)
+		return BehaviorRequestPtr();  // nullptr
 	}
 
 	string anim_name = xml_parse_string( BMLDefs::ATTR_ANIM, elem, DEFAULT_QUICKDRAW_ANIM );
 	SmartBody::SBMotion* anim = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(anim_name);
 	if (!anim){
 		SmartBody::util::log( "BML::parse_bml_quickdraw ERR: unknown motion: \"%s\"", anim_name.c_str() );
-		return BehaviorRequestPtr();  // NULL
+		return BehaviorRequestPtr();  // nullptr
 	}
 	
 	float track_duration = xml_parse_float( BMLDefs::ATTR_TRACK_DUR, elem, -1.0 );
@@ -133,20 +133,20 @@ BehaviorRequestPtr BML::parse_bml_quickdraw(
 	std::string target = xml_parse_string( BMLDefs::ATTR_TARGET, elem, "", REQUIRED_ATTR );
 	
 	if( target.empty() )	{
-		return BehaviorRequestPtr();  // NULL
+		return BehaviorRequestPtr();  // nullptr
 	}
 
 //	SkJoint* joint = const_cast<SkJoint*>( parse_target( tag, elem->getAttribute( BMLDefs::ATTR_TARGET ), mcu ) );
 	SkJoint* joint = parse_target( BMLDefs::ATTR_TARGET, elem, mcu );
-	if( joint == NULL ) {  // invalid target (parse_target should have printed something)
-		return BehaviorRequestPtr();  // NULL
+	if( joint == nullptr ) {  // invalid target (parse_target should have printed something)
+		return BehaviorRequestPtr();  // nullptr
 	}
 
 	string anim_name = xml_parse_string( BMLDefs::ATTR_ANIM, elem, DEFAULT_QUICKDRAW_ANIM );
 	std::map< std::string, SkMotion* >::iterator motionIter = mcu->motion_map.find( anim_name );
 	if( motionIter ==  mcu->motion_map.end() ){
 		SmartBody::util::log( "BML::parse_bml_quickdraw ERR: unknown motion: \"%s\"", anim_name.c_str() );
-		return BehaviorRequestPtr();  // NULL
+		return BehaviorRequestPtr();  // nullptr
 	}
 	SkMotion* anim = (*motionIter).second;
 
@@ -211,12 +211,12 @@ BehaviorRequestPtr BML::parse_bml_quickdraw(
 		std:string tag_str = xml_translate_string( elem->getTagName() );
 		std:string attr_str = xml_translate_string( BMLDefs::ATTR_TARGET );
         strm << "WARNING: BML::parse_bml_quickdraw(): <"<< tag_str <<"> BML tag missing "<< attr_str <<"= attribute." << endl;
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
     }
 
 	const SkJoint* joint = parse_target( tag, attrTarget, mcu );
-	if( joint == NULL ) {  // invalid target (parse_target should have printed something)
-		return BehaviorRequestPtr();  // a.k.a., NULL
+	if( joint == nullptr ) {  // invalid target (parse_target should have printed something)
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
 
 	string anim_name( DEFAULT_QUICKDRAW_ANIM );
@@ -232,7 +232,7 @@ BehaviorRequestPtr BML::parse_bml_quickdraw(
 		std::stringstream strstr;
         strstr << "WARNING: BML::parse_bml_quickdraw(): Unknown source animation \"" << anim_name << "\"." << endl;
 		SmartBody::util::log(strstr.str().c_str());
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
 
 	SkMotion* anim = (*motionIter).second;

@@ -50,7 +50,7 @@ SBCollisionManager::SBCollisionManager()
 	createDoubleAttribute("jointBVLenRadRatio", 4.0f, true, "Basic", 60, false, false, false, "Joint BV capsule length-radius ratio.");
 
 	_maxIterations = 5;
-	collisionSpace = NULL;
+	collisionSpace = nullptr;
 
 	_singleChrCapsuleMode = false;
 	_jointBVLenRadRatio = 4.0f;
@@ -463,7 +463,7 @@ SBGeomObject* SBCollisionManager::createCollisionObject( const std::string& geom
 
 SBGeomObject* SBCollisionManager::getCollisionObject( const std::string& geomName )
 {
-	SBGeomObject* obj = NULL;
+	SBGeomObject* obj = nullptr;
 	if (geomObjectMap.find(geomName) != geomObjectMap.end())
 	{
 		obj = geomObjectMap[geomName];

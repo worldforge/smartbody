@@ -119,7 +119,7 @@ public:
 
     /**
      *  Get Nth child 
-     *  - may return NULL
+     *  - may return nullptr
      */
     //virtual MeController* child( int n ) = 0;
 

@@ -158,7 +158,7 @@ void SBBoneBusManager::afterUpdate(double time)
 				// connection is bad, remove the bonebus character 
 				SmartBody::util::log("BoneBus cannot connect to server. Removing pawn %s", pawn->getName().c_str());
 				this->getBoneBus().DeleteCharacter(pawn->bonebusCharacter);
-				character->bonebusCharacter = NULL;
+				character->bonebusCharacter = nullptr;
 				isClosingBoneBus = true;
 				if (getBoneBus().GetNumCharacters() == 0)
 				{
@@ -253,7 +253,7 @@ void SBBoneBusManager::afterUpdate(double time)
 			if (pawn->bonebusCharacter)
 			{
 				getBoneBus().DeleteCharacter(pawn->bonebusCharacter);
-				pawn->bonebusCharacter = NULL;
+				pawn->bonebusCharacter = nullptr;
 			}
 		}
 
@@ -302,7 +302,7 @@ void SBBoneBusManager::notify(SBSubject* subject)
 void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * character, SmartBody::SBSkeleton* skeleton, GeneralParamMap * param_map )
 {
 
-	if ( character == NULL )
+	if ( character == nullptr )
 	{
 		return;
 	}

@@ -184,10 +184,10 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 	// clear intermediate skeletons
 	if (interSk)
 		delete interSk;
-	interSk = NULL;
+	interSk = nullptr;
 	if (tempSrcSk)
 		delete tempSrcSk;
-	tempSrcSk = NULL;
+	tempSrcSk = nullptr;
 
 	return true;
 

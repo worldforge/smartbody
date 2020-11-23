@@ -50,9 +50,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 SbmBlendFace::SbmBlendFace() : DeformableMesh()
 {
-//	_VBOPos							= NULL;
-	_VBONormal						= NULL;
-	_VBOTexCoord					= NULL;
+//	_VBOPos							= nullptr;
+	_VBONormal						= nullptr;
+	_VBOTexCoord					= nullptr;
 	_initGPUVertexBuffer			= false;
 
 	_faceCounter					= 0;
@@ -204,12 +204,12 @@ void SbmBlendFace::initShaderProgram_Dan()
 	_fsID = -1;
 	
 	_vsID = glCreateShader(GL_VERTEX_SHADER);
-	char *vs = NULL;		
+	char *vs = nullptr;
 	vs = SbmShaderProgram::textFileRead(shaderVs.c_str());
 	std::string shaderStrVs = vs;
 	const GLchar *sourceVs = (const GLchar *)shaderStrVs.c_str();
 	delete vs;
-	glShaderSource(_vsID, 1, &sourceVs, NULL);	
+	glShaderSource(_vsID, 1, &sourceVs, nullptr);
 	glCompileShader(_vsID);
 	glGetShaderiv(_vsID, GL_COMPILE_STATUS, &success);
 	if(success == GL_FALSE) {
@@ -219,12 +219,12 @@ void SbmBlendFace::initShaderProgram_Dan()
 	//loadShaderStr(_vsID, vsShaderStr.c_str());
 	
 	_fsID = glCreateShader(GL_FRAGMENT_SHADER);
-	char *fs = NULL;		
+	char *fs = nullptr;
 	fs = SbmShaderProgram::textFileRead(shaderFs.c_str());
 	std::string shaderStrFs = fs;
 	const GLchar *sourceFs = (const GLchar *)shaderStrFs.c_str();
 	delete fs;
-	glShaderSource(_fsID, 1, &sourceFs, NULL);	
+	glShaderSource(_fsID, 1, &sourceFs, nullptr);
 	glCompileShader(_fsID);
 	//loadShaderStr(fsID,fsShaderStr.c_str());
 	
@@ -846,7 +846,7 @@ void SbmBlendTextures::ReadMasks(GLuint * FBODst, GLuint * texDst, std::vector<f
 		boost::filesystem::path path(textureFileNames[i]);
 		std::string extension = path.extension().string();
 		std::string mask		= boost::replace_all_copy(textureFileNames[i], extension, "_mask" + extension);
-		SbmTexture* tex_mask;
+		std::unique_ptr<SbmTexture> tex_mask;
 		SmartBody::util::log("mask name = %s\n",mask.c_str());
 		// Checks if mask file exists
 		if (!boost::filesystem::exists(mask))
@@ -861,7 +861,7 @@ void SbmBlendTextures::ReadMasks(GLuint * FBODst, GLuint * texDst, std::vector<f
 			SbmTextureManager::singleton().loadTexture(SbmTextureManager::TEXTURE_DIFFUSE, mask.c_str(), mask.c_str());
 			tex_mask	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, mask.c_str());
 	
-			if(tex_mask == NULL)
+			if(tex_mask == nullptr)
 				SmartBody::util::log("ERROR loading texture %s",mask.c_str());
 		
 			// Builds mask to generate OpenGL texture ID
@@ -1088,8 +1088,8 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 	aux->setDeformableMesh(_mesh);
 	aux->buildVertexBufferGPU(weights.size());
 
-	SrSnModel* writeToBaseModel = NULL;
-	SrSnModel* baseModel		= NULL;
+	SrSnModel* writeToBaseModel = nullptr;
+	SrSnModel* baseModel		= nullptr;
 	bool foundBaseModel			= false;
 
 	std::vector<std::vector<SrPnt>*> shapes;
@@ -1110,7 +1110,7 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 				break;
 			}
 		}
-		if (baseModel == NULL)
+		if (baseModel == nullptr)
 		{
 			SmartBody::util::log("original base model cannot be found");
 			continue;
@@ -1317,8 +1317,8 @@ void SbmBlendTextures::RenderGeometryWithMasks(GLuint * FBODst, std::vector<floa
 	SbmBlendFace * aux = new SbmBlendFace();
 
 	
-	SrSnModel* writeToBaseModel = NULL;
-	SrSnModel* baseModel		= NULL;
+	SrSnModel* writeToBaseModel = nullptr;
+	SrSnModel* baseModel		= nullptr;
 	bool foundBaseModel			= false;
 
 	const int MAX_SHAPES = 14;	// I can't enable more than 16 attributes (15 vertex buffer + 1 texture coordinate buffer)
@@ -1513,8 +1513,8 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 	aux->setDeformableMesh(_mesh);
 	aux->buildVertexBufferGPU(weights.size());
 
-	SrSnModel* writeToBaseModel = NULL;
-	SrSnModel* baseModel		= NULL;
+	SrSnModel* writeToBaseModel = nullptr;
+	SrSnModel* baseModel		= nullptr;
 	bool foundBaseModel			= false;
 
 	std::vector<std::vector<SrPnt>*> shapes;
@@ -1534,7 +1534,7 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 				break;
 			}
 		}
-		if (baseModel == NULL)
+		if (baseModel == nullptr)
 		{
 			SmartBody::util::log("original base model cannot be found");
 			continue;
@@ -1977,8 +1977,8 @@ void SbmBlendTextures::BlendGeometryWithMasksFeedback( GLuint * FBODst, std::vec
 	aux->setDeformableMesh(_mesh);
 	aux->buildVertexBufferGPU(weights.size());
 	SbmShaderProgram::printOglError("Build vertex buffer end");
-	SrSnModel* writeToBaseModel = NULL;
-	SrSnModel* baseModel		= NULL;
+	SrSnModel* writeToBaseModel = nullptr;
+	SrSnModel* baseModel		= nullptr;
 	bool foundBaseModel			= false;
 
 	std::vector<std::vector<SrPnt>*> shapes;
@@ -1999,7 +1999,7 @@ void SbmBlendTextures::BlendGeometryWithMasksFeedback( GLuint * FBODst, std::vec
 				break;
 			}
 		}
-		if (baseModel == NULL)
+		if (baseModel == nullptr)
 		{
 			SmartBody::util::log("original base model cannot be found");
 			continue;

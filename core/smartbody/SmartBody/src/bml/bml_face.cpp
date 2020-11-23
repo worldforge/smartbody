@@ -49,7 +49,7 @@ BehaviorRequestPtr BML::parse_bml_face( DOMElement* elem, const std::string& uni
 
 		int au = xml_parse_int( BMLDefs::ATTR_AU, elem, -1, true );
 		if( au < 0 ) {
-			return BehaviorRequestPtr();  // a.k.a., NULL
+			return BehaviorRequestPtr();  // a.k.a., nullptr
 		}
 		float weight = xml_parse_float( BMLDefs::ATTR_AMOUNT, elem, 0.5f );
 
@@ -93,7 +93,7 @@ BehaviorRequestPtr BML::parse_bml_face( DOMElement* elem, const std::string& uni
 		return viseme;
 	}
 
-	return BehaviorRequestPtr();  // NULL
+	return BehaviorRequestPtr();  // nullptr
 
 	// OLD CODE:
 #if 0
@@ -104,7 +104,7 @@ BehaviorRequestPtr BML::parse_bml_face( DOMElement* elem, const std::string& uni
 		
 			int au = xml_parse_int( BMLDefs::ATTR_AU, elem, -1 );
 			if( au < 0 ) {
-				return BehaviorRequestPtr();  // a.k.a., NULL
+				return BehaviorRequestPtr();  // a.k.a., nullptr
 			}
 			float weight = xml_parse_float( BMLDefs::ATTR_AMOUNT, elem, 0.5f );
 
@@ -142,10 +142,10 @@ BehaviorRequestPtr BML::parse_bml_face( DOMElement* elem, const std::string& uni
 		else	{
 			// type not recognized...
 		}
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
 	// type not found...
-	return BehaviorRequestPtr();  // a.k.a., NULL
+	return BehaviorRequestPtr();  // a.k.a., nullptr
 
 #endif
 }

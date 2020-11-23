@@ -283,7 +283,7 @@ VBODataArray<S>::VBODataArray( char* name, GLuint type, std::vector<S>& data, in
 template <class S>
 S* getPtr(std::vector<S>& data)
 {
-	if (data.size() == 0) return NULL;
+	if (data.size() == 0) return nullptr;
 	return &data[0];
 }
 

@@ -53,7 +53,7 @@ public:
 	  Get_Face_Definition,
    };
 
-   NetRequest(RequestId _rid, RequestCallback _cb, void* _callbackOwner = NULL) { rid = _rid; cb = _cb; callbackOwner = _callbackOwner; }
+   NetRequest(RequestId _rid, RequestCallback _cb, void* _callbackOwner = nullptr) { rid = _rid; cb = _cb; callbackOwner = _callbackOwner; }
    virtual ~NetRequest() {}
 
    SBAPI bool DataAvailable()

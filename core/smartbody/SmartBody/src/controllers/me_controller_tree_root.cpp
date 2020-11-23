@@ -194,12 +194,12 @@ public:
 	// Constructor
 	MeControllerTreeRootImpl()
 	:	_skeletonName(""),
-		_skeleton(NULL),
+		_skeleton(nullptr),
 		_state(VALID),
 		_channels_cur(0),
 		_controllers(),
 		_frame_data(this),  // Ignore this warning... no member access
-		_logger( NULL )
+		_logger( nullptr )
 	{
 		// Make sure the ChannelArray members are zeroed out
 		_channels[0].init();
@@ -213,7 +213,7 @@ public:
 		vector< controller_ptr >::iterator ct_end = _controllers.end();
 		while( ct_iter != ct_end ) {
 			(*ct_iter)->unref();
-			(*ct_iter) = NULL;
+			(*ct_iter) = nullptr;
 
 			++ct_iter;
 		}*/
@@ -276,11 +276,11 @@ public:
 	void add_skeleton( const std::string& entityName, SkSkeleton* skeleton ) {		
 		SR_ASSERT( _state!=REMAPPING );  // simple lock
 
-		if( skeleton==NULL ) {
-			SmartBody::util::log("MeEvaluationContextSimple::addSkeleton(..): skeleton is NULL");
+		if( skeleton==nullptr ) {
+			SmartBody::util::log("MeEvaluationContextSimple::addSkeleton(..): skeleton is nullptr");
 			return;
 		}
-		if( _skeleton!=NULL && _skeleton!=skeleton ) {
+		if( _skeleton!=nullptr && _skeleton!=skeleton ) {
 			SmartBody::util::log("MeEvaluationContextSimple::addSkeleton(..): Unimplemented: Multiple Skeletons.");
 			return;
 		}		
@@ -300,7 +300,7 @@ public:
 		if( _skeletonName==entityName ) {
 			_skeletonName = "";
 			//_skeleton->unref();
-			_skeleton = NULL;
+			_skeleton = nullptr;
 		}
 	}
 
@@ -389,7 +389,7 @@ public:
 				}
 			}
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	/**
@@ -402,7 +402,7 @@ public:
 	 *  Returns a pointer to a controller currently in the tree.
 	 */
     MeController* controller( unsigned int n ) 
-    { return (n<_controllers.size())? _controllers[n]: NULL; }
+    { return (n<_controllers.size())? _controllers[n]: nullptr; }
 
 	/**
 	 *  Evaluates all the controllers.
@@ -508,7 +508,7 @@ public:
 						SmartBody::util::log("ERROR: applyBufferToAllSkeletons(): channels[%d].joint.skeleton() != _skeleton", i);
 					}
 				} else {
-					SmartBody::util::log("ERROR: applyBufferToAllSkeletons(): channels[%d].joint == NULL", i);
+					SmartBody::util::log("ERROR: applyBufferToAllSkeletons(): channels[%d].joint == nullptr", i);
 				}
 			}
 		}
@@ -547,7 +547,7 @@ public:
 						SmartBody::util::log("ERROR: applySkeletonToBuffer(): channels[%d].joint.skeleton() != _skeleton", i);
 					}
 				} else {
-					SmartBody::util::log("ERROR: applySkeletonToBuffer(): channels[%d].joint == NULL", i);
+					SmartBody::util::log("ERROR: applySkeletonToBuffer(): channels[%d].joint == nullptr", i);
 				}
 			}
 		}

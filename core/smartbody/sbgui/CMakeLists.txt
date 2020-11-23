@@ -116,7 +116,6 @@ set(SBM_FLTK_SRC
         src/SBWindowListener.cpp
         src/SBSelectionManager.cpp
         src/SBInterfaceListener.cpp
-        src/SceneExporter.cpp
         ${OGRE_SRCS}
         src/pic.cpp
         src/ppm.cpp
@@ -182,6 +181,7 @@ set(SBM_FLTK_SRC
         src/SBBaseRenderer.cpp
         src/SBRenderer.cpp
         src/SBFrameBufferObject.cpp
+        src/SBSceneHelper.cpp
 
         src/flu/Flu_Button.cpp
         src/flu/Flu_Collapsable_Group.cpp

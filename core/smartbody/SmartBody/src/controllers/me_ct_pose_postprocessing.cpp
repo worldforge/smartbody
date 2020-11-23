@@ -25,7 +25,7 @@ void MeCtPosePostProcessing::updatePoseConstraint()
 	for (unsigned int i=0;i<consNames.size();i++)
 	{
 		SmartBody::TrajectoryRecord* trajRecord = _sbChar->getJointTrajectoryConstraint(consNames[i]);
-		EffectorConstantConstraint* cons = NULL;
+		EffectorConstantConstraint* cons = nullptr;
 		if (posConstraint.find(consNames[i]) == posConstraint.end())
 		{
 			cons = new EffectorConstantConstraint();

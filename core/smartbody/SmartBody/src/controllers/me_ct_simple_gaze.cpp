@@ -277,7 +277,7 @@ MeCtSimpleGazeJoint::MeCtSimpleGazeJoint( void )	{
 //	forward_rot = euler_t( 0.0, 45.0, 0.0 );
 //	forward_rot = euler_t( 0.0, 0.0, 45.0 );
 	
-	joint_p = NULL;
+	joint_p = nullptr;
 }
 
 void MeCtSimpleGazeJoint::init( SkJoint* j_p )	{
@@ -582,23 +582,23 @@ MeCtSimpleGaze::MeCtSimpleGaze( void )	{
 	prev_time = 0.0;
 	_duration = -1.0f;
 
-	skeleton_ref_p = NULL;
-	ref_joint_str = NULL;
-	ref_joint_p = NULL;
+	skeleton_ref_p = nullptr;
+	ref_joint_str = nullptr;
+	ref_joint_p = nullptr;
 	
 	target_mode = TARGET_POINT;	
 	flexible_joint = GAZE_JOINT_SPINE4;
 	priority_joint = GAZE_JOINT_EYE_L;
 	
 	joint_count = 0;
-	joint_arr = NULL;
+	joint_arr = nullptr;
 }
 
 MeCtSimpleGaze::~MeCtSimpleGaze( void )	{
 	
 	if( ref_joint_str ) {
 		free( ref_joint_str );
-		ref_joint_str = NULL;
+		ref_joint_str = nullptr;
 	}
 }
 
@@ -631,7 +631,7 @@ void MeCtSimpleGaze::set_target_joint( float x, float y, float z, SkJoint* joint
 	point_target_pos = vector_t( x, y, z );
 	if( ref_joint_str ) {
 		free( ref_joint_str );
-		ref_joint_str = NULL;
+		ref_joint_str = nullptr;
 	}
 	ref_joint_p = joint_p;
 }
@@ -644,7 +644,7 @@ void MeCtSimpleGaze::set_target( float x, float y, float z, char *ref_joint_name
 		free( ref_joint_str );
 	}
 	ref_joint_str = _strdup( ref_joint_name );
-	ref_joint_p = NULL;
+	ref_joint_p = nullptr;
 }
 
 void MeCtSimpleGaze::set_orient_joint( float p, float h, float r, SkJoint* joint_p )	{
@@ -653,7 +653,7 @@ void MeCtSimpleGaze::set_orient_joint( float p, float h, float r, SkJoint* joint
 	orient_target_rot = euler_t( p, h, r );
 	if( ref_joint_str ) {
 		free( ref_joint_str );
-		ref_joint_str = NULL;
+		ref_joint_str = nullptr;
 	}
 	ref_joint_p = joint_p;
 }
@@ -666,7 +666,7 @@ void MeCtSimpleGaze::set_orient( float p, float h, float r, char *ref_joint_name
 		free( ref_joint_str );
 	}
 	ref_joint_str = _strdup( ref_joint_name );
-	ref_joint_p = NULL;
+	ref_joint_p = nullptr;
 }
 
 void MeCtSimpleGaze::set_offset_swing( float off_p, float off_h, float off_r )	{
@@ -812,13 +812,13 @@ void MeCtSimpleGaze::update_skeleton_gmat( void )	{
 SkJoint* MeCtSimpleGaze::reference_joint( void )	{
 
 	if( ref_joint_str )	{
-		if( ref_joint_p == NULL )	{
+		if( ref_joint_p == nullptr )	{
 			if( skeleton_ref_p )	{
 				ref_joint_p = skeleton_ref_p->search_joint( ref_joint_str );
-				if( ref_joint_p == NULL )	{
+				if( ref_joint_p == nullptr )	{
 					fprintf( stderr, "MeCtSimpleGaze::reference_joint ERR: joint '%s' NOT FOUND in skeleton\n", ref_joint_str );
 					free( ref_joint_str );
-					ref_joint_str = NULL;
+					ref_joint_str = nullptr;
 				}
 			}
 			else	{

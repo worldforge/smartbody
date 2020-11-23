@@ -60,7 +60,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBCommandManager.h>
 #include "SBUtilities.h"
 #include <sbm/PPRAISteeringAgent.h>
-#include <sbm/ParserOpenCOLLADA.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
@@ -77,6 +76,35 @@ const bool LOG_METHODS						= false;
 const bool LOG_CONTROLLER_SCHEDULE			= false;
 const bool LOG_REQUEST_REALIZE_TIME_SPAN	= false;
 
+
+namespace {
+DOMNode* getNode(const std::string& nodeName, DOMNode* node)
+{
+	int type = node->getNodeType();
+	if (type ==  DOMNode::ELEMENT_NODE)
+	{
+		std::string strname = std::string(xml_utils::UTF8(node->getNodeName()));
+		if (strname == nodeName)
+		{
+			return node;
+		}
+	}
+
+	DOMNode* child = nullptr;
+	//const DOMNodeList* list = node->getChildNodes();
+	DOMNode* curNode = node->getFirstChild();
+	while (curNode)
+		//for (unsigned int c = 0; c < list->getLength(); c++)
+	{
+		//child = getNode(nodeName, list->item(c));
+		child = getNode(nodeName, curNode);
+		if (child)
+			break;
+		curNode = curNode->getNextSibling();
+	}
+	return child;
+}
+}
 
 #ifdef max
 #undef max
@@ -218,14 +246,14 @@ void BmlRequest::init( BmlRequestPtr self ) {
 	//  OLD CODE for reference
 	//if( numTriggers > 0 ) {
 	//	// First trigger has no prev
-	//	triggers[0] = new TriggerEvent( this, NULL );
+	//	triggers[0] = new TriggerEvent( this, nullptr );
     //
 	//	// rest of the triggers
 	//	unsigned int i = 1;
 	//	for(; i<numTriggers; i++ ) {
 	//		triggers[i] = new TriggerEvent( this, triggers[numTriggers-1] );
 	//	}
-	//	first = new SyncPoint( L"act:start", triggers[0], NULL );
+	//	first = new SyncPoint( L"act:start", triggers[0], nullptr );
 	//	first->next = triggers[0]->start;
 	//	triggers[0]->start = first;
 	//	first->time = 0.0001;
@@ -236,9 +264,9 @@ void BmlRequest::init( BmlRequestPtr self ) {
 	//} else {
 	//	//
 	//	cout << "setting first and last!" << endl;
-	//	first = new SyncPoint( L"act:start", NULL, NULL );
+	//	first = new SyncPoint( L"act:start", nullptr, nullptr );
 	//	first->time = 0.0001;
-	//	last  = new SyncPoint( L"act:end", NULL, first );
+	//	last  = new SyncPoint( L"act:end", nullptr, first );
 	//	first->next = last;
 	//	sync_points.insert(make_pair(L"act:start", first));
 	//	sync_points.insert(make_pair(L"act:end", last));
@@ -252,7 +280,7 @@ BmlRequest::~BmlRequest() {
 //	for( size_t i=0; i<count; ++i ) {
 //		delete behaviors[i];
 //	}
-//	if( speech_request != NULL ) {
+//	if( speech_request != nullptr ) {
 //		speech_request.reset();
 //	}
 
@@ -1219,7 +1247,7 @@ void BmlRequest::gestureRequestProcess()
 			float start = (float)blends[i]->behav_syncs.sync_start()->time();
 			std::vector<std::string> tokens;
 			std::string blendCommand = blends[i]->getMessage();
-			SmartBody::SBAnimationBlend* blendObject = NULL;
+			SmartBody::SBAnimationBlend* blendObject = nullptr;
 			bool isScheduling = false;
 			double x = 0;
 			double y = 0;
@@ -1277,7 +1305,7 @@ void BmlRequest::gestureRequestProcess()
 				{
 					floatWeights.push_back(weights[k]);
 				} 
-				PABlendData* tempBlendData = new PABlendData(NULL, blendObject, floatWeights);
+				PABlendData* tempBlendData = new PABlendData(nullptr, blendObject, floatWeights);
 				tempBlendData->timeManager->updateWeights();
 				std::vector<double> strokeTimes;
 				std::vector<double> startTimes;
@@ -1315,7 +1343,7 @@ void BmlRequest::gestureRequestProcess()
 				if (useGestureLog)
 					SmartBody::util::log("stroke time for blend is %f, start time for blend is %f", start, start - offset);
 				delete tempBlendData;
-				tempBlendData = NULL;
+				tempBlendData = nullptr;
 			}
 			else
 				continue;
@@ -1414,7 +1442,7 @@ void BmlRequest::gestureRequestProcess()
 			SrVec prevRWristPos = prevSBMotion->getJointPosition(rWrist, (float)prevMotion->time_stroke_end());
 
 			// re-pick the best matching gesture based on previous gesture
-			SBMotion* closestMotion = NULL;
+			SBMotion* closestMotion = nullptr;
 			float minSpeedDiffL = 100000;
 			float minSpeedDiffR = 100000;
 			float lWristTransitionDistance = -1;
@@ -1479,7 +1507,7 @@ void BmlRequest::gestureRequestProcess()
 				}
 				motionInList->disconnect();
 			}
-			if (closestMotion == NULL)
+			if (closestMotion == nullptr)
 			{
 				SmartBody::util::log("gestureRequestProcess ERR: cannot find any transition motion");
 			}
@@ -1960,7 +1988,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 
 					// a speech behavior exists in this block, 
 					// determine if an existing utterance behavior is already running
-					std::string speechMsdId = character->hasSpeechBehavior();
+					std::string speechMsdId = bp->hasSpeechBehavior(*character);
 					if (speechMsdId == this->msgId)
 							continue;					
 			
@@ -2203,7 +2231,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 		dc->setParameter( XMLUni::fgDOMWRTEntities,true);
 
 		DOMDocument* xmlDoc = xml_utils::parseMessageXml(bp->getXMLParser(), xmlBody.c_str());
-		DOMNode* bmlNode = ParserOpenCOLLADA::getNode("bml", xmlDoc);
+		DOMNode* bmlNode = getNode("bml", xmlDoc);
 		const DOMNodeList* nodeList = bmlNode->getChildNodes();
 		int numGestures = 0;
 		for (unsigned int i = 0; i < nodeList->getLength(); ++i)
@@ -2287,6 +2315,29 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 	}
 }
 
+double BmlRequest::getLastScheduledSpeechBehavior(Processor* bp)
+{
+	double lastTime =-1.0;
+
+	BML::MapOfBmlRequest bmlRequestMap = bp->getBMLRequestMap();
+	for (auto & iter : bmlRequestMap)
+	{
+		std::string requestName = iter.first;
+		BML::BmlRequestPtr bmlRequestPtr = iter.second;
+		if (bmlRequestPtr->actor->getName() == actor->getName())
+		{
+			if (bmlRequestPtr->speech_request)
+			{
+				if (lastTime < bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time())
+					lastTime = bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time();
+
+			}
+		}
+	}
+	return lastTime;
+}
+
+
 void BmlRequest::unschedule( Processor* bp, SmartBody::SBScene* scene, time_sec duration )
 {
 	BmlRequestPtr request = weak_ptr.lock(); // Ref to this
@@ -2297,8 +2348,8 @@ void BmlRequest::unschedule( Processor* bp, SmartBody::SBScene* scene, time_sec 
 		speech_request->unschedule( scene, request, duration );
 	}
 
-	VecOfBehaviorRequest::iterator it  = behaviors.begin();
-	VecOfBehaviorRequest::iterator end = behaviors.end();
+	auto it  = behaviors.begin();
+	auto end = behaviors.end();
 	for( ; it != end; ++it ) {
 		BehaviorRequestPtr behavior = *it;
 		behavior->unschedule( scene, request, duration );
@@ -2610,7 +2661,7 @@ SyncPointPtr BmlRequest::getSyncByReference( const std::wstring& notation ) {
 		}
 	}
 
-	return sync;  // May be NULL
+	return sync;  // May be nullptr
 }
 
 SbmCommand::SbmCommand( std::string & command, time_sec time )
@@ -2741,17 +2792,17 @@ MeControllerRequest::MeControllerRequest( const std::string& unique_id,
 MeControllerRequest::~MeControllerRequest() {
 	if( schedule_ct ) {
 		schedule_ct->unref();
-		schedule_ct = NULL;
+		schedule_ct = nullptr;
 	}
 	if( anim_ct ) {
 		anim_ct->unref();
-		anim_ct = NULL;
+		anim_ct = nullptr;
 	}
 }
 
 
 void MeControllerRequest::register_controller_prune_policy( MePrunePolicy* prune_policy ) {
-	if( anim_ct != NULL ) {
+	if( anim_ct != nullptr ) {
 		anim_ct->prune_policy( prune_policy );
 	}
 }
@@ -2846,7 +2897,7 @@ void GestureRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene* sc
 					freq = (float)atof(sbMotion->getMetaDataString("noise_frequency").c_str());
 			}
 			SmartBody::util::tokenize(joints, jointVec);
-			SkMotion* holdM = motion->buildPoststrokeHoldMotion((float)holdTime, jointVec, scale, freq, NULL);
+			SkMotion* holdM = motion->buildPoststrokeHoldMotion((float)holdTime, jointVec, scale, freq, nullptr);
 			holdM->setName(motion->getName());	// even after holding, the name should be the same
 			SmartBody::SBMotion* sbHoldM = dynamic_cast<SmartBody::SBMotion*>(holdM);
 			if (sbHoldM)
@@ -2948,7 +2999,7 @@ void ParameterizedAnimationRequest::realize_impl( BmlRequestPtr request, SmartBo
 				z = 0;
 
 			state3D->PABlend::getWeightsFromParameters(x, y, z, weights);
-			PABlendData* blendData = new PABlendData(NULL, state, weights);
+			PABlendData* blendData = new PABlendData(nullptr, state, weights);
 			blendData->timeManager->updateWeights();
 			std::vector<double> blendedKey = blendData->timeManager->getKey();
 			startTime = relaxTime - (blendedKey[2] - blendedKey[0]);
@@ -2971,7 +3022,7 @@ void ParameterizedAnimationRequest::realize_impl( BmlRequestPtr request, SmartBo
 void ParameterizedAnimationRequest::unschedule( SmartBody::SBScene* scene, BmlRequestPtr request, time_sec duration )
 {
 	std::vector<double> weights;
-	paramAnimCt->schedule(NULL, weights);
+	paramAnimCt->schedule(nullptr, weights);
 
 }
 
@@ -3022,15 +3073,15 @@ void MeControllerRequest::cleanup( SmartBody::SBScene* scene, BmlRequestPtr requ
 {
 	if( schedule_ct ) {
 		if( !persistent ) {
-			// TODO: If track is no longer valid, the NULL TrackPtr will be ignored by remove_track
+			// TODO: If track is no longer valid, the nullptr TrackPtr will be ignored by remove_track
 			schedule_ct->remove_track( schedule_ct->track_for_anim_ct( anim_ct ) );
 		}
 		schedule_ct->unref();
-		schedule_ct = NULL;
+		schedule_ct = nullptr;
 	}
 	if( anim_ct ) {
 		anim_ct->unref();
-		anim_ct = NULL;
+		anim_ct = nullptr;
 	}
 }
 
@@ -3392,7 +3443,7 @@ bool SequenceRequest::realize_sequence( VecOfSbmCommand& commands, SmartBody::SB
 	for( ; it != end ; ++it ) {
 		SbmCommand* command = *it;
 
-		if( command != NULL ) {
+		if( command != nullptr ) {
 			if( seq->insert( (float)(command->time), command->command.c_str() ) != CMD_SUCCESS ) {
 				// TODO: Throw RealizingException
 				std::stringstream strstr;
@@ -3402,7 +3453,7 @@ bool SequenceRequest::realize_sequence( VecOfSbmCommand& commands, SmartBody::SB
 				success = false;
 			}
 			delete command;
-			(*it) = NULL;
+			(*it) = nullptr;
 		}
 	}
 	commands.clear();

@@ -4,19 +4,19 @@
 
  This file is part of Smartbody.
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+ SmartBody-lib is free software: you can redistribute it and/or
+ modify it under the terms of the Lesser GNU General Public License
+ as published by the Free Software Foundation, version 3 of the
+ license.
 
- This program is distributed in the hope that it will be useful,
+ SmartBody-lib is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ Lesser GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ You should have received a copy of the Lesser GNU General Public
+ License along with SmarBody-lib.  If not, see:
+     http://www.gnu.org/licenses/lgpl-3.0.txt
  */
 
 #include "SceneExporter.h"
@@ -43,6 +43,7 @@
 #include "sb/SBGestureMapManager.h"
 #include "sb/SBAnimationTransition.h"
 #include "sb/SBGestureMap.h"
+#include "sb/SBRenderAssetManager.h"
 #include "sbm/action_unit.hpp"
 #include <sbm/ParserOpenCOLLADA.h>
 
@@ -504,7 +505,9 @@ void exportScenePackage(SBRenderScene& renderScene, std::string outDir, const st
 		writeFileToZip(zf, scriptFileLocation, initScriptFile);
 	}
 
+	auto& assetStore = renderScene.mScene.getAssetStore();
 	SmartBody::SBAssetManager* assetManager = renderScene.mScene.getAssetManager();
+	auto& renderAssetManager = renderScene._renderAssetManager;
 	for (auto& motionName : motionNames) {
 		SmartBody::SBMotion* motion = renderScene.mScene.getMotion(motionName);
 		if (!motion) {
@@ -524,7 +527,7 @@ void exportScenePackage(SBRenderScene& renderScene, std::string outDir, const st
 		boost::filesystem::path motionFile = boost::filesystem::path(motion->getFullFilePath());
 		boost::filesystem::path motionPath = motionFile.parent_path();
 		std::string motionFileExt = boost::filesystem::extension(motionFile);
-		std::string assetLocation = assetManager->findAsset("motion", motion->getName() + motionFileExt);
+		std::string assetLocation = assetStore.findAsset("motion", motion->getName() + motionFileExt);
 
 		boost::filesystem::path diffPath;
 		boost::filesystem::path outPath;
@@ -574,7 +577,7 @@ void exportScenePackage(SBRenderScene& renderScene, std::string outDir, const st
 
 		boost::filesystem::path skelFile = boost::filesystem::path(skel->getFullFilePath());
 		boost::filesystem::path skelDir = skelFile.parent_path();
-		std::string assetLocation = assetManager->findAsset("motion", skel->getName());
+		std::string assetLocation = assetStore.findAsset("motion", skel->getName());
 		boost::filesystem::path diffPath;
 		boost::filesystem::path outPath;
 		diffPath = naive_uncomplete(skelDir, mePath);
@@ -608,9 +611,9 @@ void exportScenePackage(SBRenderScene& renderScene, std::string outDir, const st
 		}
 	}
 	//SmartBody::util::log("finish copying skeleton files");
-	std::vector<std::string> deformableMeshNames = assetManager->getDeformableMeshNames();
+	std::vector<std::string> deformableMeshNames = renderAssetManager.getDeformableMeshNames();
 	for (auto meshName : deformableMeshNames) {
-		DeformableMesh* mesh = assetManager->getDeformableMesh(meshName);
+		DeformableMesh* mesh = renderAssetManager.getDeformableMesh(meshName);
 		if (!mesh) {
 			SmartBody::util::log("Mesh %s cannot be found.", meshName.c_str());
 			continue;
@@ -629,7 +632,7 @@ void exportScenePackage(SBRenderScene& renderScene, std::string outDir, const st
 				boost::filesystem::create_directories(meshPath);
 			}
 			SmartBody::util::log("mesh %s is not loaded from a file. Export the mesh to %s", meshName.c_str(), exportMeshFullPath.c_str());
-			ParserOpenCOLLADA::exportCollada(exportMeshFullPath, meshSkName, meshName, moNames, true, true, false, 1.0);
+			ParserOpenCOLLADA::exportCollada(renderAssetManager, exportMeshFullPath, meshSkName, meshName, moNames, true, true, false, 1.0);
 			//SmartBody::util::log("finish exporting mesh as Collada files");
 			mesh->setFullFilePath(exportMeshFullPath + "/" + meshName);
 			//continue;
@@ -637,7 +640,7 @@ void exportScenePackage(SBRenderScene& renderScene, std::string outDir, const st
 
 		boost::filesystem::path meshFile = boost::filesystem::path(mesh->getFullFilePath());
 		boost::filesystem::path meshDir = meshFile.parent_path();
-		std::string assetLocation = assetManager->findAsset("mesh", meshName);
+		std::string assetLocation = assetStore.findAsset("mesh", meshName);
 		boost::filesystem::path diffPath, outPath;
 
 		diffPath = naive_uncomplete(meshDir, mePath);
@@ -943,6 +946,7 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 	//exportScenePackage("../../../../temp/","test1.zip");
 
 	SmartBody::SBAssetManager* assetManager = renderScene.mScene.getAssetManager();
+	auto& assetStore = renderScene.mScene.getAssetStore();
 	// feng : since we may have use "loadAssetsFromPath" to load the motions, we should infer all other motion paths from existing motions
 	for (auto& motionName : motionNames) {
 		SmartBody::SBMotion* motion = renderScene.mScene.getMotion(motionName);
@@ -956,7 +960,7 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 		if (remoteSetup) {
 			continue;
 		}
-		std::string assetExist = assetManager->findAsset("motion", assetName);
+		std::string assetExist = assetStore.findAsset("motion", assetName);
 		boost::filesystem::path mePath(systemMediaPath);
 		boost::filesystem::path diffPath = naive_uncomplete(motionPath, mePath);
 		if (diffPath.is_absolute()) // the path is not under media path, skip
@@ -986,7 +990,7 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 		std::string ext = boost::filesystem::extension(skelFile);
 		std::string base = boost::filesystem::basename(skelFile);
 		std::string assetName = base + ext;
-		std::string assetExist = assetManager->findAsset("motion", assetName);
+		std::string assetExist = assetStore.findAsset("motion", assetName);
 		boost::filesystem::path mePath(systemMediaPath);
 		boost::filesystem::path diffPath = naive_uncomplete(skelPath, mePath);
 		//SmartBody::util::log("motionpath = %s, mediapath = %s, diffpath = %s", skelPath.directory_string().c_str(), mePath.directory_string().c_str(), diffPath.directory_string().c_str());
@@ -1653,7 +1657,7 @@ void exportCharacter(SBRenderScene& renderScene, const std::string& charName, st
 	}
 	std::vector<std::string> motions;
 	SrVec scale = sbChar->getVec3Attribute("deformableMeshScale");
-	ParserOpenCOLLADA::exportCollada(outDir, sbChar->getSkeleton()->getName(), sbChar->getStringAttribute("deformableMesh"), motions, true, true, false, scale.x);
+	ParserOpenCOLLADA::exportCollada(renderScene._renderAssetManager, outDir, sbChar->getSkeleton()->getName(), sbChar->getStringAttribute("deformableMesh"), motions, true, true, false, scale.x);
 
 }
 

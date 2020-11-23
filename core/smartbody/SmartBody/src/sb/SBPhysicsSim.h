@@ -242,7 +242,7 @@ public:
 
 	SBAPI void updateAllPhysicsJoints();
 	SBAPI virtual void updatePhysicsJoint(SBPhysicsJoint* phyJoint) = 0; // update joint parameters		
-	SBAPI virtual void updatePhyObjGeometry(SBPhysicsObj* obj, SBGeomObject* geom = NULL) = 0;
+	SBAPI virtual void updatePhyObjGeometry(SBPhysicsObj* obj, SBGeomObject* geom = nullptr) = 0;
 
 	//virtual void applyTorque(SBJoint* joint, )
 

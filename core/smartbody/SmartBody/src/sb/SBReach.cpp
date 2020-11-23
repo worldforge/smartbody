@@ -29,7 +29,7 @@ namespace SmartBody {
 
 SBReach::SBReach()
 {
-	_character = NULL;
+	_character = nullptr;
 	interpolatorType = "KNN";	
 	currentReachType = -1;
 	reachTag = "default";
@@ -65,7 +65,7 @@ SBReach* SBReach::copy()
 	// ?????
 	// ...
 	// ...
-	return NULL;
+	return nullptr;
 }
 
 void SBReach::addMotion(std::string type, SBMotion* motion)
@@ -150,11 +150,9 @@ void SBReach::build(SBCharacter* character)
 	//character->createReachEngine(this);
 	createReachEngineMap();
 	//ReachEngineMap* reMapPtr = &reachEngineMap;//character->getReachEngineMap(this->getReachTag());
-	for (ReachEngineMap::iterator mi = reachEngineMap.begin();
-		mi != reachEngineMap.end();
-		mi++)
+	for (auto & mi : reachEngineMap)
 	{
-		MeCtReachEngine* re = mi->second;
+		MeCtReachEngine* re = mi.second;
 		if (re)
 		{
 			re->updateMotionExamples(reachMotionData, interpolatorType);
@@ -169,11 +167,9 @@ bool SBReach::isPawnAttached( std::string pawnName )
 	if (!_character)
 		return false;
 
-	for (ReachEngineMap::iterator mi = reachEngineMap.begin();
-		mi != reachEngineMap.end();
-		mi++)
+	for (auto & mi : reachEngineMap)
 	{
-		MeCtReachEngine* re = mi->second;
+		MeCtReachEngine* re = mi.second;
 		if (re)
 		{
 			if (re->getReachData()->effectorState.attachedPawnName == pawnName)
@@ -311,7 +307,7 @@ SBMotion* SBReach::findTagMotion( int tag, const MotionDataSet& motionSet )
 		if (tagMotion.first == tag)
 			return tagMotion.second;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void SBReach::createReachEngineMap()
@@ -361,7 +357,7 @@ void SBReach::createReachEngineMap()
 MeCtReachEngine* SBReach::getReachEngine( const std::string& reachType )
 {
 	int reachID = MeCtReachEngine::getReachType(reachType);
-	MeCtReachEngine* reachEngine = NULL;
+	MeCtReachEngine* reachEngine = nullptr;
 	if (reachEngineMap.find(reachID) != reachEngineMap.end())
 	{
 		reachEngine = reachEngineMap[reachID];

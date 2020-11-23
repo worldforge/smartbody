@@ -44,7 +44,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationState.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBAnimationTransition.h>
-#include <sb/SBVHMsgManager.h>
 #include <sb/SBCommandManager.h>
 #include "SBUtilities.h"
 #include <controllers/me_ct_param_animation.h>
@@ -53,7 +52,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_breathing.h>
 #include <controllers/me_controller_tree_root.hpp>
 #include <sbm/PPRAISteeringAgent.h>
-#include <sr/sr_camera.h>
 #include <sbm/Heightfield.h>
 #include <sbm/KinectProcessor.h>
 #include <sbm/local_speech.h>
@@ -82,9 +80,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/sbm_pawn.hpp"
 #include "sb/SBEvent.h"
 #include <sbm/rapidxml_utils.hpp>
-#include "sbm/ParserCOLLADAFast.h"
-#include "sbm/ParserOpenCOLLADA.h"
-#include "sbm/ParserOgre.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -98,8 +93,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include <math.h>
-#include <sb/SBDebuggerServer.h>
-#include <sb/SBDebuggerClient.h>
+//#include <sb/SBDebuggerServer.h>
+//#include <sb/SBDebuggerClient.h>
 
 #include <controllers/me_ct_gaze.h>
 #include <controllers/me_ct_motion_player.h>
@@ -140,7 +135,7 @@ void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody:
 	fr_seq_p->reset();
 	while( (cmd = fr_seq_p->pull( & t )) )	{
 		srArgBuffer args( cmd );
-		srCmdSeq *inline_seq_p = NULL;
+		srCmdSeq *inline_seq_p = nullptr;
 
 		char *tok = args.read_token();
 		if( strcmp( tok, "seq" ) == 0 )	{
@@ -150,8 +145,8 @@ void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody:
 
 				inline_seq_p = SmartBody::SBScene::getScene()->getCommandManager()->lookup_seq( name );
 				delete [] cmd;
-				cmd = NULL;
-				if( inline_seq_p == NULL )	{
+				cmd = nullptr;
+				if( inline_seq_p == nullptr )	{
 					SmartBody::util::log( "mcu_preprocess_sequence ERR: inline seq '%s' NOT FOUND\n", name );
 					return;
 				}
@@ -168,7 +163,7 @@ void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody:
 		if( cmd )	{
 			// propagate un-consumed command
 			to_seq_p->insert_ref( absolute_offset, cmd );
-      cmd = NULL;
+      cmd = nullptr;
 		}
     if (cmd) {
       delete [] cmd;
@@ -336,7 +331,7 @@ std::string tokenize( std::string& str,
 double parseMotionParameters(std::string m, std::string parameter, double min, double max)
 {
 	std::string skeletonName = tokenize(parameter, "|");
-	SmartBody::SBSkeleton* sk = NULL;
+	SmartBody::SBSkeleton* sk = nullptr;
 	if (parameter != "")
 	{
 
@@ -710,7 +705,7 @@ int mcu_terrain_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 		return( CMD_SUCCESS );
 	}
 	else
-	if( heightfield == NULL ) {
+	if( heightfield == nullptr ) {
 		SmartBody::util::log( "mcu_terrain_func: ERR: no heightfield loaded" );
 		return( CMD_FAILURE );
 	}
@@ -831,7 +826,7 @@ int mcu_time_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 		return( CMD_SUCCESS );
 	}
 
-//		if( mcu.timer_p == NULL )	{
+//		if( mcu.timer_p == nullptr )	{
 //		SmartBody::util::log( "mcu_time_func NOTICE: %s: TimeRegulator was NOT REGISTERED\n", time_cmd );
 //		SmartBody::SBScene::getScene()->getSimulationManager()->switch_internal_timer(); 
 //		}
@@ -966,7 +961,7 @@ int mcu_time_ival_prof_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 			return( CMD_SUCCESS );
 		}
 
-		if( mcu.profiler_p == NULL )	{
+		if( mcu.profiler_p == nullptr )	{
 			SmartBody::util::log( "mcu_time_ival_prof_func NOTICE: %s: TimeIntervalProfiler was NOT REGISTERED\n", tip_cmd ); 
 			mcu.switch_internal_profiler();
 		}
@@ -1296,8 +1291,8 @@ int mcu_controller_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
 	else
 	{
 		// Non-initializing controllers need an actual instance
-		MeController* ctrl_p = NULL;// removed lookup_ctrl function 1/26/13 mcu.lookup_ctrl( string( ctrl_name ), "ERROR: ctrl <controller name>: " );
-		if( ctrl_p==NULL ) {
+		MeController* ctrl_p = nullptr;// removed lookup_ctrl function 1/26/13 mcu.lookup_ctrl( string( ctrl_name ), "ERROR: ctrl <controller name>: " );
+		if( ctrl_p==nullptr ) {
 			// should have printed error from above function
 			return CMD_FAILURE;
 		}
@@ -1594,7 +1589,7 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
 #endif
 
 	//            char full[ _MAX_PATH ];
-	//            if ( _fullpath( full, "..\\..\\..\\..\\..", _MAX_PATH ) != NULL )
+	//            if ( _fullpath( full, "..\\..\\..\\..\\..", _MAX_PATH ) != nullptr )
 #if (BOOST_VERSION > 104400)
 			if ( boost::filesystem::exists( abs_p ) )
 #else
@@ -1743,7 +1738,7 @@ int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
         if ( !absolutePath )
         {
         char full[ _MAX_PATH ];
-        if ( _fullpath( full, "..\\..\\..\\..\\..", _MAX_PATH ) != NULL )
+        if ( _fullpath( full, "..\\..\\..\\..\\..", _MAX_PATH ) != nullptr )
         {
             soundFile = string( full ) + string( "\\" ) + soundFile;
         }
@@ -1888,11 +1883,9 @@ int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
     // EDF - For our reply, we're going to send one vrComponent 
     //       message for each agent loaded
 	const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
-    for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
+    for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(*iter);
+		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
         string message = "sbm ";
 		message += character->getName();
         SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "vrComponent", message.c_str() );
@@ -1998,11 +1991,9 @@ int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMg
 		
 
 		const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
-		for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-			iter != characterNames.end();
-			iter++)
+		for (const auto & characterName : characterNames)
 		{
-			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(*iter);
+			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 	
 			SmartBody::Nvbg* nvbg = character->getNvbg();
 			if (!nvbg)
@@ -2072,11 +2063,9 @@ int mcu_vrSpeech_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
 	// all characters should be receiving the perception message
 	const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
+	for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(*iter);
+		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 		SmartBody::Nvbg* nvbg = character->getNvbg();
 		if (!nvbg)
 			continue;
@@ -2120,7 +2109,7 @@ int mcu_sbmdebugger_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr
 		return CMD_FAILURE;
 	}
 
-	PyObject* pyResult = NULL;
+	PyObject* pyResult = nullptr;
 	if (returnType == "void")
 	{
 		try {
@@ -3185,7 +3174,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBC
 		char* name = args.read_token();
 		SmartBody::SBMotion* sbmotion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(name);
 		
-		if( sbmotion == NULL ) {
+		if( sbmotion == nullptr ) {
 			printf( "Breathing motion '%s' NOT FOUND in motion map\n", name ); 
 			return( CMD_FAILURE );
 		}
@@ -3424,25 +3413,25 @@ int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBCommandManager* c
 	
 }
 
-void mcu_vhmsg_callback( const char *op, const char *args, void * user_data )
-{
-	if (SmartBody::SBScene::getScene()->isRemoteMode())
-	{
-		SmartBody::SBScene::getScene()->getDebuggerClient()->ProcessVHMsgs(op, args);
-		return;
-	}
-	else
-		SmartBody::SBScene::getScene()->getDebuggerServer()->ProcessVHMsgs(op, args);
-
-	switch(SmartBody::SBScene::getScene()->getCommandManager()->execute( op, (char *)args ) ) {
-        case CMD_NOT_FOUND:
-            SmartBody::util::log("SmartBody error: command NOT FOUND: '%s' + '%s'", op, args );
-            break;
-        case CMD_FAILURE:
-            SmartBody::util::log("SmartBody error: command FAILED: '%s' + '%s'", op, args );
-            break;
-    }
-}
+//void mcu_vhmsg_callback( const char *op, const char *args, void * user_data )
+//{
+//	if (SmartBody::SBScene::getScene()->isRemoteMode())
+//	{
+//		SmartBody::SBScene::getScene()->getDebuggerClient()->ProcessVHMsgs(op, args);
+//		return;
+//	}
+//	else
+//		SmartBody::SBScene::getScene()->getDebuggerServer()->ProcessVHMsgs(op, args);
+//
+//	switch(SmartBody::SBScene::getScene()->getCommandManager()->execute( op, (char *)args ) ) {
+//        case CMD_NOT_FOUND:
+//            SmartBody::util::log("SmartBody error: command NOT FOUND: '%s' + '%s'", op, args );
+//            break;
+//        case CMD_FAILURE:
+//            SmartBody::util::log("SmartBody error: command FAILED: '%s' + '%s'", op, args );
+//            break;
+//    }
+//}
 
 int mcuFestivalRemoteSpeechCmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 {

@@ -37,7 +37,7 @@ SBAPI SBNavigationMeshManager::~SBNavigationMeshManager()
 
 SBNavigationMesh* SBNavigationMeshManager::createNavigationMesh( const std::string& naviMeshName )
 {
-	SBNavigationMesh* naviMesh = NULL;
+	SBNavigationMesh* naviMesh = nullptr;
 	if (_navigationMeshMap.find(naviMeshName) != _navigationMeshMap.end())
 	{
 		SmartBody::util::log("Navigation mesh '%s' already exists. Returns the copy in system. ", naviMeshName.c_str());
@@ -53,7 +53,7 @@ SBNavigationMesh* SBNavigationMeshManager::createNavigationMesh( const std::stri
 SBNavigationMesh* SBNavigationMeshManager::getNavigationMesh( const std::string& naviMeshName )
 {
 	std::map<std::string, SBNavigationMesh*>::iterator iter = _navigationMeshMap.find(naviMeshName);
-	SBNavigationMesh* naviMesh = NULL;
+	SBNavigationMesh* naviMesh = nullptr;
 	if (iter != _navigationMeshMap.end())
 		naviMesh = iter->second;
 	return naviMesh;

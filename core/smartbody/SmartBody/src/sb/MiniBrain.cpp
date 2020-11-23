@@ -147,7 +147,7 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 
 	std::string fastestObject = "";
 	float fastest = -1;
-	ObjectData* fastestData = NULL;
+	ObjectData* fastestData = nullptr;
 	for (std::map<std::string, ObjectData>::iterator piter = _data.begin();
 		 piter != _data.end();
 		 piter++)

@@ -49,7 +49,7 @@ MeCtLocomotionNavigator::MeCtLocomotionNavigator()
 	prev_height_adjustment = 0.0f;
 	curr_height_adjustment = 0.0f;
 
-	worldOffsetWriter = NULL;
+	worldOffsetWriter = nullptr;
 }
 
 /** Destructor */
@@ -410,7 +410,7 @@ void MeCtLocomotionNavigator::post_controller_evaluate(MeFrameData& frame, MeCtL
 	mat.roty(orientation_angle);
 	world_rot.set(mat);
 
-	if(worldOffsetWriter != NULL)
+	if(worldOffsetWriter != nullptr)
 	{
 		float world_offset_data[7];
 		world_offset_data[0] = world_pos.x;
@@ -489,7 +489,7 @@ SkChannelArray& MeCtLocomotionNavigator::controller_channels() {
 // Implements MeController::context_updated(..).
 void MeCtLocomotionNavigator::context_updated(MeControllerContext* _context) 
 {
-	if( _context == NULL )
+	if( _context == nullptr )
 		is_valid = false;
 }
 
@@ -502,7 +502,7 @@ bool MeCtLocomotionNavigator::controller_map_updated(MeControllerContext* _conte
 {
 	int index = 0;
 	is_valid = true;
-	if( _context != NULL ) 
+	if( _context != nullptr )
 	{
 		// request_channel indices (second param) come from the order of request_channels.add(..) calls in controller_channels()
 		LOOKUP_BUFFER_INDEX( bi_world_x,    bi_world_x );

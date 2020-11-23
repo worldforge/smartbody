@@ -22,15 +22,15 @@
 
 char *realloc_char_buffer( char *old_buff_p, int usage, int new_len )	{
 
-	if( ( old_buff_p == NULL )&&( usage > 0 ) )   {
-		return( NULL );
+	if( ( old_buff_p == nullptr )&&( usage > 0 ) )   {
+		return( nullptr );
 	}
 	if( new_len < ( usage + 1 ) ) {
 		return( old_buff_p );
 	}
 	char *new_buff = new char[ new_len ];
-	if( new_buff == NULL )	{
-		return( NULL );
+	if( new_buff == nullptr )	{
+		return( nullptr );
 	}
 //	printf( "REALLOC: u:%d l:%d\n", usage, new_len );
 	if( old_buff_p && ( usage > 0 ) )	{
@@ -89,7 +89,7 @@ inline int linux_query_kbhit( void )	{
 	fd_set rdfs;
 	FD_ZERO( &rdfs );
 	FD_SET( STDIN_FILENO, &rdfs );
-	select( STDIN_FILENO + 1, &rdfs, NULL, NULL, &tv );
+	select( STDIN_FILENO + 1, &rdfs, nullptr, nullptr, &tv );
 	int set = FD_ISSET( STDIN_FILENO, &rdfs );
 	return( set );
 }
@@ -182,8 +182,8 @@ inline char read_char_stdin( void )	{
 bool keyboard_query_stdin( char *cp, int *mode_p )	{
 	bool set = false;
 
-	if( cp == NULL ) return( false );
-	if( mode_p == NULL ) return( false );
+	if( cp == nullptr ) return( false );
+	if( mode_p == nullptr ) return( false );
 
 #ifdef WIN32
 	if( _kbhit() )
@@ -401,7 +401,7 @@ int commandline_query(
 
 srCmdLine::srCmdLine( void )
 {
-	cmd_buffer = NULL;
+	cmd_buffer = nullptr;
 	buffer_len = 0;
 	buffer_use = 0;
 	buffer_pos = 0;
@@ -442,7 +442,7 @@ char* srCmdLine::read_cmd( void )
 int srCmdLine::realloc_buffer( int len )
 {
 	char *new_buff = new char[ len ];
-	if( new_buff == NULL )	{
+	if( new_buff == nullptr )	{
 		return( CMD_FAILURE );
 	}
 	if( len < ( buffer_use + 1 ) )	{
@@ -470,7 +470,7 @@ void srCmdLine::test_prompt( void )	{
 	bool quit = false;
 	bool verbose = false;
 	int buffer_cap = 0;
-	char *cmd_buffer = NULL;
+	char *cmd_buffer = nullptr;
 	
 	fprintf( stdout, "> " ); fflush( stdout );
 	
@@ -682,7 +682,7 @@ int srCmdLine::pending_cmd( bool )	{
 		if( c == '\x09' ) // tab - use auto completion for commands
 		{
 			
-			srHashMapBase* map = NULL;
+			srHashMapBase* map = nullptr;
 
 			// get the current partial command
 			std::string partialCommand( cmd_buffer, buffer_use );
@@ -730,7 +730,7 @@ int srCmdLine::pending_cmd( bool )	{
 			int numEntries = map->get_num_entries();
 			map->reset();
 			int numMatches = 0;
-			char* key = NULL;
+			char* key = nullptr;
 			int numChecked = 0;
 			map->next( &key );
 			std::vector<std::string> options;
@@ -760,7 +760,7 @@ int srCmdLine::pending_cmd( bool )	{
 				map->next( &key );
 				std::string nextKey = key;
 				if( nextKey == keyString )
-					break; // shouldn't map.next(key) make key == NULL? This doesn't seem to happen.
+					break; // shouldn't map.next(key) make key == nullptr? This doesn't seem to happen.
 			}
 
 			if( numMatches == 1 )

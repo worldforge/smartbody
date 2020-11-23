@@ -294,7 +294,7 @@ bool MeCtPhysicsController::controller_evaluate(double t, MeFrameData& frame)
 			SmartBody::SbmJointObj* obj = jointObjList[i];
 			SmartBody::SBPhysicsJoint* phyJoint = obj->getPhyJoint();
 			SmartBody::SBJoint* sbJoint = phyJoint->getSBJoint();
-			SmartBody::SBJoint* joint = NULL; 
+			SmartBody::SBJoint* joint = nullptr;
 			if (sbJoint)
 				joint = _skeletonCopy->getJointByName(sbJoint->getMappedJointName());
 			if (joint)

@@ -54,8 +54,8 @@ MeController::MeController ()
 	_emphasist( -1.0f ),
 	_lastEval( -1 ),  // effectively unset.. should really be a less likely value like NaN
 	_prune_policy( new MeDefaultPrunePolicy() ),
-	_context( NULL ),
- 	_record_output( NULL ), // for recording poses and motions of immediate local results
+	_context( nullptr ),
+ 	_record_output( nullptr ), // for recording poses and motions of immediate local results
 	_startTime(-1),
 	_stopTime(-1),
 	_initialized(false),
@@ -77,22 +77,22 @@ MeController::MeController ()
 	_buffer_changes_toggle = false;
 	_buffer_changes_toggle_reset = true;
 	_record_duration = 0.0;
-	_pawn = NULL;
-	_curFrame = NULL;
+	_pawn = nullptr;
+	_curFrame = nullptr;
 
 	SBObject::createBoolAttribute("enable", true, true, "Basic", 220, false, false, false, "whether to evaluate this controller");
 	SBObject::createStringAttribute("handle", "", true, "Basic", 220, false, false, false, "handle for this controller");
 }
 
 MeController::~MeController () {
-	//assert( _context==NULL );  // Controller should not be deleted if still referenced by context
+	//assert( _context==nullptr );  // Controller should not be deleted if still referenced by context
 	stop_record();
 
 	if(_frames)	delete _frames;
 
 	if( _prune_policy ) {
 		_prune_policy->unref();
-		_prune_policy = NULL;
+		_prune_policy = nullptr;
 	}
 
 }
@@ -157,12 +157,12 @@ MePrunePolicy* MeController::prune_policy () {
 
 void MeController::prune_policy( MePrunePolicy* prune_policy ) {
 	if( _prune_policy != prune_policy ) {
-		if( _prune_policy != NULL ) {
+		if( _prune_policy != nullptr ) {
 			_prune_policy->unref();
-			_prune_policy = NULL;
+			_prune_policy = nullptr;
 		}
 		_prune_policy = prune_policy;
-		if( _prune_policy != NULL ) {
+		if( _prune_policy != nullptr ) {
 			_prune_policy->ref();
 		}
 	}
@@ -334,7 +334,7 @@ void MeController::evaluate ( double time, MeFrameData& frame ) {
 	if( _record_mode ) 
 		cont_record( time, frame );
 #endif
-	_curFrame = NULL;
+	_curFrame = nullptr;
 
 }
 
@@ -395,8 +395,8 @@ void MeController::print_tabs( int depth )	{
 bool MeController::print_bvh_hierarchy( SkJoint* joint_p, int depth )	{
 	int i;
 	
-	if( joint_p == NULL )	{
-		SmartBody::util::log("MeController::print_bvh_hierarchy ERR: NULL joint_p");
+	if( joint_p == nullptr )	{
+		SmartBody::util::log("MeController::print_bvh_hierarchy ERR: nullptr joint_p");
 		return( false );
 	}
 	
@@ -475,8 +475,8 @@ bool MeController::print_bvh_motion( SkJoint* joint_p, int depth, FRAME& frame_d
 	// NOTE: depth only used to hack STUPID-POLYTRANS ROOT bug
 	int i;
 
-	if( joint_p == NULL )	{
-		SmartBody::util::log("MeController::print_bvh_motion ERR: NULL joint_p");
+	if( joint_p == nullptr )	{
+		SmartBody::util::log("MeController::print_bvh_motion ERR: nullptr joint_p");
 		return( false );
 	}
 	
@@ -558,7 +558,7 @@ void MeController::record_write( const char *full_prefix ) {
 void MeController::saveMotionRecord( const std::string &recordname )
 {
 	std::string filename;
-	SrOutput* fileOutput = NULL;
+	SrOutput* fileOutput = nullptr;
 	SrString stringOutput;
 	if ( _record_mode == RECORD_BVH_MOTION )
 	{
@@ -568,7 +568,7 @@ void MeController::saveMotionRecord( const std::string &recordname )
 
 		SkSkeleton* skeleton_p = _pawn->getSkeleton();
 
-		if( skeleton_p == NULL )	{
+		if( skeleton_p == nullptr )	{
 			SmartBody::util::log("MeController::record_write NOTICE: SkSkeleton not available");
 			_record_mode = RECORD_NULL;
     } else {
@@ -612,8 +612,8 @@ void MeController::saveMotionRecord( const std::string &recordname )
 			//filename = _record_full_prefix + recordname + ".skp";
 	}
 
-	std::list<FRAME>::iterator iter = _frames->begin();
-	std::list<FRAME>::iterator end  = _frames->end();
+	auto iter = _frames->begin();
+	auto end  = _frames->end();
 	SmartBody::util::log("Output Motion, num frames = %d",_frames->size());
 	int frameCount = 0;
 	for(;iter!=end; iter++)
@@ -633,7 +633,7 @@ void MeController::saveMotionRecord( const std::string &recordname )
 	// load the motion
 	SrInput recordInput = SrInput((const char*)(stringOutput));
 	SmartBody::SBMotion* sbMotion = SmartBody::SBScene::getScene()->createMotion(recordname);
-	if (sbMotion == NULL)
+	if (sbMotion == nullptr)
 	{
 		SmartBody::util::log("Recorded motion %s is already existing!", recordname.c_str());
     delete fileOutput;
@@ -660,13 +660,13 @@ void MeController::cont_record( double time, MeFrameData& frame )	{
 
 	if( _record_mode == RECORD_BVH_MOTION )	{
 
-		SkSkeleton* skeleton_p = NULL;
+		SkSkeleton* skeleton_p = nullptr;
 		skeleton_p = _pawn->getSkeleton();
 		/*
 		if( _context->channels().size() > 0 )	{
 			skeleton_p = _context->channels().skeleton();
 		}*/
-		if( skeleton_p == NULL )	{
+		if( skeleton_p == nullptr )	{
 			SmartBody::util::log("MeController::cont_record NOTICE: SkSkeleton not available");
 			_record_mode = RECORD_NULL;
 			return;
@@ -734,7 +734,7 @@ void MeController::stop_record( void )	{
 	_record_frame_count = 0;
 	if( _record_output )	{
 		delete _record_output;
-		_record_output = NULL;
+		_record_output = nullptr;
 	}
 	_frames->clear();
 //	cout << "MeController::stop_record" << endl;

@@ -90,9 +90,9 @@ BehaviorRequestPtr BML::parse_bml_reach( DOMElement* elem, const std::string& un
 	// attach the skeleton to the reach controller
 #define DATA_DRIVEN_REACH 0
 #if DATA_DRIVEN_REACH
-	MeCtDataDrivenReach* reachCt = NULL;//new MeCtDataDrivenReach(request->actor->skeleton_p);
+	MeCtDataDrivenReach* reachCt = nullptr;//new MeCtDataDrivenReach(request->actor->skeleton_p);
 #else
-	MeCtReach* reachCt = NULL; //new MeCtReach(request->actor->skeleton_p);
+	MeCtReach* reachCt = nullptr; //new MeCtReach(request->actor->skeleton_p);
 #endif
 
 	const XMLCh* attrHandle = elem->getAttribute( BMLDefs::ATTR_HANDLE );
@@ -127,10 +127,10 @@ BehaviorRequestPtr BML::parse_bml_reach( DOMElement* elem, const std::string& un
         wstrstr << "WARNING: BML::parse_bml_reach(): <"<<tag<<"> BML tag missing "<<BMLDefs::ATTR_TARGET<<"= attribute.";
 		std::string str = convertWStringToString(wstrstr.str());
 		SmartBody::util::log(str.c_str());
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
     }
 
-	const XMLCh* attrReachArm = NULL;
+	const XMLCh* attrReachArm = nullptr;
 	attrReachArm = elem->getAttribute( BMLDefs::ATTR_REACH_ARM );
 	MeCtReach::ReachArm reachArm = MeCtReach::REACH_RIGHT_ARM;
 	if( !reachCt && attrReachArm && *attrReachArm != 0 ) 
@@ -147,14 +147,14 @@ BehaviorRequestPtr BML::parse_bml_reach( DOMElement* elem, const std::string& un
 		}
 	}
 
-	const SkJoint* target_joint = NULL;
+	const SkJoint* target_joint = nullptr;
 	if (attrTarget && XMLString::stringLen( attrTarget ))
 	{
 		target_joint = parse_target( tag, attrTarget, mcu );
 		
 	}
-	if (target_joint == NULL && !reachCt) {  // Invalid target.  Assume parse_target(..) printed error.
-		return BehaviorRequestPtr();  // a.k.a., NULL
+	if (target_joint == nullptr && !reachCt) {  // Invalid target.  Assume parse_target(..) printed error.
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
 
 	const XMLCh* id = elem->getAttribute(BMLDefs::ATTR_ID);
@@ -183,7 +183,7 @@ BehaviorRequestPtr BML::parse_bml_reach( DOMElement* elem, const std::string& un
 	
 #if DATA_DRIVEN_REACH	
 	
-	const XMLCh* attrUseExample = NULL;
+	const XMLCh* attrUseExample = nullptr;
 	attrUseExample = elem->getAttribute(ATTR_USE_EXAMPLE);
 	if( attrUseExample && XMLString::stringLen( attrUseExample ) ) 
 	{
@@ -201,14 +201,14 @@ BehaviorRequestPtr BML::parse_bml_reach( DOMElement* elem, const std::string& un
 
 	// feng : pre-processing steps should not be in the BML scripts. Thus this part is commented for now, and will be removed later.
 	/*	
-	const XMLCh* attrBuildExample = NULL;
+	const XMLCh* attrBuildExample = nullptr;
 	attrBuildExample = elem->getAttribute( ATTR_BUILD_EXAMPLE );
 	if (attrBuildExample && XMLString::stringLen( attrBuildExample ))
 	{
 		float minExampleDist = 5.f; // default minimal distance between examples, for more uniform sampling of poses
 		int   resampleSize = 0; // default : no resample
-		const XMLCh* attrExampleDist = NULL;
-		const XMLCh* attrResampleSize = NULL;
+		const XMLCh* attrExampleDist = nullptr;
+		const XMLCh* attrResampleSize = nullptr;
 		attrExampleDist = elem->getAttribute(ATTR_EXAMPLE_DIST);
 		attrResampleSize = elem->getAttribute(ATTR_RESAMPLE_SIZE);
 

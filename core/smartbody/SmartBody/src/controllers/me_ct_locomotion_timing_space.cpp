@@ -324,9 +324,9 @@ void MeCtLocomotionTimingSpace::clean_ref_time()
 
 void MeCtLocomotionTimingSpace::copy_to(MeCtLocomotionTimingSpace* space)
 {
-	if(space == NULL) 
+	if(space == nullptr)
 	{
-		printf("Error, timing space ptr is NULL.Copy can't be finished");
+		printf("Error, timing space ptr is nullptr.Copy can't be finished");
 		return;
 	}
 	// continue.......

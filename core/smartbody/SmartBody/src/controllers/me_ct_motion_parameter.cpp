@@ -35,7 +35,7 @@ MotionParameter::~MotionParameter(void)
 
 SkJoint* MotionParameter::getMotionFrameJoint( const BodyMotionFrame& frame, const char* jointName )
 {
-	SkJoint* outJoint = NULL;	
+	SkJoint* outJoint = nullptr;
 	for (int i=0;i<3;i++)
 	{		
 		//skeletonRef->->pos()->value(i,frame.rootPos[i]);

@@ -2,7 +2,7 @@
 #include <boost/foreach.hpp>
 #include "me_ct_data_interpolation.h"
 
-//#define FREE_DATA(data) if (data) delete data; data=NULL;
+//#define FREE_DATA(data) if (data) delete data; data=nullptr;
 
 void DataInterpolator::init( ExampleSet* exSet )
 {
@@ -282,10 +282,10 @@ KNNInterpolator::KNNInterpolator( int numResample /*= 500*/, float sampleDist /*
 	resampleSize = numResample;
 	numKNN  = 4;
 #if USE_ANN
-	kdTree = NULL;
-	dataPts = NULL;
+	kdTree = nullptr;
+	dataPts = nullptr;
 #else
-	kdTree = NULL;
+	kdTree = nullptr;
 #endif
 }
 
@@ -373,7 +373,7 @@ bool KNNInterpolator::buildInterpolator()
 	ParameterBoundingBox bbox(BBox);
 	gridBox = bbox;
 	gridBox.scaleBBox(1.5);
-	InterpolationExample* ex = NULL;
+	InterpolationExample* ex = nullptr;
 	while (nCount < resampleSize)
 	{		
 		ex = exampleSet->createPseudoExample();

@@ -44,7 +44,7 @@ protected:
 	
 
 public:
-	MeCtPeriodicReplay( MeController* child = NULL );
+	MeCtPeriodicReplay( MeController* child = nullptr );
 	// virtual ~MeCtTimeShiftWarp(); // Default destructor call ~MeCtUnary to delete child
 
 	void init( double period );

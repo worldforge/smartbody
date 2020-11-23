@@ -245,9 +245,9 @@ std::string SpeechRelayLocal::removeXMLTagsAndNewLines( const std::string & txt 
 				   {
 					   DOMElement *element = dynamic_cast<DOMElement*>( node );
              std::string markString = std::string(UTF8(element->getAttribute(UTF16("name"))));
-					   const XMLCh *speech = NULL;
+					   const XMLCh *speech = nullptr;
 					   DOMNode *speechNode = element->getFirstChild();
-					   if ( speechNode == NULL ) 
+					   if ( speechNode == nullptr )
 					   {
 						   speechNode = element->getNextSibling();
 					   }
@@ -491,7 +491,7 @@ void CereprocSpeechRelayLocal::initSpeechRelay( std::string libPath, std::string
 	{
 		std::string fullVoiceName = libPath + "/" + voices[i];
 		std::string fullLicenseName = libPath + "/" + licenses[i];
-		int success = CPRCEN_engine_load_voice(voiceEngine, fullLicenseName.c_str(), NULL, fullVoiceName.c_str(),CPRC_VOICE_LOAD_EMB_AUDIO);
+		int success = CPRCEN_engine_load_voice(voiceEngine, fullLicenseName.c_str(), nullptr, fullVoiceName.c_str(),CPRC_VOICE_LOAD_EMB_AUDIO);
 		if (!success)
 			SmartBody::util::log("Cerevoice Local Relay : load voice %s fail.",fullVoiceName.c_str());
 		else
@@ -577,7 +577,7 @@ std::string CereprocSpeechRelayLocal::textToSpeech( const char * text, const cha
 
       DOMImplementation * impl =  DOMImplementationRegistry::getDOMImplementation( UTF16( "Core" ) );
 
-      if ( impl != NULL )
+      if ( impl != nullptr )
       {
          try
          {
@@ -1123,16 +1123,16 @@ std::string FestivalSpeechRelayLocal::storeXMLMetaData( const std::string & txt)
 					   
 
              std::string markString = std::string(UTF8(element->getAttribute(UTF16("name"))));
-					   const XMLCh *speech = NULL;
+					   const XMLCh *speech = nullptr;
 					   DOMNode *speechNode = element->getFirstChild();
 					   
 
 
-					   if ( speechNode == NULL ) 
+					   if ( speechNode == nullptr )
 					   {
 						   speechNode = element->getNextSibling();		
 					   }
-					   if ( (speechNode !=NULL) && ( speechNode->getNodeType() == DOMNode::TEXT_NODE ) )
+					   if ( (speechNode !=nullptr) && ( speechNode->getNodeType() == DOMNode::TEXT_NODE ) )
 					   {
 						   speech = speechNode->getNodeValue();
 					   }					   					   
@@ -1143,7 +1143,7 @@ std::string FestivalSpeechRelayLocal::storeXMLMetaData( const std::string & txt)
 						
 					   std::string speechString;
 
-					   if(speechNode !=NULL)
+					   if(speechNode !=nullptr)
 					   {
                speechString = speech ? std::string(UTF8(speech)) : " ";
 					   }
@@ -1243,7 +1243,7 @@ void FestivalSpeechRelayLocal::processSpeechMessage( const char * message )
 	//SmartBody::util::log("remoteSpeechReply = %s",remoteSpeechReply.c_str());
 
 	char full[ _MAX_PATH ];
-	if ( getFullPath( full, const_cast<char*>(festival_file_name.c_str())) == NULL )
+	if ( getFullPath( full, const_cast<char*>(festival_file_name.c_str())) == nullptr )
 	{
 		SmartBody::util::log("\nError converting path sent from SBM to absolute path\n");
 	}

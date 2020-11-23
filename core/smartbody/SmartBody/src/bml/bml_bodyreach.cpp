@@ -72,7 +72,7 @@ using namespace xml_utils;
 BehaviorRequestPtr BML::parse_bml_bodyreach( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) {
     const XMLCh* tag      = elem->getTagName();
 
-	MeCtExampleBodyReach* bodyReachCt = NULL; 
+	MeCtExampleBodyReach* bodyReachCt = nullptr;
 	SbmCharacter* curCharacter = const_cast<SbmCharacter*>(request->actor);
 	SmartBody::SBCharacter* curSBChar = dynamic_cast<SmartBody::SBCharacter*>(curCharacter);
 	SmartBody::SBReach* reach = curSBChar->getReach();
@@ -103,8 +103,8 @@ BehaviorRequestPtr BML::parse_bml_bodyreach( DOMElement* elem, const std::string
 	}
 
 	const XMLCh* attrTarget = elem->getAttribute( BMLDefs::ATTR_TARGET );
-	const SbmPawn* targetPawn = NULL;
-	const SkJoint* targetJoint = NULL;
+	const SbmPawn* targetPawn = nullptr;
+	const SkJoint* targetJoint = nullptr;
 	if (attrTarget && XMLString::stringLen( attrTarget ))
 	{
 		targetPawn = parse_target_pawn(tag,attrTarget, scene);
@@ -113,8 +113,8 @@ BehaviorRequestPtr BML::parse_bml_bodyreach( DOMElement* elem, const std::string
 	}
 
 // 	const XMLCh* attrObstracle = elem->getAttribute(BMLDefs::ATTR_OBSTACLE );
-// 	const char* obstacleName = NULL;
-// 	const SbmPawn* obstacle_pawn = NULL;
+// 	const char* obstacleName = nullptr;
+// 	const SbmPawn* obstacle_pawn = nullptr;
 // 	if (attrObstracle && XMLString::stringLen( attrObstracle ))
 // 	{
 // 		obstacleName = asciiString(attrObstracle);
@@ -124,7 +124,7 @@ BehaviorRequestPtr BML::parse_bml_bodyreach( DOMElement* elem, const std::string
 	std::string consJointName = xml_parse_string(BMLDefs::ATTR_CONS_JOINT, elem, "", REQUIRED_ATTR);
 	const XMLCh* attrConsTarget = elem->getAttribute( BMLDefs::ATTR_CONS_TARGET );
 	std::string consTargetName = xml_parse_string(BMLDefs::ATTR_CONS_TARGET, elem, "", REQUIRED_ATTR);
-	SkJoint* consTarget = NULL;
+	SkJoint* consTarget = nullptr;
 	if (consTargetName.size() > 0)
 		consTarget = const_cast<SkJoint*>(parse_target(tag,attrConsTarget, scene));
 

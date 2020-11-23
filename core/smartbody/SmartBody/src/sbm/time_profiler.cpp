@@ -41,7 +41,7 @@ TimeIntervalProfiler::~TimeIntervalProfiler( void )
 void TimeIntervalProfiler::null( void )	{
 
 	group_map->expunge();
-	for( int i=0; i<MAX_GROUPS; i++ ) group_p_arr[ i ] = NULL;
+	for( int i=0; i<MAX_GROUPS; i++ ) group_p_arr[ i ] = nullptr;
 	full_err = false;
 	id_counter = 0;
 	group_arr_count = 0;
@@ -92,12 +92,12 @@ void TimeIntervalProfiler::null_group( group_entry_t* group_p, const char* group
 	group_p->decay_dt = 0.0;
 	group_p->roll_dt = 0.0;
 	group_p->profile_map.expunge();
-	for( int i=0; i<MAX_PROFILES; i++ ) group_p->profile_p_arr[ i ] = NULL;
+	for( int i=0; i<MAX_PROFILES; i++ ) group_p->profile_p_arr[ i ] = nullptr;
 	group_p->full_err = false;
 	group_p->profile_arr_count = 0;
 	group_p->active_profile_count = 0;
 	group_p->profile_event_count = 0;
-	group_p->curr_profile_p = NULL;
+	group_p->curr_profile_p = nullptr;
 }
 
 void TimeIntervalProfiler::null_profile( profile_entry_t* profile_p, const char* label ) {
@@ -219,7 +219,7 @@ void TimeIntervalProfiler::print_group( group_entry_t *group_p )	{
 
 		profile_entry_t *profile_p;
 		group_p->profile_map.reset();
-		while( ( profile_p = group_p->profile_map.next() ) != NULL ) {
+		while( ( profile_p = group_p->profile_map.next() ) != nullptr ) {
 			if( profile_p->index < 0 )	{
 				print_profile( profile_p );
 			}
@@ -256,7 +256,7 @@ void TimeIntervalProfiler::print_data( void )	{
 
 	group_entry_t *group_p;
 	group_map->reset();
-	while( ( group_p = group_map->next() ) != NULL ) {
+	while( ( group_p = group_map->next() ) != nullptr ) {
 		if( group_p->index < 0 )	{
 			print_group( group_p );
 		}
@@ -456,7 +456,7 @@ void TimeIntervalProfiler::report_recent_groups( group_entry_t* group_p ) {
 		}
 
 		group_p->profile_map.reset();
-		while( ( profile_p = group_p->profile_map.next() ) != NULL ) {
+		while( ( profile_p = group_p->profile_map.next() ) != nullptr ) {
 
 			if( profile_p->index < 0 )	{
 				if( profile_p->req_reset == true )	{
@@ -479,7 +479,7 @@ void TimeIntervalProfiler::report_recent_profiles( group_entry_t* group_p ) {
 			if( group_p->profile_p_arr[ j ]->req_reset == true ) found_prev = true;
 		}
 		group_p->profile_map.reset();
-		while( ( !found_prev )&&( ( profile_p = group_p->profile_map.next() ) != NULL ) ) {
+		while( ( !found_prev )&&( ( profile_p = group_p->profile_map.next() ) != nullptr ) ) {
 			if( profile_p->req_reset == true ) found_prev = true;
 		}
 		
@@ -503,7 +503,7 @@ void TimeIntervalProfiler::report_recent_profiles( group_entry_t* group_p ) {
 			}
 
 			group_p->profile_map.reset();
-			while( ( profile_p = group_p->profile_map.next() ) != NULL ) {
+			while( ( profile_p = group_p->profile_map.next() ) != nullptr ) {
 
 				if( profile_p->index < 0 )	{
 					if( profile_p->req_reset == true )	{
@@ -548,7 +548,7 @@ void TimeIntervalProfiler::report_current_group( group_entry_t* group_p ) {
 			}
 
 			group_p->profile_map.reset();
-			while( ( profile_p = group_p->profile_map.next() ) != NULL ) {
+			while( ( profile_p = group_p->profile_map.next() ) != nullptr ) {
 
 				if( profile_p->index < 0 )	{
 					if( profile_p->req_reset == false )	{
@@ -593,7 +593,7 @@ void TimeIntervalProfiler::sys_update( double time ) {
 		return;
 	}
 
-	group_entry_t *group_p = NULL;
+	group_entry_t *group_p = nullptr;
 
 	if( enabled )	{
 
@@ -601,15 +601,15 @@ void TimeIntervalProfiler::sys_update( double time ) {
 		for( int i=0; i< group_arr_count; i++ ) {
 
 			group_p = group_p_arr[ i ];
-			if( group_p == NULL ) {
-				printf( "TimeIntervalProfiler::sys_update ERR: NULL group_p in group_p_arr[ %d ]\n", i );
+			if( group_p == nullptr ) {
+				printf( "TimeIntervalProfiler::sys_update ERR: nullptr group_p in group_p_arr[ %d ]\n", i );
 				return;
 			}
 			for( int j=0; j< group_p->profile_arr_count; j++ ) {
 
 				profile_entry_t *profile_p = group_p->profile_p_arr[ j ];
-				if( profile_p == NULL ) {
-					printf( "TimeIntervalProfiler::sys_update ERR: NULL profile_p in group_p_arr[ %d ][ %d ]\n", i, j );
+				if( profile_p == nullptr ) {
+					printf( "TimeIntervalProfiler::sys_update ERR: nullptr profile_p in group_p_arr[ %d ][ %d ]\n", i, j );
 					return;
 				}
 			}
@@ -617,7 +617,7 @@ void TimeIntervalProfiler::sys_update( double time ) {
 		
 	// Close hanging intervals:
 		group_map->reset();
-		while( ( group_p = group_map->next() ) != NULL ) {
+		while( ( group_p = group_map->next() ) != nullptr ) {
 			if( group_p->enabled )	{
 				if( group_p->open ) {  // close...
 					if( group_p->open_err == false ) {
@@ -645,7 +645,7 @@ void TimeIntervalProfiler::sys_update( double time ) {
 				report_recent_groups( group_p_arr[ i ] );
 			}
 			group_map->reset();
-			while( ( group_p = group_map->next() ) != NULL ) {
+			while( ( group_p = group_map->next() ) != nullptr ) {
 				if( group_p->index < 0 )	{
 					report_recent_groups( group_p );
 				}
@@ -655,7 +655,7 @@ void TimeIntervalProfiler::sys_update( double time ) {
 				report_recent_profiles( group_p_arr[ i ] );
 			}
 			group_map->reset();
-			while( ( group_p = group_map->next() ) != NULL ) {
+			while( ( group_p = group_map->next() ) != nullptr ) {
 				if( group_p->index < 0 )	{
 					report_recent_profiles( group_p );
 				}
@@ -669,14 +669,14 @@ void TimeIntervalProfiler::sys_update( double time ) {
 
 	// Accumulate:
 		group_map->reset();
-		while( ( group_p = group_map->next() ) != NULL ) {
+		while( ( group_p = group_map->next() ) != nullptr ) {
 			
 			if( group_p->enabled )	{
 				if( group_p->req_reset == false ) {
 
 					profile_entry_t *profile_p;
 					group_p->profile_map.reset();
-					while( ( profile_p = group_p->profile_map.next() ) != NULL ) {
+					while( ( profile_p = group_p->profile_map.next() ) != nullptr ) {
 
 						if( profile_p->req_reset == false )	{
 
@@ -690,7 +690,7 @@ void TimeIntervalProfiler::sys_update( double time ) {
 						}
 					}
 					group_p->profile_map.reset();
-					while( ( profile_p = group_p->profile_map.next() ) != NULL ) {
+					while( ( profile_p = group_p->profile_map.next() ) != nullptr ) {
 					
 						if( profile_p->req_reset == false )	{
 
@@ -725,7 +725,7 @@ void TimeIntervalProfiler::sys_update( double time ) {
 			report_current_group( group_p_arr[ i ] );
 		}
 		group_map->reset();
-		while( ( group_p = group_map->next() ) != NULL ) {
+		while( ( group_p = group_map->next() ) != nullptr ) {
 			if( group_p->index < 0 )	{
 				report_current_group( group_p );
 			}
@@ -736,12 +736,12 @@ void TimeIntervalProfiler::sys_update( double time ) {
 
 	// Reset:
 		group_map->reset();
-		while( ( group_p = group_map->next() ) != NULL ) {
+		while( ( group_p = group_map->next() ) != nullptr ) {
 
 			if( group_p->enabled )	{
 				group_p->profile_map.reset();
 				profile_entry_t *profile_p;
-				while( ( profile_p = group_p->profile_map.next() ) != NULL ) {
+				while( ( profile_p = group_p->profile_map.next() ) != nullptr ) {
 					profile_p->req_reset = true;
 				}
 				group_p->req_reset = true;
@@ -793,7 +793,7 @@ void TimeIntervalProfiler::sys_update( double time ) {
 		}
 		if( req_erase ) {
 			group_map->reset();
-			while( ( group_p = group_map->next() ) != NULL ) {
+			while( ( group_p = group_map->next() ) != nullptr ) {
 				null_group( group_p, group_p->name );
 			}
 			req_erase = false;
@@ -813,7 +813,7 @@ TimeIntervalProfiler::group_entry_t*
 TimeIntervalProfiler::get_group( const char* group_name ) {
 
 	group_entry_t *group_p = group_map->lookup( group_name );
-	if( group_p == NULL ) {
+	if( group_p == nullptr ) {
 
 		group_p = new group_entry_t;
 		null_group( group_p, group_name );
@@ -844,7 +844,7 @@ TimeIntervalProfiler::profile_entry_t*
 TimeIntervalProfiler::get_profile( group_entry_t *group_p, const char* label ) {
 
 	profile_entry_t *profile_p = group_p->profile_map.lookup( label );
-	if( profile_p == NULL ) {
+	if( profile_p == nullptr ) {
 
 		profile_p = new profile_entry_t;
 		null_profile( profile_p, label );
@@ -1234,10 +1234,10 @@ void TimeIntervalProfiler::set_rolling( int len )
 	// for now, just set counts to 0:
 	group_entry_t *group_p;
 	group_map->reset();
-	while( ( group_p = group_map->next() ) != NULL ) {
+	while( ( group_p = group_map->next() ) != nullptr ) {
 		profile_entry_t *profile_p;
 		group_p->profile_map.reset();
-		while( ( profile_p = group_p->profile_map.next() ) != NULL ) {
+		while( ( profile_p = group_p->profile_map.next() ) != nullptr ) {
 			profile_p->accum_roll_dt = 0.0;
 			profile_p->accum_count = 0;
 			profile_p->roll_index = 0;
@@ -1324,7 +1324,7 @@ int TimeIntervalProfiler::mark_time( const char* group_name, double time )
 				if( group_p->open ) {  // close...
 					accum_mark( group_p, curr_time );
 					group_p->open = false;
-					group_p->curr_profile_p = NULL;
+					group_p->curr_profile_p = nullptr;
 					return( group_p->profile_event_count );
 				}
 			}

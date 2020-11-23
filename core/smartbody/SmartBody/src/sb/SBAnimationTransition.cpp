@@ -26,13 +26,13 @@ namespace SmartBody {
 
 SBAnimationTransition::SBAnimationTransition() : SBObject()
 {
-	_rule = NULL;
+	_rule = nullptr;
 }
 
 SBAnimationTransition::SBAnimationTransition(std::string name) : SBObject()
 {
 	setName(name);
-	_rule = NULL;
+	_rule = nullptr;
 }
 
 SBAPI SBAnimationTransition::SBAnimationTransition(SBAnimationTransition* transition, PABlend* from, PABlend* to) : SBObject()

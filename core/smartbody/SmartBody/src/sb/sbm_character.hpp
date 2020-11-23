@@ -100,7 +100,7 @@ public:
 	float flightTime[2];
 
 protected:
-	// The implementation to be used for speech (NULL if unset) 
+	// The implementation to be used for speech (nullptr if unset)
 	SmartBody::SpeechInterface* speech_impl;
 	// The voice code used by the implementation (empty string if unset) 
 	std::string 			voice_code;
@@ -181,12 +181,12 @@ public:
 	/**
 	 *  Gets the character's speech implementation.
 	 */
-	SmartBody::SpeechInterface* get_speech_impl() const; //returns speech implementation if set or NULL if not
+	SmartBody::SpeechInterface* get_speech_impl() const; //returns speech implementation if set or nullptr if not
 	
 	/**
 	 *  Gets the character's backup speech implementation.
 	 */
-	SmartBody::SpeechInterface* get_speech_impl_backup() const; //returns speech implementation if set or NULL if not
+	SmartBody::SpeechInterface* get_speech_impl_backup() const; //returns speech implementation if set or nullptr if not
 	
 	/**
 	 *  Sets the character's voice code string.
@@ -202,12 +202,12 @@ public:
 	/**
 	 *  Gets the character's voice code string.
 	 */
-	const std::string& get_voice_code() const; //returns voice if exists or NULL if not
+	const std::string& get_voice_code() const; //returns voice if exists or nullptr if not
 
 	/**
 	 *  Gets the character's backup voice code string.
 	 */
-	const std::string& get_voice_code_backup() const; //returns voice if exists or NULL if not
+	const std::string& get_voice_code_backup() const; //returns voice if exists or nullptr if not
 
 
 	// Prioritized Schedules for behaviors (known as "blocking" in manual animation)

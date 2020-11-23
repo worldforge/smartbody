@@ -35,7 +35,7 @@ SBMotionBlendBase::SBMotionBlendBase()
 	_isFinalized = false;
 	parameterDim = 3;	
 	_dimension = "3D";
-	blendEngine = NULL;		
+	blendEngine = nullptr;
 	interpType = "KNN";
 	blendType = "";
 }
@@ -55,7 +55,7 @@ SBMotionBlendBase::SBMotionBlendBase(const std::string& name, const std::string&
 	}
 	else // error
 	{
-		blendEngine = NULL;		
+		blendEngine = nullptr;
 	}
 }
 

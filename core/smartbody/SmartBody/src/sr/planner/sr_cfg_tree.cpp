@@ -218,7 +218,7 @@ SrCfgNode* SrCfgTreeBase::search_nearest ( const srcfg* c, float* d )
  {
    if ( !_root ) return _root;
    
-   SrCfgNode* nearest = NULL;
+   SrCfgNode* nearest = nullptr;
    float mindist = 1E+30f; // float range in visualc is: 3.4E +/- 38 
 
    _nearest ( _root, c, nearest, mindist );

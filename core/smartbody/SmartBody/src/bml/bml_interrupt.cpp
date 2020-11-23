@@ -99,7 +99,7 @@ BehaviorRequestPtr BML::parse_bml_interrupt( DOMElement* elem, const std::string
 	std::stringstream strm;
     strm << "WARNING: BodyPlannerImpl::parseBML(): <"<<tag<<"> BML tag missing "<<act<<"= attribute." << endl;
 	SmartBody::util::log( strm.str().c_str() );
-	return BehaviorRequestPtr();  // a.k.a., NULL
+	return BehaviorRequestPtr();  // a.k.a., nullptr
 
 #if 0
 	const XMLCh* tag      = elem->getTagName();
@@ -121,7 +121,7 @@ BehaviorRequestPtr BML::parse_bml_interrupt( DOMElement* elem, const std::string
 		std::wstringstream wstrstr;
         wstrstr << "WARNING: BodyPlannerImpl::parseBML(): <"<<tag<<"> BML tag missing "<<BMLDefs::TAG_ACT<<"= attribute." << endl;
 		SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
     }
 #endif
 }

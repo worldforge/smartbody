@@ -48,7 +48,7 @@ void MeCtLocomotionHeightOffset::set_limb_list(SrArray<MeCtLocomotionLimb*>* lim
 
 void MeCtLocomotionHeightOffset::update_supporting_joint_orientation()
 {
-	MeCtLocomotionLimb* limb = NULL;
+	MeCtLocomotionLimb* limb = nullptr;
 	SrVec axis;
 	SrMat mat;
 	for(int i = 0; i < limb_list->size(); ++i)
@@ -86,7 +86,7 @@ void MeCtLocomotionHeightOffset::update_height_offset(SrMat& parent_mat, float b
 	SrVec base_pos;
 	base_pos.set(parent_mat.get(12), parent_mat.get(13), parent_mat.get(14));
 
-	MeCtLocomotionLimb* limb = NULL;
+	MeCtLocomotionLimb* limb = nullptr;
 
 	for(int i = 0; i < limb_list->size(); ++i)
 	{

@@ -23,7 +23,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sr/sr_model.h>
-#include <sbm/sbm_deformable_mesh.h>
 #include <sb/SBAsset.h>
 #include <sb/SBObject.h>
 #include <string>
@@ -40,7 +39,7 @@ class SBNavigationMesh : public SBObject
 	public:
 		SBAPI SBNavigationMesh();		
 		SBAPI ~SBNavigationMesh();	
-		SBAPI bool buildNavigationMesh(std::string meshName);
+		//SBAPI bool buildNavigationMesh(std::string meshName);
 		SBAPI bool buildNavigationMeshFromModel(SrModel& inMesh);			
 		SBAPI SrModel* getRawMesh();
 		SBAPI SrModel* getNavigationMesh();

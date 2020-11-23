@@ -45,7 +45,7 @@ std::string MeCtMotionBlend::CONTROLLER_TYPE = "Blend";
 MeCtMotionBlend::MeCtMotionBlend( std::map<int,MeCtBlendEngine*>& blendMap )  : SmartBody::SBController()
 {
 	
-	currentBlendEngine = NULL;
+	currentBlendEngine = nullptr;
 
 	_duration = -1.f;	
 	

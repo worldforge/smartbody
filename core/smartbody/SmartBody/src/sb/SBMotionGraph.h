@@ -97,7 +97,7 @@ namespace SmartBody {
 		// also get the base transform with xz-rotation and y-translation
 		void getDeltaAlignTransform(float u, float du, const std::vector<float>& weights, SrMat& outAlignDiff, SrMat& outBaseXZFrame);	
 		void getRandomBlendWeights(std::vector<float>& outWeights);
-		static void decomposeBaseMat(SrMat& inMat, SrMat& inPreRot, SrMat& outYWoMat, SrMat& outXZBaseMat, SBRetarget* retarget = NULL);
+		static void decomposeBaseMat(SrMat& inMat, SrMat& inPreRot, SrMat& outYWoMat, SrMat& outXZBaseMat, SBRetarget* retarget = nullptr);
 	protected:
 		void initTimeWarp();
 		static void interpQuatList(float w, std::vector<SrQuat>& quatListA, std::vector<SrQuat>& quatListB, std::vector<SrQuat>& outQuatList);

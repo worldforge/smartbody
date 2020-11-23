@@ -51,7 +51,7 @@ class SBPawn : public SbmPawn
 		SBAPI SrVec getHPR();
 
 		SBAPI SBPhysicsObj* getPhysicsObject();
-		SBAPI DeformableMeshInstance* getActiveMesh();
+//		SBAPI DeformableMeshInstance* getActiveMesh();
 		SBAPI void createMeshFromCollisionSurface(std::string name, SrVec color);
 
 		SBAPI virtual void afterUpdate(double time);

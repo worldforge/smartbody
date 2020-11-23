@@ -56,8 +56,8 @@ AudioFileSpeech::AudioFileSpeech()
 
 AudioFileSpeech::~AudioFileSpeech()
 {
-   delete m_xmlParser;  m_xmlParser = NULL;
-   delete m_xmlHandler;  m_xmlHandler = NULL;
+   delete m_xmlParser;  m_xmlParser = nullptr;
+   delete m_xmlHandler;  m_xmlHandler = nullptr;
 
    	// remove the XML cache
 	for (std::map<std::string, DOMDocument*>::iterator xmlIter = xmlCache.begin();
@@ -130,7 +130,7 @@ RequestId AudioFileSpeech::requestSpeechAudioFast( const char * agentName, std::
 	}
 
    SmartBody::SBCharacter * agent = SmartBody::SBScene::getScene()->getCharacter(agentName );
-   if ( agent == NULL )
+   if ( agent == nullptr )
    {
       SmartBody::util::log( "AudioFileSpeech::requestSpeechAudio ERR: insert AudioFile voice code lookup FAILED, msgId=%s\n", agentName ); 
       return 0;
@@ -149,7 +149,7 @@ RequestId AudioFileSpeech::requestSpeechAudioFast( const char * agentName, std::
 #endif
    { 
 	   bool hasAudioPath = false;
-	   std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetManager()->getAssetPaths("audio");
+	   std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetPaths("audio");
 	   for (size_t audioPathCounter = 0; audioPathCounter < audioPaths.size(); ++audioPathCounter)
 	   {
 		   boost::filesystem::path p( audioPaths[audioPathCounter] );
@@ -269,7 +269,7 @@ RequestId AudioFileSpeech::requestSpeechAudio( const char * agentName, std::stri
    
 
    SmartBody::SBCharacter * agent = SmartBody::SBScene::getScene()->getCharacter( agentName );
-   if ( agent == NULL )
+   if ( agent == nullptr )
    {
       SmartBody::util::log( "AudioFileSpeech::requestSpeechAudio ERR: insert AudioFile voice code lookup FAILED, msgId=%s\n", agentName ); 
       return 0;
@@ -288,7 +288,7 @@ RequestId AudioFileSpeech::requestSpeechAudio( const char * agentName, std::stri
    if( !boost::filesystem2::exists( voicecodeabs_p ))
 #endif
    {
-	   std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetManager()->getAssetPaths("audio");
+	   std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetPaths("audio");
 	   bool hasAudioPath = false;
 	   for (size_t audioPathCounter = 0; audioPathCounter < audioPaths.size(); ++audioPathCounter)
 	   {
@@ -402,7 +402,7 @@ vector<VisemeData *> * AudioFileSpeech::getVisemes( RequestId requestId, SbmChar
       return visemeCopy;
    }
 
-   return NULL;
+   return nullptr;
 }
 
 std::vector<float> AudioFileSpeech::getEmotionCurve(RequestId requestId, const std::string& emotionType, SbmCharacter* character)
@@ -443,7 +443,7 @@ std::vector<std::string> AudioFileSpeech::getEmotionNames(RequestId requestId, S
 char * AudioFileSpeech::getSpeechPlayCommand( RequestId requestId, SbmCharacter * character )
 {
 	if (!character)
-		return NULL;
+		return nullptr;
    // TODO: Wrap up this SASO/PlaySound specific audio command string generation
    // into a class that can abstracted and shared between speech implementations.
    // The SpeechInterface should only need to provide the audio filename.
@@ -457,7 +457,7 @@ char * AudioFileSpeech::getSpeechPlayCommand( RequestId requestId, SbmCharacter 
       return (char *)it->second.playCommand.c_str();
    }
 
-   return NULL;
+   return nullptr;
 }
 
 
@@ -490,7 +490,7 @@ char * AudioFileSpeech::getSpeechStopCommand( RequestId requestId, SbmCharacter 
       return (char *)it->second.stopCommand.c_str();
    }
 
-   return NULL;
+   return nullptr;
 }
 
 
@@ -504,7 +504,7 @@ char * AudioFileSpeech::getSpeechAudioFilename( RequestId requestId )
       return (char *)it->second.audioFilename.c_str();
    }
 
-   return NULL;
+   return nullptr;
 }
 
 
@@ -597,7 +597,7 @@ void AudioFileSpeech::ReadVisemeDataLTF( const char * filename, std::vector< Vis
    visemeData.clear();
 
    FILE * f = fopen( filename, "r" );
-   if ( f == NULL )
+   if ( f == nullptr )
    {
       return;
    }
@@ -606,7 +606,7 @@ void AudioFileSpeech::ReadVisemeDataLTF( const char * filename, std::vector< Vis
    // search for the "phoneme list" section in the file
 
    char line[ 512 ];
-   while ( fgets( line, 512, f ) != NULL )
+   while ( fgets( line, 512, f ) != nullptr )
    {
       string strLine = line;
       if ( strLine.find( "// Phoneme Timing List" ) != strLine.npos )
@@ -615,7 +615,7 @@ void AudioFileSpeech::ReadVisemeDataLTF( const char * filename, std::vector< Vis
       }
    }
 
-   while ( fgets( line, 512, f ) != NULL )
+   while ( fgets( line, 512, f ) != nullptr )
    {
       string strLine = line;
 
@@ -663,7 +663,7 @@ void AudioFileSpeech::ReadMotionDataBML(const char * filename, std::vector< Vise
 	if (!useMotionByDefault)
 		return;
 
-	DOMDocument* xmlDoc = NULL;
+	DOMDocument* xmlDoc = nullptr;
 	if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCache"))
 	{
 		boost::filesystem::path path(filename);
@@ -693,7 +693,7 @@ void AudioFileSpeech::ReadMotionDataBML(const char * filename, std::vector< Vise
 		xmlDoc = xml_utils::parseMessageXml(m_xmlParser, filename);
 	}
 
-	if ( xmlDoc == NULL )
+	if ( xmlDoc == nullptr )
 	{
 		return;
 	}
@@ -722,7 +722,7 @@ void AudioFileSpeech::ReadVisemeDataBML( const char * filename, std::vector< Vis
 
    visemeData.clear();
 
-	DOMDocument* xmlDoc = NULL;
+	DOMDocument* xmlDoc = nullptr;
 	if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCache"))
 	{
 		boost::filesystem::path path(filename);
@@ -752,7 +752,7 @@ void AudioFileSpeech::ReadVisemeDataBML( const char * filename, std::vector< Vis
 		xmlDoc = xml_utils::parseMessageXml(m_xmlParser, filename);
 	}
 
-   if ( xmlDoc == NULL )
+   if ( xmlDoc == nullptr )
    {
       return;
    }
@@ -949,7 +949,7 @@ void AudioFileSpeech::ReadSpeechTiming( const char * filename, std::map< std::st
 
 
    DOMDocument * doc = xml_utils::parseMessageXml( m_xmlParser, filename );
-   if ( doc == NULL )
+   if ( doc == nullptr )
    {
       return;
    }

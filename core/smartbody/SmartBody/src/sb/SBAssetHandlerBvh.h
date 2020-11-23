@@ -33,9 +33,9 @@ class SBAssetHandlerBvh : public SBAssetHandler
 {
 	public:
 		SBAPI SBAssetHandlerBvh();
-		SBAPI virtual ~SBAssetHandlerBvh();
+		SBAPI ~SBAssetHandlerBvh() override;
 
-		SBAPI virtual std::vector<SBAsset*> getAssets(const std::string& path);
+		SBAPI std::vector<std::unique_ptr<SBAsset>> getAssets(const std::string& path) override;
 
 };
 

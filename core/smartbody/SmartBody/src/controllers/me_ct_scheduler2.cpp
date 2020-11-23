@@ -72,14 +72,14 @@ MeCtScheduler2::Context::Context( MeCtScheduler2* schedule )
 {}
 
 void MeCtScheduler2::Context::child_channels_updated( MeController* child ) {
-	if( _container == NULL )
+	if( _container == nullptr )
 		return; // MeCtScheduler2 was deleted.
 
 	MeCtScheduler2* schedule = static_cast<MeCtScheduler2*>(_container);
 
 	// Does Schedule have a context yet?
 	MeControllerContext* parent_context = schedule->_context;
-	//if( parent_context==NULL )
+	//if( parent_context==nullptr )
 	//	return;  // Ignore...
 
 	// Verify it is a child...
@@ -126,7 +126,7 @@ MeCtScheduler2::Track::Track( MeCtUnary* blending_ct,
 	_animation_ct( animation_ct ),
 	_root( animation_ct )
 {
-	// _animation_ct should never be NULL
+	// _animation_ct should never be nullptr
 	_animation_ct->ref();
 	if( _timing_ct ) {
 		_timing_ct->ref();
@@ -145,18 +145,18 @@ MeCtScheduler2::Track::~Track() {
 	// starting with shallowest, remove children and unref
 	if( _blending_ct ) {
 		_blending_ct->unref();
-		_blending_ct = NULL;
+		_blending_ct = nullptr;
 	}
 	if( _timing_ct ) {
 		_timing_ct->unref();
-		_timing_ct = NULL;
+		_timing_ct = nullptr;
 	}
 	if( _animation_ct ) {
 		//printf("delete track animation ct = %s\n",_animation_ct->name());
 		_animation_ct->unref();
-		_animation_ct = NULL;
+		_animation_ct = nullptr;
 	}
-	_root = NULL;
+	_root = nullptr;
 }
 
 // Copy Assignment Operator
@@ -181,7 +181,7 @@ MeCtScheduler2::Track& MeCtScheduler2::Track::operator=( const MeCtScheduler2::T
 	}
 	if( _animation_ct != other._animation_ct ) {
 		if( _animation_ct ) {
-			// _animation_ct should never be NULL
+			// _animation_ct should never be nullptr
 			_animation_ct->unref();
 		}
 		_animation_ct = other._animation_ct;
@@ -195,12 +195,12 @@ MeCtScheduler2::Track& MeCtScheduler2::Track::operator=( const MeCtScheduler2::T
 MeController* MeCtScheduler2::Track::animation_parent_ct() {
 	MeCtScheduler2Ptr schedule = _schedule_weak.lock();
 
-	MeController* parent = NULL;
+	MeController* parent = nullptr;
 	if( schedule ) {
 		parent = schedule.get();
-		if( _blending_ct != NULL )
+		if( _blending_ct != nullptr )
 			parent = _blending_ct;
-		if( _timing_ct != NULL )
+		if( _timing_ct != nullptr )
 			parent = _timing_ct;
 	}
 
@@ -252,7 +252,7 @@ MeController* MeCtScheduler2::child( size_t n ) {
 	if( n < _tracks.size() )
 		return _tracks[ n ]->_root;
 	else
-		return NULL;
+		return nullptr;
 }
 
 void MeCtScheduler2::context_updated() {
@@ -758,7 +758,7 @@ bool MeCtScheduler2::remove_track_impl( TrackPtr track ) {
 			result = true;
 			_tracks.erase( pos );
 
-			if( track->_root != NULL ) {
+			if( track->_root != nullptr ) {
 				_child_to_track.erase( track->_root );
 				_anim_to_track.erase( track->_animation_ct );
 
@@ -791,7 +791,7 @@ void MeCtScheduler2::clear () {
 	for( ; it != end; ++it ) {
 		TrackPtr track( *it );
 
-		if( track->_root != NULL )
+		if( track->_root != nullptr )
 			remove_child( track->_root );
 
 		track->_schedule_weak.reset();

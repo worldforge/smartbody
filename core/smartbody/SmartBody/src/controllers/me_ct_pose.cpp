@@ -33,7 +33,7 @@ std::string MeCtPose::type_name = "Pose";
 
 MeCtPose::MeCtPose () :
    _duration( -1.0f ),
-   _posture_name(NULL)
+   _posture_name(nullptr)
 {}
 
 MeCtPose::~MeCtPose() {}
@@ -167,7 +167,7 @@ bool MeCtPose::input ( SrInput& inp, const SrHashTable<SkPosture*>& postures )
    
    SkPosture* p = postures.lookup( pname );
    if( p )
-    { init( NULL, *p );
+    { init( nullptr, *p );
       return true;
     }
    else

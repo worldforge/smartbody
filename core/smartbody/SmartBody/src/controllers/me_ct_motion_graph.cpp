@@ -8,7 +8,7 @@ std::string MeCtMotionGraph::CONTROLLER_TYPE = "MotionGraph";
 
 MeCtMotionGraph::MeCtMotionGraph( SmartBody::SBCharacter* character )
 {	
-	motionState = NULL;
+	motionState = nullptr;
 	sbChar = character;
 	baseJointName = "base";
 

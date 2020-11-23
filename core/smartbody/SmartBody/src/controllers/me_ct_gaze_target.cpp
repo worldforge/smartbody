@@ -66,21 +66,21 @@ void MeCtGaze::set_target_polar( float d, float a, float r = 0.0 )	{
 void MeCtGaze::set_target_coord_world( void )	{
 
 	if( target_ref_joint_str ) free( target_ref_joint_str );
-	target_ref_joint_str = NULL;
-	target_ref_joint_p = NULL;
+	target_ref_joint_str = nullptr;
+	target_ref_joint_p = nullptr;
 }
 
 void MeCtGaze::set_target_coord_joint( char *joint_name )	{
 	
 	if( target_ref_joint_str ) free( target_ref_joint_str );
 	target_ref_joint_str = _strdup( joint_name );
-	target_ref_joint_p = NULL;
+	target_ref_joint_p = nullptr;
 }
 
 void MeCtGaze::set_target_coord_joint( SkJoint* joint_p )	{
 
 	if( target_ref_joint_str ) free( target_ref_joint_str );
-	target_ref_joint_str = NULL;
+	target_ref_joint_str = nullptr;
 	target_ref_joint_p = joint_p;
 }
 
@@ -117,8 +117,8 @@ void MeCtGaze::set_offset_polar( float d, float a, float r = 0.0 )	{
 void MeCtGaze::set_offset_coord_world( void )	{
 
 	if( offset_ref_joint_str ) free( offset_ref_joint_str );
-	offset_ref_joint_str = NULL;
-	offset_ref_joint_p = NULL;
+	offset_ref_joint_str = nullptr;
+	offset_ref_joint_p = nullptr;
 	offset_coord = OFFSET_WORLD;
 }
 
@@ -126,14 +126,14 @@ void MeCtGaze::set_offset_coord_joint( char *joint_name )	{
 
 	if( offset_ref_joint_str ) free( offset_ref_joint_str );
 	offset_ref_joint_str = _strdup( joint_name );
-	offset_ref_joint_p = NULL;
+	offset_ref_joint_p = nullptr;
 	offset_coord = OFFSET_JOINT_LOCAL;
 }
 
 void MeCtGaze::set_offset_coord_joint( SkJoint* joint_p )	{
 
 	if( offset_ref_joint_str ) free( offset_ref_joint_str );
-	offset_ref_joint_str = NULL;
+	offset_ref_joint_str = nullptr;
 	offset_ref_joint_p = joint_p;
 	offset_coord = OFFSET_JOINT_LOCAL;
 }
@@ -141,14 +141,14 @@ void MeCtGaze::set_offset_coord_joint( SkJoint* joint_p )	{
 void MeCtGaze::set_offset_coord_parent( void )	{
 
 	if( offset_ref_joint_str ) free( offset_ref_joint_str );
-	offset_ref_joint_str = NULL;
-	offset_ref_joint_p = NULL;
+	offset_ref_joint_str = nullptr;
+	offset_ref_joint_p = nullptr;
 	offset_coord = OFFSET_PARENT_LOCAL;
 }
 
 // BACKWARDS COMPATIBILITY:
 
-void MeCtGaze::set_target_joint( float x, float y, float z, SkJoint* joint_p = NULL ) {
+void MeCtGaze::set_target_joint( float x, float y, float z, SkJoint* joint_p = nullptr ) {
 
 #if 1
 static int once = 1;
@@ -163,7 +163,7 @@ if( once )	{
 	else set_target_coord_world();
 }
 
-void MeCtGaze::set_target( float x, float y, float z, char *joint_name = NULL ) {
+void MeCtGaze::set_target( float x, float y, float z, char *joint_name = nullptr ) {
 
 #if 1
 static int once = 1;
@@ -178,7 +178,7 @@ if( once )	{
 	else set_target_coord_world();
 }
 
-void MeCtGaze::set_orient_joint( float p, float h, float r, SkJoint* joint_p = NULL ) {
+void MeCtGaze::set_orient_joint( float p, float h, float r, SkJoint* joint_p = nullptr ) {
 
 #if 1
 static int once = 1;
@@ -193,7 +193,7 @@ if( once )	{
 	else set_target_coord_world();
 }
 
-void MeCtGaze::set_orient( float p, float h, float r, char *joint_name = NULL ) {
+void MeCtGaze::set_orient( float p, float h, float r, char *joint_name = nullptr ) {
 
 #if 1
 static int once = 1;
@@ -217,7 +217,7 @@ void MeCtGaze::set_target_joint( float x, float y, float z, SkJoint* joint_p )	{
 	point_target_pos = vector_t( x, y, z );
 	if( ref_joint_str ) {
 		free( ref_joint_str );
-		ref_joint_str = NULL;
+		ref_joint_str = nullptr;
 	}
 	ref_joint_p = joint_p;
 }
@@ -232,7 +232,7 @@ void MeCtGaze::set_target( float x, float y, float z, char *ref_joint_name )	{
 	if (ref_joint_name)
 	{
 		ref_joint_str = _strdup( ref_joint_name );
-		ref_joint_p = NULL;
+		ref_joint_p = nullptr;
 	}
 }
 
@@ -242,7 +242,7 @@ void MeCtGaze::set_orient_joint( float p, float h, float r, SkJoint* joint_p )	{
 	orient_target_rot = euler_t( p, h, r );
 	if( ref_joint_str ) {
 		free( ref_joint_str );
-		ref_joint_str = NULL;
+		ref_joint_str = nullptr;
 	}
 	ref_joint_p = joint_p;
 }
@@ -255,7 +255,7 @@ void MeCtGaze::set_orient( float p, float h, float r, char *ref_joint_name )	{
 		free( ref_joint_str );
 	}
 	ref_joint_str = _strdup( ref_joint_name );
-	ref_joint_p = NULL;
+	ref_joint_p = nullptr;
 }
 
 

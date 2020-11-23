@@ -50,8 +50,8 @@ const char* MeCtLocomotionPawn::ORIENTATION_TARGET  = "orientation_target";
 /** Constructor */
 MeCtLocomotionPawn::MeCtLocomotionPawn() {
 
-	walking_skeleton = NULL;
-	standing_skeleton = NULL;
+	walking_skeleton = nullptr;
+	standing_skeleton = nullptr;
 	limb_list.capacity(0);
 	locomotion_anims.capacity(0);
 }
@@ -94,7 +94,7 @@ void MeCtLocomotionPawn::init_nonlimb_joint_info()
 	}
 	std::string base_name = walking_skeleton->root()->name();
 	nonlimb_joint_info.Init(walking_skeleton, base_name.c_str(), &limb_base_name);
-	SkJoint* joint = NULL;
+	SkJoint* joint = nullptr;
 	int index = -1;
 	for(int i = 0; i < limb_list.size(); ++i)
 	{
@@ -102,7 +102,7 @@ void MeCtLocomotionPawn::init_nonlimb_joint_info()
 		while(true)
 		{
 			joint = joint->parent();
-			if(joint == NULL) break;
+			if(joint == nullptr) break;
 			index = nonlimb_joint_info.get_index_by_name(joint->name().c_str());
 			nonlimb_joint_info.mat_valid.set(index, 1);
 		}

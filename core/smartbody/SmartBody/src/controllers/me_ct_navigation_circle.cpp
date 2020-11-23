@@ -57,7 +57,7 @@ const std::string& MeCtNavigationCircle::controller_type() const {
 
 // Implements MeController::context_updated(..)
 void MeCtNavigationCircle::context_updated() {
-	if( _context == NULL ) {
+	if( _context == nullptr ) {
 		is_valid = false;
 		last_time = start_time = std::numeric_limits<double>::quiet_NaN();
 	}
@@ -76,7 +76,7 @@ SkChannelArray& MeCtNavigationCircle::controller_channels() {
 void MeCtNavigationCircle::controller_map_updated() {
 	is_valid = true;
 
-	if( _context != NULL ) {
+	if( _context != nullptr ) {
 		// request_channel indices (second param) come from the order of request_channels.add(..) calls in controller_channels()
 		LOOKUP_BUFFER_INDEX( bi_world_rot,  0 );
 

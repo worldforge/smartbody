@@ -156,7 +156,7 @@ void SkSkeleton::init ()
 	for (unsigned int i=0;i<_joints.size();i++)
 	{
 		delete _joints[i];
-		_joints[i] = NULL;
+		_joints[i] = nullptr;
 	}
 	_joints.clear();
 	_jointMap.clear();
@@ -199,11 +199,11 @@ SkJoint* SkSkeleton::add_joint ( SkJoint::RotType rtype, int parentid )
 			parent =_joints[_joints.size() - 1];
 		else
 #endif
-			parent=NULL;
+			parent=nullptr;
 	} 	
 	else if (parentid > (int)_joints.size())
 	{
-		parent = NULL;
+		parent = nullptr;
 	}
 	else {
 		parent = _joints[parentid];
@@ -213,7 +213,7 @@ SkJoint* SkSkeleton::add_joint ( SkJoint::RotType rtype, int parentid )
 	_joints.push_back(j);
 
 	// should set the root explicitly
-	//if ( parent==NULL )
+	//if ( parent==nullptr )
 	//	_root=j;
 
 	return j;
@@ -315,7 +315,7 @@ SkJoint* SkSkeleton::search_joint ( const char* n )
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

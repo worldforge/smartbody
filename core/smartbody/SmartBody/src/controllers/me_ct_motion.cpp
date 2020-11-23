@@ -220,7 +220,7 @@ bool MeCtMotion::input ( SrInput& inp, const SrHashTable<SkMotion*>& motions ) {
    
 	SkMotion* m = motions.lookup ( mname );
 	if ( m ) {
-		init ( NULL, m );
+		init ( nullptr, m );
 		return true;
 	} else {
 		return false;
@@ -320,7 +320,7 @@ bool MeCtMotion::controller_evaluate ( double t, MeFrameData& frame ) {
 		//SmartBody::util::log("%s time %f, motion time %f", this->motion()->getName().c_str(), t, curMotionTime);
 		continuing = motionTime <= dur;
 	}	
-	SmartBody::SBRetarget* retarget = NULL;
+	SmartBody::SBRetarget* retarget = nullptr;
 	SmartBody::SBMotion* sbMotion = dynamic_cast<SmartBody::SBMotion*>(_motion);
 	if (_character)
 	{

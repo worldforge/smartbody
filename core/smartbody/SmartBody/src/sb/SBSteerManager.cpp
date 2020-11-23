@@ -166,7 +166,7 @@ void SBSteerManager::start()
 	SteerLib::SimulationOptions* steerOptions = new SteerLib::SimulationOptions();
 	steerOptions->moduleOptionsDatabase["testCasePlayer"]["testcase"] = "3-way-confusion-1.xml";
 	std::string ai = dynamic_cast<SmartBody::StringAttribute*>( SmartBody::SBScene::getScene()->getSteerManager()->getAttribute("aimodule") )->getValue();
-	//Zengrui:this is not useful, casue the attribute is NULL, will cause null ptr error
+	//Zengrui:this is not useful, casue the attribute is nullptr, will cause null ptr error
 	if (ai == ""){
 		return;
 	}
@@ -340,7 +340,7 @@ void SBSteerManager::stop()
 			if (steerAgent)
 			{
 				PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-				ppraiAgent->setAgent(NULL);
+				ppraiAgent->setAgent(nullptr);
 			}
 				
 		}
@@ -354,7 +354,7 @@ void SBSteerManager::stop()
 			if (pawn->steeringSpaceObj_p)
 			{
 				delete pawn->steeringSpaceObj_p;
-				pawn->steeringSpaceObj_p = NULL;
+				pawn->steeringSpaceObj_p = nullptr;
 			}
 		}
 
@@ -381,7 +381,7 @@ SBSteerAgent* SBSteerManager::createSteerAgent(std::string name)
 	if (!character)
 	{
 		SmartBody::util::log("Character named '%s' does not exist, steering agent cannot be constructed.", name.c_str());
-		return NULL;
+		return nullptr;
 	}
 	SBSteerAgent* agent = new PPRAISteeringAgent(character);
 	_steerAgents.insert(std::pair<std::string, SBSteerAgent*>(name, agent));
@@ -408,7 +408,7 @@ SBSteerAgent* SBSteerManager::getSteerAgent(std::string name)
 {
 	std::map<std::string, SBSteerAgent*>::iterator iter = _steerAgents.find(name);
 	if (iter == _steerAgents.end())
-		return NULL;
+		return nullptr;
 	else
 		return (*iter).second;
 }

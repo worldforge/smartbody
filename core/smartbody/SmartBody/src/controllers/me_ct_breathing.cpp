@@ -38,18 +38,18 @@ MeCtBreathing::MeCtBreathing () : SmartBody::SBController()
 	_default_breath_cycle = new LinearBreathCycle();
 	_breath_layers.push_front(new BreathLayer(_default_breath_cycle, -1));
 
-	_pending_breath_layer = NULL;
+	_pending_breath_layer = nullptr;
 	_pending_pop = false;
 
 	_previous_breath_is_inspiring = current_breath_layer()->cycle->is_inspiring();
 	
-	_pending_motion = NULL;
+	_pending_motion = nullptr;
 	_bpm = 15;
 	_pending_bpm = -1;
 	_expiratory_reserve_volume_threshold = 0;
 
 	_incremental = true;
-	_blendChannelBreathingMotion = NULL;
+	_blendChannelBreathingMotion = nullptr;
 
 	// breathing settings
 	setDefaultAttributeGroupPriority("Breathing", 450);
@@ -84,7 +84,7 @@ void MeCtBreathing::setUseBlendChannels(bool val)
 {
 	if (_useBlendChannels && !val)
 	{
-		setMotion(NULL);
+		setMotion(nullptr);
 	}
 
 	_useBlendChannels = val;
@@ -169,7 +169,7 @@ void MeCtBreathing::clear_breath_layers()
 BreathLayer* MeCtBreathing::current_breath_layer()
 {
 	if(_breath_layers.empty())
-		return NULL;
+		return nullptr;
 	else
 		return _breath_layers.front();
 }
@@ -187,7 +187,7 @@ void MeCtBreathing::immediate_push_breath_layer(BreathLayer* layer)
 }
 void MeCtBreathing::immediate_pop_breath_layer()
 {
-	if(current_breath_layer() == NULL)
+	if(current_breath_layer() == nullptr)
 		return;
 
 	BreathLayer* layer = current_breath_layer();
@@ -210,7 +210,7 @@ void MeCtBreathing::immediate_motion(SkMotion* motion)
 		if( motion == _motion ) {
 			// Minimal init()
 			_last_apply_frame = 0;
-			MeController::init (NULL);
+			MeController::init (nullptr);
 			return;
 		}
 		// else new motion
@@ -221,7 +221,7 @@ void MeCtBreathing::immediate_motion(SkMotion* motion)
 
 	_motion->move_keytimes ( 0 ); // make sure motion starts at 0
 
-	MeController::init (NULL);
+	MeController::init (nullptr);
 
 	if( _context ) {
 		// Notify _context of channel change.
@@ -272,7 +272,7 @@ bool MeCtBreathing::controller_evaluate ( double t, MeFrameData& frame )
 	bool isFrameTimeSet = false;
 	while(!isFrameTimeSet)
 	{
-		if(current_breath_layer() == NULL)
+		if(current_breath_layer() == nullptr)
 			return true; //No breathing, but the controller never finishes
 
 		float desiredBreathsPerSecond = _bpm / 60.0f;
@@ -294,10 +294,10 @@ bool MeCtBreathing::controller_evaluate ( double t, MeFrameData& frame )
 				_local_time_offset = t;
 				isFrameTimeSet = false;
 			}
-			if(_pending_motion != NULL)
+			if(_pending_motion != nullptr)
 			{
 				immediate_motion(_pending_motion);
-				_pending_motion = NULL;
+				_pending_motion = nullptr;
 				isFrameTimeSet = false;
 			}
 			
@@ -315,15 +315,15 @@ bool MeCtBreathing::controller_evaluate ( double t, MeFrameData& frame )
 				_local_time_offset = t;
 				isFrameTimeSet = false;
 			}
-			if(_pending_breath_layer != NULL)
+			if(_pending_breath_layer != nullptr)
 			{
 				immediate_push_breath_layer(_pending_breath_layer);
 				_local_time_offset = t;
-				_pending_breath_layer = NULL;
+				_pending_breath_layer = nullptr;
 				isFrameTimeSet = false;
 			}
 
-			if(current_breath_layer() != NULL)
+			if(current_breath_layer() != nullptr)
 				_previous_breath_is_inspiring = current_breath_layer()->cycle->is_inspiring();
 		}
 	}

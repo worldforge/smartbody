@@ -87,7 +87,7 @@ class MeCtParamAnimation : public MeCtContainer
 		protected:
 			static std::string CONTEXT_TYPE;
 		public:
-			Context( MeCtParamAnimation* container, MeControllerContext* context = NULL )
+			Context( MeCtParamAnimation* container, MeControllerContext* context = nullptr )
 				:	MeCtContainer::Context( container, context )
 			{}
 

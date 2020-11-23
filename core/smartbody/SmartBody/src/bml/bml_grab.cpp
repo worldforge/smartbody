@@ -54,7 +54,7 @@ using namespace xml_utils;
 BehaviorRequestPtr BML::parse_bml_grab( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) {
     
 	const XMLCh* tag      = elem->getTagName();	
-	MeCtHand* handCt = NULL; 
+	MeCtHand* handCt = nullptr;
 	const XMLCh* attrHandle = elem->getAttribute( BMLDefs::ATTR_HANDLE );
 	std::string handle = "";
 	if( attrHandle && XMLString::stringLen( attrHandle ) ) {
@@ -77,26 +77,26 @@ BehaviorRequestPtr BML::parse_bml_grab( DOMElement* elem, const std::string& uni
 	}
 
 	const XMLCh* attrTarget = elem->getAttribute( BMLDefs::ATTR_TARGET );
-	const SbmPawn* target_pawn = NULL;
+	const SbmPawn* target_pawn = nullptr;
 	if (attrTarget && XMLString::stringLen( attrTarget ))
 	{
 		target_pawn = parse_target_pawn( tag, attrTarget, scene );		
 	}
 
-	const XMLCh* attrWrist = NULL;
+	const XMLCh* attrWrist = nullptr;
 	attrWrist = elem->getAttribute(BMLDefs::ATTR_WRIST);
-	SmartBody::SBJoint* wristJoint = NULL;
+	SmartBody::SBJoint* wristJoint = nullptr;
 	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(request->actor->getSkeleton());
 	if( attrWrist && XMLString::stringLen( attrWrist ) ) 
 	{
 		wristJoint =sbSkel->getJointByName(asciiString(attrWrist).c_str());
 	}
 
-	const XMLCh* attrSourceJoint = NULL;
+	const XMLCh* attrSourceJoint = nullptr;
 	std::string sourceJointName = xml_parse_string(BMLDefs::ATTR_SOURCE_JOINT,elem,"",false);
 	
 	const XMLCh* attrAttachPawn = elem->getAttribute( BMLDefs::ATTR_ATTACH_PAWN );
-	const SbmPawn* attachPawn = NULL;
+	const SbmPawn* attachPawn = nullptr;
 	if (attrAttachPawn && XMLString::stringLen( attrAttachPawn ))
 	{
 		attachPawn = parse_target_pawn( tag, attrAttachPawn, scene );		
@@ -105,8 +105,8 @@ BehaviorRequestPtr BML::parse_bml_grab( DOMElement* elem, const std::string& uni
 	std::string grabType = xml_parse_string(BMLDefs::ATTR_GRAB_TYPE,elem,"right",false);
 
 
-	if (wristJoint == NULL && !handCt) {  // Invalid target.  Assume parse_target(..) printed error.
-		return BehaviorRequestPtr();  // a.k.a., NULL
+	if (wristJoint == nullptr && !handCt) {  // Invalid target.  Assume parse_target(..) printed error.
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
 
 	float grabVelocity = xml_parse_float(BMLDefs::ATTR_GRAB_SPEED,elem,-1.f,false);

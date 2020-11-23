@@ -3,7 +3,7 @@
 #include "controllers/me_ct_inverse_interpolation.h"
 
 
-#define FREE_DATA(data) if (data) delete data; data=NULL;
+#define FREE_DATA(data) if (data) delete data; data=nullptr;
 /************************************************************************/
 /* Inverse Interpolator                                             */
 /************************************************************************/
@@ -397,7 +397,7 @@ TERMINATE_OPTMGD:
 
 float InverseInterpolation::evaluateErrorFunction( const dVector& targetPara, VecOfInterpWeight& blendWeight )
 {
-	static InterpolationExample* ex = NULL;
+	static InterpolationExample* ex = nullptr;
 	if (!ex) ex = exampleSet->createPseudoExample();
 	dVector exPara;
 	ex->weight = blendWeight;

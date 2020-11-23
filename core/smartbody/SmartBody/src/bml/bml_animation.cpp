@@ -120,14 +120,14 @@ BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::s
 			//cerr<<"WARNING: BML::parse_bml_animation(): behavior \""<<unique_id<<"\": name=\""<<asciiName<<"\" not loaded; ignoring behavior."<<endl;
 			SmartBody::util::log("WARNING: BML::parse_bml_animation(): behavior \"%s\": name=\"%s\" not loaded; ignoring behavior.", unique_id.c_str(), asciiName.c_str());
 			
-			return BehaviorRequestPtr();  // a.k.a., NULL
+			return BehaviorRequestPtr();  // a.k.a., nullptr
 		}
 	} else {
 		// TODO: exception?
 		std::wstringstream wstrstr;
 		cerr<<"WARNING: BML::parse_bml_animation(): behavior \""<<unique_id<<"\": missing name= attribute; ignoring <animation>.";
 		SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
-		return BehaviorRequestPtr();  // a.k.a., NULL
+		return BehaviorRequestPtr();  // a.k.a., nullptr
 	}
-	return BehaviorRequestPtr();  // a.k.a., NULL
+	return BehaviorRequestPtr();  // a.k.a., nullptr
 }

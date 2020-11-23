@@ -1008,7 +1008,7 @@ PABlendData::PABlendData(MeCtParamAnimation* controller, const std::string& stat
 	blendEndTrim = (float)blendEndTrim;
 	directPlay = dplay;
 	playSpeed = 1.f;
-	retarget = NULL;
+	retarget = nullptr;
 	SmartBody::SBAnimationBlend* s = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
 	state = s;
 	if (state)
@@ -1042,7 +1042,7 @@ PABlendData::PABlendData(MeCtParamAnimation* controller, PABlend* s, std::vector
 	blendEndTrim = (float)blendTrim;
 	directPlay = dplay;
 	playSpeed = 1.f;
-	retarget = NULL;
+	retarget = nullptr;
 	state = s;
 	weights.resize(s->getNumMotions());
 	for (size_t x = 0; x < w.size(); x++)
@@ -1063,13 +1063,13 @@ PABlendData::~PABlendData()
 {
 	if (timeManager)
 		delete timeManager;
-	timeManager = NULL;
+	timeManager = nullptr;
 	if (interpolator)
 		delete interpolator;
-	interpolator = NULL;
+	interpolator = nullptr;
 	if (woManager)
 		delete woManager;
-	woManager = NULL;
+	woManager = nullptr;
 }
 
 
@@ -1207,18 +1207,18 @@ void PABlendData::updateMotionIndices()
 bool PABlendData::isZeroDState()
 {
 	SmartBody::SBAnimationBlend0D* zeroBlend = dynamic_cast<SmartBody::SBAnimationBlend0D*>(state);
-	return (zeroBlend != NULL);
+	return (zeroBlend != nullptr);
 }
 
 
 PATransitionManager::PATransitionManager(float transitionLen)
 {
-	from = NULL;
-	to = NULL;
+	from = nullptr;
+	to = nullptr;
 	startTransition = false;
 	blendingMode = true;
 	active = true;
-	transition = NULL;
+	transition = nullptr;
 	curve = new srLinearCurve();
 	curve->insert(0.0, 1.0);
 	float tranLen = transitionLen;
@@ -1238,7 +1238,7 @@ PATransitionManager::PATransitionManager(double easeOutStart, double dur)
 	startTransition = false;
 	blendingMode = false;
 	active = true;
-	transition = NULL;
+	transition = nullptr;
 	curve = new srLinearCurve();
 	duration = dur;
 	localTime = 0.0;

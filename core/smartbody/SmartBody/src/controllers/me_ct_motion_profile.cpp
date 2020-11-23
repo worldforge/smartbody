@@ -67,13 +67,13 @@ void MotionProfile::buildEulerCurveProfile( float startTime, float endTime, floa
 		cleanUpProfileMap(eulerProfile[i]);
 	float prevTime = startTime - timeStep;
 	if (prevTime < 0.f) prevTime = 0.f;
-	motion->apply(prevTime,&motionBuffer[0][0],NULL);
+	motion->apply(prevTime,&motionBuffer[0][0],nullptr);
 	int curBufferIdx = 1;
 	int prevBufferIdx = 0;
 	for (float t = startTime; t <= endTime; t+= timeStep)
 	{
 		// get current motion frame
-		motion->apply(t,&motionBuffer[1][0],NULL);
+		motion->apply(t,&motionBuffer[1][0],nullptr);
 		float normT = (t-startTime)/(endTime-startTime);
 		float normTimeStep = timeStep/(endTime-startTime);
 		computeEulerVelocity(motion,normT,normTimeStep,motionBuffer[0],motionBuffer[1],eulerProfile);		
@@ -95,7 +95,7 @@ void MotionProfile::buildVelocityProfile( float startTime, float endTime, float 
 
 	float prevTime = startTime - timeStep;
 	if (prevTime < 0.f) prevTime = 0.f;
-	motion->apply(prevTime,&motionBuffer[0][0],NULL);
+	motion->apply(prevTime,&motionBuffer[0][0],nullptr);
 	int curBufferIdx = 1;
 	int prevBufferIdx = 0;
 	float maxAvgVel = 0.f;
@@ -104,7 +104,7 @@ void MotionProfile::buildVelocityProfile( float startTime, float endTime, float 
 	for (float t = startTime; t <= endTime; t+= timeStep)
 	{
 		// get current motion frame
-		motion->apply(t,&motionBuffer[curBufferIdx][0],NULL);		
+		motion->apply(t,&motionBuffer[curBufferIdx][0],nullptr);
 		computeVelocity(motion,t,timeStep,motionBuffer[prevBufferIdx],motionBuffer[curBufferIdx],velocityProfile);
 		ProfileCurve* curve = velocityProfile[velAvgName];
 		float avgVel = curve->evaluate(t);

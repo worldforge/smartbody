@@ -32,9 +32,9 @@ class SBAssetHandlerAmc : public SBAssetHandler
 {
 	public:
 		SBAPI SBAssetHandlerAmc();
-		SBAPI virtual ~SBAssetHandlerAmc();
+		SBAPI ~SBAssetHandlerAmc() override;
 
-		SBAPI virtual std::vector<SBAsset*> getAssets(const std::string& path);
+		SBAPI std::vector<std::unique_ptr<SBAsset>> getAssets(const std::string& path) override;
 
 };
 

@@ -87,7 +87,7 @@ public:
 	virtual SrVec getJointConstraintPos(SmartBody::SBPhysicsJoint* joint);
 	virtual SrVec getJointRotationAxis(SmartBody::SBPhysicsJoint* joint, int axis);
 	virtual void updatePhysicsJoint(SmartBody::SBPhysicsJoint* phyJoint); // update joint parameters		
-	virtual void updatePhyObjGeometry(SmartBody::SBPhysicsObj* obj, SBGeomObject* geom = NULL);
+	virtual void updatePhyObjGeometry(SmartBody::SBPhysicsObj* obj, SBGeomObject* geom = nullptr);
 	virtual void enablePhysicsSim(SmartBody::SBPhysicsObj* obj, bool bSim);
 	virtual void enableCollisionSim(SmartBody::SBPhysicsObj* obj, bool bCol);	
 	virtual void writeToPhysicsObj(SmartBody::SBPhysicsObj* obj); // write sim data to colObj

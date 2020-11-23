@@ -181,7 +181,7 @@ NOTE: CALCULATING DURATION with world-heading and speed requires a skeleton
 >  - when is the earliest that a controller can query the skeleton?
 
 The MeController method context_updated() is called every time the
-_context variable is set.  If _context is not NULL, then you should be
+_context variable is set.  If _context is not nullptr, then you should be
 able to query the skeleton connected to the context's channels.  All
 this happens when context( MeControllerContext* ) is called, either by
 adding the controller to a MeControllerTreeRoot, or a meta-controller.

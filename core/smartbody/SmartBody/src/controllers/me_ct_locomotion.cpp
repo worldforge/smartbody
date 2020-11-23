@@ -150,7 +150,7 @@ void MeCtLocomotion::iterate_joints(MeCtLocomotionJointInfo* joint_info)
 // Implements MeController::context_updated(..).
 void MeCtLocomotion::context_updated() 
 {
-	if( _context == NULL )
+	if( _context == nullptr )
 		channels_valid = false;
 	else
 		navigation_circle.setContext(_context);
@@ -221,7 +221,7 @@ void MeCtLocomotion::controller_map_updated()
 //temp function
 void MeCtLocomotion::temp_update_for_footprint(MeFrameData& frame)
 {
-	MeCtLocomotionLimb* limb = NULL;
+	MeCtLocomotionLimb* limb = nullptr;
 	int index;
 	SrQuat quat;
 	SrVec pos;
@@ -244,7 +244,7 @@ void MeCtLocomotion::temp_update_for_footprint(MeFrameData& frame)
 		nonlimb_joint_info.quat.set(i, quat_buff);
 	}
 
-	update_nonlimb_mat(NULL, NULL, 0);
+	update_nonlimb_mat(nullptr, nullptr, 0);
 
 	for(int j = 0; j < limb_list.size(); ++j)
 	{
@@ -634,15 +634,15 @@ void MeCtLocomotion::update(float inc_frame, MeFrameData& frame)
 
 	if(r_anim1_index_dominant < 0 && r_anim2_index_dominant < 0) return;
 
-	MeCtLocomotionLimbAnim* anim1 = NULL;
+	MeCtLocomotionLimbAnim* anim1 = nullptr;
 	if(r_anim1_index_dominant >= 0) anim1 = limb_list.get(dominant_limb)->get_walking_list()->get(r_anim1_index_dominant);
-	MeCtLocomotionLimbAnim* anim2 = NULL;
+	MeCtLocomotionLimbAnim* anim2 = nullptr;
 	if(r_anim2_index_dominant >= 0) anim2 = limb_list.get(dominant_limb)->get_walking_list()->get(r_anim2_index_dominant);
 	MeCtLocomotionLimbAnim* blended_anim = &limb_list.get(dominant_limb)->blended_anim;
 
-	MeCtLocomotionTimingSpace* space1 = NULL;
+	MeCtLocomotionTimingSpace* space1 = nullptr;
 	if(anim1) space1 = anim1->get_timing_space();
-	MeCtLocomotionTimingSpace* space2 = NULL;
+	MeCtLocomotionTimingSpace* space2 = nullptr;
 	if(anim2) space2 = anim2->get_timing_space();
 
 	// get the ratio of the two animations
@@ -739,7 +739,7 @@ void MeCtLocomotion::update(float inc_frame, MeFrameData& frame)
 
 	blend_base_joint(frame, limb_list.get(0)->get_space_time(), r_anim1_index_dominant, r_anim2_index_dominant, dom_ratio);
 
-	update_nonlimb_mat(NULL, NULL, 0);
+	update_nonlimb_mat(nullptr, nullptr, 0);
 
 	update_pos();
 
@@ -810,7 +810,7 @@ void MeCtLocomotion::update_limb_mat_with_global_info()
 void MeCtLocomotion::blend_standing(MeFrameData& frame)
 {
 	if(navigator.limb_blending_factor == 1.0f) return;
-	MeCtLocomotionLimb* limb = NULL;
+	MeCtLocomotionLimb* limb = nullptr;
 	int index;
 	SrQuat quat;
 	SrQuat quat_buff;
@@ -851,13 +851,13 @@ void MeCtLocomotion::blend_standing(MeFrameData& frame)
 
 void MeCtLocomotion::update_nonlimb_mat(SkJoint* joint, SrMat* mat, int depth)
 {
-	if(joint == NULL) joint = walking_skeleton->root();
-	//SkJoint* tjoint = NULL;
+	if(joint == nullptr) joint = walking_skeleton->root();
+	//SkJoint* tjoint = nullptr;
 	int index = -1;
 	SrMat lmat;
 	SrMat gmat;
 	SrQuat quat;
-	if(mat == NULL) mat = &gmat;
+	if(mat == nullptr) mat = &gmat;
 
 	for(int j = 0; j < limb_list.size(); ++j)
 	{
@@ -910,8 +910,8 @@ SrVec MeCtLocomotion::get_supporting_joint_pos(int joint_index, int limb_index, 
 	pos.y = height;
 	SrVec pos1 = limb_list.get(limb_index)->pos_buffer.get(2+joint_index_plus);
 
-	//height = mcu.query_terrain(pos1.x, pos1.z, NULL);
-	height = terrain.get_height(pos1.x, pos1.z, NULL);
+	//height = mcu.query_terrain(pos1.x, pos1.z, nullptr);
+	height = terrain.get_height(pos1.x, pos1.z, nullptr);
 
 	pos1.y = height;
 	if(joint_index_plus > joint_index) *orientation = pos1-pos;
@@ -924,8 +924,8 @@ SrVec MeCtLocomotion::get_supporting_joint_pos(int joint_index, int limb_index, 
 void MeCtLocomotion::apply_IK()
 {
 	//if(navigator.target_height_displacement == 0.0f) return;
-	MeCtIKScenario* ik_scenario = NULL;
-	MeCtIKScenarioJointInfo* info = NULL;
+	MeCtIKScenario* ik_scenario = nullptr;
+	MeCtIKScenarioJointInfo* info = nullptr;
 	mcuCBHandle& mcu = mcuCBHandle::singleton();
 
 	SrMat global_mat;
@@ -1081,8 +1081,8 @@ SrVec MeCtLocomotion::get_limb_pos(MeCtLocomotionLimb* limb)
 	SrMat pmat;
 	SrMat lmat;
 	SrVec pos;
-	SkJoint* tjoint = NULL;
-	SkJoint* tjoint_base = NULL;
+	SkJoint* tjoint = nullptr;
+	SkJoint* tjoint_base = nullptr;
 	//float* ppos;
 	SkSkeleton* skeleton = limb->walking_skeleton;
 
@@ -1112,7 +1112,7 @@ SrVec MeCtLocomotion::get_limb_pos(MeCtLocomotionLimb* limb)
 
 void MeCtLocomotion::update_pos()
 {
-	SkJoint* tjoint = NULL;
+	SkJoint* tjoint = nullptr;
 	SrVec currpos;
 	
 	SrVec dis[2];//temp;

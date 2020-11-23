@@ -73,7 +73,7 @@ SBHandSynthesis::SBHandSynthesis(SmartBody::SBSkeleton* skeleton, SkChannelArray
 	_leftDb = new MotionDatabase();
 	_rightDb = new MotionDatabase();
 	_selectDb = _rightDb;
-	_bodyMotion = NULL;
+	_bodyMotion = nullptr;
 	_sk = skeleton;
 	_skCopy = new SmartBody::SBSkeleton();
 	_skCopy->copy(_sk);
@@ -144,9 +144,9 @@ void SBHandSynthesis::changeState(HandState state)
 void SBHandSynthesis::addDatabaseMotion(SmartBody::SBMotion* dbMotion)
 {
 	// check if motion exists or not 
-	if (dbMotion == NULL)
+	if (dbMotion == nullptr)
 	{
-		SmartBody::util::log("Unable to add motion (its NULL)");
+		SmartBody::util::log("Unable to add motion (its nullptr)");
 		return;
 	}
 
@@ -342,12 +342,12 @@ void SBHandSynthesis::generateDatabaseSegments()
 // clear all data
 void SBHandSynthesis::clearData()
 {
-	_selectDb = NULL;
+	_selectDb = nullptr;
 	
 	_leftDb->clearDb();
 	_rightDb->clearDb();
 
-	_bodyMotion = NULL;
+	_bodyMotion = nullptr;
 }
 
 // synthesize the hand motion

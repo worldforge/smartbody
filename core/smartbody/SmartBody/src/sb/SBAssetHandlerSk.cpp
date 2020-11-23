@@ -46,12 +46,12 @@ SBAssetHandlerSk::~SBAssetHandlerSk()
 {
 }
 
-std::vector<SBAsset*> SBAssetHandlerSk::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSk::getAssets(const std::string& path)
 {
-	std::vector<SBAsset*> assets;
+	std::vector<std::unique_ptr<SBAsset>> assets;
 
 	std::string convertedPath = checkPath(path);
-	if (convertedPath == "")
+	if (convertedPath.empty())
 		return assets;
 	
 	boost::filesystem::path p(convertedPath);
@@ -59,7 +59,7 @@ std::vector<SBAsset*> SBAssetHandlerSk::getAssets(const std::string& path)
 	std::string extension =  boost::filesystem::extension( p );
 	FILE* myfile = fopen(convertedPath.c_str(), "rt");
 	SrInput input(myfile);
-	SmartBody::SBSkeleton* skeleton = new SmartBody::SBSkeleton();
+	auto skeleton = std::make_unique<SmartBody::SBSkeleton>();
 	double scale = 1.0;
 	if (SmartBody::SBScene::getScene()->getAttribute("globalSkeletonScale"))
 		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalSkeletonScale");
@@ -68,12 +68,11 @@ std::vector<SBAsset*> SBAssetHandlerSk::getAssets(const std::string& path)
 		skeleton->ref();
 		skeleton->setFileName(convertedPath);
 		skeleton->setName(fileName + extension);
-		assets.push_back(skeleton);
+		assets.emplace_back(std::move(skeleton));
 	}
 	else
 	{
 		SmartBody::util::log("Could not load .sk file %s", convertedPath.c_str());
-		delete skeleton;
 	}
 
 	return assets;

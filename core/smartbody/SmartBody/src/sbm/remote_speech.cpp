@@ -35,11 +35,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "time.h"
 #include <sb/SBSpeechManager.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBVHMsgManager.h>
+#include "sb/SBVHMsgManager.h"
 #include <sb/SBCommandManager.h>
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
-#include <sbm/local_speech.h>
+#include "sbm/local_speech.h"
 
 #include "sbm/xercesc_utils.hpp"
 #include "sbm/BMLDefs.h"
@@ -131,8 +131,8 @@ RequestId remote_speech::requestSpeechAudio( const char* agentName, std::string 
 	_strtime(timebuf);
 	_strdate(datebuf);
 	//following puts the date and time in the correct format (yyymmdd_hhmmss)
-	timebuf[2]=timebuf[3]; timebuf[3]=timebuf[4]; timebuf[4]=timebuf[6];timebuf[5]=timebuf[7]; timebuf[6]=NULL; timebuf[7]=NULL; //gets rid of colon in between time
-	tmpdatebuf[0]= '2';tmpdatebuf[1]='0';tmpdatebuf[2]=datebuf[6];tmpdatebuf[3]=datebuf[7];tmpdatebuf[4]=datebuf[0];tmpdatebuf[5]=datebuf[1];tmpdatebuf[6]=datebuf[3];tmpdatebuf[7]=datebuf[4]; tmpdatebuf[8]=NULL;
+	timebuf[2]=timebuf[3]; timebuf[3]=timebuf[4]; timebuf[4]=timebuf[6];timebuf[5]=timebuf[7]; timebuf[6]=nullptr; timebuf[7]=nullptr; //gets rid of colon in between time
+	tmpdatebuf[0]= '2';tmpdatebuf[1]='0';tmpdatebuf[2]=datebuf[6];tmpdatebuf[3]=datebuf[7];tmpdatebuf[4]=datebuf[0];tmpdatebuf[5]=datebuf[1];tmpdatebuf[6]=datebuf[3];tmpdatebuf[7]=datebuf[4]; tmpdatebuf[8]=nullptr;
 #else
 	tzset();
 	time_t t;
@@ -165,7 +165,7 @@ The timestamp is 20051121_150427 (that is, YYYYMMDD_HHMMSS ), so we can check ol
 	SmartBody::SBCharacter* agent = SmartBody::SBScene::getScene()->getCharacter(agentName);
 	
 	//SmartBody::util::log("sound file = %s",soundFile.c_str());
-	if( agent == NULL ) {
+	if( agent == nullptr ) {
 		// TODO: Log: Unknown Agent
 		SmartBody::util::log("Unknown agent...");
 		return -1;  // TODO: Define error return value as a constant somewhere (or new exception type).
@@ -222,7 +222,7 @@ void remote_speech::sendSpeechTimeout(std::ostringstream& outStream)
 
 std::vector<VisemeData*>* remote_speech::extractVisemes(DOMNode* node, vector<VisemeData*>* visemes, SbmCharacter* character) {
 	//this is used to recursively search the DOM tree and return a vector containing the visemes and the appropriate viseme resets (before a subsequent viseme is set the previous one must be reset)
-	VisemeData* curViseme = NULL;
+	VisemeData* curViseme = nullptr;
 	float blendTime = 0.0f;
 	float blendIval = 0.0f;
 	float startTime = 0.0f;
@@ -390,7 +390,7 @@ std::vector<VisemeData*>* remote_speech::getVisemes( RequestId requestId, SbmCha
 
 	/**
         *  If the request has been processed, returns the time ordered vector 
-        *  of VisemeData for the requestId.  Otherwise return NULL.
+        *  of VisemeData for the requestId.  Otherwise return nullptr.
         */
 	
 	ostringstream myStream; //creates an ostringstream object
@@ -399,7 +399,7 @@ std::vector<VisemeData*>* remote_speech::getVisemes( RequestId requestId, SbmCha
 	const char *Id= temp.c_str();
 	
 	//if dom document exists finds it and then extracts visemes from it placing them in vecto along with the appropriate viseme resets
-	if (uttLookUp.lookup(Id) !=NULL)
+	if (uttLookUp.lookup(Id) !=nullptr)
 	{
 		DOMNode* docElement= uttLookUp.lookup(Id);  
 		vector<VisemeData *> *visemeVector= new vector<VisemeData *>;  
@@ -416,8 +416,8 @@ std::vector<VisemeData*>* remote_speech::getVisemes( RequestId requestId, SbmCha
 
 		return (visemeVector);
 	}
-	else //if viseme isn't found returns NULL
-	{return(NULL); 
+	else //if viseme isn't found returns nullptr
+	{return(nullptr);
 	}
 }
 
@@ -444,9 +444,9 @@ char* remote_speech::getSpeechPlayCommand( RequestId requestId, SbmCharacter* ch
 	requestIdStream << requestId << flush; //outputs the number into the string stream and then flushes the buffer
 	string requestIdStr( requestIdStream.str() );
 	string* lookupResult = soundLookUp.lookup( requestIdStr.c_str() );
-	if( lookupResult == NULL ) {
+	if( lookupResult == nullptr ) {
 		// Error: no known sound file
-		return NULL;
+		return nullptr;
 	}
 	string& soundFile = *lookupResult;
 
@@ -475,9 +475,9 @@ char* remote_speech::getSpeechStopCommand( RequestId requestId, SbmCharacter* ch
 	requestIdStream << requestId << flush; //outputs the number into the string stream and then flushes the buffer
 	string requestIdStr( requestIdStream.str() );
 	string* lookupResult = soundLookUp.lookup( requestIdStr.c_str() );
-	if( lookupResult == NULL ) {
+	if( lookupResult == nullptr ) {
 		// Error: no known sound file
-		return NULL;
+		return nullptr;
 	}
 	string& soundFile = *lookupResult;
 
@@ -512,7 +512,7 @@ float remote_speech::getMarkTime( RequestId requestId, const XMLCh* markId ){
 	requestIdStream << requestId << flush; //outputs the number into the string stream and then flushes the buffer
 	string requestIdStr( requestIdStream.str() );
 	DOMNode* node = uttLookUp.lookup(requestIdStr.c_str());
-	if( node == NULL ) {
+	if( node == nullptr ) {
 		// Unknown DOM Node for requestId
 		return -1;
 	}
@@ -558,9 +558,9 @@ char*  remote_speech::getSpeechAudioFilename( RequestId requestId ){
 	requestIdStream << requestId << flush; //outputs the number into the string stream and then flushes the buffer
 	string requestIdStr( requestIdStream.str() );
 	string* lookup_result = soundLookUp.lookup( requestIdStr.c_str() );
-	if( lookup_result == NULL ) {
+	if( lookup_result == nullptr ) {
 		// Error: no known sound file
-		return NULL;
+		return nullptr;
 	}
 	string soundFile= *lookup_result;
 	char* retSoundFile= new char[soundFile.length() + 1];
@@ -577,7 +577,7 @@ int remoteSpeechResult_func( srArgBuffer& args, SmartBody::SBCommandManager* man
 	//SmartBody::util::log("remoteSpeechReply Func");
 	char* character_name = args.read_token(); //character speaking
 	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter( character_name );
-	if( character==NULL )
+	if( character==nullptr )
 		return( CMD_SUCCESS );  // Ignore messages for characters who are not present in this SBM process
 
 	char* msgID = args.read_token(); //the determined message ID sent out by requestSpeechAudio
@@ -620,11 +620,11 @@ int remote_speech::handleRemoteSpeechResult( SbmCharacter* character, char* msgI
 			Prser->setErrorHandler( new HandlerBase() );
 			DOMDocument *replyDoc = xml_utils::parseMessageXml( Prser, result );
 
-			if(replyDoc==NULL) //if the reply document is NULL print error message and return
+			if(replyDoc==nullptr) //if the reply document is nullptr print error message and return
 				{	
 					const char* commandChars = remote_speech::commandLookUp.lookup(msgID);
 					if( commandChars ) {
-						string command= string(commandChars)+" "+character->getName() +" "+string(msgID)+ "ERROR::remote_speech Remote speech process returns NULL document";
+						string command= string(commandChars)+" "+character->getName() +" "+string(msgID)+ "ERROR::remote_speech Remote speech process returns nullptr document";
 						char* failCmd= new char[command.length()+1];
 						strcpy(failCmd, command.c_str());
 						SmartBody::util::log(failCmd);
@@ -734,7 +734,7 @@ int remoteSpeechReady_func(srArgBuffer& args, SmartBody::SBCommandManager* manag
 		char* Okay= args.read_token(); // not used*/
 		//////////////////////////////////////////////////////////////////////
 		//DELETE THIS- THIS IS JUST TO TEST THE VISEME FUNCTION!!!
-		vector<VisemeData*>* p= x.getVisemes(reqId, NULL);
+		vector<VisemeData*>* p= x.getVisemes(reqId, nullptr);
 		for(unsigned int funTimes=0; funTimes<p->size(); funTimes++){
 			VisemeData* vd = p->at(funTimes);
 

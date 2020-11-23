@@ -164,7 +164,7 @@ class MeCtQuickDraw : public SmartBody::SBController	{
     		(SkMotion derives SrSharedClass and has ref/unref methods)
     		The keytimes of m are translated to ensure start from zero. 
     		MeController::init() is automatically called. */
-		void init( SbmPawn* pawn, SkMotion* mot_p, SkMotion* mot2_p = NULL );
+		void init( SbmPawn* pawn, SkMotion* mot_p, SkMotion* mot2_p = nullptr );
 
 		void set_gundraw_duration( float sec );
 		void set_holster_duration( float sec );
@@ -179,7 +179,7 @@ class MeCtQuickDraw : public SmartBody::SBController	{
 		// Target API
 		void set_target_point( float x, float y, float z );
 		void set_target_coord_joint( SkJoint* joint_p );
-		void set_target_joint( float x, float y, float z, SkJoint* ref_joint_p = NULL );
+		void set_target_joint( float x, float y, float z, SkJoint* ref_joint_p = nullptr );
 		
 		// Track-dur: if less than 0.0, track indefinitely
 		void set_track_duration( float dur ) { track_dur = dur; }

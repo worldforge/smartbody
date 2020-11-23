@@ -67,8 +67,8 @@ class srCmdSeq	{
 		std::string pop( float time );
 
 		void	reset(void) { iterator = handle; }
-		char	*next( float *t = NULL );	// return pointer, time
-		char	*pull( float *t = NULL );	// return instance, time
+		char	*next( float *t = nullptr );	// return pointer, time
+		char	*pull( float *t = nullptr );	// return instance, time
 
 		bool	isValid() { return _valid; }
 		void	setValid(bool val) { _valid = val; }
