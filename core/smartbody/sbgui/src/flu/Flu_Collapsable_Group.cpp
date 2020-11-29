@@ -70,7 +70,7 @@ void Flu_Collapsable_Group :: open( bool o )
   if( !_changing )
     {
       _oldResizable = group.resizable();
-      group.resizable( NULL );
+      group.resizable( nullptr );
     }
 
   if( _open )

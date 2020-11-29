@@ -14,13 +14,13 @@ public:
 	static SBBaseRenderer& singleton();
 	static void destroy_singleton();
 
-	SBBaseRenderer(void);
-	~SBBaseRenderer(void);
+	SBBaseRenderer();
+	~SBBaseRenderer();
 	virtual void draw(std::vector<SrLight>& lights, bool isDrawFloor);
 	virtual void resize(int w, int h);
 	virtual void initRenderer(int w, int h);
 	void renderMesh(DeformableMeshInstance* meshInstance, SbmShaderProgram* shaderProgram, bool deferredRender = true);
-	bool isInitialized() { return rendererInitialized;  }
+	bool isInitialized() const { return rendererInitialized;  }
 	void resetRenderer();
 	void setBackgroundColor(SrColor& bg) { backgroundColor = bg;  }
 
@@ -31,9 +31,9 @@ protected:
 	void GPUMeshUpdate(DeformableMeshInstance* meshInstance);
 	void GPUBlendShapeUpdate(DeformableMeshInstance* meshInstance);
 protected:
-	SbmShaderProgram* skinningShader;
-	SbmShaderProgram* normalMapShader;
-	int width, height;
+	SbmShaderProgram* skinningShader{};
+	SbmShaderProgram* normalMapShader{};
+	int width{}, height{};
 	SrColor backgroundColor;
 	bool rendererInitialized;
 };

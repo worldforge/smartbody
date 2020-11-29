@@ -237,7 +237,7 @@ void PanimationWindow::execCmd(PanimationWindow* window, std::string cmd, double
 	BML::SbmCommand* command = new BML::SbmCommand(cmd, (float)(SmartBody::SBScene::getScene()->getSimulationManager()->getTime() + tOffset));
 	bool success = true;
 	srCmdSeq *seq = new srCmdSeq(); //sequence that holds the commands
-	if( command != NULL ) 
+	if( command != nullptr )
 	{
 		if( seq->insert( (float)(command->time), command->command.c_str() ) != CMD_SUCCESS ) 
 		{
@@ -290,7 +290,7 @@ void PanimationWindow::addTimeMark(nle::NonLinearEditorModel* model, bool select
 
 void PanimationWindow::removeTimeMark(nle::NonLinearEditorModel* model)
 {
-	CorrespondenceMark* attachedMark = NULL;
+	CorrespondenceMark* attachedMark = nullptr;
 	for (int t = 0; t < model->getNumTracks(); t++)
 	{
 		nle::Track* track = model->getTrack(t);
@@ -305,7 +305,7 @@ void PanimationWindow::removeTimeMark(nle::NonLinearEditorModel* model)
 					CorrespondenceMark* cMark = dynamic_cast<CorrespondenceMark*>(mark);
 					cMark->getAttachedMark().clear();
 				//	attachedMark = cMark->getAttachedMark();
-				//	if (attachedMark)	attachedMark = NULL;//attachedMark->attach(NULL);
+				//	if (attachedMark)	attachedMark = nullptr;//attachedMark->attach(nullptr);
 					block->removeMark(mark);
 				}
 			}
@@ -339,7 +339,7 @@ std::vector<std::string> PanimationWindow::tokenize(const std::string& str,const
 	while (std::string::npos != pos || std::string::npos != lastPos)
 	{
     	// found a token, add it to the vector.
-    	tokens.push_back(str.substr(lastPos, pos - lastPos));
+    	tokens.emplace_back(str.substr(lastPos, pos - lastPos));
 	
     	// skip delimiters.  Note the "not_of"
     	lastPos = str.find_first_not_of(delimiters, pos);
@@ -402,7 +402,7 @@ void PanimationWindow::changeTabGroup(Fl_Widget* widget, void* data)
 
 PanimationWindow* PanimationWindow::getPAnimationWindow( Fl_Widget* w )
 {
-	PanimationWindow* panimWindow = NULL;
+	PanimationWindow* panimWindow = nullptr;
 	Fl_Widget* widget = w;
 	while (widget)
 	{
@@ -428,7 +428,7 @@ const std::string& PanimationWindow::getCurrentCharacterName()
 SmartBody::SBCharacter* PanimationWindow::getCurrentCharacter()
 {
 	if (!characterList->menu())
-		return NULL;
+		return nullptr;
 
 	std::string charName = characterList->menu()[characterList->value()].label();
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();

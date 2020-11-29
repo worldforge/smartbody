@@ -10,6 +10,7 @@ add_library(
         src/sb/SBRenderAssetManager.cpp
 
 
+        src/sbm/SBTextureAssetProcessor.cpp
         src/sbm/SBRenderScene.cpp
         src/sbm/SBRenderSceneListener.cpp
         src/sbm/sbm_deformable_mesh.cpp

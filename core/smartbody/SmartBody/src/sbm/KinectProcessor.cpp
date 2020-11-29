@@ -62,32 +62,32 @@ KinectProcessor::KinectProcessor()
 	numOfKinectJoints = 25; // use only 25 joints from Kinect2
 
 	// default mapping, can be user defined too
-	boneMapping.push_back("base");			
-	boneMapping.push_back("spine2");	// should it be spine2 or base
-	boneMapping.push_back("spine3");	// should it be spine4?
-	boneMapping.push_back("spine5");
-	boneMapping.push_back("l_shoulder");
-	boneMapping.push_back("l_elbow");
-	boneMapping.push_back("l_wrist");
-	boneMapping.push_back("l_index1");			// no mapping for hand
-	boneMapping.push_back("r_shoulder");
-	boneMapping.push_back("r_elbow");
-	boneMapping.push_back("r_wrist");
-	boneMapping.push_back("r_index1");			// no mapping for hand
-	boneMapping.push_back("l_hip");
-	boneMapping.push_back("l_knee");
-	boneMapping.push_back("l_ankle");
-	boneMapping.push_back("l_forefoot");
-	boneMapping.push_back("r_hip");
-	boneMapping.push_back("r_knee");
-	boneMapping.push_back("r_ankle");
-	boneMapping.push_back("r_forefoot");
+	boneMapping.emplace_back("base");
+	boneMapping.emplace_back("spine2");	// should it be spine2 or base
+	boneMapping.emplace_back("spine3");	// should it be spine4?
+	boneMapping.emplace_back("spine5");
+	boneMapping.emplace_back("l_shoulder");
+	boneMapping.emplace_back("l_elbow");
+	boneMapping.emplace_back("l_wrist");
+	boneMapping.emplace_back("l_index1");			// no mapping for hand
+	boneMapping.emplace_back("r_shoulder");
+	boneMapping.emplace_back("r_elbow");
+	boneMapping.emplace_back("r_wrist");
+	boneMapping.emplace_back("r_index1");			// no mapping for hand
+	boneMapping.emplace_back("l_hip");
+	boneMapping.emplace_back("l_knee");
+	boneMapping.emplace_back("l_ankle");
+	boneMapping.emplace_back("l_forefoot");
+	boneMapping.emplace_back("r_hip");
+	boneMapping.emplace_back("r_knee");
+	boneMapping.emplace_back("r_ankle");
+	boneMapping.emplace_back("r_forefoot");
 
-	boneMapping.push_back("l_acromioclavicular");
-	boneMapping.push_back("r_acromioclavicular");
-	boneMapping.push_back("");
-	boneMapping.push_back("");
-	boneMapping.push_back("");
+	boneMapping.emplace_back("l_acromioclavicular");
+	boneMapping.emplace_back("r_acromioclavicular");
+	boneMapping.emplace_back("");
+	boneMapping.emplace_back("");
+	boneMapping.emplace_back("");
 
 	parentIndexMap.clear();
 	for (unsigned int i=0;i<boneMapping.size();i++)
@@ -317,22 +317,22 @@ void KinectProcessor::processRetargetPosition( std::string targetSkelName, SrVec
 	{
 		retarget = retargetManager->createRetarget(kinectSkName,targetSkelName);
 		std::vector<std::string> endJoints;
-		endJoints.push_back("l_forefoot");
-		endJoints.push_back("l_toe");
-		endJoints.push_back("l_wrist");
-		endJoints.push_back("r_forefoot");
-		endJoints.push_back("r_toe");	
-		endJoints.push_back("r_wrist");
+		endJoints.emplace_back("l_forefoot");
+		endJoints.emplace_back("l_toe");
+		endJoints.emplace_back("l_wrist");
+		endJoints.emplace_back("r_forefoot");
+		endJoints.emplace_back("r_toe");
+		endJoints.emplace_back("r_wrist");
 		std::vector<std::string> relativeJoints;
-		relativeJoints.push_back("spine1");
-		relativeJoints.push_back("spine2");
-		relativeJoints.push_back("spine3");
-		relativeJoints.push_back("spine4");
-		relativeJoints.push_back("spine5");
-		relativeJoints.push_back("r_sternoclavicular");
-		relativeJoints.push_back("l_sternoclavicular");
-		relativeJoints.push_back("r_acromioclavicular");
-		relativeJoints.push_back("l_acromioclavicular");
+		relativeJoints.emplace_back("spine1");
+		relativeJoints.emplace_back("spine2");
+		relativeJoints.emplace_back("spine3");
+		relativeJoints.emplace_back("spine4");
+		relativeJoints.emplace_back("spine5");
+		relativeJoints.emplace_back("r_sternoclavicular");
+		relativeJoints.emplace_back("l_sternoclavicular");
+		relativeJoints.emplace_back("r_acromioclavicular");
+		relativeJoints.emplace_back("l_acromioclavicular");
 		retarget->initRetarget(endJoints,relativeJoints);
 	}
 
@@ -363,22 +363,22 @@ void KinectProcessor::processRetargetRotation(std::string targetSkelName, std::v
 	{
 		retarget = retargetManager->createRetarget(kinectSkName,targetSkelName);
 		std::vector<std::string> endJoints;
-		endJoints.push_back("l_forefoot");
-		endJoints.push_back("l_toe");
-		endJoints.push_back("l_wrist");
-		endJoints.push_back("r_forefoot");
-		endJoints.push_back("r_toe");	
-		endJoints.push_back("r_wrist");
+		endJoints.emplace_back("l_forefoot");
+		endJoints.emplace_back("l_toe");
+		endJoints.emplace_back("l_wrist");
+		endJoints.emplace_back("r_forefoot");
+		endJoints.emplace_back("r_toe");
+		endJoints.emplace_back("r_wrist");
 		std::vector<std::string> relativeJoints;
-		relativeJoints.push_back("spine1");
-		relativeJoints.push_back("spine2");
-		relativeJoints.push_back("spine3");
-		relativeJoints.push_back("spine4");
-		relativeJoints.push_back("spine5");
-		relativeJoints.push_back("r_sternoclavicular");
-		relativeJoints.push_back("l_sternoclavicular");
-		relativeJoints.push_back("r_acromioclavicular");
-		relativeJoints.push_back("l_acromioclavicular");
+		relativeJoints.emplace_back("spine1");
+		relativeJoints.emplace_back("spine2");
+		relativeJoints.emplace_back("spine3");
+		relativeJoints.emplace_back("spine4");
+		relativeJoints.emplace_back("spine5");
+		relativeJoints.emplace_back("r_sternoclavicular");
+		relativeJoints.emplace_back("l_sternoclavicular");
+		relativeJoints.emplace_back("r_acromioclavicular");
+		relativeJoints.emplace_back("l_acromioclavicular");
 		retarget->initRetarget(endJoints,relativeJoints);
 	}	
 
@@ -415,7 +415,7 @@ void KinectProcessor::filterRotation(std::vector<SrQuat>& quats)
 			rotationBuffer[i].pop_front();
 	}
 	for (int i = 0; i < numOfKinectJoints; i++)
-		rotationBuffer[i].push_back(quats[i]);
+		rotationBuffer[i].emplace_back(quats[i]);
 
 	float weight = 1.0f / float(filterSize);
 	for (int i = 0; i < numOfKinectJoints; i++)

@@ -69,7 +69,7 @@ namespace concurrent {
      *     std::vector&lt;Thread*gt; threads;
      *
      *     void execute( Runnable* r ) {
-     *         threads.push_back( new Thread( r ) );
+     *         threads.emplace_back( new Thread( r ) );
      *         threads.rbegin()->start();
      *     }
      *

@@ -886,11 +886,11 @@ void CMainApplication::SetupScene()
 //-----------------------------------------------------------------------------
 void CMainApplication::AddCubeVertex(float fl0, float fl1, float fl2, float fl3, float fl4, std::vector<float> &vertdata)
 {
-	vertdata.push_back(fl0);
-	vertdata.push_back(fl1);
-	vertdata.push_back(fl2);
-	vertdata.push_back(fl3);
-	vertdata.push_back(fl4);
+	vertdata.emplace_back(fl0);
+	vertdata.emplace_back(fl1);
+	vertdata.emplace_back(fl2);
+	vertdata.emplace_back(fl3);
+	vertdata.emplace_back(fl4);
 }
 
 
@@ -993,21 +993,21 @@ void CMainApplication::DrawControllers()
 			point[i] += 0.05f;  // offset in X, Y, Z
 			color[i] = 1.0;  // R, G, B
 			point = mat * point;
-			vertdataarray.push_back(center.x);
-			vertdataarray.push_back(center.y);
-			vertdataarray.push_back(center.z);
+			vertdataarray.emplace_back(center.x);
+			vertdataarray.emplace_back(center.y);
+			vertdataarray.emplace_back(center.z);
 
-			vertdataarray.push_back(color.x);
-			vertdataarray.push_back(color.y);
-			vertdataarray.push_back(color.z);
+			vertdataarray.emplace_back(color.x);
+			vertdataarray.emplace_back(color.y);
+			vertdataarray.emplace_back(color.z);
 
-			vertdataarray.push_back(point.x);
-			vertdataarray.push_back(point.y);
-			vertdataarray.push_back(point.z);
+			vertdataarray.emplace_back(point.x);
+			vertdataarray.emplace_back(point.y);
+			vertdataarray.emplace_back(point.z);
 
-			vertdataarray.push_back(color.x);
-			vertdataarray.push_back(color.y);
-			vertdataarray.push_back(color.z);
+			vertdataarray.emplace_back(color.x);
+			vertdataarray.emplace_back(color.y);
+			vertdataarray.emplace_back(color.z);
 
 			m_uiControllerVertcount += 2;
 		}
@@ -1016,11 +1016,11 @@ void CMainApplication::DrawControllers()
 		Vector4 end = mat * Vector4(0, 0, -39.f, 1);
 		Vector3 color(.92f, .92f, .71f);
 
-		vertdataarray.push_back(start.x); vertdataarray.push_back(start.y); vertdataarray.push_back(start.z);
-		vertdataarray.push_back(color.x); vertdataarray.push_back(color.y); vertdataarray.push_back(color.z);
+		vertdataarray.emplace_back(start.x); vertdataarray.emplace_back(start.y); vertdataarray.emplace_back(start.z);
+		vertdataarray.emplace_back(color.x); vertdataarray.emplace_back(color.y); vertdataarray.emplace_back(color.z);
 
-		vertdataarray.push_back(end.x); vertdataarray.push_back(end.y); vertdataarray.push_back(end.z);
-		vertdataarray.push_back(color.x); vertdataarray.push_back(color.y); vertdataarray.push_back(color.z);
+		vertdataarray.emplace_back(end.x); vertdataarray.emplace_back(end.y); vertdataarray.emplace_back(end.z);
+		vertdataarray.emplace_back(color.x); vertdataarray.emplace_back(color.y); vertdataarray.emplace_back(color.z);
 		m_uiControllerVertcount += 2;
 	}
 
@@ -1161,7 +1161,7 @@ void CMainApplication::SetupDistortion()
 			vert.texCoordGreen = Vector2(dc0.rfGreen[0], 1 - dc0.rfGreen[1]);
 			vert.texCoordBlue = Vector2(dc0.rfBlue[0], 1 - dc0.rfBlue[1]);
 
-			vVerts.push_back(vert);
+			vVerts.emplace_back(vert);
 		}
 	}
 
@@ -1180,7 +1180,7 @@ void CMainApplication::SetupDistortion()
 			vert.texCoordGreen = Vector2(dc0.rfGreen[0], 1 - dc0.rfGreen[1]);
 			vert.texCoordBlue = Vector2(dc0.rfBlue[0], 1 - dc0.rfBlue[1]);
 
-			vVerts.push_back(vert);
+			vVerts.emplace_back(vert);
 		}
 	}
 
@@ -1196,13 +1196,13 @@ void CMainApplication::SetupDistortion()
 			b = m_iLensGridSegmentCountH*y + x + 1 + offset;
 			c = (y + 1)*m_iLensGridSegmentCountH + x + 1 + offset;
 			d = (y + 1)*m_iLensGridSegmentCountH + x + offset;
-			vIndices.push_back(a);
-			vIndices.push_back(b);
-			vIndices.push_back(c);
+			vIndices.emplace_back(a);
+			vIndices.emplace_back(b);
+			vIndices.emplace_back(c);
 
-			vIndices.push_back(a);
-			vIndices.push_back(c);
-			vIndices.push_back(d);
+			vIndices.emplace_back(a);
+			vIndices.emplace_back(c);
+			vIndices.emplace_back(d);
 		}
 	}
 
@@ -1215,13 +1215,13 @@ void CMainApplication::SetupDistortion()
 			b = m_iLensGridSegmentCountH*y + x + 1 + offset;
 			c = (y + 1)*m_iLensGridSegmentCountH + x + 1 + offset;
 			d = (y + 1)*m_iLensGridSegmentCountH + x + offset;
-			vIndices.push_back(a);
-			vIndices.push_back(b);
-			vIndices.push_back(c);
+			vIndices.emplace_back(a);
+			vIndices.emplace_back(b);
+			vIndices.emplace_back(c);
 
-			vIndices.push_back(a);
-			vIndices.push_back(c);
-			vIndices.push_back(d);
+			vIndices.emplace_back(a);
+			vIndices.emplace_back(c);
+			vIndices.emplace_back(d);
 		}
 	}
 	m_uiIndexSize = vIndices.size();
@@ -1441,7 +1441,7 @@ void CMainApplication::updateLights()
 				light.quadratic_attenuation = 0.0f;
 			}
 
-			_lights.push_back(light);
+			_lights.emplace_back(light);
 		}
 	}
 	//SmartBody::util::log("light size = %d\n",_lights.size());
@@ -1463,7 +1463,7 @@ void CMainApplication::updateLights()
 		light.position = SrVec(lightDirection.x, lightDirection.y, lightDirection.z);
 		//	light.constant_attenuation = 1.0f/cam.scale;
 		light.constant_attenuation = 1.0f;
-		_lights.push_back(light);
+		_lights.emplace_back(light);
 
 		SrLight light2 = light;
 		light2.directional = true;
@@ -1474,7 +1474,7 @@ void CMainApplication::updateLights()
 		light2.position = SrVec(lightDirection.x, lightDirection.y, lightDirection.z);
 		//	light2.constant_attenuation = 1.0f;
 		//	light2.linear_attenuation = 2.0f;
-		_lights.push_back(light2);
+		_lights.emplace_back(light2);
 	}
 
 }
@@ -1884,7 +1884,7 @@ CGLRenderModel *CMainApplication::FindOrLoadRenderModel(const char *pchRenderMod
 		}
 		else
 		{
-			m_vecRenderModels.push_back(pRenderModel);
+			m_vecRenderModels.emplace_back(pRenderModel);
 		}
 		vr::VRRenderModels()->FreeRenderModel(pModel);
 		vr::VRRenderModels()->FreeTexture(pTexture);

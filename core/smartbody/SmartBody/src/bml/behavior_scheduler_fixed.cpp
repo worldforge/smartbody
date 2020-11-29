@@ -54,7 +54,7 @@ BehaviorSchedulerFixed::BehaviorSchedulerFixed( const VecSyncPairs& input ) {
 
 		//// Make sure we deal with start first
 		//if( it->first != BML::ATTR_START ) {
-		//	sync_point_times.push_back( make_pair<wstring,float>( BML::ATTR_START, 0 ) );
+		//	sync_point_times.emplace_back( make_pair<wstring,float>( BML::ATTR_START, 0 ) );
 		//	sync_id2index.insert( make_pair<wstring,unsigned int>( BML::ATTR_START, cur_index++ ) );
 		//}
 
@@ -68,7 +68,7 @@ BehaviorSchedulerFixed::BehaviorSchedulerFixed( const VecSyncPairs& input ) {
 			std::wstring sync_id = it->first;
 			last_time = it->second;
 
-			sync_point_times.push_back( std::make_pair( sync_id, last_time ) );
+			sync_point_times.emplace_back( std::make_pair( sync_id, last_time ) );
 			name_to_index.insert( std::make_pair( sync_id, cur_index++ ) );
 		}
 	} else {

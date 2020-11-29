@@ -388,8 +388,8 @@ static void RapiCallbackFunction(
 
               if (g_bookmarkIntermediate != "")
               {
-                 g_markListName.push_back(g_bookmarkIntermediate);
-                 g_markListTime.push_back(g_startWordTime);
+                 g_markListName.emplace_back(g_bookmarkIntermediate);
+                 g_markListTime.emplace_back(g_startWordTime);
               }
 
               g_bookmarkIntermediate = "";
@@ -397,8 +397,8 @@ static void RapiCallbackFunction(
            }
 
 
-           g_wordBreakListStart.push_back(g_startWordTime);
-           g_wordBreakListEnd.push_back(g_curTime);
+           g_wordBreakListStart.emplace_back(g_startWordTime);
+           g_wordBreakListEnd.emplace_back(g_curTime);
 
            g_startWordTime = g_curTime;
 
@@ -471,9 +471,9 @@ static void RapiCallbackFunction(
                         {
                            //g_visemesIntermediate += vhcl::Format( "      <viseme start=\"%f\" type=\"%s\" articulation=\"%s\"/>\n", g_curTime, viseme.c_str(), articulation.c_str() );
 
-                           g_visemeListType.push_back(viseme);
-                           g_visemeListStart.push_back(g_curTime);
-                           g_visemeListArticulation.push_back(atof(articulation.c_str()));
+                           g_visemeListType.emplace_back(viseme);
+                           g_visemeListStart.emplace_back(g_curTime);
+                           g_visemeListArticulation.emplace_back(atof(articulation.c_str()));
                         }
                         else
                         {
@@ -482,9 +482,9 @@ static void RapiCallbackFunction(
                            {
                               //g_visemesIntermediate += vhcl::Format( "      <viseme start=\"%f\" type=\"%s\" articulation=\"%s\"/>\n", g_curTime, viseme.c_str(), articulation.c_str() );
 
-                              g_visemeListType.push_back(viseme);
-                              g_visemeListStart.push_back(g_curTime);
-                              g_visemeListArticulation.push_back(atof(articulation.c_str()));
+                              g_visemeListType.emplace_back(viseme);
+                              g_visemeListStart.emplace_back(g_curTime);
+                              g_visemeListArticulation.emplace_back(atof(articulation.c_str()));
                            }
                         }
                      }
@@ -506,9 +506,9 @@ static void RapiCallbackFunction(
                   {
                      //g_visemesIntermediate += vhcl::Format( "      <viseme start=\"%f\" type=\"%s\"/>\n", g_curTime, viseme.c_str() );
 
-                     g_visemeListType.push_back(viseme);
-                     g_visemeListStart.push_back(g_curTime);
-                     g_visemeListArticulation.push_back(1.0);
+                     g_visemeListType.emplace_back(viseme);
+                     g_visemeListStart.emplace_back(g_curTime);
+                     g_visemeListArticulation.emplace_back(1.0);
                   }
                   else
                   {
@@ -517,9 +517,9 @@ static void RapiCallbackFunction(
                      {
                         //g_visemesIntermediate += vhcl::Format( "      <viseme start=\"%f\" type=\"%s\"/>\n", g_curTime, viseme.c_str() );
 
-                        g_visemeListType.push_back(viseme);
-                        g_visemeListStart.push_back(g_curTime);
-                        g_visemeListArticulation.push_back(1.0);
+                        g_visemeListType.emplace_back(viseme);
+                        g_visemeListStart.emplace_back(g_curTime);
+                        g_visemeListArticulation.emplace_back(1.0);
                      }
                   }
 
@@ -587,8 +587,8 @@ static void RapiCallbackFunction(
           }
           else
           {
-             g_markListName.push_back(cparam1);
-             g_markListTime.push_back(g_curTime);
+             g_markListName.emplace_back(cparam1);
+             g_markListTime.emplace_back(g_curTime);
           }
 
            /*
@@ -616,10 +616,10 @@ static void RapiCallbackFunction(
 
                 for ( int i = 0; i < length; i++ )
                 {
-                   g_audioData.push_back( data_chunk[ i + 1 ] );
-                   g_audioData.push_back( data_chunk[ i ] );
-                   g_audioData.push_back( data_chunk[ i + 1 ] );
-                   g_audioData.push_back( data_chunk[ i ] );
+                   g_audioData.emplace_back( data_chunk[ i + 1 ] );
+                   g_audioData.emplace_back( data_chunk[ i ] );
+                   g_audioData.emplace_back( data_chunk[ i + 1 ] );
+                   g_audioData.emplace_back( data_chunk[ i ] );
                    i++;
                 }
 

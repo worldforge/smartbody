@@ -20,7 +20,7 @@ void VisemeCurve::copy(VisemeCurve& v)
 	_pointRadius = v._pointRadius;
 
 	for (size_t i = 0; i < v.size(); i++)
-		this->push_back(v[i]);
+		this->emplace_back(v[i]);
 }
 
 bool VisemeCurve::isVisible()

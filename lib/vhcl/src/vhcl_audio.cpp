@@ -124,7 +124,7 @@ bool Audio::Open()
          break;
       }
 
-      m_channels.push_back( std::make_pair( uiSource, (Sound *)NULL ) );
+      m_channels.emplace_back( std::make_pair( uiSource, (Sound *)NULL ) );
 
       if ( m_channels.size() >= MAX_CHANNELS )
       {
@@ -215,7 +215,7 @@ Sound * Audio::CreateSound( const std::string & fileName, const std::string & na
    ALuint uiBuffer = alutCreateBufferFromFile( fileName.c_str() );
 
    Sound * s = new Sound( this, uiBuffer, name, fileName );
-   m_sounds.push_back( s );
+   m_sounds.emplace_back( s );
 
    return s;
 }
@@ -260,7 +260,7 @@ Sound * Audio::CreateSoundLibSndFile( const std::string & fileName, const std::s
    s->setSampleRate(sampleRate);
    s->setSampleSize(numSamples);
    s->setNumChannels(channels);
-   m_sounds.push_back( s );
+   m_sounds.emplace_back( s );
 
    return s;
 }

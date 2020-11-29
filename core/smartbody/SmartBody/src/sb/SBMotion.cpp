@@ -240,7 +240,7 @@ std::vector<float> SBMotion::getFrameData(int frameId)
 {
 	std::vector<float> ret;
 	for (int i = 0; i < getFrameSize(); i++)
-		ret.push_back(posture(frameId)[i]);
+		ret.emplace_back(posture(frameId)[i]);
 	return ret;
 }
 
@@ -282,7 +282,7 @@ std::vector<std::string> SBMotion::getChannels()
 				chanTypeString = "Others";
 		}
 		std::string name = chanName + "_" + chanTypeString;
-		ret.push_back(name);
+		ret.emplace_back(name);
 	}
 	return ret;
 }
@@ -465,23 +465,23 @@ void SBMotion::bakeFrames(float fps)
 				std::map<std::string, srLinearCurve* >::iterator iter = _channelFrameValues.find(keyName);
 				if (iter == _channelFrameValues.end())
 				{
-					data.push_back(0.0);
+					data.emplace_back(0.0);
 					continue;
 				}
 
 				srLinearCurve* curve = (*iter).second;
 				double value = curve->evaluate(curTime);
-				data.push_back((float) value);
+				data.emplace_back((float) value);
 			}
 			else if (channelType == SkChannel::Quat)
 			{
 				std::map<std::string, rotationCurve* >::iterator iter = _quatFrameValues.find(keyName);
 				if (iter == _quatFrameValues.end())
 				{
-					data.push_back(1.0);
-					data.push_back(0.0);
-					data.push_back(0.0);
-					data.push_back(0.0);
+					data.emplace_back(1.0);
+					data.emplace_back(0.0);
+					data.emplace_back(0.0);
+					data.emplace_back(0.0);
 					continue;
 				}
 
@@ -495,10 +495,10 @@ void SBMotion::bakeFrames(float fps)
 				SrMat mat;
 				sr_euler_mat_xyz(mat, euler.x, euler.y, euler.z);
 				SrQuat quat(mat);
-				data.push_back(quat.w);
-				data.push_back(quat.x);
-				data.push_back(quat.y);
-				data.push_back(quat.z);
+				data.emplace_back(quat.w);
+				data.emplace_back(quat.x);
+				data.emplace_back(quat.y);
+				data.emplace_back(quat.z);
 			}
 		}
 		this->addFrame(curTime, data);
@@ -812,7 +812,7 @@ void SBMotion::addSimilarPose(const std::string& motionName)
 		}
 	}
 
-	_similarPoses.push_back(motionName);
+	_similarPoses.emplace_back(motionName);
 }
 
 void SBMotion::removeSimilarPose(const std::string& motionName)
@@ -837,7 +837,7 @@ std::vector<std::string> SBMotion::getSimilarPoses() const
 		 iter != _similarPoses.end();
 		 iter++)
 	{
-		poses.push_back(*iter);
+		poses.emplace_back(*iter);
 	}
 	return poses;
 }
@@ -1081,9 +1081,9 @@ void SBMotion::pertainMotionChannelsByEndJoints( std::string skelName, std::vect
 			std::vector<SBJoint*> descendents = eJoint->getDescendants();
 			for (auto & descendent : descendents)
 			{
-				pertainJoints.push_back(descendent->getName());
+				pertainJoints.emplace_back(descendent->getName());
 			}
-			//pertainJoints.push_back(eJoint->getName());
+			//pertainJoints.emplace_back(eJoint->getName());
 		}		
 	}
 	std::vector<std::string> removeJoints;
@@ -1100,7 +1100,7 @@ void SBMotion::pertainMotionChannelsByEndJoints( std::string skelName, std::vect
 			}
 		}
 		if (shouldRemove)
-			removeJoints.push_back(jname);
+			removeJoints.emplace_back(jname);
 	}
 	this->removeMotionChannels(removeJoints);
 }
@@ -1123,9 +1123,9 @@ void SBMotion::removeMotionChannelsByEndJoints(std::string skelName, std::vector
 			std::vector<SBJoint*> descendents = eJoint->getDescendants();
 			for (auto & descendent : descendents)
 			{
-				removeJoints.push_back(descendent->getName());
+				removeJoints.emplace_back(descendent->getName());
 			}
-			//removeJoints.push_back(eJoint->getName());
+			//removeJoints.emplace_back(eJoint->getName());
 		}		
 	}
 	this->removeMotionChannels(removeJoints);
@@ -1408,9 +1408,9 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 		{
 			SBJoint* joint = skel->getJointByName(rec.jointNames[0]);
 			if (joint && joint->child(0))
-				rec.jointNames.push_back(joint->child(0)->jointName());
+				rec.jointNames.emplace_back(joint->child(0)->jointName());
 // 			if (joint && joint->child(0) && joint->child(0)->child(0))
-// 				rec.jointNames.push_back(joint->child(0)->child(0)->name());
+// 				rec.jointNames.emplace_back(joint->child(0)->child(0)->name());
 		}
 
 	}
@@ -1445,7 +1445,7 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 			curFrame = nextFrame;
 			if (frameConstraintMap.find(curFrame) == frameConstraintMap.end())
 				frameConstraintMap[curFrame] = std::vector<int>();
-			frameConstraintMap[curFrame].push_back(i);
+			frameConstraintMap[curFrame].emplace_back(i);
 		}
 	}
 
@@ -1582,9 +1582,9 @@ SBMotion* SBMotion::mirror(std::string name, std::string skeletonName)
 		return nullptr;
 	}
 	std::vector<std::string> from;
-	from.push_back("l_");
+	from.emplace_back("l_");
 	std::vector<std::string> to;
-	to.push_back("r_");
+	to.emplace_back("r_");
 	SkMotion* motion = buildMirrorMotion(skeleton, from, to);
 	SBMotion* sbmotion = dynamic_cast<SBMotion*>(motion);
 	if (sbmotion)
@@ -1634,9 +1634,9 @@ SBMotion* SBMotion::mirrorChildren( std::string name, std::string skeletonName, 
 	jointNameMap[pjoint->getMappedJointName()] = true;
 	
 	std::vector<std::string> from;
-	from.push_back("l_");
+	from.emplace_back("l_");
 	std::vector<std::string> to;
-	to.push_back("r_");
+	to.emplace_back("r_");
 
 	SkMotion* motion = buildMirrorMotionJoints(skeleton,jointNameMap, from, to);
 	SBMotion* sbmotion = dynamic_cast<SBMotion*>(motion);
@@ -1939,18 +1939,18 @@ std::vector<float> SBMotion::getJointTransition(SBJoint* joint, float startTime,
 	if (!joint)
 	{
 		SmartBody::util::log("No joint found when determining joint transitions.");
-		transitions.push_back(0);
-		transitions.push_back(0);
-		transitions.push_back(0);
+		transitions.emplace_back(0);
+		transitions.emplace_back(0);
+		transitions.emplace_back(0);
 		return transitions;
 	}
 
 	if (connected_skeleton() == nullptr)
 	{
 		SmartBody::util::log("Motion %s is not connected to any skeleton, cannot retrieve parameter angular speed.", getName().c_str());
-		transitions.push_back(0);
-		transitions.push_back(0);
-		transitions.push_back(0);
+		transitions.emplace_back(0);
+		transitions.emplace_back(0);
+		transitions.emplace_back(0);
 		return transitions;
 	}
 	float dt = duration() / float(frames() - 1);
@@ -1972,12 +1972,12 @@ std::vector<float> SBMotion::getJointTransition(SBJoint* joint, float startTime,
 	SrVec transitionVec = destPnt - srcPnt;
 	SrVec heading = SrVec(sin(ry - ry0 - 1.57f), 0, cos(ry - ry0 - 1.57f));
 	float x = dot(transitionVec, heading);
-	transitions.push_back(x);
+	transitions.emplace_back(x);
 	float y = destMat.get(14) - srcMat.get(14);
-	transitions.push_back(y);
+	transitions.emplace_back(y);
 	heading = SrVec(sin(ry - ry0), 0, cos(ry - ry0));
 	float z = dot(transitionVec, heading);
-	transitions.push_back(z);
+	transitions.emplace_back(z);
 	connected_skeleton()->clearJointValues(); // reset the joint quat/pos
 	return transitions;
 }
@@ -2394,8 +2394,8 @@ void SBMotion::saveToSkb(const std::string& fileName)
 	sNumChannels = _channels.size();
 	for (int c = 0; c < _channels.size(); c++)
 	{
-		sChannelNames.push_back(_channels.name(c));
-		sChannelTypes.push_back(_channels.type(c));
+		sChannelNames.emplace_back(_channels.name(c));
+		sChannelTypes.emplace_back(_channels.type(c));
 	}
 
 	sFrames = _frames.size();
@@ -2405,12 +2405,12 @@ void SBMotion::saveToSkb(const std::string& fileName)
 	for (int f = 0; f < sFrames; f++)
 	{
 		float time = _frames[f].keytime;
-		sKeyTimes.push_back(time);
-		sKeyValues.push_back(std::vector<float>() );
+		sKeyTimes.emplace_back(time);
+		sKeyValues.emplace_back(std::vector<float>() );
 		std::vector<float>& data = sKeyValues[f];
 		for (int p = 0; p < size; p++)
 		{
-			data.push_back(_frames[f].posture[p]);
+			data.emplace_back(_frames[f].posture[p]);
 		}
 	}
 
@@ -2418,16 +2418,16 @@ void SBMotion::saveToSkb(const std::string& fileName)
 	for (size_t t = 0; t < tags.size(); t++)
 	{
 		std::string tagValue = this->getMetaDataString(tags[t]);
-		this->sMetaDataNames.push_back(tags[t]);
-		this->sMetaDataValues.push_back(tagValue);
+		this->sMetaDataNames.emplace_back(tags[t]);
+		this->sMetaDataValues.emplace_back(tagValue);
 	}
-	sSyncPoints.push_back((float) this->synch_points.get_time( srSynchPoints::START ) ); 
-	sSyncPoints.push_back((float) this->synch_points.get_time( srSynchPoints::READY ) ); 
-	sSyncPoints.push_back((float) this->synch_points.get_time( srSynchPoints::STROKE_START ) ); 
-	sSyncPoints.push_back((float) this->synch_points.get_time( srSynchPoints::STROKE ) ); 
-	sSyncPoints.push_back((float) this->synch_points.get_time( srSynchPoints::STROKE_STOP ) );
-	sSyncPoints.push_back((float) this->synch_points.get_time( srSynchPoints::RELAX ) );
-	sSyncPoints.push_back((float) this->synch_points.get_time( srSynchPoints::STOP ) );
+	sSyncPoints.emplace_back((float) this->synch_points.get_time( srSynchPoints::START ) );
+	sSyncPoints.emplace_back((float) this->synch_points.get_time( srSynchPoints::READY ) );
+	sSyncPoints.emplace_back((float) this->synch_points.get_time( srSynchPoints::STROKE_START ) );
+	sSyncPoints.emplace_back((float) this->synch_points.get_time( srSynchPoints::STROKE ) );
+	sSyncPoints.emplace_back((float) this->synch_points.get_time( srSynchPoints::STROKE_STOP ) );
+	sSyncPoints.emplace_back((float) this->synch_points.get_time( srSynchPoints::RELAX ) );
+	sSyncPoints.emplace_back((float) this->synch_points.get_time( srSynchPoints::STOP ) );
 
 
 	
@@ -2709,7 +2709,7 @@ bool SBMotion::kMeansClustering1D(int num, std::vector<double>& inputPoints, std
 	// pick initial point
 	int step = inputPoints.size() / num;
 	for (int i = 0; i < num; i++)
-		outMeans.push_back(inputPoints[i * step]);
+		outMeans.emplace_back(inputPoints[i * step]);
 
 	double convergence = 0.1;
 	calculateMeans(inputPoints, outMeans, convergence);
@@ -2740,7 +2740,7 @@ void SBMotion::calculateMeans(std::vector<double>&inputPoints, std::vector<doubl
 		}
 		if (minDistId >= 0)
 		{
-			partitionBin[minDistId].push_back(inputPoints[i]);
+			partitionBin[minDistId].emplace_back(inputPoints[i]);
 		}
 	}
 
@@ -2752,7 +2752,7 @@ void SBMotion::calculateMeans(std::vector<double>&inputPoints, std::vector<doubl
 		for (size_t j = 0; j < partitionBin[i].size(); j++)
 			newMean += partitionBin[i][j];
 		newMean /= double(partitionBin[i].size());
-		newMeans.push_back(newMean);
+		newMeans.emplace_back(newMean);
 	}
 
 	double diff = 0.0f;
@@ -2894,8 +2894,8 @@ bool SBMotion::autoFootPlantDetection( SBSkeleton* srcSk, std::vector<std::strin
 			// filter speed
 			if (speed <= speedThreshold)
 			{
-				vecTiming[jointId].push_back((float)f);	
-				vecPos[jointId].push_back(gPos); // also push back the joint's current position
+				vecTiming[jointId].emplace_back((float)f);
+				vecPos[jointId].emplace_back(gPos); // also push back the joint's current position
 			}
 		}
 	}	
@@ -2914,7 +2914,7 @@ bool SBMotion::autoFootPlantDetection( SBSkeleton* srcSk, std::vector<std::strin
 		std::vector<float> mergeFrames;
 		float curFrame = plantFrames[0];
 		SrVec curPos = plantPos[0];
-		mergeFrames.push_back(curFrame); // init the constraint
+		mergeFrames.emplace_back(curFrame); // init the constraint
 		for (unsigned int k=1;k<plantFrames.size();k++)
 		{
 			float nextFrame = plantFrames[k];
@@ -2923,23 +2923,23 @@ bool SBMotion::autoFootPlantDetection( SBSkeleton* srcSk, std::vector<std::strin
 			float ftol = Fmax*exp(-curDist*log(Fmax)/dmax);
 			if (ftol > fabs(nextFrame-curFrame)) // merge constraint
 			{
-				mergeFrames.push_back(nextFrame);
+				mergeFrames.emplace_back(nextFrame);
 				curFrame = nextFrame;
 				curPos = nextPos;
 			}
 			else // finalize the current constraint
 			{
 				FootStepRecord footPlant;
-				footPlant.jointNames.push_back(jointName);
+				footPlant.jointNames.emplace_back(jointName);
 				SBJoint* joint = srcSk->getJointByName(jointName);				
 				footPlant.startTime = mergeFrames[0]*(float)getFrameRate();
 				footPlant.endTime   = mergeFrames[mergeFrames.size()-1]*(float)getFrameRate();	
-				footStepRecords.push_back(footPlant);
+				footStepRecords.emplace_back(footPlant);
 
 				curFrame = nextFrame;
 				curPos = nextPos;
 				mergeFrames.clear();
-				mergeFrames.push_back(curFrame);
+				mergeFrames.emplace_back(curFrame);
 			}
 		}
 
@@ -2947,10 +2947,10 @@ bool SBMotion::autoFootPlantDetection( SBSkeleton* srcSk, std::vector<std::strin
 		if (mergeFrames.size() > 0)
 		{
 			FootStepRecord footPlant;
-			footPlant.jointNames.push_back(jointName);
+			footPlant.jointNames.emplace_back(jointName);
 			footPlant.startTime = mergeFrames[0]*(float)getFrameRate();
 			footPlant.endTime   = mergeFrames[mergeFrames.size()-1]*(float)getFrameRate();	
-			footStepRecords.push_back(footPlant);
+			footStepRecords.emplace_back(footPlant);
 		}		
 	}
 	this->disconnect();
@@ -3004,8 +3004,8 @@ bool SBMotion::autoFootStepDetection( std::vector<double>& outMeans, int numStep
 			// filter speed
 			if (speed <= speedThreshold)
 			{
-				vecTiming[jointId].push_back(f * (float)getFrameRate());
-				possibleTiming.push_back(f * (float)getFrameRate());
+				vecTiming[jointId].emplace_back(f * (float)getFrameRate());
+				possibleTiming.emplace_back(f * (float)getFrameRate());
 			}
 		}
 	}	
@@ -3037,7 +3037,7 @@ bool SBMotion::autoFootStepDetection( std::vector<double>& outMeans, int numStep
 		for (size_t joinId = 0; joinId < selectedJoints.size(); joinId++)
 		{
 			for (size_t meanId = 0; meanId < vecOutMeans[joinId].size(); meanId++)
-				outMeans.push_back(vecOutMeans[joinId][meanId]);
+				outMeans.emplace_back(vecOutMeans[joinId][meanId]);
 		}
 		std::sort(outMeans.begin(), outMeans.end());
 	}
@@ -3056,15 +3056,15 @@ bool SBMotion::autoFootStepDetection( std::vector<double>& outMeans, int numStep
 		finalMessage << ss.str() << "\n";
 		currentState->keys[motionIndex].clear();
 		if (footStepEditor->isProcessAll)
-			currentState->keys[motionIndex].push_back(0);
+			currentState->keys[motionIndex].emplace_back(0);
 		for (size_t i = 0; i < outMeans.size(); i++)
-			currentState->keys[motionIndex].push_back(outMeans[i]);
+			currentState->keys[motionIndex].emplace_back(outMeans[i]);
 		if (footStepEditor->isProcessAll)
-			currentState->keys[motionIndex].push_back(motion->getDuration());
+			currentState->keys[motionIndex].emplace_back(motion->getDuration());
 	}
 	else
 	{
-		motionsNeedManualAdjusting.push_back(motion->getName());
+		motionsNeedManualAdjusting.emplace_back(motion->getName());
 		std::stringstream ss;
 		ss << "[" << motion->getName() << "]NOT detected(evenly distrubted): ";
 		int actualNum = maxNumSteps;
@@ -3074,7 +3074,7 @@ bool SBMotion::autoFootStepDetection( std::vector<double>& outMeans, int numStep
 		for (int i = 0; i < actualNum; i++)
 		{
 			double step = motion->getDuration() / double(actualNum - 1);
-			currentState->keys[motionIndex].push_back(step * i);
+			currentState->keys[motionIndex].emplace_back(step * i);
 			ss << step * i << " ";
 		}
 		SmartBody::util::log("%s", ss.str().c_str());
@@ -3152,7 +3152,7 @@ std::vector<std::string> SBMotion::getMetaDataTags()
 		  mi != tagAttrMap.end();
 		  mi++)
 	{
-		tagList.push_back(mi->first);
+		tagList.emplace_back(mi->first);
 	}
 	return tagList;
 }
@@ -3196,7 +3196,7 @@ SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, cons
 		SrVec refPos = refJoint->gmat().get_translation();
 		SrMat baseRot = baseJoint->gmat().get_rotation();		
 		SrVec trajPos = (effPos-refPos)*baseRot.inverse();
-		traj->jointTrajectory.push_back(trajPos);
+		traj->jointTrajectory.emplace_back(trajPos);
 	}
 	disconnect();	
 	trajMap[effectorName] = traj;
@@ -3739,7 +3739,7 @@ void printHierarchy(FILE* file, SmartBody::SBJoint* joint, int depth, std::vecto
 			fprintf(file,"JOINT %s\n",joint->getMappedJointName().c_str());
 		}
 
-		jointIdxs.push_back(joint->index());
+		jointIdxs.emplace_back(joint->index());
 		//print_tabs( depth );
 		//*_record_output << "{\n";
 		fprintf(file, "{\n");
@@ -3984,7 +3984,7 @@ SBMotion* SBMotion::buildPoststrokeHoldMotion(float holdTime, std::vector<std::s
 	std::vector<int> toSmoothIds;
 	int wide = 5;
 	for (int i = strokeEndFrameId - wide; i <= strokeEndFrameId + wide; i++)
-		toSmoothIds.push_back(i);
+		toSmoothIds.emplace_back(i);
 
 
 	// handle the base joints

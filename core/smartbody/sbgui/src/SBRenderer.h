@@ -24,12 +24,12 @@ protected:
 	void createBufferTex(int w, int h, bool rebuild);
 
 public:
-	SbmTexture* posTex;
-	SbmTexture* normalTex;
-	SbmTexture* diffuseTex;
-	SbmTexture* specularTex;
-	SbmTexture* glossyTex;
-	SbmTexture* depthTex;
+	std::shared_ptr<SbmTexture> posTex;
+	std::shared_ptr<SbmTexture> normalTex;
+	std::shared_ptr<SbmTexture> diffuseTex;
+	std::shared_ptr<SbmTexture> specularTex;
+	std::shared_ptr<SbmTexture> glossyTex;
+	std::shared_ptr<SbmTexture> depthTex;
 	GLuint fboID;
 };
 
@@ -41,26 +41,26 @@ class SBRenderer : public SBBaseRenderer
 private:
 	// for singleton
 	static SBRenderer* _singleton;
-	SBRenderer(void);
-	~SBRenderer(void);
+	SBRenderer();
+	~SBRenderer();
 public:
 	static SBRenderer& singleton();
 	static void destroy_singleton();
 
-	virtual void initRenderer(int w, int h);
-	virtual void resize(int w, int h);
+	void initRenderer(int w, int h) override;
+	void resize(int w, int h) override;
 	virtual void draw(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor);
-	
 
-	SbmTexture* getCurEnvMap(bool diffuseMap = false);
+
+	std::shared_ptr<SbmTexture> getCurEnvMap(bool diffuseMap = false);
 	
 	void initSSAO(int w, int h);
 
 	void drawDeferredRendering(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor);
 	void drawForwardRendering(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor);
-	void drawSSAOPass();	
-	void drawLightPass(std::vector<SrLight>& lights);
-	void drawIBLPass(std::vector<SrLight>& lights);
+	void drawSSAOPass(SmartBody::SBRenderScene& renderScene);
+	void drawLightPass(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights);
+	void drawIBLPass(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights);
 	
 
 	void registerGUI();
@@ -71,24 +71,24 @@ public:
 protected:	
 	
 
-	SbmShaderProgram* gbufferShader;
+	SbmShaderProgram* gbufferShader{};
 	SBGBuffer gbuffer;	
-	SbmShaderProgram* lightPassShader; // compute lighting and combine with ambient occlusion
-	SbmShaderProgram* iblShader; // compute lighting and combine with ambient occlusion	
-	SbmShaderProgram* depthQuadShader;
+	SbmShaderProgram* lightPassShader{}; // compute lighting and combine with ambient occlusion
+	SbmShaderProgram* iblShader{}; // compute lighting and combine with ambient occlusion
+	SbmShaderProgram* depthQuadShader{};
 
 	SBFrameBufferObject lightPassFBO;
-	SbmTexture* lightPassOutput;
+	std::shared_ptr<SbmTexture> lightPassOutput;
 
-	SbmShaderProgram* ssaoShader;
-	SbmShaderProgram* ssaoBlurShader;
+	SbmShaderProgram* ssaoShader{};
+	SbmShaderProgram* ssaoBlurShader{};
 	SBFrameBufferObject ssaoFBO;
 	SBFrameBufferObject ssaoBlurFBO;
-	SbmTexture* ssaoNoise;	
-	SbmTexture* ssaoOutput;
-	SbmTexture* ssaoBlurOutput;
+	std::shared_ptr<SbmTexture> ssaoNoise;
+	std::shared_ptr<SbmTexture> ssaoOutput;
+	std::shared_ptr<SbmTexture> ssaoBlurOutput;
 	std::vector<SrVec> ssaoKernel;
-	int ssaoNoiseSize;
-	int ssaoKernelSize;
+	int ssaoNoiseSize{};
+	int ssaoKernelSize{};
 };
 

@@ -42,8 +42,8 @@ static int vertex_cb(p_ply_argument argument) {
 	ply_get_argument_user_data(argument, (void**)&model, &idx);
 	if (idx == 0)
 	{
-		model->V.push_back(SrVec());
-		model->T.push_back(SrVec2());
+		model->V.emplace_back(SrVec());
+		model->T.emplace_back(SrVec2());
 	}
 	double argumentValue = ply_get_argument_value(argument);
 	model->V.back()[(int)idx] = (float) argumentValue;	
@@ -56,7 +56,7 @@ static int vertex_color_cb(p_ply_argument argument) {
 	SrModel* model;
 	ply_get_argument_user_data(argument, (void**)&model, &idx);
 	if (idx == 0)
-		model->Vc.push_back(SrVec());
+		model->Vc.emplace_back(SrVec());
 	double argumentValue = ply_get_argument_value(argument);
 	model->Vc.back()[(int)idx] = (float) argumentValue/255.0f;	
 	return 1;
@@ -71,9 +71,9 @@ static int face_cb(p_ply_argument argument) {
 	
 	if (value_index == -1) // first entry in the list
 	{
-		model->F.push_back(SrVec3i());
+		model->F.emplace_back(SrVec3i());
 		int mtlIdx = model->M.size()-1;
-		model->Fm.push_back(mtlIdx);
+		model->Fm.emplace_back(mtlIdx);
 	}
 	else if (value_index >= 0 && value_index <= 2) // a triangle face
 	{
@@ -92,13 +92,13 @@ static int texCoord2_cb(p_ply_argument argument) {
 
 	if (value_index == -1) // first entry in the list
 	{
-		model->Ft.push_back(SrVec());
+		model->Ft.emplace_back(SrVec());
 		//SrModel::Face& fid = model->F[model->Ft.size()-1];
 		//model->Ft.top().set(fid[0],fid[1],fid[2]);
 		int tsize = (model->Ft.size() - 1) * 3;
 		model->Ft.back() = SrVec(tsize + 0, tsize + 1, tsize + 2);
 		for (int i = 0; i < 3; i++)
-			model->T.push_back(SrVec2());
+			model->T.emplace_back(SrVec2());
 	}
 	else if (value_index >= 0 && value_index <= 5) // a triangle face
 	{
@@ -124,13 +124,13 @@ static int texCoord_cb(p_ply_argument argument) {
 
 	if (value_index == -1) // first entry in the list
 	{
-		model->Ft.push_back(SrVec3i());
+		model->Ft.emplace_back(SrVec3i());
 		//SrModel::Face& fid = model->F[model->Ft.size()-1];
 		//model->Ft.top().set(fid[0],fid[1],fid[2]);
 		int tsize = (model->Ft.size()-1)*3;
 		model->Ft.back() = SrVec3i(tsize+0,tsize+1,tsize+2); 
 		for (int i=0;i<3;i++)
-			model->T.push_back(SrVec2());
+			model->T.emplace_back(SrVec2());
 	}
 	else if (value_index >= 0 && value_index <= 5) // a triangle face
 	{
@@ -228,7 +228,7 @@ void SrModel::removeRedundantTexCoord(TexCoordData& tData, SrModel& model)
 			int newIdx = newTexCoordList.size();
 			tMap[T[i]] = newIdx;
 			tNewIdxMap[i] = newIdx;
-			newTexCoordList.push_back(T[i]);
+			newTexCoordList.emplace_back(T[i]);
 		}
 		else
 		{
@@ -253,7 +253,7 @@ void SrModel::removeRedundantTexCoord(TexCoordData& tData, SrModel& model)
 	for (unsigned int i = 0; i < Ft.size(); i++)
 	{
 		SrVec& f = Ft[i];
-		model.Ft.push_back(SrVec3i(f[0], f[1], f[2]));
+		model.Ft.emplace_back(SrVec3i(f[0], f[1], f[2]));
 	}
 }
 
@@ -274,10 +274,10 @@ bool SrModel::import_ply( const char* file )
 	//name.remove_file_extension();
 
 	long nvertices, ntriangles;
-	M.push_back(SrMaterial());
+	M.emplace_back(SrMaterial());
 	M.back().diffuse = SrColor::gray;
 
-	mtlnames.push_back("noname");
+	mtlnames.emplace_back("noname");
 	p_ply ply = ply_open(file, nullptr, 0, nullptr);
 	if (!ply) return false;
 	if (!ply_read_header(ply)) return false;
@@ -301,9 +301,9 @@ bool SrModel::import_ply( const char* file )
 			material.init();
 			material.diffuse = SrColor::white;
 			//M.push().init();
-			M.push_back(material);        
+			M.emplace_back(material);
 			//SR_TRACE1 ( "new material: "<<in.last_token() );	
-			mtlnames.push_back ( mtlName.c_str() );
+			mtlnames.emplace_back ( mtlName.c_str() );
 			//SmartBody::util::log("texture found : %s", texFile.c_str());
 			std::stringstream strstr2;
 			//strstr2 << name << "|" << texFile;

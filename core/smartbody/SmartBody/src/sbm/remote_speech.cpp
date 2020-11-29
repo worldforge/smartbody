@@ -295,8 +295,8 @@ std::vector<VisemeData*>* remote_speech::extractVisemes(DOMNode* node, vector<Vi
 						float t = prev_time + f * prev_dur;
 						float trig = sinf( float(M_PI) * f );
 //						float trig = ( cosf( 2.0 * float(M_PI) * f + float(M_PI) ) + 1.0f ) * 0.5f;
-						curve_arr.push_back(t);
-						curve_arr.push_back(trig);
+						curve_arr.emplace_back(t);
+						curve_arr.emplace_back(trig);
 					}
 					prevViseme->setFloatCurve( curve_arr, n, 2 );
 #else
@@ -323,7 +323,7 @@ std::vector<VisemeData*>* remote_speech::extractVisemes(DOMNode* node, vector<Vi
 #endif
 				}
 		
-				visemes->push_back(curViseme);
+				visemes->emplace_back(curViseme);
 			} else {
 				SmartBody::util::log("ERROR: remote_speech::extractVisemes(..): <viseme> without type= attribute found... Ignoring");
 			}

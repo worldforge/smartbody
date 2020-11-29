@@ -199,7 +199,7 @@ void MotionEditorWindow::reloadCharactersAndPawns()
 	// select again the character & pawn
 	for (int c = 0; c < _choiceCharacterList->menu()->size(); c++)
 	{
-		if (_choiceCharacterList->menu()[c].label() == NULL)
+		if (_choiceCharacterList->menu()[c].label() == nullptr)
 			continue;
 
 		if (selectedCharacter == _choiceCharacterList->menu()[c].label())
@@ -210,7 +210,7 @@ void MotionEditorWindow::reloadCharactersAndPawns()
 
 	for (int c = 0; c < _choiceGazeTargetList->menu()->size(); c++)
 	{
-		if (_choiceGazeTargetList->menu()[c].label() == NULL)
+		if (_choiceGazeTargetList->menu()[c].label() == nullptr)
 			continue;
 
 		if (selectedPawn == _choiceGazeTargetList->menu()[c].label())
@@ -614,7 +614,7 @@ void MotionEditorWindow::OnCheckButtonPlayMotion(Fl_Widget* widget, void* data)
 	if (editor->_selectedCharacter == "*")
 		names = SmartBody::SBScene::getScene()->getCharacterNames();
 	else
-		names.push_back(editor->_selectedCharacter);
+		names.emplace_back(editor->_selectedCharacter);
 
 	if (editor->_isScrubbing)
 	{
@@ -674,7 +674,7 @@ void MotionEditorWindow::OnSliderMotionFrame(Fl_Widget* widget, void* data)
 	}
 	else
 	{
-		names.push_back(editor->_selectedCharacter);
+		names.emplace_back(editor->_selectedCharacter);
 	}
 
 	double playTime = editor->_sliderMotionFrame->value();
@@ -729,7 +729,7 @@ void MotionEditorWindow::OnButtonPlayMotionFolder(Fl_Widget* widget, void* data)
 		if (ext != ".skm")
 			continue;
 		std::string fileName = boost::filesystem::basename(cur);
-		skmMotionNames.push_back(fileName);
+		skmMotionNames.emplace_back(fileName);
 	}
 	SmartBody::util::log("Playing animations in folder %s", motionFolderPath.c_str());
 	std::stringstream command;

@@ -69,7 +69,7 @@ const std::string& SBParseNode::getTerm()
 
 void SBParseNode::addChild(SBParseNode* node)
 {
-	_children.push_back(node);
+	_children.emplace_back(node);
 }
 
 int SBParseNode::getNumChildren()

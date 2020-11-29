@@ -164,7 +164,7 @@ void MeCtIKTreeScenario::updateValidNodes()
 	{
 		MeCtIKTreeNode* node = *si;
 		node->validNodeIdx = ikValidNodes.size();
-		ikValidNodes.push_back(node);
+		ikValidNodes.emplace_back(node);
 	}
 }
 
@@ -221,7 +221,7 @@ void MeCtIKTreeScenario::updateJointLimit()
 	{		
 		bool violate = checkJointLimit(node->getQuat(QUAT_CUR),node->jointLimit,node->getQuat(QUAT_INIT),node->jointOffset);
 		if (violate)
-			ikJointLimitNodes.push_back(node);
+			ikJointLimitNodes.emplace_back(node);
 	}		
 }
 
@@ -234,7 +234,7 @@ void MeCtIKTreeScenario::buildIKTreeFromJointRoot( SkJoint* root, std::vector<st
 	ikTreeRoot->nodeIdx = ikTreeNodes.size();
 	ikTreeRoot->nodeLevel = 0;
 	ikTreeRoot->setNodeName(root->getMappedJointName());
-	ikTreeNodes.push_back(ikTreeRoot);
+	ikTreeNodes.emplace_back(ikTreeRoot);
 	traverseJoint(root,ikTreeRoot,ikTreeNodes, stopJoints);
 	
 // 	ikQuatList.resize(ikTreeNodes.size());
@@ -255,7 +255,7 @@ int MeCtIKTreeScenario::traverseJoint(SkJoint* joint, MeCtIKTreeNode* jointNode,
 		childNode->setNodeName(child->getMappedJointName());
 		childNode->nodeIdx = nodeList.size();
 		childNode->parent = jointNode;
-		nodeList.push_back(childNode);
+		nodeList.emplace_back(childNode);
 
 		if (i==0)
 			jointNode->child = childNode;		

@@ -181,7 +181,7 @@ set(SBM_FLTK_SRC
         src/SBBaseRenderer.cpp
         src/SBRenderer.cpp
         src/SBFrameBufferObject.cpp
-        src/SBSceneHelper.cpp
+        src/Session.cpp
 
         src/flu/Flu_Button.cpp
         src/flu/Flu_Collapsable_Group.cpp
@@ -198,6 +198,8 @@ target_link_libraries(sbgui
         SmartBody
         SmartBody-renderer-gl
         SmartBody-bindings-python
+        SmartBody-debugger
+        SmartBody-renderer-gl-bindings-python
         jpge
         pinocchio
         ${MORE_LIBS}
@@ -210,7 +212,9 @@ target_include_directories(sbgui PUBLIC
         $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>)
+        $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-renderer-gl-bindings-python,INCLUDE_DIRECTORIES>)
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     conan_target_link_libraries(sbgui)

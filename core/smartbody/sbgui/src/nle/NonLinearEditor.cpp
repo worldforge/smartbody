@@ -8,7 +8,7 @@ Mark::Mark()
 {
 	startTime = -1;
 	endTime = -1;
-	block = NULL;
+	block = nullptr;
 	setSelected(false);
 	selectedBeginTime = false;
 	selectedEndTime = false;
@@ -179,7 +179,7 @@ Block::Block()
 {
 	startTime = -1;
 	endTime = -1;
-	track = NULL;
+	track = nullptr;
 	setSelected(false);
 
 	for (int i = 0; i < 4; i++)
@@ -289,7 +289,7 @@ Mark* Block::getMark(std::string name)
 		if (marks[b]->getName() == name)
 			return marks[b];
 	}
-	return NULL;
+	return nullptr;
 }
 
 Mark* Block::getMark(int num)
@@ -395,12 +395,12 @@ Mark* Block::getMark(double time)
 			marks[b]->getEndTime() >= time)
 			return marks[b];
 	}
-	return NULL;
+	return nullptr;
 }
 
 void Block::addMark(Mark* mark)
 {
-	marks.push_back(mark);
+	marks.emplace_back(mark);
 	mark->setBlock(this);
 }
 
@@ -428,7 +428,7 @@ Track::Track()
 {
 	setSelected(false);
     setActive(true);
-	model = NULL;
+	model = nullptr;
 }
 
 Track::~Track()
@@ -461,7 +461,7 @@ void Track::setName(std::string trackName)
 
 void Track::addBlock(Block* block)
 {
-	blocks.push_back(block);
+	blocks.emplace_back(block);
 	block->setTrack(this);
 	if (this->getModel())
 		this->getModel()->setModelChanged(true);
@@ -479,7 +479,7 @@ Block* Track::getBlock(std::string name)
 		if (blocks[b]->getName() == name)
 			return blocks[b];
 	}
-	return NULL;
+	return nullptr;
 }
 
 int Track::getBlockIndex(Block* block)
@@ -631,7 +631,7 @@ Block* Track::getBlock(double time)
 			blocks[b]->getEndTime() >= time)
 			return blocks[b];
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool Track::isSelected()
@@ -703,7 +703,7 @@ void NonLinearEditorModel::setName(std::string modelName)
 
 void NonLinearEditorModel::addTrack(Track* track)
 {
-	tracks.push_back(track);
+	tracks.emplace_back(track);
 	track->setModel(this);
 	setModelChanged(true);
 }
@@ -720,7 +720,7 @@ Track* NonLinearEditorModel::getTrack(std::string name)
 		if (tracks[b]->getName() == name)
 			return tracks[b];
 	}
-	return NULL;
+	return nullptr;
 }
 
 Track* NonLinearEditorModel::getTrack(unsigned int num)
@@ -728,7 +728,7 @@ Track* NonLinearEditorModel::getTrack(unsigned int num)
 	if (tracks.size() > num)
 		return tracks[num];
 	else
-		return NULL;
+		return nullptr;
 }
 
 int NonLinearEditorModel::getTrackIndex(Track* track)
@@ -944,7 +944,7 @@ void Track::getBounds(int& x, int& y, int& w, int& h)
 Block* Track::getFirstBlock()
 {
 	double prevTime = std::numeric_limits<double>::max();
-	Block* prevBlock = NULL;
+	Block* prevBlock = nullptr;
 	for (unsigned int b = 0; b < this->blocks.size(); b++)
 	{
 		if (blocks[b]->getStartTime() < prevTime)
@@ -959,14 +959,14 @@ Block* Track::getFirstBlock()
 
 Block* Track::getPrevBlock(Block* block)
 {
-	if (block == NULL)
+	if (block == nullptr)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	double closest = std::numeric_limits<double>::max();
 
-	Block* prevBlock = NULL;
+	Block* prevBlock = nullptr;
 	for (unsigned int b = 0; b < this->blocks.size(); b++)
 	{
 		if (blocks[b] == block)
@@ -985,14 +985,14 @@ Block* Track::getPrevBlock(Block* block)
 
 Block* Track::getNextBlock(Block* block)
 {
-	if (block == NULL)
+	if (block == nullptr)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	double closest = std::numeric_limits<double>::max();
 
-	Block* nextBlock = NULL;
+	Block* nextBlock = nullptr;
 	for (unsigned int b = 0; b < this->blocks.size(); b++)
 	{
 		if (blocks[b] == block)
@@ -1012,7 +1012,7 @@ Block* Track::getNextBlock(Block* block)
 Block* Track::getLastBlock()
 {
 	double latestTime = -std::numeric_limits<double>::max();
-	Block* latestBlock = NULL;
+	Block* latestBlock = nullptr;
 	for (unsigned int b = 0; b < this->blocks.size(); b++)
 	{
 		if (blocks[b]->getStartTime() > latestTime)
@@ -1060,7 +1060,7 @@ bool NonLinearEditorModel::getContext(std::string name, std::vector<Track*>& con
 			std::vector<Track*>& allTracks = contexts[c].second;
 			for (size_t t = 0; t < allTracks.size(); t++)
 			{
-				contextTracks.push_back(allTracks[t]);
+				contextTracks.emplace_back(allTracks[t]);
 			}
 			return true;
 		}
@@ -1081,9 +1081,9 @@ void NonLinearEditorModel::saveContext(std::string name)
 	std::vector<Track*> contextTracks;
 	for (int t = 0; t < this->getNumTracks(); t++)
 	{
-		contextTracks.push_back(this->getTrack(t));
+		contextTracks.emplace_back(this->getTrack(t));
 	}
-	contexts.push_back( std::pair<std::string, std::vector<Track*> >(name, contextTracks) );
+	contexts.emplace_back( std::pair<std::string, std::vector<Track*> >(name, contextTracks) );
 }
 
 std::vector<std::pair<std::string, std::vector<Track*> > >& NonLinearEditorModel::getContexts()
@@ -1141,7 +1141,7 @@ void NonLinearEditorModel::addModelListener(NonLinearEditorModelListener* listen
 		if (listener == (*iter))
 			return;
 	}
-	listeners.push_back(listener);
+	listeners.emplace_back(listener);
 }
 
 void NonLinearEditorModel::removeModelListener(NonLinearEditorModelListener* listener)

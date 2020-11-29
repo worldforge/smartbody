@@ -111,10 +111,10 @@ int pic_get_size(char *file, int *nx, int *ny)
 
 /*
  * pic_read: read a TIFF or PPM file into memory.
- * Normally, you should use opic==NULL.
- * If opic!=NULL, then picture is read into opic->pix (after checking that
+ * Normally, you should use opic==nullptr.
+ * If opic!=nullptr, then picture is read into opic->pix (after checking that
  * size is sufficient), else a new Pic is allocated.
- * Returns Pic pointer on success, NULL on failure.
+ * Returns Pic pointer on success, nullptr on failure.
  */
 Pic *pic_read(char *file, Pic *opic)
 {
@@ -133,9 +133,9 @@ Pic *pic_read(char *file, Pic *opic)
     break;
 
     default:
-      return NULL;
+      return nullptr;
     }
-  return NULL;
+  return nullptr;
 }
 
 /*

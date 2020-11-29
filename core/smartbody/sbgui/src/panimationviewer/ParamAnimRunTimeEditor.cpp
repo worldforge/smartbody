@@ -51,7 +51,7 @@ PARunTimeEditor::PARunTimeEditor(int x, int y, int w, int h, PanimationWindow* w
 		parameterGroup->box(FL_UP_BOX);
 	this->end();
 	this->resizable(parameterGroup);
-	paramGroup = NULL;
+	paramGroup = nullptr;
 	initializeRunTimeEditor();
 }
 
@@ -129,7 +129,7 @@ void PARunTimeEditor::updateRunTimeStates(std::string currentState)
 		{
 			parameterGroup->remove(paramGroup);
 			delete paramGroup;
-			paramGroup = NULL;
+			paramGroup = nullptr;
 		}
 		return;
 	}
@@ -163,12 +163,12 @@ void PARunTimeEditor::updateRunTimeStates(std::string currentState)
 	{
 		parameterGroup->remove(paramGroup);
 		delete paramGroup;
-		paramGroup = NULL;
+		paramGroup = nullptr;
 	}
 	if (state)
 	{
 		std::vector<double> weights;
-		PABlendData* blendData = new PABlendData(NULL, state, weights);
+		PABlendData* blendData = new PABlendData(nullptr, state, weights);
 		// memory leak!
 		paramGroup = new ParameterGroup(this->parameterGroup->x(), this->parameterGroup->y(), parameterGroup->w(), parameterGroup->h(), (char*)"", blendData, paWindow);
 		parameterGroup->add(paramGroup);
@@ -200,7 +200,7 @@ void PARunTimeEditor::initializeRunTimeEditor()
 	SmartBody::SBCharacter * character = SmartBody::SBScene::getScene()->getCharacter(charName);
 	if (character)
 	{
-		if (character->param_animation_ct == NULL)
+		if (character->param_animation_ct == nullptr)
 			return;
 		PABlendData* blendData = character->param_animation_ct->getCurrentPABlendData();
 		if (blendData)
@@ -231,11 +231,11 @@ void PARunTimeEditor::updateNonCycleState(Fl_Widget* widget, void* data)
 		{
 			editor->parameterGroup->remove(editor->paramGroup);
 			delete editor->paramGroup;
-			editor->paramGroup = NULL;
+			editor->paramGroup = nullptr;
 		}
 		
 		std::vector<double> weights;
-		PABlendData* blendData = new PABlendData(NULL, state, weights);
+		PABlendData* blendData = new PABlendData(nullptr, state, weights);
 		// memory leak here!
 		editor->paramGroup = new ParameterGroup(editor->parameterGroup->x(), editor->parameterGroup->y(), editor->parameterGroup->w(), editor->parameterGroup->h(), (char*)"", blendData, editor->paWindow);
 		editor->parameterGroup->add(editor->paramGroup);

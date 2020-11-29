@@ -55,8 +55,8 @@ void SBDiphone::addKey(const std::string& viseme, float time, float weight)
 	// insert the data ascendingly
 	if (curveData.size() == 0)
 	{
-		curveData.push_back(time);
-		curveData.push_back(weight);
+		curveData.emplace_back(time);
+		curveData.emplace_back(weight);
 	}
 	else
 	{
@@ -72,8 +72,8 @@ void SBDiphone::addKey(const std::string& viseme, float time, float weight)
 				}
 			}
 		}
-		curveData.push_back(time);
-		curveData.push_back(weight);
+		curveData.emplace_back(time);
+		curveData.emplace_back(weight);
 	}
 }
 
@@ -107,7 +107,7 @@ std::vector<std::string> SBDiphone::getVisemeNames()
 	std::map<std::string, std::vector<float> >::iterator iter;
 	for (iter = _visemeKeysMap.begin(); iter != _visemeKeysMap.end(); iter++)
 	{
-		visemeNames.push_back(iter->first);
+		visemeNames.emplace_back(iter->first);
 	}
 	return visemeNames;
 }

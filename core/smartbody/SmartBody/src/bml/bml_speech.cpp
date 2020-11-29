@@ -143,7 +143,7 @@ BML::SpeechRequestPtr BML::parse_bml_speech(
 					// test validity?
 					if( !tmId.empty() ) {
 						if( isValidTmId( tmId ) ) {
-							marks.push_back( SpeechMark( tmId, TIME_UNSET ) );
+							marks.emplace_back( SpeechMark( tmId, TIME_UNSET ) );
 						} else {
 #if ENABLE_BMLR_SPEECH_REQUEST_CODE
 							wstrstr << "ERROR: Invalid <mark> name=\"" << tmId << "\"" << endl;
@@ -175,7 +175,7 @@ BML::SpeechRequestPtr BML::parse_bml_speech(
 					// test validity?
 					if( !tmId.empty() ) {
 						if( isValidTmId( tmId ) ) {
-							marks.push_back( SpeechMark( tmId, TIME_UNSET ) );
+							marks.emplace_back( SpeechMark( tmId, TIME_UNSET ) );
 						} else {
 							std::wstringstream wstrstr;
 							wstrstr << "ERROR: Invalid <mark> name=\"" << tmId << "\"" << endl;
@@ -295,7 +295,7 @@ BML::SpeechRequestPtr BML::parse_bml_speech(
 				std::string markerName = (*markerIter).first;
 				float time = (*markerIter).second;
 				SpeechMark speechMark(xml_utils::xml_s2w(markerName), time);
-				marks.push_back(speechMark);
+				marks.emplace_back(speechMark);
 			}
 		}
 	}
@@ -337,7 +337,7 @@ BML::SpeechRequest::SpeechRequest(
 	vector<SpeechMark>::const_iterator end = marks.end();
 	for( vector<SpeechMark>::const_iterator mark = marks.begin(); mark != end; ++mark ) {
 		// save the speech marks
-		speechMarks.push_back(*mark);
+		speechMarks.emplace_back(*mark);
 
 		// Create a SyncPoint
 		SyncPointPtr sync( trigger->addSyncPoint() );
@@ -416,7 +416,7 @@ std::string BML::SpeechRequest::getSpeechText()
 	{
 		std::stringstream strstr;
 		vector<char> xml_copy(speechXML.begin(), speechXML.end());
-		xml_copy.push_back('\0');
+		xml_copy.emplace_back('\0');
 
 		rapidxml::xml_document<> doc;
 	
@@ -439,11 +439,11 @@ std::string BML::SpeechRequest::getSpeechText()
 			if (childNode)
 			{
 				std::vector<rapidxml::xml_node<>*> children;
-				children.push_back(childNode);
+				children.emplace_back(childNode);
 				rapidxml::xml_node<>* siblingNode = childNode->next_sibling(nullptr);
 				while (siblingNode)
 				{
-					children.push_back(siblingNode);
+					children.emplace_back(siblingNode);
 					siblingNode = siblingNode->next_sibling(nullptr);
 				}
 				size_t numChildren = children.size();
@@ -524,7 +524,7 @@ void BML::SpeechRequest::processVisemes(std::vector<VisemeData*>* result_visemes
 				}
 				std::vector<float> weights = speechInterface->getEmotionCurve(get_speech_request_id(), emotionNames[i]);
 				std::vector<float> weightedCurve = scaleCurve(iter->second, weights);
-				emotionCurvesMap[iter->first].push_back(weightedCurve);
+				emotionCurvesMap[iter->first].emplace_back(weightedCurve);
 
 				// debug - before scale
 				std::stringstream debugNameSS;
@@ -532,7 +532,7 @@ void BML::SpeechRequest::processVisemes(std::vector<VisemeData*>* result_visemes
 				VisemeData* debugDiphoneVisemeCurve = new VisemeData(debugNameSS.str(), 0.0f);
 				debugDiphoneVisemeCurve->setFloatCurve(iter->second, iter->second.size() / 2, 2);
 				debugDiphoneVisemeCurve->setCurveInfo("6");
-				debugVisemeCurves.push_back(debugDiphoneVisemeCurve);
+				debugVisemeCurves.emplace_back(debugDiphoneVisemeCurve);
 
 				// debug - after scale
 				std::stringstream debugNameSS1;
@@ -540,7 +540,7 @@ void BML::SpeechRequest::processVisemes(std::vector<VisemeData*>* result_visemes
 				VisemeData* debugDiphoneVisemeCurve1 = new VisemeData(debugNameSS1.str(), 0.0f);
 				debugDiphoneVisemeCurve1->setFloatCurve(weightedCurve, weightedCurve.size() / 2, 2);
 				debugDiphoneVisemeCurve1->setCurveInfo("7");
-				debugVisemeCurves.push_back(debugDiphoneVisemeCurve1);
+				debugVisemeCurves.emplace_back(debugDiphoneVisemeCurve1);
 			}
 		}
 		std::map<std::string, std::vector<std::vector<float> > >::iterator iter;
@@ -563,7 +563,7 @@ void BML::SpeechRequest::processVisemes(std::vector<VisemeData*>* result_visemes
 			VisemeData* debugDiphoneVisemeCurve = new VisemeData(debugNameSS.str(), 0.0f);
 			debugDiphoneVisemeCurve->setFloatCurve(mergedCurve, mergedCurve.size() / 2, 2);
 			debugDiphoneVisemeCurve->setCurveInfo("8");
-			debugVisemeCurves.push_back(debugDiphoneVisemeCurve);
+			debugVisemeCurves.emplace_back(debugDiphoneVisemeCurve);
 		}
 	}
 	else
@@ -582,7 +582,7 @@ void BML::SpeechRequest::processVisemes(std::vector<VisemeData*>* result_visemes
 	{
 		VisemeData* newVis = new VisemeData(curveIter->first, 0);
 		newVis->setFloatCurve(curveIter->second, curveIter->second.size() / 2, 2);
-		result_visemes->push_back(newVis);
+		result_visemes->emplace_back(newVis);
 	}
 }
 
@@ -618,7 +618,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 		if (i < ((*visemes).size() - 1))
 			nextViseme = (*visemes)[i + 1];
 		curViseme = (*visemes)[i];
-		visemeTimeMarkers.push_back(curViseme->time());
+		visemeTimeMarkers.emplace_back(curViseme->time());
 		if (prevViseme != nullptr)
 		{
 			SBDiphone* diphone = SmartBody::SBScene::getScene()->getDiphoneManager()->getDiphone(prevViseme->id(), curViseme->id(), diphoneMap);
@@ -717,7 +717,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 
 					VisemeData* vcopy = new VisemeData(visemeNames[v], 0.0f);
 					vcopy->setFloatCurve(curve, curve.size() / 2, 2);
-					visemeRawData.push_back(vcopy);
+					visemeRawData.emplace_back(vcopy);
 
 					// debug
 					/*
@@ -726,7 +726,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 					VisemeData* debugDiphoneVisemeCurve = new VisemeData(debugNameSS.str(), 0.0f);
 					debugDiphoneVisemeCurve->setFloatCurve(curve, curve.size() / 2, 2);
 					debugDiphoneVisemeCurve->setCurveInfo("0");
-					debugVisemeCurves.push_back(debugDiphoneVisemeCurve);
+					debugVisemeCurves.emplace_back(debugDiphoneVisemeCurve);
 					*/
 				}
 			}
@@ -765,7 +765,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 		{
 			VisemeData* newV = new VisemeData(visemeRawData[i]->id(), visemeRawData[i]->time());
 			newV->setFloatCurve(visemeRawData[i]->getFloatCurve(), visemeRawData[i]->getFloatCurve().size() / 2, 2);
-			visemeProcessedData.push_back(newV);
+			visemeProcessedData.emplace_back(newV);
 		}
 		else	// stitch the curves
 		{
@@ -779,7 +779,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 			VisemeData* debugStitch = new VisemeData(debugNameSS.str(), visemeProcessedData[index]->time());
 			debugStitch->setCurveInfo("1");
 			debugStitch->setFloatCurve(newCurve, newCurve.size() / 2, 2);
-			debugVisemeCurves.push_back(debugStitch);
+			debugVisemeCurves.emplace_back(debugStitch);
 			*/
 		}
 	}
@@ -804,8 +804,8 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 		debugVwSmoothing->setFloatCurve(visemeProcessedData[i]->getFloatCurve(), visemeProcessedData[i]->getFloatCurve().size() / 2, 2);
 		debugVwSmoothing->setCurveInfo("3");
 
-		debugVisemeCurves.push_back(debugVwoSmoothing);
-		debugVisemeCurves.push_back(debugVwSmoothing);
+		debugVisemeCurves.emplace_back(debugVwoSmoothing);
+		debugVisemeCurves.emplace_back(debugVwSmoothing);
 	}
 
 	if (thirdpass)
@@ -896,7 +896,7 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 				VisemeData* debugconstrainCurve = new VisemeData(visemeProcessedData[openIndex]->id(), visemeProcessedData[openIndex]->time());
 				debugconstrainCurve->setCurveInfo("4");
 				debugconstrainCurve->setFloatCurve(visemeProcessedData[openIndex]->getFloatCurve(), visemeProcessedData[openIndex]->getFloatCurve().size() / 2, 2);
-				debugVisemeCurves.push_back(debugconstrainCurve);
+				debugVisemeCurves.emplace_back(debugconstrainCurve);
 			}
 
 			if (wideIndex >= 0)
@@ -904,21 +904,21 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 				VisemeData* debugProcessWideCurve = new VisemeData(visemeProcessedData[wideIndex]->id(), visemeProcessedData[wideIndex]->time());
 				debugProcessWideCurve->setCurveInfo("4");
 				debugProcessWideCurve->setFloatCurve(visemeProcessedData[wideIndex]->getFloatCurve(), visemeProcessedData[wideIndex]->getFloatCurve().size() / 2, 2);
-				debugVisemeCurves.push_back(debugProcessWideCurve);
+				debugVisemeCurves.emplace_back(debugProcessWideCurve);
 			}
 			if (wIndex >= 0)
 			{
 				VisemeData* debugProcessWCurve = new VisemeData(visemeProcessedData[wIndex]->id(), visemeProcessedData[wIndex]->time());
 				debugProcessWCurve->setCurveInfo("4");
 				debugProcessWCurve->setFloatCurve(visemeProcessedData[wIndex]->getFloatCurve(), visemeProcessedData[wIndex]->getFloatCurve().size() / 2, 2);
-				debugVisemeCurves.push_back(debugProcessWCurve);
+				debugVisemeCurves.emplace_back(debugProcessWCurve);
 			}
 			if (shchIndex >= 0)
 			{
 				VisemeData* debugProcessShChCurve = new VisemeData(visemeProcessedData[shchIndex]->id(), visemeProcessedData[shchIndex]->time());
 				debugProcessShChCurve->setCurveInfo("4");
 				debugProcessShChCurve->setFloatCurve(visemeProcessedData[shchIndex]->getFloatCurve(), visemeProcessedData[shchIndex]->getFloatCurve().size() / 2, 2);
-				debugVisemeCurves.push_back(debugProcessShChCurve);
+				debugVisemeCurves.emplace_back(debugProcessShChCurve);
 			}
 		}
 	}
@@ -931,14 +931,14 @@ std::map<std::string, std::vector<float> > BML::SpeechRequest::generateCurvesGiv
 		VisemeData* debugVwFiltering = new VisemeData(visemeProcessedData[i]->id(), visemeProcessedData[i]->time());
 		debugVwFiltering->setFloatCurve(visemeProcessedData[i]->getFloatCurve(), visemeProcessedData[i]->getFloatCurve().size() / 2, 2);
 		debugVwFiltering->setCurveInfo("5");
-		debugVisemeCurves.push_back(debugVwFiltering);
+		debugVisemeCurves.emplace_back(debugVwFiltering);
 
 		//VisemeData* newV = new VisemeData(visemeProcessedData[i]->id(), visemeProcessedData[i]->time());
 		//newV->setFloatCurve(visemeProcessedData[i]->getFloatCurve(), visemeProcessedData[i]->getFloatCurve().size() / 2, 2);
 
 		std::vector<float> finalCurveData;
 		for (size_t j = 0; j < visemeProcessedData[i]->getFloatCurve().size(); ++j)
-			finalCurveData.push_back(visemeProcessedData[i]->getFloatCurve()[j]);
+			finalCurveData.emplace_back(visemeProcessedData[i]->getFloatCurve()[j]);
 
 		if (finalCurves.find(visemeProcessedData[i]->id()) == finalCurves.end())
 		{
@@ -982,7 +982,7 @@ std::vector<float> BML::SpeechRequest::scaleCurve(std::vector<float>& c1, std::v
 	if (c1.size() == 0 || weights.size() == 0)
 	{
 		for (size_t i = 0; i < c1.size(); i++)
-			ret.push_back(c1[i]);
+			ret.emplace_back(c1[i]);
 		return ret;
 	}
 	
@@ -999,8 +999,8 @@ std::vector<float> BML::SpeechRequest::scaleCurve(std::vector<float>& c1, std::v
 		{
 			if (x <= t)
 			{
-				ret.push_back(x);
-				ret.push_back(y * v);
+				ret.emplace_back(x);
+				ret.emplace_back(y * v);
 				index1++;
 				continue;
 			}
@@ -1023,8 +1023,8 @@ std::vector<float> BML::SpeechRequest::scaleCurve(std::vector<float>& c1, std::v
 					scaleV = (v - vPrev) * (x - tPrev) / (t - tPrev) + vPrev;
 				}
 				
-				ret.push_back(x);
-				ret.push_back(y * scaleV);
+				ret.emplace_back(x);
+				ret.emplace_back(y * scaleV);
 				index1++;
 				continue;
 			}
@@ -1042,8 +1042,8 @@ std::vector<float> BML::SpeechRequest::scaleCurve(std::vector<float>& c1, std::v
 		for (size_t i = index1; i < c1.size() / 2; ++i)
 		{
 			float scaleY = weights[weights.size() - 1];
-			ret.push_back(c1[index1 * 2]);
-			ret.push_back(c1[index1 * 2 + 1] * scaleY);
+			ret.emplace_back(c1[index1 * 2]);
+			ret.emplace_back(c1[index1 * 2 + 1] * scaleY);
 		}
 	}
 
@@ -1081,8 +1081,8 @@ std::vector<float> BML::SpeechRequest::addCurve(std::vector<float>& c1, std::vec
 		float y2 = c2[index2 * 2 + 1];
 		if (x1 == x2)
 		{
-			ret.push_back(x1);
-			ret.push_back(y1 + y2);
+			ret.emplace_back(x1);
+			ret.emplace_back(y1 + y2);
 			index1++;
 			index2++;
 			continue;
@@ -1091,8 +1091,8 @@ std::vector<float> BML::SpeechRequest::addCurve(std::vector<float>& c1, std::vec
 		{
 			if (index2 == 0)	// edge case
 			{
-				ret.push_back(x1);
-				ret.push_back(y1);
+				ret.emplace_back(x1);
+				ret.emplace_back(y1);
 			}
 			else
 			{
@@ -1105,14 +1105,14 @@ std::vector<float> BML::SpeechRequest::addCurve(std::vector<float>& c1, std::vec
 					{
 						curY2 = y2Prev + (y2 - y2Prev) * (x1 - x2Prev) / (x2 - x2Prev);
 					}
-					ret.push_back(x1);
-					ret.push_back(y1 + curY2);
+					ret.emplace_back(x1);
+					ret.emplace_back(y1 + curY2);
 				}
 				else
 				{
 					SmartBody::util::log("addCurve Warning: should not be here, point1(%f, %f), point2(%f, %f), previous point2(%f, %f)", x1, y1, x2, y2, x2Prev, y2Prev);
-					ret.push_back(x1);
-					ret.push_back(y1);
+					ret.emplace_back(x1);
+					ret.emplace_back(y1);
 				}
 			}
 			index1++;
@@ -1122,8 +1122,8 @@ std::vector<float> BML::SpeechRequest::addCurve(std::vector<float>& c1, std::vec
 		{
 			if (index1 == 0)
 			{
-				ret.push_back(x2);
-				ret.push_back(y2);
+				ret.emplace_back(x2);
+				ret.emplace_back(y2);
 			}
 			else
 			{
@@ -1136,14 +1136,14 @@ std::vector<float> BML::SpeechRequest::addCurve(std::vector<float>& c1, std::vec
 					{
 						curY1 = y1Prev + (y1 - y1Prev) * (x2 - x1Prev) / (x1 - x1Prev);
 					}
-					ret.push_back(x2);
-					ret.push_back(y2 + curY1);
+					ret.emplace_back(x2);
+					ret.emplace_back(y2 + curY1);
 				}
 				else
 				{
 					SmartBody::util::log("addCurve Warning: should not be here, point1(%f, %f), point2(%f, %f), previous point1(%f, %f)", x1, y1, x2, y2, x1Prev, y1Prev);
-					ret.push_back(x2);
-					ret.push_back(y2);
+					ret.emplace_back(x2);
+					ret.emplace_back(y2);
 				}
 			}
 			index2++;
@@ -1154,13 +1154,13 @@ std::vector<float> BML::SpeechRequest::addCurve(std::vector<float>& c1, std::vec
 	// handle the leftovers
 	for (size_t i = index1; i < c1.size() / 2; i++)
 	{
-		ret.push_back(c1[i * 2]);
-		ret.push_back(c1[i * 2 + 1]);
+		ret.emplace_back(c1[i * 2]);
+		ret.emplace_back(c1[i * 2 + 1]);
 	}
 	for (size_t i = index2; i < c2.size() / 2; i++)
 	{
-		ret.push_back(c2[i * 2]);
-		ret.push_back(c2[i * 2 + 1]);
+		ret.emplace_back(c2[i * 2]);
+		ret.emplace_back(c2[i * 2 + 1]);
 	}
 
 	return ret;
@@ -1216,17 +1216,17 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 	if (boundary < 0) 	// two curve does not overlap, just add them together
 	{
 		for (int i = 0; i < size1; ++i)
-			retc.push_back(c1[i]);
+			retc.emplace_back(c1[i]);
 		for (int i = 0; i < size2; ++i)
-			retc.push_back(c2[i]);
+			retc.emplace_back(c2[i]);
 		return retc;
 	}
 
 	// first fill in the non-overlapping curves
 	for (int i = 0; i < boundary; ++i)
 	{
-		retc.push_back(c1[i * 2]);
-		retc.push_back(c1[i * 2 + 1]);
+		retc.emplace_back(c1[i * 2]);
+		retc.emplace_back(c1[i * 2 + 1]);
 	}
 
 	
@@ -1255,8 +1255,8 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 				{
 					for (int k = id1; k <= i; ++k)
 					{
-						retc.push_back(c1[k * 2]);
-						retc.push_back(c1[k * 2 + 1]);
+						retc.emplace_back(c1[k * 2]);
+						retc.emplace_back(c1[k * 2 + 1]);
 					}
 					insertFirst = false;
 				}
@@ -1264,15 +1264,15 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 				{
 					for (int k = id2; k <= j; ++k)
 					{
-						retc.push_back(c2[k * 2]);
-						retc.push_back(c2[k * 2 + 1]);
+						retc.emplace_back(c2[k * 2]);
+						retc.emplace_back(c2[k * 2 + 1]);
 					}
 					insertFirst = true;
 				}
 				id1 = i + 1;
 				id2 = j + 1;
-				retc.push_back(ix);
-				retc.push_back(iy);
+				retc.emplace_back(ix);
+				retc.emplace_back(iy);
 				idi++;
 			}
 		}
@@ -1285,16 +1285,16 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 		{
 			for (int k = id1; k < size1 / 2; ++k)
 			{
-				retc.push_back(c1[k * 2]);
-				retc.push_back(c1[k * 2 + 1]);
+				retc.emplace_back(c1[k * 2]);
+				retc.emplace_back(c1[k * 2 + 1]);
 			}
 		}
 		else													// insert c2
 		{
 			for (int k = id2; k < size2 / 2; ++k)
 			{
-				retc.push_back(c2[k * 2]);
-				retc.push_back(c2[k * 2 + 1]);
+				retc.emplace_back(c2[k * 2]);
+				retc.emplace_back(c2[k * 2 + 1]);
 			}
 		}
 	}
@@ -1331,17 +1331,17 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 	if (c1[size1 - 2] < c2[0])	// no overlapping, c1 on the left
 	{
 		for (int i = 0; i < size1; ++i)
-			retc.push_back(c1[i]);
+			retc.emplace_back(c1[i]);
 		for (int i = 0; i < size2; ++i)
-			retc.push_back(c2[i]);
+			retc.emplace_back(c2[i]);
 		return retc;
 	}
 	if (c2[size2 - 2] < c1[0])	// no overlapping, c2 on the left
 	{
 		for (int i = 0; i < size2; ++i)
-			retc.push_back(c2[i]);
+			retc.emplace_back(c2[i]);
 		for (int i = 0; i < size1; ++i)
-			retc.push_back(c1[i]);
+			retc.emplace_back(c1[i]);
 		return retc;
 	}
 
@@ -1392,8 +1392,8 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 			if (rightX != leftX)
 				float ratioTransition = (curX1 - leftX) / (rightX - leftX);
 			float finalY = (1 - ratioTransition) * curY1 + ratioTransition * curY2;
-			retc.push_back(curX1);
-			retc.push_back(finalY);
+			retc.emplace_back(curX1);
+			retc.emplace_back(finalY);
 			index1++;
 			index2++;
 			continue;
@@ -1410,14 +1410,14 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 					float curY2_X1 = ratioCurve2 * (curY2 - prevY2) + prevY2;
 					float ratioTransition = (curX1 - leftX) / (rightX - leftX);
 					float finalY = (1 - ratioTransition) * curY1 + ratioTransition * curY2_X1;
-					retc.push_back(curX1);
-					retc.push_back(finalY);
+					retc.emplace_back(curX1);
+					retc.emplace_back(finalY);
 					index1++;
 					continue;
 				}
 			}
-			retc.push_back(curX1);
-			retc.push_back(curY1);
+			retc.emplace_back(curX1);
+			retc.emplace_back(curY1);
 			index1++;
 			continue;
 		}
@@ -1433,14 +1433,14 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 					float curY1_X2 = ratioCurve1 * (curY1 - prevY1) + prevY1;
 					float ratioTransition = (curX2 - leftX) / (rightX - leftX);
 					float finalY = ratioTransition * curY2 + (1 - ratioTransition) * curY1_X2;
-					retc.push_back(curX2);
-					retc.push_back(finalY);
+					retc.emplace_back(curX2);
+					retc.emplace_back(finalY);
 					index2++;
 					continue;
 				}
 			}
-			retc.push_back(curX2);
-			retc.push_back(curY2);
+			retc.emplace_back(curX2);
+			retc.emplace_back(curY2);
 			index2++;
 			continue;
 		}
@@ -1456,16 +1456,16 @@ std::vector<float> BML::SpeechRequest::stitchCurve(std::vector<float>& c1, std::
 	{
 		for (; index1 < size1 / 2; ++index1)
 		{
-			retc.push_back(c1[index1 * 2 + 0]);
-			retc.push_back(c1[index1 * 2 + 1]);
+			retc.emplace_back(c1[index1 * 2 + 0]);
+			retc.emplace_back(c1[index1 * 2 + 1]);
 		}
 	}
 	else
 	{
 		for (; index2 < size2 / 2; ++index2)
 		{
-			retc.push_back(c2[index2 * 2 + 0]);
-			retc.push_back(c2[index2 * 2 + 1]);
+			retc.emplace_back(c2[index2 * 2 + 0]);
+			retc.emplace_back(c2[index2 * 2 + 1]);
 		}
 	}
 
@@ -1484,9 +1484,9 @@ void BML::SpeechRequest::filterCurve(std::vector<float>&c, float speedLimit)
 	for (size_t i = 0; i < c.size(); i++)
 	{
 		if ((i % 2) == 0)
-			x.push_back(c[i]);
+			x.emplace_back(c[i]);
 		else
-			y.push_back(c[i]);
+			y.emplace_back(c[i]);
 	}
 
 	// apply low pass filter
@@ -1520,8 +1520,8 @@ void BML::SpeechRequest::filterCurve(std::vector<float>&c, float speedLimit)
 
 			if (i == x.size() - 2)	// append one if last point has been changed
 			{
-				x.push_back(x[i] + 0.3f);	// 0.3 is adhoc
-				y.push_back(0.0f);
+				x.emplace_back(x[i] + 0.3f);	// 0.3 is adhoc
+				y.emplace_back(0.0f);
 			}
 
 		}
@@ -1532,8 +1532,8 @@ void BML::SpeechRequest::filterCurve(std::vector<float>&c, float speedLimit)
 	c.clear();
 	for (size_t i = 0; i < x.size(); i++)
 	{
-		c.push_back(x[i]);
-		c.push_back(y[i]);
+		c.emplace_back(x[i]);
+		c.emplace_back(y[i]);
 	}
 }
 
@@ -1556,11 +1556,11 @@ void BML::SpeechRequest::smoothCurve(std::vector<float>& c, std::vector<float>& 
 		{
 			if ((i % 2) == 0)
 			{
-				x.push_back(c[i]);
-				markDelete.push_back(false);
+				x.emplace_back(c[i]);
+				markDelete.emplace_back(false);
 			}
 			else
-				y.push_back(c[i]);
+				y.emplace_back(c[i]);
 		}
 
 
@@ -1571,7 +1571,7 @@ void BML::SpeechRequest::smoothCurve(std::vector<float>& c, std::vector<float>& 
 			if ((y[i] - y[i - 1]) >= 0 &&
 				(y[i] - y[i + 1]) >= 0)
 			{
-				localMaxId.push_back(i);
+				localMaxId.emplace_back(i);
 			}
 		}
 
@@ -1598,8 +1598,8 @@ void BML::SpeechRequest::smoothCurve(std::vector<float>& c, std::vector<float>& 
 		{
 			if (!markDelete[i])
 			{
-				c.push_back(x[i]);
-				c.push_back(y[i]);
+				c.emplace_back(x[i]);
+				c.emplace_back(y[i]);
 			}
 		}
 
@@ -1618,16 +1618,16 @@ void BML::SpeechRequest::constrainCurve(std::vector<float>& openCurve, std::vect
 	for (size_t i = 0; i < openCurve.size(); ++i)
 	{
 		if (i % 2 == 0)
-			openX.push_back(openCurve[i]);
+			openX.emplace_back(openCurve[i]);
 		else
-			openY.push_back(openCurve[i]);
+			openY.emplace_back(openCurve[i]);
 	}
 	for (size_t i = 0; i < otherCurve.size(); ++i)
 	{
 		if (i % 2 == 0)
-			otherX.push_back(otherCurve[i]);
+			otherX.emplace_back(otherCurve[i]);
 		else
-			otherY.push_back(otherCurve[i]);
+			otherY.emplace_back(otherCurve[i]);
 	}
 
 	float secStart = 0.0f;
@@ -1695,8 +1695,8 @@ void BML::SpeechRequest::constrainCurve(std::vector<float>& openCurve, std::vect
 	openCurve.clear();
 	for (size_t i = 0; i < openX.size(); ++i)
 	{
-		openCurve.push_back(openX[i]);
-		openCurve.push_back(openY[i]);
+		openCurve.emplace_back(openX[i]);
+		openCurve.emplace_back(openY[i]);
 	}
 }
 
@@ -1708,9 +1708,9 @@ void BML::SpeechRequest::constrainWidenCurve(std::vector<float>& widenCurve, flo
 	for (size_t i = 0; i < widenCurve.size(); ++i)
 	{
 		if (i % 2 == 0)
-			widenX.push_back(widenCurve[i]);
+			widenX.emplace_back(widenCurve[i]);
 		else
-			widenY.push_back(widenCurve[i]);
+			widenY.emplace_back(widenCurve[i]);
 	}
 
 	widenCurve.clear();
@@ -1724,22 +1724,22 @@ void BML::SpeechRequest::constrainWidenCurve(std::vector<float>& widenCurve, flo
 				if (widenX[i - 1] < widenX[i] - amount)
 					offsetAmount = widenX[i - 1] - widenX[i] + .001;
 			}
-			widenCurve.push_back(widenX[i] - offsetAmount);
-			widenCurve.push_back(widenY[i]);
-			widenCurve.push_back(widenX[i]);
-			widenCurve.push_back(widenY[i]);
+			widenCurve.emplace_back(widenX[i] - offsetAmount);
+			widenCurve.emplace_back(widenY[i]);
+			widenCurve.emplace_back(widenX[i]);
+			widenCurve.emplace_back(widenY[i]);
 			if (i < widenY.size() - 1)
 			{
 				if (widenX[i + 1] < widenX[i] + amount)
 					offsetAmount = widenX[i + 1] - widenX[i] - .001;
 			}
-			widenCurve.push_back(widenX[i] + offsetAmount);
-			widenCurve.push_back(widenY[i]);
+			widenCurve.emplace_back(widenX[i] + offsetAmount);
+			widenCurve.emplace_back(widenY[i]);
 		}
 		else
 		{
-			widenCurve.push_back(widenX[i]);
-			widenCurve.push_back(widenY[i]);
+			widenCurve.emplace_back(widenX[i]);
+			widenCurve.emplace_back(widenY[i]);
 		}
 	}
 
@@ -1819,7 +1819,7 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 			std::vector<std::string> tokens;
 			SmartBody::util::tokenize(temp->getCurveInfo(), tokens);
 			for (size_t i = 0; i < tokens.size(); ++i)
-				temp->getFloatCurve().push_back(atof(tokens[i].c_str()));
+				temp->getFloatCurve().emplace_back(atof(tokens[i].c_str()));
 			emotionViseme->setFloatCurve(temp->getFloatCurve(), temp->getNumKeys(), 4);
 		}
 	}
@@ -1831,7 +1831,7 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 		{
 			VisemeData* v = (*result_visemes)[i];
 			VisemeData* newV = new VisemeData(v->id(), v->time());
-			phonemes.push_back(newV);
+			phonemes.emplace_back(newV);
 		}
 
 		// Process Visemes
@@ -1852,7 +1852,7 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 	}
 	if (shouldInsert && emotionViseme)
 	{
-		result_visemes->push_back(emotionViseme);
+		result_visemes->emplace_back(emotionViseme);
 	}
 #endif
 
@@ -1868,18 +1868,18 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 			if (v->duration() < actor->getMinVisemeTime() && !actor->isDiphone())
 				continue;
 			if (v->isMotionMode())
-				visemes.push_back(new VisemeData(v->id()));
+				visemes.emplace_back(new VisemeData(v->id()));
 			else if (!v->isCurveMode() && !v->isTrapezoidMode() && !v->isFloatCurveMode())
-				visemes.push_back( new VisemeData( v->id(), v->weight(), v->time() ) );
+				visemes.emplace_back( new VisemeData( v->id(), v->weight(), v->time() ) );
 			else if (v->isTrapezoidMode() && !v->isFloatCurveMode())
-				visemes.push_back( new VisemeData( v->id(), v->weight(), v->time(), v->duration(), v->rampin(), v->rampout() ) );
+				visemes.emplace_back( new VisemeData( v->id(), v->weight(), v->time(), v->duration(), v->rampin(), v->rampout() ) );
 			else if (!v->isFloatCurveMode())
-				visemes.push_back( new VisemeData( v->id(), v->getNumKeys(), v->getCurveInfo() ));
+				visemes.emplace_back( new VisemeData( v->id(), v->getNumKeys(), v->getCurveInfo() ));
 			else
 			{
 				VisemeData* vcopy = new VisemeData( v->id(), v->time());
 				vcopy->setFloatCurve(v->getFloatCurve(), v->getNumKeys(), v->getFloatsPerKey());
-				visemes.push_back( vcopy );
+				visemes.emplace_back( vcopy );
 			}
 		}
 
@@ -2093,7 +2093,7 @@ void BML::SpeechRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene
 				}
 				string cmd_str = command.str();
 				SbmCommand *cmd = new SbmCommand( cmd_str, time );
-				sbm_commands.push_back( cmd );
+				sbm_commands.emplace_back( cmd );
 				double lastVisemeTime = data[(numKeys - 1) * floatsPerKey];
 				if (time + lastVisemeTime > lastTime)
 					lastTime = time  + lastVisemeTime;
@@ -2129,8 +2129,8 @@ void BML::SpeechRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene
 				
 				string cmd_str = command.str();
 				SbmCommand *cmd = new SbmCommand( cmd_str, time );
-				sbm_commands.push_back( cmd );
-//				sbm_commands.push_back( new SbmCommand( command.str(), time ) );
+				sbm_commands.emplace_back( cmd );
+//				sbm_commands.emplace_back( new SbmCommand( command.str(), time ) );
 				if (time + duration > lastTime)
 					lastTime = time + duration;
 #endif
@@ -2197,7 +2197,7 @@ void BML::SpeechRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene
 				command << "char " << actor_id << " viseme " << v->id() << " curve " << v->getNumKeys() << ' ' << v->getCurveInfo();			
 				string cmd_str = command.str();
 				SbmCommand *cmd = new SbmCommand( cmd_str, time );
-				sbm_commands.push_back( cmd );
+				sbm_commands.emplace_back( cmd );
 				*/
 
 				// directly schedule into head_schedule_ct
@@ -2225,8 +2225,8 @@ void BML::SpeechRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene
 				echo << "echo LOG_BML_VISEMES:\t" << time << ":\t" << command.str();
 				string cmd_str = echo.str();
 				SbmCommand *cmd = new SbmCommand( cmd_str, time );
-				sbm_commands.push_back( cmd );
-//				sbm_commands.push_back( new SbmCommand( echo.str(), time ) );
+				sbm_commands.emplace_back( cmd );
+//				sbm_commands.emplace_back( new SbmCommand( echo.str(), time ) );
 			}
 		}
 	} else {
@@ -2238,7 +2238,7 @@ void BML::SpeechRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene
 		if( LOG_AUDIO || LOG_BML_VISEMES )
 			cout << "DEBUG: BodyPlannerImpl::realizeRequest(..): scheduling request->audioPlay: " << audioPlay << endl;
 		// schedule for later		
-		sbm_commands.push_back( new SbmCommand( audioPlay, startAt + request->actor->get_viseme_sound_delay() ) );
+		sbm_commands.emplace_back( new SbmCommand( audioPlay, startAt + request->actor->get_viseme_sound_delay() ) );
 		//if( seq->insert( (float)(audioOffset<0? 0: audioOffset), audioPlay.c_str() ) != CMD_SUCCESS ) {
 		//	SmartBody::util::log( "ERROR: BodyPlannerImpl::realizeRequest: insert audio trigger into seq FAILED, msgId=%s\n", bpMsg.msgId ); 
 		//}

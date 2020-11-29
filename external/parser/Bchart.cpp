@@ -209,7 +209,7 @@ add_edge(Edge* edge, int right)
       already_there_extention(loc - i -1, i, right, edge);
 
   assert(loc >= 0 && loc < MAXSENTLEN);
-  waitingEdges[right][loc].push_back( edge ); 
+  waitingEdges[right][loc].emplace_back( edge );
 }
 
 void
@@ -234,7 +234,7 @@ put_in_reg(Item * itm)
 
     if( diff < 0 || st < 0  || diff > MAXSENTLEN || st > MAXSENTLEN)
 	error( "illegal indices in put_in_reg" );
-    regs[diff][st].push_back( itm );
+    regs[diff][st].emplace_back( itm );
 }
 
 void
@@ -373,7 +373,7 @@ extend_rule(Edge* edge, Item * item, int right)
     ++ruleiCounts_;
     heap->insert(newEdge);
 
-    if(itemTerm != Term::stopTerm) item->needme().push_back(newEdge);
+    if(itemTerm != Term::stopTerm) item->needme().emplace_back(newEdge);
 }
 
 void
@@ -415,7 +415,7 @@ addFinishedEdge(Edge* newEdge)
     assert(newEdge->finishedParent() == regi);
   else newEdge->setFinishedParent( regi );    
 
-  regi->ineed().push_back( newEdge );
+  regi->ineed().emplace_back( newEdge );
   /* setFinishedParent tells newEdge that the consitutent that it
      build is regi */
 }

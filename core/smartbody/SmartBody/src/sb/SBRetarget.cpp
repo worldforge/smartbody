@@ -57,7 +57,7 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 	SmartBody::SBSkeleton* interSk = new SmartBody::SBSkeleton(targetSk); // copy for an intermediate skeleton
 	SmartBody::SBSkeleton* tempSrcSk = new SmartBody::SBSkeleton(sourceSk);
 	std::vector<std::string> stopJoints;	
-	stopJoints.push_back("skullbase");
+	stopJoints.emplace_back("skullbase");
 
 	retargetEndJoints = endJoints;
 	retargetRelativeJoints = relativeJoints;

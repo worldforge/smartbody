@@ -115,9 +115,9 @@ void ImageSequenceViewer::OnInputFolder(Fl_Widget* widget, void* data)
 				|| _stricmp(ext.c_str(), ".png" ) == 0)
 			{
 #if (BOOST_VERSION > 104400)
-				imageFiles.push_back(cur.string());
+				imageFiles.emplace_back(cur.string());
 #else
-				imageFiles.push_back(cur.string());
+				imageFiles.emplace_back(cur.string());
 #endif
 			}
 		}
@@ -164,7 +164,7 @@ ImageSequencePlayer::~ImageSequencePlayer()
 {
 	if (_activeTexture)
 		delete _activeTexture;
-	_activeTexture = NULL;
+	_activeTexture = nullptr;
 }
 
 void ImageSequencePlayer::draw()
@@ -256,7 +256,7 @@ void ImageSequencePlayer::updateImageSequences(std::vector<std::string>& imageFu
 	{
 		if (_imageSequences[i])
 			delete _imageSequences[i];
-		_imageSequences[i] = NULL;
+		_imageSequences[i] = nullptr;
 	}
 	_imageSequences.clear();
 
@@ -266,7 +266,7 @@ void ImageSequencePlayer::updateImageSequences(std::vector<std::string>& imageFu
 		SbmTexture* texture = new SbmTexture(filebase.c_str());
 		if (!texture->loadImage(imageFullPathes[i].c_str()))
 			continue;
-		_imageSequences.push_back(texture);
+		_imageSequences.emplace_back(texture);
 	}
 
 	renderTexture(0);

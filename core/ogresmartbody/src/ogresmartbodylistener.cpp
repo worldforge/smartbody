@@ -196,7 +196,7 @@ void OgreSmartBodyListener::notify(SmartBody::SBSubject* subject)
 							if (pos != std::string::npos)
 							{
 								SmartBody::StringAttribute* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
-								shapeAttributes.push_back(strAttribute);
+								shapeAttributes.emplace_back(strAttribute);
 							}
 						}
 
@@ -239,8 +239,8 @@ void OgreSmartBodyListener::notify(SmartBody::SBSubject* subject)
 									model->ref();
 									hasNeutral = true;
 									// add the shape to the deformable mesh
-									//mesh->dMeshStatic_p.push_back(model);
-									//mesh->dMeshDynamic_p.push_back(model);
+									//mesh->dMeshStatic_p.emplace_back(model);
+									//mesh->dMeshDynamic_p.emplace_back(model);
 								}
 
 							}
@@ -838,7 +838,7 @@ void OgreSmartBodyListener::addSBSkeleton(SmartBody::SBSkeleton* skel)
 	{
 
 		SbmTextureManager& texManager = SbmTextureManager::singleton();
-		SbmTexture* tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, texName.c_str());
+		auto tex = texManager.findTexture(texName.c_str());
 		Ogre::TextureManager& ogreTexManager = Ogre::TextureManager::getSingleton();
 		ogreTexManager.setDefaultNumMipmaps(Ogre::MIP_UNLIMITED);
 		Ogre::TexturePtr ogreTex = ogreTexManager.getByName(texName);

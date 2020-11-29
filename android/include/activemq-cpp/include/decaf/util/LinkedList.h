@@ -282,7 +282,7 @@ namespace util {
             const ListNode<E>* current = this->head.next;
 
             while( current != &this->tail ) {
-                result.push_back( current->value );
+                result.emplace_back( current->value );
                 current = current->next;
             }
 

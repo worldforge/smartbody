@@ -13,16 +13,16 @@ BMLGazeObject::BMLGazeObject() : BMLObject()
 			"Which logical joints will be used to gaze");
 
 	std::vector<std::string> jointRanges;
-	jointRanges.push_back("EYES");
-	jointRanges.push_back("NECK");
-	jointRanges.push_back("CHEST");
-	jointRanges.push_back("BACK");
-	jointRanges.push_back("EYES NECK");
-	jointRanges.push_back("EYES CHEST");
-	jointRanges.push_back("EYES BACK");
-	jointRanges.push_back("HEAD CHEST");
-	jointRanges.push_back("HEAD BACK");
-	jointRanges.push_back("CHEST BACK");
+	jointRanges.emplace_back("EYES");
+	jointRanges.emplace_back("NECK");
+	jointRanges.emplace_back("CHEST");
+	jointRanges.emplace_back("BACK");
+	jointRanges.emplace_back("EYES NECK");
+	jointRanges.emplace_back("EYES CHEST");
+	jointRanges.emplace_back("EYES BACK");
+	jointRanges.emplace_back("HEAD CHEST");
+	jointRanges.emplace_back("HEAD BACK");
+	jointRanges.emplace_back("CHEST BACK");
 	jointRangeAttr->setValidValues(jointRanges);
 
 
@@ -31,15 +31,15 @@ BMLGazeObject::BMLGazeObject() : BMLObject()
 			"Offset from gaze target. A number can be used in place of the directions. If polar is used, then 'angle' must also be set");
 
 	std::vector<std::string> directions;
-	directions.push_back("LEFT");
-	directions.push_back("RIGHT");
-	directions.push_back("UP");
-	directions.push_back("DOWN");
-	directions.push_back("UPLEFT");
-	directions.push_back("UPRIGHT");
-	directions.push_back("DOWNLEFT");
-	directions.push_back("DOWNRIGHT");
-	directions.push_back("POLAR");
+	directions.emplace_back("LEFT");
+	directions.emplace_back("RIGHT");
+	directions.emplace_back("UP");
+	directions.emplace_back("DOWN");
+	directions.emplace_back("UPLEFT");
+	directions.emplace_back("UPRIGHT");
+	directions.emplace_back("DOWNLEFT");
+	directions.emplace_back("DOWNRIGHT");
+	directions.emplace_back("POLAR");
 	dirAttr->setValidValues(directions);
 
 	createDoubleAttribute("angle", 0, true, "Basic", 40, false, false, false, 
@@ -49,10 +49,10 @@ BMLGazeObject::BMLGazeObject() : BMLObject()
 		"Which logical joint should acquire target (default is EYES.");
 
 	std::vector<std::string> priorityJoints;
-	priorityJoints.push_back("EYES");
-	priorityJoints.push_back("NECK");
-	priorityJoints.push_back("CHEST");
-	priorityJoints.push_back("BACK");
+	priorityJoints.emplace_back("EYES");
+	priorityJoints.emplace_back("NECK");
+	priorityJoints.emplace_back("CHEST");
+	priorityJoints.emplace_back("BACK");
 	priorityJointAttr->setValidValues(priorityJoints);
 
 	createStringAttribute("sbm:handle", "", true, "Basic", 60, false, false, false, "Handle of this reach instance, can be reused during later gaze commands.");

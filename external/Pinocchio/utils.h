@@ -55,7 +55,7 @@ inline vector<string> readWords(istream &stream)
         if(pos == string::npos)
             break;
         string::size_type eow = line.find_first_of(whitespace, pos);
-        words.push_back(string(line, pos, eow - pos));
+        words.emplace_back(string(line, pos, eow - pos));
         pos = eow;
     }
     

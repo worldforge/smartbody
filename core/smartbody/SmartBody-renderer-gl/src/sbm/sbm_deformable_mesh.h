@@ -224,7 +224,7 @@ public:
 	SBAPI SkinWeight* getSkinWeight(const std::string& skinSourceName);
 	SBAPI SkinWeight* getSkinWeightIndex(int index);
 	SBAPI int getNumMeshes();
-	SBAPI const std::string getMeshName(int index);
+	SBAPI std::string getMeshName(int index);
 	SBAPI SrModel& getStaticModel(int index);
 	SBAPI int	getMesh(const std::string& meshName);				// get the position given the mesh name
 	int getValidSkinMesh(const std::string& meshName);

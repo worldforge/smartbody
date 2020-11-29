@@ -242,7 +242,7 @@ void BehaviorSchedulerConstantSpeed::schedule( BehaviorSyncPoints& behav_syncs, 
 				}
 				else
 				{
-					intervals.push_back(std::pair<int, int>(lastPoint, x));
+					intervals.emplace_back(std::pair<int, int>(lastPoint, x));
 					lastPoint = x;
 				}
 			}
@@ -266,7 +266,7 @@ void BehaviorSchedulerConstantSpeed::schedule( BehaviorSyncPoints& behav_syncs, 
 
 			for (int x = lastScaleIndex; x < end; x++)
 			{
-				intervalScale.push_back(scale);
+				intervalScale.emplace_back(scale);
 			}
 			lastScaleIndex = end;
 			lastScale = scale;
@@ -275,7 +275,7 @@ void BehaviorSchedulerConstantSpeed::schedule( BehaviorSyncPoints& behav_syncs, 
 		{
 			for (int x = intervalScale.size() - 1; x < 6; x++)
 			{	
-				intervalScale.push_back(lastScale);
+				intervalScale.emplace_back(lastScale);
 			}
 		}
 		// at this point, intervalScale[] should contain the scaling for those particular intervals

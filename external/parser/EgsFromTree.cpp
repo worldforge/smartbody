@@ -61,9 +61,9 @@ edgesFromTree(InputTree* tree)
 	}
 
       Items subItems;
-      subItems.push_back(stops[tree->start()]);
-      subItems.push_back(rhs);
-      subItems.push_back(stops[tree->finish()]);
+      subItems.emplace_back(stops[tree->start()]);
+      subItems.emplace_back(rhs);
+      subItems.emplace_back(stops[tree->finish()]);
       Edge* edg = add_edge(lhs, subItems);
       if(!edg)
 	{
@@ -83,7 +83,7 @@ edgesFromTree(InputTree* tree)
       lhs->finish() = tree->finish();
       assert(lhs);
       Items subItems;
-      subItems.push_back(stops[tree->start()]);
+      subItems.emplace_back(stops[tree->start()]);
       InputTreesIter iti = tree->subTrees().begin();
       for( ; iti != tree->subTrees().end() ; iti++)
 	{
@@ -94,9 +94,9 @@ edgesFromTree(InputTree* tree)
 	    {
 	      return NULL;
 	    }
-	  subItems.push_back(itm);
+	  subItems.emplace_back(itm);
 	}
-      subItems.push_back(stops[tree->finish()]);
+      subItems.emplace_back(stops[tree->finish()]);
       Edge* edg = add_edge(lhs, subItems);
       if(!edg)
 	{
@@ -195,7 +195,7 @@ add_edge(Item* lhs, Items& rhs)
       prevEdge  = newEdge;
       cerr << "ae1 " << *item << " " << *newEdge << endl;
       alreadyPoped[alreadyPopedNum++] = newEdge;  //so it will be gced.;
-      if(item->term() != Term::stopTerm) item->needme().push_back(newEdge);
+      if(item->term() != Term::stopTerm) item->needme().emplace_back(newEdge);
       if(pos > 0) ii--;
     }
   for( ; ii2 != rhs.end() ; ii2++)
@@ -205,13 +205,13 @@ add_edge(Item* lhs, Items& rhs)
       prevEdge  = newEdge;
       cerr << "ae2 " << *item << " " << *newEdge << endl;
       alreadyPoped[alreadyPopedNum++] = newEdge;  //so it will be gced.;
-      if(item->term() != Term::stopTerm) item->needme().push_back(newEdge);
+      if(item->term() != Term::stopTerm) item->needme().emplace_back(newEdge);
     }
   prevEdge->setFinishedParent( lhs );    
   /* Since the chart itself only stores Items, the Edges in the chart are
      stored in the 'ineed' variable in the corresponding Item.
    */
-  lhs->ineed().push_back(prevEdge);
+  lhs->ineed().emplace_back(prevEdge);
   return prevEdge;
 }
 

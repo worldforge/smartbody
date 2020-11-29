@@ -94,7 +94,7 @@ std::vector<std::string> SBGestureMapManager::getGestureMapNames()
 		 iter != _gestureMaps.end();
 		 iter++)
 	{
-		gestureMapNames.push_back((*iter).first);
+		gestureMapNames.emplace_back((*iter).first);
 	}
 
 	return gestureMapNames;

@@ -44,7 +44,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <memory>
 
-class SBDebuggerUtility;
 class SrSnGroup;
 class SbmPawn;
 class SbmCharacter;
@@ -172,7 +171,7 @@ class SBScene : public SBObject
 		SBAPI void setDefaultCharacter(const std::string& character);
 		SBAPI void setDefaultRecipient(const std::string& recipient);
 
-		SBAPI void reset();
+		//SBAPI void reset();
 
 		SBAPI std::string getLastScriptDirectory();
 		SBAPI void setLastScriptDirectory(std::string dir);
@@ -323,6 +322,7 @@ class SBScene : public SBObject
 		 * Registers a provider which allows lookup of object through the "prefix/suffix" notation.
 		 */
 		void registerObjectProvider(std::string prefix, Provider provider);
+		void removeObjectProvider(const std::string& prefix);
 
 		//HACK: emitted when all pawns are removed. Used to allow SBRenderScene to know when to clear all cameras. For now.
 		std::function<void()> _removeAllPawnsCallback;

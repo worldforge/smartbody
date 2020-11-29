@@ -36,7 +36,7 @@ CorrespondenceMark::~CorrespondenceMark()
 
 void CorrespondenceMark::attach(CorrespondenceMark* mark)
 {
-	_attached.push_back(mark);
+	_attached.emplace_back(mark);
 }
 
 std::vector<CorrespondenceMark*>& CorrespondenceMark::getAttachedMark()

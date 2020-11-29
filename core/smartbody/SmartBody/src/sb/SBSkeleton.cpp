@@ -89,7 +89,7 @@ SBAPI SBJoint* SBSkeleton::createChannel(const std::string& name)
 	rootJoint->addChild(joint);
 	joint->setParent(rootJoint);
 	
-	_joints.push_back(joint);
+	_joints.emplace_back(joint);
 	joint->index(_joints.size() - 1);
 
 	if (this->getPawn())
@@ -155,7 +155,7 @@ SBAPI SBJoint* SBSkeleton::createJoint(const std::string& name, SBJoint* parent)
 		
 	}
 	
-	_joints.push_back(joint);
+	_joints.emplace_back(joint);
 	joint->index(_joints.size() - 1);
 
 	if (this->getPawn())
@@ -213,7 +213,7 @@ SBAPI SBJoint* SBSkeleton::createStaticJoint(const std::string& name, SBJoint* p
 		this->root(joint);
 	}
 	
-	_joints.push_back(joint);
+	_joints.emplace_back(joint);
 	joint->index(_joints.size() - 1);
 
 	if (this->getPawn())
@@ -358,7 +358,7 @@ std::vector<std::string> SBSkeleton::getJointMappedNames()
 	const std::vector<SkJoint*>& alljoints = joints();
 	for (size_t i = 0; i < alljoints.size(); i++)
 	{
-		jointNames.push_back(alljoints[i]->getMappedJointName());
+		jointNames.emplace_back(alljoints[i]->getMappedJointName());
 	}
 	return jointNames;
 }
@@ -369,7 +369,7 @@ std::vector<std::string> SBSkeleton::getJointNames()
 	const std::vector<SkJoint*>& alljoints = joints();
 	for (size_t i = 0; i < alljoints.size(); i++)
 	{
-		jointNames.push_back(alljoints[i]->jointName());
+		jointNames.emplace_back(alljoints[i]->jointName());
 	}
 	return jointNames;
 }
@@ -380,7 +380,7 @@ std::vector<std::string> SBSkeleton::getJointOriginalNames()
 	const std::vector<SkJoint*>& alljoints = joints();
 	for (size_t i = 0; i < alljoints.size(); i++)
 	{
-		jointNames.push_back(alljoints[i]->extName());
+		jointNames.emplace_back(alljoints[i]->extName());
 	}
 	return jointNames;
 }
@@ -397,7 +397,7 @@ std::vector<std::string> SBSkeleton::getUpperBodyJointNames()
 	std::vector<SkJoint*> alljoints;
 	SkJoint::recursive_children(alljoints, spine1);
 	for (size_t i = 0; i < alljoints.size(); ++i)
-		jointNames.push_back(alljoints[i]->jointName());
+		jointNames.emplace_back(alljoints[i]->jointName());
 
 	return jointNames;
 }

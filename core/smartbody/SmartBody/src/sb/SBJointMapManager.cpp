@@ -74,7 +74,7 @@ std::vector<std::string> SBJointMapManager::getJointMapNames()
 		 iter != _jointMaps.end();
 		 iter++)
 	{
-		names.push_back((*iter).first);
+		names.emplace_back((*iter).first);
 	}
 
 	return names;

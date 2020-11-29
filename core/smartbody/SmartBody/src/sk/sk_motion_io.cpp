@@ -93,7 +93,7 @@ bool SkMotion::_load_bvh ( SrInput& in ) {
    float val, kt = 0;
    for ( f=0; f<frames; f++ )
     {
-		_frames.push_back(Frame());
+		_frames.emplace_back(Frame());
 		int topFrame = _frames.size() - 1;
       _frames[topFrame].keytime = kt;
       _frames[topFrame].posture = (float*) malloc ( sizeof(float)*_postsize );

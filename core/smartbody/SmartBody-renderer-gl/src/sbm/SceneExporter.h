@@ -26,44 +26,44 @@
 namespace SmartBody {
 class SBRenderScene;
 
-SBAPI static void save(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup = false, const std::string& mediaPath = "");
+SBAPI void save(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup = false, const std::string& mediaPath = "");
 
-SBAPI static void exportScene(SmartBody::SBRenderScene& renderScene, const std::vector<std::string>& aspects, std::string mediaPath = "", bool remoteSetup = false);
+SBAPI void exportScene(SBRenderScene& renderScene, std::ostream& ostream, const std::vector<std::string>& aspects, const std::string& mediaPath = "", bool remoteSetup = false);
 
-SBAPI static void saveSceneSettings(SmartBody::SBRenderScene& renderScene, std::ostream& ostream);
+SBAPI void saveSceneSettings(SBRenderScene& renderScene, std::ostream& ostream);
 
-SBAPI static void exportScenePackage(SmartBody::SBRenderScene& renderScene, std::string outDir, const std::string& outZipArchiveName = "");
+SBAPI void exportScenePackage(SBRenderScene& renderScene, const std::string& outDir, const std::string& outZipArchiveName = "");
 
-SBAPI static void exportCharacter(SmartBody::SBRenderScene& renderScene, const std::string& charName, std::string outDir);
+SBAPI void exportCharacter(SBRenderScene& renderScene, const std::string& charName, std::string outDir);
 
 
-void saveScene(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveScene(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveAssets(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup, const std::string& mediaPath);
+void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup, const std::string& mediaPath);
 
-void saveCameras(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveCameras(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void savePawns(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void savePawns(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveCharacters(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveCharacters(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveLights(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveLights(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveRetargets(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveRetargets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveBlends(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveBlends(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveJointMaps(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveJointMaps(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveFaceDefinitions(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveFaceDefinitions(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveGestureMaps(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveGestureMaps(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveLipSyncing(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveLipSyncing(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveServices(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveServices(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void savePositions(SmartBody::SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void savePositions(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
 }
 

@@ -62,7 +62,7 @@
 #include <sb/SBBoneBusManager.h>
 #endif
 #include "FLTKListener.h"
-#include <sb/SBDebuggerServer.h>
+#include "sb/SBDebuggerServer.h"
 #include <sb/SBDebuggerClient.h>
 #include <sbm/PPRAISteeringAgent.h>
 #ifndef SB_NO_VHMSG
@@ -74,6 +74,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <sbm/sr_cmd_line.h>
+#include <SBPythonClass.h>
 #include "gwiz_cmdl.h"
 
 #ifdef WIN32
@@ -95,6 +96,8 @@
 #include "pic.h"
 //#include <FL/Fl_glut.h>
 #include "sr/sr_model.h"
+
+#include "SBRendererGLPython.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -125,30 +128,30 @@ void MyMeasure(const Fl_Label *o, int &W, int &H) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-
-void sbm_vhmsg_callback( const char *op, const char *args, void * user_data ) 
-{	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	// Replace singleton with a user_data pointer
-	if (scene->isRemoteMode())
-	{
-		scene->getDebuggerClient()->ProcessVHMsgs(op, args);
-		return;
-	}
-	else
-	{
-		scene->getDebuggerServer()->ProcessVHMsgs(op, args);
-	}
-
-	std::stringstream strstr;
-	strstr << op << "  " << args;
-	switch( scene->command(strstr.str() ))
-	{
-        case false:
-            SmartBody::util::log("SmartBody Error: command FAILED: '%s' + '%s'", op, args );
-            break;
-    }
-}
+//
+//void sbm_vhmsg_callback( const char *op, const char *args, void * user_data )
+//{
+//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	// Replace singleton with a user_data pointer
+//	if (scene->isRemoteMode())
+//	{
+//		scene->getDebuggerClient()->ProcessVHMsgs(op, args);
+//		return;
+//	}
+//	else
+//	{
+//		scene->getDebuggerServer()->ProcessVHMsgs(op, args);
+//	}
+//
+//	std::stringstream strstr;
+//	strstr << op << "  " << args;
+//	switch( scene->command(strstr.str() ))
+//	{
+//        case false:
+//            SmartBody::util::log("SmartBody Error: command FAILED: '%s' + '%s'", op, args );
+//            break;
+//    }
+//}
 
 /*
 
@@ -159,11 +162,12 @@ void sbm_vhmsg_callback( const char *op, const char *args, void * user_data )
 
 int mcu_viewer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {
+	auto& renderScene = Session::current->renderScene;
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	char *view_cmd = args.read_token();
 	if( strcmp( view_cmd, "open" ) == 0 )
 	{
-		if( scene->getViewer() == NULL )
+		if( scene->getViewer() == nullptr )
 		{
 			int argc = args.calc_num_tokens();
 			int width = 1024;
@@ -177,13 +181,13 @@ int mcu_viewer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 				py = args.read_int();
 			}
 
-			if( scene->getViewer() == NULL )
+			if( scene->getViewer() == nullptr )
 			{
 				if (!scene->getViewerFactory())
 					return CMD_FAILURE;
 				scene->setViewer(scene->getViewerFactory()->create( px, py, width, height));
 				scene->getViewer()->label_viewer( "SB Viewer - Local Mode" );
-				SrCamera* camera = scene->createCamera("activeCamera");
+				SrCamera* camera = renderScene.createCamera("activeCamera");
 				scene->getViewer()->set_camera( camera );
 				//((FltkViewer*)viewer_p)->set_mcu(this);
 				scene->getViewer()->show_viewer();
@@ -207,9 +211,9 @@ int mcu_viewer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		if( scene->getViewer() )
 		{
 			scene->getViewerFactory()->remove(scene->getViewer());
-			scene->setViewer(NULL);
+			scene->setViewer(nullptr);
 #if !defined (__ANDROID__) && !defined(SBM_IPHONE) && !defined(__native_client__)
-			SbmShaderManager::singleton().setViewer(NULL);
+			SbmShaderManager::singleton().setViewer(nullptr);
 #endif		
 			return( CMD_SUCCESS );
 		}
@@ -250,9 +254,10 @@ int mcu_viewer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 */
 
 int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
-	
+
 	if( SmartBody::SBScene::getScene()->getViewer() )	{
-		SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+		auto& renderScene = Session::current->renderScene;
+		SrCamera* camera = renderScene.getActiveCamera();
 		if (!camera)
 		{
 			SmartBody::util::log("No active camera. Camera command not executed.");
@@ -281,9 +286,9 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 			char* name = args.read_token();
 			if (!name || strcmp(name, "") == 0)
 			{
-				if (SmartBody::SBScene::getScene()->hasCameraTrack())
+				if (renderScene.hasCameraTrack())
 				{
-					SmartBody::SBScene::getScene()->removeCameraTrack();
+					renderScene.removeCameraTrack();
 					SmartBody::util::log("Removing current tracked object.");
 						return( CMD_SUCCESS );
 				}
@@ -306,7 +311,7 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 				SmartBody::util::log("Need to specify a joint to track.");
 				return( CMD_FAILURE );
 			}
-			SkSkeleton* skeleton = NULL;
+			SkSkeleton* skeleton = nullptr;
 			skeleton = pawn->getSkeleton();
 
 			SkJoint* joint = pawn->getSkeleton()->search_joint(jointName);
@@ -316,13 +321,13 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 				return( CMD_FAILURE );
 			}
 	
-			bool hasTracks = SmartBody::SBScene::getScene()->hasCameraTrack();
+			bool hasTracks = renderScene.hasCameraTrack();
 			if (hasTracks)
 			{
-				SmartBody::SBScene::getScene()->removeCameraTrack();
+				renderScene.removeCameraTrack();
 				SmartBody::util::log("Removing current tracked object.");
 			}
-			SmartBody::SBScene::getScene()->setCameraTrack(name, joint->getName());
+			renderScene.setCameraTrack(name, joint->getName());
 			return CMD_SUCCESS;			
 		}
 		else
@@ -413,7 +418,8 @@ int mcu_snapshot_func2(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	File.close();
 
 	delete[] data;
-	data = NULL;
+	data = nullptr;
+	return 0;
 }
 
 // snapshot <output file>
@@ -440,7 +446,7 @@ int mcu_snapshot_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		output_file = output_file_os.str();
 	}
 	// Allocate a picture buffer snap
-	Pic * in = pic_alloc(windowWidth, windowHeight, 3, NULL);
+	Pic * in = pic_alloc(windowWidth, windowHeight, 3, nullptr);
 	SmartBody::util::log("  File to save to: %s", output_file.c_str());
 
 	for (int i = windowHeight - 1; i >= 0; i--)
@@ -487,7 +493,7 @@ int mcu_quit_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )	{
 			if (steerAgent)
 			{
 				PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-				ppraiAgent->setAgent(NULL);
+				ppraiAgent->setAgent(nullptr);
 			}
 		}
 	}
@@ -892,6 +898,27 @@ int main( int argc, char **argv )	{
 	}
 	SmartBody::SBScene::setSystemParameter("mediapath", mediaPath);
 	settingsFile.close();
+
+	//Create the global session here.
+	Session::current = new Session();
+	SmartBody::PythonInterface::renderScene = &Session::current->renderScene;
+
+	SmartBody::PythonInterface::getViewerFn = []() {
+		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+		//TODO: remove the need for this magic
+		if (!scene->getViewer())
+		{
+			if (scene->getViewerFactory())
+			{
+				SrViewerFactory* viewerFactory = scene->getViewerFactory();
+				scene->setViewer(viewerFactory->create(viewerFactory->getX(), viewerFactory->getY(), viewerFactory->getW(), viewerFactory->getH()));
+				scene->getViewer()->label_viewer("Visual Debugger");
+				Session::current->renderScene.createCamera("cameraDefault");
+			}
+		}
+		return scene->getViewer();
+	};
+
 	// EDF - taken from tre_main.cpp, a fancier command line parser can be put here if desired.
 	//	check	command line parameters:
 	bool lock_dt_mode = false;
@@ -944,7 +971,7 @@ int main( int argc, char **argv )	{
 			if( ++i < argc ) {
 				SmartBody::util::log( "    Adding ME path '%s'\n", argv[i] );
 
-				me_paths.push_back( argv[i] );
+				me_paths.emplace_back( argv[i] );
 			} else {
 				SmartBody::util::log( "ERROR: Expected directory path to follow -mepath\n" );
 				// return -1
@@ -955,8 +982,8 @@ int main( int argc, char **argv )	{
 			if( ++i < argc ) {
 				SmartBody::util::log( "    Adding sequence path '%s'\n", argv[i] );
 
-				//seq_paths.push_back( argv[i] );
-				py_paths.push_back( argv[i] );
+				//seq_paths.emplace_back( argv[i] );
+				py_paths.emplace_back( argv[i] );
 			} else {
 				SmartBody::util::log( "ERROR: Expected directory path to follow -seqpath\n" );
 				// return -1
@@ -967,7 +994,7 @@ int main( int argc, char **argv )	{
 			if( ++i < argc ) {
 				SmartBody::util::log( "    Adding python script path '%s'\n", argv[i] );
 
-				py_paths.push_back( argv[i] );
+				py_paths.emplace_back( argv[i] );
 			} else {
 				SmartBody::util::log( "ERROR: Expected directory path to follow -pypath\n" );
 				// return -1
@@ -978,7 +1005,7 @@ int main( int argc, char **argv )	{
 			if( ++i < argc ) {
 				SmartBody::util::log( "    Addcore/smartbody/sbm/src/sbm_main.cpping audio path '%s'\n", argv[i] );
 
-				audio_paths.push_back( argv[i] );
+				audio_paths.emplace_back( argv[i] );
 			} else {
 				SmartBody::util::log( "ERROR: Expected directory path to follow -audiopath\n" );
 				// return -1
@@ -998,19 +1025,19 @@ int main( int argc, char **argv )	{
 					if (extension == "py")
 					{
 						SmartBody::util::log( "    Loading Python scrypt '%s'\n", argv[i] );
-						init_pys.push_back( argv[i] );
+						init_pys.emplace_back( argv[i] );
 					}
 					else
 					{
 						SmartBody::util::log( "    Loading sequence '%s'\n", argv[i] );
-						init_seqs.push_back( argv[i] );
+						init_seqs.emplace_back( argv[i] );
 					}
 				}
 				else
 				{
 					// No extension found
 					SmartBody::util::log( "    Loading sequence '%s'\n", argv[i] );
-					init_seqs.push_back( argv[i] );
+					init_seqs.emplace_back( argv[i] );
 				}
 			} else {
 				SmartBody::util::log( "ERROR: Expected filename to follow -seq\n" );
@@ -1135,11 +1162,11 @@ int main( int argc, char **argv )	{
 				 std::vector<string> strs;
 				 boost::split(strs, nameValuePair, boost::is_any_of("="));
 				 if (strs.size() > 0)
-					 envNames.push_back(strs[0]);
+					 envNames.emplace_back(strs[0]);
 				 if (strs.size() > 1)
-					 envValues.push_back(strs[1]);       
+					 envValues.emplace_back(strs[1]);
 				 else
-					 envValues.push_back("");
+					 envValues.emplace_back("");
 			}
         }
 		else
@@ -1153,10 +1180,16 @@ int main( int argc, char **argv )	{
 	SmartBody::util::log("Initializing Python.");
 
 	//SmartBody::SBScene::setSystemParameter("pythonlibpath", python_lib_path);
-	initPython(python_lib_path);
 	initAutoRigPythonModule();
 	initMiscPythonModule();
 	initGUIInterfacePythonModule();
+	pythonExtraModuleDeclarations.emplace_back([](){
+		initPythonRenderer();
+	});
+
+	initPython(python_lib_path);
+
+
 #endif
 
 	
@@ -1226,7 +1259,7 @@ int main( int argc, char **argv )	{
 	{
 		if( vhmsg_disabled )
 		{
-			SmartBody::util::log( "SmartBody: VHMSG_SERVER='%s': Messaging disabled.\n", vhmsg_server?"NULL":vhmsg_server );
+			SmartBody::util::log( "SmartBody: VHMSG_SERVER='%s': Messaging disabled.\n", vhmsg_server?"nullptr":vhmsg_server );
 		} else {
 #if 0 // disable server name query until vhmsg is fixed
 			std::string vhserver = (vhmsg_server? vhmsg_server : "localhost");
@@ -1264,7 +1297,7 @@ int main( int argc, char **argv )	{
 		}
 	}
 
-	SmartBody::SBScene::getScene()->getDebuggerServer()->setStringAttribute("id", "sbgui");
+	Session::current->debuggerServer.setStringAttribute("id", "sbgui");
 
 #ifndef SB_NO_PYTHON
 	// initialize any Python environment variables from the command line
@@ -1295,7 +1328,7 @@ int main( int argc, char **argv )	{
 
 	if( seq_paths.empty() && py_paths.empty() ) {
 		SmartBody::util::log( "No script paths specified. Adding current working directory to script path.\n" );
-		seq_paths.push_back( mediaPath + "/sbm-common/scripts" );
+		seq_paths.emplace_back( mediaPath + "/sbm-common/scripts" );
 	}
 
 	for( it = me_paths.begin();
@@ -1419,8 +1452,8 @@ int main( int argc, char **argv )	{
 #endif
 
 		vector<string> commands;// = mcu.bonebus.GetCommand();
-		for ( size_t i = 0; i < commands.size(); i++ ) {
-			theScene->command( (char *)commands[i].c_str() );
+		for (auto & command : commands) {
+			theScene->command( (char *)command.c_str() );
 		}
 
 		if (isInteractive)

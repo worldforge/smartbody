@@ -46,7 +46,7 @@ std::vector<std::string> SBServiceManager::getServiceNames()
 		 iter != _services.end();
 		 iter++)
 	{
-		serviceNames.push_back((*iter).first);
+		serviceNames.emplace_back((*iter).first);
 	}
 
 	return serviceNames;

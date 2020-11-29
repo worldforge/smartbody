@@ -19,7 +19,7 @@ SimulationMetricsCollector::SimulationMetricsCollector( const std::vector<SteerL
 	_agentCollectors.clear();
 	for (unsigned int i=0; i<agents.size(); i++) {
 		AgentMetricsCollector * collector = new AgentMetricsCollector( agents[i] );
-		_agentCollectors.push_back(collector);
+		_agentCollectors.emplace_back(collector);
 	}
 	
 	_resetEnvironmentMetrics();

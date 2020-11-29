@@ -63,7 +63,7 @@ void CommandDialog::SaveCommand(string& command)
          return; // the command is already stored
    }
 
-   m_previousCommands.push_back(command);
+   m_previousCommands.emplace_back(command);
 }
 
 QPlainTextEdit* CommandDialog::CurrentTextEditor()

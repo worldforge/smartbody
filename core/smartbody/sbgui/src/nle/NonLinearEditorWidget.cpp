@@ -9,7 +9,7 @@ namespace nle
 EditorWidget::EditorWidget(int x, int y, int w, int h, char* name) :
 									Fl_Widget(x, y, w, h, name)
 {
-	model = NULL;
+	model = nullptr;
 	//xOffset = x;
 	//yOffset = y;
 	setup();
@@ -18,7 +18,7 @@ EditorWidget::EditorWidget(int x, int y, int w, int h, char* name) :
 	setTimeWindowSelected(false);
 	selectState = STATE_NORMAL;
 	cameraState = CAMERASTATE_NORMAL;
-	setBlockCandidate(NULL, true);
+	setBlockCandidate(nullptr, true);
 	blockOpLocked = false;
 
 	padding = 20;
@@ -84,7 +84,7 @@ void EditorWidget::setup()
 			int endPos = convertTimeToViewablePosition(endTime);
 
 			std::vector<int> levelHeight;
-			levelHeight.push_back(0);
+			levelHeight.emplace_back(0);
 
 			for (int m = 0; m < block->getNumMarks(); m++)
 			{
@@ -149,7 +149,7 @@ void EditorWidget::setup()
 							if (conflictLevel + 1 == levelHeight.size())
 							{
 								currentTrackLocation += trackHeight;
-								levelHeight.push_back(bounds[1] + trackHeight);
+								levelHeight.emplace_back(bounds[1] + trackHeight);
 							}
 							bounds2[1] += trackHeight;
 							mark2->setBounds(bounds2[0], bounds2[1], bounds2[2], bounds2[3]);
@@ -646,9 +646,9 @@ int EditorWidget::handle(int event)
 	bool found = false;
 	bool foundBorder = false;
 	bool leftOrRight = false;
-	nle::Block* candidateBlock = NULL;             
-    nle::Block* selectedBlock = NULL;   
-	nle::Mark* selectedMark = NULL;
+	nle::Block* candidateBlock = nullptr;
+    nle::Block* selectedBlock = nullptr;
+	nle::Mark* selectedMark = nullptr;
 
 	switch (event)
 	{
@@ -673,7 +673,7 @@ int EditorWidget::handle(int event)
 								nle::Block* block = track->getBlock(b);
 								if (block->isSelected())
 								{
-									selectedBlocks.push_back(block);
+									selectedBlocks.emplace_back(block);
 									if (block->getStartTime() < selectedMinTime)
 										selectedMinTime = block->getStartTime();
 									if (block->getEndTime() > selectedMaxTime)
@@ -905,7 +905,7 @@ int EditorWidget::handle(int event)
 					break;
             }
 
-			if (selectedMark == NULL)
+			if (selectedMark == nullptr)
 			{
 				// check to see if the user is moving an entire block 
 				for (int t = 0; t < model->getNumTracks(); t++)
@@ -1552,7 +1552,7 @@ int EditorWidget::handle(int event)
 	else
 	{
 		fl_cursor(FL_CURSOR_DEFAULT);
-		this->setBlockCandidate(NULL, true);
+		this->setBlockCandidate(nullptr, true);
 	}
 
 

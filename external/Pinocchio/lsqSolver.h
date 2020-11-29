@@ -134,8 +134,8 @@ public:
         int hardNum = 0;
         for(it = constraints.begin(); it != constraints.end(); ++it) {
             if(it->second.hard) {
-                hardConstraints.push_back(it->second.lhs);
-                hardConstraintIds.push_back(it->first);
+                hardConstraints.emplace_back(it->second.lhs);
+                hardConstraintIds.emplace_back(it->first);
                 ++hardNum;
             }
         }
@@ -237,7 +237,7 @@ public:
                 if(varMap.count(it2->first) || substitutions.count(it2->first))
                     continue;
                 varMap[it2->first] = varIds.size();
-                varIds.push_back(it2->first);
+                varIds.emplace_back(it2->first);
             }
         }
         int softVars = varIds.size();
@@ -258,7 +258,7 @@ public:
             for(it = sit->second.begin(); it != sit->second.end(); ++it) {
                 if(varMap.count(it->first) == 0)
                     return false; //variable is left free by both hard and soft constraints--bad system
-                substitutedHard[idx].push_back(make_pair(varMap[it->first], it->second));
+                substitutedHard[idx].emplace_back(make_pair(varMap[it->first], it->second));
             }
         }
 
@@ -288,7 +288,7 @@ public:
             for(it2 = modLhs.begin(); it2 != modLhs.end(); ++it2) { //write modLhs into the right form
                 if(substitutions.count(it2->first))
                     continue;
-                softMatrix[idx].push_back(make_pair(varMap[it2->first], it2->second));
+                softMatrix[idx].emplace_back(make_pair(varMap[it2->first], it2->second));
             }
             sort(softMatrix[idx].begin(), softMatrix[idx].end());
         }
@@ -304,7 +304,7 @@ public:
             }
         }
         for(i = 0; i < hardNum; ++i) {
-            rhsTransform.push_back(vector<pair<int, double> >(rhsTransformMap[i].begin(),
+            rhsTransform.emplace_back(vector<pair<int, double> >(rhsTransformMap[i].begin(),
                                                               rhsTransformMap[i].end()));
         }
 
@@ -319,7 +319,7 @@ public:
             }
         }
         for(i = 0; i < softVars; ++i)
-            spdm.push_back(vector<pair<int, double> >(spdMap[i].begin(), spdMap[i].end()));
+            spdm.emplace_back(vector<pair<int, double> >(spdMap[i].begin(), spdMap[i].end()));
 
         //factor the SPDMatrix to get the LLTMatrix
         SPDMatrix spdMatrix(spdm);

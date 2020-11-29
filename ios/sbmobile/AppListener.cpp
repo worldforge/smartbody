@@ -263,7 +263,7 @@ void AppListener::notify(SmartBody::SBSubject* subject)
 							if (pos != std::string::npos)
 							{
 								SmartBody::StringAttribute* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
-								shapeAttributes.push_back(strAttribute);
+								shapeAttributes.emplace_back(strAttribute);
 							}
 						}
 

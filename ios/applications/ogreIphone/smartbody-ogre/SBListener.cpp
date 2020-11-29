@@ -55,7 +55,7 @@ void SBListener::OnCharacterCreate( const  std::string & name, const  std::strin
 	if (framework)
 	{
 		// insert into character list
-		framework->m_characterList.push_back(name);
+		framework->m_characterList.emplace_back(name);
 		
 		// get intial bone position for every character
 		std::map<std::string, Ogre::Vector3> intialBonePositions;

@@ -18,7 +18,7 @@
 AttributeEditor::AttributeEditor(int x, int y, int w, int h, char* name) : Fl_Group(x, y, w, h, name), SmartBody::SBObserver(), SBWindowListener(), SelectionListener()
 {
 	_currentSelection = "";
-	_currentWidget = NULL;
+	_currentWidget = nullptr;
 	_dirty = true;
 }
 
@@ -139,18 +139,18 @@ TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int 
 	SmartBody::SBAnimationBlendManager* blendManager = scene->getBlendManager();
 
 	SmartBody::SBObject* object = scene->getObjectFromString(name);
-	TreeItemInfoWidget* widget = NULL;
+	TreeItemInfoWidget* widget = nullptr;
 	SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(object);
 	if (character)
 	{
-		widget = new AttributeItemWidget(character,x,y,w,h,strdup(object->getName().c_str()),NULL);
+		widget = new AttributeItemWidget(character,x,y,w,h,strdup(object->getName().c_str()),nullptr);
 		return widget;
 	}
 
 	SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(object);
 	if (pawn)
 	{
-		widget = new AttributeItemWidget(pawn,x,y,w,h,strdup(object->getName().c_str()),NULL);
+		widget = new AttributeItemWidget(pawn,x,y,w,h,strdup(object->getName().c_str()),nullptr);
 		return widget;
 	}
 
@@ -161,7 +161,7 @@ TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int 
 		SmartBody::SBPawn* skelPawn = skeleton->getPawn();
 		if (skelPawn)
 			pawnName = skelPawn->getName();
-		widget = new SkeletonItemInfoWidget(pawnName, x,y,w,h,strdup(object->getName().c_str()), NULL);
+		widget = new SkeletonItemInfoWidget(pawnName, x,y,w,h,strdup(object->getName().c_str()), nullptr);
 		return widget;
 	}
 
@@ -175,34 +175,34 @@ TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int 
 	SmartBody::SBScene* objscene = dynamic_cast<SmartBody::SBScene*>(object);
 	if (objscene)
 	{
-		widget = new AttributeItemWidget(objscene,x,y,w,h,strdup("scene"),NULL);
+		widget = new AttributeItemWidget(objscene,x,y,w,h,strdup("scene"),nullptr);
 		return widget;
 	}
 	SmartBody::SBService* service = dynamic_cast<SmartBody::SBService*>(object);
 	if (service)
 	{
-		widget = new AttributeItemWidget(service,x,y,w,h,strdup(object->getName().c_str()),NULL);
+		widget = new AttributeItemWidget(service,x,y,w,h,strdup(object->getName().c_str()),nullptr);
 		return widget;
 	}
 
 	DeformableMesh* mesh = dynamic_cast<DeformableMesh*>(object);
 	if (mesh)
 	{
-		widget = new AttributeItemWidget(mesh,x,y,w,h,strdup(object->getName().c_str()),NULL);
+		widget = new AttributeItemWidget(mesh,x,y,w,h,strdup(object->getName().c_str()),nullptr);
 		return widget;
 	}
 
 	SbmTexture* texture = dynamic_cast<SbmTexture*>(object);
 	if (texture)
 	{
-		widget = new AttributeItemWidget(texture, x, y, w, h, strdup(object->getName().c_str()), NULL);
+		widget = new AttributeItemWidget(texture, x, y, w, h, strdup(object->getName().c_str()), nullptr);
 		return widget;
 	}
 
 	SmartBody::SBController* controller = dynamic_cast<SmartBody::SBController*>(object);
 	if (controller)
 	{
-		widget = new AttributeItemWidget(controller,x,y,w,h,strdup(object->getName().c_str()),NULL);
+		widget = new AttributeItemWidget(controller,x,y,w,h,strdup(object->getName().c_str()),nullptr);
 		return widget;
 	}
 
@@ -210,7 +210,7 @@ TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int 
 	if (jointMap)
 	{
 		// no attributes for joint map
-		return NULL;
+		return nullptr;
 	}
 
 	SmartBody::SBGestureMap* gestureMap = dynamic_cast<SmartBody::SBGestureMap*>(object);
@@ -251,11 +251,11 @@ TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int 
 	SmartBody::Nvbg* nvbg = dynamic_cast<SmartBody::Nvbg*>(object);
 	if (nvbg)
 	{
-		widget = new AttributeItemWidget(nvbg,x,y,w,h,strdup(object->getName().c_str()),NULL);
+		widget = new AttributeItemWidget(nvbg,x,y,w,h,strdup(object->getName().c_str()),nullptr);
 		return widget;
 	}
 
-	return NULL;
+	return nullptr;
 	/*
 
 	
@@ -277,7 +277,7 @@ TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int 
 		SmartBody::SBPhysicsCharacter* phyParent = phySim->getPhysicsCharacter(parentName);
 		SmartBody::SBPhysicsObj*    phyBody = phySim->getPhysicsPawn(itemName);
 		SmartBody::SBObject* phyObj = phySim;		
-		SmartBody::SBObject* phyObj2 = NULL;
+		SmartBody::SBObject* phyObj2 = nullptr;
 
 		static std::string name1 = "PHYSICS JOINT";
 		static std::string name2 = "RIGID BODY";	
@@ -292,10 +292,10 @@ TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int 
 			SmartBody::SBPhysicsJoint* phyJoint = phyParent->getPhyJoint(itemName);
 			phyObj = phyJoint;
 			phyObj2 = phyJoint->getChildObj();
-			phyObjNameList.push_back(name1);
-			phyObjNameList.push_back(name2);
-			phyObjList.push_back(phyObj);
-			phyObjList.push_back(phyObj2);
+			phyObjNameList.emplace_back(name1);
+			phyObjNameList.emplace_back(name2);
+			phyObjList.emplace_back(phyObj);
+			phyObjList.emplace_back(phyObj2);
 		}
 		else if (phyBody)
 		{
@@ -323,7 +323,7 @@ TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int 
 
 	return widget;
 		*/
-return NULL;
+return nullptr;
 }
 
 
@@ -335,7 +335,7 @@ void AttributeEditor::removeCurrentWidget()
 		std::vector<Fl_Widget*> widgets;
 		for (int c = 0; c < numChildren; c++)
 		{
-			widgets.push_back(this->child(c));
+			widgets.emplace_back(this->child(c));
 		}
 		for (size_t w = 0; w < widgets.size(); w++)
 		{
@@ -344,7 +344,7 @@ void AttributeEditor::removeCurrentWidget()
 			// crashes in FLTK
 		}
 
-		_currentWidget = NULL;
+		_currentWidget = nullptr;
 	}
 }
 

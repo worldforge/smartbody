@@ -337,12 +337,12 @@ bool MeCtMotion::controller_evaluate ( double t, MeFrameData& frame ) {
 			retarget->addJointRotOffset("r_shoulder",rShlderQuat);
 
 		/*	std::vector<std::string> jointNames;
-			jointNames.push_back("r_hip");
-			jointNames.push_back("r_knee");
-			jointNames.push_back("r_ankle");
-			jointNames.push_back("l_hip");
-			jointNames.push_back("l_knee");
-			jointNames.push_back("l_ankle");
+			jointNames.emplace_back("r_hip");
+			jointNames.emplace_back("r_knee");
+			jointNames.emplace_back("r_ankle");
+			jointNames.emplace_back("l_hip");
+			jointNames.emplace_back("l_knee");
+			jointNames.emplace_back("l_ankle");
 
 			for (size_t j = 0; j < jointNames.size(); j++)
 			{

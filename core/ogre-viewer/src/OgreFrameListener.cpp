@@ -18,7 +18,7 @@ OgreFrameListener::OgreFrameListener(RenderWindow * win, Camera * cam, const std
 	m_ogreMouseEnabled = true;
 	for (size_t c = 0; c < initialCommands.size(); c++)
 	{
-		m_initialCommands.push_back(initialCommands[c]);
+		m_initialCommands.emplace_back(initialCommands[c]);
 	}
 
 	// turn off mouse look by default

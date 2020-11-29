@@ -20,20 +20,17 @@ namespace SmartBody
 {
 #ifndef SB_NO_PYTHON
 
+SBRenderScene* PythonInterface::renderScene = nullptr;
+std::function<SrViewer*()> PythonInterface::getViewerFn;
+
 SrViewer* getViewer()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	if (!scene->getViewer())
-	{
-		if (scene->getViewerFactory())
-		{
-			SrViewerFactory* viewerFactory = scene->getViewerFactory();
-			scene->setViewer(viewerFactory->create(viewerFactory->getX(), viewerFactory->getY(), viewerFactory->getW(), viewerFactory->getH()));
-			scene->getViewer()->label_viewer("Visual Debugger");
-			SmartBody::SBScene::getScene()->createCamera("cameraDefault");
-		}
+	if (PythonInterface::getViewerFn) {
+		return PythonInterface::getViewerFn();
+	} else {
+		return nullptr;
 	}
-	return scene->getViewer();
+
 }
 
 
@@ -70,7 +67,7 @@ void printLog(const std::string& message)
 
 SBController* createController(std::string controllerType, std::string controllerName)
 {
-	SBController* controller = NULL;
+	SBController* controller = nullptr;
 
 	if (controllerType == "schedule")
 	{
@@ -106,7 +103,10 @@ SBController* createController(std::string controllerType, std::string controlle
 
 SrCamera* getCamera()
 {
-	return SmartBody::SBScene::getScene()->getActiveCamera();
+	if (SmartBody::PythonInterface::renderScene) {
+		return SmartBody::PythonInterface::renderScene->getActiveCamera();
+	}
+	return nullptr;
 }
 
 #endif

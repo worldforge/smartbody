@@ -408,7 +408,7 @@ int main( int argc, char * argv[] )
       {
          printf( "Voice paramater: %s\n", argv[ i+1 ] );
          bServerMode = false;     
-         voices.push_back( argv[ i+1 ] );
+         voices.emplace_back( argv[ i+1 ] );
       } 
       else 
       {

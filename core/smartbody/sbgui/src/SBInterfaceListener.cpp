@@ -2,6 +2,7 @@
 #include <sb/SBNavigationMesh.h>
 #include <sb/SBScene.h>
 #include "SBSelectionManager.h"
+#include "Session.h"
 #include <sr/sr_plane.h>
 #include <sr/sr_camera.h>
 
@@ -55,7 +56,7 @@ void SBInterfaceListener::onEnd()
 
 
 
-SBInterfaceManager* SBInterfaceManager::_interfaceManager = NULL;
+SBInterfaceManager* SBInterfaceManager::_interfaceManager = nullptr;
 
 SBInterfaceManager::SBInterfaceManager()
 {
@@ -75,28 +76,26 @@ void SBInterfaceManager::resize( int w, int h )
 SBInterfaceManager::~SBInterfaceManager()
 {
 	std::vector<SBInterfaceListener*> listeners = getInterfaceListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		this->removeInterfaceListener(listeners[l]);
+		this->removeInterfaceListener(listener);
 	}
 }
 
 void SBInterfaceManager::addInterfaceListener(SBInterfaceListener* listener)
 {
-	for (std::vector<SBInterfaceListener*>::iterator iter = _interfaceListeners.begin();
-		 iter != _interfaceListeners.end(); 
-		 iter++)
+	for (auto & _interfaceListener : _interfaceListeners)
 	{
-		if ((*iter) == listener)
+		if (_interfaceListener == listener)
 			return;
 	}
-	_interfaceListeners.push_back(listener);
+	_interfaceListeners.emplace_back(listener);
 	listener->onStart();
 }
 
 void SBInterfaceManager::removeInterfaceListener(SBInterfaceListener* listener)
 {
-	for (std::vector<SBInterfaceListener*>::iterator iter = _interfaceListeners.begin();
+	for (auto iter = _interfaceListeners.begin();
 		 iter != _interfaceListeners.end(); 
 		 iter++)
 	{
@@ -112,11 +111,9 @@ void SBInterfaceManager::removeInterfaceListener(SBInterfaceListener* listener)
 std::vector<SBInterfaceListener*> SBInterfaceManager::getInterfaceListeners()
 {
 	std::vector<SBInterfaceListener*> listeners;
-	for (std::vector<SBInterfaceListener*>::iterator iter = _interfaceListeners.begin();
-		 iter != _interfaceListeners.end(); 
-		 iter++)
+	for (auto & _interfaceListener : _interfaceListeners)
 	{
-		listeners.push_back(*iter);
+		listeners.emplace_back(_interfaceListener);
 	}
 
 	return listeners;
@@ -131,7 +128,7 @@ SrVec SBInterfaceManager::convertScreenSpaceTo3D(int x, int y, SrVec ground, SrV
 	screenY = (float)(y*2.f)/screenHeight - 1.f;
 	screenY *= -1.0;
 
-	SmartBody::SBScene::getScene()->getActiveCamera()->get_ray(screenX, screenY, p1, p2);
+	Session::current->renderScene.getActiveCamera()->get_ray(screenX, screenY, p1, p2);
 	//SmartBody::util::log("mouse click = %d, %d,   p1 = %f %f %f, p2 = %f %f %f", x,y, p1[0], p1[1], p1[2],  p2[0], p2[1], p2[2]);
 	bool intersectGround = true;
 	SrVec dest, src;				
@@ -147,7 +144,7 @@ std::string SBInterfaceManager::getSelectedObject()
 
 SBInterfaceManager* SBInterfaceManager::getInterfaceManager()
 {
-	if (SBInterfaceManager::_interfaceManager == NULL)
+	if (SBInterfaceManager::_interfaceManager == nullptr)
 	{
 		SBInterfaceManager::_interfaceManager = new SBInterfaceManager();
 	}

@@ -67,7 +67,7 @@ std::vector<std::string> SBNavigationMeshManager::getNavigationMeshNames()
 		iter != _navigationMeshMap.end();
 		iter++)
 	{
-		ret.push_back(std::string(iter->first));
+		ret.emplace_back(std::string(iter->first));
 	}
 
 	return ret;	

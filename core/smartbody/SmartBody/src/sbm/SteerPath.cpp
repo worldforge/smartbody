@@ -41,9 +41,9 @@ void SteerPath::initPath( const std::vector<SrPnt>& pts, float radius )
 	{
 		SrVec lineDir = pathPts[i] - pathPts[i-1];
 		float length = lineDir.len();
-		pathSegLength.push_back(length);
+		pathSegLength.emplace_back(length);
 		lineDir.normalize();
-		pathSegDir.push_back(lineDir);
+		pathSegDir.emplace_back(lineDir);
 	}
 	currentGoal = 1;
 }

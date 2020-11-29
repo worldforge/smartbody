@@ -349,7 +349,7 @@ namespace util {
             std::vector<E> result;
 
             for( int i = 0; i < this->curSize; ++i ) {
-                result.push_back( this->elements[i] );
+                result.emplace_back( this->elements[i] );
             }
 
             return result;

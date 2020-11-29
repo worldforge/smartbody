@@ -105,7 +105,7 @@ RequestId AudioFileSpeech::requestSpeechAudioFast( const char * agentName, std::
     
 	rapidxml::xml_document<> doc;
 	//std::vector<char> xml(text.begin(), text.end());
-    //xml.push_back('\0');
+    //xml.emplace_back('\0');
 	std::string ref = "";
 	try {
 		doc.parse<0>(const_cast<char *>(text.c_str()));
@@ -390,13 +390,13 @@ vector<VisemeData *> * AudioFileSpeech::getVisemes( RequestId requestId, SbmChar
       {
          VisemeData & v = it->second.visemeData[ i ];
 		 if (v.isMotionMode())
-			 visemeCopy->push_back(new VisemeData(v.id()));
+			 visemeCopy->emplace_back(new VisemeData(v.id()));
 		 else if (!v.isCurveMode() && !v.isTrapezoidMode())
-			 visemeCopy->push_back( new VisemeData( v.id(), v.weight(), v.time() ) );
+			 visemeCopy->emplace_back( new VisemeData( v.id(), v.weight(), v.time() ) );
 		 else if (v.isTrapezoidMode())
-			 visemeCopy->push_back( new VisemeData( v.id(), v.weight(), v.time(), v.duration(), v.rampin(), v.rampout() ) );
+			 visemeCopy->emplace_back( new VisemeData( v.id(), v.weight(), v.time(), v.duration(), v.rampin(), v.rampout() ) );
 		 else
-			 visemeCopy->push_back( new VisemeData( v.id(), v.getNumKeys(), v.getCurveInfo() ));
+			 visemeCopy->emplace_back( new VisemeData( v.id(), v.getNumKeys(), v.getCurveInfo() ));
       }
 
       return visemeCopy;
@@ -417,7 +417,7 @@ std::vector<float> AudioFileSpeech::getEmotionCurve(RequestId requestId, const s
 			std::vector<float> emoCurve;
 			for (size_t i = 0; i < it->second.emotionData[emotionType].size(); ++i)
 			{
-				emoCurve.push_back(it->second.emotionData[emotionType][i]);
+				emoCurve.emplace_back(it->second.emotionData[emotionType][i]);
 			}
 			return emoCurve;
 		}
@@ -434,7 +434,7 @@ std::vector<std::string> AudioFileSpeech::getEmotionNames(RequestId requestId, S
 		std::map<std::string, std::vector<float> >::iterator iter;
 		for (iter = it->second.emotionData.begin(); iter != it->second.emotionData.end(); ++iter)
 		{
-			emotionNames.push_back(iter->first);
+			emotionNames.emplace_back(iter->first);
 		}
 	}
 	return emotionNames;
@@ -649,8 +649,8 @@ void AudioFileSpeech::ReadVisemeDataLTF( const char * filename, std::vector< Vis
 
       string strVisemeIndex = phonemeToViseme[ atoi( strPhonemeIndex.c_str() ) ];
 
-      visemeData.push_back( VisemeData( strVisemeIndex.c_str(), 1.0f, (float)atof( strStartTime.c_str() ) ) );
-      visemeData.push_back( VisemeData( strVisemeIndex.c_str(), 0.0f, (float)atof( strEndTime.c_str() ) ) );
+      visemeData.emplace_back( VisemeData( strVisemeIndex.c_str(), 1.0f, (float)atof( strStartTime.c_str() ) ) );
+      visemeData.emplace_back( VisemeData( strVisemeIndex.c_str(), 0.0f, (float)atof( strEndTime.c_str() ) ) );
    }
 
    fclose( f );
@@ -711,7 +711,7 @@ void AudioFileSpeech::ReadMotionDataBML(const char * filename, std::vector< Vise
 		string motionName = "";
 		xml_utils::xml_translate(&motionName, e->getAttribute(BML::BMLDefs::ATTR_NAME));
 
-		visemeData.push_back(VisemeData(motionName));
+		visemeData.emplace_back(VisemeData(motionName));
 	}
 }
 
@@ -782,7 +782,7 @@ void AudioFileSpeech::ReadVisemeDataBML( const char * filename, std::vector< Vis
 
 		   int num = atoi(numKeys.c_str());
 		   if (num > 0)
-			   visemeData.push_back(VisemeData(visemeName, num, curveInfo));
+			   visemeData.emplace_back(VisemeData(visemeName, num, curveInfo));
 	   }
 	   // revert to using normal viseme mode if curves are not found
 	   if (length == 0)
@@ -863,7 +863,7 @@ void AudioFileSpeech::ReadVisemeDataBML( const char * filename, std::vector< Vis
 				}
 			}
 
-			visemeData.push_back((*curViseme));
+			visemeData.emplace_back((*curViseme));
 			delete curViseme;
 	   }
 	   if (visemeData.size() > 0)
@@ -936,8 +936,8 @@ void AudioFileSpeech::ReadEmotionData(const char* filename, std::map<std::string
 			int frameNumber = atoi(tokens[1].c_str());
 			float time = (float)frameNumber / (float)fps;
 			float value = (float)atof(tokens[2].c_str());
-			emotionData[emotionType].push_back(time);
-			emotionData[emotionType].push_back(value);
+			emotionData[emotionType].emplace_back(time);
+			emotionData[emotionType].emplace_back(value);
 			continue;
 		}
 	}
@@ -1026,7 +1026,7 @@ void AudioFileSpeech::ReadVisemeDataBMLFast( const char * filename, std::vector<
 					if (keyData)
 					{
 						std::string curveInfo = keyData->value();
-						m_speechRequestInfo[ m_requestIdCounter ].visemeData.push_back(VisemeData(name.c_str(), atoi(numKeys.c_str()), curveInfo.c_str()));
+						m_speechRequestInfo[ m_requestIdCounter ].visemeData.emplace_back(VisemeData(name.c_str(), atoi(numKeys.c_str()), curveInfo.c_str()));
 
 					}
 
@@ -1083,8 +1083,8 @@ void AudioFileSpeech::ReadVisemeDataBMLFast( const char * filename, std::vector<
 			if (endAttr)
 				end = endAttr->value();
 
-			//		  m_speechRequestInfo[ m_requestIdCounter ].visemeData.push_back( VisemeData( viseme.c_str(), (float)atof( articulation.c_str() ), (float)atof( start.c_str() ) ) );
-			//		  m_speechRequestInfo[ m_requestIdCounter ].visemeData.push_back( VisemeData( viseme.c_str(), 0.0f,                                (float)atof( end.c_str() ) ) );
+			//		  m_speechRequestInfo[ m_requestIdCounter ].visemeData.emplace_back( VisemeData( viseme.c_str(), (float)atof( articulation.c_str() ), (float)atof( start.c_str() ) ) );
+			//		  m_speechRequestInfo[ m_requestIdCounter ].visemeData.emplace_back( VisemeData( viseme.c_str(), 0.0f,                                (float)atof( end.c_str() ) ) );
 
 			float startTime = (float)atof( start.c_str() );
 			float endTime = (float)atof( end.c_str() );
@@ -1136,7 +1136,7 @@ void AudioFileSpeech::ReadVisemeDataBMLFast( const char * filename, std::vector<
 				}
 			}
 
-			visemeData.push_back((*curViseme));
+			visemeData.emplace_back((*curViseme));
 
 			node = node->next_sibling("lips");
 		}

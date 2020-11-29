@@ -214,14 +214,14 @@ void Util::getFilesInDirectory( const std::string & directoryName, const std::st
 		if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 			std::string fileName(data.cFileName);
 			// at this point we know the path is a file and has the desired extension.
-			fileNames.push_back(fileName);
+			fileNames.emplace_back(fileName);
 		}
 
 		while (FindNextFile(ret, &data)) {
 			if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 				std::string fileName(data.cFileName);
 				// at this point we know the path is a file and has the desired extension.
-				fileNames.push_back(fileName);
+				fileNames.emplace_back(fileName);
 			}
 		}
 	}
@@ -247,7 +247,7 @@ void Util::getFilesInDirectory( const std::string & directoryName, const std::st
 					std::string fileName(dirEntry->d_name);
 					if ( endsWith(fileName, extension)) {
 						// at this point we know the path is a file and has the desired extension.
-						fileNames.push_back(fileName);
+						fileNames.emplace_back(fileName);
 					}
 				}
 			}

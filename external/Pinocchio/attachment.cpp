@@ -66,7 +66,7 @@ public:
             int cur, start;
             cur = start = mesh.vertices[i].edge;
             do {
-                edges[i].push_back(mesh.edges[cur].vertex);
+                edges[i].emplace_back(mesh.edges[cur].vertex);
                 cur = mesh.edges[mesh.edges[cur].prev].twin;
             } while(cur != start);
         }
@@ -156,10 +156,10 @@ public:
 
                 if(edges[i][j] > i) //check for triangular here because sum should be computed regardless
                     continue;
-                A[i].push_back(make_pair(edges[i][j], -cot1 - cot2));
+                A[i].emplace_back(make_pair(edges[i][j], -cot1 - cot2));
             }
 
-            A[i].push_back(make_pair(i, sum + H[i] / D[i]));
+            A[i].emplace_back(make_pair(i, sum + H[i] / D[i]));
 
             sort(A[i].begin(), A[i].end());
         }
@@ -182,7 +182,7 @@ public:
                 if(rhs[i] > 1.)
                     rhs[i] = 1.; //clip just in case
                 if(rhs[i] > 1e-8)
-                    nzweights[i].push_back(make_pair(j, rhs[i]));
+                    nzweights[i].emplace_back(make_pair(j, rhs[i]));
             }
         }
 
@@ -253,7 +253,7 @@ public:
 			int cur, start;
 			cur = start = mesh.vertices[i].edge;
 			do {
-				edges[i].push_back(mesh.edges[cur].vertex);
+				edges[i].emplace_back(mesh.edges[cur].vertex);
 				cur = mesh.edges[mesh.edges[cur].prev].twin;
 			} while(cur != start);
 		}
@@ -344,10 +344,10 @@ public:
 
 				if(edges[i][j] > i) //check for triangular here because sum should be computed regardless
 					continue;
-				A[i].push_back(make_pair(edges[i][j], -cot1 - cot2));
+				A[i].emplace_back(make_pair(edges[i][j], -cot1 - cot2));
 			}
 
-			A[i].push_back(make_pair(i, sum + H[i] / D[i]));
+			A[i].emplace_back(make_pair(i, sum + H[i] / D[i]));
 
 			sort(A[i].begin(), A[i].end());
 		}
@@ -367,7 +367,7 @@ public:
 			{
 				boneChildIdxs[parentIdx] = std::vector<int>();
 			}
-			boneChildIdxs[parentIdx].push_back(j);
+			boneChildIdxs[parentIdx].emplace_back(j);
 		}
 
 		for(j = 0; j < bones; ++j) {
@@ -410,7 +410,7 @@ public:
 				if(rhs[i] > 1.)
 					rhs[i] = 1.; //clip just in case
 				if(rhs[i] > 1e-8)
-					nzweights[i].push_back(make_pair(j, rhs[i]));
+					nzweights[i].emplace_back(make_pair(j, rhs[i]));
 			}
 		}
 

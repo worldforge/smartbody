@@ -171,7 +171,7 @@ void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
 		   iter != m_attributeList.end();
 		   iter++)
 	 {
-		 attrNameList.push_back(iter->first);
+		 attrNameList.emplace_back(iter->first);
 	 }		 
 	 for (unsigned int i=0;i<attrNameList.size();i++)
 		 removeAttribute(attrNameList[i]);
@@ -189,7 +189,7 @@ std::vector<std::string> SBObject::getAttributeNames()
 		 iter != m_attributeList.end();
 		 iter++)
 	 {
-		 attrNameList.push_back(iter->first);
+		 attrNameList.emplace_back(iter->first);
 	 }
 	 return attrNameList;
 }

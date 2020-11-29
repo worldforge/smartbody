@@ -45,7 +45,7 @@ void SBListener::OnPawnCreate( const std::string& name )
 	mSceneNode->scale( .05f, .05f, .05f );
 	if (frameListener)
 	{
-		frameListener->m_pawnList.push_back(name);
+		frameListener->m_pawnList.emplace_back(name);
 	}
 	return;
 }
@@ -104,7 +104,7 @@ void SBListener::OnCharacterCreate( const  std::string & name, const  std::strin
 	if (frameListener)
 	{		
 		// insert into character list
-		frameListener->m_characterList.push_back(name);
+		frameListener->m_characterList.emplace_back(name);
 		
 		// get intial bone position for every character
 		std::map<std::string, Ogre::Vector3> intialBonePositions;

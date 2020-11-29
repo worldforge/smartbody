@@ -60,10 +60,10 @@ SBPawn::SBPawn() : SbmPawn()
 	createActionAttribute("createPhysics", true, "Physics", 300, false, false, false, "Initializes the pawn as a physics object.");
 	createBoolAttribute("enablePhysics", false, true, "Physics", 310, false, false, false, "Enables or disables physics for this pawn.");
 	std::vector<std::string> shapes;
-	shapes.push_back("null");
-	shapes.push_back("sphere");
-	shapes.push_back("box");
-	shapes.push_back("capsule");
+	shapes.emplace_back("null");
+	shapes.emplace_back("sphere");
+	shapes.emplace_back("box");
+	shapes.emplace_back("capsule");
 	SmartBody::StringAttribute* shapeAttr = createStringAttribute("collisionShape", "null", true, "Physics", 350, false, false, false, "Initializes the pawn as a physics object.");
 	shapeAttr->setValidValues(shapes);
 	SrVec defaultScale(1.0f, 1.0f, 1.0f);
@@ -103,10 +103,10 @@ SBPawn::SBPawn(const char* name) : SbmPawn(name)
 	createActionAttribute("createPhysics", true, "Physics", 300, false, false, false, "Initializes the pawn as a physics object.");
 	createBoolAttribute("enablePhysics", false, true, "Physics", 310, false, false, false, "Enables or disables physics for this pawn.");
 	std::vector<std::string> shapes;
-	shapes.push_back("null");
-	shapes.push_back("sphere");
-	shapes.push_back("box");
-	shapes.push_back("capsule");
+	shapes.emplace_back("null");
+	shapes.emplace_back("sphere");
+	shapes.emplace_back("box");
+	shapes.emplace_back("capsule");
 	SmartBody::StringAttribute* shapeAttr = createStringAttribute("collisionShape", "null", true, "Physics", 350, false, false, false, "Initializes the pawn as a physics object.");
 	shapeAttr->setValidValues(shapes);
 	SrVec defaultScale(1.0f, 1.0f, 1.0f);
@@ -515,30 +515,30 @@ void SBPawn::createMeshFromCollisionSurface(std::string name, SrVec color)
 //
 //	SrModel* model = new SrModel();
 //
-//	model->V.push_back(SrPnt(  1.0f * boxSize[0], -1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 0
-//	model->V.push_back(SrPnt(  1.0f * boxSize[0],  1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 1
-//	model->V.push_back(SrPnt(  1.0f * boxSize[0],  1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 2
-//	model->V.push_back(SrPnt(  1.0f * boxSize[0], -1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 3
+//	model->V.emplace_back(SrPnt(  1.0f * boxSize[0], -1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 0
+//	model->V.emplace_back(SrPnt(  1.0f * boxSize[0],  1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 1
+//	model->V.emplace_back(SrPnt(  1.0f * boxSize[0],  1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 2
+//	model->V.emplace_back(SrPnt(  1.0f * boxSize[0], -1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 3
 //
-//	model->V.push_back(SrPnt( -1.0f * boxSize[0], -1.0f * boxSize[1],  1.0f * boxSize[2] ));  // 4
-//	model->V.push_back(SrPnt( -1.0f * boxSize[0],  1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 5
-//	model->V.push_back(SrPnt( -1.0f * boxSize[0],  1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 6
-//	model->V.push_back(SrPnt( -1.0f * boxSize[0], -1.0f * boxSize[1], -1.0f * boxSize[2] ));  // 7
+//	model->V.emplace_back(SrPnt( -1.0f * boxSize[0], -1.0f * boxSize[1],  1.0f * boxSize[2] ));  // 4
+//	model->V.emplace_back(SrPnt( -1.0f * boxSize[0],  1.0f * boxSize[1],  1.0f * boxSize[2]  ));  // 5
+//	model->V.emplace_back(SrPnt( -1.0f * boxSize[0],  1.0f * boxSize[1], -1.0f * boxSize[2]  ));  // 6
+//	model->V.emplace_back(SrPnt( -1.0f * boxSize[0], -1.0f * boxSize[1], -1.0f * boxSize[2] ));  // 7
 //
 //
 //	// CW
-//	model->F.push_back(SrVec3i( 7, 1, 0));
-//	model->F.push_back(SrVec3i(6, 1, 7));
-//	model->F.push_back(SrVec3i(1, 2, 3));
-//	model->F.push_back(SrVec3i(0, 1, 3));
-//	model->F.push_back(SrVec3i(6, 2, 1));
-//	model->F.push_back(SrVec3i(5, 2, 6));
-//	model->F.push_back(SrVec3i(7, 5, 6));
-//	model->F.push_back(SrVec3i(5, 7, 4));
-//	model->F.push_back(SrVec3i(2, 4, 3));
-//	model->F.push_back(SrVec3i(2, 5, 4));
-//	model->F.push_back(SrVec3i(7, 0, 3));
-//	model->F.push_back(SrVec3i(4, 7, 3));
+//	model->F.emplace_back(SrVec3i( 7, 1, 0));
+//	model->F.emplace_back(SrVec3i(6, 1, 7));
+//	model->F.emplace_back(SrVec3i(1, 2, 3));
+//	model->F.emplace_back(SrVec3i(0, 1, 3));
+//	model->F.emplace_back(SrVec3i(6, 2, 1));
+//	model->F.emplace_back(SrVec3i(5, 2, 6));
+//	model->F.emplace_back(SrVec3i(7, 5, 6));
+//	model->F.emplace_back(SrVec3i(5, 7, 4));
+//	model->F.emplace_back(SrVec3i(2, 4, 3));
+//	model->F.emplace_back(SrVec3i(2, 5, 4));
+//	model->F.emplace_back(SrVec3i(7, 0, 3));
+//	model->F.emplace_back(SrVec3i(4, 7, 3));
 //
 //	// edges
 //	SrArray<int> edges;
@@ -577,14 +577,14 @@ void SBPawn::createMeshFromCollisionSurface(std::string name, SrVec color)
 //	model->M.resize(1);
 //	model->M[0] = SrMaterial();
 //	model->M[0].diffuse.set(color[0], color[1], color[2], 1.0f);
-//	model->mtlnames.push_back("unknown");
+//	model->mtlnames.emplace_back("unknown");
 //	model->set_one_material(model->M[0]);
 //
 //	SrSnModel* srSnModelStatic = new SrSnModel();
 //	srSnModelStatic->shape(*model);
 //	if (model->name.len() > 0)
 //		srSnModelStatic->shape().name = model->name;
-//	mesh->dMeshStatic_p.push_back(srSnModelStatic);
+//	mesh->dMeshStatic_p.emplace_back(srSnModelStatic);
 //	srSnModelStatic->ref();
 //
 //	SrSnModel* srSnModelDynamic = new SrSnModel();
@@ -592,7 +592,7 @@ void SBPawn::createMeshFromCollisionSurface(std::string name, SrVec color)
 //	srSnModelDynamic->changed(true);
 //	srSnModelDynamic->visible(false);
 //	srSnModelDynamic->shape().name = model->name;
-//	mesh->dMeshDynamic_p.push_back(srSnModelDynamic);
+//	mesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
 //	srSnModelDynamic->ref();
 //
 //

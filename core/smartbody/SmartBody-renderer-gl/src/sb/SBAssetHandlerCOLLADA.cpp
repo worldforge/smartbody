@@ -219,7 +219,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 					{
 						j = curJoint->getName();
 					}
-					//skinWeight->infJoint.push_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
+					//skinWeight->infJoint.emplace_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
 				}				
 			}
 	
@@ -304,7 +304,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 						//SmartBody::util::log("RETRIEVED BASE %s", baseShape.c_str());
 					}
 					std::vector<SrSnModel*>& models = (*iter).second;
-					models.push_back(srSnModelStatic);
+					models.emplace_back(srSnModelStatic);
 					//SmartBody::util::log("INSERTED BLENDSHAPE %s INTO BASE %s", (const char*) srSnModelStatic->shape().name, baseShape.c_str());
 					srSnModelStatic->ref();
 					delete srSnModelDynamic;
@@ -323,18 +323,18 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 					srSnModelDynamicBase->visible(false);
 					srSnModelDynamicBase->shape().name = i->name;
 
-					mesh->dMeshStatic_p.push_back(srSnModelStaticBase);
+					mesh->dMeshStatic_p.emplace_back(srSnModelStaticBase);
 					srSnModelStaticBase->ref();
-					mesh->dMeshDynamic_p.push_back(srSnModelDynamicBase);
+					mesh->dMeshDynamic_p.emplace_back(srSnModelDynamicBase);
 					srSnModelDynamicBase->ref();
 					//SmartBody::util::log("Insert base mesh %s", (const char*)meshModelVec[i]->name);
 				}
 
 				if (!isBlendShape && !isBaseShape)
 				{
-					mesh->dMeshStatic_p.push_back(srSnModelStatic);
+					mesh->dMeshStatic_p.emplace_back(srSnModelStatic);
 					srSnModelStatic->ref();
-					mesh->dMeshDynamic_p.push_back(srSnModelDynamic);
+					mesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
 					srSnModelDynamic->ref();
 					//SmartBody::util::log("Insert mesh %s", (const char*)meshModelVec[i]->name);
 				}
@@ -352,7 +352,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 						srSnGroup->add(meshGroup);
 				}
 				*/
-				meshModelToDelete.push_back(i);
+				meshModelToDelete.emplace_back(i);
 			}
 
 			for (auto & d : meshModelToDelete)

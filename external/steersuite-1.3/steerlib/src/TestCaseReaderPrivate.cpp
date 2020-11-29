@@ -244,7 +244,7 @@ void TestCaseReaderPrivate::_parseCameraView(const ticpp::Element * subRoot)
 		}
 	}
 
-	_cameraViews.push_back(cvi);
+	_cameraViews.emplace_back(cvi);
 }
 
 void TestCaseReaderPrivate::_parseAgent(const ticpp::Element * subRoot)
@@ -273,7 +273,7 @@ void TestCaseReaderPrivate::_parseAgent(const ticpp::Element * subRoot)
 		}
 	}
 
-	_rawAgents.push_back(newAgent);
+	_rawAgents.emplace_back(newAgent);
 }
 
 void TestCaseReaderPrivate::_parseAgentRegion(const ticpp::Element * subRoot)
@@ -308,7 +308,7 @@ void TestCaseReaderPrivate::_parseAgentRegion(const ticpp::Element * subRoot)
 	}
 
 	for (unsigned int i=0; i<numAgents; i++) {
-		_rawAgents.push_back(newAgent);
+		_rawAgents.emplace_back(newAgent);
 	}
 
 }
@@ -324,7 +324,7 @@ void TestCaseReaderPrivate::_parseObstacle(const ticpp::Element * subRoot)
 	obst.regionBounds = _header.worldBounds;
 	obst.size = 0.0f;
 
-	_rawObstacles.push_back(obst);
+	_rawObstacles.emplace_back(obst);
 }
 
 void TestCaseReaderPrivate::_parseObstacleRegion(const ticpp::Element * subRoot)
@@ -359,7 +359,7 @@ void TestCaseReaderPrivate::_parseObstacleRegion(const ticpp::Element * subRoot)
 	}
 
 	for (unsigned int i=0; i<numObstacles; i++) {
-		_rawObstacles.push_back(obst);
+		_rawObstacles.emplace_back(obst);
 	}
 }
 
@@ -438,7 +438,7 @@ void TestCaseReaderPrivate::_parseGoalSequence(const ticpp::Element * subRoot, s
 			}
 		}
 
-		goals.push_back(newGoal);
+		goals.emplace_back(newGoal);
 
 	}
 

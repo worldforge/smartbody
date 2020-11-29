@@ -518,14 +518,14 @@ void ExampleSet::addExample( InterpolationExample* ex )
 	if (paraSize == 0)
 		paraSize = ex->parameter.size();
 
-	interpExamples.push_back(ex);
+	interpExamples.emplace_back(ex);
 	parameterBBox.extendBBox(ex->parameter);
 }
 
 bool MotionExampleSet::addMotionExample(MotionExample* ex )
 {
-	motionData.push_back(ex);
-	motionExamples.push_back(ex);
+	motionData.emplace_back(ex);
+	motionExamples.emplace_back(ex);
 	addExample(ex);
 	return true;
 }

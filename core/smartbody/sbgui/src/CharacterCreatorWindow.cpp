@@ -77,7 +77,7 @@ void CharacterCreatorWindow::CreateCB(Fl_Widget* w, void* data)
 
 ResolutionWindow::ResolutionWindow( int x, int y, int w, int h, char* name ): Fl_Double_Window(x, y, w, h, name)
 {
-	baseWin = NULL;
+	baseWin = nullptr;
 	begin();	
 	inputXRes = new Fl_Input(100, 20, 100, 25, "X Res");
 	inputYRes = new Fl_Input(100, 50, 100, 25, "Y Res");

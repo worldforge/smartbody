@@ -42,7 +42,7 @@ Flu_Button :: Flu_Button( int X,int Y,int W,int H,const char *l )
   : Fl_Button( X,Y,W,H,l )
 {
   flags = 0;
-  inactiveImg = downImg = NULL;
+  inactiveImg = downImg = nullptr;
   color( FL_GRAY );
   selection_color( FL_GRAY );
   retBtn = linkBtn = false;
@@ -218,7 +218,7 @@ void Flu_Button :: down_image( Fl_Image *i )
 {
   if( downImg )
     delete downImg;
-  downImg = NULL;
+  downImg = nullptr;
   if( i )
     {
       if( labeltype() != FL_NORMAL_LABEL )
@@ -231,7 +231,7 @@ void Flu_Button :: image( Fl_Image *i )
 {
   if( inactiveImg )
     delete inactiveImg;
-  inactiveImg = NULL;
+  inactiveImg = nullptr;
   if( i )
     {
       if( labeltype() != FL_NORMAL_LABEL )

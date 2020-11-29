@@ -43,6 +43,27 @@ class SBRenderScene {
 public:
 	friend class SBRenderSceneListener;
 
+	struct Renderable {
+		SBPawn* pawn;
+		boost::intrusive_ptr<SkScene> scene_p;
+		std::unique_ptr<DeformableMeshInstance> meshInstance;
+		std::unique_ptr<DeformableMeshInstance> staticMeshInstance;
+		bool useStaticMesh;
+
+		DeformableMeshInstance* getActiveMesh() const {
+			if (useStaticMesh) {
+				if (staticMeshInstance) {
+					return staticMeshInstance.get();
+				}
+			} else {
+				if (meshInstance){
+					return meshInstance.get();
+				}
+			}
+			return nullptr;
+		}
+	};
+
 	explicit SBRenderScene(SBScene& scene, SBRenderAssetManager& renderAssetManager);
 	~SBRenderScene();
 
@@ -80,7 +101,15 @@ public:
 	SBRenderAssetManager& _renderAssetManager;
 	SBScene& mScene;
 
+	const Renderable* getRenderable(const std::string& name) const;
+	Renderable* getRenderable(const std::string& name);
+
+	const std::map<std::string, Renderable>& getRenderables() const {
+		return mRenderables;
+	}
+
 protected:
+
 
 	bool _isCameraLocked;
 	std::map<std::string, SrCamera*> _cameras;
@@ -91,13 +120,6 @@ protected:
 	SkJoint *	_coneOfSight_leftEye;
 	SkJoint *	_coneOfSight_rightEye;
 	std::string	_coneOfSight_character;
-
-	struct Renderable {
-		SBPawn* pawn;
-		boost::intrusive_ptr<SkScene> scene_p;
-		std::unique_ptr<DeformableMeshInstance> meshInstance;
-		std::unique_ptr<DeformableMeshInstance> staticMeshInstance;
-	};
 
 	std::map<std::string, Renderable> mRenderables;
 	std::unique_ptr<SBRenderSceneListener> mListener;

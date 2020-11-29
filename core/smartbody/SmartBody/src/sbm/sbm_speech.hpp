@@ -164,10 +164,10 @@ namespace SmartBody {
 			_floatsPerKey = floatsPerKey;
 			for (int x = 0; x < numKeys; x++)
 			{
-				_curveData.push_back(curve[x * floatsPerKey]);
-				_curveData.push_back(curve[x * floatsPerKey + 1]);
+				_curveData.emplace_back(curve[x * floatsPerKey]);
+				_curveData.emplace_back(curve[x * floatsPerKey + 1]);
 				for (int y = 2; y < floatsPerKey; y++)
-					_curveData.push_back(0.0f);
+					_curveData.emplace_back(0.0f);
 			}
 		}
 

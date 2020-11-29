@@ -11,8 +11,8 @@ BMLSpeechObject::BMLSpeechObject() : BMLObject()
 	typeAttr = createStringAttribute("type", "text/plain", "", "Basic", 10, false, false, false, "Format of speech content.");
 #ifndef __APPLE__
 	std::vector<std::string> types;
-//	types.push_back("text/plain");
-	//types.push_back("application/ssml+xml");
+//	types.emplace_back("text/plain");
+	//types.emplace_back("application/ssml+xml");
 //	typeAttr->setValidValues(types);
 #endif
 
@@ -21,10 +21,10 @@ BMLSpeechObject::BMLSpeechObject() : BMLObject()
 
 	policyAttr = createStringAttribute("policy", "", "", "Basic", 120, false, false, false, "Utterance policy that overrides character's default behavior of attribute utterancePolicy: queue (play utterance after others), ignore (don't play this utterance if others are being played), interrupt (interrupt other utterance, play this one)");
 	std::vector<std::string> policyTypes;
-	policyTypes.push_back("");
-	policyTypes.push_back("ignore");
-	policyTypes.push_back("queue");
-	policyTypes.push_back("interrupt");
+	policyTypes.emplace_back("");
+	policyTypes.emplace_back("ignore");
+	policyTypes.emplace_back("queue");
+	policyTypes.emplace_back("interrupt");
 	policyAttr->setValidValues(policyTypes);
 
 

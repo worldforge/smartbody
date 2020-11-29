@@ -240,7 +240,7 @@ void RecFileWriter::startFrame( float timeStamp, float timePassedSinceLastFrame 
 	//
 	// add the new entry to the frameTable
 	//
-	_frameTable.push_back(currentFrame);
+	_frameTable.emplace_back(currentFrame);
 
 	_writingFrame = true;
 
@@ -314,7 +314,7 @@ void RecFileWriter::addObstacleBoundingBox( float xmin, float xmax, float ymin, 
 	newObstacle.bounds.ymax = ymax;
 	newObstacle.bounds.zmin = zmin;
 	newObstacle.bounds.zmax = zmax;
-	_obstacleList.push_back(newObstacle);
+	_obstacleList.emplace_back(newObstacle);
 
 }
 
@@ -338,7 +338,7 @@ void RecFileWriter::addCameraView( float origx, float origy, float origz, float 
 	newCameraView.up.x = 0.0f;
 	newCameraView.up.y = 1.0f;
 	newCameraView.up.z = 0.0f;
-	_cameraList.push_back(newCameraView);
+	_cameraList.emplace_back(newCameraView);
 
 }
 

@@ -116,7 +116,7 @@ void RecFilePlayerModule::initializeSimulation()
 	for (unsigned int i=0; i < _simulationReader->getNumObstacles(); i++) {
 		BoxObstacle * b;
 		b = new BoxObstacle(_simulationReader->getObstacleBoundsAtFrame(i,0));
-		_obstacles.push_back(b);
+		_obstacles.emplace_back(b);
 		_engine->addObstacle(b);
 		_engine->getSpatialDatabase()->addObject( b, b->getBounds());
 	}

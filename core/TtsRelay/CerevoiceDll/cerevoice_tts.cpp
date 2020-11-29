@@ -449,8 +449,8 @@ std::string RemoveXMLTagsAndNewLines( const std::string & txt , SpeechRequestMes
                            //fprintf(stderr, "Got timing tag: \"%s\" and text: \"%s\"\n", markString.c_str(), temporaryText.c_str());
 #endif
                             /// Push tag into xmlMetaData
-                            xmlMetaData.tags.push_back(markString);
-                            //xmlMetaData.words.push_back(temporaryText);
+                            xmlMetaData.tags.emplace_back(markString);
+                            //xmlMetaData.words.emplace_back(temporaryText);
 
                             actualText += temporaryText;
                        }
@@ -1040,8 +1040,8 @@ void cerevoice_tts::tts( const char * text, const char * cereproc_file_name, con
       for (int wordTimingIndex = 0; wordTimingIndex < numberOfWords * 2; ++wordTimingIndex)
       {
          std::string timeStamp = "T" + wordTimingIndex;
-         xmlMetaData.tags.push_back(timeStamp);
-         xmlMetaData.words.push_back(words.at(wordTimingIndex));
+         xmlMetaData.tags.emplace_back(timeStamp);
+         xmlMetaData.words.emplace_back(words.at(wordTimingIndex));
       }
    }
    */
@@ -1159,15 +1159,15 @@ void cerevoice_tts::tts( const char * text, const char * cereproc_file_name, con
 
                      if ( g_visemeMapping == "sbm" )
                      {
-                        g_visemeListType.push_back(phone_type_s);
-                        g_visemeListStart.push_back(start_time_d);
-                        g_visemeListArticulation.push_back(1.0);
+                        g_visemeListType.emplace_back(phone_type_s);
+                        g_visemeListStart.emplace_back(start_time_d);
+                        g_visemeListArticulation.emplace_back(1.0);
                      }
                      else if ( g_visemeMapping == "facefx" )
                      {
-                        g_visemeListType.push_back(viseme);
-                        g_visemeListStart.push_back(start_time_d);
-                        g_visemeListArticulation.push_back(vhcl::ToDouble(articulation));
+                        g_visemeListType.emplace_back(viseme);
+                        g_visemeListStart.emplace_back(start_time_d);
+                        g_visemeListArticulation.emplace_back(vhcl::ToDouble(articulation));
                      }
 
                      if ( strcmp( abuf->trans[ i ].name, "sil" ) == 0 )
@@ -1189,8 +1189,8 @@ void cerevoice_tts::tts( const char * text, const char * cereproc_file_name, con
                   {
                      if ( wordElementHasChildNodes )
                      {
-                        g_wordBreakListStart.push_back(word_start_d);
-                        g_wordBreakListEnd.push_back(end_time_d);
+                        g_wordBreakListStart.emplace_back(word_start_d);
+                        g_wordBreakListEnd.emplace_back(end_time_d);
                      }
 
                      wordElementHasChildNodes = false;
@@ -1230,8 +1230,8 @@ void cerevoice_tts::tts( const char * text, const char * cereproc_file_name, con
                         printf("Warning: Reference to unspecified tag, constructing one on-the-fly to be: %s\n", s.c_str());
                      }
 
-                     g_markListName.push_back(s);
-                     g_markListTime.push_back(word_start_d);
+                     g_markListName.emplace_back(s);
+                     g_markListTime.emplace_back(word_start_d);
 
 
                      double_words = num_words * 2 + 1;
@@ -1260,8 +1260,8 @@ void cerevoice_tts::tts( const char * text, const char * cereproc_file_name, con
                         printf("Warning: Reference to unspecified tag, constructing one on-the-fly to be: %s\n", s.c_str());
                      }
 
-                     g_markListName.push_back(s);
-                     g_markListTime.push_back(end_time_d);
+                     g_markListName.emplace_back(s);
+                     g_markListTime.emplace_back(end_time_d);
                      }
 
                      num_words++;

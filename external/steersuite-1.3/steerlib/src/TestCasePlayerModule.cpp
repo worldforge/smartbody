@@ -100,7 +100,7 @@ void TestCasePlayerModule::initializeSimulation() {
 		const SteerLib::ObstacleInitialConditions & ic = testCaseReader->getObstacleInitialConditions(i);
 		SteerLib::BoxObstacle * b;
 		b = new SteerLib::BoxObstacle(ic.xmin, ic.xmax, ic.ymin, ic.ymax, ic.zmin, ic.zmax);
-		_obstacles.push_back(b);
+		_obstacles.emplace_back(b);
 		_engine->addObstacle(b);
 		_engine->getSpatialDatabase()->addObject( b, b->getBounds());
 	}

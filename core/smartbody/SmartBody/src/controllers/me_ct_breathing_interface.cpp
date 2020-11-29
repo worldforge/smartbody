@@ -165,15 +165,15 @@ KeyframeBreathCycle* KeyframeBreathCycle::custom(float breathMin, float breathMa
 {
 	KeyframeBreathCycle* breath_cycle = new KeyframeBreathCycle();
 
-	breath_cycle->keyframes.push_back(new Keyframe(breathMin, breathStartTime));
+	breath_cycle->keyframes.emplace_back(new Keyframe(breathMin, breathStartTime));
 	if(inspirationStartTime != breathStartTime)
-		breath_cycle->keyframes.push_back(new Keyframe(breathMin, inspirationStartTime));
-	breath_cycle->keyframes.push_back(new Keyframe(breathMax, inspirationEndTime));
+		breath_cycle->keyframes.emplace_back(new Keyframe(breathMin, inspirationStartTime));
+	breath_cycle->keyframes.emplace_back(new Keyframe(breathMax, inspirationEndTime));
 	if(expirationStartTime != inspirationEndTime)
-		breath_cycle->keyframes.push_back(new Keyframe(breathMax, expirationStartTime));
-	breath_cycle->keyframes.push_back(new Keyframe(breathMin, expirationEndTime));
+		breath_cycle->keyframes.emplace_back(new Keyframe(breathMax, expirationStartTime));
+	breath_cycle->keyframes.emplace_back(new Keyframe(breathMin, expirationEndTime));
 	if(breathEndTime != expirationEndTime)
-		breath_cycle->keyframes.push_back(new Keyframe(breathMin, breathEndTime));
+		breath_cycle->keyframes.emplace_back(new Keyframe(breathMin, breathEndTime));
 	breath_cycle->update();
 
 	return breath_cycle;

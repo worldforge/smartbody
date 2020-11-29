@@ -47,21 +47,21 @@ BMLCreatorWindow::BMLCreatorWindow(int x,int y,int w,int h, const char* s) : Fl_
 	BMLObject* state = new BMLStateObject();
 	BMLObject* noise = new BMLNoiseObject();
 
-	_bmlObjects.push_back(body);
-	_bmlObjects.push_back(locomotion);
-	_bmlObjects.push_back(animation);
-	_bmlObjects.push_back(gesture);
-	_bmlObjects.push_back(reach);
-	_bmlObjects.push_back(hand);
-	_bmlObjects.push_back(gaze);
-	_bmlObjects.push_back(constraint);
-	_bmlObjects.push_back(head);
-	_bmlObjects.push_back(face);
-	_bmlObjects.push_back(speech);
-	_bmlObjects.push_back(saccade);
-	_bmlObjects.push_back(event);
-	_bmlObjects.push_back(state);
-	_bmlObjects.push_back(noise);
+	_bmlObjects.emplace_back(body);
+	_bmlObjects.emplace_back(locomotion);
+	_bmlObjects.emplace_back(animation);
+	_bmlObjects.emplace_back(gesture);
+	_bmlObjects.emplace_back(reach);
+	_bmlObjects.emplace_back(hand);
+	_bmlObjects.emplace_back(gaze);
+	_bmlObjects.emplace_back(constraint);
+	_bmlObjects.emplace_back(head);
+	_bmlObjects.emplace_back(face);
+	_bmlObjects.emplace_back(speech);
+	_bmlObjects.emplace_back(saccade);
+	_bmlObjects.emplace_back(event);
+	_bmlObjects.emplace_back(state);
+	_bmlObjects.emplace_back(noise);
 
 	for (size_t i = 0; i < _bmlObjects.size(); i++)
 	{

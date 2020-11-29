@@ -121,7 +121,7 @@ void BehaviorWindow::show_viewer()
 void BehaviorWindow::hide_viewer()
 {
 	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-	bp->registerRequestCallback(NULL, NULL);
+	bp->registerRequestCallback(nullptr, nullptr);
 	this->hide();
 }
 
@@ -254,7 +254,7 @@ nle::Block* BehaviorWindow::getSelectedBlock()
 {
 	nle::NonLinearEditorModel* model = nleWidget->getModel();
 	if (!model)
-		return NULL;
+		return nullptr;
 
 	// activate the inputs based on the selected block
 	for (int t = 0; t < model->getNumTracks(); t++)
@@ -269,14 +269,14 @@ nle::Block* BehaviorWindow::getSelectedBlock()
 			}
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 nle::Track* BehaviorWindow::getSelectedTrack()
 {
     nle::NonLinearEditorModel* model = nleWidget->getModel();
     if (!model)
-        return NULL;
+        return nullptr;
 
     // activate the inputs based on the selected block
     for (int t = 0; t < model->getNumTracks(); t++)
@@ -285,7 +285,7 @@ nle::Track* BehaviorWindow::getSelectedTrack()
         if (track->isSelected())
             return track;
     }
-    return NULL;
+    return nullptr;
 }
 
 void BehaviorWindow::ClearCB(Fl_Widget* widget, void* data)
@@ -462,7 +462,7 @@ void BehaviorWindow::updateBehaviors(BML::BmlRequest* request)
 		{
 			// save this mark for later since it contains sync point information
 			// that we haven't obtained the proper time for yet
-			untimedMarks.push_back(std::pair<RequestMark*, std::string>(requestMark, syncPointName));
+			untimedMarks.emplace_back(std::pair<RequestMark*, std::string>(requestMark, syncPointName));
 		}
 		//if (requestMark)
 			requestBlock->addMark(requestMark);
@@ -635,7 +635,7 @@ void BehaviorWindow::updateBehaviors(BML::BmlRequest* request)
 							}
 						}
 						if (!found)
-							behaviorBlocks.push_back(std::pair<BML::BehaviorRequest*, nle::Block*>((*behavIter).get(), motionBlock));
+							behaviorBlocks.emplace_back(std::pair<BML::BehaviorRequest*, nle::Block*>((*behavIter).get(), motionBlock));
 					}
 					
 				}
@@ -663,7 +663,7 @@ void BehaviorWindow::updateBehaviors(BML::BmlRequest* request)
 							}
 						}
 						if (!found)
-							behaviorBlocks.push_back(std::pair<BML::BehaviorRequest*, nle::Block*>((*behavIter).get(), nodBlock));
+							behaviorBlocks.emplace_back(std::pair<BML::BehaviorRequest*, nle::Block*>((*behavIter).get(), nodBlock));
 					}
 				}
 				
@@ -773,7 +773,7 @@ void BehaviorWindow::processMotionRequest(BML::MotionRequest* motionRequest, nle
 		if (iter != behaviorToNameMap.end())		
 		{
 			std::string name((*iter).first.begin(), (*iter).first.end());
-			untimedMarks.push_back( std::pair<RequestMark*, std::string>(spMark, name));
+			untimedMarks.emplace_back( std::pair<RequestMark*, std::string>(spMark, name));
 		}
 		*/
 		block->setStartTime(spMark->getStartTime());
@@ -796,7 +796,7 @@ void BehaviorWindow::processMotionRequest(BML::MotionRequest* motionRequest, nle
 		if (iter != behaviorToNameMap.end())		
 		{
 			std::string name((*iter).first.begin(), (*iter).first.end());
-			untimedMarks.push_back( std::pair<RequestMark*, std::string>(spMark, name));
+			untimedMarks.emplace_back( std::pair<RequestMark*, std::string>(spMark, name));
 		}
 		*/
 			
@@ -819,7 +819,7 @@ void BehaviorWindow::processMotionRequest(BML::MotionRequest* motionRequest, nle
 		if (iter != behaviorToNameMap.end())		
 		{
 			std::string name((*iter).first.begin(), (*iter).first.end());
-			untimedMarks.push_back( std::pair<RequestMark*, std::string>(spMark, name));
+			untimedMarks.emplace_back( std::pair<RequestMark*, std::string>(spMark, name));
 		}
 		*/
 	}
@@ -841,7 +841,7 @@ void BehaviorWindow::processMotionRequest(BML::MotionRequest* motionRequest, nle
 		if (iter != behaviorToNameMap.end())		
 		{
 			std::string name((*iter).first.begin(), (*iter).first.end());
-			untimedMarks.push_back( std::pair<RequestMark*, std::string>(spMark, name));
+			untimedMarks.emplace_back( std::pair<RequestMark*, std::string>(spMark, name));
 		}
 		*/
 	}
@@ -863,7 +863,7 @@ void BehaviorWindow::processMotionRequest(BML::MotionRequest* motionRequest, nle
 		if (iter != behaviorToNameMap.end())		
 		{
 			std::string name((*iter).first.begin(), (*iter).first.end());
-			untimedMarks.push_back( std::pair<RequestMark*, std::string>(spMark, name));
+			untimedMarks.emplace_back( std::pair<RequestMark*, std::string>(spMark, name));
 		}
 		*/
 	}
@@ -885,7 +885,7 @@ void BehaviorWindow::processMotionRequest(BML::MotionRequest* motionRequest, nle
 		if (iter != behaviorToNameMap.end())		
 		{
 			std::string name((*iter).first.begin(), (*iter).first.end());
-			untimedMarks.push_back( std::pair<RequestMark*, std::string>(spMark, name));
+			untimedMarks.emplace_back( std::pair<RequestMark*, std::string>(spMark, name));
 		}
 		*/
 	}
@@ -907,7 +907,7 @@ void BehaviorWindow::processMotionRequest(BML::MotionRequest* motionRequest, nle
 		if (iter != behaviorToNameMap.end())		
 		{
 			std::string name((*iter).first.begin(), (*iter).first.end());
-			untimedMarks.push_back( std::pair<RequestMark*, std::string>(spMark, name));
+			untimedMarks.emplace_back( std::pair<RequestMark*, std::string>(spMark, name));
 		}
 		*/
 
@@ -1106,7 +1106,7 @@ void BehaviorWindow::processControllerRequest(BML::MeControllerRequest* controll
 			if (biter != behaviorToNameMap.end())		
 			{
 				std::string spName((*biter).second.begin(), (*biter).second.end());
-				untimedMarks.push_back(std::pair<RequestMark*, std::string>(readyMark, spName));
+				untimedMarks.emplace_back(std::pair<RequestMark*, std::string>(readyMark, spName));
 			}
 		}
 
@@ -1120,7 +1120,7 @@ void BehaviorWindow::processControllerRequest(BML::MeControllerRequest* controll
 			if (biter != behaviorToNameMap.end())		
 			{
 				std::string spName((*biter).second.begin(), (*biter).second.end());
-				untimedMarks.push_back(std::pair<RequestMark*, std::string>(strokeMark, spName));
+				untimedMarks.emplace_back(std::pair<RequestMark*, std::string>(strokeMark, spName));
 			}
 		}
 
@@ -1134,7 +1134,7 @@ void BehaviorWindow::processControllerRequest(BML::MeControllerRequest* controll
 			if (biter != behaviorToNameMap.end())		
 			{
 				std::string spName((*biter).second.begin(), (*biter).second.end());
-				untimedMarks.push_back(std::pair<RequestMark*, std::string>(relaxMark, spName));
+				untimedMarks.emplace_back(std::pair<RequestMark*, std::string>(relaxMark, spName));
 			}
 		}
 
@@ -1148,7 +1148,7 @@ void BehaviorWindow::processControllerRequest(BML::MeControllerRequest* controll
 			if (biter != behaviorToNameMap.end())		
 			{
 				std::string spName((*biter).second.begin(), (*biter).second.end());
-				untimedMarks.push_back(std::pair<RequestMark*, std::string>(endMark, spName));
+				untimedMarks.emplace_back(std::pair<RequestMark*, std::string>(endMark, spName));
 			}
 		}
 	}
@@ -1233,7 +1233,7 @@ void BehaviorWindow::processSpeechRequest(BML::SpeechRequest* speechRequest, nle
 		std::stringstream strstr;
 		strstr << "Visemes:\n";
 		float lastTime = 0;
-		const std::vector<SmartBody::VisemeData *>* visemes = audioSpeechInterface->getVisemes(speechRequest->get_speech_request_id(), NULL);
+		const std::vector<SmartBody::VisemeData *>* visemes = audioSpeechInterface->getVisemes(speechRequest->get_speech_request_id(), nullptr);
 		for (unsigned int v = 0; v < visemes->size(); v++)
 		{
 			SmartBody::VisemeData* viseme = (*visemes)[v];
@@ -1429,7 +1429,7 @@ void BehaviorWindow::processSpeechRequest(BML::SpeechRequest* speechRequest, nle
 						}
 						else
 						{
-							untimedMarks.push_back(std::pair<RequestMark*, std::string>(timeMark, timeMark->getName()));
+							untimedMarks.emplace_back(std::pair<RequestMark*, std::string>(timeMark, timeMark->getName()));
 						}
 					}
 
@@ -1466,7 +1466,7 @@ void BehaviorWindow::processSpeechRequest(BML::SpeechRequest* speechRequest, nle
 			if (prefixMarker.size() > 0)
 				prefixMarker.append(":");
 			prefixMarker.append(name);
-			untimedMarks.push_back(std::pair<RequestMark*, std::string>(mark, prefixMarker));
+			untimedMarks.emplace_back(std::pair<RequestMark*, std::string>(mark, prefixMarker));
 		}
 		//mark->setStartTime(triggerTime + time);
 		//mark->setEndTime(triggerTime + time);
@@ -1499,7 +1499,7 @@ void BehaviorWindow::processEventRequest(BML::EventRequest* eventRequest, nle::N
 	RequestMark* syncPointMark = new RequestMark();
 	syncPointMark->setName(syncPointName);
 	eventBlock->addMark(syncPointMark);
-	untimedMarks.push_back(std::pair<RequestMark*, std::string> (syncPointMark, syncPointName));
+	untimedMarks.emplace_back(std::pair<RequestMark*, std::string> (syncPointMark, syncPointName));
 }
 
 void BehaviorWindow::processVisemeRequest(BML::VisemeRequest* visemeRequest, nle::NonLinearEditorModel* model, BML::BehaviorRequest* behavior, 
@@ -1673,7 +1673,7 @@ GenericViewer* BehaviorViewerFactory::create(int x, int y, int w, int h)
 void BehaviorViewerFactory::destroy(GenericViewer* viewer)
 {
 	delete viewer;
-	viewer = NULL;
+	viewer = nullptr;
 }
 
 

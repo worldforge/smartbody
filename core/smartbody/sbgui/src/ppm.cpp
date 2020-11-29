@@ -44,7 +44,7 @@ int ppm_get_size(char *file, int *nx, int *ny) {
     char tok[20];
     FILE *fp;
 
-    if ((fp = fopen(file, "r")) == NULL) {
+    if ((fp = fopen(file, "r")) == nullptr) {
 	fprintf(stderr, "can't read PPM file %s\n", file);
 	return 0;
     }
@@ -77,7 +77,7 @@ Pic *ppm_read(char *file, Pic *opic) {
     Pic *p;
 
     /* open PPM file */
-    if ((fp = fopen(file, "r")) == NULL) {
+    if ((fp = fopen(file, "r")) == nullptr) {
 	fprintf(stderr, "can't read PPM file %s\n", file);
 	return 0;
     }

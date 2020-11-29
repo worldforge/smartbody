@@ -108,7 +108,7 @@ void FLTKListener::OnCharacterDelete( const std::string & name )
 //			scene->getRootGroup()->remove( pawn->scene_p );
 //		}
 //		pawn->scene_p->unref();
-//		pawn->scene_p = NULL;
+//		pawn->scene_p = nullptr;
 //	}
 	// remove any existing deformable mesh
 #if 0
@@ -119,7 +119,7 @@ void FLTKListener::OnCharacterDelete( const std::string & name )
 			scene->getRootGroup()->remove( pawn->dMesh_p->dMeshDynamic_p[i] );
 		}
 		//delete character->dMesh_p; // AS 1/28/13 causing crash related to mesh instances
-		pawn->dMesh_p = NULL;
+		pawn->dMesh_p = nullptr;
 	}
 #endif 
 
@@ -180,7 +180,7 @@ void FLTKListener::OnCharacterUpdate( const std::string & name)
 //			scene->getRootGroup()->remove( pawn->scene_p );
 //		}
 //		pawn->scene_p->unref();
-//		pawn->scene_p = NULL;
+//		pawn->scene_p = nullptr;
 //	}
 //
 //	pawn->scene_p = new SkScene();
@@ -374,7 +374,7 @@ void FLTKListener::notify(SmartBody::SBSubject* subject)
 //							if (pos != std::string::npos)
 //							{
 //								SmartBody::StringAttribute* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
-//								shapeAttributes.push_back(strAttribute);
+//								shapeAttributes.emplace_back(strAttribute);
 //							}
 //						}
 //
@@ -417,8 +417,8 @@ void FLTKListener::notify(SmartBody::SBSubject* subject)
 //									model->ref();
 //									hasNeutral = true;
 //									// add the shape to the deformable mesh
-//									//mesh->dMeshStatic_p.push_back(model);
-//									//mesh->dMeshDynamic_p.push_back(model);
+//									//mesh->dMeshStatic_p.emplace_back(model);
+//									//mesh->dMeshDynamic_p.emplace_back(model);
 //								}
 //
 //							}
@@ -455,7 +455,7 @@ void FLTKListener::notify(SmartBody::SBSubject* subject)
 //										}
 //										else
 //										{
-//											(*blendshapeIter).second[count] = NULL;
+//											(*blendshapeIter).second[count] = nullptr;
 //										}
 //										count++;
 //									}

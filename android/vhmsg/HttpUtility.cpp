@@ -100,22 +100,22 @@ wstring HtppUtility_UrlDecode( const string & s )
             xchar = GetChar( s, (int)i + 2, 4 );
             if ( xchar != -1 )
             {
-               output.push_back( (wchar_t)xchar );
+               output.emplace_back( (wchar_t)xchar );
                i += 5;
             }
             else
             {
-               output.push_back( '%' );
+               output.emplace_back( '%' );
             }
          }
          else if ( ( xchar = GetChar( s, (int)i + 1, 2 ) ) != -1 )
          {
-            bytes.push_back( (unsigned char)xchar );
+            bytes.emplace_back( (unsigned char)xchar );
             i += 2;
          }
          else
          {
-            output.push_back( '%' );
+            output.emplace_back( '%' );
          }
 
          continue;
@@ -129,11 +129,11 @@ wstring HtppUtility_UrlDecode( const string & s )
 
       if ( s[ i ] == '+' )
       {
-         output.push_back( ' ' );
+         output.emplace_back( ' ' );
       }
       else
       {
-         output.push_back( s[ i ] );
+         output.emplace_back( s[ i ] );
       }
    }
 
@@ -172,22 +172,22 @@ string HtppUtility_UrlDecode( const string & s )
             xchar = GetChar( s, (int)i + 2, 4 );
             if ( xchar != -1 )
             {
-               output.push_back( (wchar_t)xchar );
+               output.emplace_back( (wchar_t)xchar );
                i += 5;
             }
             else
             {
-               output.push_back( '%' );
+               output.emplace_back( '%' );
             }
          }
          else if ( ( xchar = GetChar( s, (int)i + 1, 2 ) ) != -1 )
          {
-            bytes.push_back( (unsigned char)xchar );
+            bytes.emplace_back( (unsigned char)xchar );
             i += 2;
          }
          else
          {
-            output.push_back( '%' );
+            output.emplace_back( '%' );
          }
 
          continue;
@@ -201,11 +201,11 @@ string HtppUtility_UrlDecode( const string & s )
 
       if ( s[ i ] == '+' )
       {
-         output.push_back( ' ' );
+         output.emplace_back( ' ' );
       }
       else
       {
-         output.push_back( s[ i ] );
+         output.emplace_back( s[ i ] );
       }
    }
 
@@ -322,28 +322,28 @@ void UrlEncodeChar( const wchar_t c, string & result, const bool isUnicode )
       int idx;
       int i = (int)c;
 
-      result.push_back( '%' );
-      result.push_back( 'u' );
+      result.emplace_back( '%' );
+      result.emplace_back( 'u' );
       idx = i >> 12;
-      result.push_back( hexChars[ idx ] );
+      result.emplace_back( hexChars[ idx ] );
       idx = ( i >> 8 ) & 0x0F;
-      result.push_back( hexChars[ idx ] );
+      result.emplace_back( hexChars[ idx ] );
       idx = ( i >> 4 ) & 0x0F;
-      result.push_back( hexChars[ idx ] );
+      result.emplace_back( hexChars[ idx ] );
       idx = i & 0x0F;
-      result.push_back( hexChars[ idx ] );
+      result.emplace_back( hexChars[ idx ] );
       return;
    }
 
    if ( c > ' ' && NotEncoded( c ) )
    {
-      result.push_back( c );
+      result.emplace_back( c );
       return;
    }
 
    if ( c == ' ' )
    {
-      result.push_back( '+' );
+      result.emplace_back( '+' );
       return;
    }
 
@@ -354,23 +354,23 @@ void UrlEncodeChar( const wchar_t c, string & result, const bool isUnicode )
    {
       if ( isUnicode && c > 127 )
       {
-         result.push_back( '%' );
-         result.push_back( 'u' );
-         result.push_back( '0' );
-         result.push_back( '0' );
+         result.emplace_back( '%' );
+         result.emplace_back( 'u' );
+         result.emplace_back( '0' );
+         result.emplace_back( '0' );
       }
       else
       {
-         result.push_back( '%' );
+         result.emplace_back( '%' );
       }
 
       int idx = ( (int)c ) >> 4;
-      result.push_back( hexChars[ idx ] );
+      result.emplace_back( hexChars[ idx ] );
       idx = ( (int) c ) & 0x0F;
-      result.push_back( hexChars[ idx ] );
+      result.emplace_back( hexChars[ idx ] );
    }
    else
    {
-      result.push_back( c );
+      result.emplace_back( c );
    }
 }

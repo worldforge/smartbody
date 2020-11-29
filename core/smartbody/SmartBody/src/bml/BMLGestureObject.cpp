@@ -8,11 +8,11 @@ BMLGestureObject::BMLGestureObject() : BMLObject()
 	// TODO: align the bml specification
 /*
 	std::vector<std::string> gestures;
-	gestures.push_back("POINT");
-	gestures.push_back("REACH");
-	gestures.push_back("BEAT");
-	gestures.push_back("DEPICT");
-	gestures.push_back("SIGNAL");
+	gestures.emplace_back("POINT");
+	gestures.emplace_back("REACH");
+	gestures.emplace_back("BEAT");
+	gestures.emplace_back("DEPICT");
+	gestures.emplace_back("SIGNAL");
 */
 	createStringAttribute("name", "", "", "Basic", 40, false, false, false, "Name of the gesture animation, basically playing one animation.");
 
@@ -21,9 +21,9 @@ BMLGestureObject::BMLGestureObject() : BMLObject()
 	createStringAttribute("type", "", "", "Basic", 60, false, false, false, "Type of lexeme.");
 
 	std::vector<std::string> modes;
-	modes.push_back("LEFT_HAND");
-	modes.push_back("RIGHT_HAND");
-	modes.push_back("BOTH_HANDS");
+	modes.emplace_back("LEFT_HAND");
+	modes.emplace_back("RIGHT_HAND");
+	modes.emplace_back("BOTH_HANDS");
 	SmartBody::StringAttribute* modeAttr = createStringAttribute("mode", "", "", "Basic", 70, false, false, false, "Which hand is involved. Should be one of the following: left, right, both.");
 	modeAttr->setValidValues(modes);
 

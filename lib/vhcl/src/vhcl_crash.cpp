@@ -103,7 +103,7 @@ void SetEmailServer( const string & server )
 
 void AddCrashCallback( CrashCallback * callback )
 {
-   g_crashCallbacks.push_back( callback );
+   g_crashCallbacks.emplace_back( callback );
 }
 
 

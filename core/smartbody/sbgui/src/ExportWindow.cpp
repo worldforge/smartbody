@@ -1,4 +1,5 @@
 #include "ExportWindow.h"
+#include "sbm/SceneExporter.h"
 #include <vector>
 #include <string>
 #include <sb/SBScene.h>
@@ -12,20 +13,20 @@
 ExportWindow::ExportWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h, name)
 {
 	std::vector<std::string> aspects;
-	aspects.push_back("scene");
-	aspects.push_back("assets");
-	aspects.push_back("cameras");
-	aspects.push_back("lights");
-	aspects.push_back("face definitions");
-	//aspects.push_back("joint maps");
-	aspects.push_back("lip syncing");
-	aspects.push_back("blends and transitions");
-	aspects.push_back("retargets");
-	aspects.push_back("gesture maps");
-	aspects.push_back("pawns");
-	aspects.push_back("characters");
-	aspects.push_back("services");
-	aspects.push_back("positions");
+	aspects.emplace_back("scene");
+	aspects.emplace_back("assets");
+	aspects.emplace_back("cameras");
+	aspects.emplace_back("lights");
+	aspects.emplace_back("face definitions");
+	//aspects.emplace_back("joint maps");
+	aspects.emplace_back("lip syncing");
+	aspects.emplace_back("blends and transitions");
+	aspects.emplace_back("retargets");
+	aspects.emplace_back("gesture maps");
+	aspects.emplace_back("pawns");
+	aspects.emplace_back("characters");
+	aspects.emplace_back("services");
+	aspects.emplace_back("positions");
 
 	int curY = 10;
 	int curX = 60;
@@ -40,15 +41,12 @@ ExportWindow::ExportWindow(int x, int y, int w, int h, char* name) : Fl_Double_W
 	choiceExportType->when(FL_WHEN_CHANGED);
 	choiceExportType->callback(ChangeExportTypeCB,this);
 	curY += 40;
-	for (std::vector<std::string>::iterator iter = aspects.begin();
-		 iter != aspects.end();
-		 iter++)
+	for (auto & str : aspects)
 	{
-		std::string& str = (*iter);
-		Fl_Check_Button* check = new Fl_Check_Button(curX, curY, 150, 25, _strdup(str.c_str()));
+			Fl_Check_Button* check = new Fl_Check_Button(curX, curY, 150, 25, _strdup(str.c_str()));
 		check->value(1);
 		curY += 25;	
-		checkExport.push_back(check);
+		checkExport.emplace_back(check);
 	}
 
 	curY += 20;
@@ -109,26 +107,24 @@ void ExportWindow::ExportAllCB( Fl_Widget* widget, void* data )
 		return;
 
 	std::vector<std::string> aspects;
-	for (std::vector<Fl_Check_Button*>::iterator iter = window->checkExport.begin();
-		iter != window->checkExport.end();
-		iter++)
+	for (auto & iter : window->checkExport)
 	{
-		if ((*iter)->value())
+		if (iter->value())
 		{
-			aspects.push_back((*iter)->label());
+			aspects.emplace_back(iter->label());
 		}
 	}
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	if (window->exportToFolder && isExportAsset)
 	{
-		scene->exportScenePackage(fname);		
+		SmartBody::exportScenePackage(Session::current->renderScene, fname);
 	}
 	else if (isExportZip && isExportAsset)
 	{
 		std::string fileBase = fs::basename(fname);
 		fs::path fullFile(fname);
-		fs::path filePath = fullFile.parent_path();	
-		scene->exportScenePackage(filePath.string(), fileBase+".zip");
+		fs::path filePath = fullFile.parent_path();
+		SmartBody::exportScenePackage(Session::current->renderScene, filePath.string(), fileBase+".zip");
 	}
 	else
 	{
@@ -162,18 +158,14 @@ void ExportWindow::ExportCB(Fl_Widget* widget, void* data)
 	}
 
 	std::vector<std::string> aspects;
-	for (std::vector<Fl_Check_Button*>::iterator iter = window->checkExport.begin();
-		 iter != window->checkExport.end();
-		 iter++)
+	for (auto & iter : window->checkExport)
 	{
-		if ((*iter)->value())
+		if (iter->value())
 		{
-			aspects.push_back((*iter)->label());
+			aspects.emplace_back(iter->label());
 		}
 	}
-
-	std::string exportData = SmartBody::SBScene::getScene()->exportScene(aspects, "", false);
-	file << exportData;
+	SmartBody::exportScene(Session::current->renderScene, file, aspects, "", false);
 	file.close();
 
 	fl_alert("Saved to: %s", fname);
@@ -201,20 +193,18 @@ void ExportWindow::exportSceneScript( const std::string& filename, std::vector<s
 	if (!separateScriptFile) // write all setup in one single file
 	{
 		std::ofstream file(filename.c_str());
-		std::string exportData = SmartBody::SBScene::getScene()->exportScene(aspects, "", false);
-		file << exportData;
+		SmartBody::exportScene(Session::current->renderScene, file, aspects, "", false);
 		file.close();
 	}
 	else // write each configuration aspect into separate file
 	{
-		for (unsigned int i=0;i<aspects.size();i++)
+		for (auto & aspect : aspects)
 		{
-			std::string outFileName = filePath.string() + "/" + fileBase + "_" + aspects[i] + ".py";
+			std::string outFileName = filePath.string() + "/" + fileBase + "_" + aspect + ".py";
 			std::vector<std::string> oneAspect;
-			oneAspect.push_back(aspects[i]);
+			oneAspect.emplace_back(aspect);
 			std::ofstream file(filename.c_str());
-			std::string exportData = SmartBody::SBScene::getScene()->exportScene(oneAspect, "", false);
-			file << exportData;
+			SmartBody::exportScene(Session::current->renderScene, file, oneAspect, "", false);
 			file.close();
 		}
 	}		

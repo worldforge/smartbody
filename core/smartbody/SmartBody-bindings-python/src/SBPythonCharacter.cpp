@@ -102,27 +102,7 @@ void pythonFuncsCharacter()
 		.def("createMeshFromCollisionSurface", &SBPawn::createMeshFromCollisionSurface, "Creates a mesh based on the current collision surface.")
 	;
 
-	boost::python::class_<SrCamera, boost::python::bases<SBPawn> >("Camera")
-		.def("print", &SrCamera::print, "Shows all the camera statistics. ")
-		.def("reset", &SrCamera::reset, "Reset camera with camera eye (0 166 185), camera center (0 92 0). ")
-		.def("setEye", &SrCamera::setEye, "Set camera eye position. \n Input: camera eye position(should only have three number in the input list) e.g. [0, 0, 0] \n Output: NULL")
-		.def("getEye", &SrCamera::getEye, "Get camera eye position.")
-		.def("setCenter", &SrCamera::setCenter, "Set camera center. \n Input: camera center position(should only have three number in the input list) e.g. [0, 0, 0] \n Output: NULL")
-		.def("getCenter", &SrCamera::getCenter, "Get camera center.")
-		.def("setScale", &SrCamera::setScale, "Set camera scale. \n camera scale: NULL \n Output: NULL")
-		.def("getScale", &SrCamera::getScale, "Get camera scale.")
-		.def("setUpVector", &SrCamera::setUpVector, "Set camera up vector.")
-		.def("getUpVector", &SrCamera::getUpVector, "Returns the camera up vector.")
-		.def("setFov", &SrCamera::setFov, "Set's the camera's field of view.")
-		.def("getFov", &SrCamera::getFov, "Get's the camera's field of view.")
-		.def("setNearPlane", &SrCamera::setNearPlane, "Set's the camera's near plane.")
-		.def("getNearPlane", &SrCamera::getNearPlane, "Get's the camera's near plane.")
-		.def("setFarPlane", &SrCamera::setFarPlane, "Set's the camera's far plane.")
-		.def("getFarPlane", &SrCamera::getFarPlane, "Get's the camera's far plane.")
-		.def("setAspectRatio", &SrCamera::setAspectRatio, "Set's the camera's aspect ratio.")
-		.def("getAspectRatio", &SrCamera::getAspectRatio, "Get's the camera's aspect ratio.")
-		.def("setCameraParameterSmooth", &SrCamera::setCameraParameterSmooth, "Smoothly interpolate the current camera to target camera within given time.")		
-		;
+
 
 	boost::python::class_<SBCharacter, boost::python::bases<SBPawn, SBObject> >("SBCharacter")
 		//.def(boost::python::init<std::string, std::string>())

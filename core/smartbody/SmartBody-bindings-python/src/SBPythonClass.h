@@ -19,6 +19,8 @@
 
 #ifndef SB_NO_PYTHON
 #include <boost/python.hpp>
+#include <sbm/SBRenderScene.h>
+
 #endif
 namespace SmartBody 
 {
@@ -125,20 +127,25 @@ SBController* createController(std::string controllerType, std::string controlle
 
 SrCamera* getCamera();
 
+struct PythonInterface {
+	static SBRenderScene* renderScene;
+	static std::function<SrViewer*()> getViewerFn;
+};
+
 class PythonController :  public SBController
 {
 public:
 	std::string controllerType;
 	PythonController() : SBController() { controllerType = "python";}
-	virtual void start() {};
-	virtual void init(SmartBody::SBPawn* pawn) { SBController::init(pawn); };
+	void start() override {};
+	void init(SmartBody::SBPawn* pawn) override { SBController::init(pawn); };
 	virtual void evaluate() {};
-	virtual void stop() {};
+	void stop() override {};
 
-	virtual SkChannelArray& controller_channels () { return channels;}
-	virtual double controller_duration () { return  1000000.0; }
-	const std::string& controller_type() const { return controllerType; }
-	bool controller_evaluate(double t, MeFrameData& frame )
+	SkChannelArray& controller_channels () override { return channels;}
+	double controller_duration () override { return  1000000.0; }
+	const std::string& controller_type() const override { return controllerType; }
+	bool controller_evaluate(double t, MeFrameData& frame ) override
 	{
 		evaluate();
 		return true;

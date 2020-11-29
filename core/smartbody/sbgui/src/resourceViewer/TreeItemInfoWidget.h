@@ -50,7 +50,7 @@ protected:
 	std::string      skeletonName;
 	std::string      charName;
 public:
-	SkeletonItemInfoWidget( const std::string& characterName, int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = NULL);
+	SkeletonItemInfoWidget( const std::string& characterName, int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = nullptr);
 	virtual void updateWidget();
 	void updateJointAttributes(std::string jointName);
 	static void treeCallBack(Fl_Widget* widget, void* data);
@@ -71,7 +71,7 @@ protected:
 	int              motionFrame;
 	int              channelIndex;
 public:
-	MotionItemInfoWidget(int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = NULL);
+	MotionItemInfoWidget(int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = nullptr);
 	virtual void updateWidget();
 	void updateChannelAttributes();
 	void setMotionFrame(int frame) { motionFrame = frame; }
@@ -124,7 +124,7 @@ protected:
 	Fl_Button*          runSeqButton;
 	Fl_Button*          editSeqButton;
 public:
-	SeqItemInfoWidget(int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = NULL);
+	SeqItemInfoWidget(int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = nullptr);
 	static void runSeqCallback(Fl_Widget* widget, void* data);
 	static void editSeqCallback(Fl_Widget* widget, void* data);
 	virtual void updateWidget();
@@ -140,7 +140,7 @@ protected:
 	TreeInfoObject* eventInfoObject;
 	std::string     eventName;
 public:
-	EventItemInfoWidget(int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = NULL);
+	EventItemInfoWidget(int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = nullptr);
 	static void addEventCallback(Fl_Widget* widget, void* data);
 	void addNewEvent();
 	void removeEvent();
@@ -153,7 +153,7 @@ public:
 class PawnItemInfoWidget : public TreeItemInfoWidget, public SmartBody::SBObserver
 {
 public:
-	PawnItemInfoWidget(int x, int y, int w, int h, const char* name, SBObserver* observerWindow = NULL);	
+	PawnItemInfoWidget(int x, int y, int w, int h, const char* name, SBObserver* observerWindow = nullptr);
 	~PawnItemInfoWidget();
 	virtual void updateWidget();
 	virtual void notify(SmartBody::SBSubject* subject);
@@ -169,7 +169,7 @@ protected:
 	AttributeWindow* attrWindow;
 	SmartBody::SBObject*         infoObject;
 public:
-	AttributeItemWidget(SmartBody::SBObject* object, int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = NULL);
+	AttributeItemWidget(SmartBody::SBObject* object, int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow = nullptr);
 	~AttributeItemWidget();
 
 	virtual void updateWidget();
@@ -182,7 +182,7 @@ protected:
 	SmartBody::SBObject*         infoObject1;
 	SmartBody::SBObject*         infoObject2;
 public:
-	DoubleAttributeItemWidget(SmartBody::SBObject* object1, SmartBody::SBObject* object2, int x, int y, int w, int h, int ySep, const char* name1, const char* name2, SmartBody::SBObserver* observerWindow = NULL);
+	DoubleAttributeItemWidget(SmartBody::SBObject* object1, SmartBody::SBObject* object2, int x, int y, int w, int h, int ySep, const char* name1, const char* name2, SmartBody::SBObserver* observerWindow = nullptr);
 	~DoubleAttributeItemWidget();
 
 	virtual void updateWidget();
@@ -197,7 +197,7 @@ protected:
 	std::vector<SmartBody::SBObject*> infoObjectList;	
 	std::vector<std::string> attrNameList;
 public:
-	MultiAttributeItemWidget(std::vector<SmartBody::SBObject*>& objectList, int x, int y, int w, int h, int yStep, const char* name, std::vector<std::string>& objectNameList, SmartBody::SBObserver* observerWindow /*= NULL*/ );
+	MultiAttributeItemWidget(std::vector<SmartBody::SBObject*>& objectList, int x, int y, int w, int h, int yStep, const char* name, std::vector<std::string>& objectNameList, SmartBody::SBObserver* observerWindow /*= nullptr*/ );
 	~MultiAttributeItemWidget();
 
 	virtual void updateWidget();

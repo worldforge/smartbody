@@ -193,26 +193,26 @@ HRESULT CSkeletalViewerApp::Nui_Init( )
 
 	// add skeleton mapping. seems unncessary since the default kinect joint index matches ours exactly.
 	m_skeletonJointMapping.clear();
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_HIP_CENTER);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_SPINE);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_SHOULDER_CENTER);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_HEAD);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_SHOULDER_LEFT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_ELBOW_LEFT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_WRIST_LEFT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_HAND_LEFT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_SHOULDER_RIGHT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_ELBOW_RIGHT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_WRIST_RIGHT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_HAND_RIGHT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_HIP_LEFT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_KNEE_LEFT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_ANKLE_LEFT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_FOOT_LEFT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_HIP_RIGHT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_KNEE_RIGHT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_ANKLE_RIGHT);
-	m_skeletonJointMapping.push_back(NUI_SKELETON_POSITION_FOOT_RIGHT);	
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_HIP_CENTER);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_SPINE);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_SHOULDER_CENTER);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_HEAD);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_SHOULDER_LEFT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_ELBOW_LEFT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_WRIST_LEFT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_HAND_LEFT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_SHOULDER_RIGHT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_ELBOW_RIGHT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_WRIST_RIGHT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_HAND_RIGHT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_HIP_LEFT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_KNEE_LEFT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_ANKLE_LEFT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_FOOT_LEFT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_HIP_RIGHT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_KNEE_RIGHT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_ANKLE_RIGHT);
+	m_skeletonJointMapping.emplace_back(NUI_SKELETON_POSITION_FOOT_RIGHT);
 
     m_hNextDepthFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
     m_hNextColorFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );

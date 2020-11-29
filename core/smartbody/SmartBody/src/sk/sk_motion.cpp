@@ -152,7 +152,7 @@ bool SkMotion::insert_frame ( int pos, float kt )
    int index = 0;
    if (pos == _frames.size())
    {
-	   _frames.push_back(Frame());
+	   _frames.emplace_back(Frame());
    }
    else
    {
@@ -832,8 +832,8 @@ void SkMotion::registerAnimation()
 	for (size_t f = 0; f < _frames.size(); f++)
 	{
 		SkMotion::Frame& frame = _frames[f];
-		_frameOffset.push_back(SrVec(frame.posture[xPos], frame.posture[yPos], frame.posture[zPos]));
-		_frameOrientation.push_back(SrQuat(frame.posture[qPos], frame.posture[qPos + 1], frame.posture[qPos + 2], frame.posture[qPos + 3]));
+		_frameOffset.emplace_back(SrVec(frame.posture[xPos], frame.posture[yPos], frame.posture[zPos]));
+		_frameOrientation.emplace_back(SrQuat(frame.posture[qPos], frame.posture[qPos + 1], frame.posture[qPos + 2], frame.posture[qPos + 3]));
 
 		// remove the position and orientation from the motion
 		frame.posture[xPos] = 0;
@@ -1001,7 +1001,7 @@ const bool ascendingTime(SmartBody::SBMotionEvent* a, SmartBody::SBMotionEvent* 
 
 void SkMotion::addMotionEvent(SmartBody::SBMotionEvent* motionEvent)
 {
-	_motionEvents.push_back(motionEvent);
+	_motionEvents.emplace_back(motionEvent);
 	// make sure that the motion events are ordered by time
 	std::sort(_motionEvents.begin(), _motionEvents.end(), ascendingTime);
 }
@@ -1143,8 +1143,8 @@ void SkMotion::convertBoneOrientation( std::string &pjointName, SkSkeleton* inte
 		SrVec srcdir = tempSrcSk->boneGlobalDirection(pjoint->name(),child->name());
 		SrVec dstdir = interSk->boneGlobalDirection(pjoint->name(),child->name());	
 		//jointQueues.push(child->name());
-		srcDirList.push_back(srcdir);			
-		dstDirList.push_back(dstdir);
+		srcDirList.emplace_back(srcdir);
+		dstDirList.emplace_back(dstdir);
 		//dir += gdir;
 	}
 #else
@@ -1168,8 +1168,8 @@ void SkMotion::convertBoneOrientation( std::string &pjointName, SkSkeleton* inte
 
 
 			//jointQueues.push(child->name());
-			srcDirList.push_back(srcdir);			
-			dstDirList.push_back(dstdir);			
+			srcDirList.emplace_back(srcdir);
+			dstDirList.emplace_back(dstdir);
 			//break;
 		}
 		else
@@ -1244,9 +1244,9 @@ SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* tar
 	SkSkeleton* tempSrcSk = new SkSkeleton(sourceSk);
 
 	std::vector<std::string> stopJoints;	
-	stopJoints.push_back("skullbase");
-	//stopJoints.push_back("l_wrist");
-	//stopJoints.push_back("r_wrist");
+	stopJoints.emplace_back("skullbase");
+	//stopJoints.emplace_back("l_wrist");
+	//stopJoints.emplace_back("r_wrist");
 	// update the global matrices
 	tempSrcSk->clearJointValues();
 	interSk->clearJointValues();
@@ -1534,8 +1534,8 @@ SkMotion* SkMotion::buildRetargetMotion3( SkSkeleton* sourceSk, SkSkeleton* targ
 	SkSkeleton* tempSrcSk = new SkSkeleton(sourceSk);
 	
 	std::vector<std::string> stopJoints;
-	stopJoints.push_back("l_wrist");
-	stopJoints.push_back("r_wrist");
+	stopJoints.emplace_back("l_wrist");
+	stopJoints.emplace_back("r_wrist");
 
 	// update the global matrices
 	tempSrcSk->invalidate_global_matrices();
@@ -1579,8 +1579,8 @@ SkMotion* SkMotion::buildRetargetMotion3( SkSkeleton* sourceSk, SkSkeleton* targ
 			SrVec dstdir = interSk->boneGlobalDirection(pjoint->name(),child->name());
 			SrVec srcDir1 = sourceSk->boneGlobalDirection(pjoint->name(),child->name());
 			jointQueues.push(child->name());
-			srcDirList.push_back(srcdir);			
-			dstDirList.push_back(dstdir);
+			srcDirList.emplace_back(srcdir);
+			dstDirList.emplace_back(dstdir);
 			//dir += gdir;
 		}
 		SrQuat jointRotation;
@@ -1801,7 +1801,7 @@ std::vector<SkMotion::Frame> SkMotion::data_frames() const
 		temp_frame.keytime = frame.keytime;
 		temp_frame.posture = new float[posture_size()];
 		memcpy(temp_frame.posture,frame.posture,sizeof(float)*posture_size());
-		frame_copy.push_back(temp_frame);
+		frame_copy.emplace_back(temp_frame);
 	}
 	return frame_copy;
 }
@@ -1912,7 +1912,7 @@ SkMotion* SkMotion::buildPoststrokeHoldMotion(float holdTime, std::vector<std::s
 	std::vector<int> toSmoothIds;
 	int wide = 5;
 	for (int i = strokeEndFrameId - wide; i <= strokeEndFrameId + wide; i++)
-		toSmoothIds.push_back(i);
+		toSmoothIds.emplace_back(i);
 
 
 	// handle the base joints
@@ -1974,7 +1974,7 @@ void SkMotion::smoothAtFrame(int frameId, int interval, int maskSize, int maskTy
 
 	std::vector<int> frameIds;
 	for (int i = frameId - interval; i <= frameId + interval; ++i)
-		frameIds.push_back(i);
+		frameIds.emplace_back(i);
 
 	std::vector<float> mask;
 	mask.resize(maskSize);
@@ -2055,7 +2055,7 @@ void SkMotion::smoothByMask(std::vector<int>& frameIds, std::vector<float>& mask
 	{
 		float* new_p = (float*)malloc(sizeof(float)*posture_size());
 		memset(new_p, 0, posture_size());
-		newFrameData.push_back(new_p);
+		newFrameData.emplace_back(new_p);
 	}
 	
 	SkChannelArray& mchan_arr = this->channels();

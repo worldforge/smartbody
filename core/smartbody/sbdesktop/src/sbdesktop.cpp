@@ -587,7 +587,7 @@ int WINAPI _tWinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR str,int nWi
 			if( ++i < argc ) {
 				SmartBody::util::SmartBody::util::log( "    Adding ME path '%s'\n", argv[i] );
 
-				me_paths.push_back( argv[i] );
+				me_paths.emplace_back( argv[i] );
 			} else {
 				SmartBody::util::SmartBody::util::log( "ERROR: Expected directory path to follow -mepath\n" );
 				// return -1
@@ -598,8 +598,8 @@ int WINAPI _tWinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR str,int nWi
 			if( ++i < argc ) {
 				SmartBody::util::SmartBody::util::log( "    Adding sequence path '%s'\n", argv[i] );
 
-				seq_paths.push_back( argv[i] );
-				py_paths.push_back( argv[i] );
+				seq_paths.emplace_back( argv[i] );
+				py_paths.emplace_back( argv[i] );
 			} else {
 				SmartBody::util::SmartBody::util::log( "ERROR: Expected directory path to follow -seqpath\n" );
 				// return -1
@@ -610,7 +610,7 @@ int WINAPI _tWinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR str,int nWi
 			if( ++i < argc ) {
 				SmartBody::util::SmartBody::util::log( "    Adding python script path '%s'\n", argv[i] );
 
-				py_paths.push_back( argv[i] );
+				py_paths.emplace_back( argv[i] );
 			} else {
 				SmartBody::util::SmartBody::util::log( "ERROR: Expected directory path to follow -pypath\n" );
 				// return -1
@@ -621,7 +621,7 @@ int WINAPI _tWinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR str,int nWi
 			if( ++i < argc ) {
 				SmartBody::util::SmartBody::util::log( "    Addcore/smartbody/sbm/src/sbm_main.cpping audio path '%s'\n", argv[i] );
 
-				audio_paths.push_back( argv[i] );
+				audio_paths.emplace_back( argv[i] );
 			} else {
 				SmartBody::util::SmartBody::util::log( "ERROR: Expected directory path to follow -audiopath\n" );
 				// return -1
@@ -641,19 +641,19 @@ int WINAPI _tWinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR str,int nWi
 					if (extension == "py")
 					{
 						SmartBody::util::SmartBody::util::log( "    Loading Python scrypt '%s'\n", argv[i] );
-						init_pys.push_back( argv[i] );
+						init_pys.emplace_back( argv[i] );
 					}
 					else
 					{
 						SmartBody::util::SmartBody::util::log( "    Loading sequence '%s'\n", argv[i] );
-						init_seqs.push_back( argv[i] );
+						init_seqs.emplace_back( argv[i] );
 					}
 				}
 				else
 				{
 					// No extension found
 					SmartBody::util::SmartBody::util::log( "    Loading sequence '%s'\n", argv[i] );
-					init_seqs.push_back( argv[i] );
+					init_seqs.emplace_back( argv[i] );
 				}
 			} else {
 				SmartBody::util::SmartBody::util::log( "ERROR: Expected filename to follow -seq\n" );
@@ -836,7 +836,7 @@ int WINAPI _tWinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR str,int nWi
 
 	if( seq_paths.empty() && py_paths.empty() ) {
 		SmartBody::util::SmartBody::util::log( "No script paths specified. Adding current working directory to script path.\n" );
-		py_paths.push_back( "." );
+		py_paths.emplace_back( "." );
 	}
 
 	for( it = me_paths.begin();
@@ -880,7 +880,7 @@ int WINAPI _tWinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR str,int nWi
 	if( init_seqs.empty() && init_pys.empty())
 	{
 		SmartBody::util::SmartBody::util::log( "No Python scripts specified. Loading script 'default.py'\n");
-		init_pys.push_back( "default.py" );
+		init_pys.emplace_back( "default.py" );
 	}
 
 	for( it = init_seqs.begin();

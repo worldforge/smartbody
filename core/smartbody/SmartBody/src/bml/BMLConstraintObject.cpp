@@ -16,8 +16,8 @@ BMLConstraintObject::BMLConstraintObject() : BMLObject()
 
 	SmartBody::StringAttribute* constraintTypeAttr = createStringAttribute("sbm:constraint-type","pos",true,"Basic", 80, false, false, false,"the constraint type to be enforced. it can be positional or rotational constraint.");
 	std::vector<std::string> constraintTypes;
-	constraintTypes.push_back("pos");
-	constraintTypes.push_back("rot");	
+	constraintTypes.emplace_back("pos");
+	constraintTypes.emplace_back("rot");
 	constraintTypeAttr->setValidValues(constraintTypes);
 
 	createDoubleAttribute("pos-x",0.0,true,"Basic", 90, false, false, false,"the x positional offset added on top of positional constraint");

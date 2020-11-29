@@ -93,7 +93,7 @@ void SBAttributeManager::resortGroups()
 		iter != m_groups.end();
 		iter++)
 	{
-		m_groupsByPriority.push_back((*iter).second);
+		m_groupsByPriority.emplace_back((*iter).second);
 	}
 
 	std::sort(m_groupsByPriority.begin(), m_groupsByPriority.end(), prioritySort());

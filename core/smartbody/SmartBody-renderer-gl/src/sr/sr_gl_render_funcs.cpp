@@ -87,7 +87,7 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 #if !defined(ANDROID_BUILD) && !defined(SB_IPHONE)
 	bool USE_SHADER_MANAGER = true;
 
-	SrModel* model			= new SrModel();
+	auto* model			= new SrModel();
 	std::string model_path	= "Z:\\casas\\gale_expressions\\v1.00\\Gale_Neutral_clean2_UV_diffuse.BlendArtWarped_average.obj";	
 	bool loadSuccess		= model->import_obj(model_path.c_str());	
 	if (loadSuccess)
@@ -101,7 +101,7 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 		return;
 	}
 	
-	SbmDeformableMeshGPU* mesh	= new SbmDeformableMeshGPU();
+	auto* mesh	= new SbmDeformableMeshGPU();
 
 	boost::filesystem::path p(model_path);
 	std::string fileName		= boost::filesystem::basename(p);
@@ -109,21 +109,21 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 
 	mesh->setName(fileName + extension);
 		
-	if (model->Fn.size() == 0)
+	if (model->Fn.empty())
 		model->computeNormals();
 	
-	SrSnModel* srSnModelStatic		= new SrSnModel();
+	auto* srSnModelStatic		= new SrSnModel();
 	srSnModelStatic->shape(*model);
 	srSnModelStatic->shape().name	= model->name;
-	mesh->dMeshStatic_p.push_back(srSnModelStatic);
+	mesh->dMeshStatic_p.emplace_back(srSnModelStatic);
 	srSnModelStatic->ref();
 	
-	SrSnModel* srSnModelDynamic		= new SrSnModel();
+	auto* srSnModelDynamic		= new SrSnModel();
 	srSnModelDynamic->shape(*model);
 	srSnModelDynamic->changed(true);
 	srSnModelDynamic->visible(false);
 	srSnModelDynamic->shape().name = model->name;
-	mesh->dMeshDynamic_p.push_back(srSnModelDynamic);
+	mesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
 	srSnModelDynamic->ref();
 
 	mesh->buildSkinnedVertexBuffer();
@@ -217,10 +217,10 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 		for(size_t i=0; i<testMesh->subMeshList.size(); i++)
 		{
 			SbmTextureManager::singleton().loadTexture(SbmTextureManager::TEXTURE_DIFFUSE, "Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png", "Z:\\casas\\gale_expressions\\v1.00\\Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png");
-			
+
 			SbmTexture* tex;
-			auto tex0	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, testMesh->subMeshList[i]->texName.c_str());
-			auto tex1	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png");
+			auto tex0	= SbmTextureManager::singleton().findTexture(testMesh->subMeshList[i]->texName.c_str());
+			auto tex1	= SbmTextureManager::singleton().findTexture("Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png");
 
 			float weight = SmartBody::SBScene::getScene()->getPawn("defaultPawn0")->getBoundingBox().getCenter().x;
 			glUniform1f(weightLocation, weight);
@@ -500,7 +500,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 				//SmartBody::util::log("textureType = %s", texturesType.c_str());
 				if( texturesType == "static" || texturesType == "dynamic")
 				{
-					auto tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
+					auto tex = SbmTextureManager::singleton().findTexture(subMesh->texName.c_str());
 					//SmartBody::util::log("texName = %s, tex = %d", subMesh->texName.c_str(), tex->getID());
 					if (tex && !showSkinWeight)
 					{
@@ -650,7 +650,7 @@ void SrGlRenderFuncs::render_model ( SrSnShapeBase* shape )
    std::string texName = "none";
    if (model.mtlTextureNameMap.find(mtlName) != model.mtlTextureNameMap.end())
        texName = model.mtlTextureNameMap[mtlName];
-   SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE,texName.c_str());   
+   SbmTexture* tex = SbmTextureManager::singleton().findTexture(texName.c_str());
 
    if (tex && T.size() != 0) // apply textures
    {
@@ -737,14 +737,13 @@ void SrGlRenderFuncs::render_model ( SrSnShapeBase* shape )
 		   if (model.mtlTextureNameMap.find(mtlName) != model.mtlTextureNameMap.end())
 			   texName = model.mtlTextureNameMap[mtlName];
 
-		   auto tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE,texName.c_str());
+		   auto tex = SbmTextureManager::singleton().findTexture(texName.c_str());
 		   if ( fsize > Fn.size() || flat ) // no normal
 		   {
 			   //SmartBody::util::log("No normal\n");
 			   glBegin ( GL_TRIANGLES ); // some cards do require begin/end for each triangle!
-			   for (unsigned int k=0; k<mtlFaces.size(); k++ )
+			   for (int f : mtlFaces)
 			   {  
-				   int f = mtlFaces[k];			   
 				   fn = model.face_normal(f);
 				   glNormal ( fn );		   
 				   glVertex ( V[F[f][0]] );
@@ -757,9 +756,8 @@ void SrGlRenderFuncs::render_model ( SrSnShapeBase* shape )
 		   {
 			   //SmartBody::util::log("No texture\n");
 			   glBegin ( GL_TRIANGLES );
-			   for (unsigned int k=0; k<mtlFaces.size(); k++ )
+			   for (int f : mtlFaces)
 			   {	
-				   int f = mtlFaces[k];
 				   glNormal ( N[Fn[f][0]] ); glVertex ( V[F[f][0]] );
 				   glNormal ( N[Fn[f][1]] ); glVertex ( V[F[f][1]] );
 				   glNormal ( N[Fn[f][2]] ); glVertex ( V[F[f][2]] );		   
@@ -792,9 +790,8 @@ void SrGlRenderFuncs::render_model ( SrSnShapeBase* shape )
 			   //printf("Texture bound[%d], start drawing %s\n", tex->getID(), mtlName.c_str());
 			   glBegin ( GL_TRIANGLES );
 			   //glColor3f(1.f,0.f,1.f);
-			   for (unsigned int k=0; k<mtlFaces.size(); k++ )
+			   for (int f : mtlFaces)
 			   {	
-				   int f = mtlFaces[k];
 				   int ft_a = Ft[f][0];
 				   int ft_b = Ft[f][1];
 				   int ft_c = Ft[f][2];

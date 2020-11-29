@@ -82,7 +82,7 @@ SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& na
 	SBAnimationBlend0D* blend = new SBAnimationBlend0D(name);
 
 	addBlendToGraph(name);
-	_blends.push_back(blend);
+	_blends.emplace_back(blend);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
 	for (size_t l = 0; l < listeners.size(); l++)
@@ -101,7 +101,7 @@ SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& na
 	SBAnimationBlend1D* blend = new SBAnimationBlend1D(name);
 	
 	addBlendToGraph(name);
-	_blends.push_back(blend);
+	_blends.emplace_back(blend);
 	
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
 	for (size_t l = 0; l < listeners.size(); l++)
@@ -120,7 +120,7 @@ SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& na
 	SBAnimationBlend2D* blend = new SBAnimationBlend2D(name);
 	
 	addBlendToGraph(name);
-	_blends.push_back(blend);
+	_blends.emplace_back(blend);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
 	for (size_t l = 0; l < listeners.size(); l++)
@@ -140,7 +140,7 @@ SBAnimationBlend3D* SBAnimationBlendManager::createBlend3D(const std::string& na
 	SBAnimationBlend3D* blend = new SBAnimationBlend3D(name);
 	
 	addBlendToGraph(name);
-	_blends.push_back(blend);
+	_blends.emplace_back(blend);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
 	for (size_t l = 0; l < listeners.size(); l++)
@@ -155,7 +155,7 @@ SBMotionBlendBase* SBAnimationBlendManager::createMotionBlendBase( const std::st
 	SBMotionBlendBase* blend = new SBMotionBlendBase(name,skelName, dimension);
 	
 	//	addBlendToGraph(name);
-	_blends.push_back(blend);
+	_blends.emplace_back(blend);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
 	for (size_t l = 0; l < listeners.size(); l++)
@@ -184,7 +184,7 @@ SBAnimationTransition* SBAnimationBlendManager::createTransition(const std::stri
 	SBAnimationTransition* transition = new SBAnimationTransition(source + "/" + dest);
 	transition->set(sourceBlend, destBlend);
 
-	_transitions.push_back(transition);
+	_transitions.emplace_back(transition);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
 	for (size_t l = 0; l < listeners.size(); l++)
@@ -216,7 +216,7 @@ std::vector<std::string> SBAnimationBlendManager::getBlendNames()
 	std::vector<std::string> states;
 	for (size_t i = 0; i < _blends.size(); i++)
 	{
-		states.push_back(_blends[i]->stateName);
+		states.emplace_back(_blends[i]->stateName);
 	}
 	return states;
 }
@@ -228,7 +228,7 @@ std::vector<std::string> SBAnimationBlendManager::getTransitionBlends(const std:
 	for (size_t i = 0; i < _transitions.size(); i++)
 	{
 		if (_transitions[i]->getSourceBlend()->stateName == source)
-			blends.push_back(_transitions[i]->getDestinationBlend()->stateName);
+			blends.emplace_back(_transitions[i]->getDestinationBlend()->stateName);
 	}
 
 	return blends;
@@ -279,7 +279,7 @@ std::vector<std::string> SBAnimationBlendManager::getTransitionNames()
 	std::vector<string> transitionNames;
 	for (size_t i = 0; i < _transitions.size(); i++)
 	{
-		transitionNames.push_back( _transitions[i]->getTransitionName() );
+		transitionNames.emplace_back( _transitions[i]->getTransitionName() );
 	}
 	return transitionNames;
 }

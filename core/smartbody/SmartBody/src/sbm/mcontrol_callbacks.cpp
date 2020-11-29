@@ -271,7 +271,7 @@ int mcu_sequence_chain_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 	vector<string> seq_names;
 	const char* token = args.read_token();
 	while( token[0] != '\0' ) {
-		seq_names.push_back( token );
+		seq_names.emplace_back( token );
 
 		token = args.read_token();
 	}
@@ -391,7 +391,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
 				if (!motion)
 					return CMD_FAILURE;
-				newState->motions.push_back(motion);
+				newState->motions.emplace_back(motion);
 			}
 			int numKeys = args.read_int();
 			for (int i = 0; i < numMotions; i++)
@@ -399,15 +399,15 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 				std::vector<double> keysForOneMotion;
 				if (numKeys == 0)
 				{
-					keysForOneMotion.push_back(0.0);
-					keysForOneMotion.push_back(newState->motions[i]->duration());
+					keysForOneMotion.emplace_back(0.0);
+					keysForOneMotion.emplace_back(newState->motions[i]->duration());
 				}
 				else
 				{
 					for (int j = 0; j < numKeys; j++)
 					{
 						double key = args.read_double();
-						keysForOneMotion.push_back(key);
+						keysForOneMotion.emplace_back(key);
 					}
 					for (int j = 0; j < numKeys - 1; j++)
 					{
@@ -415,7 +415,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 							keysForOneMotion[j + 1] += newState->motions[i]->duration();
 					}
 				}
-				newState->keys.push_back(keysForOneMotion);
+				newState->keys.emplace_back(keysForOneMotion);
 			}
       delete newState;
 			//SmartBody::SBScene::getScene()->getBlendManager()->addBlend(newState);
@@ -573,7 +573,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 				if (blend)
 				{
 					for (int i = 0; i < blend->getNumMotions(); i++)
-						weights.push_back(args.read_double());
+						weights.emplace_back(args.read_double());
 				}
 			}
 			if (blend && numWeights < blend->getNumMotions())
@@ -595,7 +595,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			if (args.calc_num_tokens() == character->param_animation_ct->getNumWeights())
 			{
 				for (int i = 0; i < character->param_animation_ct->getNumWeights(); i++)
-					w.push_back(args.read_double());
+					w.emplace_back(args.read_double());
 				//SmartBody::util::log("weight size = %d",w.size());
 				character->param_animation_ct->updateWeights(w);
 			}
@@ -616,7 +616,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			}
 			std::vector<double> p;
 			for (int i = 0; i < (type + 1); i++)
-				p.push_back(args.read_double());
+				p.emplace_back(args.read_double());
 			std::vector<double> weights;
 			weights.resize(character->param_animation_ct->getCurrentPABlendData()->state->getNumMotions());
 			if (type == 0)
@@ -2556,9 +2556,9 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 					float x, y, z;
 					float yaw, pitch, roll;
 					character->get_world_offset(x, y, z, yaw, pitch, roll);
-					character->trajectoryGoalList.push_back(x);
-					character->trajectoryGoalList.push_back(y);
-					character->trajectoryGoalList.push_back(z);
+					character->trajectoryGoalList.emplace_back(x);
+					character->trajectoryGoalList.emplace_back(y);
+					character->trajectoryGoalList.emplace_back(z);
 
 					if (mode == "normal")
 					{
@@ -2577,8 +2577,8 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 						for (int i = 0; i < num; i++)
 						{
 							float v = args.read_float();
-							ppraiAgent->goalList.push_back(v);
-							character->trajectoryGoalList.push_back(v);
+							ppraiAgent->goalList.emplace_back(v);
+							character->trajectoryGoalList.emplace_back(v);
 						}
 					}
 					else if (mode == "additive")
@@ -2586,8 +2586,8 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 						for (int i = 0; i < num; i++)
 						{
 							float v = args.read_float();
-							ppraiAgent->goalList.push_back(v);
-							character->trajectoryGoalList.push_back(v);
+							ppraiAgent->goalList.emplace_back(v);
+							character->trajectoryGoalList.emplace_back(v);
 						}
 					}
 					else
@@ -2599,7 +2599,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 					for (size_t i=0; i < trajList.size() / 3; i++)
 					{
 						SrVec trajPt = SrVec(trajList[i*3],trajList[i*3+1],trajList[i*3+2]);
-						trajPtList.push_back(trajPt);
+						trajPtList.emplace_back(trajPt);
 					}
 					steerPath.clearPath();
 					steerPath.initPath(trajPtList,pathRadius);
@@ -2895,7 +2895,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			std::string receiverName = character->getStringAttribute("receiverName");
 			if (receiverName == skelName || character->getName() == skelName)
 			{
-				controlledCharacters.push_back(character);
+				controlledCharacters.emplace_back(character);
 			}
 		}
 
@@ -3028,7 +3028,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 					quat.y = args.read_float();
 					quat.z = args.read_float();
 					quat.normalize();
-					quats.push_back(quat);
+					quats.emplace_back(quat);
 
 					// converte rotation axis for kinect
 					quats[i].z *= -1.0f;
@@ -3082,13 +3082,13 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 					quat.y = args.read_float();
 					quat.z = args.read_float();
 					quat.normalize();
-					quats.push_back(quat);
+					quats.emplace_back(quat);
 					
 					SrVec tran;
 					tran.x = args.read_float() * scale;
 					tran.y = args.read_float() * scale;
 					tran.z = args.read_float() * scale;
-					trans.push_back(tran);
+					trans.emplace_back(tran);
 				}
 				if (!kinectSk)
 					scene->getKinectProcessor()->initKinectSkeleton(trans, quats);
@@ -3211,7 +3211,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBC
 			{
 				float time = args.read_float();
 				float value = args.read_float();
-				cycle->keyframes.push_back(new KeyframeBreathCycle::Keyframe(value, time));
+				cycle->keyframes.emplace_back(new KeyframeBreathCycle::Keyframe(value, time));
 			}
 			cycle->update();
 

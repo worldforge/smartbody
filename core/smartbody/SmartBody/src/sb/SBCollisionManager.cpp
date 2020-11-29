@@ -41,8 +41,8 @@ SBCollisionManager::SBCollisionManager()
 	createIntAttribute("maxNumIterations", 5, true, "Basic", 60, false, false, false, "Max number collision response iterations.");
 
 	std::vector<std::string> collisionHandles;
-	collisionHandles.push_back("none");
-	collisionHandles.push_back("default");	
+	collisionHandles.emplace_back("none");
+	collisionHandles.emplace_back("default");
 	SmartBody::StringAttribute* collisionHandleAttr = createStringAttribute("collisionResolutionType", "none", true, "Physics", 350, false, false, false, "Set the collision resolution method");
 	collisionHandleAttr->setValidValues(collisionHandles);
 
@@ -133,22 +133,22 @@ void SBCollisionManager::start()
 				{
 					SkJoint* j = origJnts[i];
 					SrString jname(j->jointName().c_str());
-					if(jname.search("world_offset")>=0) { jnt_excld_list.push_back(j); continue; } // skip world_offset
-					if(jname.search("face")>=0) { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("brow")>=0) { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("eye")>=0)  { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("nose")>=0) { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("lid")>=0)  { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("jaw")>=0)  { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("tongue")>=0) { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("lip")>=0)    { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("cheek")>=0)  { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("finger")>=0) { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("thumb")>=0)  { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("index")>=0)  { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("middle")>=0) { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("pinky")>=0)  { jnt_excld_list.push_back(j); continue; }
-					if(jname.search("ring")>=0)   { jnt_excld_list.push_back(j); continue; }
+					if(jname.search("world_offset")>=0) { jnt_excld_list.emplace_back(j); continue; } // skip world_offset
+					if(jname.search("face")>=0) { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("brow")>=0) { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("eye")>=0)  { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("nose")>=0) { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("lid")>=0)  { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("jaw")>=0)  { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("tongue")>=0) { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("lip")>=0)    { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("cheek")>=0)  { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("finger")>=0) { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("thumb")>=0)  { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("index")>=0)  { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("middle")>=0) { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("pinky")>=0)  { jnt_excld_list.emplace_back(j); continue; }
+					if(jname.search("ring")>=0)   { jnt_excld_list.emplace_back(j); continue; }
 				}
 				std::string chrName = character->getGeomObjectName();
 				float chrHeight = character->getHeight();

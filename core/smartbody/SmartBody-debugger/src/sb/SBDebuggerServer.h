@@ -18,6 +18,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
+#ifndef SBM_DEBUGGER_SERVER_H_
+#define SBM_DEBUGGER_SERVER_H_
+
 #include <vhcl.h>
 #include <sb/SBTypes.h>
 #include <string>
@@ -33,14 +36,14 @@ class SBRenderScene;
 class SBDebuggerServer : public SBService
 {
 	public:
-		SBAPI SBDebuggerServer(SBRenderScene& renderScene);
+		SBAPI explicit SBDebuggerServer(SBRenderScene& renderScene);
 		SBAPI virtual ~SBDebuggerServer();
 
-		SBAPI virtual void setEnable(bool val);
+		SBAPI void setEnable(bool val) override;
 
-		SBAPI virtual void afterUpdate(double time);
+		SBAPI void afterUpdate(double time) override;
 
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 
 	   void Update();
 
@@ -80,4 +83,5 @@ public:
 };
 
 }
+#endif
 

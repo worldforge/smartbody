@@ -160,7 +160,7 @@ void SBHandSynthesis::addDatabaseMotion(SmartBody::SBMotion* dbMotion)
 
 	// trim motion channels
 	std::vector<std::string> jointNames;
-	jointNames.push_back("l_wrist"); jointNames.push_back("r_wrist");
+	jointNames.emplace_back("l_wrist"); jointNames.emplace_back("r_wrist");
 
 	// make body motion by removing channels
 	bodyMotion->removeMotionChannelsByEndJoints("ChrBrad.sk",jointNames);
@@ -184,8 +184,8 @@ void SBHandSynthesis::addDatabaseMotion(SmartBody::SBMotion* dbMotion)
 	bodyMotion->setName(bodyFileName);
 
 	// use these motions instead
-	_handDbMotion.push_back(handMotion);
-	_bodyDbMotion.push_back(bodyMotion);
+	_handDbMotion.emplace_back(handMotion);
+	_bodyDbMotion.emplace_back(bodyMotion);
 }
 
 // load the database motions
@@ -573,7 +573,7 @@ void SBHandSynthesis::findSimilarSegments()
 			float cost  = compareSegments(_selectDb->getJointName(), segment, databaseSegment);
 
 			// add to cost vector
-			costVector.push_back( std::pair<int,float>(j,cost));
+			costVector.emplace_back( std::pair<int,float>(j,cost));
 
 		}
 
@@ -584,7 +584,7 @@ void SBHandSynthesis::findSimilarSegments()
 		// put the top k into the array
 		for (int j=0;j<_k;j++)
 		{
-			similarSegmentVector.push_back(costVector[j]);
+			similarSegmentVector.emplace_back(costVector[j]);
 
 			// cout<<"Index at "<<i<<" is "<< costVector[j].first << endl;
 			// cout<<"Cost at "<<i<< " is "<< costVector[j].second<<endl;
@@ -918,7 +918,7 @@ void SBHandSynthesis::buildGraph()
 		
 		// adding vertex here
 		Vertex v = boost::add_vertex(std::string(name),g);
-		vertex_array.push_back(v);
+		vertex_array.emplace_back(v);
 	}
 
 	// populate edges from the start
@@ -1031,7 +1031,7 @@ void SBHandSynthesis::buildGraph()
 		std::pair<Graph::edge_descriptor, bool> edgePair = boost::edge(u, v, g);
 		Graph::edge_descriptor edge = edgePair.first;
  
-		path.push_back( edge );
+		path.emplace_back( edge );
 	}
 
 
@@ -1219,7 +1219,7 @@ void SBHandSynthesis::combineMotion(SmartBody::SBMotion* destMotion, SmartBody::
 		offset.normalize();
 
 		// store this offset
-		offsets.push_back(offset);
+		offsets.emplace_back(offset);
 	
 	}
 
@@ -1278,7 +1278,7 @@ void SBHandSynthesis::combineMotion(SmartBody::SBMotion* destMotion, SmartBody::
 			offset.normalize();
 
 			// store this offset
-			offsets.push_back(offset);
+			offsets.emplace_back(offset);
 		}
 
 		// add blend to the first motion
@@ -1519,31 +1519,31 @@ SmartBody::SBMotion* MotionDatabase::getFinalMotion()
 // add to body database
 void MotionDatabase::addBodyDbSegment(SmartBody::SBMotion* segment) 
 {
-	_bodyDatabaseSegments.push_back(segment);
+	_bodyDatabaseSegments.emplace_back(segment);
 }
 
 // add to hand database
 void MotionDatabase::addHandDbSegment(SmartBody::SBMotion* segment) 
 {
-	_handDatabaseSegments.push_back(segment);
+	_handDatabaseSegments.emplace_back(segment);
 }
 
 // add motion segment
 void MotionDatabase::addMotionSegment(SmartBody::SBMotion* segment)
 {
-	_motionSegments.push_back(segment);
+	_motionSegments.emplace_back(segment);
 }
 
 // adds a cost list
 void MotionDatabase::addCostList(CostList costList)
 {
-	_similarSegments.push_back(costList);
+	_similarSegments.emplace_back(costList);
 }
 
 // add a motion index for final motion
 void MotionDatabase::addMotionIndex(int index)
 {
-	_finalMotionIndices.push_back(index);
+	_finalMotionIndices.emplace_back(index);
 }
 
 void MotionDatabase::setJointName(std::string jointName)

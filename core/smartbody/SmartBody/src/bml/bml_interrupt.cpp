@@ -70,13 +70,13 @@ namespace BML {
 			ostringstream out;
 			out << "bp interrupt " << request->actorId << ' ' << performance_id << ' ' << duration;
 			string out_str = out.str();
-			commands.push_back( new SbmCommand( out_str, (float)strokeAt ) );
+			commands.emplace_back( new SbmCommand( out_str, (float)strokeAt ) );
 
 			if( ECHO_BP_INTERRUPT_COMMAND ) {
 				ostringstream out2;
 				out2 << "echo " << out.str();
 				string out2_str = out2.str();
-				commands.push_back( new SbmCommand( out2_str, (float)strokeAt ) );
+				commands.emplace_back( new SbmCommand( out2_str, (float)strokeAt ) );
 			}
 
 			realize_sequence( commands, scene );

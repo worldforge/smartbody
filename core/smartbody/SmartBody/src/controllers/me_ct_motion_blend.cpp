@@ -117,7 +117,7 @@ void MeCtMotionBlend::init(SmartBody::SBPawn* pawn)
 		MeCtIKTreeNode* node = nodeList[i];
 		SkJoint* joint = node->joint;
 		SkJointQuat* skQuat = joint->quat();				
-		affectedJoints.push_back(joint);
+		affectedJoints.emplace_back(joint);
 		_channels.add(joint->jointName(), SkChannel::Quat);		
 	}			
 	MeController::init(pawn);	

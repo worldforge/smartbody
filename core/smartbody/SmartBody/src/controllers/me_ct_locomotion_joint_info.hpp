@@ -76,7 +76,7 @@ struct MeCtLocomotionJointInfo
 			quat_valid.push() = 0;
 		}
 
-		joint_name.push_back(name);
+		joint_name.emplace_back(name);
 		joint_index.push() = joint->index();
 		sum = 1;
 

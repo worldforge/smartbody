@@ -313,7 +313,7 @@ bool Debug::GetStackTrace(LPCONTEXT context, V_StackFrame& stack, unsigned omitF
   if (omitFrames == 0)
   {
     // our our current location as the top of the stack
-    stack.push_back( context->IPREG );
+    stack.emplace_back( context->IPREG );
   }
   else
   {
@@ -371,8 +371,8 @@ bool Debug::GetStackTrace(LPCONTEXT context, V_StackFrame& stack, unsigned omitF
 
     if (omitFrames == 0)
     {
-      //stack.push_back( frame.AddrReturn.Offset );
-      stack.push_back( frame.AddrPC.Offset );
+      //stack.emplace_back( frame.AddrReturn.Offset );
+      stack.emplace_back( frame.AddrPC.Offset );
     }
     else
     {

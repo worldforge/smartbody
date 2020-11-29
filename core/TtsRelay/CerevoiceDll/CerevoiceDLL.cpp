@@ -52,8 +52,8 @@ CEREVOICE_DLL_API bool CEREVOICE_DLL_Init(const char * visemeMapping)
    printf( "CerevoiceDLL - Init()\n" );
 
    vector<char *> voices;
-   voices.push_back("katherine");
-   voices.push_back("star");
+   voices.emplace_back("katherine");
+   voices.emplace_back("star");
 
    tts = new cerevoice_tts();
    tts->init( voices, visemeMapping );

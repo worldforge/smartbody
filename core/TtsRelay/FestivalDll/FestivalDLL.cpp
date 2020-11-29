@@ -631,8 +631,8 @@ std::string storeXMLMetaData( const std::string & txt)
                      cleanString(temporaryText);
                      /// Words can be used to match up which tags we need to see
                      /// Push tag and word into xmlMetaData
-                     xmlMetaData.tags.push_back(markString);
-                     xmlMetaData.words.push_back(temporaryText);
+                     xmlMetaData.tags.emplace_back(markString);
+                     xmlMetaData.words.emplace_back(temporaryText);
                      actualText += " ";
                      actualText += temporaryText;
                      cleanString(actualText);

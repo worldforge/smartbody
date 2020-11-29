@@ -66,8 +66,8 @@ void FaceShiftViewer::CharacterCB(Fl_Widget* widget, void* data)
 				slider->align(FL_ALIGN_LEFT);
 				slider->range(0.0, 1.0);
 				faceViewer->bottomGroup->add(slider);
-				faceViewer->_sliders.push_back(slider);
-				faceViewer->_weights.push_back(NULL);
+				faceViewer->_sliders.emplace_back(slider);
+				faceViewer->_weights.emplace_back(nullptr);
 				curY += 30;
 			}
 
@@ -78,8 +78,8 @@ void FaceShiftViewer::CharacterCB(Fl_Widget* widget, void* data)
 				slider->align(FL_ALIGN_LEFT);
 				slider->range(0.0, 1.0);
 				faceViewer->bottomGroup->add(slider);
-				faceViewer->_sliders.push_back(slider);
-				faceViewer->_weights.push_back(NULL);
+				faceViewer->_sliders.emplace_back(slider);
+				faceViewer->_weights.emplace_back(nullptr);
 				curY += 30;
 			}
 
@@ -91,8 +91,8 @@ void FaceShiftViewer::CharacterCB(Fl_Widget* widget, void* data)
 				slider->range(0.0, 1.0);
 				slider->callback(FaceCB, faceViewer);
 				faceViewer->bottomGroup->add(slider);
-				faceViewer->_sliders.push_back(slider);
-				faceViewer->_weights.push_back(NULL);
+				faceViewer->_sliders.emplace_back(slider);
+				faceViewer->_weights.emplace_back(nullptr);
 				curY += 30;
 			}
 			
@@ -108,7 +108,7 @@ void FaceShiftViewer::CharacterCB(Fl_Widget* widget, void* data)
 			slider->range(0.0, 1.0);
 			slider->callback(FaceCB, faceViewer);
 			faceViewer->bottomGroup->add(slider);
-			faceViewer->_sliders.push_back(slider);
+			faceViewer->_sliders.emplace_back(slider);
 			
 			std::string weightLabel = visemeNames[v] + " weight";
 			Fl_Value_Slider* weightSlider = new Fl_Value_Slider(330, curY, 100, 25, _strdup(weightLabel.c_str()));
@@ -120,7 +120,7 @@ void FaceShiftViewer::CharacterCB(Fl_Widget* widget, void* data)
 			// set the initial weight
 			float initialWeight = faceDefinition->getVisemeWeight(visemeNames[v]);
 			weightSlider->value(initialWeight);
-			faceViewer->_weights.push_back(weightSlider);
+			faceViewer->_weights.emplace_back(weightSlider);
 
 			curY += 30;
 		}
@@ -138,8 +138,8 @@ void FaceShiftViewer::CharacterCB(Fl_Widget* widget, void* data)
 					slider->range(0.0, 1.0);
 					slider->callback(FaceCB, faceViewer);
 					faceViewer->bottomGroup->add(slider);
-					faceViewer->_sliders.push_back(slider);
-					faceViewer->_weights.push_back(NULL);
+					faceViewer->_sliders.emplace_back(slider);
+					faceViewer->_weights.emplace_back(nullptr);
 					curY += 30;
 				}
 			}

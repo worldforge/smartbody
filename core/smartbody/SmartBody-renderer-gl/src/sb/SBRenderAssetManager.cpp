@@ -32,6 +32,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "stb_image_aug.h"
 
 #include <boost/filesystem.hpp>
+#include "sb/SBAssetStore.h"
 
 namespace {
 #define SMALL_NUM   0.00000001 // anything that avoids division overflow
@@ -107,6 +108,7 @@ SBRenderAssetManager::SBRenderAssetManager(SBScene& scene, SBAssetStore& assetSt
 		_assetStore(assetStore),
 		_meshCounter(0) {
 
+	assetStore.addAssetProcessor(this);
 	scene.registerObjectProvider("mesh", SBScene::Provider{
 			[&](const std::string& name) {
 				return this->getDeformableMesh(name);
@@ -122,6 +124,7 @@ SBRenderAssetManager::SBRenderAssetManager(SBScene& scene, SBAssetStore& assetSt
 }
 
 void SBRenderAssetManager::removeAllAssets() {
+	_assetStore.removeAssetProcessor(this);
 
 	_deformableMeshMap.clear();
 }
@@ -161,9 +164,9 @@ void SBRenderAssetManager::removeAllDeformableMeshes() {
 	_deformableMeshMap.clear();
 }
 
-std::unique_ptr<SbmTexture> SBRenderAssetManager::getHDRTexture(const std::string& texName) {
+std::shared_ptr<SbmTexture> SBRenderAssetManager::getHDRTexture(const std::string& texName) {
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
-	return texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, texName.c_str());
+	return texManager.findTexture(texName.c_str());
 }
 
 std::vector<std::string> SBRenderAssetManager::getHDRTextureNames() {
@@ -184,15 +187,16 @@ void SBRenderAssetManager::processAssets(std::vector<std::unique_ptr<SBAsset>>& 
 					SmartBody::util::log("Mesh named %s already exist, changing name to %s", existingMesh->getName().c_str(), name.c_str());
 					existingMesh->setName(name);
 				}
-				this->addMesh(mesh);
+				asset.release();
+				this->addMesh(std::unique_ptr<DeformableMesh>(mesh));
 				_history.addAssetHistory("MESH " + mesh->getName());
 				continue;
 			}
-			auto* texture = dynamic_cast<SbmTexture*>(asset.get());
-			if (texture) {
-				_history.addAssetHistory("ENVMAP " + texture->getName());
-				continue;
-			}
+//			auto* texture = dynamic_cast<SbmTexture*>(asset.get());
+//			if (texture) {
+//				_history.addAssetHistory("ENVMAP " + texture->getName());
+//				continue;
+//			}
 		}
 	}
 }
@@ -219,35 +223,42 @@ SBAPI std::string SBRenderAssetManager::getAssetNameVariation(SBAsset* asset) {
 
 }
 
-
-SBAPI void SBRenderAssetManager::addMesh(DeformableMesh* mesh) {
+SBAPI void SBRenderAssetManager::addMesh(std::unique_ptr<DeformableMesh> mesh) {
 	auto iter = _deformableMeshMap.find(mesh->getName());
 	if (iter != _deformableMeshMap.end()) {
 		SmartBody::util::log("Mesh named %s already exists, new mesh will not be added.", mesh->getName().c_str());
-		return;
+	} else {
+		auto result = _deformableMeshMap.emplace(mesh->getName(), std::move(mesh));
+		if (result.second) {
+			auto& listeners = _scene.getSceneListeners();
+			for (auto listener : listeners) {
+				listener->OnObjectCreate(result.first->second.get());
+			}
+		}
 	}
-	_deformableMeshMap.insert(std::pair<std::string, DeformableMesh*>(mesh->getName(), mesh));
+}
 
-	auto& listeners = _scene.getSceneListeners();
-	for (auto listener : listeners) {
-		listener->OnObjectCreate(mesh);
-	}
+SBAPI void SBRenderAssetManager::addMesh(DeformableMesh* mesh) {
+	addMesh(std::unique_ptr<DeformableMesh>(mesh));
 }
 
 SBAPI void SBRenderAssetManager::removeMesh(DeformableMesh* mesh) {
 	if (!mesh) return;
 
+	std::unique_ptr<DeformableMesh> existingMesh;
 	auto iter = _deformableMeshMap.find(mesh->getName());
 	if (iter != _deformableMeshMap.end()) {
 		SmartBody::util::log("Remove mesh '%s'", mesh->getName().c_str());
+		existingMesh = std::move(iter->second);
 		_deformableMeshMap.erase(iter);
 	}
 
-	auto& listeners = _scene.getSceneListeners();
-	for (auto listener : listeners) {
-		listener->OnObjectDelete(mesh);
+	if (existingMesh) {
+		auto& listeners = _scene.getSceneListeners();
+		for (auto listener : listeners) {
+			listener->OnObjectDelete(existingMesh.get());
+		}
 	}
-	delete mesh;
 }
 
 
@@ -261,7 +272,7 @@ std::vector<std::string> SBRenderAssetManager::getMeshNames() {
 
 	for (auto& iter : _deformableMeshMap) {
 		auto& mesh = iter.second;
-		ret.push_back(mesh->getName());
+		ret.emplace_back(mesh->getName());
 	}
 
 	return ret;
@@ -295,11 +306,11 @@ bool SBRenderAssetManager::createMeshFromBlendMasks(const std::string& neutralSh
 	}
 
 	// make sure that a diffuse texture exists
-	std::unique_ptr<SbmTexture> neutralTexture;
+	std::shared_ptr<SbmTexture> neutralTexture;
 
 	if (neutralMesh) {
 		for (auto subMesh : neutralMesh->subMeshList) {
-			neutralTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
+			neutralTexture = texManager.findTexture(subMesh->texName.c_str());
 			if (neutralTexture) {
 				break;
 			}
@@ -309,7 +320,7 @@ bool SBRenderAssetManager::createMeshFromBlendMasks(const std::string& neutralSh
 				SrModel& model = neutralMesh->dMeshStatic_p[0]->shape();
 				for (auto& iter : model.mtlTextureNameMap) {
 					std::string textureCandidate = iter.second;
-					neutralTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, textureCandidate.c_str());
+					neutralTexture = texManager.findTexture(textureCandidate.c_str());
 					if (neutralTexture)
 						break;
 				}
@@ -336,11 +347,11 @@ bool SBRenderAssetManager::createMeshFromBlendMasks(const std::string& neutralSh
 	}
 
 	// make sure that an expressive diffuse texture exists
-	std::unique_ptr<SbmTexture> expressiveTexture = nullptr;
+	std::shared_ptr<SbmTexture> expressiveTexture = nullptr;
 
 	if (expressiveMesh) {
 		for (auto subMesh : expressiveMesh->subMeshList) {
-			expressiveTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
+			expressiveTexture = texManager.findTexture(subMesh->texName.c_str());
 			if (expressiveTexture) {
 				break;
 			}
@@ -350,7 +361,7 @@ bool SBRenderAssetManager::createMeshFromBlendMasks(const std::string& neutralSh
 				SrModel& model = expressiveMesh->dMeshStatic_p[0]->shape();
 				for (auto& iter : model.mtlTextureNameMap) {
 					std::string textureCandidate = iter.second;
-					expressiveTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, textureCandidate.c_str());
+					expressiveTexture = texManager.findTexture(textureCandidate.c_str());
 					if (expressiveTexture)
 						break;
 				}
@@ -364,7 +375,7 @@ bool SBRenderAssetManager::createMeshFromBlendMasks(const std::string& neutralSh
 
 	// load the masked texture
 	texManager.loadTexture(SbmTextureManager::TEXTURE_DIFFUSE, maskTextureFile.c_str(), maskTextureFile.c_str());
-	auto maskedTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, maskTextureFile.c_str());
+	auto maskedTexture = texManager.findTexture(maskTextureFile.c_str());
 	if (!maskedTexture) {
 		SmartBody::util::log("Could not load masked texture file %s.", maskTextureFile.c_str());
 		ok = false;
@@ -718,7 +729,7 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 		SrVec3i& face = baseShape.F[f];
 		// calculate the average position
 		SrPnt avgPoint = (baseShape.V[face[0]] + baseShape.V[face[1]] + baseShape.V[face[2]]) / 3.0;
-		avgFaces.push_back(avgPoint);
+		avgFaces.emplace_back(avgPoint);
 
 		if (false)
 		{
@@ -936,8 +947,8 @@ bool SBRenderAssetManager::addModelToMesh(std::string templateMeshName, std::str
 	if (!found)
 	{
 		SmartBody::util::log("Adding new mesh %s", newModelName.c_str());
-		mesh->dMeshStatic_p.push_back(modelSrSn);
-		mesh->dMeshDynamic_p.push_back(modelSrSn);
+		mesh->dMeshStatic_p.emplace_back(modelSrSn);
+		mesh->dMeshDynamic_p.emplace_back(modelSrSn);
 	}
 
 	if (mesh->skinWeights.empty())
@@ -966,17 +977,17 @@ bool SBRenderAssetManager::addModelToMesh(std::string templateMeshName, std::str
 	}
 
 	modelSkin->bindShapeMat = existingBindShapeMat;
-	modelSkin->bindPoseMat.push_back(modelBindPose);
-	modelSkin->infJointName.push_back(rigidBindJoint);
+	modelSkin->bindPoseMat.emplace_back(modelBindPose);
+	modelSkin->infJointName.emplace_back(rigidBindJoint);
 	modelSkin->sourceMesh = newModelName;
-	modelSkin->bindWeight.push_back(1.0f);
+	modelSkin->bindWeight.emplace_back(1.0f);
 	for (unsigned int i = 0; i < model.V.size(); i++)
 	{
-		modelSkin->jointNameIndex.push_back(0);
-		modelSkin->numInfJoints.push_back(1);
-		modelSkin->weightIndex.push_back(0);
+		modelSkin->jointNameIndex.emplace_back(0);
+		modelSkin->numInfJoints.emplace_back(1);
+		modelSkin->weightIndex.emplace_back(0);
 	}
-	mesh->skinWeights.push_back(modelSkin);
+	mesh->skinWeights.emplace_back(modelSkin);
 	return true;
 }
 
@@ -1028,10 +1039,10 @@ bool SBRenderAssetManager::addBlendshapeToModel(std::string templateMeshName, st
 				mesh->dMeshStatic_p[m]->shape().N = baseModel->shape().N;
 
 				std::vector<SrSnModel*> modelList;
-				modelList.push_back(baseModel);
+				modelList.emplace_back(baseModel);
 				mesh->blendShapeMap.insert(std::pair<std::string, std::vector<SrSnModel*> >(submeshName, modelList));
 				std::vector<std::string> morphTargetList;
-				morphTargetList.push_back(shapeName);
+				morphTargetList.emplace_back(shapeName);
 				mesh->morphTargets.insert(std::pair<std::string, std::vector<std::string> >(submeshName, morphTargetList));
 			}
 			else
@@ -1062,14 +1073,14 @@ bool SBRenderAssetManager::addBlendshapeToModel(std::string templateMeshName, st
 					baseModel->visible(false);
 					baseModel->ref();
 
-					existingShapeModels.push_back(baseModel);
+					existingShapeModels.emplace_back(baseModel);
 					auto morphNameIter = mesh->morphTargets.find(submeshName);
 					if (morphNameIter == mesh->morphTargets.end())
 					{
 						SmartBody::util::log("Couldn't find controller name %s in morph target list, strange...", submeshName.c_str());
 						return false;
 					}
-					(*morphNameIter).second.push_back(shapeName);
+					(*morphNameIter).second.emplace_back(shapeName);
 				}
 
 			}

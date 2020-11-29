@@ -319,7 +319,7 @@ namespace util {
 
             std::auto_ptr< Iterator<E> > iter( this->iterator() );
             while( iter->hasNext() ) {
-                valueArray.push_back( iter->next() );
+                valueArray.emplace_back( iter->next() );
             }
 
             return valueArray;

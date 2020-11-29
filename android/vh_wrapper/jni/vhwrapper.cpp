@@ -1278,7 +1278,7 @@ void WRAPPER_tt_client_callback(const char * op, const char * args, void * user_
    msg += " ";
    msg += args;
    wchar_t* msgwc = ConvertCharToWChar(msg.c_str());
-   queuedMessages->push_back(msgwc);
+   queuedMessages->emplace_back(msgwc);
 }
 #endif
 

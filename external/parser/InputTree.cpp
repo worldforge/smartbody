@@ -45,7 +45,7 @@ headTree_(it->headTree_)
 {
 	InputTreesIter subti = it->subTrees().begin();
 	for( ; subti != it->subTrees().end() ; subti++)
-		subTrees_.push_back(*subti);
+		subTrees_.emplace_back(*subti);
 }
 
 bool
@@ -174,7 +174,7 @@ readParse(istream& is)
 	for (;;)
 	{
 		InputTree* nextTree = newParse(is, pos, this);
-		subTrees_.push_back(nextTree);
+		subTrees_.emplace_back(nextTree);
 		finish_ = pos;
 
 		headTree_ = nextTree->headTree_;
@@ -206,7 +206,7 @@ newParse(istream& is, int& strt, InputTree* par)
 		if(temp == "(")
 		{
 			InputTree* nextTree = newParse(is, strt, NULL);
-			if(nextTree) subTrs.push_back(nextTree);
+			if(nextTree) subTrs.emplace_back(nextTree);
 		}
 		else if(temp == ")") break;
 		else
@@ -470,7 +470,7 @@ make(list<ECString>& words)
 {
 	if(word_ != "")
 	{
-		words.push_back(word_);
+		words.emplace_back(word_);
 	}
 	else
 	{
@@ -490,7 +490,7 @@ makePosList(vector<ECString>& words)
 {
 	if(word_ != "")
 	{
-		words.push_back(term_);
+		words.emplace_back(term_);
 	}
 	else
 	{

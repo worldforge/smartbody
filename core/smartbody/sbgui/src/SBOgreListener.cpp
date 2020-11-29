@@ -59,7 +59,7 @@ void OgreListener::OnCharacterCreate( const std::string & name, const std::strin
 	//std::string logMsg = "Character " + name ;
 	//LogManager::getSingleton().logMessage(logMsg.c_str());
 
-	Ogre::MovableObject* movableObject = NULL;
+	Ogre::MovableObject* movableObject = nullptr;
 	if (ogreInterface->getSceneManager()->hasEntity(name))
 	{
 		SmartBody::util::log("ALREADY FOUND ENTITY NAMED %s", name.c_str());
@@ -109,7 +109,7 @@ void OgreListener::OnCharacterCreate( const std::string & name, const std::strin
 
 	}
 
-	if (movableObject == NULL)
+	if (movableObject == nullptr)
 	{
 		if (objectClass != "")
 		{
@@ -135,7 +135,7 @@ void OgreListener::OnCharacterCreate( const std::string & name, const std::strin
 		if (isPawn)
 		{
 			// insert into pawn list
-			frameListener->m_pawnList.push_back(name);
+			frameListener->m_pawnList.emplace_back(name);
 			mSceneNode->setVisible(true);
 		}
 		else
@@ -144,7 +144,7 @@ void OgreListener::OnCharacterCreate( const std::string & name, const std::strin
 			Ogre::Entity* ent = dynamic_cast<Ogre::Entity*>(movableObject);
 			Ogre::Skeleton* skel = ent->getSkeleton();	
 			if (!skel) return; // this should not happen at all ?
-			frameListener->m_characterList.push_back(name);
+			frameListener->m_characterList.emplace_back(name);
 			// get intial bone position for every character
 			if (skel)
 			{
@@ -247,7 +247,7 @@ void OgreListener::notify(SmartBody::SBSubject* subject)
 		else if (name == "displayType")
 		{
 			SmartBody::StringAttribute* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
-			Entity * ent = NULL;
+			Entity * ent = nullptr;
 			std::string entName = pawn->getName();
 			if (ogreInterface->getSceneManager()->hasEntity(entName))
 			{

@@ -27,7 +27,7 @@ struct RP //information for refined embedding
     {
         vector<Vec3Object> mpts;
         for(int i = 0; i < (int)medialSurface.size(); ++i)
-            mpts.push_back(medialSurface[i]);
+            mpts.emplace_back(medialSurface[i]);
 
         medProjector = ObjectProjector<3, Vec3Object>(mpts);
     }

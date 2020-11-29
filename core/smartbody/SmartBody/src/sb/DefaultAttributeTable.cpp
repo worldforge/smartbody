@@ -99,7 +99,7 @@ void DefaultAttributeTable::addDefaultAttributeDouble( const std::string& name, 
 	VariablePointer var;
 	var.varType = VariablePointer::TYPE_DOUBLE;
 	var.varPtr  = varPtr;
-	_defaultAttributes.push_back(AttributeVarPair(hf,var));	
+	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
 }
 
 void DefaultAttributeTable::addDefaultAttributeFloat( const std::string& name, float defaultValue, const std::string& attributeGroup, float* varPtr )
@@ -125,7 +125,7 @@ void DefaultAttributeTable::addDefaultAttributeFloat( const std::string& name, f
 	VariablePointer var;
 	var.varType = VariablePointer::TYPE_FLOAT;
 	var.varPtr  = varPtr;
-	_defaultAttributes.push_back(AttributeVarPair(hf,var));	
+	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
 }
 
 void DefaultAttributeTable::addDefaultAttributeInt( const std::string& name, int defaultValue, const std::string& attributeGroup, int* varPtr )
@@ -151,7 +151,7 @@ void DefaultAttributeTable::addDefaultAttributeInt( const std::string& name, int
 	VariablePointer var;
 	var.varType = VariablePointer::TYPE_INT;
 	var.varPtr  = varPtr;
-	_defaultAttributes.push_back(AttributeVarPair(hf,var));	
+	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
 }
 
 void DefaultAttributeTable::addDefaultAttributeBool( const std::string& name, bool defaultValue, const std::string& attributeGroup, bool* varPtr )
@@ -177,7 +177,7 @@ void DefaultAttributeTable::addDefaultAttributeBool( const std::string& name, bo
 	VariablePointer var;
 	var.varType = VariablePointer::TYPE_BOOL;
 	var.varPtr  = varPtr;
-	_defaultAttributes.push_back(AttributeVarPair(hf,var));	
+	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
 }
 
 void DefaultAttributeTable::addDefaultAttributeString( const std::string& name, const std::string& defaultValue, const std::string& attributeGroup, std::string* varPtr )
@@ -203,7 +203,7 @@ void DefaultAttributeTable::addDefaultAttributeString( const std::string& name, 
 	VariablePointer var;
 	var.varType = VariablePointer::TYPE_STRING;
 	var.varPtr  = varPtr;
-	_defaultAttributes.push_back(AttributeVarPair(hf,var));	
+	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
 }
 
 void DefaultAttributeTable::addDefaultAttributeVec3( const std::string& name, SrVec& defaultValue, const std::string& attributeGroup, SrVec* varPtr )
@@ -229,7 +229,7 @@ void DefaultAttributeTable::addDefaultAttributeVec3( const std::string& name, Sr
 	VariablePointer var;
 	var.varType = VariablePointer::TYPE_VEC3;
 	var.varPtr  = varPtr;
-	_defaultAttributes.push_back(AttributeVarPair(hf,var));	
+	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
 }
 
 void DefaultAttributeTable::addDefaultAttributeMatrix( const std::string& name, SrMat& defaultValue, const std::string& attributeGroup, SrMat* varPtr )
@@ -255,7 +255,7 @@ void DefaultAttributeTable::addDefaultAttributeMatrix( const std::string& name, 
 	VariablePointer var;
 	var.varType = VariablePointer::TYPE_MATRIX;
 	var.varPtr  = varPtr;
-	_defaultAttributes.push_back(AttributeVarPair(hf,var));	
+	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
 }
 
 void DefaultAttributeTable::addDefaultAttributeAction( const std::string& name, const std::string& attributeGroup, bool* varPtr )
@@ -279,7 +279,7 @@ void DefaultAttributeTable::addDefaultAttributeAction( const std::string& name, 
 	VariablePointer var;
 	var.varType = VariablePointer::TYPE_ACTION;
 	var.varPtr  = varPtr;
-	_defaultAttributes.push_back(AttributeVarPair(hf,var));	
+	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
 }
 
 std::vector<AttributeVarPair>& DefaultAttributeTable::getDefaultAttributes()

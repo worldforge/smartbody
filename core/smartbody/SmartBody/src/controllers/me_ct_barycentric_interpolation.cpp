@@ -35,7 +35,7 @@ void Simplex::getSubSimplex( std::vector<Simplex>& outSimpList )
 			int vidx = (i+k)%vertexIndices.size();
 			subSim.vertexIndices[k] = vidx;							 
 		}
-		outSimpList.push_back(subSim);
+		outSimpList.emplace_back(subSim);
 	}
 }
 /************************************************************************/
@@ -165,8 +165,8 @@ bool BarycentricInterpolator::buildInterpolator()
 		Simplex tet;
 		tet.numDim = dataDim;
 		for (int k=0;k<tetOut.numberofcorners;k++)
-			tet.vertexIndices.push_back(tetOut.tetrahedronlist[i*tetOut.numberofcorners+k]);
-		simplexList.push_back(tet);
+			tet.vertexIndices.emplace_back(tetOut.tetrahedronlist[i*tetOut.numberofcorners+k]);
+		simplexList.emplace_back(tet);
 	}
 #endif
 	//ptIn.deinitialize();	

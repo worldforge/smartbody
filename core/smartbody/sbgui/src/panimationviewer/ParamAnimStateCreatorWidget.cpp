@@ -72,7 +72,7 @@ void PABlendCreator::setInfo(bool createModeFlag, const std::string& stateName)
 		if (!state)
 		{
 			fl_alert("State %s does not exist.", stateName.c_str());
-			cancelState(this, NULL);
+			cancelState(this, nullptr);
 			return;
 		}
 		std::vector<SmartBody::SBMotion*>& motions = state->motions;
@@ -144,7 +144,7 @@ void PABlendCreator::removeMotion(Fl_Widget* widget, void* data)
 	{
 		if (creator->stateAnimationList->selected(i+1))
 		{
-			selectedMotions.push_back(creator->stateAnimationList->text(i + 1));
+			selectedMotions.emplace_back(creator->stateAnimationList->text(i + 1));
 			creator->stateAnimationList->remove(i + 1);
 			i--;
 		}
@@ -240,9 +240,9 @@ void PABlendCreator::createState(Fl_Widget* widget, void* data)
 		std::vector<double> endingPoints;
 		for (int i = 0; i < state->getNumMotions(); i++)
 		{
-			motionNames.push_back(state->getMotionName(i));
-			startingPoints.push_back(0);
-			endingPoints.push_back(state->motions[i]->duration());
+			motionNames.emplace_back(state->getMotionName(i));
+			startingPoints.emplace_back(0);
+			endingPoints.emplace_back(state->motions[i]->duration());
 		}
 		state->addCorrespondencePoints(motionNames, startingPoints);
 		state->addCorrespondencePoints(motionNames, endingPoints);
@@ -253,7 +253,7 @@ void PABlendCreator::createState(Fl_Widget* widget, void* data)
 		std::vector<std::string> updatedMotions;
 		for (int i = 0; i < creator->stateAnimationList->size(); i++)
 		{
-			updatedMotions.push_back(creator->stateAnimationList->text(i + 1));
+			updatedMotions.emplace_back(creator->stateAnimationList->text(i + 1));
 		}
 
 		std::vector<SmartBody::SBMotion*>& motions = state->motions;
@@ -347,7 +347,7 @@ void PABlendCreator::createState(Fl_Widget* widget, void* data)
 void PABlendCreator::cancelState(Fl_Widget* widget, void* data)
 {
 	PABlendCreator* creator = (PABlendCreator*) data;
-	creator->stateEditor->creator = NULL;
+	creator->stateEditor->creator = nullptr;
 	creator->hide();
 	delete creator;
 }

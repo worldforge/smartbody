@@ -25,6 +25,7 @@
 #include "sb/SBSkeleton.h"
 #include "sb/SBAssetManager.h"
 #include "sb/SBRenderAssetManager.h"
+#include "sr/sr_camera.h"
 
 namespace SmartBody {
 
@@ -196,6 +197,12 @@ void SBRenderSceneListener::OnPawnCreate(const std::string& name) {
 }
 
 void SBRenderSceneListener::OnPawnDelete(const std::string& name) {
+	auto camera = dynamic_cast<SrCamera*>(mRenderScene.mScene.getPawn(name));
+	if (camera) {
+		//Calling this when the camera already has been removed is a no-op, so it's safe.
+		mRenderScene.removeCamera(camera);
+	}
+
 	SBRenderSceneListener::OnCharacterDelete(name);
 }
 
@@ -259,7 +266,7 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 					int index = value.find('.');
 					if (index != std::string::npos) {
 						std::string prefix = value.substr(0, index);
-						const std::vector<std::string>& meshPaths =  parent.mRenderScene.mScene.getAssetStore().getAssetPaths("mesh");
+						const std::vector<std::string>& meshPaths = parent.mRenderScene.mScene.getAssetStore().getAssetPaths("mesh");
 						for (const auto& meshPath : meshPaths) {
 							parent.mRenderScene.mScene.getAssetStore().loadAsset(meshPath + "/" + prefix + "/" + value);
 						}
@@ -315,7 +322,7 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 							size_t pos = attrName.find("blendShape.channelName.");
 							if (pos != std::string::npos) {
 								auto* strAttr = dynamic_cast<SmartBody::StringAttribute*>(attr);
-								shapeAttributes.push_back(strAttr);
+								shapeAttributes.emplace_back(strAttr);
 							}
 						}
 
@@ -355,8 +362,8 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 									model->ref();
 									hasNeutral = true;
 									// add the shape to the deformable mesh
-									//mesh->dMeshStatic_p.push_back(model);
-									//mesh->dMeshDynamic_p.push_back(model);
+									//mesh->dMeshStatic_p.emplace_back(model);
+									//mesh->dMeshDynamic_p.emplace_back(model);
 								}
 
 							}
@@ -501,6 +508,8 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 //		} else if (name == "useDefaultLights") {
 //			BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
 //			window->curViewer->updateLights();
+		} else if (name == "showStaticMesh") {
+			renderable.useStaticMesh = pawn->getBoolAttribute("showStaticMesh");
 		}
 
 		// check for scene attributes

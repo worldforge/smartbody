@@ -142,7 +142,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 					JointInfo* newJointInfo = new JointInfo();
 					curJointInfo = newJointInfo;
 					curJointInfo->name = "root";
-					jointInfoList.push_back(newJointInfo);
+					jointInfoList.emplace_back(newJointInfo);
 					state = 5;
 				}
 				else // assume documentaion data
@@ -162,7 +162,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 					{
 						while ((str = strtok(nullptr, " ")) != nullptr)
 						{
-							curJointInfo->dof.push_back(str);
+							curJointInfo->dof.emplace_back(str);
 							if (strcasecmp(str, "tx") == 0)
 							{
 								cur->pos()->limits(SkVecLimits::X, false);
@@ -275,7 +275,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 						JointInfo* newJointInfo = new JointInfo();
 						curJointInfo = newJointInfo;
 						newJointInfo->name = str;
-						jointInfoList.push_back(newJointInfo);
+						jointInfoList.emplace_back(newJointInfo);
 						state = 9;
 					}
 					else // assign a name based on the joint number
@@ -363,7 +363,7 @@ bool ParserASFAMC::parseAsf(SmartBody::SBSkeleton& skeleton, std::ifstream& meta
 				{
 					while ((str = strtok(nullptr, " ")) != nullptr)
 					{
-						curJointInfo->dof.push_back(str);
+						curJointInfo->dof.emplace_back(str);
 					}
 					state = 13;
 				}
@@ -524,7 +524,7 @@ bool ParserASFAMC::parseAmc(SmartBody::SBMotion& motion, SmartBody::SBSkeleton* 
 		std::vector<std::string>& asfChannels = joint->getAsfChannels();
 		for (size_t c = 0; c < asfChannels.size(); c++)
 		{
-			jointInfo->dof.push_back(asfChannels[c]);
+			jointInfo->dof.emplace_back(asfChannels[c]);
 		}
 		jointInfo->axis = joint->getAsfAxis();
 		jointInfoMap[jointInfo->name] = jointInfo;
@@ -668,11 +668,11 @@ bool ParserASFAMC::parseAmc(SmartBody::SBMotion& motion, SmartBody::SBSkeleton* 
 		for (unsigned int i = 0; i < rootInfo->dof.size(); i++)
 		{
 			if (rootInfo->dof[i] == "RX" || rootInfo->dof[i] == "rx")
-				orderVec.push_back("x");
+				orderVec.emplace_back("x");
 			if (rootInfo->dof[i] == "RY" || rootInfo->dof[i] == "ry")
-				orderVec.push_back("y");
+				orderVec.emplace_back("y");
 			if (rootInfo->dof[i] == "RZ" || rootInfo->dof[i] == "rz")
-				orderVec.push_back("z");
+				orderVec.emplace_back("z");
 		}
 		if (orderVec[0] == "x" && orderVec[1] == "y" && orderVec[2] == "z")
 			order = 123;
@@ -695,7 +695,7 @@ bool ParserASFAMC::parseAmc(SmartBody::SBMotion& motion, SmartBody::SBSkeleton* 
 		SkChannel& chan = motionChannels[i];
 		if (chan.type == SkChannel::Quat)
 		{
-			quatIndices.push_back(i);
+			quatIndices.emplace_back(i);
 		}
 	}
 	for (int frameCt = 0; frameCt < motion.frames(); frameCt++)

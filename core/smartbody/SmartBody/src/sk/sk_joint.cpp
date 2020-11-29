@@ -78,7 +78,7 @@ SkJoint::SkJoint ( SkSkeleton* sk, SkJoint* parent, RotType rtype, int i )
 
    // TODO: verify we are a parent/ancestor of the parent
    if( parent )
-	   parent->_children.push_back(this);
+	   parent->_children.emplace_back(this);
  }
 
 SkJoint::~SkJoint()
@@ -284,7 +284,7 @@ void SkJoint::unite_colgeo ( SrModel& m )
 
 void SkJoint::add_child( SkJoint* child )
  { 
-	 _children.push_back(child); 
+	 _children.emplace_back(child);
 	 child->set_parent(this);
 	 child->skeleton(this->skeleton());
 }
@@ -319,7 +319,7 @@ SrVec SkJoint::localGlobalAxis(int i)
 
 void SkJoint::recursive_children(std::vector<SkJoint*>& joints, SkJoint* root)
 {
-	joints.push_back(root);
+	joints.emplace_back(root);
 	for (int i = 0; i < root->num_children(); i++)
 	{
 		SkJoint::recursive_children(joints, root->child(i));

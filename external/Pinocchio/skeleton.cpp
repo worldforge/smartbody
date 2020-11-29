@@ -31,7 +31,7 @@ void Skeleton::initCompressed()
         if(fGraphV.edges[i].size() == 2)
             continue;
         fcMapV[i] = cfMapV.size();
-        cfMapV.push_back(i);
+        cfMapV.emplace_back(i);
     }
     
     cPrevV.resize(cfMapV.size(), -1);
@@ -41,7 +41,7 @@ void Skeleton::initCompressed()
     cFatV = vector<bool>(cPrevV.size(), false);
     
     for(i = 0; i < (int)cfMapV.size(); ++i) {
-        cGraphV.verts.push_back(fGraphV.verts[cfMapV[i]]);
+        cGraphV.verts.emplace_back(fGraphV.verts[cfMapV[i]]);
         
         //symmetry--TODO: need to make sure all unreduced bones in chain
         //          are marked as symmetric before marking the reduced one
@@ -59,8 +59,8 @@ void Skeleton::initCompressed()
     
     //graph edges
     for(i = 1; i < (int)cPrevV.size(); ++i) {
-        cGraphV.edges[i].push_back(cPrevV[i]);
-        cGraphV.edges[cPrevV[i]].push_back(i);
+        cGraphV.edges[i].emplace_back(cPrevV[i]);
+        cGraphV.edges[cPrevV[i]].emplace_back(i);
     }
     
     cLengthV.resize(cPrevV.size(), 0.);
@@ -94,18 +94,18 @@ void Skeleton::scale(double factor)
 void Skeleton::makeJoint(const string &name, const Vector3 &pos, const string &previous)
 {
     int cur = fSymV.size();
-    fSymV.push_back(-1);
-    fGraphV.verts.push_back(pos * 0.5); //skeletons specified in [-1,1] will be fit to object in [0,1]
+    fSymV.emplace_back(-1);
+    fGraphV.verts.emplace_back(pos * 0.5); //skeletons specified in [-1,1] will be fit to object in [0,1]
     fGraphV.edges.resize(cur + 1);
     jointNames[name] = cur;
     
     if(previous == string("")) {
-        fPrevV.push_back(-1);
+        fPrevV.emplace_back(-1);
     } else { //add a bone
         int prev = jointNames[previous];
-        fGraphV.edges[cur].push_back(prev);
-        fGraphV.edges[prev].push_back(cur);
-        fPrevV.push_back(prev);
+        fGraphV.edges[cur].emplace_back(prev);
+        fGraphV.edges[prev].emplace_back(cur);
+        fPrevV.emplace_back(prev);
     }
 }
 

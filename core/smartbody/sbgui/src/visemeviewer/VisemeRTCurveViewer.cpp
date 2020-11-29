@@ -28,7 +28,7 @@ VisemeRTCurveViewer::VisemeRTCurveViewer(int x, int y, int w, int h, char* name,
 
 VisemeRTCurveViewer::~VisemeRTCurveViewer()
 {
-	_data = NULL;
+	_data = nullptr;
 }
 
 
@@ -293,7 +293,7 @@ void VisemeRTCurveViewer::drawLabel()
 void VisemeRTCurveViewer::drawPhonemeNames()
 {
 #ifdef WIN32
-	if (_data == NULL)
+	if (_data == nullptr)
 		return;
 
 	if (_data->_phonemeNames.size() == 0)
@@ -337,7 +337,7 @@ void VisemeRTCurveViewer::drawPhonemeNames()
 void VisemeRTCurveViewer::drawPhonemeLines()
 {
 #ifdef WIN32
-	if (_data == NULL)
+	if (_data == nullptr)
 		return;
 
 	if (_data->_phonemeNames.size() == 0)

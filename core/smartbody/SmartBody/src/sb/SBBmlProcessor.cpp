@@ -496,7 +496,7 @@ std::vector<BMLObject*> SBBmlProcessor::parseBML(const std::string& bml)
 				// parse the XML
 				bmlInstance->parse(behaviorNode);
 
-				behaviors.push_back(bmlInstance);
+				behaviors.emplace_back(bmlInstance);
 
 				behaviorNode = behaviorNode->next_sibling();
 			}

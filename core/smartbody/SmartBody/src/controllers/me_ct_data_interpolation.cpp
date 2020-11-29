@@ -269,7 +269,7 @@ void KNNBaseInterpolator::mapDistWeightToBlendWeight( VecOfInterpExample& exampl
 		if (mi->second == 0.f)
 			continue;	
 		InterpWeight w = *mi;
-		outBlendWeight.push_back(w);
+		outBlendWeight.emplace_back(w);
 	}
 	normalizeBlendWeight(outBlendWeight);
 }
@@ -354,7 +354,7 @@ void KNNInterpolator::predictInterpWeights( const dVector& para, VecOfInterpWeig
 // 
 // 		InterpWeight w = *mi;
 // 		w.second /= weightSum;
-// 		blendWeights.push_back(w);
+// 		blendWeights.emplace_back(w);
 // 	}
 }
 
@@ -364,7 +364,7 @@ bool KNNInterpolator::buildInterpolator()
 	// add "real" example data 
 // 	for (int i=0;i<interpExamples.size();i++)
 // 	{
-// 		resampleData.push_back(interpExamples[i]);			
+// 		resampleData.emplace_back(interpExamples[i]);
 // 	}
 
 	// build resample
@@ -399,7 +399,7 @@ bool KNNInterpolator::buildInterpolator()
 	// put together example data & resample data
 	finalExampleData = resampleData;
 	for (unsigned int i=0;i<interpExamples.size();i++)	
-		finalExampleData.push_back(interpExamples[i]);
+		finalExampleData.emplace_back(interpExamples[i]);
 
 #if USE_ANN
 	// build Kd-Tree
@@ -436,7 +436,7 @@ bool KNNInterpolator::addResample( InterpolationExample* ex )
 	VecOfInterpWeight outDist;
 	if (minDist <= 0.f) // just add the pose
 	{
-		resampleData.push_back(ex);	
+		resampleData.emplace_back(ex);
 		return true;
 	}
 	else
@@ -445,10 +445,10 @@ bool KNNInterpolator::addResample( InterpolationExample* ex )
 		int iHash = closestExampleInHash(ex->parameter,1,outDist);
 		if (outDist.size() == 0 || outDist[0].second > minDist)
 		{
-			resampleData.push_back(ex);			
+			resampleData.emplace_back(ex);
  			if (exampleHash.find(iHash) == exampleHash.end())
  				exampleHash[iHash] = VecOfInterpExample(); 
- 			exampleHash[iHash].push_back(ex);
+ 			exampleHash[iHash].emplace_back(ex);
 			return true;
 		}
 	}
@@ -461,7 +461,7 @@ int KNNInterpolator::closestExampleInHash(const dVector& inPara, unsigned int nK
 	VecOfInt adjHash;
 	VecOfInterpExample exList;
 	int iHash = bbox.gridHashing(inPara,minDist,adjHash);	
-	//adjHash.push_back(iHash);
+	//adjHash.emplace_back(iHash);
 	bool bCorrectHash = false;
  	for (unsigned int i=0;i<adjHash.size();i++)
  	{

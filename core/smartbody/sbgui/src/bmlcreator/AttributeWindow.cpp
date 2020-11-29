@@ -238,7 +238,7 @@ void AttributeWindow::reorderAttributes()
 		iter++)
 	{
 		if (!iter->second->getAttributeInfo()->getHidden())
-			list.push_back(iter->second);
+			list.emplace_back(iter->second);
 	}
 
 	std::sort(list.begin(), list.end(), AttributePriorityPredicate);
@@ -319,7 +319,7 @@ void AttributeWindow::draw()
 		std::vector<SmartBody::SBAttributeGroup*>& attributeGroups = object->getAttributeManager()->getAttributeGroups();
 		for (size_t g = 0; g < attributeGroups.size(); g++)
 		{
-			sortedAttributeGroups.push_back(attributeGroups[g]);
+			sortedAttributeGroups.emplace_back(attributeGroups[g]);
 		}
 		std::sort(sortedAttributeGroups.begin(), sortedAttributeGroups.end(), AttributeGroupPriorityPredicate);
 		
@@ -339,11 +339,11 @@ void AttributeWindow::draw()
 				iter++)
 			{
 				if (!iter->second->getAttributeInfo()->getHidden())
-					sortedAttributes.push_back(iter->second);
+					sortedAttributes.emplace_back(iter->second);
 			}
 
 			// check to see if this group widget exists
-			Flu_Collapsable_Group* attGroupWidget = NULL;
+			Flu_Collapsable_Group* attGroupWidget = nullptr;
 			std::string groupName = "group_";
 			groupName += attributeGroup->getName();
 			std::map<std::string, Flu_Collapsable_Group*>::iterator mapGroupIter = widgetGroupMap.find(groupName);
@@ -681,7 +681,7 @@ void AttributeWindow::draw()
 							Fl_Widget* widget = (*mapIter).second;
 							group->remove(*widget);
 						}
-						attrToDelete.push_back(mapIter->first);
+						attrToDelete.emplace_back(mapIter->first);
 					}
 				}				
 			}
@@ -716,7 +716,7 @@ void AttributeWindow::draw()
 						if (groupIter != widgetGroupMap.end())
 						{
 							widgetGroupMap.erase(groupIter);
-							groupToDelete.push_back(mapGroupIter->first);
+							groupToDelete.emplace_back(mapGroupIter->first);
 						}
 
 					}
@@ -1204,7 +1204,7 @@ void AttributeWindow::notify(SmartBody::SBSubject* subject)
 	{
 		SmartBody::SBAttributeInfo* attrInfo = attr->getAttributeInfo();
 
-		Fl_Widget* widget = NULL;
+		Fl_Widget* widget = nullptr;
 		// make sure that the attribute exists in the attribute map
 		std::map<std::string, Fl_Widget*>::iterator iter = widgetMap.find(attr->getName());
 		if (iter == widgetMap.end())

@@ -1764,10 +1764,10 @@ void SbmCharacter::schedule_viseme_curve(
 		if (iter != viseme_name_patch.end())
 		{
 			for (size_t nCount = 0; nCount < iter->second.size(); nCount++)
-				visemeNames.push_back(iter->second[nCount]);
+				visemeNames.emplace_back(iter->second[nCount]);
 		}
 		else
-			visemeNames.push_back(viseme);		
+			visemeNames.emplace_back(viseme);
 		// patch for AU (both)
 		if (strlen(viseme) >= 4)
 		{
@@ -1789,8 +1789,8 @@ void SbmCharacter::schedule_viseme_curve(
 						visemeNames.clear();
 						std::string leftName = std::string(viseme) + "_left";
 						std::string rightName = std::string(viseme) + "_right";
-						visemeNames.push_back(leftName);
-						visemeNames.push_back(rightName);
+						visemeNames.emplace_back(leftName);
+						visemeNames.emplace_back(rightName);
 					}
 				}
 			}
@@ -1913,10 +1913,10 @@ void SbmCharacter::schedule_viseme_blend_curve(
 		if (iter != viseme_name_patch.end())
 		{
 			for (size_t nCount = 0; nCount < iter->second.size(); nCount++)
-				visemeNames.push_back(iter->second[nCount]);
+				visemeNames.emplace_back(iter->second[nCount]);
 		}
 		else
-			visemeNames.push_back(viseme);
+			visemeNames.emplace_back(viseme);
 
 		SmartBody::SBFaceDefinition* faceDefinition = getFaceDefinition();
 		float visemeWeight = 1.0f;
@@ -1942,8 +1942,8 @@ void SbmCharacter::schedule_viseme_blend_curve(
 						visemeNames.clear();
 						std::string leftName = std::string(viseme) + "_left";
 						std::string rightName = std::string(viseme) + "_right";
-						visemeNames.push_back(leftName);
-						visemeNames.push_back(rightName);
+						visemeNames.emplace_back(leftName);
+						visemeNames.emplace_back(rightName);
 					}
 				}
 			}
@@ -2570,7 +2570,7 @@ void SbmCharacter::addActionUnitChannel(int auNum, ActionUnit* au)
 		name += "_";
 		name += "left";
 
-		allUnits.push_back(name);
+		allUnits.emplace_back(name);
 	}
 	if( au->is_right()) {
 		std::string name = "au_";
@@ -2578,14 +2578,14 @@ void SbmCharacter::addActionUnitChannel(int auNum, ActionUnit* au)
 		name += "_";
 		name += "right";
 
-		allUnits.push_back(name);
+		allUnits.emplace_back(name);
 	}
 	if (au->is_bilateral())
 	{
 		std::string name = "au_";
 		name += id;
 
-		allUnits.push_back(name);
+		allUnits.emplace_back(name);
 	}
 
 	// add a corresponding channel for this action unit
@@ -2661,11 +2661,11 @@ bool SbmCharacter::checkExamples()
 	std::string startingRName = prefix + "StartingRight";
 	std::string idleTurnName = prefix + "IdleTurn";
 	std::vector<std::string> standardRequiredStates;
-	standardRequiredStates.push_back(locomotionName);
-	standardRequiredStates.push_back(stepName);
-	standardRequiredStates.push_back(startingLName);
-	standardRequiredStates.push_back(startingRName);
-	standardRequiredStates.push_back(idleTurnName);
+	standardRequiredStates.emplace_back(locomotionName);
+	standardRequiredStates.emplace_back(stepName);
+	standardRequiredStates.emplace_back(startingLName);
+	standardRequiredStates.emplace_back(startingRName);
+	standardRequiredStates.emplace_back(idleTurnName);
 
 	int numMissing = 0;
 	for (size_t x = 0; x < standardRequiredStates.size(); x++)
@@ -2690,10 +2690,10 @@ bool SbmCharacter::checkExamples()
 	}
 
 	std::vector<std::string> minimalRequiredStates;
-	minimalRequiredStates.push_back(locomotionName);
-	minimalRequiredStates.push_back(startingLName);
-	minimalRequiredStates.push_back(startingRName);
-	minimalRequiredStates.push_back(stepName);
+	minimalRequiredStates.emplace_back(locomotionName);
+	minimalRequiredStates.emplace_back(startingLName);
+	minimalRequiredStates.emplace_back(startingRName);
+	minimalRequiredStates.emplace_back(stepName);
 
 	int numMissing1 = 0;
 	for (size_t x = 0; x < minimalRequiredStates.size(); x++)

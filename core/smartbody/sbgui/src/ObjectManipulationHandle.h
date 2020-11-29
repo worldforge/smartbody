@@ -26,10 +26,10 @@ public:
 	bool hasPicking() { return bHasPicking; }
 	SrVec2& getPickLoc() { bHasPicking = false; return pick_loc; }
 
-	//bool has_active_control() { return (active_control!=NULL); }
+	//bool has_active_control() { return (active_control!=nullptr); }
 	PawnControl* get_active_control() { return active_control; }
 
-	void removeActiveControl() { active_control = NULL; }
+	void removeActiveControl() { active_control = nullptr; }
 	SbmPawn* get_selected_pawn();
 	void set_selected_pawn(SbmPawn* pawn);
 

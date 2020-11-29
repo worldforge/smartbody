@@ -769,7 +769,7 @@ extern "C"
    		std::string fboName = "renderFBO";
    		std::string fboTexName = "fboTex";
       
-      	SbmTexture* fboTex = texManager.createTexture(SbmTextureManager::TEXTURE_RENDER_TARGET, fboTexName.c_str());
+      	auto fboTex = texManager.createTexture(SbmTextureManager::TEXTURE_RENDER_TARGET, fboTexName.c_str());
 		fboTex->createEmptyTexture(esContext->width, esContext->height, 4, GL_FLOAT);
 		fboTex->buildTexture(false, true);
    		esContext->fboID  = texManager.createFBO(fboName.c_str());   
@@ -914,7 +914,7 @@ extern "C"
 					light.specular = SrColor( 0.0f, 0.0f, 0.0f );
 				}
 
-				_lights.push_back(light);
+				_lights.emplace_back(light);
 			}
 		}
 
@@ -928,7 +928,7 @@ extern "C"
 			SrVec up(0,1,0);
 			SrVec lightDirection = -up * orientation;
 			light.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
-			_lights.push_back(light);
+			_lights.emplace_back(light);
 
 			SrLight light2 = light;
 			light2.diffuse = SrColor( 0.8f, 0.8f, 0.8f );
@@ -936,7 +936,7 @@ extern "C"
 			SrQuat orientation2(mat);
 			lightDirection = -up * orientation2;
 			light2.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
-			_lights.push_back(light2);
+			_lights.emplace_back(light2);
 		}
 		//pass lights to mesh shader 
 		glUseProgram ( userData->programObject );
@@ -993,7 +993,7 @@ extern "C"
 	void SHADER_API drawBackground(std::string backgroundName, ESContext *esContext)
 	{
 		//SmartBody::util::log("Shader drawBackground");
-		SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE,backgroundName.c_str());
+		auto tex = SbmTextureManager::singleton().findTexture(backgroundName.c_str());
 		if (!tex)
 		{
 			//SmartBody::util::log("drawBackground : cannot find texture image .....");
@@ -1250,9 +1250,9 @@ extern "C"
 			for(size_t i = 0; i < shape->transformBuffer.size(); ++i){
 				SrQuat temp = SrQuat(shape->transformBuffer[i].get_rotation());
 				temp.normalize();
-				QuaternionBuf.push_back(SrVec4(temp.getData(1), temp.getData(2), temp.getData(3), temp.getData(0)));
+				QuaternionBuf.emplace_back(SrVec4(temp.getData(1), temp.getData(2), temp.getData(3), temp.getData(0)));
 				SrVec tempT = SrVec(shape->transformBuffer[i].get_translation());
-				TranslationBuf.push_back(SrVec4(tempT.getData(0), tempT.getData(1), tempT.getData(2), 0.0));
+				TranslationBuf.emplace_back(SrVec4(tempT.getData(0), tempT.getData(1), tempT.getData(2), 0.0));
 			}
 			//submit QT to the Vertex shader
       // todo: this smells.
@@ -1290,7 +1290,7 @@ extern "C"
 			
 			if( texturesType == "static" || texturesType == "dynamic")
 			{
-				SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());		
+				auto tex = SbmTextureManager::singleton().findTexture(subMesh->texName.c_str());
 				//printf("tex = %d", tex);
 				if (tex && !showSkinWeight)
 				{
@@ -1366,10 +1366,10 @@ extern "C"
 		SbmDeformableMeshGPU* gpuMesh = (SbmDeformableMeshGPU*)gpuMeshInstance->getDeformableMesh();
 
 		SbmTextureManager& texManager = SbmTextureManager::singleton();
-		SbmTexture* whiteTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "white_tex");
-		SbmTexture* blackTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "black_tex");
-		SbmTexture* grayTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "gray_tex");
-		SbmTexture* defaultNormalTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "defaultNormal_tex");
+		auto whiteTex = texManager.findTexture("white_tex");
+		auto blackTex = texManager.findTexture("black_tex");
+		auto grayTex = texManager.findTexture("gray_tex");
+		auto defaultNormalTex = texManager.findTexture("defaultNormal_tex");
 
 		std::vector<SrVec4>          QuaternionBuf;
 		std::vector<SrVec4>			 TranslationBuf;
@@ -1476,9 +1476,9 @@ extern "C"
 			SbmShaderProgram::printOglError("drawMeshStaticVBO #7");
 			if (texturesType == "static" || texturesType == "dynamic")
 			{
-				SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
-				SbmTexture* normalMap = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_NORMALMAP, subMesh->normalMapName.c_str());
-				SbmTexture* specularMap = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_SPECULARMAP, subMesh->specularMapName.c_str());
+				auto tex = SbmTextureManager::singleton().findTexture(subMesh->texName.c_str());
+				auto normalMap = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_NORMALMAP, subMesh->normalMapName.c_str());
+				auto specularMap = SbmTextureManager::singleton().findTexture(subMesh->specularMapName.c_str());
 
 				if (!tex) tex = whiteTex;
 				if (!normalMap) normalMap = defaultNormalTex;
@@ -1671,9 +1671,9 @@ extern "C"
 
 			if( texturesType == "static" || texturesType == "dynamic")
 			{
-				SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
-                SbmTexture* normalMap = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_NORMALMAP, subMesh->normalMapName.c_str());
-                SbmTexture* specularMap = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_SPECULARMAP, subMesh->specularMapName.c_str());
+				auto tex = SbmTextureManager::singleton().findTexture(subMesh->texName.c_str());
+                auto normalMap = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_NORMALMAP, subMesh->normalMapName.c_str());
+                auto specularMap = SbmTextureManager::singleton().findTexture(subMesh->specularMapName.c_str());
 				//SmartBody::util::log("Render StaticMesh texName = %s, tex = %d", subMesh->texName.c_str(), tex);
 				if (tex && !showSkinWeight)
 				{

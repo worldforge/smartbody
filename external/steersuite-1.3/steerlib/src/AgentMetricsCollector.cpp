@@ -188,7 +188,7 @@ void AgentMetricsCollector::_checkAndUpdateOneCollision(unsigned int collisionKe
 			_currentCollidingObjects.erase(collisionKey);
 			oldCollision.endTime = currentTimeStamp;
 			oldCollision.timeDuration = oldCollision.endTime - oldCollision.startTime;
-			_pastCollisions.push_back(oldCollision);
+			_pastCollisions.emplace_back(oldCollision);
 
 			if (_metrics.maxCollisionPenetration < oldCollision.maxPenetration) _metrics.maxCollisionPenetration = oldCollision.maxPenetration;
 			if (_metrics.maxTimeSpentInCollision < oldCollision.timeDuration) _metrics.maxTimeSpentInCollision = oldCollision.timeDuration;

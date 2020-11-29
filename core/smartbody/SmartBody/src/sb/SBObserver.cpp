@@ -34,7 +34,7 @@ SBObserver::~SBObserver()
 		 iter != _subjects.end();
 		 iter++)
 	{
-		tmpSubjects.push_back(*iter);
+		tmpSubjects.emplace_back(*iter);
 	}
 	
 	for (std::vector<SBSubject*>::iterator iter = tmpSubjects.begin(); 

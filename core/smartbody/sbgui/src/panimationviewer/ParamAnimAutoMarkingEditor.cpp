@@ -117,7 +117,7 @@ void PAAutoFootStepsEditor::confirmEditting(Fl_Widget* widget, void* data)
 	{
 		if (footStepEditor->browserJoint->selected(i+1))
 		{
-			selectedJoints.push_back(footStepEditor->browserJoint->text(i + 1));
+			selectedJoints.emplace_back(footStepEditor->browserJoint->text(i + 1));
 		}
 	}
 	if (selectedJoints.size() == 0)
@@ -210,8 +210,8 @@ void PAAutoFootStepsEditor::confirmEditting(Fl_Widget* widget, void* data)
 				// filter speed
 				if (speed <= speedThresh)
 				{
-					vecTiming[jointId].push_back(f * (float)motion->getFrameRate());
-					possibleTiming.push_back(f * (float)motion->getFrameRate());
+					vecTiming[jointId].emplace_back(f * (float)motion->getFrameRate());
+					possibleTiming.emplace_back(f * (float)motion->getFrameRate());
 				}
 			}
 		}
@@ -254,7 +254,7 @@ void PAAutoFootStepsEditor::confirmEditting(Fl_Widget* widget, void* data)
 			for (size_t joinId = 0; joinId < selectedJoints.size(); joinId++)
 			{
 				for (size_t meanId = 0; meanId < vecOutMeans[joinId].size(); meanId++)
-					outMeans.push_back(vecOutMeans[joinId][meanId]);
+					outMeans.emplace_back(vecOutMeans[joinId][meanId]);
 			}
 			std::sort(outMeans.begin(), outMeans.end());
 		}
@@ -273,15 +273,15 @@ void PAAutoFootStepsEditor::confirmEditting(Fl_Widget* widget, void* data)
 			finalMessage << ss.str() << "\n";
 			currentState->keys[motionIndex].clear();
 			if (footStepEditor->isProcessAll)
-				currentState->keys[motionIndex].push_back(0);
+				currentState->keys[motionIndex].emplace_back(0);
 			for (size_t i = 0; i < outMeans.size(); i++)
-				currentState->keys[motionIndex].push_back(outMeans[i]);
+				currentState->keys[motionIndex].emplace_back(outMeans[i]);
 			if (footStepEditor->isProcessAll)
-				currentState->keys[motionIndex].push_back(motion->getDuration());
+				currentState->keys[motionIndex].emplace_back(motion->getDuration());
 		}
 		else
 		{
-			motionsNeedManualAdjusting.push_back(motion->getName());
+			motionsNeedManualAdjusting.emplace_back(motion->getName());
 			std::stringstream ss;
 			ss << "[" << motion->getName() << "]NOT detected(evenly distrubted): ";
 			int actualNum = maxNumSteps;
@@ -291,7 +291,7 @@ void PAAutoFootStepsEditor::confirmEditting(Fl_Widget* widget, void* data)
 			for (int i = 0; i < actualNum; i++)
 			{
 				double step = motion->getDuration() / double(actualNum - 1);
-				currentState->keys[motionIndex].push_back(step * i);
+				currentState->keys[motionIndex].emplace_back(step * i);
 				ss << step * i << " ";
 			}
 			SmartBody::util::log("%s", ss.str().c_str());
@@ -318,7 +318,7 @@ void PAAutoFootStepsEditor::cancelEditting(Fl_Widget* widget, void* data)
 {
 	PAAutoFootStepsEditor* footStepEditor = (PAAutoFootStepsEditor*) data;
 	footStepEditor->stateEditor->refresh();
-	footStepEditor->stateEditor->autoFootStepsEditor = NULL;
+	footStepEditor->stateEditor->autoFootStepsEditor = nullptr;
 	footStepEditor->hide();
 	delete footStepEditor;
 }

@@ -804,7 +804,7 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 		//printf("shineness = %d\n",mesh->material.shininess);
 		glUniform1f(shinenessLoc,mesh->material.shininess);
 		//SmartBody::util::log("mat color = %f %f %f\n",color[0],color[1],color[2]);
-		auto tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE,mesh->texName.c_str());
+		auto tex = texManager.findTexture(mesh->texName.c_str());
 
 		if (mesh->material.useAlphaBlend)
 		{
@@ -833,7 +833,7 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 			glUniform1i(useTextureLoc,0);
 		}
 
-		auto texNormal = texManager.findTexture(SbmTextureManager::TEXTURE_NORMALMAP,mesh->normalMapName.c_str());
+		auto texNormal = texManager.findTexture(mesh->normalMapName.c_str());
 		if (texNormal)
 		{
 			//SmartBody::util::log("use texture normal, id = %d", texNormal->getID());
@@ -847,7 +847,7 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 			glUniform1i(useNormalMapLoc,0);
 		}
 
-		auto texSpecular = texManager.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP,mesh->specularMapName.c_str());
+		auto texSpecular = texManager.findTexture(mesh->specularMapName.c_str());
 		if (texSpecular)
 		{
 			//SmartBody::util::log("use texture specualr, id = %d",texSpecular->getID());
@@ -1048,9 +1048,9 @@ bool SbmDeformableMeshGPU::initBuffer1()
 	defaultMaterial.specular = SrColor(101,101,101);//SrColor::gray;
 	defaultMaterial.shininess = 29;
 
-	allMatList.push_back(defaultMaterial);
-	allTexNameList.push_back("");
-	allNormalTexNameList.push_back("");
+	allMatList.emplace_back(defaultMaterial);
+	allTexNameList.emplace_back("");
+	allNormalTexNameList.emplace_back("");
 	meshSubsetMap[0] = std::vector<int>(); // default material group : gray color
 	for (unsigned int skinCounter = 0; skinCounter < skinWeights.size(); skinCounter++)
 	{
@@ -1073,22 +1073,22 @@ bool SbmDeformableMeshGPU::initBuffer1()
 				std::string mtlName = dMeshDynamic->shape().mtlnames[j];
 				if (mtlTexMap.find(mtlName) != mtlTexMap.end())
 				{
-					allTexNameList.push_back(mtlTexMap[mtlName]);
+					allTexNameList.emplace_back(mtlTexMap[mtlName]);
 				}
 				else
 				{
-					allTexNameList.push_back("");
+					allTexNameList.emplace_back("");
 				}	
 
 				if (mtlNormalTexMap.find(mtlName) != mtlNormalTexMap.end())
 				{
-					allNormalTexNameList.push_back(mtlNormalTexMap[mtlName]);
+					allNormalTexNameList.emplace_back(mtlNormalTexMap[mtlName]);
 				}
 				else
 				{
-					allNormalTexNameList.push_back("");
+					allNormalTexNameList.emplace_back("");
 				}
-				allMatList.push_back(mat);
+				allMatList.emplace_back(mat);
 				//colorArray[j%6].get(fcolor);				
 				meshSubsetMap[nMaterial] = std::vector<int>(); 
 				nMaterial++;
@@ -1120,7 +1120,7 @@ bool SbmDeformableMeshGPU::initBuffer1()
 			int nTexture = dMeshStatic->shape().T.size();
 			for (int i=0;i<nVtx;i++)
 			{
-				vtxNormalIdxMap.push_back(std::set<IntPair>());				
+				vtxNormalIdxMap.emplace_back(std::set<IntPair>());
 			}
 
 			nTotalVtxs += nVtx;				
@@ -1132,8 +1132,8 @@ bool SbmDeformableMeshGPU::initBuffer1()
 				if (boneIdxMap.find(jointName) == boneIdxMap.end()) // new joint
 				{
 					boneIdxMap[jointName] = nTotalBones++;
-					boneJointList.push_back(curJoint);
-					bindPoseMatList.push_back(skinWeight->bindShapeMat*skinWeight->bindPoseMat[k]);
+					boneJointList.emplace_back(curJoint);
+					bindPoseMatList.emplace_back(skinWeight->bindShapeMat*skinWeight->bindPoseMat[k]);
 				}
 			}
 			int numTris = dMeshStatic->shape().F.size();
@@ -1157,7 +1157,7 @@ bool SbmDeformableMeshGPU::initBuffer1()
 				int nMatIdx = 0; // if no corresponding materials, push into the default gray material group
 				if (i < dMeshStatic->shape().Fm.size())
 					nMatIdx = dMeshStatic->shape().Fm[i] + iMaterialOffset;		
-				meshSubsetMap[nMatIdx].push_back(iFace);			
+				meshSubsetMap[nMatIdx].emplace_back(iFace);
 				iFace++;
 			}
 			iFaceIdxOffset += nVtx;
@@ -1185,7 +1185,7 @@ bool SbmDeformableMeshGPU::initBuffer1()
 				  si != idxMap.end();
 				  si++)
 			{
-				vtxNewVtxIdxMap[i].push_back(nTotalVtxs);
+				vtxNewVtxIdxMap[i].emplace_back(nTotalVtxs);
 				ntNewVtxIdxMap[*si] = nTotalVtxs;
 				nTotalVtxs++;
 			}
@@ -1248,7 +1248,7 @@ bool SbmDeformableMeshGPU::initBuffer1()
 					int    jointIndex  = boneIdxMap[curJointName];
 // 					if (numOfInfJoints > 8)
 // 						printf("w = %d : %f\n",jointIndex,jointWeight);
-					weightList.push_back(IntFloatPair(jointIndex,jointWeight));							
+					weightList.emplace_back(IntFloatPair(jointIndex,jointWeight));
 					globalCounter ++;									
 				}
 				std::sort(weightList.begin(),weightList.end(),intFloatComp);				
@@ -1357,7 +1357,7 @@ bool SbmDeformableMeshGPU::initBuffer1()
 		mesh->normalMapName = allNormalTexNameList[iMaterial];
 		mesh->VBOTri = new VBOVec3i((char*)"TriIdx",GL_ELEMENT_ARRAY_BUFFER,subsetBuffer);
 		mesh->numTri = faceIdxList.size();
-		meshSubset.push_back(mesh);
+		meshSubset.emplace_back(mesh);
 	}
 	printf("meshSubset size = %d\n",meshSubset.size());
 	// initial GPU buffer memory
@@ -1490,13 +1490,13 @@ void SbmDeformableMeshGPU::rebuildVertexBuffer(bool rebuild)
 		subSkin->jointNameIndex.clear();
 		subSkin->numInfJoints.clear();
 		subSkin->weightIndex.clear();
-		subSkin->bindWeight.push_back(1.0f);
+		subSkin->bindWeight.emplace_back(1.0f);
 		int num = subSkin->getNumVertices();
 		for (unsigned int i = 0; i < num; i++)
 		{
-			subSkin->jointNameIndex.push_back(0);
-			subSkin->numInfJoints.push_back(1);
-			subSkin->weightIndex.push_back(0);
+			subSkin->jointNameIndex.emplace_back(0);
+			subSkin->numInfJoints.emplace_back(1);
+			subSkin->weightIndex.emplace_back(0);
 		}
 	}
 
@@ -1585,7 +1585,7 @@ bool SbmDeformableMeshGPU::buildVertexBufferGPU()
 		//SmartBody::util::log("subMeshTriBuf size = %d", subMesh->triBuf.size());
 		VBOVec3i* subMeshTriBuf = new VBOVec3i((char*)"TriIdx",GL_ELEMENT_ARRAY_BUFFER,subMesh->triBuf);
 		SbmShaderProgram::printOglError("SbmDeformableMeshGPU::buildVertexBufferGPU #3 subMesh");
-		subMeshTris.push_back(subMeshTriBuf);
+		subMeshTris.emplace_back(subMeshTriBuf);
 	}
 	// Texture Buffer Object
 	if (SbmShaderManager::getShaderSupport() == SbmShaderManager::SUPPORT_OPENGL_3_0)
@@ -1623,7 +1623,7 @@ bool SbmDeformableMeshGPU::initBuffer()
 	{
 		SbmSubMesh* subMesh = subMeshList[i];
 		VBOVec3i* subMeshTriBuf = new VBOVec3i((char*)"TriIdx",GL_ELEMENT_ARRAY_BUFFER,subMesh->triBuf);
-		subMeshTris.push_back(subMeshTriBuf);
+		subMeshTris.emplace_back(subMeshTriBuf);
 	}
 
 	// Texture Buffer Object

@@ -290,7 +290,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter( std::string charN
 		std::string jName = joint->getMappedJointName();
 		if (joint->num_children() == 0) // don't process leaves
 			continue;
-		jointNameList.push_back(jName);
+		jointNameList.emplace_back(jName);
 		if (excludeNameList.find(jName) != excludeNameList.end())
 			continue;
 		for (int i=0;i<joint->num_children();i++)

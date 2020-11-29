@@ -61,7 +61,7 @@ TreeItemInfoWidget::TreeItemInfoWidget( int x, int y, int w, int h, const char* 
 
 JointInfoObject::JointInfoObject()
 {
-	itemSkeleton = NULL;
+	itemSkeleton = nullptr;
 	jointName = "";
 }
 
@@ -135,7 +135,7 @@ SkeletonItemInfoWidget::SkeletonItemInfoWidget( const std::string& characterName
 	attrWindow->end();
 	this->end();	
 	this->resizable(skeletonTree);
-	itemSkeleton = NULL;	
+	itemSkeleton = nullptr;
 	skeletonName = name;
 	charName = characterName;
 	updateWidget();
@@ -403,7 +403,7 @@ PathItemInfoWidget::PathItemInfoWidget( int x, int y, int w, int h, const char* 
 void PathItemInfoWidget::addDirectoryCallback( Fl_Widget* widget, void* data )
 {
 	PathItemInfoWidget* pathInfoWidget = (PathItemInfoWidget*)data;
-	pathInfoWidget->addDirectory(NULL);	
+	pathInfoWidget->addDirectory(nullptr);
 }
 
 void PathItemInfoWidget::addDirectory( const char* dirName )
@@ -422,7 +422,7 @@ void PathItemInfoWidget::addDirectory( const char* dirName )
 
 	SmartBody::SBScene::getScene()->addAssetPath(paraType, relativePath);
 	updateWidget();
-	observer->notify(NULL);
+	observer->notify(nullptr);
 
 
 
@@ -519,7 +519,7 @@ void SeqItemInfoWidget::editSeqCallback( Fl_Widget* widget, void* data )
 		memset(&piProcessInfo, 0, sizeof(piProcessInfo)); 
 		siStartupInfo.cb = sizeof(siStartupInfo); 		
 		std::string cmd = "notepad.exe ";		
-		BOOL success = CreateProcess(NULL,const_cast<LPSTR>((cmd+seqFullPath).c_str()),0, 0, false, 
+		BOOL success = CreateProcess(nullptr,const_cast<LPSTR>((cmd+seqFullPath).c_str()),0, 0, false,
 									 CREATE_DEFAULT_ERROR_MODE, 0, 0,&siStartupInfo, &piProcessInfo);		
 #else
 		pid_t child_pid;
@@ -535,7 +535,7 @@ void SeqItemInfoWidget::editSeqCallback( Fl_Widget* widget, void* data )
 		  else
 			  argList[0] = "gedit";
 		  argList[1] = pathChar;
-		  argList[2] = NULL;
+		  argList[2] = nullptr;
 		  execvp("gedit",argList);
 		}		
 #endif
@@ -640,7 +640,7 @@ void EventItemInfoWidget::removeEvent()
 PawnItemInfoWidget::PawnItemInfoWidget( int x, int y, int w, int h, const char* name, SBObserver* observerWindow ) 
 : TreeItemInfoWidget(x,y,w,h,name)
 {
-	pawnInfoObject = NULL;
+	pawnInfoObject = nullptr;
 	pawnName = name;
 	updateWidget();
 	//if (observerWindow)
@@ -702,10 +702,10 @@ void PawnItemInfoWidget::notify( SmartBody::SBSubject* subject )
 	}
 }
 
-AttributeItemWidget::AttributeItemWidget( SmartBody::SBObject* object, int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow /*= NULL*/ )
+AttributeItemWidget::AttributeItemWidget( SmartBody::SBObject* object, int x, int y, int w, int h, const char* name, SmartBody::SBObserver* observerWindow /*= nullptr*/ )
 : TreeItemInfoWidget(x,y,w,h,name)
 {
-	attrWindow = NULL;
+	attrWindow = nullptr;
 	infoObject = object;
 	if (!object)
 		return;
@@ -727,11 +727,11 @@ AttributeItemWidget::~AttributeItemWidget()
 	delete attrWindow;
 }
 
-DoubleAttributeItemWidget::DoubleAttributeItemWidget( SmartBody::SBObject* object1, SmartBody::SBObject* object2, int x, int y, int w, int h, int ySep, const char* name1, const char* name2, SmartBody::SBObserver* observerWindow /*= NULL*/ )
+DoubleAttributeItemWidget::DoubleAttributeItemWidget( SmartBody::SBObject* object1, SmartBody::SBObject* object2, int x, int y, int w, int h, int ySep, const char* name1, const char* name2, SmartBody::SBObserver* observerWindow /*= nullptr*/ )
 : TreeItemInfoWidget(x,y,w,h,name1)
 {
-	attrWindow1 = NULL;
-	attrWindow2 = NULL;
+	attrWindow1 = nullptr;
+	attrWindow2 = nullptr;
 	if (!object1 && !object2)
 		return;
 
@@ -763,20 +763,20 @@ void DoubleAttributeItemWidget::updateWidget()
 	redraw();
 }
 
-MultiAttributeItemWidget::MultiAttributeItemWidget( std::vector<SmartBody::SBObject*>& objectList, int x, int y, int w, int h, int yStep, const char* name, std::vector<std::string>& objectNameList, SmartBody::SBObserver* observerWindow /*= NULL*/ )
+MultiAttributeItemWidget::MultiAttributeItemWidget( std::vector<SmartBody::SBObject*>& objectList, int x, int y, int w, int h, int yStep, const char* name, std::vector<std::string>& objectNameList, SmartBody::SBObserver* observerWindow /*= nullptr*/ )
 :TreeItemInfoWidget(x,y,w,h,name) 
 {
 	infoObjectList = objectList;
 	attrNameList = objectNameList;
 	int speLen = 15;
 	int yCur = y;
-	AttributeWindow* attrWin = NULL;
+	AttributeWindow* attrWin = nullptr;
 	this->begin();
 	mainGroup = new Fl_Tabs( x,  y, w, h, name);
 	mainGroup->begin();
 	for (size_t i = 0; i < infoObjectList.size(); i++)
 	{
-		const char* attrWinName = (i<attrNameList.size())?attrNameList[i].c_str():NULL;
+		const char* attrWinName = (i<attrNameList.size())?attrNameList[i].c_str():nullptr;
 		attrWin = new AttributeWindow(infoObjectList[i],x+speLen,y+speLen,w-speLen,h-speLen,attrWinName,false);
 		attrWin->setOffset(150);
 		attrWin->begin();
@@ -800,7 +800,7 @@ AnimationBlendInfoWidget::AnimationBlendInfoWidget( SmartBody::SBAnimationBlend*
 :TreeItemInfoWidget(x,y,w,h,name) 
 {
 	if (!blend) return;
-	attrWindow = NULL;
+	attrWindow = nullptr;
 	blendName = blend->stateName;
 	blendInfoObject = new TreeInfoObject();
 	this->begin();
@@ -838,7 +838,7 @@ BlendTransitionInfoWidget::BlendTransitionInfoWidget( SmartBody::SBAnimationTran
 :TreeItemInfoWidget(x,y,w,h,name) 
 {
 	if (!transition) return;
-	attrWindow = NULL;
+	attrWindow = nullptr;
 	transitionName = transition->getTransitionName();
 	transitionInfoObject = new TreeInfoObject();
 	this->begin();

@@ -158,12 +158,12 @@ static void read_materials ( std::vector<SrMaterial>& M,
 			SrMaterial material;
 			material.init();
 			//M.push().init();
-			M.push_back(material);        
+			M.emplace_back(material);
 			//SR_TRACE1 ( "new material: "<<in.last_token() );
 			SrString matName;
 			in.getline(matName);
 			matName.trim();
-			mnames.push_back( (const char*) matName );
+			mnames.emplace_back( (const char*) matName );
 		}	  
 		else if ( in.last_token()=="Ka" )
 		{
@@ -277,7 +277,7 @@ static bool process_line ( const SrString& line,
       //m.V.push();
 	  SrVec topVec;
       in >> topVec;	 
-	  m.V.push_back(topVec);
+	  m.V.emplace_back(topVec);
 	  // more to read after the 
 	  if (in.get_token() != SrInput::EndOfFile)
 	  {
@@ -285,21 +285,21 @@ static bool process_line ( const SrString& line,
 		  SrVec vColor;
 		  in >> vColor;
 		  vColor /= 255.f; // normalize color
-		  m.Vc.push_back(vColor);
+		  m.Vc.emplace_back(vColor);
 	  }
     }
    else if ( in.last_token()=="vn" ) // vn i j k
     { //SR_TRACE1 ( "vn" );
       SrVec vN;
       in >> vN;
-	  m.N.push_back(vN);
+	  m.N.emplace_back(vN);
     }
    else if ( in.last_token()=="vt" ) // vt u v [w]
     { //SR_TRACE1 ( "vt" );
 	
 		SrVec2 vT;
 		in >> vT;
-		m.T.push_back(vT);
+		m.T.emplace_back(vT);
     }
    else if ( in.last_token()=="g" )
     { //SR_TRACE1 ( "g" );
@@ -319,14 +319,14 @@ static bool process_line ( const SrString& line,
       if ( v.size()<3 ) return false;
 
       for ( i=2; i<v.size(); i++ )
-       { m.F.push_back(SrVec3i( v[0], v[i-1], v[i] ));
-         m.Fm.push_back(curmtl);
+       { m.F.emplace_back(SrVec3i( v[0], v[i-1], v[i] ));
+         m.Fm.emplace_back(curmtl);
 
          if ( t[0]>=0 && t[1]>=0 && t[i]>=0 )
-          m.Ft.push_back(SrVec3i( t[0], t[i-1], t[i] ));
+          m.Ft.emplace_back(SrVec3i( t[0], t[i-1], t[i] ));
 
          if ( n[0]>=0 && n[1]>=0 && n[i]>=0 )
-          m.Fn.push_back(SrVec3i(  n[0], n[i-1], n[i] ));
+          m.Fn.emplace_back(SrVec3i(  n[0], n[i-1], n[i] ));
        }
     }
    else if ( in.last_token()=="s" ) // smoothing groups not supported
@@ -396,9 +396,9 @@ bool SrModel::import_obj ( const char* file )
 	name = filename;
 	//name.remove_file_extension();
 	int curmtl = 0;
-	M.push_back(SrMaterial());
+	M.emplace_back(SrMaterial());
 	M.back().diffuse = SrColor::gray;
-	mtlnames.push_back("noname");
+	mtlnames.emplace_back("noname");
 
 	SrString line;
 	while ( in.getline(line)!=EOF )

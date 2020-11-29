@@ -1729,7 +1729,7 @@ bool BoneBusServer::Update()
          ioctl( newSock, FIONBIO, &nonBlocking );
 #endif
 
-         m_socketPimpl->m_sockConnectionsTCP.push_back( newSock );
+         m_socketPimpl->m_sockConnectionsTCP.emplace_back( newSock );
 
          //printf( "New Connection!\n" );
 

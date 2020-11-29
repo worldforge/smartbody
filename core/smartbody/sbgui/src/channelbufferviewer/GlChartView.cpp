@@ -26,8 +26,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "gwiz_math.h"
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
+#include "Session.h"
 
-GlChartView::GlChartView(int x, int y, int w, int h, char* name) : Fl_Gl_Window( x, y, w, h, name ), SrViewer(x, y, w, h, name)
+GlChartView::GlChartView(int x, int y, int w, int h, char* name)
+: Fl_Gl_Window( x, y, w, h, name ),
+SrViewer(x, y, w, h, name),
+  camera(Session::current->renderScene)
 {
 	//initGL(w, h);
 	//initFont();
@@ -235,7 +239,7 @@ void GlChartView::draw_coordinate()
 
 void GlChartView::draw_series()
 {
-	GlChartViewSeries* series = NULL;
+	GlChartViewSeries* series = nullptr;
 	for(int i = 0; i < archive.GetSeriesCount(); ++i)
 	{
 		series = archive.GetSeries(i);

@@ -398,7 +398,7 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
             {
                if (split[2] == "id")
                {
-                  m_processIdList.push_back(split[1]);
+                  m_processIdList.emplace_back(split[1]);
                }
             }
 
@@ -475,12 +475,12 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
 
                                  if (parent == NULL)
                                  {
-                                    character.m_joints.push_back(j);
+                                    character.m_joints.emplace_back(j);
                                     parent = *(character.m_joints.end() - 1);
                                  }
                                  else
                                  {
-                                    parent->m_joints.push_back(j);
+                                    parent->m_joints.emplace_back(j);
                                     parent = *(parent->m_joints.end() - 1);
                                  }
                               }
@@ -493,7 +493,7 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
                               }
                            }
 
-                           m_scene.m_characters.push_back(character);
+                           m_scene.m_characters.emplace_back(character);
                         }
                         else if (split[3] == "pawn")
                         {
@@ -509,11 +509,11 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
                            worldOffset->rotOrig.y = vhcl::ToDouble(split[11]);
                            worldOffset->rotOrig.z = vhcl::ToDouble(split[12]);
                            worldOffset->rotOrig.w = vhcl::ToDouble(split[13]);
-                           p.m_joints.push_back(worldOffset);
+                           p.m_joints.emplace_back(worldOffset);
                            p.m_shape = Pawn::StringToPawnShape(split[15]);
                            p.m_size = vhcl::ToDouble(split[17]);
                            
-                           m_scene.m_pawns.push_back(p);
+                           m_scene.m_pawns.emplace_back(p);
                         }
                         else if (split[3] == "renderer")
                         {

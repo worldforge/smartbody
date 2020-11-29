@@ -153,7 +153,7 @@ bool SbmBlendFace::buildVertexBufferGPU(int number_of_shapes)
 	{
 		SbmSubMesh* subMesh		= _mesh->subMeshList[i];
 		VBOVec3i* subMeshTriBuf = new VBOVec3i((char*)"TriIdx",GL_ELEMENT_ARRAY_BUFFER,subMesh->triBuf);
-		subMeshTris.push_back(subMeshTriBuf);
+		subMeshTris.emplace_back(subMeshTriBuf);
 	}
 	
 	_initGPUVertexBuffer = true;
@@ -175,7 +175,7 @@ void SbmBlendFace::addFace(SrSnModel* newFace)
 	std::vector<SrVec> vertices;
 	for (int i = 0; i < v.size(); i++) {
 		//std::cerr << "Adding face "<< i << ": " << v[i].x << ", " << v[i].y << ", " << v[i].z << "\n";
-		vertices.push_back( v[i] );
+		vertices.emplace_back( v[i] );
 	}
 	addFaceVertices(vertices);
 }
@@ -846,20 +846,20 @@ void SbmBlendTextures::ReadMasks(GLuint * FBODst, GLuint * texDst, std::vector<f
 		boost::filesystem::path path(textureFileNames[i]);
 		std::string extension = path.extension().string();
 		std::string mask		= boost::replace_all_copy(textureFileNames[i], extension, "_mask" + extension);
-		std::unique_ptr<SbmTexture> tex_mask;
+		std::shared_ptr<SbmTexture> tex_mask;
 		SmartBody::util::log("mask name = %s\n",mask.c_str());
 		// Checks if mask file exists
 		if (!boost::filesystem::exists(mask))
 		{
 			SmartBody::util::log("WARNING! Can't find mask named %s for texture %s, using a white mask instead.\n", mask.c_str(), textureFileNames[i].c_str());
 			SbmTextureManager::singleton().createWhiteTexture("white");
-			tex_mask	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE,"white");
+			tex_mask	= SbmTextureManager::singleton().findTexture("white");
 		}
 		else
 		{
 			// Loads the mask using SBmTextureManager
 			SbmTextureManager::singleton().loadTexture(SbmTextureManager::TEXTURE_DIFFUSE, mask.c_str(), mask.c_str());
-			tex_mask	= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, mask.c_str());
+			tex_mask	= SbmTextureManager::singleton().findTexture(mask.c_str());
 	
 			if(tex_mask == nullptr)
 				SmartBody::util::log("ERROR loading texture %s",mask.c_str());
@@ -1119,7 +1119,7 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 		neutralV	= (baseModel->shape().V);
 
 		// Copies reference to the shape vector
-		shapes.push_back(&(baseModel->shape().V));
+		shapes.emplace_back(&(baseModel->shape().V));
 
 		for (size_t i = 0; i < mIter->second.size(); ++i)
 		{
@@ -1132,7 +1132,7 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 			aux->addFace(mIter->second[i]);
 
 			// Copies reference to the shape vector
-			shapes.push_back(&(baseModel->shape().V));
+			shapes.emplace_back(&(baseModel->shape().V));
 		}
 	}
 	
@@ -1168,8 +1168,8 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 			// Pushes this weight to the vector of used weights
-			usedWeights.push_back(weights[i]);
-			usedShapeIDs.push_back(i);
+			usedWeights.emplace_back(weights[i]);
+			usedShapeIDs.emplace_back(i);
 		}
 	}
 	//SbmShaderProgram::printOglError("BlendGeometry glVertexAttributePointer");
@@ -1353,8 +1353,8 @@ void SbmBlendTextures::RenderGeometryWithMasks(GLuint * FBODst, std::vector<floa
 // 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 			// Pushes this weight to the vector of used weights
-			usedWeights.push_back(weights[i]);
-			usedShapeIDs.push_back(i);
+			usedWeights.emplace_back(weights[i]);
+			usedShapeIDs.emplace_back(i);
 		}
 	}
 	glEnableVertexAttribArray(aVertexPosition);
@@ -1475,9 +1475,9 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 	int id2 = _mesh->triBuf[i][1];
 	int id3 = _mesh->triBuf[i][2];
 			
-	edges.push_back(SrVec2(id1,id2));
-	edges.push_back(SrVec2(id1,id3));
-	edges.push_back(SrVec2(id3,id2));
+	edges.emplace_back(SrVec2(id1,id2));
+	edges.emplace_back(SrVec2(id1,id3));
+	edges.emplace_back(SrVec2(id3,id2));
 	}
 
 	for(int i=0; i<edges.size(); i++)
@@ -1543,7 +1543,7 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 		neutralV	= (baseModel->shape().V);
 
 		// Copies reference to the shape vector
-		shapes.push_back(&(baseModel->shape().V));
+		shapes.emplace_back(&(baseModel->shape().V));
 
 		for (size_t i = 0; i < mIter->second.size(); ++i)
 		{
@@ -1556,7 +1556,7 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 			aux->addFace(mIter->second[i]);
 
 			// Copies reference to the shape vector
-			shapes.push_back(&(baseModel->shape().V));
+			shapes.emplace_back(&(baseModel->shape().V));
 		}
 	}
 	
@@ -1588,8 +1588,8 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 			// Pushes this weight to the vector of used weights
-			usedWeights.push_back(weights[i]);
-			usedShapeIDs.push_back(i);
+			usedWeights.emplace_back(weights[i]);
+			usedShapeIDs.emplace_back(i);
 
 			// Areas is a vector<int> used to set which areas each shape affect (0 -> all, 1-> upper)
 			// If this shape is for eye_blink, sets area to upper
@@ -1597,7 +1597,7 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 				//(texture_names[i].find("eye") != std::string::npos) ||
 				(texture_names[i].find("brows") != std::string::npos) 
 				)
-				areas.push_back(1);										
+				areas.emplace_back(1);
 			else if(
 				(texture_names[i].find("smile") != std::string::npos)||
 				(texture_names[i].find("bmp") != std::string::npos)||
@@ -1605,11 +1605,11 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 				(texture_names[i].find("w") != std::string::npos) 
 				)
 			{
-				areas.push_back(2);
+				areas.emplace_back(2);
 			}
 			else
 			{
-				areas.push_back(0);
+				areas.emplace_back(0);
 			}
 		}
 	}
@@ -2010,7 +2010,7 @@ void SbmBlendTextures::BlendGeometryWithMasksFeedback( GLuint * FBODst, std::vec
 		//neutralV	= (baseModel->shape().V);
 
 		// Copies reference to the shape vector
-		//shapes.push_back(&(baseModel->shape().V));
+		//shapes.emplace_back(&(baseModel->shape().V));
 
 		for (size_t i = 0; i < mIter->second.size(); ++i)
 		{
@@ -2046,7 +2046,7 @@ void SbmBlendTextures::BlendGeometryWithMasksFeedback( GLuint * FBODst, std::vec
 			//aux->addFace(mIter->second[i]);
 
 			// Copies reference to the shape vector
-			//shapes.push_back(&(baseModel->shape().V));
+			//shapes.emplace_back(&(baseModel->shape().V));
 		}
 	}
 
@@ -2079,8 +2079,8 @@ void SbmBlendTextures::BlendGeometryWithMasksFeedback( GLuint * FBODst, std::vec
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 			// Pushes this weight to the vector of used weights
-			usedWeights.push_back(weights[i]);
-			usedShapeIDs.push_back(i);
+			usedWeights.emplace_back(weights[i]);
+			usedShapeIDs.emplace_back(i);
 		}
 	}
 	SbmShaderProgram::printOglError("BlendGeometry glVertexAttributePointer");
@@ -2249,8 +2249,8 @@ void SbmBlendTextures::BlendTextureWithMasks(GLuint FBODst, GLuint FBOTex,std::v
 		if(((weights[i] > 0.0001) && (usedWeights.size() < MAX_SHAPES)) || (i == 0))
 		{
 			// Pushes this weight to the vector of used weights
-			usedWeights.push_back(weights[i]);
-			usedShapeIDs.push_back(i);
+			usedWeights.emplace_back(weights[i]);
+			usedShapeIDs.emplace_back(i);
 		}
 	}
 

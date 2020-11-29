@@ -230,8 +230,8 @@ std::vector<SmartBody::SBSyncPoint*> BMLObject::getSyncPointObjects()
 	{
 			SmartBody::SBSyncPoint* spStart = new SmartBody::SBSyncPoint(id + ":start");
 			SmartBody::SBSyncPoint* spEnd = new SmartBody::SBSyncPoint(id + ":end");
-			syncPoints.push_back(spStart);
-			syncPoints.push_back(spEnd);
+			syncPoints.emplace_back(spStart);
+			syncPoints.emplace_back(spEnd);
 	}
 
 	return syncPoints;
@@ -246,7 +246,7 @@ std::vector<SmartBody::SBTrigger*> BMLObject::getTriggers()
 	{
 		SmartBody::SBTrigger* trigger = new SmartBody::SBTrigger();
 		trigger->setStartTag(start);
-		triggers.push_back(trigger);
+		triggers.emplace_back(trigger);
 	}
 
 	std::string end = this->getStringAttribute("end");
@@ -254,7 +254,7 @@ std::vector<SmartBody::SBTrigger*> BMLObject::getTriggers()
 	{
 		SmartBody::SBTrigger* trigger = new SmartBody::SBTrigger();
 		trigger->setEndTag(end);
-		triggers.push_back(trigger);
+		triggers.emplace_back(trigger);
 	}
 
 	return triggers;

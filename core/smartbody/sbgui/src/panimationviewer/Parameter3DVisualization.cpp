@@ -2,6 +2,7 @@
 #include "Parameter3DVisualization.h"
 #include <sr/sr_gl.h>
 #include <sr/sr_light.h>
+#include <Session.h>
 #include "PanimationWindow.h"
 #include "ParameterGroup.h"
 
@@ -9,7 +10,9 @@
 # define DOLLYING(e)	(e.alt && e.button3)
 # define TRANSLATING(e)	(e.alt && e.button2)
 
-VisualizationBase::VisualizationBase(int x, int y, int w, int h, char* name) : Fl_Gl_Window(x, y, w, h, "")
+VisualizationBase::VisualizationBase(int x, int y, int w, int h, char* name) :
+	Fl_Gl_Window(x, y, w, h, ""),
+	cam(Session::current->renderScene)
 {	
 	this->begin();
 	this->end();
@@ -26,9 +29,7 @@ VisualizationBase::VisualizationBase(int x, int y, int w, int h, char* name) : F
 	viewScale = 1.f;
 }
 
-VisualizationBase::~VisualizationBase()
-{
-}
+VisualizationBase::~VisualizationBase() = default;
 
 void VisualizationBase::draw()
 {
@@ -375,7 +376,7 @@ Parameter3DVisualization::Parameter3DVisualization(int x, int y, int w, int h, c
 	cam.setUpVector(SrVec(0, 0, 1));
 	floorHeight = 0;
 	for (int t = 0; t < 4; t++)
-		tet.push_back(SrVec());
+		tet.emplace_back(SrVec());
 
 	blendData = s;
 	SrVec scale;

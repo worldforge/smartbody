@@ -263,7 +263,7 @@ namespace SteerLib {
 	 *         for_each_transition_possible_from_currentState {
 	 *             newAction.cost = cost_of_this_specific_transition;
 	 *             newAction.state = new_state_after_transition;
-	 *             transitions.push_back( newAction );
+	 *             transitions.emplace_back( newAction );
 	 *         }
 	 *     }
 	 *

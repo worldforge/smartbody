@@ -58,7 +58,7 @@ void FaceDialog::AddFacialExpression(const string& name, double weight)
    weightSlider->setSingleStep(1);
    weightSlider->setValue(weight * 100);
    weightSlider->setObjectName(name.c_str());
-   m_Sliders.push_back(weightSlider);
+   m_Sliders.emplace_back(weightSlider);
 
    // create spin box
    QDoubleSpinBox* weightDisplay = new QDoubleSpinBox(this);
@@ -84,10 +84,10 @@ void FaceDialog::AddFacialExpression(const string& name, double weight)
 
 
    // save for later deletion
-   m_scrollListChildren.push_back(expressionName);
-   m_scrollListChildren.push_back(weightSlider);
-   m_scrollListChildren.push_back(weightDisplay);
-   m_scrollListChildren.push_back(frame);
+   m_scrollListChildren.emplace_back(expressionName);
+   m_scrollListChildren.emplace_back(weightSlider);
+   m_scrollListChildren.emplace_back(weightDisplay);
+   m_scrollListChildren.emplace_back(frame);
 }
 
 void FaceDialog::Reset()

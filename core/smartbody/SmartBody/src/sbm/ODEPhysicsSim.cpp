@@ -795,7 +795,7 @@ void ODECollisionSpace::collisionSpaceNearCallBack( void *data, dGeomID o1, dGeo
 	SbmCollisionPairList& curColPairs = colSpace->getCurrentCollisionPairList();
 	//SBGeomObject* g1 = (SBGeomObject*)dGeomGetData(o1);
 	//SBGeomObject* g2 = (SBGeomObject*)dGeomGetData(o2);
-	curColPairs.push_back(SbmCollisionPair(colSpace->getODEGeomName(o1),colSpace->getODEGeomName(o2)));
+	curColPairs.emplace_back(SbmCollisionPair(colSpace->getODEGeomName(o1),colSpace->getODEGeomName(o2)));
 }
 
 ODECollisionSpace::~ODECollisionSpace()

@@ -97,7 +97,7 @@ std::vector<std::string> SBAttributeGroup::getAttributeNames()
 		 iter != m_attributeMap.end();
 		 iter++)
 	{
-		attributes.push_back((*iter).first);
+		attributes.emplace_back((*iter).first);
 	}
 	return attributes;
 }
@@ -917,7 +917,7 @@ void StringAttribute::setValidValues(const std::vector<std::string>& values)
 {
 	m_validValues.clear();
 	for (size_t v = 0; v < values.size(); v++)
-		m_validValues.push_back(values[v]);
+		m_validValues.emplace_back(values[v]);
 }
 
 const std::vector<std::string>& StringAttribute::getValidValues()

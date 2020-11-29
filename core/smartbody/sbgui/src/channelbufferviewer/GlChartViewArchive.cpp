@@ -452,7 +452,7 @@ GlChartViewArchive::GlChartViewArchive()
 
 GlChartViewArchive::~GlChartViewArchive()
 {
-	GlChartViewSeries* series = NULL;
+	GlChartViewSeries* series = nullptr;
 	int num = series_list.size();
 	for(int i = 0; i < num; ++i)
 	{
@@ -473,17 +473,17 @@ void GlChartViewArchive::NewSeries(const char* title, int type, int buffer_index
 	if(series_list.size() == 0) series->SetRGBColor();
 	else series->SetColorOnBufferIndex();
 	series->SetMaxSize(0);
-	series_list.push_back(series);
+	series_list.emplace_back(series);
 }
 
 void GlChartViewArchive::AddSeries(GlChartViewSeries* series)
 {
-	series_list.push_back(series);
+	series_list.emplace_back(series);
 }
 
 void GlChartViewArchive::DeleteSeries(const char* title)
 {
-	GlChartViewSeries* series = NULL;
+	GlChartViewSeries* series = nullptr;
 	for (std::vector<GlChartViewSeries*>::iterator iter = series_list.begin();
 		 iter != series_list.end();
 		 iter++)
@@ -501,7 +501,7 @@ void GlChartViewArchive::DeleteSeries(const char* title)
 
 void GlChartViewArchive::DeleteSeries(int index)
 {
-	GlChartViewSeries* series = NULL;
+	GlChartViewSeries* series = nullptr;
 	int count = 0;
 	for (std::vector<GlChartViewSeries*>::iterator iter = series_list.begin();
 		 iter != series_list.end();
@@ -521,7 +521,7 @@ void GlChartViewArchive::DeleteSeries(int index)
 
 void GlChartViewArchive::ClearSeries()
 {
-	GlChartViewSeries* series = NULL;
+	GlChartViewSeries* series = nullptr;
 	int num = series_list.size();
 	for(int i = 0; i < num; ++i)
 	{
@@ -554,12 +554,12 @@ GlChartViewSeries* GlChartViewArchive::GetSeries(const char* title)
 		if(strcmp(series_list[i]->title.c_str(), title) == 0) 
 			return series_list[i];
 	}
-	return NULL;
+	return nullptr;
 }
 
 void GlChartViewArchive::Update(SrBuffer<float>& buffer)
 {
-	GlChartViewSeries* series = NULL;
+	GlChartViewSeries* series = nullptr;
 	float x, y, z, w;
 	int buffer_index = 0;
 	for(size_t i = 0; i < series_list.size(); ++i)

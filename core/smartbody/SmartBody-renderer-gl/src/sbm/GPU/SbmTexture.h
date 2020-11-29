@@ -30,7 +30,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 class SbmTexture;
 class SbmTextureData;
-typedef std::map<std::string, std::shared_ptr<SbmTextureData>> StrTextureMap;
+typedef std::map<std::string, std::shared_ptr<SbmTexture>> StrTextureMap;
 
 #if defined(EMSCRIPTEN)
 #define USE_CUBE_MAP 1
@@ -50,12 +50,16 @@ class SbmTextureManager
 public:
 	enum { TEXTURE_DIFFUSE = 0, TEXTURE_NORMALMAP, TEXTURE_SPECULARMAP, TEXTURE_GLOSSYMAP, TEXTURE_RENDER_TARGET, TEXTURE_HDR_MAP, TEXTURE_CUBEMAP};
 protected:
-	StrTextureMap textureMap;
-	StrTextureMap normalTexMap;
-	StrTextureMap specularTexMap;
-	StrTextureMap glossyTexMap;
-	StrTextureMap renderTargetTexMap;
-	StrTextureMap hdrTexMap;
+	struct TextureHolder {
+		int type;
+		std::shared_ptr<SbmTexture> texture;
+	};
+	std::map<std::string, TextureHolder> textureMap;
+//	StrTextureMap normalTexMap;
+//	StrTextureMap specularTexMap;
+//	StrTextureMap glossyTexMap;
+//	StrTextureMap renderTargetTexMap;
+//	StrTextureMap hdrTexMap;
 	std::map<std::string, GLuint> FBOMap;
 private:
 	static SbmTextureManager* _singleton;
@@ -74,15 +78,16 @@ public:
 			delete _singleton;
 		_singleton = nullptr;
 	}	
-	SBAPI std::unique_ptr<SbmTexture> findTexture(int type, const char* textureName);
+	SBAPI std::shared_ptr<SbmTexture> findTexture(const char* textureName);
 	SBAPI GLuint findFBO(const char* fboName);
 	SBAPI void loadTexture(int type, const char* textureName, const char* fileName);
+    SBAPI void addTexture(std::string name, int type, std::shared_ptr<SbmTexture> texture);
 	SBAPI void updateTexture();
 	SBAPI void reloadTexture();
 	SBAPI std::vector<std::string> getTextureNames(int type);
 
 	// Creates a 1x1 white texture
-	SBAPI std::unique_ptr<SbmTexture> createTexture(int type, const char* textureName);
+	SBAPI std::shared_ptr<SbmTexture> createTexture(int type, const char* textureName);
 	SBAPI void deleteTexture(int type, const char* textureName);
 	SBAPI void createWhiteTexture(const char* textureName, int width = 1, int height = 1);	
 	SBAPI void createBlackTexture(const char* textureName, int width = 1, int height = 1);
@@ -93,7 +98,6 @@ public:
 	SBAPI void updateEnvMaps();
 	void releaseAllTextures();	
 protected:
-	StrTextureMap& findMap(int type);
 
 //Zengrui: add some additional functions for cube-map texture
 #if USE_CUBE_MAP
@@ -138,36 +142,33 @@ struct SbmTextureData {
 class SbmTexture : public SmartBody::SBAsset// simple place holder for OpenGL texture
 {
 public:
-	enum RotateEnum { ROTATE_NONE = 0, ROTATE_90, ROTATE_180, ROTATE_270 };
-protected:
-	std::shared_ptr<SbmTextureData> data;
-public:
-	SBAPI explicit SbmTexture(std::shared_ptr<SbmTextureData> data);
+	SbmTextureData data;
+	SBAPI explicit SbmTexture();
 	SBAPI explicit SbmTexture(const char* texName);
 	SBAPI ~SbmTexture();
 
-	void cleanTexture();
+//	void cleanTexture();
 
-	SBAPI bool hasBuild() { return data->finishBuild; }
-	SBAPI bool isTransparent() { return data->transparentTexture; }
-	bool isBuildMipMap() const { return data->buildMipMap; }
-	void setBuildMipMap(bool val) { data->buildMipMap = val; }
+	SBAPI bool hasBuild() const { return data.finishBuild; }
+	SBAPI bool isTransparent() const { return data.transparentTexture; }
+	bool isBuildMipMap() const { return data.buildMipMap; }
+	void setBuildMipMap(bool val) { data.buildMipMap = val; }
 
-	SBAPI const std::string& getName() override { return data->textureName; }
-	SBAPI const std::string& getFileName() { return data->textureFileName; }
-	SBAPI GLuint getID() { return data->texID; }
+	SBAPI const std::string& getName() override { return data.textureName; }
+	SBAPI const std::string& getFileName() const { return data.textureFileName; }
+	SBAPI GLuint getID() const { return data.texID; }
 	SBAPI bool loadImage(const char* fileName);	
 
 	SBAPI bool loadHDRImage(const char* fileName);
 
 	SBAPI void buildTexture(bool buildMipMap = false, bool recreateTexture = true);
-	SBAPI void rotateTexture(RotateEnum rotate);
+	SBAPI void rotateTexture(SbmTextureData::RotateEnum rotate);
 
 	SBAPI unsigned char* getBuffer();
 	SBAPI int getBufferSize();
-	SBAPI int getWidth() const { return data->width; }
-	SBAPI int getHeight() const { return data->height; }
-	SBAPI int getNumChannels() const { return data->channels; }
+	SBAPI int getWidth() const { return data.width; }
+	SBAPI int getHeight() const { return data.height; }
+	SBAPI int getNumChannels() const { return data.channels; }
 
 	SBAPI void setBuffer(unsigned char* buffer, int size);
 	SBAPI void setTextureSize(int w, int h, int numChannels);

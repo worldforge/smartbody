@@ -43,19 +43,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <boost/lexical_cast.hpp>
 
+#include "sbm/SBRenderScene.h"
 
-SBRenderer* SBRenderer::_singleton = NULL;
+
+SBRenderer* SBRenderer::_singleton = nullptr;
 
 SBRenderer::SBRenderer()
 {
-	ssaoOutput = ssaoNoise = ssaoBlurOutput = lightPassOutput = NULL;
 	rendererInitialized = false;
 }
 
 
-SBRenderer::~SBRenderer()
-{
-}
+SBRenderer::~SBRenderer() = default;
 
 SBRenderer& SBRenderer::singleton()
 {
@@ -67,7 +66,7 @@ SBRenderer& SBRenderer::singleton()
 void SBRenderer::destroy_singleton()
 {
 	delete _singleton;
-	_singleton = NULL;
+	_singleton = nullptr;
 }
 
 
@@ -76,7 +75,7 @@ void SBRenderer::drawDebugFBO()
 	std::string gbufferDebug = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.gbufferDebug");
 	if (gbufferDebug == "" || gbufferDebug == "none")
 		return;
-	SbmTexture* debugTex = NULL;
+	std::shared_ptr<SbmTexture> debugTex;
 	if (gbufferDebug == "posTex")
 		debugTex = gbuffer.posTex;
 	else if (gbufferDebug == "normalTex")
@@ -108,17 +107,16 @@ void SBRenderer::drawDebugFBO()
 	}
 
 	//SBFrameBufferObject::drawTextureQuad(debugTex);
-	drawTextureQuadWithDepth(debugTex, gbuffer.depthTex);
+	drawTextureQuadWithDepth(debugTex.get(), gbuffer.depthTex.get());
 }
 
-SbmTexture* SBRenderer::getCurEnvMap(bool diffuseMap)
+std::shared_ptr<SbmTexture> SBRenderer::getCurEnvMap(bool diffuseMap)
 {
-	SbmTexture* debugTex = NULL;
 	std::string texName = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.envMapName");
 	if (diffuseMap)
 		texName = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.envDiffuseMapName");
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
-	debugTex = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, texName.c_str());
+	auto debugTex = texManager.findTexture(texName.c_str());
 	if (!debugTex)
 		SmartBody::util::log("Error ! Can't find tex name = %s", texName.c_str());		
 	return debugTex;
@@ -143,7 +141,7 @@ void SBRenderer::initRenderer(int w, int h)
 	lightPassOutput = texManager.createTexture(SbmTextureManager::TEXTURE_RENDER_TARGET, "lightPassOutput");
 	lightPassOutput->createEmptyTexture(w, h, 4, GL_FLOAT);
 	lightPassOutput->buildTexture(false, true);
-	lightPassFBO.attachTexture(lightPassOutput, GL_COLOR_ATTACHMENT0);
+	lightPassFBO.attachTexture(lightPassOutput.get(), GL_COLOR_ATTACHMENT0);
 	lightPassFBO.setDrawBufferDefault();
 
 	shaderManager.addShader("lightPass_shader", shaderPath + "lighting.vert", shaderPath + "lighting.frag", true);
@@ -169,14 +167,14 @@ void SBRenderer::initSSAO(int w, int h)
 	ssaoOutput = texManager.createTexture(SbmTextureManager::TEXTURE_RENDER_TARGET, "ssaoOutput");
 	ssaoOutput->createEmptyTexture(w, h, 4, GL_FLOAT);
 	ssaoOutput->buildTexture(false, true);
-	ssaoFBO.attachTexture(ssaoOutput, GL_COLOR_ATTACHMENT0);
+	ssaoFBO.attachTexture(ssaoOutput.get(), GL_COLOR_ATTACHMENT0);
 	ssaoFBO.setDrawBufferDefault();
 
 	ssaoBlurFBO.initFBO("ssaoBlurFBO");
 	ssaoBlurOutput = texManager.createTexture(SbmTextureManager::TEXTURE_RENDER_TARGET, "ssaoBlurOutput");
 	ssaoBlurOutput->createEmptyTexture(w, h, 4, GL_FLOAT);
 	ssaoBlurOutput->buildTexture(false, true);
-	ssaoBlurFBO.attachTexture(ssaoBlurOutput, GL_COLOR_ATTACHMENT0);
+	ssaoBlurFBO.attachTexture(ssaoBlurOutput.get(), GL_COLOR_ATTACHMENT0);
 	ssaoBlurFBO.setDrawBufferDefault();
 
 	SrRandom random;
@@ -194,7 +192,7 @@ void SBRenderer::initSSAO(int w, int h)
 		// favor sample points that are closer to the vertex position, rescale the samples based on a distance cut-off curve
 		float ratio = (float)i / (float)ssaoKernel.size();
 		float rr = ratio*ratio;
-		float kernelWeight = 0.1*(1.f - rr) + 1.f*rr;
+		float kernelWeight = 0.1f*(1.f - rr) + 1.f*rr;
 		ssaoKernel[i] *= kernelWeight;
 		SmartBody::util::log("Kernel %d, vec = %s", i, ssaoKernel[i].toString().c_str());
 	}
@@ -206,10 +204,10 @@ void SBRenderer::initSSAO(int w, int h)
 	ssaoNoise = texManager.createTexture(SbmTextureManager::TEXTURE_RENDER_TARGET, "ssaoNoise");
 	ssaoNoise->createEmptyTexture(ssaoNoiseSize, ssaoNoiseSize, 3, GL_FLOAT);	
 	std::vector<SrVec> noiseTexData(noiseSqr);	
-	for (unsigned int i = 0; i < noiseTexData.size(); i++)
+	for (auto & i : noiseTexData)
 	{
-		noiseTexData[i] = SrVec(random.get(-1.f, 1.f), random.get(-1.f, 1.f), 0.f);
-		noiseTexData[i].normalize();
+		i = SrVec(random.get(-1.f, 1.f), random.get(-1.f, 1.f), 0.f);
+		i.normalize();
 	}
 	ssaoNoise->setBuffer((unsigned char*)&noiseTexData[0], noiseTexData.size() * sizeof(SrVec));
 	ssaoNoise->buildTexture(false, true);
@@ -270,7 +268,7 @@ void SBRenderer::draw(SmartBody::SBRenderScene& renderScene,  std::vector<SrLigh
 {
 	if (!isInitialized()) return;
 
-	this->drawDeferredRendering(lights, isDrawFloor);
+	this->drawDeferredRendering(renderScene, lights, isDrawFloor);
 }
 
 void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor)
@@ -280,24 +278,24 @@ void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, st
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<std::string> pawnNames = scene->getPawnNames();
 #if 1
-	for (unsigned int i = 0; i < pawnNames.size(); i++)
-	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnNames[i]);
-		DeformableMeshInstance* meshInstance = pawn->getActiveMesh();		
+	for (auto& entry : renderScene.getRenderables()) {
+		auto& renderable = entry.second;
+		DeformableMeshInstance* meshInstance = renderable.getActiveMesh();
 		if (meshInstance)
 		{
 			if (!meshInstance->isStaticMesh())
 			{
-				SbmDeformableMeshGPUInstance* gpuMeshInstance = dynamic_cast<SbmDeformableMeshGPUInstance*>(meshInstance);				
+				auto* gpuMeshInstance = dynamic_cast<SbmDeformableMeshGPUInstance*>(meshInstance);
 				GPUMeshUpdate(meshInstance);
-			}			
+			}
 		}
 	}
+
 #endif
 	gbuffer.bindFBO();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glUseProgram(gbufferShader->getShaderProgram());	
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* cam = renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
 		return;	
@@ -328,15 +326,16 @@ void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, st
 
 	glUniformMatrix4fv(glGetUniformLocation(gbufferShader->getShaderProgram(), "modelViewMat"), 1, GL_FALSE, (GLfloat*)&modelViewMat);
 	glUniformMatrix4fv(glGetUniformLocation(gbufferShader->getShaderProgram(), "modelViewProjMat"), 1, GL_FALSE, (GLfloat*)&modelViewProjMat);
-	
-	for (unsigned int i = 0; i < pawnNames.size(); i++)
-	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnNames[i]);
-		DeformableMeshInstance* meshInstance = pawn->getActiveMesh();
-		float alphaThreshold = (float)pawn->getDoubleAttribute("alphaThreshold");
+
+
+	for (auto& entry : renderScene.getRenderables()) {
+		auto& renderable = entry.second;
+		DeformableMeshInstance* meshInstance = renderable.getActiveMesh();
+
+		float alphaThreshold = (float)renderable.pawn->getDoubleAttribute("alphaThreshold");
 		glUniform1f(glGetUniformLocation(gbufferShader->getShaderProgram(), "alphaThreshold"), alphaThreshold);
 		if (meshInstance)
-		{				
+		{
 			renderMesh(meshInstance, gbufferShader, true);
 		}
 	}
@@ -346,9 +345,9 @@ void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, st
 	glUseProgram(0);
 	gbuffer.unbindFBO();
 	std::string gbufferDebug = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.gbufferDebug");
-	drawSSAOPass();
+	drawSSAOPass(renderScene);
 	//drawLightPass(lights);
-	drawIBLPass(lights);
+	drawIBLPass(renderScene, lights);
 
 	drawDebugFBO();
 }
@@ -360,19 +359,20 @@ void SBRenderer::drawForwardRendering(SmartBody::SBRenderScene& renderScene, std
 
 	std::vector<std::string> pawnNames = scene->getPawnNames();
 #if 1
-	for (unsigned int i = 0; i < pawnNames.size(); i++)
-	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnNames[i]);
-		DeformableMeshInstance* meshInstance = pawn->getActiveMesh();
+
+	for (auto& entry : renderScene.getRenderables()) {
+		auto& renderable = entry.second;
+		DeformableMeshInstance* meshInstance = renderable.getActiveMesh();
 		if (meshInstance)
 		{
 			if (!meshInstance->isStaticMesh())
 			{
-				SbmDeformableMeshGPUInstance* gpuMeshInstance = dynamic_cast<SbmDeformableMeshGPUInstance*>(meshInstance);
+				auto* gpuMeshInstance = dynamic_cast<SbmDeformableMeshGPUInstance*>(meshInstance);
 				GPUMeshUpdate(meshInstance);
 			}
 		}
 	}
+
 #endif
 	glUseProgram(normalMapShader->getShaderProgram());
 	// setup lighting
@@ -399,7 +399,7 @@ void SBRenderer::drawForwardRendering(SmartBody::SBRenderScene& renderScene, std
 
 
 
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* cam = renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
 		return;
@@ -416,15 +416,14 @@ void SBRenderer::drawForwardRendering(SmartBody::SBRenderScene& renderScene, std
 
 	glUniformMatrix4fv(glGetUniformLocation(normalMapShader->getShaderProgram(), "uMVMatrix"), 1, GL_FALSE, (GLfloat*)&modelViewMat);
 	glUniformMatrix4fv(glGetUniformLocation(normalMapShader->getShaderProgram(), "uMVPMatrix"), 1, GL_FALSE, (GLfloat*)&modelViewProjMat);
-	//SmartBody::util::log("Render Forward shading");
-	for (unsigned int i = 0; i < pawnNames.size(); i++)
-	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnNames[i]);
-		DeformableMeshInstance* meshInstance = pawn->getActiveMesh();
+
+
+	for (auto& entry : renderScene.getRenderables()) {
+		auto& renderable = entry.second;
+		DeformableMeshInstance* meshInstance = renderable.getActiveMesh();
 		if (meshInstance)
 		{
 			renderMesh(meshInstance, gbufferShader, true);
-			//renderMesh(meshInstance, false);
 		}
 	}
 	if (isDrawFloor)
@@ -432,10 +431,10 @@ void SBRenderer::drawForwardRendering(SmartBody::SBRenderScene& renderScene, std
 	glUseProgram(0);
 }
 
-void SBRenderer::drawLightPass(std::vector<SrLight>& lights)
+void SBRenderer::drawLightPass(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights)
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* cam = renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
 		return;
@@ -449,14 +448,14 @@ void SBRenderer::drawLightPass(std::vector<SrLight>& lights)
 	std::vector<SrVec> lightDirs, lightColors;
 	float lcolor[4];
 	// update light direction
-	for (unsigned int i = 0; i < lights.size(); i++)
+	for (auto & light : lights)
 	{
-		SrVec ldir = lights[i].position*viewMat;
+		SrVec ldir = light.position*viewMat;
 		ldir.normalize();
-		lightDirs.push_back(ldir);
-		lights[i].diffuse.get(lcolor);
-		lightColors.push_back(SrVec(lcolor[0], lcolor[1], lcolor[2]));
-		//lightColors.push_back(SrVec(1,1,1));
+		lightDirs.emplace_back(ldir);
+		light.diffuse.get(lcolor);
+		lightColors.emplace_back(SrVec(lcolor[0], lcolor[1], lcolor[2]));
+		//lightColors.emplace_back(SrVec(1,1,1));
 	}
 	
 	glUniform1i(glGetUniformLocation(lightPassShader->getShaderProgram(), "numLights"), lights.size());
@@ -507,15 +506,15 @@ void SBRenderer::drawLightPass(std::vector<SrLight>& lights)
 
 
 
-void SBRenderer::drawIBLPass(std::vector<SrLight>& lights)
+void SBRenderer::drawIBLPass(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights)
 {
 	std::string texName = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.envMapName");
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
-	SbmTexture* envMap = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, texName.c_str());
+	auto envMap = texManager.findTexture(texName.c_str());
 	if (!envMap) return;
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* cam = renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
 		return;
@@ -531,8 +530,8 @@ void SBRenderer::drawIBLPass(std::vector<SrLight>& lights)
 	float tanHalfFov = tanf(cam->getFov() / 2.f);
 	float aspectRatio = cam->getAspectRatio();
 
-	SbmTexture* curEnvMap = getCurEnvMap(false);
-	SbmTexture* curEnvDiffuseMap = getCurEnvMap(true);
+	auto curEnvMap = getCurEnvMap(false);
+	auto curEnvDiffuseMap = getCurEnvMap(true);
 	GLuint envMapTexID = -1, envDiffuseTexId = -1;
 	if (curEnvMap)
 		envMapTexID = curEnvMap->getID();
@@ -558,13 +557,13 @@ void SBRenderer::drawIBLPass(std::vector<SrLight>& lights)
 	std::vector<SrVec> lightDirs, lightColors;
 	float lcolor[4];
 	// update light direction
-	for (unsigned int i = 0; i < lights.size(); i++)
+	for (auto & light : lights)
 	{
-		SrVec ldir = lights[i].position;
+		SrVec ldir = light.position;
 		ldir.normalize();
-		lightDirs.push_back(ldir);
-		lights[i].diffuse.get(lcolor);
-		lightColors.push_back(SrVec(lcolor[0], lcolor[1], lcolor[2]));		
+		lightDirs.emplace_back(ldir);
+		light.diffuse.get(lcolor);
+		lightColors.emplace_back(lcolor[0], lcolor[1], lcolor[2]);
 	}
 
 	glUniform1i(glGetUniformLocation(iblShader->getShaderProgram(), "showEnvMap"), scene->getBoolAttribute("Renderer.showEnvMap") ? 1 : 0);
@@ -656,10 +655,10 @@ void SBRenderer::drawIBLPass(std::vector<SrLight>& lights)
 
 }
 
-void SBRenderer::drawSSAOPass()
+void SBRenderer::drawSSAOPass(SmartBody::SBRenderScene& renderScene)
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* cam = renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
 		return;
@@ -768,17 +767,17 @@ void SBRenderer::registerGUI()
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
 	std::vector<std::string> GBufferOptions;
-	GBufferOptions.push_back("none");
-	GBufferOptions.push_back("posTex");
-	GBufferOptions.push_back("normalTex");
-	GBufferOptions.push_back("diffuseTex");
-	GBufferOptions.push_back("specularTex");
-	GBufferOptions.push_back("glossyTex");
-	GBufferOptions.push_back("depthTex");
-	GBufferOptions.push_back("ssaoTex");
-	GBufferOptions.push_back("ssaoBlurTex");
-	GBufferOptions.push_back("lightTex");
-	GBufferOptions.push_back("envMapTex");
+	GBufferOptions.emplace_back("none");
+	GBufferOptions.emplace_back("posTex");
+	GBufferOptions.emplace_back("normalTex");
+	GBufferOptions.emplace_back("diffuseTex");
+	GBufferOptions.emplace_back("specularTex");
+	GBufferOptions.emplace_back("glossyTex");
+	GBufferOptions.emplace_back("depthTex");
+	GBufferOptions.emplace_back("ssaoTex");
+	GBufferOptions.emplace_back("ssaoBlurTex");
+	GBufferOptions.emplace_back("lightTex");
+	GBufferOptions.emplace_back("envMapTex");
 
 	SmartBody::StringAttribute* gbufferOptionsAttr = scene->createStringAttribute("Renderer.gbufferDebug", "none", true, "Renderer", 60, false, false, false, "Debug gbuffer");
 	gbufferOptionsAttr->setValidValues(GBufferOptions);
@@ -837,7 +836,7 @@ void SBRenderer::drawTextureQuadWithDepth(SbmTexture* tex, SbmTexture* depthTex)
 
 SBGBuffer::SBGBuffer()
 {
-	posTex = normalTex = diffuseTex = specularTex = glossyTex = depthTex = NULL;
+	posTex = normalTex = diffuseTex = specularTex = glossyTex = depthTex = nullptr;
 }
 
 void SBGBuffer::initBuffer(int w, int h)
@@ -854,12 +853,12 @@ void SBGBuffer::initBuffer(int w, int h)
 	depthTex = texManager.createTexture(SbmTextureManager::TEXTURE_RENDER_TARGET, "gbuffer_depthTex");
 
 	createBufferTex(w, h, true);	
-	attachTexture(posTex, GL_COLOR_ATTACHMENT0);
-	attachTexture(normalTex, GL_COLOR_ATTACHMENT1);
-	attachTexture(diffuseTex, GL_COLOR_ATTACHMENT2);
-	attachTexture(specularTex, GL_COLOR_ATTACHMENT3);
-	attachTexture(glossyTex, GL_COLOR_ATTACHMENT4);
-	attachTexture(depthTex, GL_DEPTH_ATTACHMENT);
+	attachTexture(posTex.get(), GL_COLOR_ATTACHMENT0);
+	attachTexture(normalTex.get(), GL_COLOR_ATTACHMENT1);
+	attachTexture(diffuseTex.get(), GL_COLOR_ATTACHMENT2);
+	attachTexture(specularTex.get(), GL_COLOR_ATTACHMENT3);
+	attachTexture(glossyTex.get(), GL_COLOR_ATTACHMENT4);
+	attachTexture(depthTex.get(), GL_DEPTH_ATTACHMENT);
 	setDrawBufferDefault();	
 }
 

@@ -173,7 +173,7 @@ extendTrees(AnsTreeStr& ats,int dir)
 	  if(curAtq().size == NTH && p2 <= curAtq().worstP) continue;
 	  addedNew = true;
 	  AnsTree tree2 = atp.second;
-	  if(dir == 2) tree2.subTrees.push_back(&subat);
+	  if(dir == 2) tree2.subTrees.emplace_back(&subat);
 	  else tree2.subTrees.push_front(&subat);
 	  if(dir == 0) tree2.wrd = subat.wrd;
 	  curAtq().push(p2, tree2);

@@ -86,7 +86,7 @@ class FLU_EXPORT FluSimpleString
     { return s1.casecompare( s2 ); }
 
   //! Add character \b c to the end of the string
-  inline void push_back( char c )
+  inline void emplace_back( char c )
     { char s[2] = { c, '\0' }; *this += s; }
 
   //! Alias for the \c = operator

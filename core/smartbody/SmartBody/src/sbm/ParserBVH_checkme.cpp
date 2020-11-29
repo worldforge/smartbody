@@ -264,7 +264,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 						motionChannels.add(cur->jointName(), SkChannel::Quat);
 						curChannelIndex += 4;
 					}
-					channelInfoMap.push_back(channelInfo);
+					channelInfoMap.emplace_back(channelInfo);
 
 					//if (cur->isIgnoreChannels())
 					//{
@@ -434,7 +434,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 					{
 						ChannelInfo* channelInfo = channelInfoMap[j];
 						for (int n = 0; n < channelInfo->numBVHChannels; n++)
-							bvhIndex.push_back(std::pair<int, int>(j, n));
+							bvhIndex.emplace_back(std::pair<int, int>(j, n));
 					}
 					// set up the size of the posture based on the SmartBody skeleton
 					//skChannels.compress();

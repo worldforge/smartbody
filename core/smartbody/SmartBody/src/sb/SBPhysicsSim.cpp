@@ -86,7 +86,7 @@ void SBPhysicsSim::setGravity( float gravity )
 
 void SBPhysicsSim::addPhysicsObj( SBPhysicsObj* obj )
 {
-	//physicsObjList.push_back(obj);
+	//physicsObjList.emplace_back(obj);
 	if (physicsObjList.find(obj->getID()) == physicsObjList.end())
 	{
 		physicsObjList[obj->getID()] = obj;
@@ -256,10 +256,10 @@ SBPhysicsObj::SBPhysicsObj()
 	
 	SmartBody::StringAttribute* geomTypeAttr = createStringAttribute("geomType","box",true,"Geom", 80, false, false, false,"the geometry type");	
 	std::vector<std::string> geomTypes;
-	geomTypes.push_back("null");
-	geomTypes.push_back("sphere");	
-	geomTypes.push_back("box");	
-	geomTypes.push_back("capsule");	
+	geomTypes.emplace_back("null");
+	geomTypes.emplace_back("sphere");
+	geomTypes.emplace_back("box");
+	geomTypes.emplace_back("capsule");
 	geomTypeAttr->setValidValues(geomTypes);
 	SBObject::createVec3Attribute("geomSize",1.f,1.f,1.f,true, "Geom", 20, false, false, false, "?");
 }
@@ -580,7 +580,7 @@ void SbmJointObj::handleCollision( SrVec contactPt, SBPhysicsObj* colObj )
 	{
 		rec.momentum = colObj->getLinearVel()*colObj->getMass();
 	}
-	colRecords.push_back(rec);	
+	colRecords.emplace_back(rec);
 }
 
 
@@ -624,7 +624,7 @@ std::vector<SbmJointObj*> SBPhysicsCharacter::getJointObjList()
 		 mi != jointObjMap.end();
 		 mi++)
 	{
-		jointObjList.push_back(mi->second);
+		jointObjList.emplace_back(mi->second);
 	}
 	return jointObjList;	
 }
@@ -638,7 +638,7 @@ std::vector<SBPhysicsJoint*> SBPhysicsCharacter::getPhyJointList()
 		  mi != jointMap.end();
 		  mi++)
 	{
-		jointList.push_back(mi->second);
+		jointList.emplace_back(mi->second);
 	}
 	return jointList;
 }

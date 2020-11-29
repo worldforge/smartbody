@@ -87,7 +87,7 @@ LLTMatrix *SPDMatrix::factor() const
     vector<vector<pair<int, double> > > mt(sz); //transposed values
     for(i = 0; i < sz; ++i) {
         for(j = 0; j < (int)m[i].size(); ++j) {
-            mt[m[i][j].first].push_back(make_pair(i, m[i][j].second));
+            mt[m[i][j].first].emplace_back(make_pair(i, m[i][j].second));
         }
     }
     
@@ -171,7 +171,7 @@ vector<int> SPDMatrix::computePerm() const
         int cur = (neighborSize.begin())->second;
         neighborSize.erase(neighborSize.begin());
 
-        out.push_back(cur);
+        out.emplace_back(cur);
 
         //collect the neighbors of eliminated vertex
         vector<int> nb(neighbors[cur].begin(), neighbors[cur].end()); 
@@ -222,9 +222,9 @@ LLTMatrix *SPDMatrix::factor() const
         for(j = 0; j < (int)m[i].size(); ++j) {
             int ni = out.perm[i], nidx = out.perm[m[i][j].first];
             if(ni >= nidx)
-                pm[ni].push_back(make_pair(nidx, m[i][j].second));
+                pm[ni].emplace_back(make_pair(nidx, m[i][j].second));
             else
-                pm[nidx].push_back(make_pair(ni, m[i][j].second));
+                pm[nidx].emplace_back(make_pair(ni, m[i][j].second));
         }
     }
     for(i = 0; i < sz; ++i)
@@ -245,7 +245,7 @@ LLTMatrix *SPDMatrix::factor() const
         int inCA = 0;
         for(j = 0; j < (int)pm[i].size() - 1; ++j) {
             added[pm[i][j].first] = true;
-            columnsAdded.push_back(pm[i][j].first);
+            columnsAdded.emplace_back(pm[i][j].first);
         }
         while(inCA < (int)columnsAdded.size()) {
             int idx = columnsAdded[inCA];
@@ -254,7 +254,7 @@ LLTMatrix *SPDMatrix::factor() const
                 int curCol = cols[idx][k].first;
                 if(!added[curCol]) {
                     added[curCol] = true;
-                    columnsAdded.push_back(curCol);
+                    columnsAdded.emplace_back(curCol);
                 }
             }
         }
@@ -262,7 +262,7 @@ LLTMatrix *SPDMatrix::factor() const
 
         for(j = 0; j < (int)columnsAdded.size(); ++j) {//add the columns and clear added
             added[columnsAdded[j]] = false;
-            cols[columnsAdded[j]].push_back(make_pair(i, 0.));
+            cols[columnsAdded[j]].emplace_back(make_pair(i, 0.));
         }
 
         for(j = 0; j < (int)pm[i].size() - 1; ++j) { //initialize it with m's entries
@@ -283,7 +283,7 @@ LLTMatrix *SPDMatrix::factor() const
         for(j = 0; j < (int)columnsAdded.size(); ++j) {
             double val = cols[columnsAdded[j]].back().second;
             out.diag[i] -= SQR(val);
-            out.m[i].push_back(make_pair(columnsAdded[j], val)); //also add rows to output
+            out.m[i].emplace_back(make_pair(columnsAdded[j], val)); //also add rows to output
         }
         if(out.diag[i] <= 0.) { //not positive definite
             assert(false && "Not positive definite matrix (or ill-conditioned)");
@@ -302,8 +302,8 @@ LLTMatrix *SPDMatrix::factor() const
         for(j = 0; j < m[i].size(); ++j) {
             int q = m[i][j].first;
             double total = -m[i][j].second;
-            out.m[i].push_back(make_pair(i, out.diag[i]));
-            if(i != q) out.m[q].push_back(make_pair(q, out.diag[q]));
+            out.m[i].emplace_back(make_pair(i, out.diag[i]));
+            if(i != q) out.m[q].emplace_back(make_pair(q, out.diag[q]));
             for(k = 0; k < out.m[i].size(); ++k) {
                 for(int z = 0; z < out.m[q].size(); ++z) {
                     if(out.m[i][k].first != out.m[q][z].first)
@@ -331,7 +331,7 @@ void MyLLTMatrix::initMt()  //compute the transposed entries (by rows)
 
     for(i = 0; i < (int)m.size(); ++i) {
         for(j = 0; j < (int)m[i].size(); ++j) {
-            mt[m[i][j].first].push_back(make_pair(i, m[i][j].second));
+            mt[m[i][j].first].emplace_back(make_pair(i, m[i][j].second));
         }
     }
 }

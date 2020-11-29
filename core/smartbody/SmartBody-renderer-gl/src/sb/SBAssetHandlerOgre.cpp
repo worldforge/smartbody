@@ -104,10 +104,10 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 						{
 							// manually add all joint names
 							SmartBody::SBJoint* joint = existingSkeleton->getJoint(k);
-							sw->infJointName.push_back(joint->getName());
-							sw->infJoint.push_back(joint);
+							sw->infJointName.emplace_back(joint->getName());
+							sw->infJoint.emplace_back(joint);
 							SrMat gmatZeroInv = joint->gmatZero().rigidInverse();						
-							sw->bindPoseMat.push_back(gmatZeroInv);
+							sw->bindPoseMat.emplace_back(gmatZeroInv);
 						}
 					}
 				}
@@ -119,7 +119,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 						for (size_t i = 0; i < skinWeight->jointNameIndex.size(); i++)
 						{
 							SmartBody::SBJoint* joint = existingSkeleton->getJoint(skinWeight->jointNameIndex[i]);
-							skinWeight->infJointName.push_back(joint->getName());
+							skinWeight->infJointName.emplace_back(joint->getName());
 						}
 					}
 				}
@@ -142,7 +142,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 				auto* srSnModelStatic = new SrSnModel();
 				srSnModelStatic->shape(*i);
 				srSnModelStatic->shape().name = i->name;
-				mesh->dMeshStatic_p.push_back(srSnModelStatic);
+				mesh->dMeshStatic_p.emplace_back(srSnModelStatic);
 				srSnModelStatic->ref();
 
 				auto* srSnModelDynamic = new SrSnModel();
@@ -150,7 +150,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 				srSnModelDynamic->changed(true);
 				srSnModelDynamic->visible(false);
 				srSnModelDynamic->shape().name = i->name;
-				mesh->dMeshDynamic_p.push_back(srSnModelDynamic);
+				mesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
 				srSnModelDynamic->ref();
 			
 				delete i;

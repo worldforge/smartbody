@@ -61,12 +61,17 @@ struct ColladChannel
 class ParserOpenCOLLADA
 {
 	public:
+		struct ParserContext {
+			std::unique_ptr<XercesDOMParser> parser;
+			std::unique_ptr<HandlerBase> errorHandler;
+		};
+
 		static void getChildNodes(const std::string& nodeName, DOMNode* node, std::vector<DOMNode*>& childs );
 		static DOMNode* getNode(const std::string& nodeName, DOMNode* node, int curDepth, int maximumDepth);
 		static DOMNode* getNode(const std::string& nodeName, DOMNode* node);
-		static DOMNode* getNode(const std::string& nodeName, std::string fileName, int maximumDepth);
-		static DOMNode* getNode(const std::string& nodeName, std::string fileName);
-		static XercesDOMParser* getParserFromFile(std::string fileName);
+//		static DOMNode* getNode(const std::string& nodeName, std::string fileName, int maximumDepth);
+//		static DOMNode* getNode(const std::string& nodeName, std::string fileName);
+		static ParserContext getParserFromFile(std::string fileName);
 		static std::string getNodeAttributeString(DOMNode* node, XMLCh* attrName);
 		static int         getNodeAttributeInt(DOMNode* node, XMLCh* attrName);
 		static void nodeStr(const XMLCh* s, std::string& out);
@@ -110,7 +115,7 @@ class ParserOpenCOLLADA
 		static std::string getGeometryType(std::string s);
 		static void setModelVertexSource(std::string& sourceName, std::string& semanticName, SrModel* model, VecListMap& vecMap);		
 		static void writeJointNode(FILE* fp, SmartBody::SBJoint* joint, double scale);
-		static std::string exportMaerialTexParam( FILE* fp, std::string texName );
+		static std::string exportMaerialTexParam( FILE* fp, const std::string& texName );
 };
 
 #endif

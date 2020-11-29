@@ -290,7 +290,7 @@ int DrawLib::_startDefiningDisplayList()
 		return -1;
 
 	// save the new list
-	_displayLists.push_back(newDisplayList);
+	_displayLists.emplace_back(newDisplayList);
 
 	// start the list
 	glNewList(newDisplayList, GL_COMPILE);

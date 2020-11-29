@@ -1579,7 +1579,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 					float cDiff = cAngle - yaw;
 					normalizeAngle(cDiff);
 					if (diff * cDiff > 0)
-						neigbors.push_back(cAngle);
+						neigbors.emplace_back(cAngle);
 				}
 			}
 		}
@@ -1949,7 +1949,7 @@ void PPRAISteeringAgent::parameterTesting()
 
 void PPRAISteeringAgent::cacheParameter(std::list<float>& sampleData, float data, int size)
 {
-	sampleData.push_back(data);
+	sampleData.emplace_back(data);
 	while (sampleData.size() > (size_t)size)
 		sampleData.pop_front();
 }

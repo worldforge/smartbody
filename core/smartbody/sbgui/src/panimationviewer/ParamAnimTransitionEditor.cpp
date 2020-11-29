@@ -290,7 +290,7 @@ void PATransitionEditor::updateTransitionTimeMark(Fl_Widget* widget, void* data)
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	PATransitionEditor* editor = (PATransitionEditor*) data;
-	SmartBody::SBAnimationTransition* transition = NULL;
+	SmartBody::SBAnimationTransition* transition = nullptr;
 	std::string fromStateName = "";
 	std::string toStateName = "";
 	if (!editor->transitionList->active())
@@ -369,7 +369,7 @@ void PATransitionEditor::createNewTransition(Fl_Widget* widget, void* data)
 	std::string toStateName = editor->stateList2->menu()[editor->stateList2->value()].label();
 
 	SmartBody::SBAnimationTransition* transition = SmartBody::SBScene::getScene()->getBlendManager()->getTransition(fromStateName, toStateName);
-	if (transition != NULL)
+	if (transition != nullptr)
 	{
 		SmartBody::util::log("Transition %s to %s already exist.", fromStateName.c_str(), toStateName.c_str());
 		return;
@@ -377,7 +377,7 @@ void PATransitionEditor::createNewTransition(Fl_Widget* widget, void* data)
 	SmartBody::SBAnimationBlend* fromState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(fromStateName);
 	SmartBody::SBAnimationBlend* toState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(toStateName);
 		
-	if (fromState != NULL && toState != NULL)
+	if (fromState != nullptr && toState != nullptr)
 	{
 		transition = SmartBody::SBScene::getScene()->getBlendManager()->createTransition(fromStateName, toStateName);
 		updateTransitionTimeMark(widget, data);

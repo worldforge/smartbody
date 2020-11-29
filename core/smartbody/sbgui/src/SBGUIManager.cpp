@@ -25,7 +25,7 @@
 
 #include "SBGUIManager.h"
 
-SBGUIManager* SBGUIManager::_singleton = NULL;
+SBGUIManager* SBGUIManager::_singleton = nullptr;
 SBGUIManager::SBGUIManager()
 {
 	initialized = false;

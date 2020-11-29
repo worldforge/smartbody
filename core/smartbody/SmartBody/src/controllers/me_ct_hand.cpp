@@ -24,7 +24,7 @@ void FingerChain::init( MeCtIKTreeNode* figTip )
 	fingerNodes.clear();
 	while (node->parent != nullptr)
 	{
-		fingerNodes.push_back(node);
+		fingerNodes.emplace_back(node);
 		node = node->parent;
 	}
 	//fingerQuats.resize(fingerNodes.size());	
@@ -44,7 +44,7 @@ void FingerChain::getLineSeg( std::vector<SrVec>& lineSeg )
 	lineSeg.clear();
 	for (unsigned int i=0;i<fingerNodes.size();i++)
 	{
-		lineSeg.push_back(fingerNodes[i]->gmat.get_translation());		
+		lineSeg.emplace_back(fingerNodes[i]->gmat.get_translation());
 	}
 }
 
@@ -276,7 +276,7 @@ void MeCtHand::init(std::string grabType, const MotionDataSet& reachPose, const 
 		MeCtIKTreeNode* node = nodeList[i];
 		SmartBody::SBJoint* joint = skeletonCopy->getJointByName(node->getNodeName());
 		SkJointQuat* skQuat = joint->quat();		
-		affectedJoints.push_back(joint);	
+		affectedJoints.emplace_back(joint);
 		_channels.add(joint->getMappedJointName(), SkChannel::Quat);		
 	}	
 	SmartBody::SBMotion *releaseHand, *grabHand, *reachHand, *pointHand;

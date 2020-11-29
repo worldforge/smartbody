@@ -250,7 +250,7 @@ void ParserCOLLADAFast::getChildNodes(const std::string& nodeName, rapidxml::xml
 	std::string name = node->name();
 	std::string value = node->value();
 	if (name == nodeName)
-		children.push_back(node);
+		children.emplace_back(node);
 
 	//if (!node->hasChildNodes()) // no child nodes
 	//	return;
@@ -469,12 +469,12 @@ void ParserCOLLADAFast::parseLibraryControllers(rapidxml::xml_node<>* node, Defo
 												jointName.erase(0, jointPrefix.size());
 											}
 											//cout << "joint name = " << jointName << endl;	
-											skinWeight->infJointName.push_back(jointName);
+											skinWeight->infJointName.emplace_back(jointName);
 
 										}
 										//if ( sourceId == bindWeightName && realNodeName == "float_array") // joint weights
 										if ( isBindWeights && realNodeName == "float_array") // joint weights
-											skinWeight->bindWeight.push_back((float)atof(token.c_str()));
+											skinWeight->bindWeight.emplace_back((float)atof(token.c_str()));
 										//if ( sourceId == bindPoseMatName && realNodeName == "float_array") // bind pose matrices
 										if ( isBindPoseMatrices && realNodeName == "float_array") // bind pose matrices
 										{
@@ -488,7 +488,7 @@ void ParserCOLLADAFast::parseLibraryControllers(rapidxml::xml_node<>* node, Defo
 												//newMat = skinWeight->bindShapeMat.inverse()*newMat;
 												SrVec newTran = newMat.get_translation()*scaleFactor;
 												newMat.setl4(newTran);
-												skinWeight->bindPoseMat.push_back(newMat);
+												skinWeight->bindPoseMat.emplace_back(newMat);
 											}
 										}
 									}
@@ -514,17 +514,17 @@ void ParserCOLLADAFast::parseLibraryControllers(rapidxml::xml_node<>* node, Defo
 									{
 										for (size_t i = 0; i < tokens.size(); i++)
 										{
-											skinWeight->numInfJoints.push_back(atoi(tokens[i].c_str()));
+											skinWeight->numInfJoints.emplace_back(atoi(tokens[i].c_str()));
 										}
 									}
 									else if (indexNodeName == "v")
 									{
 										for (size_t i = 0; i < tokens.size(); i++)
 										{
-											skinWeight->jointNameIndex.push_back(atoi(tokens[i].c_str()));
+											skinWeight->jointNameIndex.emplace_back(atoi(tokens[i].c_str()));
 											i++;
 
-											skinWeight->weightIndex.push_back(atoi(tokens[i].c_str()));
+											skinWeight->weightIndex.emplace_back(atoi(tokens[i].c_str()));
 										}
 									}
 									else
@@ -538,7 +538,7 @@ void ParserCOLLADAFast::parseLibraryControllers(rapidxml::xml_node<>* node, Defo
 							childOfSkinCurNode = childOfSkinCurNode->next_sibling();
 						}
 
-						mesh.skinWeights.push_back(skinWeight);
+						mesh.skinWeights.emplace_back(skinWeight);
 
 
 					} // end of if (childName == "skin")
@@ -570,14 +570,14 @@ void ParserCOLLADAFast::parseLibraryControllers(rapidxml::xml_node<>* node, Defo
 									if (childNameOfSource == "IDREF_array" || childNameOfSource == "Name_array")
 									{
 										std::vector<std::string> refMesh;
-										refMesh.push_back(morphName);	// first one is the base shape
+										refMesh.emplace_back(morphName);	// first one is the base shape
 										std::string tokenBlock = childNodeOfSource->value();
 
 										std::vector<std::string> tokens;
 										SmartBody::util::tokenize(tokenBlock, tokens, " \r\n");										
 										for (auto & token : tokens)
 										{
-											refMesh.push_back(token);
+											refMesh.emplace_back(token);
 										}
 										mesh.morphTargets.insert(make_pair(controllerId, refMesh));
 									}
@@ -606,7 +606,7 @@ void ParserCOLLADAFast::parseLibraryControllers(rapidxml::xml_node<>* node, Defo
 			{
 				std::string& jointName = skinWeight->infJointName[j];
 				SkJoint* curJoint = char_p->getSkeleton()->search_joint(jointName.c_str());
-				skinWeight->infJoint.push_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
+				skinWeight->infJoint.emplace_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
 			}
 		}
 	}
@@ -751,9 +751,9 @@ void ParserCOLLADAFast::parseJoints(rapidxml::xml_node<>* node, SkSkeleton& skel
 						jorientx = euler[0];
 						jorienty = euler[1];
 						jorientz = euler[2];
-						orderVec.push_back("Y");
-						orderVec.push_back("X");
-						orderVec.push_back("Z");
+						orderVec.emplace_back("Y");
+						orderVec.emplace_back("X");
+						orderVec.emplace_back("Z");
 					}
 					if (infoNodeName == "translate")
 					{
@@ -783,7 +783,7 @@ void ParserCOLLADAFast::parseJoints(rapidxml::xml_node<>* node, SkSkeleton& skel
 
 #if ALL_ROTATION
 							if (tokens.size() >= 4)
-								allrots.push_back(SrQuat(SrVec(atof(tokens[0].c_str()), atof(tokens[1].c_str()), atof(tokens[2].c_str())), M_PI / 180.0 * 	atof(tokens[3].c_str())));	
+								allrots.emplace_back(SrQuat(SrVec(atof(tokens[0].c_str()), atof(tokens[1].c_str()), atof(tokens[2].c_str())), M_PI / 180.0 * 	atof(tokens[3].c_str())));
 #else
 							float finalValue = 0;
 							for (int tokenizeC = 0; tokenizeC < 4; tokenizeC++)
@@ -793,7 +793,7 @@ void ParserCOLLADAFast::parseJoints(rapidxml::xml_node<>* node, SkSkeleton& skel
 							if (sidAttr == "jointOrientY") jorienty = finalValue;
 							if (sidAttr == "jointOrientZ") jorientz = finalValue;
 							if (orderVec.size() != 3)
-								orderVec.push_back(sidAttr.substr(11, 1));
+								orderVec.emplace_back(sidAttr.substr(11, 1));
 								
 #endif
 						}
@@ -804,7 +804,7 @@ void ParserCOLLADAFast::parseJoints(rapidxml::xml_node<>* node, SkSkeleton& skel
 							SmartBody::util::tokenize(rotationString, tokens, " \n");
 #if ALL_ROTATION
 							if (tokens.size() >= 4)
-								allrots.push_back(SrQuat(SrVec(atof(tokens[0].c_str()), atof(tokens[1].c_str()), atof(tokens[2].c_str())), M_PI / 180.0 * 	atof(tokens[3].c_str())));		
+								allrots.emplace_back(SrQuat(SrVec(atof(tokens[0].c_str()), atof(tokens[1].c_str()), atof(tokens[2].c_str())), M_PI / 180.0 * 	atof(tokens[3].c_str())));
 #else
 							float finalValue = 0;
 							for (int tokenizeC = 0; tokenizeC < 4; tokenizeC++)
@@ -813,7 +813,7 @@ void ParserCOLLADAFast::parseJoints(rapidxml::xml_node<>* node, SkSkeleton& skel
 							if (sidAttr == "rotateY") roty = finalValue;
 							if (sidAttr == "rotateZ") rotz = finalValue;
 							if (orderVec.size() != 3)
-								orderVec.push_back(sidAttr.substr(6, 1));
+								orderVec.emplace_back(sidAttr.substr(6, 1));
 #endif
 						}
 						if (sidAttr.substr(0, 8) == "rotation")
@@ -828,7 +828,7 @@ void ParserCOLLADAFast::parseJoints(rapidxml::xml_node<>* node, SkSkeleton& skel
 							if (sidAttr == "rotationY") roty = finalValue;
 							if (sidAttr == "rotationZ") rotz = finalValue;
 							if (orderVec.size() != 3)
-								orderVec.push_back(sidAttr.substr(8, 1));
+								orderVec.emplace_back(sidAttr.substr(8, 1));
 						}
 					}
 					infoCurNode = infoCurNode->next_sibling();
@@ -1182,7 +1182,7 @@ void ParserCOLLADAFast::parseLibrarySingleAnimation(rapidxml::xml_node<>* node, 
 					jointRotationOrderMap[jointName] = emptyString;
 				}
 				std::string rotationOrder = channelType.substr(channelType.size() - 1, 1);
-				jointRotationOrderMap[jointName].push_back(rotationOrder);
+				jointRotationOrderMap[jointName].emplace_back(rotationOrder);
 			}
 			if (channelType == "translate")
 			{
@@ -1216,7 +1216,7 @@ void ParserCOLLADAFast::parseLibrarySingleAnimation(rapidxml::xml_node<>* node, 
 			int quatIdx = motionChannels.float_position(channelID);
 			if (zaxis && jointName == skeleton.root()->jointName())
 				rootIdx = quatIdx;
-			quatIndices.push_back(quatIdx);
+			quatIndices.emplace_back(quatIdx);
 		}
 	}
 
@@ -1479,7 +1479,7 @@ void ParserCOLLADAFast::parseLibraryAnimations( rapidxml::xml_node<>* node,
 							jointRotationOrderMap[jointName] = emptyString;
 						}
 						std::string rotationOrder = channelType.substr(channelType.size() - 1, 1);
-						jointRotationOrderMap[jointName].push_back(rotationOrder);
+						jointRotationOrderMap[jointName].emplace_back(rotationOrder);
 					}
 					if (channelType == "translate")
 					{
@@ -1513,7 +1513,7 @@ void ParserCOLLADAFast::parseLibraryAnimations( rapidxml::xml_node<>* node,
 					int quatIdx = motionChannels.float_position(channelID);
 					if (zaxis && jointName == skeleton.root()->jointName())
 						rootIdx = quatIdx;
-					quatIndices.push_back(quatIdx);
+					quatIndices.emplace_back(quatIdx);
 				}
 			}
 
@@ -1632,7 +1632,7 @@ void ParserCOLLADAFast::parseLibraryAnimations2(rapidxml::xml_node<>* node, SkSk
 					jointRotationOrderMap[jointName] = emptyString;
 				}
 				std::string rotationOrder = channelType.substr(channelType.size()-1,1);
-				jointRotationOrderMap[jointName].push_back(rotationOrder);
+				jointRotationOrderMap[jointName].emplace_back(rotationOrder);
 			}
 			if (channelType == "translate")
 			{
@@ -1844,7 +1844,7 @@ void ParserCOLLADAFast::parseLibraryAnimations2(rapidxml::xml_node<>* node, SkSk
 		if (chan.type == SkChannel::Quat)
 		{
 			int id = motionChannels.float_position(i);
-			quatIndices.push_back(id);
+			quatIndices.emplace_back(id);
 		}
 	}
 	*/
@@ -1858,7 +1858,7 @@ void ParserCOLLADAFast::parseLibraryAnimations2(rapidxml::xml_node<>* node, SkSk
 		int channelID = motionChannels.search(jointName,SkChannel::Quat);
 		if (channelID != -1)
 		{
-			quatIndices.push_back(motionChannels.float_position(channelID));
+			quatIndices.emplace_back(motionChannels.float_position(channelID));
 		}		
 	}
 
@@ -2315,7 +2315,7 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 							//if (c >= numTokens)
 								//break;
 						}
-						floatArrayMap[sourceID].push_back(tempV);
+						floatArrayMap[sourceID].emplace_back(tempV);
 					}
 					/*
 					std::vector<std::string> tokens;
@@ -2330,7 +2330,7 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 						{
 							tempV[k] = (float)atof(tokens[i+k].c_str());
 						}
-						floatArrayMap[sourceID].push_back(tempV);
+						floatArrayMap[sourceID].emplace_back(tempV);
 					}
 					*/
 
@@ -2465,7 +2465,7 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 							std::vector<std::string> tokens;
 							SmartBody::util::tokenize(vcountString, tokens, " \n");
 							for (int i = 0; i < count; i++)
-								vcountList.push_back(atoi(tokens[i].c_str()));
+								vcountList.emplace_back(atoi(tokens[i].c_str()));
 						}
 
 						triangleCurNode = triangleCurNode->next_sibling();
@@ -2477,7 +2477,7 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 					if (vcountList.size() == 0)
 					{
 						for (int i = 0; i < count; i++)
-							vcountList.push_back(3);
+							vcountList.emplace_back(3);
 					}
 
 					// iterating to get all the <p> node
@@ -2529,20 +2529,20 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 								if (semantic == "VERTEX")
 								{
 									if (vertexSemantics.find("POSITION") != vertexSemantics.end())																								
-										fVec.push_back(atoi(tokens[index].c_str()));
-										//fVec.push_back(atoi(splitter.GetToken(i)));
+										fVec.emplace_back(atoi(tokens[index].c_str()));
+										//fVec.emplace_back(atoi(splitter.GetToken(i)));
 
 									if (vertexSemantics.find("NORMAL") != vertexSemantics.end())
-										fnVec.push_back(atoi(tokens[index].c_str()));
-										//fnVec.push_back(atoi(splitter.GetToken(i)));									
+										fnVec.emplace_back(atoi(tokens[index].c_str()));
+										//fnVec.emplace_back(atoi(splitter.GetToken(i)));
 								}
  								if (semantic == "TEXCOORD")
- 									ftVec.push_back(atoi(tokens[index].c_str()));
-									//ftVec.push_back(atoi(splitter.GetToken(i)));
+ 									ftVec.emplace_back(atoi(tokens[index].c_str()));
+									//ftVec.emplace_back(atoi(splitter.GetToken(i)));
 
 								if (semantic == "NORMAL" && vertexSemantics.find("NORMAL") == vertexSemantics.end())
-									fnVec.push_back(atoi(tokens[index].c_str()));
-									//fnVec.push_back(atoi(splitter.GetToken(i)));
+									fnVec.emplace_back(atoi(tokens[index].c_str()));
+									//fnVec.emplace_back(atoi(splitter.GetToken(i)));
 
 								//i++;
 								//if (i >= count)
@@ -2557,21 +2557,21 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 							
 						for (size_t x = 2; x < fVec.size(); x++)
 						{
-							newModel->F.push_back(SrVec3i(fVec[0], fVec[x - 1], fVec[x]));
-							newModel->Fm.push_back(curmtl);
+							newModel->F.emplace_back(SrVec3i(fVec[0], fVec[x - 1], fVec[x]));
+							newModel->Fm.emplace_back(curmtl);
 							if (ftVec.size() > x)
-								newModel->Ft.push_back(SrVec3i(ftVec[0], ftVec[x - 1], ftVec[x]));
+								newModel->Ft.emplace_back(SrVec3i(ftVec[0], ftVec[x - 1], ftVec[x]));
 							else if (ftVec.size() > 2)
-								newModel->Ft.push_back(SrVec3i(ftVec[0], ftVec[1], ftVec[2]));
+								newModel->Ft.emplace_back(SrVec3i(ftVec[0], ftVec[1], ftVec[2]));
 							else
-								newModel->Ft.push_back(SrVec3i(0, 0, 0));
+								newModel->Ft.emplace_back(SrVec3i(0, 0, 0));
 
 							if (fnVec.size() > x)
-								newModel->Fn.push_back(SrVec3i(fnVec[0], fnVec[x - 1], fnVec[x]));
+								newModel->Fn.emplace_back(SrVec3i(fnVec[0], fnVec[x - 1], fnVec[x]));
 							else if (fnVec.size() > 2)
-								newModel->Fn.push_back(SrVec3i(fnVec[0], fnVec[1], fnVec[2]));
+								newModel->Fn.emplace_back(SrVec3i(fnVec[0], fnVec[1], fnVec[2]));
 							else
-								newModel->Fn.push_back(SrVec3i(fVec[0], fVec[x - 1], fVec[x]));
+								newModel->Fn.emplace_back(SrVec3i(fVec[0], fVec[x - 1], fVec[x]));
 						}
 					}					
 				}
@@ -2594,7 +2594,7 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 //			newModel->remove_redundant_normals();
 			newModel->compress();
 			
-			meshModelVec.push_back(newModel);
+			meshModelVec.emplace_back(newModel);
 			//SmartBody::util::log("Added model %s", (const char*) newModel->name);			
 			for (size_t i = 0; i < newModel->M.size(); i++)
 			{
@@ -2611,7 +2611,7 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 				  
 				   if (transparentTexMap.find(matName) != transparentTexMap.end())
 				   {
-					   auto diffuseTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, prefixedName.c_str());
+					   auto diffuseTex = texManager.findTexture(prefixedName.c_str());
 					   SbmTexture* transTex = transparentTexMap[matName];
 					   if (diffuseTex && transTex)
 					   {
@@ -2640,7 +2640,7 @@ void ParserCOLLADAFast::parseLibraryGeometries( rapidxml::xml_node<>* node, cons
 
 				   if (glossyTexMap.find(matName) != glossyTexMap.end())
 				   {
-					   auto specularTex = texManager.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP, prefixedName.c_str());
+					   auto specularTex = texManager.findTexture(prefixedName.c_str());
 					   SbmTexture* glossyTex = glossyTexMap[matName];
 					   if (specularTex && glossyTex)
 					   {
@@ -2693,14 +2693,14 @@ void ParserCOLLADAFast::setModelVertexSource( std::string& sourceName, std::stri
 // 				SrVec pos = (*sourceArray)[i];
 // 				SmartBody::util::log("pos = %f %f %f",pos[0],pos[1],pos[2]);
 // 			}
-			model->V.push_back((*sourceArray)[i]);										
+			model->V.emplace_back((*sourceArray)[i]);
 		}
 	}
 	else if (semanticName == "NORMAL" && sourceArray && model->N.size() == 0)
 	{
 		for (unsigned int i=0;i<sourceArray->size();i++)
 		{
-			model->N.push_back((*sourceArray)[i]);										
+			model->N.emplace_back((*sourceArray)[i]);
 		}
 	}
 	else if (semanticName == "TEXCOORD" && sourceArray && model->T.size() == 0)
@@ -2708,14 +2708,14 @@ void ParserCOLLADAFast::setModelVertexSource( std::string& sourceName, std::stri
 		for (unsigned int i=0;i<sourceArray->size();i++)
 		{
 			SrVec ts = (*sourceArray)[i];
-			model->T.push_back(SrVec2(ts[0],ts[1]));										
+			model->T.emplace_back(SrVec2(ts[0],ts[1]));
 		}
 	}
 	else if (semanticName == "COLOR" && sourceArray && model->Vc.size() == 0)
 	{
 		for (unsigned int i=0;i<sourceArray->size();i++)
 		{			
-			model->Vc.push_back((*sourceArray)[i]);										
+			model->Vc.emplace_back((*sourceArray)[i]);
 		}
 	}
 }
@@ -2895,9 +2895,9 @@ void ParserCOLLADAFast::parseLibraryEffects( rapidxml::xml_node<>* node, std::st
 			//std::string materialName = materialId2Name[materialId];
 			SrMaterial material;
 			material.init();
-			M.push_back(material);
+			M.emplace_back(material);
 			SrString matName(materialId.c_str());
-			mnames.push_back((const char*) matName);
+			mnames.emplace_back((const char*) matName);
 
 			std::vector<rapidxml::xml_node<>*> initNodes;
 			ParserCOLLADAFast::getChildNodes("init_from", node, initNodes);
@@ -3263,7 +3263,7 @@ void ParserCOLLADAFast::parseNodeAnimation(rapidxml::xml_node<>* node1, std::map
 		{
 			std::string target = getNodeAttributeString(node2, "target");
 			std::string source = getNodeAttributeString(node2, "source");
-			channelSamplerNameMap.push_back(ColladChannelFast());
+			channelSamplerNameMap.emplace_back(ColladChannelFast());
 			ColladChannelFast& colChannel = channelSamplerNameMap.back();
 			colChannel.sourceName = source.substr(1);
 			//SmartBody::util::log("colChannel input name = %s",colChannel.sourceName.c_str());

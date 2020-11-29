@@ -149,7 +149,7 @@ void SBMobile::callJNIMethod(std::string className, std::string methodName, std:
 	for (unsigned int i=0;i<parameters.size();i++)
 	{
 		jstring temp = stringToJString(parameters[i]);
-		parametersJStr.push_back(temp);
+		parametersJStr.emplace_back(temp);
 	}
 	int sizeOfParameters = parameters.size();
 

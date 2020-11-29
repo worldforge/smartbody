@@ -43,7 +43,7 @@ PATransitionEditor2::PATransitionEditor2(int x, int y, int w, int h, PanimationW
 	precisionCompensate = .0001;
 	lastNameIndex = 0;
 	isPlaying = false;
-	curTransition = NULL;
+	curTransition = nullptr;
 
 	this->label("Transition Editor2");
 	this->begin();
@@ -140,7 +140,7 @@ PATransitionEditor2::PATransitionEditor2(int x, int y, int w, int h, PanimationW
 	track2->addBlock(block2);
 	transitionEditorNleModel->addTrack(track2);
 
-	creator = NULL;
+	creator = nullptr;
 	lastSelectedMotion = "";
 
 	loadStates();
@@ -309,7 +309,7 @@ void PATransitionEditor2::changeState1List(Fl_Widget* widget, void* data)
 		}
 		else
 		{
-			editor->curTransition = NULL;
+			editor->curTransition = nullptr;
 		}
 	}
 	editor->updateIntervalMarks(editor->curTransition);
@@ -372,7 +372,7 @@ void PATransitionEditor2::changeState2List(Fl_Widget* widget, void* data)
 		}
 		else
 		{
-			editor->curTransition = NULL;
+			editor->curTransition = nullptr;
 		}
 	}
 	editor->updateIntervalMarks(editor->curTransition);
@@ -431,7 +431,7 @@ void PATransitionEditor2::removeTransitionTimeMark(Fl_Widget* widget, void* data
 
 	// which correspondence point has been selected?
 	int keyIndex = -1;
-	CorrespondenceMark* attachedMark = NULL;
+	CorrespondenceMark* attachedMark = nullptr;
 	for (int t = 0; t < editor->transitionEditorNleModel->getNumTracks(); t++)
 	{
 		nle::Track* track = editor->transitionEditorNleModel->getTrack(t);
@@ -476,7 +476,7 @@ void PATransitionEditor2::snapTimeMark(Fl_Widget* widget, void* data)
 
 	// which correspondence point has been selected?
 	int keyIndex = -1;
-	CorrespondenceMark* attachedMark = NULL;
+	CorrespondenceMark* attachedMark = nullptr;
 	int motionIndex = -1;
 	for (int t = 0; t < editor->transitionEditorNleModel->getNumTracks(); t++)
 	{
@@ -525,7 +525,7 @@ void PATransitionEditor2::snapStartTimeMark(Fl_Widget* widget, void* data)
 
 	// which correspondence point has been selected?
 	int keyIndex = -1;
-	CorrespondenceMark* attachedMark = NULL;
+	CorrespondenceMark* attachedMark = nullptr;
 	int motionIndex = -1;
 	for (int t = 0; t < editor->transitionEditorNleModel->getNumTracks(); t++)
 	{
@@ -578,7 +578,7 @@ void PATransitionEditor2::snapEndTimeMark(Fl_Widget* widget, void* data)
 
 	// which interval point has been selected?
 	int keyIndex = -1;
-	CorrespondenceMark* attachedMark = NULL;
+	CorrespondenceMark* attachedMark = nullptr;
 	int motionIndex = -1;
 	for (int t = 0; t < editor->transitionEditorNleModel->getNumTracks(); t++)
 	{
@@ -875,7 +875,7 @@ void PATransitionEditor2::scrub(Fl_Widget* widget, void* data)
 	{
 		if (editor->state1AnimationList->selected(i+1))
 		{
-			selectedMotions.push_back(editor->state1AnimationList->text(i + 1));
+			selectedMotions.emplace_back(editor->state1AnimationList->text(i + 1));
 		}
 	}
 
@@ -896,7 +896,7 @@ void PATransitionEditor2::scrub(Fl_Widget* widget, void* data)
 		{
 			weights[lastMotionIndex] = 1.;
 		}
-		PABlendData blendData(NULL, currentState, weights);
+		PABlendData blendData(nullptr, currentState, weights);
 		blendData.timeManager->updateWeights();
 		std::vector<double> times(blendData.state->getNumMotions());
 		blendData.timeManager->getParallelTimes(localTime, times);

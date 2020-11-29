@@ -220,7 +220,7 @@ std::vector<double> SBMotionBlendBase::getMotionParameter( const std::string& mo
 	blendEngine->getMotionParameter(motion,motionParam);
 	std::vector<double> param;
 	for (unsigned int i=0;i<motionParam.size();i++)
-		param.push_back(motionParam(i));
+		param.emplace_back(motionParam(i));
 	return param;
 }
 

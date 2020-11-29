@@ -211,12 +211,12 @@ void replaceSubMesh(std::string deformableMeshName, std::string subMeshName, std
 	subSkin->jointNameIndex.clear();
 	subSkin->numInfJoints.clear();
 	subSkin->weightIndex.clear();
-	subSkin->bindWeight.push_back(1.0f);
+	subSkin->bindWeight.emplace_back(1.0f);
 	for (unsigned int i = 0; i < inputModel.V.size(); i++)
 	{
-		subSkin->jointNameIndex.push_back(0);
-		subSkin->numInfJoints.push_back(1);
-		subSkin->weightIndex.push_back(0);
+		subSkin->jointNameIndex.emplace_back(0);
+		subSkin->numInfJoints.emplace_back(1);
+		subSkin->weightIndex.emplace_back(0);
 	}
 	SbmDeformableMeshGPU* gpuMesh = (SbmDeformableMeshGPU*)mesh;
 	gpuMesh->rebuildVertexBuffer(true);
@@ -278,7 +278,7 @@ void deformableMeshTextureReplace(std::string meshName, std::string textureName,
 
 	SmartBody::util::log("Found texture '%s' in the deformable mesh '%s'.", finalTextureName.c_str(), meshName.c_str());
 	// replace textures with new image files
-	SbmTexture* texture = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, finalTextureName.c_str());
+	auto texture = SbmTextureManager::singleton().findTexture(finalTextureName.c_str());
 	if (!texture)
 	{
 		SmartBody::util::log("Error replacing texture '%s', texture doesn't exist.", finalTextureName.c_str(), meshName.c_str());

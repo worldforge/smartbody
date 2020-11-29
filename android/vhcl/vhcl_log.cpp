@@ -193,7 +193,7 @@ void Logger::AddListener( Listener * listener )
       m_configuredByFile = false;
    }
 
-   m_listeners.push_back( listener );
+   m_listeners.emplace_back( listener );
 }
 
 
@@ -357,7 +357,7 @@ void AndroidListener::OnMessage( const std::string & message )
    // we're now letting log4cxx handle the message
     while (logList.size() > 100)
 	   logList.pop_front();
-    logList.push_back(message);
+    logList.emplace_back(message);
 }
 
 
@@ -422,7 +422,7 @@ void Logger::AddListener( Listener * listener )
       m_configuredByFile = false;
    }
 
-   m_listeners.push_back( listener );
+   m_listeners.emplace_back( listener );
 }
 
 

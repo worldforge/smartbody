@@ -204,8 +204,8 @@ readTermProbs(ECString& path)
 	  if(prb < .001) continue;
 	  const Term* trm = Term::fromInt(trmInt);
 	  assert(trm);
-	  if(trm->terminal_p() == COLON) Term::Colons.push_back(w);
-	  else if(trm->terminal_p() == FINAL) Term::Finals.push_back(w);
+	  if(trm->terminal_p() == COLON) Term::Colons.emplace_back(w);
+	  else if(trm->terminal_p() == FINAL) Term::Finals.emplace_back(w);
 	}
       int cnt;
       wlistStream >> cnt;
@@ -359,7 +359,7 @@ wtoInt(ECString& w)
   if(wmi != newWordMap.end()) return (*wmi).second;
   lastWord++;
   newWordMap[w] = lastWord;
-  newWords.push_back(w);
+  newWords.emplace_back(w);
   return lastWord;
 }
 
@@ -388,7 +388,7 @@ wordPlist(Wrd* word, int word_num)
   if(word->lexeme() == "^^")
     {
       ans.push_back((float)Term::stopTerm->toInt());
-      ans.push_back(1.0);
+      ans.emplace_back(1.0);
       return ans;
     }
   if( wint <= lastKnownWord )
@@ -403,7 +403,7 @@ wordPlist(Wrd* word, int word_num)
 	  if(prob == 0) continue;
 	  assert( prob > 0);
 	  ans.push_back((float)i);
-	  ans.push_back(prob);
+	  ans.emplace_back(prob);
 	  if(printDebug(7777)) cerr << "\t" << i << "\t" << prob << endl;
 	}
       if(!ans.empty())
@@ -424,7 +424,7 @@ wordPlist(Wrd* word, int word_num)
       assert(prob > 0);
       if(printDebug(7777)) cerr << "Uk\t" << i << "\t" << prob << endl;
       ans.push_back((float)i);
-      ans.push_back(prob);
+      ans.emplace_back(prob);
     }
   assert(!ans.empty());
   return ans;

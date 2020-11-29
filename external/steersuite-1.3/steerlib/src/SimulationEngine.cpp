@@ -786,7 +786,7 @@ SteerLib::ModuleMetaInformation * SimulationEngine::_loadModule(const std::strin
 	//================
 	// if all went well up to this point, the module and its dependencies is loaded, so add it to the end of the list of modules
 	// (i.e. it executes after all its dependencies) and return!
-	_modulesInExecutionOrder.push_back(newModule);
+	_modulesInExecutionOrder.emplace_back(newModule);
 	std::cout << "loaded module " << newMetaInfo->moduleName << "\n";
 
 	return newMetaInfo;
@@ -876,13 +876,13 @@ bool SimulationEngine::_unloadModule( SteerLib::ModuleInterface * moduleToDestro
 //========================================
 void SimulationEngine::getListOfKnownBuiltInModules(std::vector<std::string> & moduleNames)
 {
-	moduleNames.push_back("dummyAI");
-	moduleNames.push_back("testCasePlayer");
-	moduleNames.push_back("recFilePlayer");
-	moduleNames.push_back("simulationRecorder");
-	moduleNames.push_back("metricsCollector");
-	moduleNames.push_back("steerBench");
-	moduleNames.push_back("steerBug");
+	moduleNames.emplace_back("dummyAI");
+	moduleNames.emplace_back("testCasePlayer");
+	moduleNames.emplace_back("recFilePlayer");
+	moduleNames.emplace_back("simulationRecorder");
+	moduleNames.emplace_back("metricsCollector");
+	moduleNames.emplace_back("steerBench");
+	moduleNames.emplace_back("steerBug");
 }
 
 
@@ -915,13 +915,13 @@ void SimulationEngine::getListOfKnownPlugInModules(std::vector<std::string> & mo
 				DynamicLibrary dll(searchPath+"/"+fileNames[i]);
 				if (dll.getSymbol("createModule",false) != NULL) {
 					// Then this dynamic library is a module
-					moduleNames.push_back(moduleName);
+					moduleNames.emplace_back(moduleName);
 				}
 				dll.unload();
 			}
 			else {
 				// if the module was already loaded, then of course it is a module...
-				moduleNames.push_back(moduleName);
+				moduleNames.emplace_back(moduleName);
 			}
 		}
 	}
@@ -968,7 +968,7 @@ SteerLib::AgentInterface * SimulationEngine::createAgent(const SteerLib::AgentIn
 
 	if (newAgent != NULL) {
 		newAgent->reset(initialConditions,this);
-		_agents.push_back(newAgent);
+		_agents.emplace_back(newAgent);
 		_agentOwners[newAgent] = owner;
 	}
 
@@ -1039,7 +1039,7 @@ void SimulationEngine::addAgent(SteerLib::AgentInterface * newAgent, SteerLib::M
 		throw GenericException("Cannot add agent, agent already exists.\n");
 	}
 
-	_agents.push_back(newAgent);
+	_agents.emplace_back(newAgent);
 	_agentOwners[newAgent] = owner;
 }
 

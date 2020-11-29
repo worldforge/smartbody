@@ -190,7 +190,7 @@ void GLGraphWidget::AddLineGraphPoint(const string& lineName, const Vector3& pos
    }
    else
    {
-      m_DataLines[lineName].push_back(new LineGraphPoint(position, color));
+      m_DataLines[lineName].emplace_back(new LineGraphPoint(position, color));
    }
 }
 

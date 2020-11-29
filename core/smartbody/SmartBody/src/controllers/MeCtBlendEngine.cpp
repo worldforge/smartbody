@@ -46,7 +46,7 @@ void MeCtBlendEngine::init(const std::string& paramFuncType)
 	{
 		MeCtIKTreeNode* node = nodeList[i];
 		SmartBody::SBJoint* joint = skeletonCopy->getJointByName(node->getNodeName());		
-		affectedJoints.push_back(joint);			
+		affectedJoints.emplace_back(joint);
 	}
 
 	if (paramFuncType == "reach")
@@ -134,7 +134,7 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 		if (!refMotion)
 			refMotion = motion;
 
-		motionData.push_back(motion);
+		motionData.emplace_back(motion);
 		MotionExample* ex = new MotionExample();
 		ex->motion = motion;		
 		ex->timeWarp = new SimpleTimeWarp(refMotion->duration(),motion->duration());
@@ -152,13 +152,13 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 		InterpWeight w;
 		w.first = motionExamples.getExamples().size();
 		w.second = 1.f;
-		ex->weight.push_back(w);	
+		ex->weight.emplace_back(w);
 		// add the example parameter for visualization purpose
  		SrVec reachPos;
  		for (int i=0;i<3;i++)
  			reachPos[i] = (float)ex->parameter[i];
 		//SmartBody::util::log("reach pos =  %f %f %f",reachPos[0], reachPos[1], reachPos[2]);
-// 		examplePts.push_back(reachPos);		
+// 		examplePts.emplace_back(reachPos);
 		motionExamples.addMotionExample(ex);
 	}	
 
@@ -184,7 +184,7 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 			SrVec reachPos;
 			for (int k=0;k<3;k++)
 				reachPos[k] = (float)ex->parameter[k];
-			resamplePts.push_back(reachPos);		
+			resamplePts.emplace_back(reachPos);
 		}
 	}
 
@@ -283,7 +283,7 @@ void MeCtBlendEngine::getBlendParameterFromWeights( dVector& outPara, std::vecto
 	for (unsigned int i=0;i<inWeight.size();i++)
 	{
 		if (inWeight[i] > 0.0)
-			weight.push_back(InterpWeight(i,(float)inWeight[i]));
+			weight.emplace_back(InterpWeight(i,(float)inWeight[i]));
 	}
 	interpMotion->weight = weight;
 	// a quick and dirty way to combine the parameters, but are they the right way ?

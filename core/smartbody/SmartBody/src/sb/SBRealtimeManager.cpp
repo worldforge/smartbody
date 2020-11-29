@@ -199,7 +199,7 @@ void SBRealtimeManager::setChannelNames(const std::string& channels)
 	
 	for (size_t c = 0; c < tokens.size(); c++)
 	{
-		channelNames.push_back(tokens[c]);
+		channelNames.emplace_back(tokens[c]);
 		channelTable.insert(std::pair<std::string, std::string>(tokens[c], ""));
 	}
 }
@@ -231,7 +231,7 @@ void SBRealtimeManager::setChannelMetadata(const std::string& channelsandamounts
 			s.size = numParams;
 
 			channelMetadataMap.insert(std::pair<std::string, channelIndexStruct>(channelName, s));
-			channelMetadataOrder.push_back(channelName);
+			channelMetadataOrder.emplace_back(channelName);
 			curIndex += numParams;
 		}
 		else

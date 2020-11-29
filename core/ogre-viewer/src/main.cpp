@@ -72,12 +72,12 @@ static int inihandler(void* user, const char* section, const char* name,
 	else if (MATCH("GENERAL", "DefaultPyFile"))
 	{
 		std::string temp = "python scene.run(\"" + std::string(value) + "\")";
-		renderer->m_initialCommands.push_back(temp);
+		renderer->m_initialCommands.emplace_back(temp);
 	}
 	else if (MATCH("GENERAL", "ScriptPath"))
 	{
 		std::string temp = "python scene.addAssetPath(\"script\", \"" + std::string(value) + "\")";
-		renderer->m_initialCommands.push_back(temp);
+		renderer->m_initialCommands.emplace_back(temp);
     }
 	else if (MATCH("GENERAL", "MediaPath"))
 	{
@@ -133,8 +133,8 @@ int main(int argc, char* argv[])
 	bool implicitConfig = false;
 	if (numTokens == 0)
 	{
-		tokenzied.push_back("-config");
-		tokenzied.push_back("config.ini");
+		tokenzied.emplace_back("-config");
+		tokenzied.emplace_back("config.ini");
 		numTokens = 2;
 		implicitConfig = true;
 	}
@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
 			if (tokenCounter < numTokens)
 			{
 				std::string command = "python scene.addAssetPath(\"script\", \"" + tokenzied[tokenCounter] + "\")";
-				app.m_initialCommands.push_back(command);
+				app.m_initialCommands.emplace_back(command);
 				app.setUseBoneBus(false);
 			}
 		}
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
 			{
 				std::string command = "seq " + tokenzied[tokenCounter];
 				printf("-------------- command = %s\n",command.c_str());;
-				app.m_initialCommands.push_back(command);
+				app.m_initialCommands.emplace_back(command);
 			}
 		}
 		if (op == "-script")
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
 			if (tokenCounter < numTokens)
 			{
 				std::string command = "python scene.run(\"" + tokenzied[tokenCounter] + "\")";
-				app.m_initialCommands.push_back(command);		
+				app.m_initialCommands.emplace_back(command);
 				app.setUseBoneBus(false);
 			}
 		}
@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
 			if (tokenCounter < numTokens)
 			{
 				std::string command = "python scene.setMediaPath(\"" + tokenzied[tokenCounter] + "\")";
-				app.m_initialCommands.push_back(command);
+				app.m_initialCommands.emplace_back(command);
 				app.setUseBoneBus(false);
 			}
 		}
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
 			if (tokenCounter < numTokens)
 			{
 				std::string command = "python scene.setMediaPath(\"" + mediaPath + "\")";
-				app.m_initialCommands.push_back(command);
+				app.m_initialCommands.emplace_back(command);
 			}
 		}
 		if (op == "-help")

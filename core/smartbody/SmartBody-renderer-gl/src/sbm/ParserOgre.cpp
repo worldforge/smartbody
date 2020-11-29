@@ -639,7 +639,7 @@ bool ParserOgre::parseMotion(DOMNode* animationsNode, std::vector<std::unique_pt
 			}
 			std::vector<float> allTimes;
 			for (float time : times)
-				allTimes.push_back(time);
+				allTimes.emplace_back(time);
 			
 			std::sort(allTimes.begin(), allTimes.end());
 
@@ -740,7 +740,7 @@ bool ParserOgre::parseMotion(DOMNode* animationsNode, std::vector<std::unique_pt
 															firstKey = keyIndex;
 														lastKey = keyIndex;
 
-														vecTime.push_back(time); 
+														vecTime.emplace_back(time);
 
 														SrVec translation;
 														SrVec axis;
@@ -924,19 +924,19 @@ bool ParserOgre::parseMotion(DOMNode* animationsNode, std::vector<std::unique_pt
 								data = new float[xsize];
 								for (size_t t = 0; t < xsize; t++)
 									data[t] = vecTranslateX[t] * scale;
-								allData.push_back(data);
+								allData.emplace_back(data);
 
 								size_t ysize = vecTranslateY.size();
 								data = new float[ysize];
 								for (size_t  t = 0; t < ysize; t++)
 									data[t] = vecTranslateY[t] * scale;
-								allData.push_back(data);
+								allData.emplace_back(data);
 
 								size_t zsize = vecTranslateZ.size();
 								data = new float[zsize];
 								for (size_t t = 0; t < zsize; t++)
 									data[t] = vecTranslateZ[t] * scale;
-								allData.push_back(data);
+								allData.emplace_back(data);
 
 								size_t anglesize = vecAngle.size();
 								size_t axisSize = vecAxis.size();
@@ -949,7 +949,7 @@ bool ParserOgre::parseMotion(DOMNode* animationsNode, std::vector<std::unique_pt
 									data[t * 4 + 2] = quat.y;
 									data[t * 4 + 3] = quat.z;
 								}
-								allData.push_back(data);
+								allData.emplace_back(data);
 							}
 						}
 					}
@@ -1036,9 +1036,9 @@ bool ParserOgre::parseMesh( DOMNode* meshNode, std::vector<SrModel*>& meshModelV
 			materialName = matAttr;
 		}
 		if (materialName != "")
-			model->mtlnames.push_back(materialName.c_str());
+			model->mtlnames.emplace_back(materialName.c_str());
 
-		meshModelVec.push_back(model);
+		meshModelVec.emplace_back(model);
 		//SmartBody::util::log("SubMesh %d ... ",i);
 		const DOMNodeList* subMeshChildren = subMesh->getChildNodes();
 		for (unsigned int a = 0; a < subMeshChildren->getLength(); a++)
@@ -1110,9 +1110,9 @@ bool ParserOgre::parseMesh( DOMNode* meshNode, std::vector<SrModel*>& meshModelV
 										xml_utils::xml_translate(&zAttr, zNode->getNodeValue());
 									offset.z = (float) atof(zAttr.c_str());									
 									if (transformNodeName == "position")
-										model->V.push_back(offset);
+										model->V.emplace_back(offset);
 									else if (transformNodeName == "normal")
-										model->N.push_back(offset);
+										model->N.emplace_back(offset);
 								}
 								
 							}							
@@ -1133,7 +1133,7 @@ bool ParserOgre::parseMesh( DOMNode* meshNode, std::vector<SrModel*>& meshModelV
 										xml_utils::xml_translate(&yAttr, yNode->getNodeValue());
 									offset.y = 1.f - (float) atof(yAttr.c_str());	
 									//offset.y = (float) atof(yAttr.c_str());	
-									model->T.push_back(offset);									
+									model->T.emplace_back(offset);
 								}
 							}						
 						}
@@ -1208,10 +1208,10 @@ bool ParserOgre::parseMesh( DOMNode* meshNode, std::vector<SrModel*>& meshModelV
 						}
 						
 						// no material for now.
-						model->Fm.push_back(0); // use first material
-						model->F.push_back(SrVec3i(v1,v2,v3));
-						model->Ft.push_back(SrVec3i(t1,t2,t3));
-						model->Fn.push_back(SrVec3i(v1,v2,v3));
+						model->Fm.emplace_back(0); // use first material
+						model->F.emplace_back(SrVec3i(v1,v2,v3));
+						model->Ft.emplace_back(SrVec3i(t1,t2,t3));
+						model->Fn.emplace_back(SrVec3i(v1,v2,v3));
 					}	
 					faceNode = faceNode->getNextSibling();
 				}
@@ -1249,7 +1249,7 @@ bool ParserOgre::parseSkinWeight( DOMNode* meshNode, std::vector<SkinWeight*>& s
 			{		
 				SkinWeight* sw = new SkinWeight();
 				sw->sourceMesh = meshName;
-				skinWeights.push_back(sw);
+				skinWeights.emplace_back(sw);
 				const DOMNodeList* weightList = subMeshChild->getChildNodes();				
 				int prevVtxIdx = -1;
 				int infJointCount = 0;
@@ -1276,7 +1276,7 @@ bool ParserOgre::parseSkinWeight( DOMNode* meshNode, std::vector<SkinWeight*>& s
 						{
 							if (prevVtxIdx != -1)
 							{
-								sw->numInfJoints.push_back(infJointCount);
+								sw->numInfJoints.emplace_back(infJointCount);
 							}
 							prevVtxIdx = vtxIdx;
 							infJointCount = 0;
@@ -1293,15 +1293,15 @@ bool ParserOgre::parseSkinWeight( DOMNode* meshNode, std::vector<SkinWeight*>& s
 							xml_utils::xml_translate(&zAttr, zNode->getNodeValue());
 						weight = (float) atof(zAttr.c_str());
 						
-						sw->weightIndex.push_back(sw->bindWeight.size());
-						sw->bindWeight.push_back(weight);
-						sw->jointNameIndex.push_back(boneIdx);	
-						//sw->bindPoseMat.push_back(SrMat::id);
+						sw->weightIndex.emplace_back(sw->bindWeight.size());
+						sw->bindWeight.emplace_back(weight);
+						sw->jointNameIndex.emplace_back(boneIdx);
+						//sw->bindPoseMat.emplace_back(SrMat::id);
 					}					
 					weightNode = weightNode->getNextSibling();
 					w++;
 				}	
-				sw->numInfJoints.push_back(infJointCount); // add the last set of infJoints
+				sw->numInfJoints.emplace_back(infJointCount); // add the last set of infJoints
 				sw->normalizeWeights();
 			}
 		}			
@@ -1345,7 +1345,7 @@ void ParserOgre::loadMeshMaterial( std::vector<SrModel*>& meshModelVec, std::str
 				SrMaterial tempMat; tempMat.init();
 				materialMap[matName] = tempMat;
 			}
-			materialModelIndexMap[matName].push_back(i);
+			materialModelIndexMap[matName].emplace_back(i);
 
 		}
 	}
@@ -1389,7 +1389,7 @@ void ParserOgre::loadMeshMaterial( std::vector<SrModel*>& meshModelVec, std::str
 						int offset = 1;
 						while (isFloat(tokens[idx+1]))
 						{
-							floatVec.push_back((float)atof(tokens[idx+1].c_str()));
+							floatVec.emplace_back((float)atof(tokens[idx+1].c_str()));
 							idx++;
 						}			
 						//SmartBody::util::log("ambient, vec size = %d",floatVec.size());
@@ -1410,7 +1410,7 @@ void ParserOgre::loadMeshMaterial( std::vector<SrModel*>& meshModelVec, std::str
 						int offset = 1;
 						while (isFloat(tokens[idx+1]))
 						{
-							floatVec.push_back((float)atof(tokens[idx+1].c_str()));
+							floatVec.emplace_back((float)atof(tokens[idx+1].c_str()));
 							idx++;
 						}			
 						//SmartBody::util::log("diffuse, vec size = %d",floatVec.size());
@@ -1432,7 +1432,7 @@ void ParserOgre::loadMeshMaterial( std::vector<SrModel*>& meshModelVec, std::str
 						int offset = 1;
 						while (isFloat(tokens[idx+1]))
 						{
-							floatVec.push_back((float)atof(tokens[idx+1].c_str()));
+							floatVec.emplace_back((float)atof(tokens[idx+1].c_str()));
 							idx++;
 						}
 						//SmartBody::util::log("specular, vec size = %d",floatVec.size());
@@ -1539,7 +1539,7 @@ bool ParserOgre::parseMeshMaterial( std::vector<SrModel*>& meshModelVec, std::st
 			std::string ext = boost::filesystem::extension(fileName);
 			if (ext == ".material" || ext == ".MATERIAL")
 			{
-				materialFileList.push_back(fileName);
+				materialFileList.emplace_back(fileName);
 			}			
 		}
 	}

@@ -58,7 +58,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/local_speech.h>
 #include <sbm/text_speech.h>
 #include <sbm/sbm_speech_audiofile.hpp>
-//#include <bml/bml_processor.hpp>
+#include <bml/bml_processor.hpp>
 #include <sk/sk_channel_array.h>
 #include <sr/sr_random.h>
 
@@ -122,8 +122,8 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 	createStringAttribute("gestureMap", "", true, "Gestures", 50, false, false, false, "Name of the gesture map to use.");
 
 	std::vector<std::string> gesturePolicyVec;
-	gesturePolicyVec.push_back("random");
-	gesturePolicyVec.push_back("first");
+	gesturePolicyVec.emplace_back("random");
+	gesturePolicyVec.emplace_back("first");
 	StringAttribute* gesturePolicyAttr = createStringAttribute("gesturePolicy", "random", true, "Gestures", 60, false, false, false, "Gesture policy to be used");
 	gesturePolicyAttr->setValidValues(gesturePolicyVec);
 
@@ -182,14 +182,14 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 
 	SmartBody::StringAttribute* displayAttribute = createStringAttribute("displayType", "bones", true, "Display", 210, false, false, false, "How to display the character: bones, colgeo, visgeo, axis, mesh, GPUmesh");
 	std::vector<std::string> displayVec;
-	displayVec.push_back("bones");
-	displayVec.push_back("colgeo");
-	displayVec.push_back("visgeo");
-	displayVec.push_back("axis");
-	displayVec.push_back("skinWeight");
-	displayVec.push_back("wireframeMesh");
-	displayVec.push_back("mesh");
-	displayVec.push_back("GPUmesh");
+	displayVec.emplace_back("bones");
+	displayVec.emplace_back("colgeo");
+	displayVec.emplace_back("visgeo");
+	displayVec.emplace_back("axis");
+	displayVec.emplace_back("skinWeight");
+	displayVec.emplace_back("wireframeMesh");
+	displayVec.emplace_back("mesh");
+	displayVec.emplace_back("GPUmesh");
 	displayAttribute->setValidValues(displayVec);
 
 	createVec3Attribute("deformableMeshScale", 1.0, 1.0, 1.0, true, "Display", 220, false, false, false, "Scale factor when loading mesh.");
@@ -220,11 +220,11 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 
 
 	std::vector<std::string> voiceTypes;
-	voiceTypes.push_back("");
-	voiceTypes.push_back("remote");
-	voiceTypes.push_back("audiofile");	
-	voiceTypes.push_back("local");	
-	voiceTypes.push_back("text");
+	voiceTypes.emplace_back("");
+	voiceTypes.emplace_back("remote");
+	voiceTypes.emplace_back("audiofile");
+	voiceTypes.emplace_back("local");
+	voiceTypes.emplace_back("text");
 
 	StringAttribute* voiceAttribute = createStringAttribute("voice", "remote", true, "Voice", 400, false, false, false, "How the voice is created - local (uses local festival voice), remote (uses a speech relay), or audiofile (voice generated from prerecorded audio).");
 	voiceAttribute->setValidValues(voiceTypes);
@@ -236,16 +236,16 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 	createStringAttribute("lastAudioFile", ".", true, "Voice", 440, false, false, false, "Last audio file used for speech.");
 	
 	std::vector<std::string> utterancePolicyTypes;
-	utterancePolicyTypes.push_back("none");
-	utterancePolicyTypes.push_back("ignore");
-	utterancePolicyTypes.push_back("queue");
-	utterancePolicyTypes.push_back("interrupt");	
+	utterancePolicyTypes.emplace_back("none");
+	utterancePolicyTypes.emplace_back("ignore");
+	utterancePolicyTypes.emplace_back("queue");
+	utterancePolicyTypes.emplace_back("interrupt");
 	StringAttribute* utterancePolicyAttribute = createStringAttribute("utterancePolicy", "none", true, "Speech", 500, false, false, false, "How utterances are handled when the character is already performing an utterance. Valid values are: ignore (ignores the new utterance and any associated behaviors), queue (plays the new utterance and associated behavior when the old utterance has finished), interrupt (stops the existing utterance and associated behaviors and plays the new one)");
 	utterancePolicyAttribute->setValidValues(utterancePolicyTypes);
 
 	std::vector<std::string> saccadePolicy;
-	saccadePolicy.push_back("stopinutterance");
-	saccadePolicy.push_back("alwayson");
+	saccadePolicy.emplace_back("stopinutterance");
+	saccadePolicy.emplace_back("alwayson");
 	StringAttribute* saccadePolicyAttribute = createStringAttribute("saccadePolicy", "stopinutterance", true, "Speech", 501, false, false, false, "How saccade is handled during utterance");
 	saccadePolicyAttribute->setValidValues(saccadePolicy);
 	createDoubleAttribute("saccadeTurnOnDelay", 2, true, "Speech", 502, false, false, false, "delay saccade turn on after utterance.");
@@ -262,9 +262,9 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 	
 	SmartBody::StringAttribute* textureAttribute = createStringAttribute("texturesType", "static", true, "Display", 210, false, false, false, "How to display textures");
 	std::vector<std::string> textureVec;
-	textureVec.push_back("none");
-	textureVec.push_back("static");
-	textureVec.push_back("dynamic");
+	textureVec.emplace_back("none");
+	textureVec.emplace_back("static");
+	textureVec.emplace_back("dynamic");
 	textureAttribute->setValidValues(textureVec);
 	
 	createBoolAttribute("useOptimizedBlendShapes", true, true, "Display", 720, false, false, false, "Enables faster blend shape computation by caching blend shape data.");
@@ -440,7 +440,7 @@ std::vector<std::string> SBCharacter::getControllerNames()
 	for (int i = 0; i < (int)ct_tree_p->count_controllers(); i++)
 	{
 		const std::string& cName = ct_tree_p->controller(i)->getName();
-		ret.push_back(cName);
+		ret.emplace_back(cName);
 	}	
 	return ret;
 }
@@ -582,46 +582,46 @@ SBBehavior* SBCharacter::getBehavior(int num)
 		return nullptr;
 }
 
-//double SBCharacter::getLastScheduledSpeechBehavior()
-//{
-//	double lastTime =-1.0;
-//
-//	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
-//	for (auto & iter : bmlRequestMap)
-//	{
-//		std::string requestName = iter.first;
-//		BML::BmlRequestPtr bmlRequestPtr = iter.second;
-//		if (bmlRequestPtr->actor->getName() == this->getName())
-//		{
-//			if (bmlRequestPtr->speech_request)
-//			{
-//				if (lastTime < bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time())
-//					lastTime = bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time();
-//
-//			}
-//		}
-//	}
-//	return lastTime;
-//}
+double SBCharacter::getLastScheduledSpeechBehavior()
+{
+	double lastTime =-1.0;
 
-//std::string SBCharacter::hasSpeechBehavior()
-//{
-//	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
-//	for (auto & iter : bmlRequestMap)
-//	{
-//		std::string requestName = iter.first;
-//		BML::BmlRequestPtr bmlRequestPtr = iter.second;
-//		if (bmlRequestPtr->actor->getName() == this->getName())
-//		{
-//			if (bmlRequestPtr->speech_request)
-//			{
-//				return (*bmlRequestPtr).msgId;
-//			}
-//		}
-//	}
-//
-//	return "";
-//}
+	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
+	for (auto & iter : bmlRequestMap)
+	{
+		std::string requestName = iter.first;
+		BML::BmlRequestPtr bmlRequestPtr = iter.second;
+		if (bmlRequestPtr->actor->getName() == this->getName())
+		{
+			if (bmlRequestPtr->speech_request)
+			{
+				if (lastTime < bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time())
+					lastTime = bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time();
+
+			}
+		}
+	}
+	return lastTime;
+}
+
+std::string SBCharacter::hasSpeechBehavior()
+{
+	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
+	for (auto & iter : bmlRequestMap)
+	{
+		std::string requestName = iter.first;
+		BML::BmlRequestPtr bmlRequestPtr = iter.second;
+		if (bmlRequestPtr->actor->getName() == this->getName())
+		{
+			if (bmlRequestPtr->speech_request)
+			{
+				return (*bmlRequestPtr).msgId;
+			}
+		}
+	}
+
+	return "";
+}
 
 //std::vector<SBBehavior*>& SBCharacter::getBehaviors()
 //{
@@ -646,7 +646,7 @@ SBBehavior* SBCharacter::getBehavior(int num)
 //				speechBehavior->setId((*bmlRequestPtr).msgId);
 //				speechBehavior->setUtterance(bmlRequestPtr->speech_request->getSpeechText());
 //
-//				_curBehaviors.push_back(speechBehavior);
+//				_curBehaviors.emplace_back(speechBehavior);
 //			}
 //		}
 //	}
@@ -663,7 +663,7 @@ SBBehavior* SBCharacter::getBehavior(int num)
 //				const std::string& motionName = motionCt->motion()->getName();
 //				PostureBehavior* postureBehavior = new PostureBehavior();
 //				postureBehavior->setPosture(motionName);
-//				_curBehaviors.push_back(postureBehavior);
+//				_curBehaviors.emplace_back(postureBehavior);
 //			}
 //		}
 //	}
@@ -685,7 +685,7 @@ SBBehavior* SBCharacter::getBehavior(int num)
 //			locoBehavior->setLocomotionTarget(target);
 //			locoBehavior->setReachTarget(reachTarget);
 //		}
-//		_curBehaviors.push_back(locoBehavior);
+//		_curBehaviors.emplace_back(locoBehavior);
 //	}
 //
 //	// gaze
@@ -712,7 +712,7 @@ SBBehavior* SBCharacter::getBehavior(int num)
 //					gazeBehavior->setFadedOut(gazeCt->isFadedOut());
 //					gazeBehavior->setHandle(gazeCt->handle());
 //
-//					_curBehaviors.push_back(gazeBehavior);
+//					_curBehaviors.emplace_back(gazeBehavior);
 //					break;
 //				}
 //			}
@@ -774,7 +774,7 @@ void SBCharacter::notify(SBSubject* subject)
 							//SmartBody::util::log("Blend shape channel %s already existed. Skipping add shape %s...", channelName.c_str(), shapeName.c_str());
 							continue;
 						}
-						shapeNames.push_back(channelName);
+						shapeNames.emplace_back(channelName);
 						//SmartBody::util::log("Blend shape channel %s added for shape %s ...", channelName.c_str(), shapeName.c_str());
 					}
 				}
@@ -1006,7 +1006,7 @@ void SBCharacter::interruptFace(double seconds)
 		bool visemeExists = faceDefinition->hasViseme(controllerName);
 		if (visemeExists)
 		{
-			tracksToRemove.push_back(track);
+			tracksToRemove.emplace_back(track);
 			//this->schedule_viseme_trapezoid(controllerName.c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), 0, 0, float(seconds), float(seconds));
 			//this->pruneControllers();
 		}
@@ -1015,7 +1015,7 @@ void SBCharacter::interruptFace(double seconds)
 			ActionUnit* au = faceDefinition->getAUByName(controllerName);
 			if (au)
 			{
-				tracksToRemove.push_back(track);
+				tracksToRemove.emplace_back(track);
 				//this->schedule_viseme_trapezoid(controllerName.c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), 0, 0, float(seconds), float(seconds));
 				//this->pruneControllers();
 			}
@@ -1117,7 +1117,7 @@ SBAPI std::vector<std::string> SBCharacter::getJointConstraintNames()
 		  mi != jointTrajMap.end();
 		  mi++)
 	{
-		jointConsNames.push_back(mi->first);
+		jointConsNames.emplace_back(mi->first);
 	}
 	return jointConsNames;
 }

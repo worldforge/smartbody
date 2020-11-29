@@ -26,13 +26,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "MonitorConnectWindow.h"
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBDebuggerClient.h>
-#include <sb/SBDebuggerServer.h>
 #include "SBPythonClass.h"
 #include <sb/SBVHMsgManager.h>
+#include "Session.h"
 #include "SBUtilities.h"
 
-MonitorConnectWindow::MonitorConnectWindow(int x, int y, int w, int h, char* label, bool quickConnect) : Fl_Double_Window(x, y, w, h, label)
+MonitorConnectWindow::MonitorConnectWindow(int x, int y, int w, int h, char* label, bool quickConnect, SmartBody::SBDebuggerClient& debuggerClient)
+: Fl_Double_Window(x, y, w, h, label),
+mDebuggerClient(debuggerClient)
 {
 	set_modal();
 	this->label("Monitor Connect");
@@ -57,7 +58,7 @@ MonitorConnectWindow::MonitorConnectWindow(int x, int y, int w, int h, char* lab
 
    if (quickConnect)
    {
-      OnFefreshCB(NULL, this);
+      OnFefreshCB(nullptr, this);
       
 	   if (_browserSBProcesses->value() <= 0)
 	   {
@@ -68,14 +69,12 @@ MonitorConnectWindow::MonitorConnectWindow(int x, int y, int w, int h, char* lab
       {
          // there is an actively running sb process. Connect to it
          std::string processId = _browserSBProcesses->text(_browserSBProcesses->value());
-         OnConfirmCB(NULL, this);
+         OnConfirmCB(nullptr, this);
       }
    }
 }
 
-MonitorConnectWindow::~MonitorConnectWindow()
-{
-}
+MonitorConnectWindow::~MonitorConnectWindow() = default;
 
 void MonitorConnectWindow::show()
 {
@@ -92,20 +91,19 @@ void MonitorConnectWindow::loadProcesses()
 	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
 	SmartBody::SBScene::getScene()->setRemoteMode(true);
 
-	SmartBody::SBDebuggerClient* c = sbScene->getDebuggerClient();
-	SmartBody::SBDebuggerServer* s = sbScene->getDebuggerServer();
-	c->QuerySbmProcessIds();
+	SmartBody::SBDebuggerServer& s = Session::current->debuggerServer;
+	mDebuggerClient.QuerySbmProcessIds();
 	vhcl::Sleep(2);
 	sbScene->getVHMsgManager()->poll();
 	_browserSBProcesses->clear();
-	std::vector<std::string> ids = c->GetSbmProcessIds();
-	for (size_t i = 0; i < ids.size(); i++)
+	std::vector<std::string> ids = mDebuggerClient.GetSbmProcessIds();
+	for (auto & id : ids)
 	{
-		if (s->getStringAttribute("id")  != ids[i])
-			_browserSBProcesses->add(ids[i].c_str());
+		if (s.getStringAttribute("id")  != id)
+			_browserSBProcesses->add(id.c_str());
 	}
 
-   if (ids.size() > 0)
+   if (!ids.empty())
    {
       _browserSBProcesses->select(1);
    }
@@ -116,29 +114,28 @@ void MonitorConnectWindow::OnConfirmCB(Fl_Widget* widget, void* data)
 #ifndef SB_NO_VHMSG
 	MonitorConnectWindow* monitorConnectWindow = (MonitorConnectWindow*) data;
 	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
-	SmartBody::SBDebuggerClient* c = sbScene->getDebuggerClient();
-	SmartBody::SBDebuggerServer* s = sbScene->getDebuggerServer();
+	SmartBody::SBDebuggerClient& c = monitorConnectWindow->mDebuggerClient;
 
 	if (monitorConnectWindow->_browserSBProcesses->value() <= 0)
 		return;
 
 	std::string processId = monitorConnectWindow->_browserSBProcesses->text(monitorConnectWindow->_browserSBProcesses->value());
-	if (processId == "")
+	if (processId.empty())
 	{
 		fl_alert("Please a process.");
 		return;
 	}
 
-	c->Disconnect();
-	c->Connect(processId);
+	c.Disconnect();
+	c.Connect(processId);
 	vhcl::Sleep(2);
 	vhmsg::ttu_poll();
-	if (c->GetConnectResult())
+	if (c.GetConnectResult())
 	{
 		SmartBody::util::log("Connect succeeded to id: %s\n", processId.c_str());
 	}
-	c->Init();
-	c->StartUpdates(sbScene->getSimulationManager()->getTimeDt());
+	c.Init();
+	c.StartUpdates(sbScene->getSimulationManager()->getTimeDt());
 	monitorConnectWindow->hide();
 #else
 	fl_alert("VHMSG has been disabled.");

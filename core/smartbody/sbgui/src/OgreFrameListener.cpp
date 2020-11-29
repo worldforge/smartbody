@@ -208,7 +208,7 @@ void OgreFrameListener::ogreBlendShape( Ogre::Entity* sbEntity, DeformableMeshIn
 
 	std::map<std::string, std::vector<SrSnModel*> >::iterator mIter;
 	mIter = defMesh->blendShapeMap.begin();
-	SrSnModel* writeToBaseModel = NULL;
+	SrSnModel* writeToBaseModel = nullptr;
 	int vtxBaseIdx = 0;
 	for (size_t i = 0; i < defMesh->dMeshStatic_p.size(); ++i)
 	{		
@@ -234,7 +234,7 @@ void OgreFrameListener::ogreBlendShape( Ogre::Entity* sbEntity, DeformableMeshIn
 	Ogre::HardwareVertexBufferSharedPtr VertexBufPOS = meshPtr->sharedVertexData->vertexBufferBinding->getBuffer( VertexEle_POS->getSource() );
 	unsigned char* VertexPtrPOS = static_cast<unsigned char*>( VertexBufPOS->lock( Ogre::HardwareBuffer::HBL_NORMAL ) );
 	int VertSizePOS=VertexBufPOS->getVertexSize();
-	float * pElementPOS=NULL;
+	float * pElementPOS=nullptr;
 	std::map<int,std::vector<int> >& vtxNewVtxIdxMap = defMesh->vtxNewVtxIdxMap;
 
 	for (int i=0;i<baseModel.V.size();i++)
@@ -360,7 +360,7 @@ bool OgreFrameListener::frameStarted( const FrameEvent & evt )
 				n->setVisible(false);
 				continue;
 			}
-			if ( ent == NULL )
+			if ( ent == nullptr )
 				continue;
 			Ogre::Skeleton* skel = ent->getSkeleton();				
 			if (!skel) continue;

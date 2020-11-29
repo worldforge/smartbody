@@ -39,7 +39,7 @@ namespace SmartBody {
 
 SBAssetHandlerSk::SBAssetHandlerSk()
 {
-	assetTypes.push_back("sk");
+	assetTypes.emplace_back("sk");
 }
 
 SBAssetHandlerSk::~SBAssetHandlerSk()

@@ -164,7 +164,7 @@ void LocomotionAnalyzer::initLegCycles( const std::string& name, SmartBody::SBAn
 		int nCycles = ki->second.size();
 		for (int i=0;i<nCycles;i++)
 		{
-			legCycleVec.push_back(LocomotionLegCycle());
+			legCycleVec.emplace_back(LocomotionLegCycle());
 			LocomotionLegCycle& legCycle = legCycleVec[i];
 			legCycle.cycleIdx = i;
 			legCycle.stanceTime = (float)getKeyTagTime("stance",i,keyTag);
@@ -306,7 +306,7 @@ void MotionAnalysis::init(std::string skeletonName, std::string baseJoint, Smart
 		LocomotionAnalyzer* analyzer = new LocomotionAnalyzer();
 		analyzer->legInfos = legInfos;
 		analyzer->initLegCycles(motionName,locomotionBlend,keyTagMap,skelCopy);
-		locoAnalyzers.push_back(analyzer);
+		locoAnalyzers.emplace_back(analyzer);
 	}	
 
 	for (int i=0;i<2;i++)
@@ -336,8 +336,8 @@ void MotionAnalysis::initLegInfos()
 	rLeg->base = "base";
 	rLeg->hip = "r_hip";
 
-	legInfos.push_back(lLeg);
-	legInfos.push_back(rLeg);
+	legInfos.emplace_back(lLeg);
+	legInfos.emplace_back(rLeg);
 	legStates.resize(2);
 
 	for (int i=0;i<2;i++)

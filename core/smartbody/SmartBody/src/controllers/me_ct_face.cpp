@@ -237,7 +237,7 @@ void MeCtFace::finish_adding( void )	{
 	int curIndex = 0;
 	for (int b = 0; b < baseSize; b++)
 	{
-		_baseChannelToBufferIndex.push_back(curIndex);
+		_baseChannelToBufferIndex.emplace_back(curIndex);
 		int baseChannelSize = baseChannelArray[b].size();
 		curIndex += baseChannelSize;
 	}
@@ -256,11 +256,11 @@ void MeCtFace::finish_adding( void )	{
 			int baseChannelIndex = _base_pose_p->channels().search(jointName, channel.type);
 			if (baseChannelIndex >= 0)
 			{
-				keyIndices.push_back(baseChannelIndex); // mapping from the key pose channel index to the base pose channel index
+				keyIndices.emplace_back(baseChannelIndex); // mapping from the key pose channel index to the base pose channel index
 			}
 			else
 			{
-				keyIndices.push_back(-1); // key contains channel that does not exist in base pose
+				keyIndices.emplace_back(-1); // key contains channel that does not exist in base pose
 			}
 
 		}
@@ -375,23 +375,23 @@ bool MeCtFace::controller_evaluate( double t, MeFrameData& frame ) {
 	{
 		std::vector<std::string> visemeChannels;
 #if 1
-		visemeChannels.push_back("open");
-		visemeChannels.push_back("W");
-		visemeChannels.push_back("ShCh");
-		visemeChannels.push_back("PBM");
-		visemeChannels.push_back("FV");
-		visemeChannels.push_back("wide");
-		visemeChannels.push_back("tBack");
-		visemeChannels.push_back("tRoof");
-		visemeChannels.push_back("tTeeth");
+		visemeChannels.emplace_back("open");
+		visemeChannels.emplace_back("W");
+		visemeChannels.emplace_back("ShCh");
+		visemeChannels.emplace_back("PBM");
+		visemeChannels.emplace_back("FV");
+		visemeChannels.emplace_back("wide");
+		visemeChannels.emplace_back("tBack");
+		visemeChannels.emplace_back("tRoof");
+		visemeChannels.emplace_back("tTeeth");
 
-		visemeChannels.push_back("au_1");
-		visemeChannels.push_back("au_2");
-		visemeChannels.push_back("au_4");
-		visemeChannels.push_back("au_5");
-		visemeChannels.push_back("au_6");
-		visemeChannels.push_back("au_7");
-		visemeChannels.push_back("au_9");
+		visemeChannels.emplace_back("au_1");
+		visemeChannels.emplace_back("au_2");
+		visemeChannels.emplace_back("au_4");
+		visemeChannels.emplace_back("au_5");
+		visemeChannels.emplace_back("au_6");
+		visemeChannels.emplace_back("au_7");
+		visemeChannels.emplace_back("au_9");
 #endif
 
 		DeformableMesh* mesh = _character->dMeshInstance_p->getDeformableMesh();

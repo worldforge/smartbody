@@ -10,7 +10,7 @@
 #include <sb/SBServiceManager.h>
 #include <sb/SBAssetManager.h>
 
-SBSelectionManager* SBSelectionManager::_selectionManager = NULL;
+SBSelectionManager* SBSelectionManager::_selectionManager = nullptr;
 
 SelectionListener::SelectionListener()
 {
@@ -63,7 +63,7 @@ void SBSelectionManager::addSelectionListener(SelectionListener* listener)
 		if ((*iter) == listener)
 			return;
 	}
-	_selectionListeners.push_back(listener);
+	_selectionListeners.emplace_back(listener);
 }
 
 void SBSelectionManager::removeSelectionListener(SelectionListener* listener)

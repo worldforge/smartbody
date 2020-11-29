@@ -136,7 +136,7 @@ std::vector<std::string> SBReach::getMotionNames(std::string type)
 		  vi++)
 	{
 		SkMotion* motion = (*vi).second;
-		motionNames.push_back(motion->getName());
+		motionNames.emplace_back(motion->getName());
 	}	
 	return motionNames;
 

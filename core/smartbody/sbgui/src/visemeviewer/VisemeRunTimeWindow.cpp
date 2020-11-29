@@ -19,13 +19,13 @@ void RunTimeCurveData::insertData(const std::string& id, const std::vector<float
 	d.inlist = true;
 
 	// check if the curve already exist 
-	_curves.push_back(d);
+	_curves.emplace_back(d);
 }
 
 void RunTimeCurveData::insertPhoneme(const std::string& name, double t)
 {
-	_phonemeNames.push_back(name);
-	_phonemeTimes.push_back(t);
+	_phonemeNames.emplace_back(name);
+	_phonemeTimes.emplace_back(t);
 }
 
 void RunTimeCurveData::clear()
@@ -78,10 +78,10 @@ VisemeRunTimeWindow::VisemeRunTimeWindow(int x, int y, int w, int h, char* name)
 
 VisemeRunTimeWindow::~VisemeRunTimeWindow()
 {
-	if (_data != NULL)
+	if (_data != nullptr)
 	{
 		delete _data;
-		_data = NULL;
+		_data = nullptr;
 	}
 }
 

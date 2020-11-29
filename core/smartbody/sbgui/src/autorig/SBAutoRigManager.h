@@ -41,7 +41,7 @@ class SBAutoRigManager // build auto rigging given a static character mesh
 		static void destroy_singleton() {
 			if( _singleton )
 				delete _singleton;
-			_singleton = NULL;
+			_singleton = nullptr;
 		}		
 
 		bool buildAutoRigging(SrModel& inModel, std::string outSkName, std::string outDeformableMeshName);

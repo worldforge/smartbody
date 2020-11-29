@@ -677,7 +677,7 @@ void MeController::cont_record( double time, MeFrameData& frame )	{
 		print_bvh_motion( skeleton_p->root(), 0, frame_data );		
 		if((_record_frame_count>=_record_max_frames)&&(_record_max_frames>0))
 			_frames->pop_front();
-		_frames->push_back(frame_data);
+		_frames->emplace_back(frame_data);
 	}
 	else if( _record_mode == RECORD_MOTION )
 	{
@@ -722,7 +722,7 @@ void MeController::cont_record( double time, MeFrameData& frame )	{
 		frame_data += frame_data_os.str();
 		if((_record_frame_count>=_record_max_frames)&&(_record_max_frames>0))
 			_frames->pop_front();
-		_frames->push_back(frame_data);
+		_frames->emplace_back(frame_data);
 	}
 	_record_duration = time;
 	_record_frame_count++;

@@ -68,7 +68,7 @@ SBAPI std::vector<StringPair> SBRetargetManager::getRetargetNames()
 		  ri != _retargets.end();
 		  ri++)
 	{
-		retargetNames.push_back(ri->first);
+		retargetNames.emplace_back(ri->first);
 	}
 	return retargetNames;
 }

@@ -1,5 +1,6 @@
 
 #include "AutoRigViewer.h"
+#include "Session.h"
 #include "jointmapviewer/RetargetStepWindow.h"
 #include <sb/SBScene.h>
 #include <sb/SBCharacter.h>
@@ -58,7 +59,7 @@ AutoRigViewer::AutoRigViewer(int x, int y, int w, int h, char* name) : Fl_Double
 	end();
 	_deletePawnName = "";
 	_characterName = "";
-	retargetStepWindow = NULL;
+	retargetStepWindow = nullptr;
 }
 
 
@@ -86,10 +87,7 @@ void AutoRigViewer::voxelComplete(SrModel& voxelModel)
 	}
 }
 
-AutoRigViewer::~AutoRigViewer()
-{
-	
-}
+AutoRigViewer::~AutoRigViewer() = default;
 
 void AutoRigViewer::draw()
 {
@@ -110,10 +108,10 @@ void AutoRigViewer::updateAutoRigViewer()
 void AutoRigViewer::setCharacterName(const std::string& name)
 {
 	_characterName = name;
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
-	if (pawn)
+	auto renderable = Session::current->renderScene.getRenderable(name);
+	if (renderable)
 	{
-		DeformableMeshInstance* meshInstance = pawn->getActiveMesh();
+		DeformableMeshInstance* meshInstance = renderable->getActiveMesh();
 		if (meshInstance)
 		{
 			if (meshInstance->getDeformableMesh())
@@ -139,7 +137,7 @@ void AutoRigViewer::setCharacterName(const std::string& name)
 
 void AutoRigViewer::applyAutoRig( int riggingType /*= 0*/ )
 {
-	if (_characterName == "")
+	if (_characterName.empty())
 		return;
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -147,15 +145,21 @@ void AutoRigViewer::applyAutoRig( int riggingType /*= 0*/ )
 	SBAutoRigManager& autoRigManager = SBAutoRigManager::singleton();
 	autoRigManager.setAutoRigCallBack(this);
 
-	SmartBody::SBPawn* sbPawn = scene->getPawn(_characterName);	
-	DeformableMeshInstance* meshInstance = sbPawn->dStaticMeshInstance_p;
-	if (!sbPawn || !meshInstance || meshInstance->getDeformableMesh() == NULL)
+	auto renderable = Session::current->renderScene.getRenderable(_characterName);
+	if (!renderable)
+	{
+		SmartBody::util::log("AutoRigging Fail : No pawn is selected, or the selected pawn does not contain 3D mesh for rigging.");
+		return;
+	}
+	auto& meshInstance = renderable->staticMeshInstance;
+	if (!meshInstance || meshInstance->getDeformableMesh() == nullptr)
 	{
 
 		SmartBody::util::log("AutoRigging Fail : No pawn is selected, or the selected pawn does not contain 3D mesh for rigging.");
 		return;
 	}
-	DeformableMesh* mesh = meshInstance->getDeformableMesh();	
+
+	DeformableMesh* mesh = meshInstance->getDeformableMesh();
 
 	std::string modelName = mesh->getName();//(const char*) model.name;
 	std::string filebasename = boost::filesystem::basename(modelName);
@@ -203,7 +207,7 @@ void AutoRigViewer::applyAutoRig( int riggingType /*= 0*/ )
 		return;
 	}		
 
-	std::string charName = sbPawn->getName()+"autoRig";
+	std::string charName = renderable->pawn->getName()+"autoRig";
 
 	SmartBody::SBJointMapManager* jointMapManager = scene->getJointMapManager();
 	SmartBody::SBJointMap* jointMap = jointMapManager->getJointMap(skelName);
@@ -220,7 +224,7 @@ void AutoRigViewer::applyAutoRig( int riggingType /*= 0*/ )
 	character->createStandardControllers();
 	character->setStringAttribute("deformableMesh",deformMeshName);	
 
-	SrVec dest = sbPawn->getPosition();
+	SrVec dest = renderable->pawn->getPosition();
 	float yOffset = -skel->getBoundingBox().a.y;
 	dest.y = yOffset;		
 	character->setPosition(SrVec(dest.x,dest.y,dest.z));
@@ -272,7 +276,7 @@ void AutoRigViewer::applyAutoRig( int riggingType /*= 0*/ )
 
 void AutoRigViewer::ApplyAutoRigCB( Fl_Widget* widget, void* data )
 {
-	AutoRigViewer* viewer = (AutoRigViewer*) data;
+	auto* viewer = (AutoRigViewer*) data;
 	int riggingType = viewer->_choiceVoxelRigging->value();
 	viewer->applyAutoRig(riggingType);
 }
@@ -288,7 +292,7 @@ void ModelViewer::updateFancyLights()
 	light.position = SrVec( 100.0, 100.0, 500.0 );
 	//	light.constant_attenuation = 1.0f/cam.scale;
 	light.constant_attenuation = 1.0f;
-	lights.push_back(light);
+	lights.emplace_back(light);
 
 	light.directional = true;
 	light.diffuse = SrColor( 0.9f, 0.5f, 0.5f );
@@ -296,7 +300,7 @@ void ModelViewer::updateFancyLights()
 	light.position = SrVec( 900.0, -150.0, 150.0 );
 	//	light.constant_attenuation = 1.0f/cam.scale;
 	light.constant_attenuation = 1.0f;
-	lights.push_back(light);
+	lights.emplace_back(light);
 
 	SrLight light2 = light;
 	light2.directional = true;
@@ -305,25 +309,25 @@ void ModelViewer::updateFancyLights()
 	light2.position = SrVec( -900.0, 100.0, 100.0 );
 	//	light2.constant_attenuation = 1.0f;
 	//	light2.linear_attenuation = 2.0f;
-	lights.push_back(light2);
+	lights.emplace_back(light2);
 }
 
 ModelViewer::ModelViewer( int x, int y, int w, int h, char* name ) : MouseViewer(x,y,w,h,name)
 {
-	_model = NULL;
+	_model = nullptr;
 	updateFancyLights();
 }
 
 ModelViewer::~ModelViewer()
 {
-	if (_model)
+
 		delete _model;
 }
 
 
 void ModelViewer::setModel( SrModel& model )
 {
-	if (_model)
+
 		delete _model;
 	_model = new SrSnModel();
 	_model->shape(model);
@@ -374,15 +378,12 @@ void ModelViewer::focusOnModel()
 /************************************************************************/
 SkinViewer::SkinViewer(int x, int y, int w, int h, char* name) : MouseViewer(x,y,w,h,name)
 {
-	skeleton = NULL;
-	skeletonScene = NULL;
-	mesh = NULL;
+	skeleton = nullptr;
+	skeletonScene = nullptr;
+	mesh = nullptr;
 	updateLights();
 }
-SkinViewer::~SkinViewer()
-{
-
-}
+SkinViewer::~SkinViewer() = default;
 void SkinViewer::setSkeleton(SmartBody::SBSkeleton* sk)
 {
 	skeleton = sk;
@@ -390,7 +391,7 @@ void SkinViewer::setSkeleton(SmartBody::SBSkeleton* sk)
 	if (skeletonScene)
 	{
 		delete skeletonScene;
-		skeletonScene = NULL;
+		skeletonScene = nullptr;
 	}
 	skeletonScene = new SkScene();
 	skeletonScene->ref();
@@ -404,7 +405,7 @@ void SkinViewer::setDeformableMesh(DeformableMesh* defMesh)
 	if (defMesh)
 		SmartBody::util::log("SkinViewer::setDeformableMesh = %s", defMesh->getName().c_str());
 	else
-		SmartBody::util::log("SkinViewer::setDeformableMesh to NULL.");
+		SmartBody::util::log("SkinViewer::setDeformableMesh to nullptr.");
 	mesh = defMesh;
 	redraw();
 }

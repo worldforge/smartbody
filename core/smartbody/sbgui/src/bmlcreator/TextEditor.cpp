@@ -17,12 +17,12 @@ TextEditorWindow::TextEditorWindow(int x, int y, int w, int h, char* name) : Fl_
 	buttonOK->callback(OnConfirmCB, this);
 	this->end();
 	this->resizable(textEditor);
-	stringAttr = NULL;
+	stringAttr = nullptr;
 }
 
 TextEditorWindow::~TextEditorWindow()
 {
-	stringAttr = NULL;
+	stringAttr = nullptr;
 }
 
 void TextEditorWindow::setSBStringAttribute(SmartBody::StringAttribute* attr)
@@ -36,7 +36,7 @@ void TextEditorWindow::OnConfirmCB(Fl_Widget* widget, void* data)
 {
 	TextEditorWindow* window = (TextEditorWindow*)data;
 	std::string text = window->textBuffer->text();
-	if (window->stringAttr != NULL)
+	if (window->stringAttr != nullptr)
 		window->stringAttr->setValue(text);
 	window->hide();
 	delete window;

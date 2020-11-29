@@ -21,17 +21,17 @@ VisemeCurveEditor::VisemeCurveEditor(int x, int y, int w, int h, char* name) : F
 	_gridWidth = w - 12;
 	_gridHeight = h - 12;
 
-	visemeWindow = NULL;
+	visemeWindow = nullptr;
 
-	_colors.push_back(FL_GRAY0);
-	_colors.push_back(FL_RED);
-	//_colors.push_back(FL_GREEN);
-	_colors.push_back(FL_BLUE);
-	_colors.push_back(FL_DARK_RED);
-	_colors.push_back(FL_DARK_GREEN);
-	_colors.push_back(FL_CYAN);
-	_colors.push_back(FL_DARK_BLUE);
-	_colors.push_back(FL_MAGENTA);
+	_colors.emplace_back(FL_GRAY0);
+	_colors.emplace_back(FL_RED);
+	//_colors.emplace_back(FL_GREEN);
+	_colors.emplace_back(FL_BLUE);
+	_colors.emplace_back(FL_DARK_RED);
+	_colors.emplace_back(FL_DARK_GREEN);
+	_colors.emplace_back(FL_CYAN);
+	_colors.emplace_back(FL_DARK_BLUE);
+	_colors.emplace_back(FL_MAGENTA);
 }
 
 void VisemeCurveEditor::setVisemeWindow(VisemeViewerWindow* w)
@@ -155,11 +155,11 @@ int VisemeCurveEditor::handle(int event)
 				else if (isShiftPressed)
 				{
 					if (_lineIsSelected)
-						_selectedLines.push_back(_selectedLine);
+						_selectedLines.emplace_back(_selectedLine);
 
 					if (isLineSelected(mousex, mousey))
 					{
-						_selectedLines.push_back(_selectedLine);
+						_selectedLines.emplace_back(_selectedLine);
 						redraw();
 					}
 				}
@@ -490,7 +490,7 @@ void VisemeCurveEditor::generateCurves(int count)
 		for(int j = 0; j < 5; j++)
 		{
 			SrVec point( rand() % 25 + (float)(x() + j * 70), (float)( y() + h()/2.0f + rand() % 70), (float)0);
-			curve.push_back(point);
+			curve.emplace_back(point);
 		}
 		if (i < (int) _colors.size())
 			curve.SetLineColor(_colors[i]);
@@ -498,7 +498,7 @@ void VisemeCurveEditor::generateCurves(int count)
 			curve.SetLineColor( rand() % 256);
 		//curve.SetPointColor( rand() % 256);
 
-		_curves.push_back(curve);
+		_curves.emplace_back(curve);
 	}
 }
 
@@ -515,23 +515,23 @@ void VisemeCurveEditor::changeCurve(int viseme, std::vector<float>& curveData, c
 			{
 				for (size_t i = 0; i < phonemeCurve1.size() / 2; i++)
 				{
-					_curves[viseme]. push_back(SrVec(phonemeCurve1[i * 2 + 0] * 0.5f, phonemeCurve1[i * 2 + 1], 0.0f));
+					_curves[viseme]. emplace_back(SrVec(phonemeCurve1[i * 2 + 0] * 0.5f, phonemeCurve1[i * 2 + 1], 0.0f));
 				}
 			}
 			if (phonemeCurve2.size() > 0)
 			{
 				for (size_t i = 0; i < phonemeCurve2.size() / 2; i++)
 				{
-					_curves[viseme]. push_back(SrVec(phonemeCurve2[i * 2 + 0] * 0.5f + 0.5f, phonemeCurve2[i * 2 + 1], 0.0f));
+					_curves[viseme]. emplace_back(SrVec(phonemeCurve2[i * 2 + 0] * 0.5f + 0.5f, phonemeCurve2[i * 2 + 1], 0.0f));
 				}
 			}
 		}
 		else
 		{
 			_curves[viseme].clear();
-			_curves[viseme].push_back(SrVec(0.1f, 0, 0));
-			_curves[viseme].push_back(SrVec(0.5f, 1.0f, 0));
-			_curves[viseme].push_back(SrVec(0.9f, 0, 0));
+			_curves[viseme].emplace_back(SrVec(0.1f, 0, 0));
+			_curves[viseme].emplace_back(SrVec(0.5f, 1.0f, 0));
+			_curves[viseme].emplace_back(SrVec(0.9f, 0, 0));
 		}
 	}
 	else
@@ -540,7 +540,7 @@ void VisemeCurveEditor::changeCurve(int viseme, std::vector<float>& curveData, c
 
 		for (size_t i = 0; i < curveData.size() / 2; i++)
 		{
-			_curves[viseme].push_back(SrVec(curveData[i * 2 + 0], curveData[i * 2 + 1], 0.0f));
+			_curves[viseme].emplace_back(SrVec(curveData[i * 2 + 0], curveData[i * 2 + 1], 0.0f));
 		}
 	}
 }

@@ -66,7 +66,7 @@ void SBJointMap::applyMotion(SmartBody::SBMotion* motion)
 	}
 #endif
 
-	_mappedMotions.push_back(motion->getName());
+	_mappedMotions.emplace_back(motion->getName());
 }
 
 void SBJointMap::applyMotionRecurse(const std::string& directory)
@@ -292,7 +292,7 @@ void SBJointMap::applySkeleton(SmartBody::SBSkeleton* skeleton)
 	{
 		pawn->ct_tree_p->child_channels_updated(nullptr);
 	}
-	_mappedSkeletons.push_back(skeleton->getName());
+	_mappedSkeletons.emplace_back(skeleton->getName());
 }
 
 std::vector<std::string>&  SBJointMap::getMappedMotions()
@@ -360,7 +360,7 @@ void SBJointMap::setMapping(const std::string& from, const std::string& to)
 		}
 	}
 
-	_map.push_back(std::pair<std::string, std::string>(from, to));
+	_map.emplace_back(std::pair<std::string, std::string>(from, to));
 #else
  	if (_jointMap.left.find(from) != _jointMap.left.end())
  		return;
@@ -408,7 +408,7 @@ void SBJointMap::removeMapping(const std::string& from)
 		std::string f = (*iter).first;
 		if (from != f)
 		{
-			tempMap.push_back((*iter));
+			tempMap.emplace_back((*iter));
 		}
 	}
 	tempMap.swap(_map);
@@ -448,7 +448,7 @@ void SBJointMap::removeMappingTo( const std::string& to )
 		std::string f = (*iter).second;
 		if (to != f)
 		{
-			tempMap.push_back((*iter));
+			tempMap.emplace_back((*iter));
 		}
 	}
 	tempMap.swap(_map);
@@ -1734,7 +1734,7 @@ void SBJointMap::listChildrenJoints(SkJoint* j, std::vector<SkJoint*>& j_list)
 {
 	if(!j) return;
 
-	j_list.push_back(j);
+	j_list.emplace_back(j);
 	for(int i=0; i<j->num_children(); i++)
 	{
 		listChildrenJoints(j->child(i), j_list);
@@ -1798,7 +1798,7 @@ SBAPI std::vector<std::pair<std::string, std::string> > SBJointMap::getMappingLi
 		  mi != _jointMap.end();
 		  mi++)
 	{
-		outJointMap.push_back(std::pair<std::string,std::string>(mi->get_left_pair().first, mi->get_left_pair().second));
+		outJointMap.emplace_back(std::pair<std::string,std::string>(mi->get_left_pair().first, mi->get_left_pair().second));
 	}
 	return outJointMap;
 }

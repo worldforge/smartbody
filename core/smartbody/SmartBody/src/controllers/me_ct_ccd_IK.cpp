@@ -202,13 +202,13 @@ void MeCtCCDIK::sortConstraint( ConstraintMap* conMap, VecOfConstraintPtr& sortC
 		vi != conMap->end();
 		vi++)
 	{
-		//conList.push_back(vi->second);
+		//conList.emplace_back(vi->second);
 		EffectorConstraint* con = vi->second;
 		MeCtIKTreeNode* node = ikScenario->findIKTreeNode(con->efffectorName.c_str());		
 		StrIntPair sip;
 		sip.first = con->efffectorName;
 		sip.second = node->nodeLevel;
-		sortList.push_back(sip);
+		sortList.emplace_back(sip);
 	}
 	std::sort(sortList.begin(),sortList.end(),strIntComp);
 
@@ -218,7 +218,7 @@ void MeCtCCDIK::sortConstraint( ConstraintMap* conMap, VecOfConstraintPtr& sortC
 	{
 		std::string key = sortList[i].first;
 		EffectorConstraint* con = (*conMap)[key];
-		sortConList.push_back(con);		
+		sortConList.emplace_back(con);
 	}
 }
 

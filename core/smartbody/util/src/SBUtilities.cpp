@@ -19,7 +19,7 @@ void SmartBody::util::tokenize(const std::string& str, std::vector<std::string>&
 	while (std::string::npos != pos || std::string::npos != lastPos)
 	{
 		// Found a token, add it to the vector.
-		tokens.push_back(str.substr(lastPos, pos - lastPos));
+		tokens.emplace_back(str.substr(lastPos, pos - lastPos));
 		// Skip delimiters.  Note the "not_of"
 		lastPos = str.find_first_not_of(delimiters, pos);
 		// Find next "non-delimiter"
@@ -324,7 +324,7 @@ SmartBody::util::Logger::~Logger()
 
 void SmartBody::util::Logger::AddListener(Listener * listener)
 {
-	m_listeners.push_back(listener);
+	m_listeners.emplace_back(listener);
 }
 
 
@@ -470,7 +470,7 @@ void SmartBody::util::AndroidListener::OnMessage(const std::string & message)
 	// we're now letting log4cxx handle the message
 	while (logList.size() > 100)
 		logList.pop_front();
-	logList.push_back(message);
+	logList.emplace_back(message);
 }
 
 std::string SmartBody::util::AndroidListener::getLogs()
@@ -536,7 +536,7 @@ SmartBody::util::Logger::~Logger()
 
 void SmartBody::util::Logger::AddListener(Listener * listener)
 {
-	m_listeners.push_back(listener);
+	m_listeners.emplace_back(listener);
 }
 
 

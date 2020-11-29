@@ -7,16 +7,16 @@ BMLFaceObject::BMLFaceObject() : BMLObject()
 
 	SmartBody::StringAttribute* typeAttr = createStringAttribute("type", "", "", "Basic", 10, false, false, false);
 	std::vector<std::string> types;
-	types.push_back("facs");
+	types.emplace_back("facs");
 	typeAttr->setValidValues(types);
 
 	createStringAttribute("au", "", true, "Basic", 50, false, false, false, "Action unit number");
 	SmartBody::StringAttribute* sideAttr = createStringAttribute("side", "", true, "Basic", 50, false, false, false, "Action unit number");
 	std::vector<std::string> sides;
-	sides.push_back("");
-	sides.push_back("BOTH");
-	sides.push_back("LEFT");
-	sides.push_back("RIGHT");
+	sides.emplace_back("");
+	sides.emplace_back("BOTH");
+	sides.emplace_back("LEFT");
+	sides.emplace_back("RIGHT");
 	sideAttr->setValidValues(sides);
 	
 	createStringAttribute("au", "", true, "Basic", 60, false, false, false, "Action unit number");

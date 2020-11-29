@@ -3,6 +3,7 @@
 #endif
 
 #include "SBBaseRenderer.h"
+#include "Session.h"
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
 #include <sr/sr_camera.h>
@@ -11,6 +12,8 @@
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
 #include <sbm/GPU/VBOData.h>
 #include <boost/lexical_cast.hpp>
+#include "Session.h"
+#include "sbm/SBRenderScene.h"
 
 char vTestShaderStr[] =
 "#version 430                        \n"
@@ -147,7 +150,7 @@ char fShaderNormalMapStr[] =
 
 ;
 
-SBBaseRenderer* SBBaseRenderer::_singleton = NULL;
+SBBaseRenderer* SBBaseRenderer::_singleton = nullptr;
 
 SBBaseRenderer& SBBaseRenderer::singleton()
 {
@@ -159,20 +162,17 @@ SBBaseRenderer& SBBaseRenderer::singleton()
 void SBBaseRenderer::destroy_singleton()
 {
 	delete _singleton;
-	_singleton = NULL;
+	_singleton = nullptr;
 }
 
-SBBaseRenderer::SBBaseRenderer(void)
+SBBaseRenderer::SBBaseRenderer()
 {
 	rendererInitialized = false;
 	backgroundColor = SrColor(0.6f, 0.6f, 0.6f);
 }
 
 
-SBBaseRenderer::~SBBaseRenderer(void)
-{
-
-}
+SBBaseRenderer::~SBBaseRenderer() = default;
 
 
 void SBBaseRenderer::draw(std::vector<SrLight>& lights, bool isDrawFloor)
@@ -181,20 +181,24 @@ void SBBaseRenderer::draw(std::vector<SrLight>& lights, bool isDrawFloor)
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<std::string> pawnNames = scene->getPawnNames();
 #if 1
-	for (unsigned int i = 0; i < pawnNames.size(); i++)
-	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnNames[i]);
-		DeformableMeshInstance* meshInstance = pawn->getActiveMesh();
+	auto& renderables = Session::current->renderScene.getRenderables();
+	for (auto& entry : renderables) {
+		auto& renderable = entry.second;
+		auto meshInstance = renderable.getActiveMesh();
+
 		if (meshInstance && meshInstance->getDeformableMesh())
 		{
 			GPUBlendShapeUpdate(meshInstance);
 			if (!meshInstance->isStaticMesh())
 			{
-				SbmDeformableMeshGPUInstance* gpuMeshInstance = dynamic_cast<SbmDeformableMeshGPUInstance*>(meshInstance);
-				GPUMeshUpdate(meshInstance);
-			}			
+				auto* gpuMeshInstance = dynamic_cast<SbmDeformableMeshGPUInstance*>(meshInstance);
+				if (gpuMeshInstance) {
+					GPUMeshUpdate(meshInstance);
+				}
+			}
 		}
 	}
+
 #endif
 	glUseProgram(normalMapShader->getShaderProgram());
 	// setup lighting
@@ -204,18 +208,18 @@ void SBBaseRenderer::draw(std::vector<SrLight>& lights, bool isDrawFloor)
 	std::string str;
 	for (int i = 0; i < lights.size(); ++i) {
 		light = lights[i];
-		str = "uLights[" + boost::lexical_cast<std::string>(i) + "].position";
+		str = "uLights[" + std::to_string(i) + "].position";
 		loc = glGetUniformLocation(normalMapShader->getShaderProgram(), str.c_str());
 		glUniform4f(loc, light.position.x, light.position.y, light.position.z, 0.0);
-		str = "uLights[" + boost::lexical_cast<std::string>(i) + "].diffuse";
+		str = "uLights[" + std::to_string(i) + "].diffuse";
 		loc = glGetUniformLocation(normalMapShader->getShaderProgram(), str.c_str());
 		glUniform4f(loc, (float)light.diffuse.r / 255.0f, (float)light.diffuse.g / 255.0f, (float)light.diffuse.b / 255.0f, 1.0f);
-		str = "uLights[" + boost::lexical_cast<std::string>(i) + "].ambient";
+		str = "uLights[" + std::to_string(i) + "].ambient";
 		loc = glGetUniformLocation(normalMapShader->getShaderProgram(), str.c_str());
 		glUniform4f(loc, (float)light.ambient.r / 255.0f, (float)light.ambient.g / 255.0f, (float)light.ambient.b / 255.0f, 1.0f);
 	}
 	//material
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* cam = Session::current->renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
 		return;
@@ -242,15 +246,16 @@ void SBBaseRenderer::draw(std::vector<SrLight>& lights, bool isDrawFloor)
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//SmartBody::util::log("Render Forward shading");
-	for (unsigned int i = 0; i < pawnNames.size(); i++)
-	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnNames[i]);
-		DeformableMeshInstance* meshInstance = pawn->getActiveMesh();
+	for (auto& entry : renderables) {
+		auto& renderable = entry.second;
+		auto meshInstance = renderable.getActiveMesh();
+
 		if (meshInstance)
 		{
 			renderMesh(meshInstance, normalMapShader, false);
 		}
 	}
+
 	if (isDrawFloor)
 		drawFloor(false);
 	glUseProgram(0);
@@ -279,9 +284,9 @@ void SBBaseRenderer::drawFloor(bool deferredRender)
 		std::string defaultTexName = "gray_tex";
 		std::string defaultNormalTex = "defaultNormal_tex";
 		std::string defaultGlossyTex = "gray_tex";
-		SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, defaultTexName.c_str());
-		SbmTexture* blueTex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, defaultNormalTex.c_str());
-		SbmTexture* grayTex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, defaultGlossyTex.c_str());
+		auto tex = SbmTextureManager::singleton().findTexture(defaultTexName.c_str());
+		auto blueTex = SbmTextureManager::singleton().findTexture(defaultNormalTex.c_str());
+		auto grayTex = SbmTextureManager::singleton().findTexture(defaultGlossyTex.c_str());
 		//	If we are using blended textures
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
@@ -324,8 +329,8 @@ void SBBaseRenderer::drawFloor(bool deferredRender)
 
 void SBBaseRenderer::GPUMeshUpdate(DeformableMeshInstance* meshInstance)
 {
-	SbmDeformableMeshGPUInstance* gpuMeshInstance = (SbmDeformableMeshGPUInstance*)meshInstance;
-	SbmDeformableMeshGPU* gpuMesh = (SbmDeformableMeshGPU*)gpuMeshInstance->getDeformableMesh();
+	auto* gpuMeshInstance = (SbmDeformableMeshGPUInstance*)meshInstance;
+	auto* gpuMesh = (SbmDeformableMeshGPU*)gpuMeshInstance->getDeformableMesh();
 
 	if (!gpuMesh) return;
 
@@ -339,19 +344,19 @@ void SBBaseRenderer::GPUMeshUpdate(DeformableMeshInstance* meshInstance)
 
 	glEnableVertexAttribArray(0);
 	gpuMesh->getPosVBO()->VBO()->BindBuffer();
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(1);
 	gpuMesh->getNormalVBO()->VBO()->BindBuffer();
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(2);
 	gpuMesh->getTangentVBO()->VBO()->BindBuffer();
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(3);
 	gpuMesh->getBoneIDVBO()->VBO()->BindBuffer();
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(4);
 	gpuMesh->getBoneWeightVBO()->VBO()->BindBuffer();
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
 
 	glEnable(GL_RASTERIZER_DISCARD);
 	gpuMeshInstance->updateTransformBuffer();
@@ -397,7 +402,7 @@ void SBBaseRenderer::resize(int w, int h)
 
 void SBBaseRenderer::resetRenderer()
 {
-	skinningShader = normalMapShader = NULL;
+	skinningShader = normalMapShader = nullptr;
 	rendererInitialized = false;
 }
 
@@ -465,11 +470,11 @@ void SBBaseRenderer::renderMesh(DeformableMeshInstance* meshInstance, SbmShaderP
 	}
 
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
-	SbmTexture* whiteTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "white_tex");
-	SbmTexture* blackTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "black_tex");
-	SbmTexture* grayTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "gray_tex");
-	SbmTexture* defaultSpecularTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "defaultSpecular_tex");
-	SbmTexture* defaultNormalTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, "defaultNormal_tex");
+	auto whiteTex = texManager.findTexture("white_tex");
+	auto blackTex = texManager.findTexture("black_tex");
+	auto grayTex = texManager.findTexture("gray_tex");
+	auto defaultSpecularTex = texManager.findTexture("defaultSpecular_tex");
+	auto defaultNormalTex = texManager.findTexture("defaultNormal_tex");
 
 #if 0
 	if (meshInstance->_deformPosBuf.size() > 0)
@@ -570,23 +575,23 @@ void SBBaseRenderer::renderMesh(DeformableMeshInstance* meshInstance, SbmShaderP
 // 		}
 
 		SmartBody::SBSkeleton* skel = meshInstance->getSkeleton();
-		SmartBody::SBPawn* pawn = skel->getPawn();		
-		
-		SbmTexture* tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
-		SbmTexture* normalTex = texManager.findTexture(SbmTextureManager::TEXTURE_NORMALMAP, subMesh->normalMapName.c_str());	
-		SbmTexture* specularTex = texManager.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP, subMesh->specularMapName.c_str());
-		//SbmTexture* glossyTex = texManager.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP, subMesh->specularMapName.c_str());
+		SmartBody::SBPawn* pawn = skel->getPawn();
+
+		auto tex = texManager.findTexture(subMesh->texName.c_str());
+		auto normalTex = texManager.findTexture(subMesh->normalMapName.c_str());
+		auto specularTex = texManager.findTexture(subMesh->specularMapName.c_str());
+		//SbmTexture* glossyTex = texManager.findTexture(subMesh->specularMapName.c_str());
 
 		if (!tex)
-			tex = whiteTex;
+			tex = std::move(whiteTex);
 		if (!normalTex)
 		{
 			//SmartBody::util::log("No normal texture name = %s", subMesh->normalMapName.c_str());
-			normalTex = defaultNormalTex; // to use only original normal
+			normalTex = std::move(defaultNormalTex); // to use only original normal
 		}
 
 		if (!specularTex)
-			specularTex = blackTex;
+			specularTex = std::move(blackTex);
 
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
@@ -664,7 +669,7 @@ void SBBaseRenderer::render(Heightfield& heightfield, int renderMode) const {
 	auto& meshData = heightfield.getMeshData();
 	if (meshData.vertex_arr && meshData.color_arr) {
 
-		if (dirty_normals) {
+		if (meshData.dirty_normals) {
 			heightfield.load_normals();
 		}
 

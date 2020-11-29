@@ -378,7 +378,7 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
             {
                if (split[2] == "id")
                {
-                  m_processIdList.push_back(split[1]);
+                  m_processIdList.emplace_back(split[1]);
                }
             }
 

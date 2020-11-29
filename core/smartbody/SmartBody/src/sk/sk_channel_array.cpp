@@ -100,13 +100,13 @@ void SkChannelArray::_add ( SkJoint* j, std::string name, SkChannel::Type t, boo
 		std::map<SkChannel::Type, int>& typeMap = (*iter).second;
 		std::map<SkChannel::Type, int>::iterator typeIter = typeMap.find(t);
 
-		_channelList.push_back(channel);
+		_channelList.emplace_back(channel);
 		typeMap.insert(std::pair<SkChannel::Type, int>(t, _channelList.size() - 1));
 		_floats += SkChannel::size(t);
 	}
 	else
 	{
-		_channelList.push_back(channel);
+		_channelList.emplace_back(channel);
 		std::map<SkChannel::Type, int> typeMap;
 		typeMap.insert(std::pair<SkChannel::Type, int>(t, _channelList.size() - 1));
 		_channelMap.insert(std::pair<std::string, std::map<SkChannel::Type, int> >(name, typeMap));
@@ -522,8 +522,8 @@ bool SkChannelArray::merge ( SkChannelArray& ca )
 		int pos = search(name, t);
 		if (pos < 0) // missing channel found
 		{ 
-			namesToAdd.push_back(name);
-			typesToAdd.push_back(t);
+			namesToAdd.emplace_back(name);
+			typesToAdd.emplace_back(t);
 		}
 	}
 
@@ -559,7 +559,7 @@ void SkChannelArray::operator = ( const SkChannelArray& a )
 	_channelList.clear();
 	for (size_t x = 0; x < a._channelList.size(); x++)
 	{
-		_channelList.push_back(a._channelList[x]);
+		_channelList.emplace_back(a._channelList[x]);
 	}
 	if (jointMapName != a.getJointMapName())
 	{
@@ -632,12 +632,12 @@ SrInput& operator>> ( SrInput& in, SkChannelArray& ca )
 			ca.add ( name, SkChannel::get_type(tokens[tokens.size() - 1].c_str()) );
 			n--;
 			tokens.clear();
-			tokens.push_back(std::string(curTok));
+			tokens.emplace_back(std::string(curTok));
 			curLine = tmpLine;
 		}
 		else
 		{
-			tokens.push_back(std::string(curTok));
+			tokens.emplace_back(std::string(curTok));
 		}
 
 

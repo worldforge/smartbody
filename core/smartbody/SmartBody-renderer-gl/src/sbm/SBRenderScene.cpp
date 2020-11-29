@@ -129,11 +129,13 @@ SBRenderScene::SBRenderScene(SBScene& scene, SBRenderAssetManager& renderAssetMa
 	//TODO is this needed?
 	SbmShaderManager::singleton().setViewer(nullptr);
 
+	mScene.addSceneListener(mListener.get());
+
 	mScene.registerObjectProvider("envmap", SBScene::Provider{
 			[&](const std::string& suffix)->SmartBody::SBObject* {
 				//TODO: allow getting envmap texture
 //				SbmTextureManager& texManager = SbmTextureManager::singleton();
-//				auto texture = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, suffix.c_str());
+//				auto texture = texManager.findTexture(suffix.c_str());
 //				if (texture) {
 //					return texture.get();
 //				}
@@ -152,6 +154,11 @@ SBRenderScene::SBRenderScene(SBScene& scene, SBRenderAssetManager& renderAssetMa
 }
 
 SBRenderScene::~SBRenderScene() {
+	mScene.removeSceneListener(mListener.get());
+
+	mScene._removeAllPawnsCallback = {};
+	mScene.removeObjectProvider("envmap");
+
 	SbmTextureManager::destroy_singleton();
 	SbmShaderManager::destroy_singleton();
 }
@@ -186,7 +193,7 @@ std::vector<std::string> SBRenderScene::checkVisibility_current_view() {
 		SrBox pawn_bb				= pawn->getBoundingBox();
 
 		if(frustum.pointInFrustum(pawn_bb.a) || frustum.pointInFrustum(pawn_bb.b))
-			visible_pawns.push_back(pawn->getName());
+			visible_pawns.emplace_back(pawn->getName());
 
 		/*
 		// Usign OgreCamera
@@ -424,7 +431,7 @@ std::vector<std::string> SBRenderScene::occlusionTest(const std::vector<std::str
 		if (iSamplesPassed > 0) // not occluded
 		{
 			//SmartBody::util::log("pawn %s, visible samples = %d", pawn->getName().c_str(), iSamplesPassed);
-			visiblePawns.push_back(pawn->getName());
+			visiblePawns.emplace_back(pawn->getName());
 			//glDrawBox(pawn_bb.a, pawn_bb.b);
 		}
 	}
@@ -499,7 +506,7 @@ std::vector<std::string> SBRenderScene::frustumTest(const std::vector<std::strin
 			frustum.pointInFrustum(pointBAA) ||
 			frustum.pointInFrustum(pointABA) ||
 			frustum.pointInFrustum(pointBAB))
-			visiblePawns.push_back(pawn->getName());
+			visiblePawns.emplace_back(pawn->getName());
 	}
 	return visiblePawns;
 }
@@ -610,14 +617,13 @@ void SBRenderScene::removeConeOfSight() {
 }
 
 SrCamera* SBRenderScene::createCamera(const std::string& name) {
-	SBPawn* pawn = mScene.getPawn(name);
 // 	if (camera)
 // 	{
 // 		SmartBody::util::log("A camera with name '%s' already exists.", name.c_str());
 // 		return camera;
 // 	}
 // 	else
-	if (pawn) {
+	if (mScene.getPawn(name)) {
 		SmartBody::util::log("A pawn with name '%s' already exists. Camera will not be created.", name.c_str());
 		return nullptr;
 	}
@@ -630,7 +636,7 @@ SrCamera* SBRenderScene::createCamera(const std::string& name) {
 
 	_cameras.insert(std::pair<std::string, SrCamera*>(name, camera));
 
-	mScene.insertPawn(pawn);
+	mScene.insertPawn(camera);
 
 	// if this is the first camera that is created, make it the active camera
 	if (_cameras.size() == 1) {
@@ -699,7 +705,7 @@ int SBRenderScene::getNumCameras() {
 std::vector<std::string> SBRenderScene::getCameraNames() {
 	std::vector<std::string> cameraNames;
 	for (auto& _camera : _cameras) {
-		cameraNames.push_back(_camera.first);
+		cameraNames.emplace_back(_camera.first);
 	}
 
 	return cameraNames;
@@ -741,7 +747,7 @@ void SBRenderScene::setCameraTrack(const std::string& characterName, const std::
 	SmartBody::util::log("Vector from joint to target is %f %f %f", cameraTrack->jointToCamera.x, cameraTrack->jointToCamera.y, cameraTrack->jointToCamera.z);
 	cameraTrack->targetToCamera = camera->getEye() - camera->getCenter();
 	SmartBody::util::log("Vector from target to eye is %f %f %f", cameraTrack->targetToCamera.x, cameraTrack->targetToCamera.y, cameraTrack->targetToCamera.z);
-	_cameraTracking.push_back(cameraTrack);
+	_cameraTracking.emplace_back(cameraTrack);
 	SmartBody::util::log("Object %s will now be tracked at joint %s.", characterName.c_str(), jointName.c_str());
 }
 
@@ -757,6 +763,22 @@ void SBRenderScene::removeCameraTrack() {
 
 bool SBRenderScene::hasCameraTrack() {
 	return !_cameraTracking.empty();
+}
+
+const SBRenderScene::Renderable* SBRenderScene::getRenderable(const std::string& name) const {
+	auto I = mRenderables.find(name);
+	if (I != mRenderables.end()) {
+		return &I->second;
+	}
+	return nullptr;
+}
+
+SBRenderScene::Renderable* SBRenderScene::getRenderable(const std::string& name) {
+	auto I = mRenderables.find(name);
+	if (I != mRenderables.end()) {
+		return &I->second;
+	}
+	return nullptr;
 }
 
 
@@ -804,7 +826,7 @@ SBAPI void SBRenderScene::rescalePartialMeshSkeleton(const std::string& meshName
 	SrVec rootPos = rootJoint->gmat().get_translation();
 	std::vector<std::string> belowJointNames;
 	std::string headJointName = "none";
-	belowJointNames.push_back(rootJointName);
+	belowJointNames.emplace_back(rootJointName);
 	int rootJointIdx = mesh->boneJointIdxMap[rootJointName];
 	int headJointIdx = -1;
 	int neckJointIdx = -1;
@@ -827,7 +849,7 @@ SBAPI void SBRenderScene::rescalePartialMeshSkeleton(const std::string& meshName
 		SrVec jpos = joint->gmat().get_translation();
 		if (jpos.y < rootPos.y) // lower than root position
 		{
-			belowJointNames.push_back(joint->getMappedJointName());
+			belowJointNames.emplace_back(joint->getMappedJointName());
 		}
 	}
 	SrVec neckPos = rootJoint->getParent()->gmat().get_translation();

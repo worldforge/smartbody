@@ -94,7 +94,7 @@ next(int n)
 	}
     }
   */
-  nbest.push_back(ans);
+  nbest.emplace_back(ans);
   num_++;
   return ans;
 }
@@ -158,10 +158,10 @@ Val::
 extendTrees(Bst& bst2,int pos)
 {
   len_++;
-  vec_.push_back(0);
-  if(bsts_.size() == 0) bsts_.push_back(&bst2);
+  vec_.emplace_back(0);
+  if(bsts_.size() == 0) bsts_.emplace_back(&bst2);
   else if(pos < 2) bsts_.push_front(&bst2);
-  else bsts_.push_back(&bst2);
+  else bsts_.emplace_back(&bst2);
   prob_ *= bst2.prob();
 }
 
@@ -240,11 +240,11 @@ Val(Val* oval)
 {
   assert(trm_ >= -1 && trm_ < 400);
   vector<short>::const_iterator vsi = oval->vec().begin();
-  for( ; vsi != oval->vec().end() ; vsi++) vec_.push_back(*vsi);
+  for( ; vsi != oval->vec().end() ; vsi++) vec_.emplace_back(*vsi);
   Bsts::const_iterator bi = oval->bsts().begin();
   for( ; bi != oval->bsts().end() ; bi++)
     {
-      bsts_.push_back(*bi);
+      bsts_.emplace_back(*bi);
     }
 };
   

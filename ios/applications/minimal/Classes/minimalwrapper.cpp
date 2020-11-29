@@ -503,7 +503,7 @@ void drawLights()
 				light.quadratic_attenuation = 0.0f;
 			}
 			
-			_lights.push_back(light);
+			_lights.emplace_back(light);
 		}
 	}
 
@@ -522,7 +522,7 @@ void drawLights()
 		light.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
 	//	light.constant_attenuation = 1.0f/cam.scale;
 		light.constant_attenuation = 1.0f;
-		_lights.push_back(light);
+		_lights.emplace_back(light);
 
 		SrLight light2 = light;
 		light2.directional = true;
@@ -533,7 +533,7 @@ void drawLights()
 		light2.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
 	//	light2.constant_attenuation = 1.0f;
 	//	light2.linear_attenuation = 2.0f;
-		_lights.push_back(light2);
+		_lights.emplace_back(light2);
 	}
     
     

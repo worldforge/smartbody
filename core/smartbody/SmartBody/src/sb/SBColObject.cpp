@@ -626,7 +626,7 @@ void SBCollisionUtil::collisionDetection( SBGeomObject* obj1, SBGeomObject* obj2
 		geomContact.contactPoint = SrVec((float)ct.pos[0],(float)ct.pos[1],(float)ct.pos[2]);	
 		geomContact.contactNormal = SrVec((float)ct.normal[0],(float)ct.normal[1],(float)ct.normal[2]);
 		geomContact.penetrationDepth = (float)ct.depth;
-		contactPts.push_back(geomContact);
+		contactPts.emplace_back(geomContact);
 	}
 	dGeomDestroy(odeGeom1);
 	dGeomDestroy(odeGeom2);

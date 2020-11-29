@@ -46,12 +46,12 @@ ECArgs(int argc, char *argv[])
 	  int l = (int)arg.length();
 	  assert(l > 1);
 	  ECString opt(1,arg[1]);
-	  optList.push_back(opt);
-	  if(l == 2) optList.push_back("");
+	  optList.emplace_back(opt);
+	  if(l == 2) optList.emplace_back("");
 	  else
 	    {
 	      ECString v(arg,2,l-2);
-	      optList.push_back(v);
+	      optList.emplace_back(v);
 	    }
 	}
     }

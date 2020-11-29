@@ -14,7 +14,7 @@
 #include "VoxelizerWindow.h"
 #endif
 
-
+#include "Session.h"
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBJoint.h>
@@ -42,20 +42,20 @@ void WeightMapToSkinWeight(std::vector<std::map<int,float> >& weightMap, SkinWei
 class PinoAutoRigCallback : public PinnocchioCallBack
 {
 public:
-	PinoAutoRigCallback(AutoRigCallBack* callback)
+	explicit PinoAutoRigCallback(AutoRigCallBack* callback)
 	{
 		autoRigCallBack = callback;
 	}
 
-	virtual void callbackFunc()
+	void callbackFunc() override
 	{
 		Fl::check();
 	}
-	virtual void skeletonCompleteCallBack(std::vector<Vector3>& embedding)
+	void skeletonCompleteCallBack(std::vector<Vector3>& embedding) override
 	{
 		if (autoRigCallBack)
 		{
-			SmartBody::SBSkeleton* autoRigSk = new SmartBody::SBSkeleton();
+			auto* autoRigSk = new SmartBody::SBSkeleton();
 			PinocchioOutput out;
 			out.embedding = embedding;
 			AutoRigToSBSk(out, *autoRigSk);
@@ -69,33 +69,31 @@ protected:
 	AutoRigCallBack* autoRigCallBack;
 };
 
-SBAutoRigManager* SBAutoRigManager::_singleton = NULL;
+SBAutoRigManager* SBAutoRigManager::_singleton = nullptr;
 SBAutoRigManager::SBAutoRigManager()
 {
-	autoRigCallBack = NULL;
+	autoRigCallBack = nullptr;
 }
 
-SBAutoRigManager::~SBAutoRigManager()
-{
-
-}
+SBAutoRigManager::~SBAutoRigManager() = default;
 
 
 bool SBAutoRigManager::buildAutoRiggingFromPawnMesh( const std::string& pawnName, int riggingType, const std::string& outSkName, const std::string& outDeformableMeshName )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBPawn* sbPawn = scene->getPawn(pawnName);	
-	DeformableMeshInstance* meshInstance = NULL;
-	if (sbPawn)
-		meshInstance = sbPawn->dStaticMeshInstance_p;
-	if (!sbPawn || !meshInstance || meshInstance->getDeformableMesh() == NULL)
+	auto renderable = Session::current->renderScene.getRenderable(pawnName);
+
+
+	DeformableMeshInstance* meshInstance = nullptr;
+	if (renderable)
+		meshInstance = renderable->staticMeshInstance.get();
+	if (!renderable || !meshInstance || meshInstance->getDeformableMesh() == nullptr)
 	{
 
 		SmartBody::util::log("AutoRigging Fail : No pawn is selected, or the selected pawn does not contain 3D mesh for rigging.");
 		return false;
 	}
-	DeformableMesh* mesh = meshInstance->getDeformableMesh();	
-	SrModel& model = mesh->dMeshStatic_p[0]->shape();	
+	DeformableMesh* mesh = meshInstance->getDeformableMesh();
+	SrModel& model = mesh->dMeshStatic_p[0]->shape();
 
 	SrModel scaleModel = SrModel(model);
 	for (unsigned int i=1; i< mesh->dMeshStatic_p.size();i++)
@@ -103,19 +101,19 @@ bool SBAutoRigManager::buildAutoRiggingFromPawnMesh( const std::string& pawnName
 		scaleModel.add_model(mesh->dMeshStatic_p[i]->shape());
 	}
 
-	
 
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+
+	auto& assetManager = Session::current->renderAssetManager;
 	bool autoRigSuccess = false;
-	SrMat worldRotation = sbPawn->get_world_offset().get_rotation(); 
-	if (!assetManager->getDeformableMesh(outDeformableMeshName))
-	{			
+	SrMat worldRotation = renderable->pawn->get_world_offset().get_rotation();
+	if (!assetManager.getDeformableMesh(outDeformableMeshName))
+	{
 		//model.scale(meshInstance->getMeshScale()); // resize the vertices
 		SrVec meshScale = meshInstance->getMeshScale();
-		for (unsigned int i=0;i<scaleModel.V.size();i++)
-			scaleModel.V[i] *= meshScale[0];
-		for (unsigned int i=0;i<scaleModel.V.size();i++)
-			scaleModel.V[i] = scaleModel.V[i]*worldRotation;
+		for (auto & i : scaleModel.V)
+			i *= meshScale[0];
+		for (auto & i : scaleModel.V)
+			i = i*worldRotation;
 
 		if (riggingType == 0)
 			autoRigSuccess = buildAutoRiggingVoxels(scaleModel,outSkName,outDeformableMeshName);
@@ -123,7 +121,7 @@ bool SBAutoRigManager::buildAutoRiggingFromPawnMesh( const std::string& pawnName
 		else if (riggingType == 1)
 			autoRigSuccess = buildAutoRiggingVoxelsWithVoxelSkinWeights(scaleModel,outSkName,outDeformableMeshName);
 		else if (riggingType == 2)
-			autoRigSuccess = buildAutoRigging(scaleModel, outSkName, outDeformableMeshName);		
+			autoRigSuccess = buildAutoRigging(scaleModel, outSkName, outDeformableMeshName);
 	}
 	else
 	{
@@ -135,7 +133,7 @@ bool SBAutoRigManager::buildAutoRiggingFromPawnMesh( const std::string& pawnName
 
 void SBAutoRigManager::transferSkinWeight(SmartBody::SBSkeleton& skel, SrModel& inModel, std::vector<std::map<int,float> >& inWeight, SrModel& outModel, std::vector<std::map<int,float> >& outWeight)
 {
-	
+
 	vector<Tri3Object> triobjvec;
 	for(unsigned int i = 0; i < inModel.F.size(); i++) {
 		SrVec p1,p2,p3;
@@ -146,19 +144,19 @@ void SBAutoRigManager::transferSkinWeight(SmartBody::SBSkeleton& skel, SrModel& 
 		Vector3 v1 = Vector3(p1[0],p1[1],p1[2]);
 		Vector3 v2 = Vector3(p2[0],p2[1],p2[2]);
 		Vector3 v3 = Vector3(p3[0],p3[1],p3[2]);
-		triobjvec.push_back(Tri3Object(v1, v2, v3,i));
+		triobjvec.emplace_back(Tri3Object(v1, v2, v3,i));
 	}
 
 	ObjectProjector<3, Tri3Object> proj(triobjvec);
 	Tri3Object projTri;
 	int numBones = skel.getNumJoints();
 	outWeight.clear();
-	for (unsigned int i=0;i<outModel.V.size();i++)
+	for (auto & i : outModel.V)
 	{
 		std::map<int,float> vtxWeight;
-		Vector3 vtxPos = Vector3(outModel.V[i][0],outModel.V[i][1],outModel.V[i][2]);
-		Vector3 projPos = proj.projectObj(vtxPos,projTri);	
-		Vector3 baryW = barycentricCoord(projPos, projTri);	
+		Vector3 vtxPos = Vector3(i[0],i[1],i[2]);
+		Vector3 projPos = proj.projectObj(vtxPos,projTri);
+		Vector3 baryW = barycentricCoord(projPos, projTri);
 
 		for (int v=0;v<3;v++)
 		{
@@ -169,35 +167,35 @@ void SBAutoRigManager::transferSkinWeight(SmartBody::SBSkeleton& skel, SrModel& 
 			for ( mi  = origWeight.begin();
 					mi != origWeight.end();
 					mi++)
-			{	
+			{
 				if (vtxWeight.find(mi->first) == vtxWeight.end())
 					vtxWeight[mi->first] = 0.f;
-				vtxWeight[mi->first] += mi->second*baryW[v];		
+				vtxWeight[mi->first] += mi->second*baryW[v];
 			}
-		}	
-		outWeight.push_back(vtxWeight);
+		}
+		outWeight.emplace_back(vtxWeight);
 	}
 }
 
 bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& charName, int weightType )
 {
 	bool computeWeightSuccess = false;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBPawn* sbChar = scene->getPawn(charName);	
-	
-	DeformableMeshInstance* meshInstance = NULL;
-	if (sbChar)
-		sbChar->getAttribute()
-		meshInstance = sbChar->dMeshInstance_p;
-	if (!sbChar || !meshInstance || meshInstance->getDeformableMesh() == NULL)
+	auto renderable = Session::current->renderScene.getRenderable(charName);
+
+	DeformableMeshInstance* meshInstance = nullptr;
+	if (renderable && renderable->meshInstance)
+		meshInstance = renderable->meshInstance.get();
+	if (!renderable || !meshInstance || meshInstance->getDeformableMesh() == nullptr)
 	{
 
 		SmartBody::util::log("Update skin weight fail, the character doesn't have skin mesh.");
 		return false;
 	}
 
-	DeformableMesh* mesh = meshInstance->getDeformableMesh();	
-	SrModel& model = mesh->dMeshStatic_p[0]->shape();	
+	auto sbChar = renderable->pawn;
+
+	DeformableMesh* mesh = meshInstance->getDeformableMesh();
+	SrModel& model = mesh->dMeshStatic_p[0]->shape();
 
 	std::string jointNameMap[] = {"spine4", "spine3", "spine2", "spine1", "base", "spine5", "skullbase", "head", "r_hip", "r_knee", "r_ankle", "r_forefoot", "r_toe", "l_hip", "l_knee", "l_ankle", "l_forefoot", "l_toe", "r_shoulder", "r_elbow", "r_wrist", "r_hand", "l_shoulder", "l_elbow", "l_wrist", "l_hand" };
 
@@ -212,7 +210,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 	}
 	voxelWindow->hide();
 	PolyVox::SimpleVolume<uint8_t>* voxels = voxelWindow->getVoxels();
-	voxelWindow->saveVoxels("test.binvox");	
+	voxelWindow->saveVoxels("test.binvox");
 
 	PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal> lowResMesh;
 
@@ -222,7 +220,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 
 #if VOXEL_MESH_SIMPLIFICATION
 	PolyVox::MeshDecimator<PolyVox::PositionMaterialNormal> decimator(voxelMesh,&lowResMesh, 0.95);
-	decimator.execute();	
+	decimator.execute();
 #endif
 
 	Mesh m, origMesh;
@@ -244,7 +242,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 		sw->weightIndex.clear();
 		sw->bindWeight.clear();
 		sw->jointNameIndex.clear();
-		
+
 		std::vector<std::map<int,float> > skinWeightMap;
 		buildBoneGlowSkinWeights(model, *sbSk, *voxelWindow, skinWeightMap);
 		WeightMapToSkinWeight(skinWeightMap,*sw);
@@ -255,18 +253,18 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 			// manually add all joint names
 			SmartBody::SBJoint* joint = sbOrigSk->getJointByName(sw->infJointName[k]);
 
-			SrMat gmatZeroInv = joint->gmatZero().rigidInverse();						
+			SrMat gmatZeroInv = joint->gmatZero().rigidInverse();
 			sw->bindPoseMat[k] = gmatZeroInv;
 		}
 
-	} 
+	}
 	else
 	{
 		SmartBody::util::log("m scale = %f, toAdd = %f %f %f", m.scale, m.toAdd[0], m.toAdd[1], m.toAdd[2]);
 		// update skinning weights
 		std::vector<Vector3> embedPos;
 		// hard coded the number of embedding for now		
-		sbSk->updateGlobalMatricesZero();		
+		sbSk->updateGlobalMatricesZero();
 		embedPos.resize(26);
 		for (int i=0;i<26;i++)
 		{
@@ -276,7 +274,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 			{
 				SrVec pos = joint->gmatZero().get_translation();
 				for (int k=0;k<3;k++)
-					embedPos[i][k] = pos[k]*m.scale+m.toAdd[k];	
+					embedPos[i][k] = pos[k]*m.scale+m.toAdd[k];
 				SmartBody::util::log("Sk EmbedPos[%d] = %f %f %f", i, embedPos[i][0],embedPos[i][1],embedPos[i][2]);
 			}
 		}
@@ -299,7 +297,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 			if (boneIdx < 0)
 				continue;
 			else
-				boneIdxMap.push_back(boneIdx);
+				boneIdxMap.emplace_back(boneIdx);
 		}
 
 		SmartBody::util::log("transfer skin weights");
@@ -327,22 +325,22 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 						weights[boneIdx] = 0.f;
 					}
 					weights[boneIdx] += (float) d;
-				}		
+				}
 			}
 			//SmartBody::util::log("after copying weights");
 			std::map<int,float>::iterator mi;
-			sw->numInfJoints.push_back(weights.size());
+			sw->numInfJoints.emplace_back(weights.size());
 			for ( mi  = weights.begin(); mi != weights.end(); mi++)
 			{
-				sw->weightIndex.push_back(sw->bindWeight.size());
-				sw->bindWeight.push_back(mi->second);
-				sw->jointNameIndex.push_back(mi->first);				
+				sw->weightIndex.emplace_back(sw->bindWeight.size());
+				sw->bindWeight.emplace_back(mi->second);
+				sw->jointNameIndex.emplace_back(mi->first);
 			}
 			//SmartBody::util::log("after convert weights");
 		}
 		SmartBody::util::log("after transfer skin weights");
 		sw->normalizeWeights();
-		
+
 		SmartBody::util::log("after normalize weights");
 
 
@@ -351,8 +349,8 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 		{
 			// manually add all joint names
 			SmartBody::SBJoint* joint = sbOrigSk->getJointByName(sw->infJointName[k]);
-			
-			SrMat gmatZeroInv = joint->gmatZero().rigidInverse();						
+
+			SrMat gmatZeroInv = joint->gmatZero().rigidInverse();
 			sw->bindPoseMat[k] = gmatZeroInv;
 		}
 	}
@@ -379,7 +377,7 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 	}
 	voxelWindow->hide();
 	PolyVox::SimpleVolume<uint8_t>* voxels = voxelWindow->getVoxels();
-	voxelWindow->saveVoxels("test.binvox");	
+	voxelWindow->saveVoxels("test.binvox");
 
 	PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal> lowResMesh;
 
@@ -389,7 +387,7 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 
 #if VOXEL_MESH_SIMPLIFICATION
 	PolyVox::MeshDecimator<PolyVox::PositionMaterialNormal> decimator(voxelMesh,&lowResMesh, 0.95);
-	decimator.execute();	
+	decimator.execute();
 #endif
 
 	//SrModel tempMesh;
@@ -419,28 +417,28 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 
 	PinoAutoRigCallback* pinoCallback = new PinoAutoRigCallback(autoRigCallBack);
 	PinnocchioCallBackManager::singletonPtr()->setCallBack(pinoCallback);
-	PinocchioOutput out = autorigVoxelTransfer(sk,m,origMesh);	
-	PinnocchioCallBackManager::singletonPtr()->setCallBack(NULL);
+	PinocchioOutput out = autorigVoxelTransfer(sk,m,origMesh);
+	PinnocchioCallBackManager::singletonPtr()->setCallBack(nullptr);
 
 	//PinocchioOutput out = autorig(sk,m);	
 	//PinocchioOutput out = autorigVoxelTransfer(sk,m,origMesh, false); // don't compute the skin weights
 	SmartBody::util::log("embedding = %d",out.embedding.size());
 	if (out.embedding.size() == 0)
-		return false;	
+		return false;
 
-	
 
-	for(int i = 0; i < (int)out.embedding.size(); ++i)
-		out.embedding[i] = (out.embedding[i] - m.toAdd) / m.scale;
-	SmartBody::SBSkeleton* sbSk = new SmartBody::SBSkeleton();
+
+	for(auto & i : out.embedding)
+		i = (i - m.toAdd) / m.scale;
+	auto sbSk = std::make_unique<SmartBody::SBSkeleton>();
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
-	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);	
+	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
 
 	// build deformable model using voxel skinning weights
-	SbmDeformableMeshGPU* deformMesh = new SbmDeformableMeshGPU();
+	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>();
 	deformMesh->setName(outDeformableMeshName);
-		
+
 	std::string meshName = (const char*) inModel.name;
 	SrSnModel* srSnModelDynamic = new SrSnModel();
 	SrSnModel* srSnModelStatic = new SrSnModel();
@@ -449,15 +447,15 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 	srSnModelDynamic->changed(true);
 	srSnModelDynamic->visible(false);
 	srSnModelStatic->shape().name = meshName.c_str();
-	srSnModelDynamic->shape().name = meshName.c_str();	
-	deformMesh->dMeshStatic_p.push_back(srSnModelStatic);
-	deformMesh->dMeshDynamic_p.push_back(srSnModelDynamic);
+	srSnModelDynamic->shape().name = meshName.c_str();
+	deformMesh->dMeshStatic_p.emplace_back(srSnModelStatic);
+	deformMesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
 	srSnModelDynamic->ref();
 	srSnModelStatic->ref();
 
 	SmartBody::util::log("Build Voxel Skin Weights");
 	SkinWeight* sw = new SkinWeight();
-	sw->sourceMesh = meshName;	
+	sw->sourceMesh = meshName;
 	// build voxel skin weights
 	//buildVoxelSkinWeights(inModel, *sbSk, *voxelWindow, *sw);
 	SrModel voxelSrModel;
@@ -472,41 +470,41 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 #endif
 
 	WeightMapToSkinWeight(skinWeightMap, *sw);
-	deformMesh->skinWeights.push_back(sw);
+	deformMesh->skinWeights.emplace_back(sw);
 	SmartBody::util::log("after normalize weights");
 
 
-	SmartBody::SBSkeleton* sbOrigSk = sbSk;
-	for (int k=0;k<sbOrigSk->getNumJoints();k++)
+	for (int k=0;k<sbSk->getNumJoints();k++)
 	{
 		// manually add all joint names
-		SmartBody::SBJoint* joint = sbOrigSk->getJoint(k);
-		sw->infJointName.push_back(joint->getName());
-		sw->infJoint.push_back(joint);
-		SrMat gmatZeroInv = joint->gmatZero().rigidInverse();						
-		sw->bindPoseMat.push_back(gmatZeroInv);
+		SmartBody::SBJoint* joint = sbSk->getJoint(k);
+		sw->infJointName.emplace_back(joint->getName());
+		sw->infJoint.emplace_back(joint);
+		SrMat gmatZeroInv = joint->gmatZero().rigidInverse();
+		sw->bindPoseMat.emplace_back(gmatZeroInv);
 	}
 
 	//bool isValidDeformableMesh = AutoRigToDeformableMesh(out, inModel, *sbSk, *deformMesh);
-		
+
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	auto& renderAssetManager = Session::current->renderAssetManager;
 	sbSk->ref();
-	sbSk->skfilename(outSkName.c_str());				
+	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());
 	deformMesh->skeletonName = outSkName;
 
-	assetManager->addSkeleton(sbSk);
-	assetManager->addDeformableMesh(outDeformableMeshName, deformMesh);
+	assetManager->addSkeleton(std::move(sbSk));
 
 	if (autoRigCallBack)
 	{
 		deformMesh->buildVertexBufferGPU();
-		autoRigCallBack->skinComplete(assetManager->getDeformableMesh(outDeformableMeshName));
+		autoRigCallBack->skinComplete(deformMesh.get());
 		Fl::check();
 	}
+	renderAssetManager.addDeformableMesh(outDeformableMeshName, std::move(deformMesh));
 
 	delete voxelWindow;
-	return true;	
+	return true;
 #else
 	return false;
 #endif
@@ -517,51 +515,52 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 
 bool SBAutoRigManager::buildAutoRiggingVoxels( SrModel& inModel, std::string outSkName, std::string outDeformableMeshName )
 {
-	
+	auto& renderAssetManager = Session::current->renderAssetManager;
+
 #if defined USE_AUTO_RIGGING && USE_AUTO_RIGGING > 0
 	inModel.computeNormals();
 	int voxelSize = 250;
-	VoxelizerWindow* voxelWindow = new VoxelizerWindow(0,0,voxelSize,voxelSize,"voxelWindow");
-	voxelWindow->initVoxelizer(&inModel,voxelSize);
-	voxelWindow->show();
-	while(!voxelWindow->isFinishBuildVoxels())
+	VoxelizerWindow voxelWindow(0,0,voxelSize,voxelSize,"voxelWindow");
+	voxelWindow.initVoxelizer(&inModel,voxelSize);
+	voxelWindow.show();
+	while(!voxelWindow.isFinishBuildVoxels())
 	{
-		voxelWindow->draw();
+		voxelWindow.draw();
 		Fl::check();
 	}
-	voxelWindow->hide();
-	PolyVox::SimpleVolume<uint8_t>* voxels = voxelWindow->getVoxels();
-	voxelWindow->saveVoxels("test.binvox");	
+	voxelWindow.hide();
+	PolyVox::SimpleVolume<uint8_t>* voxels = voxelWindow.getVoxels();
+	voxelWindow.saveVoxels("test.binvox");
 
 	PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal> lowResMesh;
 
-	PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>* voxelMesh = voxelWindow->getNormalizedVoxelMesh();
-	
+	PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>* voxelMesh = voxelWindow.getNormalizedVoxelMesh();
+
 #define VOXEL_MESH_SIMPLIFICATION 0
 
 #if VOXEL_MESH_SIMPLIFICATION
 	PolyVox::MeshDecimator<PolyVox::PositionMaterialNormal> decimator(voxelMesh,&lowResMesh, 0.95);
-	decimator.execute();	
+	decimator.execute();
 #endif
 
 	//SrModel tempMesh;
 	//PolyVoxMeshToSrModel(mesh,tempMesh);
 	exportPolyVoxMeshToObj(*voxelMesh,"testVol.obj");
 
-	
+
 
 	if (autoRigCallBack)
 	{
-		PolyVox::SurfaceMesh<PolyVox::PositionMaterial>* cubicMesh = voxelWindow->getNormalizedCubicMesh();
+		PolyVox::SurfaceMesh<PolyVox::PositionMaterial>* cubicMesh = voxelWindow.getNormalizedCubicMesh();
 		exportCubicMeshToObj(*cubicMesh,"testVolCubic.obj");
 		SrModel srCubicMesh; srCubicMesh.import_obj("testVolCubic.obj");
 		srCubicMesh.computeNormals(0);
 		autoRigCallBack->voxelComplete(srCubicMesh);
-		
+
 		Fl::check();
 	}
-	
-	
+
+
 	//exportPolyVoxMeshToObj(lowResMesh,"testVolLowRes.obj");
 
 	Mesh m, origMesh;
@@ -569,55 +568,56 @@ bool SBAutoRigManager::buildAutoRiggingVoxels( SrModel& inModel, std::string out
 	bool isValidModel = PolyVoxMeshToPinoMesh(*voxelMesh,m);
 	SrModelToMesh(inModel,origMesh, false);
 	if (!isValidModel) return false; // no auto-rigging if the model is not valid
-	
+
 	//PinocchioOutput out = autorig(sk,m);	
 
-	PinoAutoRigCallback* pinoCallback = new PinoAutoRigCallback(autoRigCallBack);
+	auto* pinoCallback = new PinoAutoRigCallback(autoRigCallBack);
 	PinnocchioCallBackManager::singletonPtr()->setCallBack(pinoCallback);
-	PinocchioOutput out = autorigVoxelTransfer(sk,m,origMesh);	
-	PinnocchioCallBackManager::singletonPtr()->setCallBack(NULL);
+	PinocchioOutput out = autorigVoxelTransfer(sk,m,origMesh);
+	PinnocchioCallBackManager::singletonPtr()->setCallBack(nullptr);
 
 	//SmartBody::util::log("embedding = %d",out.embedding.size());
-	if (out.embedding.size() == 0)
-		return false;	
+	if (out.embedding.empty())
+		return false;
 
-	for(int i = 0; i < (int)out.embedding.size(); ++i)
-		out.embedding[i] = (out.embedding[i] - m.toAdd) / m.scale;
-	SmartBody::SBSkeleton* sbSk = new SmartBody::SBSkeleton();
+	for(auto & i : out.embedding)
+		i = (i - m.toAdd) / m.scale;
+	auto sbSk = std::make_unique<SmartBody::SBSkeleton>();
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
-	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);	
-	SbmDeformableMeshGPU* deformMesh = new SbmDeformableMeshGPU();
+	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
+	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>();
 	deformMesh->setName(outDeformableMeshName);
 	bool isValidDeformableMesh = AutoRigToDeformableMesh(out, inModel, *sbSk, *deformMesh);
-	
+
 
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
 	sbSk->ref();
-	sbSk->skfilename(outSkName.c_str());				
+	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());
 	deformMesh->skeletonName = outSkName;
 
-	assetManager->addSkeleton(sbSk);
-	assetManager->addDeformableMesh(outDeformableMeshName, deformMesh);
+	assetManager->addSkeleton(std::move(sbSk));
 
 	//deformMesh->buildSkinnedVertexBuffer();
 	if (autoRigCallBack)
 	{
 		deformMesh->buildVertexBufferGPU();
-		autoRigCallBack->skinComplete(assetManager->getDeformableMesh(outDeformableMeshName));
+		autoRigCallBack->skinComplete(deformMesh.get());
 		Fl::check();
 	}
+	renderAssetManager.addDeformableMesh(outDeformableMeshName, std::move(deformMesh));
 
-	
-	delete voxelWindow;
-	return true;	
+
+	return true;
 #endif
 	return false;
 }
 
 bool SBAutoRigManager::buildAutoRigging( SrModel& inModel, std::string outSkName, std::string outDeformableMeshName )
 {
+	auto& renderAssetManager = Session::current->renderAssetManager;
+
 #if defined USE_AUTO_RIGGING && USE_AUTO_RIGGING > 0
 	Mesh m;
 	//Skeleton sk = HumanSkeleton(); // default human skeleton from Pinocchio. Should define our own custom skeleton to account for gaze and other behavior
@@ -625,31 +625,31 @@ bool SBAutoRigManager::buildAutoRigging( SrModel& inModel, std::string outSkName
 	inModel.computeNormals();
 	bool isValidModel = SrModelToMesh(inModel,m);
 	if (!isValidModel) return false; // no auto-rigging if the model is not valid
-	PinocchioOutput out = autorig(sk,m);	
+	PinocchioOutput out = autorig(sk,m);
 	if (out.embedding.size() == 0)
 		return false; // no embedding
 
-	for(int i = 0; i < (int)out.embedding.size(); ++i)
-		out.embedding[i] = (out.embedding[i] - m.toAdd) / m.scale;
-	SmartBody::SBSkeleton* sbSk = new SmartBody::SBSkeleton();
+	for(auto & i : out.embedding)
+		i = (i - m.toAdd) / m.scale;
+	auto sbSk = std::make_unique<SmartBody::SBSkeleton>();
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
-	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);	
+	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
 	//SmartBody::util::log("autoRig result, num joints = %d",out.embedding.size());
 	//SmartBody::util::log("AutoRig Skeleton = %s", sbSk->saveToString().c_str());
-	SbmDeformableMeshGPU* deformMesh = new SbmDeformableMeshGPU();
+	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>();
 	deformMesh->setName(outDeformableMeshName);
 	bool isValidDeformableMesh = AutoRigToDeformableMesh(out, inModel, *sbSk, *deformMesh);
 
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
 
 	sbSk->ref();
-	sbSk->skfilename(outSkName.c_str());				
+	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());
 	deformMesh->skeletonName = outSkName;
 
-	assetManager->addSkeleton(sbSk);
-	assetManager->addDeformableMesh(outDeformableMeshName, deformMesh);
+	assetManager->addSkeleton(std::move(sbSk));
+	renderAssetManager.addDeformableMesh(outDeformableMeshName, std::move(deformMesh));
 	return true;
 #endif
 	return false;
@@ -658,7 +658,7 @@ bool SBAutoRigManager::buildAutoRigging( SrModel& inModel, std::string outSkName
 
 #if defined USE_AUTO_RIGGING && USE_AUTO_RIGGING > 0
 
-typedef PolyVox::SimpleVolume<uint8_t> IntVolume; 
+typedef PolyVox::SimpleVolume<uint8_t> IntVolume;
 typedef PolyVox::SimpleVolume<float> FloatVolume;
 typedef std::map<SrVec3i,float> DistMap;
 
@@ -683,7 +683,7 @@ void buildVoxelDistanceMap(SmartBody::SBJoint* joint, VoxelizerWindow& voxelWind
 	if (!centerOnly)
 	{
 		for (int i=0;i<joint->getNumChildren();i++)
-		{		
+		{
 			SrVec pos2 = joint->getChild(i)->getMatrixGlobal().get_translation();
 			std::vector<SrVec3i> boneLineSeg = voxelWindow.rasterizeVoxelLine(pos1,pos2);
 			allBoneLineSeg.insert(allBoneLineSeg.end(), boneLineSeg.begin(),boneLineSeg.end());
@@ -692,19 +692,19 @@ void buildVoxelDistanceMap(SmartBody::SBJoint* joint, VoxelizerWindow& voxelWind
 	else
 	{
 		if (joint->getNumChildren() > 1)
-		{			
+		{
 			SrVec3i jointVoxID = voxelWindow.getVoxelIDFromPosition(pos1);
-			allBoneLineSeg.push_back(jointVoxID);
+			allBoneLineSeg.emplace_back(jointVoxID);
 		}
 		else // has only one child, take the center of line segment
 		{
 			SrVec pos2 = (joint->getChild(0)->getMatrixGlobal().get_translation() + pos1)*0.5f;
 			SrVec3i jointVoxID = voxelWindow.getVoxelIDFromPosition(pos1);
-			allBoneLineSeg.push_back(jointVoxID);			
+			allBoneLineSeg.emplace_back(jointVoxID);
 		}
 	}
-	
-	
+
+
 	SmartBody::util::log("joint %s, bone voxels = %d", joint->getName().c_str(), allBoneLineSeg.size());
 	std::queue<SrVec3i> voxelQueue;
 	for (unsigned int i=0;i<allBoneLineSeg.size();i++)
@@ -713,7 +713,7 @@ void buildVoxelDistanceMap(SmartBody::SBJoint* joint, VoxelizerWindow& voxelWind
 		distVol.setVoxelAt(PolyVox::Vector3DInt32(pos[0],pos[1],pos[2]), 0.f);
 		voxelQueue.push(pos);
 	}
-	
+
 	// flood fill the voxel with distances
 	while (!voxelQueue.empty())
 	{
@@ -722,7 +722,7 @@ void buildVoxelDistanceMap(SmartBody::SBJoint* joint, VoxelizerWindow& voxelWind
 		std::vector<SrVec3i> neighborCells = voxelWindow.getNeighborCells(cv);
 		float cvDist = distVol.getVoxelAt(cv[0],cv[1],cv[2]);
 		SrVec cvCenter = voxelWindow.getVoxelCenterByID(cv);
-		
+
 		for (unsigned int i=0;i<neighborCells.size();i++)
 		{
 			SrVec3i nv = neighborCells[i];
@@ -776,8 +776,8 @@ void boneWeightInPainting(std::vector<std::map<int,float> >& vtxBoneWeights, std
 	std::vector<int> boneIdxs;
 	std::map<int,int> validVtxMap;
 	std::map<int,float>& boneWeight = vtxBoneWeights[0];
-	
-	
+
+
 	//normalizeBoneWeights(vtxBoneWeights);
 
 	std::map<int,float>::iterator bi;
@@ -785,7 +785,7 @@ void boneWeightInPainting(std::vector<std::map<int,float> >& vtxBoneWeights, std
 		  bi != boneWeight.end();
 		  bi++)
 	{
-		boneIdxs.push_back(bi->first);
+		boneIdxs.emplace_back(bi->first);
 	}
 
 
@@ -812,7 +812,7 @@ void boneWeightInPainting(std::vector<std::map<int,float> >& vtxBoneWeights, std
 					validVtxMap[f[j]] = validIdx;
 				}
 			}
-		}		
+		}
 	}
 	std::vector<std::map<int,float> > vtxNeighborWeights;
 	vtxNeighborWeights.resize(nv);
@@ -823,8 +823,8 @@ void boneWeightInPainting(std::vector<std::map<int,float> >& vtxBoneWeights, std
 	{
 		float weightSum = 0.f;
 		int vidx = vi->first;
-		std::set<int>& neighbor = vtxNeighbors[vidx];	
-		std::map<int,float>& mapNeighbor = vtxNeighborWeights[vidx];		
+		std::set<int>& neighbor = vtxNeighbors[vidx];
+		std::map<int,float>& mapNeighbor = vtxNeighborWeights[vidx];
 		std::set<int>::iterator ni;
 		SrVec vPos = m.V[vidx];
 		for ( ni  = neighbor.begin();
@@ -846,43 +846,43 @@ void boneWeightInPainting(std::vector<std::map<int,float> >& vtxBoneWeights, std
 		}
 	}
 
-	float constraintWeight = 1.f;	
+	float constraintWeight = 1.f;
 	vector<vector<pair<int, double> > > A(validVtxMap.size());
 	vector<double> D(validVtxMap.size(), 0.), H(validVtxMap.size(), 0.);
 	for ( vi  = validVtxMap.begin();
 		  vi != validVtxMap.end();
 		  vi++)
-	{	
+	{
 		//get laplacian
 		int vidx = vi->first;
 		int vrow = vi->second;
-		double sum = 0.0;				
-		std::map<int,float>& mapNeighbor = vtxNeighborWeights[vidx];	
+		double sum = 0.0;
+		std::map<int,float>& mapNeighbor = vtxNeighborWeights[vidx];
 		std::map<int,float>::iterator mi;
 		for (  mi  = mapNeighbor.begin();
 			   mi != mapNeighbor.end();
 			   mi++)
-		{		
+		{
 			sum += mi->second;
 			int ncol = validVtxMap[mi->first];
 
 			if(ncol > vrow) //check for triangular here because sum should be computed regardless
 				continue;
-			A[vrow].push_back(make_pair(ncol, -mi->second));
+			A[vrow].emplace_back(make_pair(ncol, -mi->second));
 		}
 
-		A[vrow].push_back(make_pair(vrow, sum + constraintWeight));
+		A[vrow].emplace_back(make_pair(vrow, sum + constraintWeight));
 		sort(A[vrow].begin(), A[vrow].end());
 	}
 
-	
+
 	SPDMatrix Am(A);
 	LLTMatrix *Ainv = Am.factor();
-	if(Ainv == NULL)
+	if(Ainv == nullptr)
 		return;
 
 	for(size_t j = 0; j < boneIdxs.size(); ++j) {
-		vector<double> rhs(validVtxMap.size(), 0.);		
+		vector<double> rhs(validVtxMap.size(), 0.);
 		int boneIdx = boneIdxs[j];
 		for ( vi  = validVtxMap.begin();
 			  vi != validVtxMap.end();
@@ -891,14 +891,14 @@ void boneWeightInPainting(std::vector<std::map<int,float> >& vtxBoneWeights, std
 			int vidx = vi->first;
 			int ncol = vi->second;
 			if (vtxBoneWeights[vidx][boneIdx] > 0.0f)
-				rhs[ncol] = vtxBoneWeights[vidx][boneIdx]*constraintWeight;//*vtxAreas[i];			 
+				rhs[ncol] = vtxBoneWeights[vidx][boneIdx]*constraintWeight;//*vtxAreas[i];
 			else
 			{
 				//SmartBody::util::log("bone = %d, v = %d, rhs = 0", boneIdx, i);
 				rhs[ncol] = 0.f;
 			}
 		}
-		Ainv->solve(rhs);           
+		Ainv->solve(rhs);
 		for ( vi  = validVtxMap.begin();
 			  vi != validVtxMap.end();
 			  vi++)
@@ -907,7 +907,7 @@ void boneWeightInPainting(std::vector<std::map<int,float> >& vtxBoneWeights, std
 			int ncol = vi->second;
 			//if (rhs[i] > 1.f)
 			//	rhs[i] = 1.f;
-			vtxBoneWeights[vidx][boneIdx] = (float)rhs[ncol];			
+			vtxBoneWeights[vidx][boneIdx] = (float)rhs[ncol];
 		}
 	}
 
@@ -929,8 +929,8 @@ void boneWeightInPainting(std::vector<std::map<int,float> >& vtxBoneWeights, std
 void boneWeightLaplacianSmoothing(std::vector<std::map<int,float> >& vtxBoneWeights, std::vector<float>& vtxCloestDist, SrModel& m)
 {
 	if (vtxBoneWeights.size() == 0) return;
-	int nv = m.V.size();	
-	std::vector<std::set<int> > vtxNeighbors;	
+	int nv = m.V.size();
+	std::vector<std::set<int> > vtxNeighbors;
 	std::map<int,float>& boneWeight = vtxBoneWeights[0];
 	std::vector<int> boneIdxs;
 	std::map<int,float>::iterator mi;
@@ -938,7 +938,7 @@ void boneWeightLaplacianSmoothing(std::vector<std::map<int,float> >& vtxBoneWeig
 		 mi != boneWeight.end();
 		 mi++)
 	{
-		boneIdxs.push_back(mi->first);
+		boneIdxs.emplace_back(mi->first);
 	}
 
 	//normalizeBoneWeights(vtxBoneWeights);
@@ -963,8 +963,8 @@ void boneWeightLaplacianSmoothing(std::vector<std::map<int,float> >& vtxBoneWeig
 	for (int i = 0; i < nv; i++)
 	{
 		float weightSum = 0.f;
-		std::set<int>& neighbor = vtxNeighbors[i];	
-		std::map<int,float>& mapNeighbor = vtxNeighborWeights[i];		
+		std::set<int>& neighbor = vtxNeighbors[i];
+		std::map<int,float>& mapNeighbor = vtxNeighborWeights[i];
 		std::set<int>::iterator ni;
 		SrVec vPos = m.V[i];
 		for ( ni  = neighbor.begin();
@@ -1033,7 +1033,7 @@ void boneWeightHarmonicSmoothing(std::vector<std::map<int,float> >& vtxBoneWeigh
 		  mi != boneWeight.end();
 		  mi++)
 	{
-		boneIdxs.push_back(mi->first);
+		boneIdxs.emplace_back(mi->first);
 	}
 
 	for (int i=0;i<nv;i++)
@@ -1075,8 +1075,8 @@ void boneWeightHarmonicSmoothing(std::vector<std::map<int,float> >& vtxBoneWeigh
 	for (int i = 0; i < nv; i++)
 	{
 		float weightSum = 0.f;
-		std::set<int>& neighbor = vtxNeighbors[i];	
-		std::map<int,float>& mapNeighbor = vtxNeighborWeights[i];		
+		std::set<int>& neighbor = vtxNeighbors[i];
+		std::map<int,float>& mapNeighbor = vtxNeighborWeights[i];
 		std::set<int>::iterator ni;
 		SrVec vPos = m.V[i];
 		for ( ni  = neighbor.begin();
@@ -1100,53 +1100,53 @@ void boneWeightHarmonicSmoothing(std::vector<std::map<int,float> >& vtxBoneWeigh
 	}
 
 	float constraintWeight = 0.8f;
-		
+
 	vector<vector<pair<int, double> > > A(nv);
 	vector<double> D(nv, 0.), H(nv, 0.);
 	vector<int> closest(nv, -1);
-	for(int i = 0; i < nv; ++i) {		
+	for(int i = 0; i < nv; ++i) {
 		//get laplacian
-		double sum = 0.;		
+		double sum = 0.;
 		H[i] = 1.f/(1e-10+vtxCloestDist[i]*vtxCloestDist[i]);
-		std::map<int,float>& mapNeighbor = vtxNeighborWeights[i];	
+		std::map<int,float>& mapNeighbor = vtxNeighborWeights[i];
 		std::map<int,float>::iterator mi;
 		for (  mi  = mapNeighbor.begin();
 			mi != mapNeighbor.end();
 			mi++)
-		{		
+		{
 			sum += mi->second;
 			if(mi->first > i) //check for triangular here because sum should be computed regardless
 				continue;
-			A[i].push_back(make_pair(mi->first, -mi->second));
+			A[i].emplace_back(make_pair(mi->first, -mi->second));
 		}
 
-		A[i].push_back(make_pair(i, sum + constraintWeight));
+		A[i].emplace_back(make_pair(i, sum + constraintWeight));
 		sort(A[i].begin(), A[i].end());
 	}
 
-	
+
 	SPDMatrix Am(A);
 	LLTMatrix *Ainv = Am.factor();
-	if(Ainv == NULL)
+	if(Ainv == nullptr)
 		return;
 
 	for(size_t j = 0; j < boneIdxs.size(); ++j) {
-		vector<double> rhs(nv, 0.);		
+		vector<double> rhs(nv, 0.);
 		int boneIdx = boneIdxs[j];
 		for(int i = 0; i < nv; ++i) {
 			if (vtxBoneWeights[i][boneIdx] > 0.0f)
-				rhs[i] = vtxBoneWeights[i][boneIdx]*constraintWeight;//*vtxAreas[i];			 
+				rhs[i] = vtxBoneWeights[i][boneIdx]*constraintWeight;//*vtxAreas[i];
 			else
 			{
 				//SmartBody::util::log("bone = %d, v = %d, rhs = 0", boneIdx, i);
 				rhs[i] = 0.f;
 			}
 		}
-		Ainv->solve(rhs);           
+		Ainv->solve(rhs);
 		for(int i = 0; i < nv; ++i) {
 			//if (rhs[i] > 1.f)
 			//	rhs[i] = 1.f;
-			 vtxBoneWeights[i][boneIdx] = (float)rhs[i];			
+			 vtxBoneWeights[i][boneIdx] = (float)rhs[i];
 		}
 	}
 
@@ -1172,15 +1172,15 @@ void buildHarmonicSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 void WeightMapToSkinWeight(std::vector<std::map<int,float> >& weightMap, SkinWeight& skinWeight)
 {
 	for (unsigned int i=0;i< weightMap.size();i++)
-	{		
+	{
 		std::map<int, float>& weights = weightMap[i];
 		std::map<int,float>::iterator mi;
-		skinWeight.numInfJoints.push_back(weights.size());
+		skinWeight.numInfJoints.emplace_back(weights.size());
 		for ( mi  = weights.begin(); mi != weights.end(); mi++)
 		{
-			skinWeight.weightIndex.push_back(skinWeight.bindWeight.size());
-			skinWeight.bindWeight.push_back(mi->second);
-			skinWeight.jointNameIndex.push_back(mi->first);				
+			skinWeight.weightIndex.emplace_back(skinWeight.bindWeight.size());
+			skinWeight.bindWeight.emplace_back(mi->second);
+			skinWeight.jointNameIndex.emplace_back(mi->first);
 		}
 		//SmartBody::util::log("after convert weights");
 	}
@@ -1210,14 +1210,14 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 			voxClosestBoneMap[voxID] = std::pair<int,float>(-1,1e30f);
 			voxClosestBoneMap[voxID] = std::pair<int,float>(-1,1e30f);
 		}
-		voxelVtxMap[voxID].push_back(i);		
+		voxelVtxMap[voxID].emplace_back(i);
 	}
 	std::map<int, std::vector<SrVec3i> > boneVoxelMap;
 	std::map<int, std::vector<SrVec3i> > allBoneVoxelMap;
 	for (int i=0;i<inSk.getNumJoints();i++) // compute distance map for all joints
-	{		
-		SmartBody::SBJoint* joint = inSk.getJoint(i);	
-		if (joint->getParent() != NULL)
+	{
+		SmartBody::SBJoint* joint = inSk.getJoint(i);
+		if (joint->getParent() != nullptr)
 		{
 			SrVec pos1 = joint->getMatrixGlobal().get_translation();
 			SrVec pos2 = joint->getParent()->getMatrixGlobal().get_translation();
@@ -1230,19 +1230,19 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 					allBoneVoxelMap[parentIdx] = std::vector<SrVec3i>();
 				std::vector<SrVec3i>& allBoneLineSeg = allBoneVoxelMap[parentIdx];
 				allBoneLineSeg.insert(allBoneLineSeg.end(),boneLineSeg.begin(),boneLineSeg.end());
-			}			
+			}
 		}
 	}
 
 	std::map<SrVec3i, std::vector<int> >::iterator voxIter;
-	std::map<int, DistMap> distanceMapList;		
-	std::map<int, DistMap> curvatureMapList;	
+	std::map<int, DistMap> distanceMapList;
+	std::map<int, DistMap> curvatureMapList;
 	FloatVolume distVoxels(origVoxels->getEnclosingRegion());
 	FloatVolume curvatureVoxels(origVoxels->getEnclosingRegion());
 	float maxDist = 0.f;
 #if 1
 	for (int i=0;i<inSk.getNumJoints();i++) // compute distance map for all joints
-	{		
+	{
 		SmartBody::SBJoint* joint = inSk.getJoint(i);
 		if (joint->getNumChildren() > 0)
 		{
@@ -1250,22 +1250,22 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 			curvatureMapList[joint->getIndex()] = DistMap();
 			DistMap& boneDistMap = distanceMapList[joint->getIndex()];
 			DistMap& curvDistMap = curvatureMapList[joint->getIndex()];
-			buildVoxelDistanceMap(joint,voxelWindow, distVoxels, false);		
+			buildVoxelDistanceMap(joint,voxelWindow, distVoxels, false);
 			//buildVoxelDistanceMap(joint,voxelWindow, curvatureVoxels, true);
 
 			for ( voxIter  = voxelVtxMap.begin();
 				  voxIter != voxelVtxMap.end();
 				  voxIter++)
-			{	
+			{
 				SrVec3i vid = voxIter->first;
 				float voxDist = distVoxels.getVoxelAt(vid.data[0],vid.data[1],vid.data[2]);
 				//float curvatureDist = curvatureVoxels.getVoxelAt(vid.data[0],vid.data[1],vid.data[2]);
-				boneDistMap[vid] = voxDist;	
+				boneDistMap[vid] = voxDist;
 				//curvDistMap[vid] = curvatureDist;
 				if (voxClosestBoneMap[vid].second > voxDist) // compute the closest bone for each vertex voxel
 				{
-					voxClosestBoneMap[vid] = std::pair<int,float>(joint->getIndex(), voxDist);					
-				}								
+					voxClosestBoneMap[vid] = std::pair<int,float>(joint->getIndex(), voxDist);
+				}
 			}
 		}
 	}
@@ -1281,7 +1281,7 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 	{
 		SrVec3i voxID = voxIter->first;
 		SrVec voxelCenter = voxelWindow.getVoxelCenterByID(voxID);
-		int cloestBone = voxClosestBoneMap[voxID].first;		
+		int cloestBone = voxClosestBoneMap[voxID].first;
 		std::vector<int>& vtxIdx = voxIter->second;
 		float voxClosestDist = voxClosestBoneMap[voxID].second;
 		for (unsigned int v=0;v<vtxIdx.size();v++)
@@ -1298,7 +1298,7 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 		for (unsigned int b=0;b<allBoneLineSeg.size();b++)
 		{
 			if (voxelWindow.checkVoxelLineVisible(voxID, allBoneLineSeg[b]))
-			{	
+			{
 				visibleCount += 1.f;
 			}
 		}
@@ -1315,7 +1315,7 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 #endif
 
 	float alpha = 1.0f;
-	
+
 	std::vector<bool> badBoneVtxList(m.V.size(), false);
 	std::vector<std::map<int,float> > vtxBoneWeights;
 	vtxBoneWeights.resize(m.V.size());
@@ -1333,9 +1333,9 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 			vtxBoneWeights[vtxIdx[i]] = std::map<int,float>();
 		}
 
-				
+
 		if (badVoxelMap[voxID] == true) // bad voxel, use geodesic distance to compute bone weights ( or just set it to zero, and use heat map ? )
-		{		
+		{
 #if 0
 			std::map<int,float> voxelBoneCurvatures;
 			std::map<int, DistMap>::iterator curIterator;
@@ -1362,20 +1362,20 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 				voxelBoneCurvatures[jointIdx] = curvature;
 			}
 #endif
-			
-		
+
+
 			for (unsigned int v=0;v<vtxIdx.size();v++)
 			{
 				int vIdx = vtxIdx[v];
 				badBoneVtxList[vIdx] = true;
-				SrVec vPos = m.V[vIdx];				
+				SrVec vPos = m.V[vIdx];
 				float voxDeltaDist = (vPos - voxelCenter).norm();
-				std::map<int,float>& weight = vtxBoneWeights[vIdx];	
+				std::map<int,float>& weight = vtxBoneWeights[vIdx];
 				std::map<int, DistMap>::iterator distIter;
 				for ( distIter  = distanceMapList.begin();
 					  distIter != distanceMapList.end();
 					  distIter++)
-				{	
+				{
 					int jointIdx = distIter->first;
 					DistMap& boneDistMap = distIter->second;
 					if (boneDistMap.find(voxID) != boneDistMap.end())
@@ -1395,15 +1395,15 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 				}
 			}
 		}
-		else // 
+		else //
 		{
-			
+
 			std::map<int, DistMap>::iterator distIter;
 			std::map<float,int> jointDistanceOrder;
 			for ( distIter  = distanceMapList.begin();
 				  distIter != distanceMapList.end();
 				  distIter++)
-			{	
+			{
 				int jointIdx = distIter->first;
 				DistMap& boneDistMap = distIter->second;
 				jointDistanceOrder[boneDistMap[voxID]] = jointIdx;
@@ -1437,7 +1437,7 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 						useBone = true;
 					biCount++;
 				}
-						
+
 
 #if 0
 				SmartBody::SBJoint* joint = inSk.getJoint(boneID);
@@ -1470,18 +1470,18 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 				for (unsigned int b=0;b<boneLine.size();b++)
 				{
 					if (voxelWindow.checkVoxelLineVisible(voxID, boneLine[b]))
-					{	
+					{
 						SrVec bonePos = voxelWindow.getVoxelCenterByID(boneLine[b]);
-						visibleBone.push_back(bonePos);
+						visibleBone.emplace_back(bonePos);
 					}
 				}
-				
+
 				for (unsigned int v=0;v<vtxIdx.size();v++)
 				{
 					int vIdx = vtxIdx[v];
 					std::map<int,float>& weight = vtxBoneWeights[vIdx];
 					SrVec& vPos = m.V[vIdx];
-					SrVec& vN = m.N[vIdx];				
+					SrVec& vN = m.N[vIdx];
 					if (weight.find(infJointIdx) == weight.end())
 						weight[infJointIdx] = 0.f;
 					for (unsigned int b=0;b<visibleBone.size();b++)
@@ -1496,8 +1496,8 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 				}
 #endif
 			}
-		}		
-	}	
+		}
+	}
 
 	SmartBody::util::log("In-Painting Skin Weights");
 	//boneWeightSmoothing(vtxBoneWeights, vtxClosestBoneDist, m);
@@ -1506,13 +1506,13 @@ void buildBoneGlowSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, Voxelizer
 	boneWeightLaplacianSmoothing(vtxBoneWeights, vtxClosestBoneDist, m);
 	SmartBody::util::log("Finish Smooth Skin Weights");
 	skinWeight = vtxBoneWeights;
-	
+
 }
 
 void buildVoxelSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, VoxelizerWindow& voxelWindow, SkinWeight& skinWeight)
 {
 	// copy the original voxel shapes
-	
+
 	IntVolume* origVoxels = voxelWindow.getVoxels();
 	// set all voxels with vertex values	
 	std::set<SrVec3i> vtxVoxelSet;
@@ -1523,14 +1523,14 @@ void buildVoxelSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, VoxelizerWin
 		origVoxels->setVoxelAt(PolyVox::Vector3DInt32(voxID[0],voxID[1],voxID[2]),100);
 		vtxVoxelSet.insert(voxID);
 	}
-	
+
 	// compute distance 
 	//std::vector<DistMap> distanceMapList;
 	std::map<int, DistMap> distanceMapList;
 	FloatVolume distVoxels(origVoxels->getEnclosingRegion());
 	float maxDist = 0.f;
 	for (int i=0;i<inSk.getNumJoints();i++) // compute distance map for all joints
-	{		
+	{
 		SmartBody::SBJoint* joint = inSk.getJoint(i);
 		if (joint->getNumChildren() > 0)
 		{
@@ -1538,7 +1538,7 @@ void buildVoxelSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, VoxelizerWin
 			DistMap& boneDistMap = distanceMapList[joint->getIndex()];
 			buildVoxelDistanceMap(joint,voxelWindow, distVoxels, false);
 			BOOST_FOREACH(const SrVec3i& vid, vtxVoxelSet)
-			{	
+			{
 				float voxDist = distVoxels.getVoxelAt(vid.data[0],vid.data[1],vid.data[2]);
 				boneDistMap[vid] = voxDist;
 				if (voxDist > maxDist)
@@ -1554,7 +1554,7 @@ void buildVoxelSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, VoxelizerWin
 	float alpha = 0.1f;
 	// compute the final skin weights	
 	for (unsigned int i=0;i<(size_t) m.V.size();i++)
-	{	
+	{
 		std::map<int, DistMap>::iterator distIter;
 		std::map<int, float> weights;
 		SrVec vPos = m.V[i];
@@ -1563,7 +1563,7 @@ void buildVoxelSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, VoxelizerWin
 		for ( distIter  = distanceMapList.begin();
 			  distIter != distanceMapList.end();
 			  distIter++)
-		{	
+		{
 			int jointIdx = distIter->first;
 			DistMap& boneDistMap = distIter->second;
 			if (boneDistMap.find(vtxVoxID) != boneDistMap.end())
@@ -1581,12 +1581,12 @@ void buildVoxelSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, VoxelizerWin
 		}
 
 		std::map<int,float>::iterator mi;
-		skinWeight.numInfJoints.push_back(weights.size());
+		skinWeight.numInfJoints.emplace_back(weights.size());
 		for ( mi  = weights.begin(); mi != weights.end(); mi++)
 		{
-			skinWeight.weightIndex.push_back(skinWeight.bindWeight.size());
-			skinWeight.bindWeight.push_back(mi->second);
-			skinWeight.jointNameIndex.push_back(mi->first);				
+			skinWeight.weightIndex.emplace_back(skinWeight.bindWeight.size());
+			skinWeight.bindWeight.emplace_back(mi->second);
+			skinWeight.jointNameIndex.emplace_back(mi->first);
 		}
 		//SmartBody::util::log("after convert weights");
 	}
@@ -1596,7 +1596,7 @@ void buildVoxelSkinWeights(SrModel& m, SmartBody::SBSkeleton& inSk, VoxelizerWin
 
 bool AutoRigToDeformableMesh( PinocchioOutput& out, SrModel& m, SmartBody::SBSkeleton& sbSk, DeformableMesh& deformMesh )
 {
-	//deformMesh.dMeshStatic_p.push_back()
+	//deformMesh.dMeshStatic_p.emplace_back()
 	// setup mesh
 	std::string meshName = (const char*) m.name;
 	SrSnModel* srSnModelDynamic = new SrSnModel();
@@ -1606,9 +1606,9 @@ bool AutoRigToDeformableMesh( PinocchioOutput& out, SrModel& m, SmartBody::SBSke
 	srSnModelDynamic->changed(true);
 	srSnModelDynamic->visible(false);
 	srSnModelStatic->shape().name = meshName.c_str();
-	srSnModelDynamic->shape().name = meshName.c_str();	
-	deformMesh.dMeshStatic_p.push_back(srSnModelStatic);
-	deformMesh.dMeshDynamic_p.push_back(srSnModelDynamic);
+	srSnModelDynamic->shape().name = meshName.c_str();
+	deformMesh.dMeshStatic_p.emplace_back(srSnModelStatic);
+	deformMesh.dMeshDynamic_p.emplace_back(srSnModelDynamic);
 	srSnModelDynamic->ref();
 	srSnModelStatic->ref();
 
@@ -1626,13 +1626,13 @@ bool AutoRigToDeformableMesh( PinocchioOutput& out, SrModel& m, SmartBody::SBSke
 		if (boneIdx < 0)
 			continue;
 		else
-			boneIdxMap.push_back(boneIdx);
+			boneIdxMap.emplace_back(boneIdx);
 	}
 
 	SmartBody::util::log("transfer skin weights");
-	
+
 	SkinWeight* sw = new SkinWeight();
-	sw->sourceMesh = meshName;	
+	sw->sourceMesh = meshName;
 	for (unsigned int i=0;i< (size_t) m.V.size();i++)
 	{
 		//SmartBody::util::log("vertex id = %d",i);
@@ -1651,36 +1651,36 @@ bool AutoRigToDeformableMesh( PinocchioOutput& out, SrModel& m, SmartBody::SBSke
 					weights[boneIdx] = 0.f;
 				}
 				weights[boneIdx] += (float) d;
-			}		
+			}
 		}
 		//SmartBody::util::log("after copying weights");
 		std::map<int,float>::iterator mi;
-		sw->numInfJoints.push_back(weights.size());
+		sw->numInfJoints.emplace_back(weights.size());
 		for ( mi  = weights.begin(); mi != weights.end(); mi++)
 		{
-			sw->weightIndex.push_back(sw->bindWeight.size());
-			sw->bindWeight.push_back(mi->second);
-			sw->jointNameIndex.push_back(mi->first);				
+			sw->weightIndex.emplace_back(sw->bindWeight.size());
+			sw->bindWeight.emplace_back(mi->second);
+			sw->jointNameIndex.emplace_back(mi->first);
 		}
 		//SmartBody::util::log("after convert weights");
 	}
 	SmartBody::util::log("after transfer skin weights");
 	sw->normalizeWeights();
-	deformMesh.skinWeights.push_back(sw);
+	deformMesh.skinWeights.emplace_back(sw);
 	SmartBody::util::log("after normalize weights");
 
-	
+
 	SmartBody::SBSkeleton* sbOrigSk = &sbSk;
 	for (int k=0;k<sbOrigSk->getNumJoints();k++)
 	{
 		// manually add all joint names
 		SmartBody::SBJoint* joint = sbOrigSk->getJoint(k);
-		sw->infJointName.push_back(joint->getName());
-		sw->infJoint.push_back(joint);
-		SrMat gmatZeroInv = joint->gmatZero().rigidInverse();						
-		sw->bindPoseMat.push_back(gmatZeroInv);
+		sw->infJointName.emplace_back(joint->getName());
+		sw->infJoint.emplace_back(joint);
+		SrMat gmatZeroInv = joint->gmatZero().rigidInverse();
+		sw->bindPoseMat.emplace_back(gmatZeroInv);
 	}
-	
+
 	return true;
 }
 
@@ -1700,7 +1700,7 @@ bool AutoRigToSBSk( PinocchioOutput& out, SmartBody::SBSkeleton& sbSk)
 
 	// build all joints
 	for(int i = 0; i < (int)out.embedding.size(); ++i) // number of joints
-	{	
+	{
 		SmartBody::SBJoint* joint = dynamic_cast<SmartBody::SBJoint*>(sbSk.add_joint(SkJoint::TypeQuat, -1));
 		joint->quat()->activate();
 		joint->name(jointNameMap[i]);
@@ -1725,7 +1725,7 @@ bool AutoRigToSBSk( PinocchioOutput& out, SmartBody::SBSkeleton& sbSk)
 			{
 				pos[j] -= (float) out.embedding[prevJointIdx[i]][j];
 			}
-		}	
+		}
 		joint->setOffset(SrVec(pos[0],pos[1],pos[2]));
 	}
 	// setup joint hierarchy
@@ -1762,17 +1762,17 @@ bool PolyVoxMeshToPinoMesh( PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal
 	mesh.edges.resize(polyMesh.getIndices().size());
 	for (size_t i=0;i<polyMesh.getIndices().size();i++)
 	{
-		mesh.edges[i].vertex = polyMesh.m_vecTriangleIndices[i];		
+		mesh.edges[i].vertex = polyMesh.m_vecTriangleIndices[i];
 	}
 
 	mesh.fixDupFaces();
 	mesh.computeTopology();
 	if(!mesh.integrityCheck())
-	{		
+	{
 		//Debugging::out() << "Successfully read " << file << ": " << vertices.size() << " vertices, " << edges.size() << " edges" << endl;
 		SmartBody::util::log("Error : SBAutoRigManager::SrModelToMesh Fail.");
 		return false;
-	}	
+	}
 	mesh.normalizeBoundingBox();
 	mesh.computeVertexNormals();
 
@@ -1802,9 +1802,9 @@ bool SrModelToMesh( SrModel& model, Mesh& mesh, bool sanityCheck )
 	{
 		mesh.fixDupFaces();
 		mesh.computeTopology();
-	}	
+	}
 	if(sanityCheck && !mesh.integrityCheck())
-	{		
+	{
 		//Debugging::out() << "Successfully read " << file << ": " << vertices.size() << " vertices, " << edges.size() << " edges" << endl;
 		SmartBody::util::log("Error : SBAutoRigManager::SrModelToMesh Fail.");
 		return false;
@@ -1819,7 +1819,7 @@ bool SrModelToMesh( SrModel& model, Mesh& mesh, bool sanityCheck )
 bool PolyVoxMeshToSrModel( PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>& mesh, SrModel& model )
 {
 	int nVtx = mesh.getNoOfVertices();
-	int nTri = mesh.getNoOfIndices()/3;	
+	int nTri = mesh.getNoOfIndices()/3;
 	model.V.resize(mesh.getNoOfVertices());
 	model.F.resize(mesh.getNoOfIndices()/3);
 	float x,y,z;
@@ -1829,7 +1829,7 @@ bool PolyVoxMeshToSrModel( PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>
 		x = vtx.position.getX();
 		y = vtx.position.getY();
 		z = vtx.position.getZ();
-		model.V[i] = SrPnt(x,y,z);		
+		model.V[i] = SrPnt(x,y,z);
 	}
 	for (int i=0;i<nTri;i++)
 	{
@@ -1845,7 +1845,7 @@ void exportPolyVoxMeshToObj( PolyVox::SurfaceMesh<PolyVox::PositionMaterialNorma
 {
 	FILE* fp = fopen(filename.c_str(),"wt");
 	int nVtx = mesh.getNoOfVertices();
-	int nTri = mesh.getNoOfIndices()/3;	
+	int nTri = mesh.getNoOfIndices()/3;
 
 	float x,y,z;
 	for (int i=0;i<nVtx;i++)
@@ -1873,7 +1873,7 @@ void exportCubicMeshToObj( PolyVox::SurfaceMesh<PolyVox::PositionMaterial>& mesh
 {
 	FILE* fp = fopen(filename.c_str(),"wt");
 	int nVtx = mesh.getNoOfVertices();
-	int nTri = mesh.getNoOfIndices()/3;	
+	int nTri = mesh.getNoOfIndices()/3;
 
 	float x,y,z;
 	for (int i=0;i<nVtx;i++)

@@ -22,8 +22,8 @@ ParameterGroup::ParameterGroup(int x, int y, int w, int h, char* name, PABlendDa
 			paramVisualization->end();
 
 			this->resizable(paramVisualization);
-			yAxis = NULL;
-			zAxis = NULL;
+			yAxis = nullptr;
+			zAxis = nullptr;
 			double min = blendData->state->getVec(blendData->state->getMinVecX()).x;
 			double max = blendData->state->getVec(blendData->state->getMaxVecX()).x;
 			xAxis = new Fl_Value_Slider(4 * xDis + x, h - 4 * yDis + y, w - 5 * xDis, 2 * yDis, "X");
@@ -36,7 +36,7 @@ ParameterGroup::ParameterGroup(int x, int y, int w, int h, char* name, PABlendDa
 			int actualX = 0;
 			int actualY = 0;
 			paramVisualization->getActualPixel(actualValue, 0.0f, actualX, actualY);
-			param3DVisualization = NULL;
+			param3DVisualization = nullptr;
 		}
 		else if (type == 1)
 		{
@@ -63,14 +63,14 @@ ParameterGroup::ParameterGroup(int x, int y, int w, int h, char* name, PABlendDa
 			int actualX = 0;
 			int actualY = 0;
 			paramVisualization->getActualPixel(actualValueX, actualValueY, actualX, actualY);
-			param3DVisualization = NULL;
+			param3DVisualization = nullptr;
 		}
 		else if (type == 2)
 		{
 			param3DVisualization = new Parameter3DVisualization(4 * xDis + x, 4 * yDis + y, w - 5 * xDis, h - 8 * yDis, (char*)"", s, this);
 			param3DVisualization->end();
 			this->resizable(param3DVisualization);	
-			paramVisualization = NULL;
+			paramVisualization = nullptr;
 			double minX = blendData->state->getVec(blendData->state->getMinVecX()).x;
 			double maxX = blendData->state->getVec(blendData->state->getMaxVecX()).x;
 			double minY = blendData->state->getVec(blendData->state->getMinVecY()).y;
@@ -95,8 +95,8 @@ ParameterGroup::ParameterGroup(int x, int y, int w, int h, char* name, PABlendDa
 		}
 		else
 		{
-			param3DVisualization = NULL;
-			paramVisualization = NULL;
+			param3DVisualization = nullptr;
+			paramVisualization = nullptr;
 		}
 	this->end();	
 	this->redraw();
@@ -190,9 +190,9 @@ PABlendData* ParameterGroup::getCurrentPABlendData()
 	std::string charName = paWindow->characterList->menu()[paWindow->characterList->value()].label();
 	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(charName);
 	if (!character)
-		return NULL;
+		return nullptr;
 	if (!character->param_animation_ct)
-		return NULL;
+		return nullptr;
 	return character->param_animation_ct->getCurrentPABlendData();
 }
 

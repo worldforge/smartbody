@@ -33,7 +33,7 @@ public:
 	virtual void show();
 	virtual void draw();
 	void setApplyType(bool applyAll);
-	void setCharacterName(std::string charName);	
+	void setCharacterName(const std::string& charName);
 	std::string getCharName() const { return _charName; }	
 
 	//void setSkeletonName(std::string skName);

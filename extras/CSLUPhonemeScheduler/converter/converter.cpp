@@ -45,7 +45,7 @@ void CSLUConverter::generateDiphoneBML(const std::string& iFileName, const std::
 		std::string line;
 		std::getline(ifile, line);
 		if (line != "")
-			lines.push_back(line);
+			lines.emplace_back(line);
 	}
 	lines.erase(lines.begin(), lines.begin() + 2);
 
@@ -68,10 +68,10 @@ void CSLUConverter::generateDiphoneBML(const std::string& iFileName, const std::
 			std::cout << "Mal-formatted output from mapping: " << lines[i] << std::endl;
 			continue;
 		}
-		startTimes.push_back(atof(tokens[0].c_str()) / 1000);
-		endTimes.push_back(atof(tokens[1].c_str()) / 1000);
-		phonemes.push_back(iter->second);
-		phonemesBeforeMapping.push_back(iter->first);
+		startTimes.emplace_back(atof(tokens[0].c_str()) / 1000);
+		endTimes.emplace_back(atof(tokens[1].c_str()) / 1000);
+		phonemes.emplace_back(iter->second);
+		phonemesBeforeMapping.emplace_back(iter->first);
 	}
 
 	// guess the word timing
@@ -82,7 +82,7 @@ void CSLUConverter::generateDiphoneBML(const std::string& iFileName, const std::
 		std::string line;
 		std::getline(ntpFile, line);
 		if (line != "")
-			ntpLines.push_back(line);
+			ntpLines.emplace_back(line);
 	}
 	if (ntpLines.size() > 0)
 		ntpLine = ntpLines[0];	// ntp file is supposed to only have one line
@@ -94,7 +94,7 @@ void CSLUConverter::generateDiphoneBML(const std::string& iFileName, const std::
 		std::string line;
 		std::getline(txtFile, line);
 		if (line != "")
-			txtLines.push_back(line);
+			txtLines.emplace_back(line);
 	}
 	if (txtLines.size() > 0)
 		txtLine = txtLines[0];	// ntp file is supposed to only have one line
@@ -134,8 +134,8 @@ void CSLUConverter::generateDiphoneBML(const std::string& iFileName, const std::
 		{
 			// record word with last phoneme time as end
 			ePhonemeId = phonemeIndex - 1;
-			wordStartTimes.push_back(startTimes[sPhonemeId]);
-			wordEndTimes.push_back(endTimes[ePhonemeId]);
+			wordStartTimes.emplace_back(startTimes[sPhonemeId]);
+			wordEndTimes.emplace_back(endTimes[ePhonemeId]);
 			sPhonemeId = phonemeIndex;
 			ntpId++;
 		}

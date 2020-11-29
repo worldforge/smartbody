@@ -324,7 +324,7 @@ void ThreadedTaskManager::_createAllThreads()
 		if (newThread == NULL) {
 			throw GenericException("CreateThread failed with error code " + toString(GetLastError()));
 		}
-		_threads.push_back(newThread);
+		_threads.emplace_back(newThread);
 	}
 #else
 	for (unsigned int i=0; i<_numThreads; i++) {
@@ -333,7 +333,7 @@ void ThreadedTaskManager::_createAllThreads()
 		if (returnValue != 0) {
 			throw GenericException("pthread_create failed with return value " + toString(returnValue));
 		}
-		_threads.push_back(newThread);
+		_threads.emplace_back(newThread);
 	}
 #endif
 }

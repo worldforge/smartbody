@@ -670,10 +670,10 @@ void SimulationOptions::_tokenizeModuleOptions( std::string & options,  std::vec
 		unsigned int numchars = options.length();
 		std::replace_if( options.begin(), options.end(), _isDelimeter, '\0');
 		char * cstr = const_cast<char*>(options.c_str());
-		argv.push_back( &(cstr[0]) );
+		argv.emplace_back( &(cstr[0]) );
 		for (unsigned int i = 1; i < numchars; i++) {
 			if (cstr[i-1] == '\0')
-				argv.push_back( &(cstr[i]) );
+				argv.emplace_back( &(cstr[i]) );
 		}
 	}
 }

@@ -53,7 +53,7 @@ bool SBFrameBufferObject::setDrawBufferDefault()
 		 mi++)
 	{
 		//SmartBody::util::log("Draw Buffer = %d", mi->first);
-		drawBuffers.push_back(mi->first);
+		drawBuffers.emplace_back(mi->first);
 	}
 	//SmartBody::util::log("Draw Buffer size = %d", drawBuffers.size());
 	return setDrawBuffer(drawBuffers);	

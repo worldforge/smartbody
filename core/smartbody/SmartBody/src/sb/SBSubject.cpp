@@ -23,23 +23,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBSubject::SBSubject()
-{
-}
+SBSubject::SBSubject() = default;
 
 SBSubject::~SBSubject()
 {
-	for (std::set<SBObserver*>::iterator iter = m_observers.begin();
-		 iter !=  m_observers.end();
-		 iter++)
+	for (auto m_observer : m_observers)
 	{
-		(*iter)->removeDependency(this);
+		m_observer->removeDependency(this);
 	}
 }
 
 void SBSubject::registerObserver(SBObserver* observer)
 {
-	std::set<SBObserver*>::iterator iter = m_observers.find(observer);
+	auto iter = m_observers.find(observer);
 	if (iter == m_observers.end())
 	{
 		m_observers.insert(observer);
@@ -49,7 +45,7 @@ void SBSubject::registerObserver(SBObserver* observer)
 
 void SBSubject::unregisterObserver(SBObserver* observer)
 {
-	std::set<SBObserver*>::iterator iter = m_observers.find(observer);
+	auto iter = m_observers.find(observer);
 	if (iter != m_observers.end())
 	{
 		m_observers.erase(iter);
@@ -59,11 +55,9 @@ void SBSubject::unregisterObserver(SBObserver* observer)
 
 void SBSubject::notifyObservers()
 {
-	for (std::set<SBObserver*>::iterator iter = m_observers.begin();
-		 iter != m_observers.end();
-		 iter++)
+	for (auto m_observer : m_observers)
 	{
-		(*iter)->notify(this);
+		m_observer->notify(this);
 	}
 }
 

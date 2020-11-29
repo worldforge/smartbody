@@ -184,7 +184,7 @@ private:
 
    void AddNetRequest(NetRequest* req)
    {
-      m_requests.push_back(req);
+      m_requests.emplace_back(req);
    }
 };
 

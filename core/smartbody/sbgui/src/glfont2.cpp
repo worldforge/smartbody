@@ -33,7 +33,7 @@ GLFont::GLFont ()
 	header.tex_height = 0;
 	header.start_char = 0;
 	header.end_char = 0;
-	header.chars = NULL;
+	header.chars = nullptr;
 }
 //*******************************************************************
 GLFont::~GLFont ()
@@ -62,7 +62,7 @@ bool GLFont::Create (const char *file_name, int tex)
 
 	//Allocate space for character array
 	num_chars = header.end_char - header.start_char + 1;
-	if ((header.chars = new GLFontChar[num_chars]) == NULL)
+	if ((header.chars = new GLFontChar[num_chars]) == nullptr)
 		return false;
 
 	//Read character array
@@ -106,7 +106,7 @@ void GLFont::Destroy (void)
 	if (header.chars)
 	{
 		delete[] header.chars;
-		header.chars = NULL;
+		header.chars = nullptr;
 	}
 }
 //*******************************************************************

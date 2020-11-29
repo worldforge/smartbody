@@ -36,7 +36,9 @@ void pythonFuncsSystem()
 	// viewers
 	boost::python::def("getCamera", getCamera, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the camera object for the viewer. \n Input: NULL \n Output: camera object");
 	boost::python::def("getViewer", getViewer, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the visual debugger. \n Input: NULL \n Output: visual debugger");
-	
+
+
+
 
 	// assets
 //	boost::python::def("execScripts", execScripts, "Execute a chain of scripts. \n Input: list of script name string e.g. [\"script1 name\", \"script2 name\", ...] \n Output: NULL");

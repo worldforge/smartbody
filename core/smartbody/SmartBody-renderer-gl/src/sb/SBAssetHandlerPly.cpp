@@ -74,7 +74,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerPly::getAssets(const std::st
 		auto* srSnModelStatic = new SrSnModel();
 		srSnModelStatic->shape(model);
 		srSnModelStatic->shape().name = model.name;
-		mesh->dMeshStatic_p.push_back(srSnModelStatic);
+		mesh->dMeshStatic_p.emplace_back(srSnModelStatic);
 		srSnModelStatic->ref();
 
 		auto* srSnModelDynamic = new SrSnModel();
@@ -82,7 +82,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerPly::getAssets(const std::st
 		srSnModelDynamic->changed(true);
 		srSnModelDynamic->visible(false);
 		srSnModelDynamic->shape().name = model.name;
-		mesh->dMeshDynamic_p.push_back(srSnModelDynamic);
+		mesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
 		srSnModelDynamic->ref();
 
 		assets.emplace_back(std::move(mesh));

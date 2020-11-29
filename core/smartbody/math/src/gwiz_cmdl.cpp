@@ -518,7 +518,7 @@ bool gwiz::cmdl::pending( const std::string& prompt )	{
 				if( cmds->size() >= max_cmdlines )	{
 					cmds->pop_front();
 				}
-				cmds->push_back( line );
+				cmds->emplace_back( line );
 				iter = cmds->end();
 			}
 

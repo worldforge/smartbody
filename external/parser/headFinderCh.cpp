@@ -52,9 +52,9 @@ readHeadInfoCh(ECString& path)
 		  istringstream osl(line);
 		  list<ECString> listofheads;
 		  while(osl>>head){
-			  listofheads.push_back(head);
+			  listofheads.emplace_back(head);
 		  }
-		  termlist.push_back(listofheads);
+		  termlist.emplace_back(listofheads);
 	  }
 	  hmap[term]=termlist;
 	  //cerr<<term<<endl;

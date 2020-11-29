@@ -402,7 +402,7 @@ SkJoint* SkSkeleton::_loadj ( SrInput& in, SkJoint* p, SrStringArray& paths, boo
 	}
 
 	j = new SmartBody::SBJoint  ( this, p, SkJoint::TypeQuat, _joints.size() );
-	_joints.push_back(j);
+	_joints.emplace_back(j);
 
 	j->name ( (const char*) name );
 	j->extName ( (const char*) name );
@@ -489,7 +489,7 @@ bool SkSkeleton::loadSk ( SrInput& in, double skScale, const char* basedir )
 	}
 	else if ( s=="set_collision_free_pairs" )
 	{ while ( in.get_token()==SrInput::Name )
-	coldet_pairs.push_back( (const char*) in.last_token() );
+	coldet_pairs.emplace_back( (const char*) in.last_token() );
 	}
 	else if ( s=="add_posture" )
 	{ if ( _channels->size()==0 ) make_active_channels ();
@@ -560,8 +560,8 @@ bool SkSkeleton::loadSk ( SrInput& in, double skScale, const char* basedir )
 	{ j1 = search_joint ( coldet_pairs[i].c_str() );
 	j2 = search_joint ( coldet_pairs[i+1].c_str() );
 	if ( j1 && j2 )
-	{ _coldet_free_pairs.push_back(j1);
-	_coldet_free_pairs.push_back(j2);
+	{ _coldet_free_pairs.emplace_back(j1);
+	_coldet_free_pairs.emplace_back(j2);
 	}
 	}
 
@@ -591,7 +591,7 @@ SkJoint* SkSkeleton::_loadjlist ( SrInput& in, float scale, SrStringArray& paths
 	if ( in.last_token_type()!=SrInput::Name && in.last_token_type()!=SrInput::String ) break;
 
 	j = new SmartBody::SBJoint  ( this, 0/*parent*/, SkJoint::TypeQuat, _joints.size() );
-	_joints.push_back(j);
+	_joints.emplace_back(j);
 
 	j->name ( (const char*) in.last_token() );
 	j->extName( j->jointName() ); 
@@ -629,7 +629,7 @@ SkJoint* SkSkeleton::_loadjlist ( SrInput& in, float scale, SrStringArray& paths
 		// joint k is the parent of joint i:
 		if (k<_joints.size() )
 		{ _joints[i]->_parent = _joints[k];
-		_joints[k]->_children.push_back(_joints[i]);
+		_joints[k]->_children.emplace_back(_joints[i]);
 		_joints[i]->_offset = offsets[i]-offsets[k];
 		_joints[i]->_offset *= scale;
 		}

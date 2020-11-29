@@ -162,8 +162,8 @@ VisemeViewerWindow::VisemeViewerWindow(int x, int y, int w, int h, char* name) :
 	_gatherStats = false;
 	_useRemote = true;
 
-	_windowVisemeRunTime = NULL;
-	_imageSequenceViewer = NULL;
+	_windowVisemeRunTime = nullptr;
+	_imageSequenceViewer = nullptr;
 
 	loadData();
 
@@ -171,10 +171,10 @@ VisemeViewerWindow::VisemeViewerWindow(int x, int y, int w, int h, char* name) :
 
 VisemeViewerWindow::~VisemeViewerWindow()
 {
-	if (_windowVisemeRunTime != NULL)
+	if (_windowVisemeRunTime != nullptr)
 	{
 		delete _windowVisemeRunTime;
-		_windowVisemeRunTime = NULL;
+		_windowVisemeRunTime = nullptr;
 	}
 }
 void VisemeViewerWindow::show()
@@ -192,7 +192,7 @@ void VisemeViewerWindow::hide()
 	Fl_Double_Window::hide();
 
 	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-	bp->registerRequestCallback(NULL, NULL);
+	bp->registerRequestCallback(nullptr, nullptr);
 }
 
 void VisemeViewerWindow::update()
@@ -325,7 +325,7 @@ SmartBody::SBCharacter* VisemeViewerWindow::getCurrentCharacter()
 		return character;
 	}
 	else
-		return NULL;
+		return nullptr;
 }
 
 std::string VisemeViewerWindow::getCurrentCharacterName()
@@ -356,7 +356,7 @@ SmartBody::SBDiphone* VisemeViewerWindow::getCurrentDiphone()
 	}
 
 	if (phoneme1 == "" || phoneme2 == "" || !getCurrentCharacter())
-		return NULL;
+		return nullptr;
 
 	const std::string& diphoneMap = SmartBody::SBScene::getScene()->getCharacter(getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
 	// map the phones to their common set partner
@@ -417,8 +417,8 @@ void VisemeViewerWindow::refreshData()
 
 			for (size_t j = 0; j < _curveEditor->getCurves()[i].size(); j++)
 			{
-				key.push_back(_curveEditor->getCurves()[i][j].x);
-				key.push_back(_curveEditor->getCurves()[i][j].y);
+				key.emplace_back(_curveEditor->getCurves()[i][j].x);
+				key.emplace_back(_curveEditor->getCurves()[i][j].y);
 			}
 		}
 	}
@@ -855,7 +855,7 @@ void VisemeViewerWindow::loadAudioFiles()
 	_choiceXMLFile->clear();
 	// if an audio path is present, use it
 	bool useAudioPaths = true;
-	std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetManager()->getAssetPaths("audio");
+	std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetStore().getAssetPaths("audio");
 	std::string relativeAudioPath = "";
 	for (size_t audioPathCounter = 0; audioPathCounter < audioPaths.size(); ++audioPathCounter)
 	{
@@ -930,7 +930,7 @@ void VisemeViewerWindow::OnXMLFileSelectCB(Fl_Widget* widget, void* data)
 	if (xmlFileIndex >= 0)
 	{
 		const char* xmlFileName = viewer->_choiceXMLFile->menu()[viewer->_choiceXMLFile->value()].label();
-		std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetManager()->getAssetPaths("audio");
+		std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetStore().getAssetPaths("audio");
 		if (audioPaths.size() > 0)
 		{
 			boost::filesystem::path path(audioPaths[0]);
@@ -1128,7 +1128,7 @@ void VisemeViewerWindow::OnDiphoneSelectCB(Fl_Widget* widget, void* data)
 		if (tok == "-")
 			continue;
         
-		diphones.push_back(tok);
+		diphones.emplace_back(tok);
 	}
 
 	if (diphones.size() != 2)
@@ -1431,7 +1431,7 @@ void VisemeViewerWindow::OnDumpCB(Fl_Widget* widget, void* data)
 
 void VisemeViewerWindow::OnNormalizeCB(Fl_Widget* widget, void* data)
 {
-	int confirm = fl_choice("This will normalize the phone bigrames.\nContinue?", "No", "Yes", NULL);
+	int confirm = fl_choice("This will normalize the phone bigrames.\nContinue?", "No", "Yes", nullptr);
 	if (confirm != 1)
 	{
 		return;
@@ -1455,7 +1455,7 @@ void VisemeViewerWindow::OnRunTimeCurvesCB(Fl_Widget* widget, void* data)
 {
 	VisemeViewerWindow* viewer = (VisemeViewerWindow*) data;
 
-	if (viewer->_windowVisemeRunTime == NULL)
+	if (viewer->_windowVisemeRunTime == nullptr)
 	{
 		viewer->_windowVisemeRunTime = new VisemeRunTimeWindow(150, 150, 800, 600, "Diphone Runtime Window");
 	}
@@ -1515,7 +1515,7 @@ void VisemeViewerWindow::OnSimulationUpdate()
 void VisemeViewerWindow::OnPlayImageSequence(Fl_Widget* widget, void* data)
 {
 	VisemeViewerWindow* viewer = (VisemeViewerWindow*) data;
-	if (viewer->_imageSequenceViewer == NULL)
+	if (viewer->_imageSequenceViewer == nullptr)
 	{
 		viewer->_imageSequenceViewer = new ImageSequenceViewer(100, 100, 500, 500, "Image Sequence Viewer");
 	}
@@ -1658,7 +1658,7 @@ void VisemeViewerWindow::OnGenerateLipSyncCB(Fl_Widget* widget, void* data)
 				std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), ::toupper);
 				if (fileExtension == ".WAV")
 				{
-					filesToProcess.push_back((*dir_iter).path());
+					filesToProcess.emplace_back((*dir_iter).path());
 					SmartBody::util::log("Found sound file %s", (*dir_iter).path().string().c_str());
 				}
 			}
@@ -1679,7 +1679,7 @@ void VisemeViewerWindow::OnGenerateLipSyncCB(Fl_Widget* widget, void* data)
 			fl_alert("No transcription.\nPlease enter a transcription of the .wav file in the Transcription input.\nMake sure to add <sil> to mark periods of silence in the recording.");
 			return;
 		}
-		filesToProcess.push_back(viewer->_inputSpeechFile->value());
+		filesToProcess.emplace_back(viewer->_inputSpeechFile->value());
 	}
 	SmartBody::util::log("Running forced alignment on %d files.", filesToProcess.size());
 

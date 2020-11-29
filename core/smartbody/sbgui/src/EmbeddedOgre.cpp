@@ -33,11 +33,11 @@ using namespace Ogre;
 
 EmbeddedOgre::EmbeddedOgre(void)
 {
-	ogreRoot = NULL;
-	ogreWnd  = NULL;
-	ogreSceneMgr = NULL;
-	ogreFrameListener = NULL;
-	ogreCamera = NULL;
+	ogreRoot = nullptr;
+	ogreWnd  = nullptr;
+	ogreSceneMgr = nullptr;
+	ogreFrameListener = nullptr;
+	ogreCamera = nullptr;
 	ogreCharacterVisible = false;
 }
 
@@ -141,7 +141,7 @@ void EmbeddedOgre::resetOgreScene()
 // 		ogreListener->OnCharacterUpdate(characterNames[i],"character");
 // 	}			
 
-	ogreCamera = NULL;
+	ogreCamera = nullptr;
 	createDefaultScene();
 }
 
@@ -754,7 +754,7 @@ Ogre::MovableObject* EmbeddedOgre::createOgrePawn( SmartBody::SBPawn* sbPawn )
 	const std::string& name = sbPawn->getName();
 	if (name.find_first_of("camera") == 0)
 	{
-		Ogre::Camera* camera = NULL;
+		Ogre::Camera* camera = nullptr;
 		bool createViewport = false;
 		bool needsSceneNode = true;
 		try {
@@ -847,7 +847,7 @@ Ogre::MovableObject* EmbeddedOgre::createOgrePawn( SmartBody::SBPawn* sbPawn )
 		else if (needsSceneNode)
 			return camera;
 		else
-			return NULL;
+			return nullptr;
 		
 	}
 	else if (name.find_first_of("light") == 0)
@@ -860,17 +860,17 @@ Ogre::MovableObject* EmbeddedOgre::createOgrePawn( SmartBody::SBPawn* sbPawn )
 	}
 
 	ogreWnd->setVSyncEnabled(true);
-	Ogre::Entity* outPawn = NULL;
+	Ogre::Entity* outPawn = nullptr;
 	std::string meshName = sbPawn->getStringAttribute("mesh");
 	DeformableMeshInstance* meshInstance = sbPawn->dStaticMeshInstance_p;
 	if (meshName == "") meshName = sbPawn->getName();
 
 	addDeformableMesh(meshName, meshInstance);
 	Ogre::MeshPtr     ogreMesh = Ogre::MeshManager::getSingleton().getByName(meshName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-	if (ogreMesh.isNull()) return NULL;
-	if (!meshInstance) return NULL;
+	if (ogreMesh.isNull()) return nullptr;
+	if (!meshInstance) return nullptr;
 	DeformableMesh* deformMesh = meshInstance->getDeformableMesh();
-	if (!deformMesh) return NULL;
+	if (!deformMesh) return nullptr;
 
 	ogreMesh->load();
 	outPawn = ogreSceneMgr->createEntity(sbPawn->getName(),meshName);	
@@ -927,7 +927,7 @@ void EmbeddedOgre::setLightParams(Ogre::Light* light, SmartBody::SBPawn* sbPawn)
 Ogre::Entity* EmbeddedOgre::createOgreCharacter( SmartBody::SBCharacter* sbChar )
 {
 	ogreWnd->setVSyncEnabled(true);
-	Ogre::Entity* outChar = NULL;
+	Ogre::Entity* outChar = nullptr;
 	std::string skeletonName = sbChar->getSkeleton()->getName();
 	std::string meshName = sbChar->getStringAttribute("deformableMesh");
 	DeformableMeshInstance* meshInstance = sbChar->dMeshInstance_p;
@@ -938,11 +938,11 @@ Ogre::Entity* EmbeddedOgre::createOgreCharacter( SmartBody::SBCharacter* sbChar 
 	addDeformableMesh(meshName, meshInstance);
 	Ogre::SkeletonPtr ogreSkel = Ogre::SkeletonManager::getSingleton().getByName(skeletonName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	Ogre::MeshPtr     ogreMesh = Ogre::MeshManager::getSingleton().getByName(meshName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-	if (ogreSkel.isNull() || ogreMesh.isNull()) return NULL;
-    if (!meshInstance) return NULL;
+	if (ogreSkel.isNull() || ogreMesh.isNull()) return nullptr;
+    if (!meshInstance) return nullptr;
 
 	DeformableMesh* deformMesh = meshInstance->getDeformableMesh();
-	if (!deformMesh) return NULL;
+	if (!deformMesh) return nullptr;
 #if 1
 	if (deformMesh->isSkinnedMesh())	
 	{
@@ -1445,7 +1445,7 @@ void EmbeddedOgre::addTexture( std::string texName )
 {
 	
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
-	SbmTexture* tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE,texName.c_str());
+	auto tex = texManager.findTexture(texName.c_str());
 	Ogre::TextureManager& ogreTexManager = Ogre::TextureManager::getSingleton();	
 	ogreTexManager.setDefaultNumMipmaps(MIP_UNLIMITED);
 	Ogre::TexturePtr ogreTex = ogreTexManager.getByName(texName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);

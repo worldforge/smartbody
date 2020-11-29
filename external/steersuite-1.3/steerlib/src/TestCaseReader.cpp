@@ -68,7 +68,7 @@ void TestCaseReader::readTestCaseFromFile( const std::string & testCaseFilename 
 		// init the obstacle, and add it to a temporary database
 		ObstacleInitialConditions newObstacle;
 		_initObstacleInitialConditions(newObstacle, _rawObstacles[i].obstacleBounds);
-		_initializedObstacles.push_back(newObstacle);
+		_initializedObstacles.emplace_back(newObstacle);
 		testCaseDB->addObject(&(_rawObstacles[i]), _rawObstacles[i].obstacleBounds);
 	}
 
@@ -100,7 +100,7 @@ void TestCaseReader::readTestCaseFromFile( const std::string & testCaseFilename 
 		// init the agent, and add it to a temporary database
 		AgentInitialConditions newAgent;
 		_initAgentInitialConditions(newAgent, _rawAgents[i]);
-		_initializedAgents.push_back(newAgent);
+		_initializedAgents.emplace_back(newAgent);
 		testCaseDB->addObject(&(_rawAgents[i]), agentBounds);
 	}
 
@@ -120,7 +120,7 @@ void TestCaseReader::readTestCaseFromFile( const std::string & testCaseFilename 
 		// init the obstacle, and add it to a temporary database
 		ObstacleInitialConditions newObstacle;
 		_initObstacleInitialConditions(newObstacle, _rawObstacles[i].obstacleBounds);
-		_initializedObstacles.push_back(newObstacle);
+		_initializedObstacles.emplace_back(newObstacle);
 		testCaseDB->addObject(&(_rawObstacles[i]), _rawObstacles[i].obstacleBounds);
 	}
 
@@ -144,7 +144,7 @@ void TestCaseReader::readTestCaseFromFile( const std::string & testCaseFilename 
 		// if it doesnt overlap, then add it to the database
 		AgentInitialConditions newAgent;
 		_initAgentInitialConditions(newAgent, _rawAgents[i]);
-		_initializedAgents.push_back(newAgent);
+		_initializedAgents.emplace_back(newAgent);
 		testCaseDB->addObject(&(_rawAgents[i]), agentBounds);
 	}
 

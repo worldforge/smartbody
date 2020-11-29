@@ -36,7 +36,7 @@ std::vector<std::string> SBAssetStore::getAssetPaths(const std::string& type) {
 		path.reset();
 		std::string nextPath = path.next_path(true);
 		while (!nextPath.empty()) {
-			list.push_back(nextPath);
+			list.emplace_back(nextPath);
 			nextPath = path.next_path(true);
 		}
 	}
@@ -107,7 +107,7 @@ std::string SBAssetStore::findAssetFromLocation(const std::string& filepath, con
 	}
 
 	std::vector<boost::filesystem::path> dirs;
-	dirs.push_back(path);
+	dirs.emplace_back(path);
 	while (!dirs.empty()) {
 		boost::filesystem::path curPath = dirs[0];
 		dirs.erase(dirs.begin());
@@ -118,7 +118,7 @@ std::string SBAssetStore::findAssetFromLocation(const std::string& filepath, con
 				std::string extension = boost::filesystem::extension(it->path());
 				if (basename.empty() && extension.find('.') == 0)
 					continue;
-				dirs.push_back(it->path());
+				dirs.emplace_back(it->path());
 			} else if (boost::filesystem::is_regular_file(it->path())) {
 				std::string base = boost::filesystem::basename(it->path());
 				std::string ext = boost::filesystem::extension(it->path());
@@ -171,7 +171,7 @@ void SBAssetStore::loadAssetsFromPath(const std::string& assetPath) {
 	std::vector<boost::filesystem::path> dirs;
 
 	if (boost::filesystem::is_directory(path)) {
-		dirs.push_back(path);
+		dirs.emplace_back(path);
 		while (!dirs.empty()) {
 			boost::filesystem::path curPath = dirs[0];
 			dirs.erase(dirs.begin());
@@ -182,7 +182,7 @@ void SBAssetStore::loadAssetsFromPath(const std::string& assetPath) {
 					std::string extension = boost::filesystem::extension(it->path());
 					if (basename.empty() && extension.find('.') == 0)
 						continue;
-					dirs.push_back(it->path());
+					dirs.emplace_back(it->path());
 				} else if (boost::filesystem::is_regular_file(it->path())) {
 					loadAsset(it->path().string());
 				}
@@ -342,6 +342,17 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetStore::loadAsset(const std::string&
 	return allAssets;
 }
 
+void SBAssetStore::addAssetProcessor(SBAssetsProcessor* processor) {
+	_assetProcessors.emplace_back(processor);
+}
+
+void SBAssetStore::removeAssetProcessor(SBAssetsProcessor* processor) {
+	auto I = std::find(_assetProcessors.begin(), _assetProcessors.end(), processor);
+	if (I != _assetProcessors.end()) {
+		_assetProcessors.erase(I);
+	}
+}
+
 std::string SBAssetStore::findFileName(const std::string& type, const std::string& filename)
 {
 	auto I = _paths.find(type);
@@ -422,7 +433,7 @@ srPathList* SBAssetStore::getPathList(const std::string& type) {
 
 void SBAssetsHistory::addAssetHistory(const std::string& str)
 {
-	_assetHistory.push_back(str);
+	_assetHistory.emplace_back(str);
 }
 
 std::vector<std::string>& SBAssetsHistory::getAssetHistory()

@@ -302,8 +302,8 @@ std::string storeXMLMetaData( const std::string & txt)
 						   cleanString(temporaryText);
 						   /// Words can be used to match up which tags we need to see
 							/// Push tag and word into xmlMetaData
-							xmlMetaData.tags.push_back(markString);
-							xmlMetaData.words.push_back(temporaryText);
+							xmlMetaData.tags.emplace_back(markString);
+							xmlMetaData.words.emplace_back(temporaryText);
 							actualText += " ";
 							actualText += temporaryText;
 							cleanString(actualText);
@@ -891,7 +891,7 @@ int main(int argc, char **argv)
 			while(!scriptStream.eof() && scriptStream.good())
 			{
 				scriptStream.getline(line, 4096, '\n');
-				festivalCommands.push_back(line);
+				festivalCommands.emplace_back(line);
 			}
 			scriptStream.close();
 			scriptFileRead = true;
@@ -908,12 +908,12 @@ int main(int argc, char **argv)
 		printf("Running default Festival commands - %s\n\n", voice.c_str());
 		// setting voice to be used
 		std::string voice_command = "(" + voice + ")";
-		festivalCommands.push_back(voice_command.c_str());
+		festivalCommands.emplace_back(voice_command.c_str());
 		// setting the duration method to be used by festival
-		festivalCommands.push_back("(Parameter.set `Duration_Method Duration_Default)");
+		festivalCommands.emplace_back("(Parameter.set `Duration_Method Duration_Default)");
 		// this command hooks our virtual human method such that every time an utterance is synthesized, our method is called on it
 		// in order to generate the virtual human message (RemoteSpeechReply)
-		festivalCommands.push_back("(set! after_synth_hooks (list Duration_VirtualHuman))");					
+		festivalCommands.emplace_back("(set! after_synth_hooks (list Duration_VirtualHuman))");
 		 
 	}
 

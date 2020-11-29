@@ -552,11 +552,11 @@ int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 					return( CMD_FAILURE );	
 				}
 			}
-			new_param->char_names.push_back( char_name );
+			new_param->char_names.emplace_back( char_name );
 			GeneralParamMap::iterator it; 
 			if( (it = scene->getGeneralParameters().find(param_name)) != scene->getGeneralParameters().end())
 			{
-				it->second->char_names.push_back( char_name );
+				it->second->char_names.emplace_back( char_name );
 				delete new_param;
 			}
 			else
@@ -1013,7 +1013,7 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 									MeCtChannelWriter* channelWriter = dynamic_cast<MeCtChannelWriter*>(controller);
 									if (channelWriter)
 									{
-										tracksToRemove.push_back(track);
+										tracksToRemove.emplace_back(track);
 									}
 								}
 								scheduler->remove_tracks(tracksToRemove);

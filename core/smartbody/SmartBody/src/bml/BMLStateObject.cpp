@@ -7,27 +7,27 @@ BMLStateObject::BMLStateObject() : BMLObject()
 	SmartBody::StringAttribute* stateAttr = createStringAttribute("name", "", "", "Basic", 10, false, false, false, "Blend Name.");
 	SmartBody::StringAttribute* modeAttr = createStringAttribute("mode", "", "", "Basic", 20, false, false, false, "Mode. Either scheduling new blend or updating current blend, default setting is schedule");
 	std::vector<std::string> modes;
-	modes.push_back("schedule");
-	modes.push_back("update");
+	modes.emplace_back("schedule");
+	modes.emplace_back("update");
 	modeAttr->setValidValues(modes);	
 
 	SmartBody::StringAttribute* loopAttr = createStringAttribute("sbm:wrap-mode", "", "", "Basic", 30, false, false, false, "Wrap mode for current blend. Loop or Once.Default is Loop");
 	std::vector<std::string> loops;
-	loops.push_back("Loop");
-	loops.push_back("Once");
-	loops.push_back("Clamp");
+	loops.emplace_back("Loop");
+	loops.emplace_back("Once");
+	loops.emplace_back("Clamp");
 	loopAttr->setValidValues(loops);
 
 	SmartBody::StringAttribute* startNowAttr = createStringAttribute("sbm:schedule-mode", "", "", "Basic", 40, false, false, false, "Schedule mode for the blend. Now or Queued.Default is Queued");
 	std::vector<std::string> startNow;
-	startNow.push_back("Now");
-	startNow.push_back("Queued");
+	startNow.emplace_back("Now");
+	startNow.emplace_back("Queued");
 	startNowAttr->setValidValues(startNow);
 
 	SmartBody::StringAttribute* additiveAttr = createStringAttribute("sbm:blend-mode", "", "", "Basic", 50, false, false, false, "Blend mode for current blend. Overwrite or Additive.Default is Overwrite");
 	std::vector<std::string> additive;
-	additive.push_back("Overwrite");
-	additive.push_back("Additive");
+	additive.emplace_back("Overwrite");
+	additive.emplace_back("Additive");
 	additiveAttr->setValidValues(additive);
 
 	createStringAttribute("sbm:partial-joint", "", "", "Basic", 60, false, false, false, "Starting joint name inside skeleton hierarchy for additive blending.");

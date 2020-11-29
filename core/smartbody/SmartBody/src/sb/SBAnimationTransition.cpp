@@ -42,9 +42,9 @@ SBAPI SBAnimationTransition::SBAnimationTransition(SBAnimationTransition* transi
 	this->fromMotionName = transition->fromMotionName;
 	this->toMotionName = transition->toMotionName;
 	for (unsigned int i = 0; i < transition->easeOutStart.size(); i++)
-		this->easeOutStart.push_back(transition->easeOutStart[i]);
+		this->easeOutStart.emplace_back(transition->easeOutStart[i]);
 	for (unsigned int i = 0; i < transition->easeOutEnd.size(); i++)
-		this->easeOutEnd.push_back(transition->easeOutEnd[i]);
+		this->easeOutEnd.emplace_back(transition->easeOutEnd[i]);
 	this->easeInStart = transition->getEaseInStart();
 	this->easeInEnd = transition->getEaseInEnd();
 }
@@ -110,8 +110,8 @@ std::vector<double> SBAnimationTransition::getEaseOutInterval(int num)
 	if (num <0 || num >= (int) easeOutStart.size())
 		return interval;
 
-	interval.push_back((float) easeOutStart[num]);
-	interval.push_back((float) easeOutEnd[num]);
+	interval.emplace_back((float) easeOutStart[num]);
+	interval.emplace_back((float) easeOutEnd[num]);
 
 	return interval;
 }
@@ -119,8 +119,8 @@ std::vector<double> SBAnimationTransition::getEaseOutInterval(int num)
 void SBAnimationTransition::addEaseOutInterval(std::string sourceMotion, float start, float end)
 {
 	fromMotionName = sourceMotion;
-	easeOutStart.push_back(start);
-	easeOutEnd.push_back(end);
+	easeOutStart.emplace_back(start);
+	easeOutEnd.emplace_back(end);
 }
 
 void SBAnimationTransition::removeEaseOutInterval(int num)

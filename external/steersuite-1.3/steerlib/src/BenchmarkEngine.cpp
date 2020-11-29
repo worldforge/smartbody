@@ -51,7 +51,7 @@ BenchmarkEngine::BenchmarkEngine(const std::string & recordingFilename, Benchmar
 		newAgent->setRadius(_recFileReader->getAgentRadiusAtFrame(i,0));
 		newAgent->setCurrentGoal(newGoal);
 		_spatialDatabase->addObject(newAgent, newAgent->getBounds());
-		_agents.push_back(newAgent);
+		_agents.emplace_back(newAgent);
 	}
 
 	// allocate obstacles
@@ -59,7 +59,7 @@ BenchmarkEngine::BenchmarkEngine(const std::string & recordingFilename, Benchmar
 	for (unsigned int i=0; i < _recFileReader->getNumObstacles(); i++) {
 		BoxObstacle * newObstacle = new BoxObstacle(_recFileReader->getObstacleBoundsAtFrame(i,0));
 		_spatialDatabase->addObject(newObstacle, newObstacle->getBounds());
-		_obstacles.push_back(newObstacle);
+		_obstacles.emplace_back(newObstacle);
 	}
 
 	// allocate and initialize the metrics collector

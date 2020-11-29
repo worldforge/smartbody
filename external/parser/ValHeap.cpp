@@ -40,7 +40,7 @@ push(Val* atp)
   if(print)
     cerr << "heap insertion of atp at " << unusedPos_ << endl;
   assert((int)array.size() >= unusedPos_);
-  if(array.size() ==  unusedPos_) array.push_back(atp);
+  if(array.size() ==  unusedPos_) array.emplace_back(atp);
   else array[unusedPos_] = atp;
   upheap(unusedPos_);
   unusedPos_++;

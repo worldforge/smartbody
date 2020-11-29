@@ -24,7 +24,7 @@ class Val
   static Val* newIth(int ith, Val* oval, bool& stop);
   Val() : len_(1), prob_(0), edge_(NULL), trm_(-1), wrd_(-1), status(NORMALVAL)
     {
-      vec_.push_back(0);
+      vec_.emplace_back(0);
     }
   Val(Edge* e, double prb);
   ~Val();
@@ -79,7 +79,7 @@ class Bst
   void addnth(Val* val)
     {
       num_++;
-      nbest.push_back(val);
+      nbest.emplace_back(val);
     }
   static void tester(Val* val);
   bool ptst(Val* val);

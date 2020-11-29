@@ -131,8 +131,8 @@ void SBFaceDefinition::setDefaultFacePose(const std::vector<std::string>& poses,
 
 	for (unsigned int x = 0; x < poses.size(); x++)
 	{
-		_defaultFacePoses.push_back(poses[x]);
-		_defaultFaceValues.push_back(values[x]);
+		_defaultFacePoses.emplace_back(poses[x]);
+		_defaultFaceValues.emplace_back(values[x]);
 	}
 }
 
@@ -140,7 +140,7 @@ std::vector<std::string> SBFaceDefinition::getDefaultFacePoses()
 {
 	std::vector<std::string> poses;
 	for (unsigned int x = 0; x < _defaultFacePoses.size(); x++)
-		poses.push_back(_defaultFacePoses[x]);
+		poses.emplace_back(_defaultFacePoses[x]);
 	return poses;
 }
 
@@ -148,7 +148,7 @@ std::vector<float> SBFaceDefinition::getDefaultFaceValues()
 {
 	std::vector<float> values;
 	for (unsigned int x = 0; x < _defaultFaceValues.size(); x++)
-		values.push_back(_defaultFaceValues[x]);
+		values.emplace_back(_defaultFaceValues[x]);
 	return values;
 }
 
@@ -428,7 +428,7 @@ std::vector<std::string> SBFaceDefinition::getVisemeNames()
 		 iter != _visemeMap.end();
 		 iter++)
 	{
-		visemeNames.push_back((*iter).first);
+		visemeNames.emplace_back((*iter).first);
 	}
 
 	return visemeNames;
@@ -527,7 +527,7 @@ std::vector<int> SBFaceDefinition::getAUNumbers()
 		 iter != _auMap.end();
 		 iter++)
 	{
-		auNames.push_back((*iter).first);
+		auNames.emplace_back((*iter).first);
 	}
 
 	return auNames;

@@ -45,7 +45,7 @@ bool InverseInterpolation::buildInterpolator()
 #endif
 
 	prevWeight.clear();
-	prevWeight.push_back(InterpWeight(0,1.f));
+	prevWeight.emplace_back(InterpWeight(0,1.f));
 
 	return true;
 }

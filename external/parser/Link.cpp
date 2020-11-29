@@ -20,7 +20,7 @@ do_link(int tint, bool& ans)
   ans = true;
   Link* nlink = new Link(tint);
   //cerr << "LN " << tint << endl;
-  links_.push_back(nlink);
+  links_.emplace_back(nlink);
   return nlink;
 }
 

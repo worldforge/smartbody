@@ -99,10 +99,12 @@ _skeletonCounter(0)
 
 	_motionCounter = 0;
 	_skeletonCounter = 0;
+	store.addAssetProcessor(this);
 }
 
 SBAssetManager::~SBAssetManager()
 {
+	_store.removeAssetProcessor(this);
 	removeAllAssets();
 }
 
@@ -176,6 +178,42 @@ SBSkeleton* SBAssetManager::getSkeleton(const std::string& name)
 	}
 }
 
+void SBAssetManager::processAssets(std::vector<std::unique_ptr<SBAsset>>& assets) {
+// place the assets in their proper place
+	for (auto& asset : assets) {
+		if (asset) {
+			auto* motion = dynamic_cast<SBMotion*>(asset.get());
+			if (motion) {
+				SBMotion* existingMotion = this->getMotion(motion->getName());
+				if (existingMotion) {
+					std::string name = this->getAssetNameVariation(existingMotion);
+					SmartBody::util::log("Motion named %s already exist, changing name to %s", motion->getName().c_str(), name.c_str());
+					motion->setName(name);
+				}
+				asset.release();
+				this->addMotion(std::unique_ptr<SBMotion>(motion));
+				addAssetHistory("MOTION " + motion->getName());
+				continue;
+			}
+			auto* skeleton = dynamic_cast<SmartBody::SBSkeleton*>(asset.get());
+			if (skeleton) {
+				SBSkeleton* existingSkeleton = this->getSkeleton(skeleton->getName());
+				if (existingSkeleton) {
+					std::string name = this->getAssetNameVariation(existingSkeleton);
+					SmartBody::util::log("Skeleton named %s already exist, changing name to %s", skeleton->getName().c_str(), name.c_str());
+					skeleton->setName(name);
+				}
+				asset.release();
+				this->addSkeleton(std::unique_ptr<SBSkeleton>(skeleton));
+				skeleton->ref();
+				addAssetHistory("SKELETON " + skeleton->getName());
+				continue;
+			}
+		}
+	}
+}
+
+
 
 
 //std::string SBAssetManager::findAssetFromLocation(const std::string& filepath, const std::string& assetName)
@@ -221,7 +259,7 @@ SBSkeleton* SBAssetManager::getSkeleton(const std::string& name)
 //	}
 //
 //	std::vector<boost::filesystem::path> dirs;
-//	dirs.push_back(path);
+//	dirs.emplace_back(path);
 //	while (dirs.size() > 0)
 //	{
 //		boost::filesystem::path curPath = dirs[0];
@@ -235,7 +273,7 @@ SBSkeleton* SBAssetManager::getSkeleton(const std::string& name)
 //				std::string extension = boost::filesystem::extension(it->path());
 //				if (basename.size() == 0 && extension.find(".") == 0)
 //					continue;
-//				dirs.push_back(it->path());
+//				dirs.emplace_back(it->path());
 //			}
 //			else if (boost::filesystem::is_regular_file(it->path()))
 //			{
@@ -339,7 +377,7 @@ SBSkeleton* SBAssetManager::getSkeleton(const std::string& name)
 //		for (size_t a = 0; a < assets.size(); a++)
 //		{
 //			assets[a]->setFullFilePath(finalPath);
-//			allAssets.push_back(assets[a]);
+//			allAssets.emplace_back(assets[a]);
 //		}
 //	}
 //
@@ -443,7 +481,7 @@ SBSkeleton* SBAssetManager::getSkeleton(const std::string& name)
 //
 //	if (boost::filesystem::is_directory(path))
 //	{
-//		dirs.push_back(path);
+//		dirs.emplace_back(path);
 //		while (dirs.size() > 0)
 //		{
 //			boost::filesystem::path curPath = dirs[0];
@@ -457,7 +495,7 @@ SBSkeleton* SBAssetManager::getSkeleton(const std::string& name)
 //					std::string extension = boost::filesystem::extension(it->path());
 //					if (basename.size() == 0 && extension.find(".") == 0)
 //						continue;
-//					dirs.push_back(it->path());
+//					dirs.emplace_back(it->path());
 //				}
 //				else if (boost::filesystem::is_regular_file(it->path()))
 //				{
@@ -688,7 +726,7 @@ SBAPI void SBAssetManager::removeMotion(SmartBody::SBMotion* motion)
 //		iter++)
 //	{
 //		DeformableMesh* mesh = (*iter).second;
-//		ret.push_back(mesh->getName());
+//		ret.emplace_back(mesh->getName());
 //	}
 //
 //	return ret;
@@ -721,7 +759,7 @@ std::vector<std::string> SBAssetManager::getMotionNames()
 	for(auto & _motion : _motions)
 	{
 		SBMotion* motion = _motion.second.get();
-		ret.push_back(motion->getName());
+		ret.emplace_back(motion->getName());
 	}
 
 	return ret;
@@ -754,7 +792,7 @@ std::vector<std::string> SBAssetManager::getSkeletonNames()
 //		iter != _deformableMeshMap.end();
 //		iter++)
 //	{
-//		ret.push_back(std::string(iter->first));
+//		ret.emplace_back(std::string(iter->first));
 //	}
 //
 //	return ret;
@@ -877,7 +915,7 @@ std::vector<std::string> SBAssetManager::getSkeletonNames()
 //
 //			parseSuccessful = motion->load(fullin, scale);
 //			if (parseSuccessful)
-//				motions.push_back(motion);
+//				motions.emplace_back(motion);
 //			else
 //				delete motion;
 //		} else if (ext == ".bvh" || ext == ".BVH") {
@@ -904,7 +942,7 @@ std::vector<std::string> SBAssetManager::getSkeletonNames()
 //				sbMotion->trim(pretrimFrames, 0);
 //			}
 //			if (parseSuccessful)
-//				motions.push_back(motion);
+//				motions.emplace_back(motion);
 //			else
 //				delete motion;
 //		} else if (ext == ".xml" || ext == ".XML") {
@@ -936,7 +974,7 @@ std::vector<std::string> SBAssetManager::getSkeletonNames()
 //			parseSuccessful = parseSuccessful && ParserASFAMC::parseAmc(*motion, &skeleton, filestream, float(scale));
 //			motion->setName(filebase.c_str());
 //			if (parseSuccessful)
-//				motions.push_back(motion);
+//				motions.emplace_back(motion);
 //			else
 //				delete motion;
 //		}
@@ -948,7 +986,7 @@ std::vector<std::string> SBAssetManager::getSkeletonNames()
 //			SmartBody::util::log("FBX motion parse: %s", convertedPath.c_str());
 //			parseSuccessful = ParserFBX::parse(skeleton, *motion, pathname.string(), float(scale));
 //			if (parseSuccessful)
-//				motions.push_back(motion);
+//				motions.emplace_back(motion);
 //	  else
 //		delete motion;
 //		}
@@ -1169,7 +1207,7 @@ std::vector<std::string> SBAssetManager::getSkeletonNames()
 //		fclose(fp);
 //		SmartBody::SBMotion motion;
 //		std::vector<SmartBody::SBMotion*> motions;
-//		motions.push_back(&motion);
+//		motions.emplace_back(&motion);
 //		ParserOgre::parse(*skeleton_p, motions, filename, float(scale), true, false);
 //		skeleton_p->skfilename(filename.c_str());
 //		skeleton_p->setName(skel_file);
@@ -1664,7 +1702,7 @@ FILE* SBAssetManager::open_sequence_file( const char *seq_name, std::string& ful
 //SbmTexture* SBAssetManager::getHDRTexture(const std::string& texName)
 //{
 //	SbmTextureManager& texManager = SbmTextureManager::singleton();
-//	SbmTexture* tex = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, texName.c_str());
+//	SbmTexture* tex = texManager.findTexture(texName.c_str());
 //	return tex;
 //}
 //
@@ -1730,9 +1768,25 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 
 }
 
+std::string SBAssetManager::findFileName(const std::string& type, const std::string& filename) {
+	return _store.findFileName(type, filename);
+}
+
+std::vector<std::string>& SBAssetManager::getAssetHistory() {
+	return _history.getAssetHistory();
+}
+
+void SBAssetManager::clearAssetHistory() {
+	_history.clearAssetHistory();
+}
+
+void SBAssetManager::addAssetHistory(const std::string& str) {
+	_history.addAssetHistory(str);
+}
+
 //void SBAssetManager::addAssetHistory(const std::string& str)
 //{
-//	_assetHistory.push_back(str);
+//	_assetHistory.emplace_back(str);
 //}
 //
 //std::vector<std::string>& SBAssetManager::getAssetHistory()
@@ -1776,7 +1830,7 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //		for (unsigned int i=0; i < neutralMesh->subMeshList.size(); i++)
 //		{
 //			SbmSubMesh* subMesh = neutralMesh->subMeshList[i];
-//			neutralTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
+//			neutralTexture = texManager.findTexture(subMesh->texName.c_str());
 //			if (neutralTexture)
 //			{
 //				break;
@@ -1792,7 +1846,7 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //					 iter++)
 //				{
 //					std::string textureCandidate = (*iter).second;
-//					neutralTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, textureCandidate.c_str());
+//					neutralTexture = texManager.findTexture(textureCandidate.c_str());
 //					if (neutralTexture)
 //						break;
 //				}
@@ -1830,7 +1884,7 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //		for (unsigned int i=0; i < expressiveMesh->subMeshList.size(); i++)
 //		{
 //			SbmSubMesh* subMesh = expressiveMesh->subMeshList[i];
-//			expressiveTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
+//			expressiveTexture = texManager.findTexture(subMesh->texName.c_str());
 //			if (expressiveTexture)
 //			{
 //				break;
@@ -1846,7 +1900,7 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //					 iter++)
 //				{
 //					std::string textureCandidate = (*iter).second;
-//					expressiveTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, textureCandidate.c_str());
+//					expressiveTexture = texManager.findTexture(textureCandidate.c_str());
 //					if (expressiveTexture)
 //						break;
 //				}
@@ -1861,7 +1915,7 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //
 //	// load the masked texture
 //	texManager.loadTexture(SbmTextureManager::TEXTURE_DIFFUSE, maskTextureFile.c_str(), maskTextureFile.c_str());
-//	SbmTexture* maskedTexture = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, maskTextureFile.c_str());
+//	SbmTexture* maskedTexture = texManager.findTexture(maskTextureFile.c_str());
 //	if (!maskedTexture)
 //	{
 //		SmartBody::util::log("Could not load masked texture file %s.", maskTextureFile.c_str());
@@ -2317,7 +2371,7 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //		SrVec3i& face = baseShape.F[f];
 //		// calculate the average position
 //		SrPnt avgPoint = (baseShape.V[face[0]] + baseShape.V[face[1]] + baseShape.V[face[2]]) / 3.0;
-//		avgFaces.push_back(avgPoint);
+//		avgFaces.emplace_back(avgPoint);
 //
 //		if (false)
 //		{
@@ -2536,8 +2590,8 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //	if (!found)
 //	{
 //		SmartBody::util::log("Adding new mesh %s", newModelName.c_str());
-//		mesh->dMeshStatic_p.push_back(modelSrSn);
-//		mesh->dMeshDynamic_p.push_back(modelSrSn);
+//		mesh->dMeshStatic_p.emplace_back(modelSrSn);
+//		mesh->dMeshDynamic_p.emplace_back(modelSrSn);
 //	}
 //
 //	if (mesh->skinWeights.size() == 0)
@@ -2566,17 +2620,17 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //	}
 //
 //	modelSkin->bindShapeMat = existingBindShapeMat;
-//	modelSkin->bindPoseMat.push_back(modelBindPose);
-//	modelSkin->infJointName.push_back(rigidBindJoint);
+//	modelSkin->bindPoseMat.emplace_back(modelBindPose);
+//	modelSkin->infJointName.emplace_back(rigidBindJoint);
 //	modelSkin->sourceMesh = newModelName;
-//	modelSkin->bindWeight.push_back(1.0f);
+//	modelSkin->bindWeight.emplace_back(1.0f);
 //	for (unsigned int i = 0; i < model.V.size(); i++)
 //	{
-//		modelSkin->jointNameIndex.push_back(0);
-//		modelSkin->numInfJoints.push_back(1);
-//		modelSkin->weightIndex.push_back(0);
+//		modelSkin->jointNameIndex.emplace_back(0);
+//		modelSkin->numInfJoints.emplace_back(1);
+//		modelSkin->weightIndex.emplace_back(0);
 //	}
-//	mesh->skinWeights.push_back(modelSkin);
+//	mesh->skinWeights.emplace_back(modelSkin);
 //	return true;
 //}
 //
@@ -2629,10 +2683,10 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //				mesh->dMeshStatic_p[m]->shape().N = baseModel->shape().N;
 //
 //				std::vector<SrSnModel*> modelList;
-//				modelList.push_back(baseModel);
+//				modelList.emplace_back(baseModel);
 //				mesh->blendShapeMap.insert(std::pair<std::string, std::vector<SrSnModel*> >(submeshName, modelList));
 //				std::vector<std::string> morphTargetList;
-//				morphTargetList.push_back(shapeName);
+//				morphTargetList.emplace_back(shapeName);
 //				mesh->morphTargets.insert(std::pair<std::string, std::vector<std::string> >(submeshName, morphTargetList));
 //			}
 //			else
@@ -2663,14 +2717,14 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 //					baseModel->visible(false);
 //					baseModel->ref();
 //
-//					existingShapeModels.push_back(baseModel);
+//					existingShapeModels.emplace_back(baseModel);
 //					std::map<std::string, std::vector<std::string> >::iterator morphNameIter = mesh->morphTargets.find(submeshName);
 //					if (morphNameIter == mesh->morphTargets.end())
 //					{
 //						SmartBody::util::log("Couldn't find controller name %s in morph target list, strange...", submeshName.c_str());
 //						return false;
 //					}
-//					(*morphNameIter).second.push_back(shapeName);
+//					(*morphNameIter).second.emplace_back(shapeName);
 //				}
 //
 //			}

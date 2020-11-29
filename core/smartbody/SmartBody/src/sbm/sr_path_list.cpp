@@ -22,7 +22,7 @@ bool srPathList::insert(std::string path)
 			return false;
 	}
 
-	_paths.push_back(path);
+	_paths.emplace_back(path);
 	return true;	
 }
 

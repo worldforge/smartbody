@@ -213,8 +213,8 @@ SmartBody::SBParseNode* SBParser::parse(const std::string& input)
 		//cerr << "V " << numVersions << " " << isU << " " << v->prob() << "\n" << *mapparse << endl;
 		if(isU)
 		{
-			saveTrees.push_back(mapparse);
-			saveProbs.push_back(v->prob());
+			saveTrees.emplace_back(mapparse);
+			saveProbs.emplace_back(v->prob());
 			numDiff++;
 		}
 		else

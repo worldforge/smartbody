@@ -535,7 +535,7 @@ std::vector<SrVec> SBNavigationMesh::findPath( SrVec& spos, SrVec& epos )
 
 			pathList.clear();
 			for (int i=0;i<m_nstraightPath;i++)
-				pathList.push_back(m_straightPath[i]);
+				pathList.emplace_back(m_straightPath[i]);
 		}
 	}
 	return pathList;

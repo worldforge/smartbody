@@ -135,7 +135,7 @@ PinocchioOutput PINOCCHIO_API autoRigSkinWeightOnly( const Skeleton &given, Mesh
 			Vector3 v1 = voxelMesh.vertices[voxelMesh.edges[i].vertex].pos;
 			Vector3 v2 = voxelMesh.vertices[voxelMesh.edges[i + 1].vertex].pos;
 			Vector3 v3 = voxelMesh.vertices[voxelMesh.edges[i + 2].vertex].pos;
-			triobjvec.push_back(Tri3Object(v1, v2, v3,i/3));
+			triobjvec.emplace_back(Tri3Object(v1, v2, v3,i/3));
 		}
 
 		ObjectProjector<3, Tri3Object> proj(triobjvec);
@@ -255,7 +255,7 @@ PinocchioOutput PINOCCHIO_API autorigVoxelTransfer( const Skeleton &given, Mesh 
 			Vector3 v1 = voxelMesh.vertices[voxelMesh.edges[i].vertex].pos;
 			Vector3 v2 = voxelMesh.vertices[voxelMesh.edges[i + 1].vertex].pos;
 			Vector3 v3 = voxelMesh.vertices[voxelMesh.edges[i + 2].vertex].pos;
-			triobjvec.push_back(Tri3Object(v1, v2, v3,i/3));
+			triobjvec.emplace_back(Tri3Object(v1, v2, v3,i/3));
 		}
 
 		ObjectProjector<3, Tri3Object> proj(triobjvec);

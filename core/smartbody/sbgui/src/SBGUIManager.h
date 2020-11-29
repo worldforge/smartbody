@@ -34,7 +34,7 @@ class SBGUIManager // wrapper class for CEGUI library
 		static void destroy_singleton() {
 			if( _singleton )
 				delete _singleton;
-			_singleton = NULL;
+			_singleton = nullptr;
 		}	
 
 		void init();

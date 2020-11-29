@@ -55,7 +55,7 @@ namespace Debug
     std::vector<std::string> files;
     if (!file.empty())
     {
-      files.push_back(file);
+      files.emplace_back(file);
     }
     return SendMail(subject, text, files, destination, source);
   }

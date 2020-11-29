@@ -306,7 +306,7 @@ void Tokenize( const string & str, vector<string> & tokens, const string & delim
    while ( string::npos != pos || string::npos != lastPos )
    {
       // Found a token, add it to the vector.
-      tokens.push_back( str.substr( lastPos, pos - lastPos ) );
+      tokens.emplace_back( str.substr( lastPos, pos - lastPos ) );
 
       // Skip delimiters.  Note the "not_of"
       lastPos = str.find_first_not_of( delimiters, pos );
@@ -330,7 +330,7 @@ void Tokenize( const wstring & str, vector<wstring> & tokens, const wstring & de
    while ( wstring::npos != pos || wstring::npos != lastPos )
    {
       // Found a token, add it to the vector.
-      tokens.push_back( str.substr( lastPos, pos - lastPos ) );
+      tokens.emplace_back( str.substr( lastPos, pos - lastPos ) );
 
       // Skip delimiters.  Note the "not_of"
       lastPos = str.find_first_not_of( delimiters, pos );

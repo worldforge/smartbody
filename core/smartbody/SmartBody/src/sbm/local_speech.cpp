@@ -280,8 +280,8 @@ std::string SpeechRelayLocal::removeXMLTagsAndNewLines( const std::string & txt 
 #endif
 						   /// Words can be used to match up which tags we need to see
 							/// Push tag and word into xmlMetaData
-							xmlMetaData.tags.push_back(markString);
-							xmlMetaData.words.push_back(temporaryText);
+							xmlMetaData.tags.emplace_back(markString);
+							xmlMetaData.words.emplace_back(temporaryText);
 
 							actualText += temporaryText;
 					   }
@@ -475,10 +475,10 @@ CereprocSpeechRelayLocal::~CereprocSpeechRelayLocal()
 void CereprocSpeechRelayLocal::setVoiceAndLicenses(const std::vector<std::string>& voicelist, const std::vector<std::string>& licenseList)
 {
 	for (size_t v = 0; v < voicelist.size(); v++)
-		voices.push_back(voicelist[v]);
+		voices.emplace_back(voicelist[v]);
 
 	for (size_t l = 0; l < licenseList.size(); l++)
-		licenses.push_back(licenseList[l]);
+		licenses.emplace_back(licenseList[l]);
 }
 
 
@@ -1163,8 +1163,8 @@ std::string FestivalSpeechRelayLocal::storeXMLMetaData( const std::string & txt)
 						   //SmartBody::util::log("tempText after clean = %s",temporaryText.c_str());
 						   /// Words can be used to match up which tags we need to see
 							/// Push tag and word into xmlMetaData
-							xmlMetaData.tags.push_back(markString);
-							xmlMetaData.words.push_back(temporaryText);
+							xmlMetaData.tags.emplace_back(markString);
+							xmlMetaData.words.emplace_back(temporaryText);
 							actualText += temporaryText;
 							//SmartBody::util::log("actual text before clean = %s",actualText.c_str());
 							cleanString(actualText);
@@ -1420,17 +1420,17 @@ void FestivalSpeechRelayLocal::initSpeechRelay(std::string libPath, std::string 
 	//if (!scriptFileRead)
 	{
 		SmartBody::util::log("Running default Festival commands\n\n", voice.c_str());
-		//festivalCommands.push_back("(voice_roger_hts2010)");
+		//festivalCommands.emplace_back("(voice_roger_hts2010)");
 		// setting the duration method to be used by festival
-		festivalCommands.push_back("(Parameter.set `Duration_Method Duration_Default)");
+		festivalCommands.emplace_back("(Parameter.set `Duration_Method Duration_Default)");
 		// this command hooks our virtual human method such that every time an utterance is synthesized, our method is called on it
 		// in order to generate the virtual human message (RemoteSpeechReply)
-		festivalCommands.push_back("(set! after_synth_hooks (list Duration_VirtualHuman))");
+		festivalCommands.emplace_back("(set! after_synth_hooks (list Duration_VirtualHuman))");
 		// setting duration stretch parameter
-		festivalCommands.push_back("(Parameter.set 'Duration_Stretch 0.8)");
+		festivalCommands.emplace_back("(Parameter.set 'Duration_Stretch 0.8)");
 		std::stringstream strstr;
 		strstr << "(set! voice_default '" << voice << ")";
-		festivalCommands.push_back(strstr.str());
+		festivalCommands.emplace_back(strstr.str());
 	}
 
 	SmartBody::util::log("\n");

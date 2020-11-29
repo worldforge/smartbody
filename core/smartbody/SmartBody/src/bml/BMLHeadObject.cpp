@@ -7,12 +7,12 @@ BMLHeadObject::BMLHeadObject() : BMLObject()
 
 	SmartBody::StringAttribute* typeAttr = createStringAttribute("type", "", true, "Basic", 20, false, false, false, "type of head movement");
 	std::vector<std::string> headTypes;
-	headTypes.push_back("NOD");
-	headTypes.push_back("SHAKE");
-	headTypes.push_back("TOSS");
-	headTypes.push_back("WIGGLE");
-	headTypes.push_back("WAGGLE");
-	headTypes.push_back("PARAMETERIZED");
+	headTypes.emplace_back("NOD");
+	headTypes.emplace_back("SHAKE");
+	headTypes.emplace_back("TOSS");
+	headTypes.emplace_back("WIGGLE");
+	headTypes.emplace_back("WAGGLE");
+	headTypes.emplace_back("PARAMETERIZED");
 	typeAttr->setValidValues(headTypes);
 
 	createDoubleAttribute("repeats", 1, true, "Basic", 30, false, false, false, "number of times a NOD or SHAKE repeats");

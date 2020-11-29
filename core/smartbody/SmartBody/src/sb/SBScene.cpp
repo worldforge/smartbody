@@ -70,7 +70,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBParser.h>
 #include <sb/SBRetarget.h>
-//#include <sb/SBVHMsgManager.h>
+#include <sb/SBVHMsgManager.h>
 #include <sb/SBMotionGraph.h>
 #include "SBUtilities.h"
 #include <sbm/sbm_audio.h>
@@ -159,12 +159,9 @@ class ForwardLogListener : public SmartBody::util::Listener
 
 SBScene::SBScene() : SBObject(),
 _assetStore(std::make_unique<SBAssetStore>(*this))
-{
-	//initialize();
-}
 
-void SBScene::initialize()
 {
+	_scene = this;
 #ifndef SB_NO_PYTHON
 #ifndef __native_client__
 //	_mainModule = nullptr;
@@ -197,7 +194,7 @@ void SBScene::initialize()
 	_eventManager = new SBEventManager();
 	_assetManager = new SBAssetManager(*_assetStore);
 	_speechManager = new SBSpeechManager();
-	//_vhmsgManager = new SBVHMsgManager();
+	_vhmsgManager = new SBVHMsgManager();
 	_commandManager = new SBCommandManager();
 	_naviMeshManager = new SBNavigationMeshManager();
 	_motionGraphManager = new SBMotionGraphManager();
@@ -212,7 +209,7 @@ void SBScene::initialize()
 	_serviceManager->addService(_physicsManager);
 	_serviceManager->addService(_boneBusManager);
 	_serviceManager->addService(_collisionManager);
-	//_serviceManager->addService(_vhmsgManager);
+	_serviceManager->addService(_vhmsgManager);
 	_serviceManager->addService(_realtimeManager);
 	_serviceManager->addService(_phonemeManager);
 	_serviceManager->addService(_profiler);
@@ -267,10 +264,10 @@ void SBScene::initialize()
 	createBoolAttribute("drawMeshWireframe",false,true,"",120,false,false,false,"Render mesh with wireframe.");
 	
 	SmartBody::util::g_log.RemoveAllListeners();
-	ForwardLogListener* forwardListener = new ForwardLogListener();
+	auto* forwardListener = new ForwardLogListener();
 	SmartBody::util::g_log.AddListener(forwardListener);
 #if !defined(WIN_BUILD) && !defined(NATIVE_FRAMEWORK_BUILD)
-	SmartBody::util::StdoutListener* stdoutListener = new SmartBody::util::StdoutListener();
+	auto* stdoutListener = new SmartBody::util::StdoutListener();
 	SmartBody::util::g_log.AddListener(stdoutListener);
 #endif
 	
@@ -476,8 +473,8 @@ void SBScene::cleanup()
 	AUDIO_Init();
 #endif
 
-//	if (_vhmsgManager->isEnable() && _vhmsgManager->isConnected())
-//		_vhmsgManager->send( "vrProcEnd sbm" );
+	if (_vhmsgManager->isEnable() && _vhmsgManager->isConnected())
+		_vhmsgManager->send( "vrProcEnd sbm" );
 	
 //	delete _vhmsgManager;	
 //	_vhmsgManager = nullptr;
@@ -551,6 +548,10 @@ SBScene::~SBScene()
 
 	delete _parser;
 
+	if (_scene == this) {
+		_scene = nullptr;
+	}
+
 //	_debuggerClient->Disconnect();
 //  // TODO: should delete these in reverse order?
 //	delete _debuggerClient;
@@ -577,13 +578,13 @@ SBScene::~SBScene()
 
 SBScene* SBScene::getScene()
 {
-	if (_firstTime)
-	{
-		XMLPlatformUtils::Initialize(); 
-		_firstTime = false;
-		_scene = new SBScene();
-		_scene->initialize();
-	}
+//	if (_firstTime)
+//	{
+//		XMLPlatformUtils::Initialize();
+//		_firstTime = false;
+//		_scene = new SBScene();
+//		_scene->initialize();
+//	}
 
 	return _scene;
 }
@@ -685,7 +686,7 @@ void SBScene::update()
 			} while( !cmd.empty() );
 			if( seq->get_count() < 1 )
 			{
-				sequencesToDelete.push_back(seqName);
+				sequencesToDelete.emplace_back(seqName);
 			}
 		}
 	}
@@ -841,11 +842,11 @@ float SBScene::getScale()
 	return _scale;
 }
 
-void SBScene::reset()
-{
-	cleanup();
-	initialize();	
-}
+//void SBScene::reset()
+//{
+//	cleanup();
+//	initialize();
+//}
 
 void SBScene::notify( SBSubject* subject )
 {
@@ -985,7 +986,7 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 		}
 
 		_pawnMap.insert(std::pair<std::string, SbmPawn*>(character->getName(), character));
-		_pawnNames.push_back(character->getName());
+		_pawnNames.emplace_back(character->getName());
 	
 		std::map<std::string, SbmCharacter*>::iterator citer = _characterMap.find(character->getName());
 		if (citer != _characterMap.end())
@@ -996,7 +997,7 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 			return nullptr;
 		}
 		_characterMap.insert(std::pair<std::string, SbmCharacter*>(character->getName(), character));
-		_characterNames.push_back(character->getName());
+		_characterNames.emplace_back(character->getName());
 
 		//if (getCharacterListener() )
 		//	getCharacterListener()->OnCharacterCreate( character->getName().c_str(), character->getClassType() );
@@ -1071,7 +1072,7 @@ SBPawn* SBScene::insertPawn(SBPawn* pawn) {
 	}
 
 	_pawnMap.insert(std::pair<std::string, SbmPawn*>(pawn->getName(), pawn));
-	_pawnNames.push_back(pawn->getName());
+	_pawnNames.emplace_back(pawn->getName());
 
 
 	std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
@@ -1158,11 +1159,9 @@ void SBScene::removeCharacter(const std::string& charName)
 void SBScene::removeAllCharacters()
 {
 	std::vector<std::string> characters = getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characters.begin();
-		 iter != characters.end();
-		 iter++)
+	for (const auto & character : characters)
 	{
-		removeCharacter((*iter));
+		removeCharacter(character);
 	}
 	
 }
@@ -1241,7 +1240,7 @@ int SBScene::getNumPawns()
 
 SBPawn* SBScene::getPawn(const std::string& name)
 {
-	std::map<std::string, SbmPawn*>::iterator iter = _pawnMap.find(name);
+	auto iter = _pawnMap.find(name);
 	if (iter == _pawnMap.end())
 	{
 		return nullptr;
@@ -1255,7 +1254,7 @@ SBPawn* SBScene::getPawn(const std::string& name)
 
 SBCharacter* SBScene::getCharacter(const std::string& name)
 {
-	std::map<std::string, SbmCharacter*>::iterator iter = _characterMap.find(name);
+	auto iter = _characterMap.find(name);
 	if (iter == _characterMap.end())
 	{
 		return nullptr;
@@ -1283,12 +1282,10 @@ std::vector<std::string> SBScene::getEventHandlerNames()
 	
 	std::vector<std::string> ret;
 
-	for(std::map<std::string, SBEventHandler*>::iterator iter = eventManager->getEventHandlers().begin();
-		iter != eventManager->getEventHandlers().end();
-		iter++)
+	for(auto & iter : eventManager->getEventHandlers())
 	{
 
-		ret.push_back(std::string(iter->first));
+		ret.emplace_back(std::string(iter.first));
 	}
 	return ret;
 }
@@ -1352,20 +1349,20 @@ bool SBScene::commandAt(float seconds, const std::string& command)
 
 void SBScene::removePendingCommands()
 {
-	SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->clear();
-	SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->clear();
+	getCommandManager()->getActiveSequences()->clear();
+	getCommandManager()->getPendingSequences()->clear();
 }
 
-//void SBScene::sendVHMsg(const std::string& message)
-//{
-//	SmartBody::SBScene::getScene()->getVHMsgManager()->send(message.c_str());
-//}
-//
-//void SBScene::sendVHMsg2(const std::string& message, const std::string& message2)
-//{
-//
-//	SmartBody::SBScene::getScene()->getVHMsgManager()->send2(message.c_str(), message2.c_str());
-//}
+void SBScene::sendVHMsg(const std::string& message)
+{
+	getVHMsgManager()->send(message.c_str());
+}
+
+void SBScene::sendVHMsg2(const std::string& message, const std::string& message2)
+{
+
+	getVHMsgManager()->send2(message.c_str(), message2.c_str());
+}
 
 bool SBScene::run(const std::string& command)
 {
@@ -1641,7 +1638,7 @@ std::vector<std::string> SBScene::getFaceDefinitionNames()
 		 iter !=  _faceDefinitions.end();
 		 iter++)
 	{
-		faces.push_back((*iter).second->getName());
+		faces.emplace_back((*iter).second->getName());
 	}
 
 	return faces;
@@ -1689,7 +1686,7 @@ std::vector<std::string> SBScene::getScriptNames()
 		 iter != _scripts.end();
 		 iter++)
 	{
-		scriptNames.push_back((*iter).first);
+		scriptNames.emplace_back((*iter).first);
 	}
 
 	return scriptNames;
@@ -1717,7 +1714,7 @@ void SBScene::addSceneListener(SBSceneListener* listener)
 {
 	std::vector<SBSceneListener*>::iterator iter = std::find(_sceneListeners.begin(), _sceneListeners.end(), listener);
 	if (iter == _sceneListeners.end())
-		_sceneListeners.push_back(listener);
+		_sceneListeners.emplace_back(listener);
 }
 
 void SBScene::removeSceneListener(SBSceneListener* listener)
@@ -1794,7 +1791,7 @@ std::vector<std::string> SBScene::getSystemParameterNames()
 		 iter != _systemParameters.end();
 		 iter++)
 	{
-		names.push_back((*iter).first);
+		names.emplace_back((*iter).first);
 	}
 
 	return names;
@@ -1831,7 +1828,7 @@ std::vector<std::string> SBScene::getSystemParameterNames()
 //	}
 //
 //	_pawnMap.insert(std::pair<std::string, SbmPawn*>(camera->getName(), camera));
-//	_pawnNames.push_back(camera->getName());
+//	_pawnNames.emplace_back(camera->getName());
 //
 //	std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
 //	for (size_t i = 0; i < listeners.size(); i++)
@@ -1940,7 +1937,7 @@ std::vector<std::string> SBScene::getSystemParameterNames()
 //		iter != _cameras.end();
 //		iter++)
 //	{
-//		cameraNames.push_back((*iter).first);
+//		cameraNames.emplace_back((*iter).first);
 //	}
 //
 //	return cameraNames;
@@ -1954,15 +1951,15 @@ std::vector<SBController*>& SBScene::getDefaultControllers()
 
 void SBScene::createDefaultControllers()
 {
-	 _defaultControllers.push_back(new MeCtEyeLidRegulator());
-	 _defaultControllers.push_back(new MeCtSaccade(nullptr));
+	 _defaultControllers.emplace_back(new MeCtEyeLidRegulator());
+	 _defaultControllers.emplace_back(new MeCtSaccade(nullptr));
 	 std::map<int, MeCtReachEngine*> reachMap;
-	 _defaultControllers.push_back(new MeCtExampleBodyReach(nullptr));
-	 _defaultControllers.push_back(new MeCtBreathing());
-	 _defaultControllers.push_back(new MeCtGaze());
-	 _defaultControllers.push_back(new MeCtNewLocomotion());
-	 _defaultControllers.push_back(new MeCtGenericHand());
-	 _defaultControllers.push_back(new RealTimeLipSyncController());
+	 _defaultControllers.emplace_back(new MeCtExampleBodyReach(nullptr));
+	 _defaultControllers.emplace_back(new MeCtBreathing());
+	 _defaultControllers.emplace_back(new MeCtGaze());
+	 _defaultControllers.emplace_back(new MeCtNewLocomotion());
+	 _defaultControllers.emplace_back(new MeCtGenericHand());
+	 _defaultControllers.emplace_back(new RealTimeLipSyncController());
 
 	 for (size_t x = 0; x < _defaultControllers.size(); x++)
 		 _defaultControllers[x]->ref();
@@ -2062,12 +2059,12 @@ SBMotion* SBScene::createMotion(const std::string& motionName)
 	return getAssetManager()->createMotion(motionName);
 }
 
-void SBScene::addMotions(const std::string& path, bool recursive)
-{
-	if (SHOW_DEPRECATION_MESSAGES)
-		SmartBody::util::log("DEPRECATED: Use AssetManager.addMotion() instead.");
-	getAssetManager()->addMotions(path, recursive);
-}
+//void SBScene::addMotions(const std::string& path, bool recursive)
+//{
+//	if (SHOW_DEPRECATION_MESSAGES)
+//		SmartBody::util::log("DEPRECATED: Use AssetManager.addMotion() instead.");
+//	getAssetManager()->addMotions(path, recursive);
+//}
 
 int SBScene::getNumSkeletons()
 {
@@ -2162,7 +2159,7 @@ void SBScene::updatePawnNames()
 		 iter != _pawnMap.end();
 		 iter++)
 	{
-		allPawns.push_back((*iter).second);
+		allPawns.emplace_back((*iter).second);
 	}
 	_pawnMap.clear();
 	_pawnNames.clear();
@@ -2172,7 +2169,7 @@ void SBScene::updatePawnNames()
 		 iter++)
 	{
 		_pawnMap.insert(std::pair<std::string, SbmPawn*>((*iter)->getName(), (*iter))); 
-		_pawnNames.push_back((*iter)->getName());
+		_pawnNames.emplace_back((*iter)->getName());
 	}
 
 }
@@ -2184,7 +2181,7 @@ void SBScene::updateCharacterNames()
 		 iter != _characterMap.end();
 		 iter++)
 	{
-		allCharacters.push_back((*iter).second);
+		allCharacters.emplace_back((*iter).second);
 	}
 	_characterMap.clear();
 	_characterNames.clear();
@@ -2194,7 +2191,7 @@ void SBScene::updateCharacterNames()
 		 iter++)
 	{
 		_characterMap.insert(std::pair<std::string, SbmCharacter*>((*iter)->getName(), (*iter))); 
-		_characterNames.push_back((*iter)->getName());
+		_characterNames.emplace_back((*iter)->getName());
 	}
 }
 
@@ -2232,7 +2229,7 @@ void SBScene::updateCharacterNames()
 //	SrVec rootPos = rootJoint->gmat().get_translation();
 //	std::vector<std::string> belowJointNames;
 //	std::string headJointName = "none";
-//	belowJointNames.push_back(rootJointName);
+//	belowJointNames.emplace_back(rootJointName);
 //	int rootJointIdx = mesh->boneJointIdxMap[rootJointName];
 //	int headJointIdx = -1;
 //	int neckJointIdx = -1;
@@ -2257,7 +2254,7 @@ void SBScene::updateCharacterNames()
 //		SrVec jpos = joint->gmat().get_translation();
 //		if (jpos.y < rootPos.y) // lower than root position
 //		{
-//			belowJointNames.push_back(joint->getMappedJointName());
+//			belowJointNames.emplace_back(joint->getMappedJointName());
 //		}
 //	}
 //	SrVec neckPos = rootJoint->getParent()->gmat().get_translation();
@@ -2621,7 +2618,7 @@ boost::python::object& SBScene::getPythonMainDict()
 //			if (camPt.z >  zMin)
 //				zMin = camPt.z;
 //		}
-//		pawnZSortedList.push_back(std::pair<float,int>(zMin,i));
+//		pawnZSortedList.emplace_back(std::pair<float,int>(zMin,i));
 //	}
 //	std::sort(pawnZSortedList.begin(),pawnZSortedList.end()); // sort pawns from back to front
 //	reverse(pawnZSortedList.begin(),pawnZSortedList.end()); // reverse the order so the order is front to back
@@ -2698,7 +2695,7 @@ boost::python::object& SBScene::getPythonMainDict()
 //		if (iSamplesPassed > 0) // not occluded
 //		{
 //			//SmartBody::util::log("pawn %s, visible samples = %d", pawn->getName().c_str(), iSamplesPassed);
-//			visiblePawns.push_back(pawn->getName());
+//			visiblePawns.emplace_back(pawn->getName());
 //			//glDrawBox(pawn_bb.a, pawn_bb.b);
 //		}
 //	}
@@ -2780,7 +2777,7 @@ boost::python::object& SBScene::getPythonMainDict()
 //			frustum.pointInFrustum(pointBAA) ||
 //			frustum.pointInFrustum(pointABA) ||
 //			frustum.pointInFrustum(pointBAB))
-//			visiblePawns.push_back(pawn->getName());
+//			visiblePawns.emplace_back(pawn->getName());
 //	}
 //	return visiblePawns;
 //}
@@ -2895,7 +2892,7 @@ void SBScene::checkVisibility() {
 //	SmartBody::util::log("Vector from joint to target is %f %f %f", cameraTrack->jointToCamera.x, cameraTrack->jointToCamera.y, cameraTrack->jointToCamera.z);
 //	cameraTrack->targetToCamera = camera->getEye() - camera->getCenter();
 //	SmartBody::util::log("Vector from target to eye is %f %f %f", cameraTrack->targetToCamera.x, cameraTrack->targetToCamera.y, cameraTrack->targetToCamera.z);
-//	_cameraTracking.push_back(cameraTrack);
+//	_cameraTracking.emplace_back(cameraTrack);
 //	SmartBody::util::log("Object %s will now be tracked at joint %s.", characterName.c_str(), jointName.c_str());
 //}
 //
@@ -3012,7 +3009,7 @@ SBAPI bool SBScene::createNavigationMesh( const std::string& meshfilename )
 	{
 		SrModel *mesh = new SrModel();
 		loadSuccess = mesh->import_obj(meshfilename.c_str());		
-		meshVec.push_back(mesh);
+		meshVec.emplace_back(mesh);
 	}
 	else if ( ext == ".xml" || ext == ".XML" )
 	{
@@ -3198,6 +3195,12 @@ void SBScene::registerObjectProvider(std::string prefix, Provider provider) {
 	_objectProviders.emplace(prefix, std::move(provider));
 }
 
+void SBScene::removeObjectProvider(const std::string& prefix) {
+	_objectProviders.erase(prefix);
+}
+
+
+
 
 SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 {
@@ -3285,7 +3288,7 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 //	else if (prefix == "envmap")
 //	{
 //		SbmTextureManager& texManager = SbmTextureManager::singleton();
-//		SbmTexture* texture = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, suffix.c_str());
+//		SbmTexture* texture = texManager.findTexture(suffix.c_str());
 //		return texture;
 //	}
 	else if (prefix == "controller")

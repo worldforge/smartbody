@@ -99,9 +99,9 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
 	cons->efffectorName = reachEndEffector->getMappedJointName().c_str();
 
 	std::vector<std::string> consJointList;
-	//consJointList.push_back("sternoclavicular");
-	//consJointList.push_back("acromioclavicular");
-	consJointList.push_back("shoulder");
+	//consJointList.emplace_back("sternoclavicular");
+	//consJointList.emplace_back("acromioclavicular");
+	consJointList.emplace_back("shoulder");
 
 	std::string preFix = "r_";	
 	if (reachType == LEFT_ARM || reachType == LEFT_JUMP)
@@ -194,7 +194,7 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
 		MeCtIKTreeNode* node = nodeList[i];
 		SmartBody::SBJoint* joint = skeletonCopy->getJointByName(node->getNodeName());		
 		SkJointQuat* skQuat = joint->quat();		
-		affectedJoints.push_back(joint);			
+		affectedJoints.emplace_back(joint);
 	}		
 
 	SmartBody::SBJoint* copyEffector = skeletonCopy->getJointByName(reachEndEffector->getMappedJointName());
@@ -301,12 +301,12 @@ void MeCtReachEngine::updateMotionExamples( const MotionDataSet& inMotionSet, st
 		InterpWeight w;
 		w.first = motionExamples.getExamples().size();
 		w.second = 1.f;
-		ex->weight.push_back(w);	
+		ex->weight.emplace_back(w);
 		// add the example parameter for visualization purpose
 		SrVec reachPos;
 		for (int i=0;i<3;i++)
 			reachPos[i] = (float)ex->parameter[i];
-		examplePts.push_back(reachPos);		
+		examplePts.emplace_back(reachPos);
 		motionExamples.addMotionExample(ex);
 	}	
 
@@ -331,7 +331,7 @@ void MeCtReachEngine::updateMotionExamples( const MotionDataSet& inMotionSet, st
 			SrVec reachPos;
 			for (int k=0;k<3;k++)
 				reachPos[k] = (float)ex->parameter[k];
-			resamplePts.push_back(reachPos);		
+			resamplePts.emplace_back(reachPos);
 		}
 	}
 

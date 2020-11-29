@@ -465,7 +465,7 @@ namespace concurrent {
             array.reserve(size);
 
             for(Pointer< QueueNode<E> > p = this->head->next; p != NULL; p = p->next) {
-                array.push_back(p->get());
+                array.emplace_back(p->get());
             }
 
             return array;

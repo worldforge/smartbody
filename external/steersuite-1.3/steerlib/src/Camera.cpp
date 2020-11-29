@@ -64,7 +64,7 @@ int Camera::addPointOfInterest(const Point & pos, const Point & lookat, const Ve
 	poi.lookat = lookat;
 	poi.up = up;
 
-	m_pois.push_back(poi);
+	m_pois.emplace_back(poi);
 	
 	if(m_pois.size() == 1)
 	{

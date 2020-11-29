@@ -133,7 +133,7 @@ void Mesh::normalizeBoundingBox()
     int i;
     vector<Vector3> positions;
     for(i = 0; i < (int)vertices.size(); ++i) {
-        positions.push_back(vertices[i].pos);
+        positions.emplace_back(vertices[i].pos);
     }
     Rect3 boundingBox = Rect3(positions.begin(), positions.end());
     double cscale = .9 / boundingBox.getSize().accumulate(ident<double>(), maximum<double>());
@@ -246,7 +246,7 @@ void Mesh::readObj(istream &strm)
 			double tx,ty;
 			sscanf(words[1].c_str(), "%lf", &tx);
 			sscanf(words[2].c_str(), "%lf", &ty);
-			texCoords.push_back(Vector3(tx,ty,0.0));
+			texCoords.emplace_back(Vector3(tx,ty,0.0));
 		}
         //deal with the line based on the first word
         else if(words[0][0] == 'v' && words[0].size() == 1) {
@@ -494,7 +494,7 @@ void Mesh::readGts(istream &strm)
             int e1, e2;
             sscanf(words[0].c_str(), "%d", &e1);
             sscanf(words[1].c_str(), "%d", &e2);
-            fedges.push_back(make_pair(e1 - 1, e2 - 1));
+            fedges.emplace_back(make_pair(e1 - 1, e2 - 1));
             continue;
         }
         
@@ -579,7 +579,7 @@ void Mesh::readStl(istream &strm)
             else
                 idx = vertexIdx[cur];
             
-            lastIdxs.push_back(idx);
+            lastIdxs.emplace_back(idx);
             if(lastIdxs.size() > 3)
                 lastIdxs.erase(lastIdxs.begin());
             continue;
@@ -634,7 +634,7 @@ bool Mesh::isConnected() const
             if(!reached[vtx]) {
                 reached[vtx] = true;
                 ++reachedCount;
-                todo.push_back(vtx);
+                todo.emplace_back(vtx);
             }
         } while(curEdge != startEdge);        
     }

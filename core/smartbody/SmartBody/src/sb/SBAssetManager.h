@@ -16,7 +16,7 @@ class SBSkeleton;
 class SBMotion;
 class SBNavigationMesh;
 
-class SBAssetManager : public SBObject
+class SBAssetManager : public SBObject, public SBAssetsProcessor
 {
 	public:
 		SBAPI explicit SBAssetManager(SBAssetStore& store);
@@ -50,7 +50,7 @@ class SBAssetManager : public SBObject
 		SBAPI bool addMotion(std::unique_ptr<SmartBody::SBMotion> motion);
 		SBAPI SBMotion* addMotionDefinition(const std::string& name, double duration, int numFrames);
 		SBAPI void removeMotion(SmartBody::SBMotion* motion);
-		SBAPI void addMotions(const std::string& path, bool recursive);
+		//SBAPI void addMotions(const std::string& path, bool recursive);
 		SBAPI SBMotion* createMotion(const std::string& motionName);
 		SBAPI SBMotion* getMotion(const std::string& name);
 		SBAPI int getNumMotions();
@@ -63,7 +63,7 @@ class SBAssetManager : public SBObject
 
 		SBAPI FILE* open_sequence_file( const char *seq_name, std::string& fullPath );
 
-		SBAPI const std::string findFileName(const std::string& type, const std::string& filename);
+		SBAPI std::string findFileName(const std::string& type, const std::string& filename);
 
 
 
@@ -74,7 +74,9 @@ class SBAssetManager : public SBObject
 //		SBAPI bool handlePenetrations(std::string deformableMesh, std::string baseModel, std::string penetratingModel, float offset, bool showVisualization);
 //		SBAPI bool addBlendshapeToModel(std::string templateMeshName, std::string modelFile, std::string shapeName, std::string submeshName);
 //		SBAPI bool addModelToMesh(std::string templateMeshName, std::string modelFile, std::string newModelName, std::string rigidBindJoint, std::string bindPoseCopySubMeshName);
-		
+
+		void processAssets(std::vector<std::unique_ptr<SBAsset>>& assets) override;
+
 protected:
 
 //		std::string findAssetFromLocation(const std::string& filepath, const std::string& assetName);

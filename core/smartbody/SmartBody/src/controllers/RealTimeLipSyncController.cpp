@@ -136,7 +136,7 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 			double value = curve->evaluate(t - timeDelay);
 			if (value > 0.0)
 			{
-				curveData.push_back(std::pair<std::string, double>(visemeName, value));
+				curveData.emplace_back(std::pair<std::string, double>(visemeName, value));
 			}
 		}
 		
@@ -214,8 +214,8 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 
 		for (size_t p = 0; p < phonemeTimingsList.size(); p++)
 		{
-			_currentPhonemes.push_back(phonemeList[p]);
-			_currentPhonemeTimings.push_back(phonemeTimingsList[p]);
+			_currentPhonemes.emplace_back(phonemeList[p]);
+			_currentPhonemeTimings.emplace_back(phonemeTimingsList[p]);
 		}
 
 		double fromTime = _currentPhonemeTimings[_currentPhonemeTimings.size() - 3];
@@ -237,8 +237,8 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 		SmartBody::VisemeData* visemeStart = new SmartBody::VisemeData(fromPhoneme, 0);
 		SmartBody::VisemeData* visemeEnd = new SmartBody::VisemeData(toPhoneme, (float) diphoneInterval);
 		std::vector<SmartBody::VisemeData*> visemes;
-		visemes.push_back(visemeStart);
-		visemes.push_back(visemeEnd);
+		visemes.emplace_back(visemeStart);
+		visemes.emplace_back(visemeEnd);
 
 		_lastPhonemeTime = t;
 		// obtain a set of curves from the phoneme manager based on the two phonemes
@@ -269,7 +269,7 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 				float value = (*fiter);
 				curve->insert(time + _lastPhonemeTime, value);
 			}
-			_currentCurves.push_back(std::pair<std::string, srLinearCurve*>((*iter).first, curve));
+			_currentCurves.emplace_back(std::pair<std::string, srLinearCurve*>((*iter).first, curve));
 			
 		}
 
@@ -317,11 +317,11 @@ void RealTimeLipSyncController::smoothCurve(std::vector<float>& c, float windowS
 		{
 			if ((i % 2) == 0)
 			{
-				x.push_back(c[i]);
-				markDelete.push_back(false);
+				x.emplace_back(c[i]);
+				markDelete.emplace_back(false);
 			}
 			else
-				y.push_back(c[i]);
+				y.emplace_back(c[i]);
 		}
 
 
@@ -332,7 +332,7 @@ void RealTimeLipSyncController::smoothCurve(std::vector<float>& c, float windowS
 			if ((y[i] - y[i - 1]) >= 0 &&
 				(y[i] - y[i + 1]) >= 0)
 			{
-				localMaxId.push_back(i);
+				localMaxId.emplace_back(i);
 			}
 		}
 
@@ -359,8 +359,8 @@ void RealTimeLipSyncController::smoothCurve(std::vector<float>& c, float windowS
 		{
 			if (!markDelete[i])
 			{
-				c.push_back(x[i]);
-				c.push_back(y[i]);
+				c.emplace_back(x[i]);
+				c.emplace_back(y[i]);
 			}
 		}
 

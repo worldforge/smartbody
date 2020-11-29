@@ -137,11 +137,11 @@ void RetargetCreatorWindow::OnMotionSelectCB( Fl_Widget* widget, void* data )
 	{
 		if (browserMotion->selected(i+1))
 		{
-			boolSelectedMotions.push_back(true);
-			selectedMotions.push_back(browserMotion->text(i + 1));
+			boolSelectedMotions.emplace_back(true);
+			selectedMotions.emplace_back(browserMotion->text(i + 1));
 		}
 		else
-			boolSelectedMotions.push_back(false);
+			boolSelectedMotions.emplace_back(false);
 	}
 	win->inputMotionList = selectedMotions;
 }

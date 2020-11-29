@@ -11,17 +11,17 @@ BMLHandObject::BMLHandObject() : BMLObject()
 	createStringAttribute("sbm:attach-pawn", "", true, "Basic", 10, false, false, false, "wrist joint");
 	SmartBody::StringAttribute*  grabActionAttr = createStringAttribute("sbm:grab-type", "", true, "Basic", 10, false, false, false, "wrist joint");
 	std::vector<std::string> grabTypes;
-	grabTypes.push_back("left");
-	grabTypes.push_back("right");
+	grabTypes.emplace_back("left");
+	grabTypes.emplace_back("right");
 	grabActionAttr->setValidValues(grabTypes);
 
 	SmartBody::StringAttribute*  grabStateAttr = createStringAttribute("sbm:grab-state", "", true, "Basic", 10, false, false, false, "wrist joint");
 	std::vector<std::string> grabStates;
-	grabStates.push_back("start");
-	grabStates.push_back("reach");
-	grabStates.push_back("finish");
-	grabStates.push_back("return");
-	grabStates.push_back("point");
+	grabStates.emplace_back("start");
+	grabStates.emplace_back("reach");
+	grabStates.emplace_back("finish");
+	grabStates.emplace_back("return");
+	grabStates.emplace_back("point");
 	grabStateAttr->setValidValues(grabStates);
 
 	createDoubleAttribute("sbm:grab-velocity",-1.0,true,"Basic", 60, false, false, false,"the end effector movement velocity when interpolating two poses.");

@@ -61,7 +61,7 @@ void CommandLineParser::parse( int argc, char** argv, bool skipFirstArg, std::ve
 			//
 			// in this case, we did not find the option, so add it to the leftoverArgs (and check for errors later).
 			//
-			leftoverArgs.push_back(argv[i]);
+			leftoverArgs.emplace_back(argv[i]);
 		}
 		else {
 			//
@@ -171,7 +171,7 @@ void CommandLineParser::parse( int argc, char** argv, bool skipFirstArg, std::ve
 							throw GenericException("expected a value for the " + (*op).first + " option.");
 						}
 						// then initialize the target with this value.
-						if (optionToParse.target != NULL) (*((std::vector<std::string>*)(optionToParse.target))).push_back(std::string(argv[i]));
+						if (optionToParse.target != NULL) (*((std::vector<std::string>*)(optionToParse.target))).emplace_back(std::string(argv[i]));
 					}
 					if (optionToParse.flagTarget != NULL)  *(optionToParse.flagTarget) = optionToParse.flagIfOptionSpecified;
 					break;

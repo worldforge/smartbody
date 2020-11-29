@@ -60,7 +60,7 @@ bool SequenceManager::addSequence(const std::string& seqName, srCmdSeq* seq)
 		return false;
 
 	_sequenceSet.insert(seqName);
-	_sequences.push_back(std::pair<std::string, srCmdSeq*>(seqName, seq));
+	_sequences.emplace_back(std::pair<std::string, srCmdSeq*>(seqName, seq));
 	return true;
 }
 

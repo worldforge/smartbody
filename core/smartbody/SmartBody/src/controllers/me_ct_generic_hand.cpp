@@ -135,10 +135,10 @@ MeCtGenericHand::MeCtGenericHand( SmartBody::SBSkeleton* skeleton, SbmCharacter*
 	_handSynthesis = new SmartBody::SBHandSynthesis(_sk, _channels);
 
 	// fill the end joints vector 
-	_endJointsRt.push_back(_handSynthesis->getRightDb()->getJointName());
-	_endJointsLt.push_back(_handSynthesis->getLeftDb()->getJointName());
-	_endJoints.push_back(_handSynthesis->getRightDb()->getJointName());
-	_endJoints.push_back(_handSynthesis->getLeftDb()->getJointName());
+	_endJointsRt.emplace_back(_handSynthesis->getRightDb()->getJointName());
+	_endJointsLt.emplace_back(_handSynthesis->getLeftDb()->getJointName());
+	_endJoints.emplace_back(_handSynthesis->getRightDb()->getJointName());
+	_endJoints.emplace_back(_handSynthesis->getLeftDb()->getJointName());
 }
 
 MeCtGenericHand::~MeCtGenericHand()
@@ -243,7 +243,7 @@ void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame, std::vector<std::s
 		if (eJoint)
 		{
 			std::vector<SmartBody::SBJoint*> descendents = eJoint->getDescendants();
-			//descendents.push_back(eJoint);
+			//descendents.emplace_back(eJoint);
 
 			for (unsigned int j=0;j<descendents.size();j++)
 			{
@@ -315,7 +315,7 @@ void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame)
 			continue;
 		else
 		{
-			keepJoints.push_back(joint);
+			keepJoints.emplace_back(joint);
 		}
 	}
 

@@ -7,15 +7,15 @@ BMLSaccadeObject::BMLSaccadeObject() : BMLObject()
 
 	SmartBody::StringAttribute* finishAttr = createStringAttribute("finish", "", true, "Basic", 10, false, false, false, "Turn on or off saccade");
 	std::vector<std::string> toggles;
-	toggles.push_back("true");
-	toggles.push_back("false");
+	toggles.emplace_back("true");
+	toggles.emplace_back("false");
 	finishAttr->setValidValues(toggles);
 
 	SmartBody::StringAttribute* modeAttr = createStringAttribute("mode", "", true, "Basic", 20, false, false, false, "Which mode is saccade in. Default is lisen mode");
 	std::vector<std::string> modes;
-	modes.push_back("talk");
-	modes.push_back("listen");
-	modes.push_back("think");
+	modes.emplace_back("talk");
+	modes.emplace_back("listen");
+	modes.emplace_back("think");
 	modeAttr->setValidValues(modes);
 
 	/*

@@ -63,7 +63,7 @@ namespace SteerLib {
 				// possibly add the action that transitions to location (x+1, z)
 				unsigned int n = _spatialDatabase->getCellIndexFromGridCoords(x+1,z);
 				if ((n != previousState)&&(canBeTraversed(n))) {
-					transitions.push_back(initAction(n,_spatialDatabase->getTraversalCost(n)));
+					transitions.emplace_back(initAction(n,_spatialDatabase->getTraversalCost(n)));
 				}
 
 				// possibly add the action that transitions to location (x+1, z+1)
@@ -72,7 +72,7 @@ namespace SteerLib {
 					unsigned int nAdjacent1 = _spatialDatabase->getCellIndexFromGridCoords(x,z+1);
 					unsigned int nAdjacent2 = _spatialDatabase->getCellIndexFromGridCoords(x+1,z);
 					if ((n != previousState)&&(canBeTraversed(n))&&(canBeTraversed(nAdjacent1))&&(canBeTraversed(nAdjacent2))) {
-						transitions.push_back(initAction(n,_spatialDatabase->getTraversalCost(n) * sqrtf(2)));
+						transitions.emplace_back(initAction(n,_spatialDatabase->getTraversalCost(n) * sqrtf(2)));
 					}
 				}
 
@@ -82,7 +82,7 @@ namespace SteerLib {
 					unsigned int nAdjacent1 = _spatialDatabase->getCellIndexFromGridCoords(x,z-1);
 					unsigned int nAdjacent2 = _spatialDatabase->getCellIndexFromGridCoords(x+1,z);
 					if ((n != previousState)&&(canBeTraversed(n))&&(canBeTraversed(nAdjacent1))&&(canBeTraversed(nAdjacent2))) {
-						transitions.push_back(initAction(n,_spatialDatabase->getTraversalCost(n) * sqrtf(2)));
+						transitions.emplace_back(initAction(n,_spatialDatabase->getTraversalCost(n) * sqrtf(2)));
 					}
 				}
 			}
@@ -91,7 +91,7 @@ namespace SteerLib {
 				// possibly add the action that transitions to location (x-1, z)
 				unsigned int n = _spatialDatabase->getCellIndexFromGridCoords(x-1,z);
 				if ((n != previousState)&&(canBeTraversed(n))) {
-					transitions.push_back(initAction(n,_spatialDatabase->getTraversalCost(n)));
+					transitions.emplace_back(initAction(n,_spatialDatabase->getTraversalCost(n)));
 				}
 
 				// possibly add the action that transitions to location (x-1, z+1)
@@ -100,7 +100,7 @@ namespace SteerLib {
 					unsigned int nAdjacent1 = _spatialDatabase->getCellIndexFromGridCoords(x,z+1);
 					unsigned int nAdjacent2 = _spatialDatabase->getCellIndexFromGridCoords(x-1,z);
 					if ((n != previousState)&&(canBeTraversed(n))&&(canBeTraversed(nAdjacent1))&&(canBeTraversed(nAdjacent2))) {
-						transitions.push_back(initAction(n,_spatialDatabase->getTraversalCost(n) * sqrtf(2)));
+						transitions.emplace_back(initAction(n,_spatialDatabase->getTraversalCost(n) * sqrtf(2)));
 					}
 				}
 
@@ -110,7 +110,7 @@ namespace SteerLib {
 					unsigned int nAdjacent1 = _spatialDatabase->getCellIndexFromGridCoords(x,z-1);
 					unsigned int nAdjacent2 = _spatialDatabase->getCellIndexFromGridCoords(x-1,z);
 					if ((n != previousState)&&(canBeTraversed(n))&&(canBeTraversed(nAdjacent1))&&(canBeTraversed(nAdjacent2))) {
-						transitions.push_back(initAction(n,_spatialDatabase->getTraversalCost(n) * sqrtf(2)));
+						transitions.emplace_back(initAction(n,_spatialDatabase->getTraversalCost(n) * sqrtf(2)));
 					}
 				}
 			}
@@ -119,7 +119,7 @@ namespace SteerLib {
 			if (z+1 < _spatialDatabase->getNumCellsZ()) {
 				unsigned int n = _spatialDatabase->getCellIndexFromGridCoords(x,z+1);
 				if ((n != previousState)&&(canBeTraversed(n))) {
-					transitions.push_back(initAction(n,_spatialDatabase->getTraversalCost(n)));
+					transitions.emplace_back(initAction(n,_spatialDatabase->getTraversalCost(n)));
 				}
 			}
 
@@ -127,7 +127,7 @@ namespace SteerLib {
 			if (z >= 1) {
 				unsigned int n = _spatialDatabase->getCellIndexFromGridCoords(x,z-1);
 				if ((n != previousState)&&(canBeTraversed(n))) {
-					transitions.push_back(initAction(n,_spatialDatabase->getTraversalCost(n)));
+					transitions.emplace_back(initAction(n,_spatialDatabase->getTraversalCost(n)));
 				}
 			}
 		}

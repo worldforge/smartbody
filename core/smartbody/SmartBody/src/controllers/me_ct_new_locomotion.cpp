@@ -78,19 +78,19 @@ void MeCtNewLocomotion::init(SbmCharacter* sbChar)
 {
 	character = sbChar;
 
-	attributes_names.push_back("walkCycle");
-	attributes_names.push_back("walkSkeleton");
-	attributes_names.push_back("walkScale");
-	attributes_names.push_back("walkSpeedGain");
-	attributes_names.push_back("CenterHipJoint");
-	attributes_names.push_back("LEndEffectorJoint");
-	attributes_names.push_back("REndEffectorJoint");
-	attributes_names.push_back("FadeIn");
-	attributes_names.push_back("FadeOut");
-	attributes_names.push_back("TurningRate");
-	attributes_names.push_back("footPlantRight");
-	attributes_names.push_back("footPlantLeft");
-	attributes_names.push_back("startsWithRight");
+	attributes_names.emplace_back("walkCycle");
+	attributes_names.emplace_back("walkSkeleton");
+	attributes_names.emplace_back("walkScale");
+	attributes_names.emplace_back("walkSpeedGain");
+	attributes_names.emplace_back("CenterHipJoint");
+	attributes_names.emplace_back("LEndEffectorJoint");
+	attributes_names.emplace_back("REndEffectorJoint");
+	attributes_names.emplace_back("FadeIn");
+	attributes_names.emplace_back("FadeOut");
+	attributes_names.emplace_back("TurningRate");
+	attributes_names.emplace_back("footPlantRight");
+	attributes_names.emplace_back("footPlantLeft");
+	attributes_names.emplace_back("startsWithRight");
 	for(unsigned int i = 0; i< attributes_names.size(); i++)
 	{
 		SmartBody::SBAttribute* a = character->getAttribute(attributes_names[i]);
@@ -174,9 +174,9 @@ void MeCtNewLocomotion::setup()
 		SmartBody::SBJoint* rootJoint = character->getSkeleton()->getJointByName(hipjoint);
 		ik_scenario.ikTreeNodes.clear();
 		std::vector<std::string> stopJoints;
-		stopJoints.push_back(lend);
-		stopJoints.push_back(rend);
-		stopJoints.push_back("spine1");
+		stopJoints.emplace_back(lend);
+		stopJoints.emplace_back(rend);
+		stopJoints.emplace_back("spine1");
 		ik_scenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);	
 
 		double ikReachRegion = character->getHeight()*0.02f;		

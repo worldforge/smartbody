@@ -11,8 +11,8 @@ BMLNoiseObject::BMLNoiseObject() : BMLObject()
 
 	SmartBody::StringAttribute* enableAttr = createStringAttribute("enable", "", true, "Basic", 30, false, false, false, "Wrap mode for current blend. Loop or Once.Default is Loop");
 	std::vector<std::string> flags;
-	flags.push_back("true");
-	flags.push_back("false");
+	flags.emplace_back("true");
+	flags.emplace_back("false");
 	enableAttr->setValidValues(flags);
 
 	/*

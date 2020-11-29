@@ -22,21 +22,23 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SMARTBODY_SBRENDERASSETMANAGER_H
 #define SMARTBODY_SBRENDERASSETMANAGER_H
 
+#include "sb/SBAssetStore.h"
+#include <boost/noncopyable.hpp>
 #include <map>
 #include <string>
 #include <memory>
-#include "sb/SBAssetStore.h"
 
 class DeformableMesh;
 class SbmTexture;
 namespace SmartBody {
-class SBRenderAssetManager : public SBAssetsProcessor {
+class SBRenderAssetManager : public SBAssetsProcessor, public boost::noncopyable {
 public:
 	explicit SBRenderAssetManager(SBScene& scene, SBAssetStore& assetStore);
 
 	void processAssets(std::vector<std::unique_ptr<SBAsset>>& assets) override ;
 	SBAPI void removeAllAssets();
 
+	SBAPI void addMesh(std::unique_ptr<DeformableMesh> mesh);
 	SBAPI void addMesh(DeformableMesh* mesh);
 	SBAPI void removeMesh(DeformableMesh* mesh);
 	SBAPI int getNumMeshes();
@@ -56,7 +58,7 @@ public:
 	SBAPI std::vector<std::string> getDeformableMeshNames();
 	SBAPI void removeAllDeformableMeshes();
 
-	SBAPI std::unique_ptr<SbmTexture> getHDRTexture(const std::string& texName);
+	SBAPI std::shared_ptr<SbmTexture> getHDRTexture(const std::string& texName);
 	SBAPI std::vector<std::string> getHDRTextureNames();
 
 	SBAPI std::string getAssetNameVariation(SBAsset* asset);

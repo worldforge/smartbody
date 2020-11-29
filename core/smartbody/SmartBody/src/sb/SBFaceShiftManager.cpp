@@ -163,7 +163,7 @@ void SBFaceShiftManager::update( double time )
 				{
 					SmartBody::util::log("[%s]", (*iter).c_str());
 					
-					shapeNames.push_back(*iter);
+					shapeNames.emplace_back(*iter);
 				}
 			}
 		}

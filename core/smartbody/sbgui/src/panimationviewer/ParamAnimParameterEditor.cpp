@@ -198,7 +198,7 @@ void PAParameterEditor::cancelEditting(Fl_Widget* widget, void* data)
 {
 	PAParameterEditor* paramEditor = (PAParameterEditor*) data;
 	paramEditor->stateEditor->refresh();
-	paramEditor->stateEditor->parameterEditor = NULL;
+	paramEditor->stateEditor->parameterEditor = nullptr;
 	paramEditor->hide();
 	delete paramEditor;
 }

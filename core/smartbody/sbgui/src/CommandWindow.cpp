@@ -43,9 +43,9 @@ CommandWindow::CommandWindow(int x,int y,int w,int h, const char* s) : GenericVi
 	this->begin();
 
 	menubar = new Fl_Menu_Bar(0, 0, w, 25); 
-	menubar->add("&Edit/&Clear", (const char*) NULL, clearcb, 0);
-	menubar->add("&Edit/C&lear History", (const char*) NULL, clearhistorycb, 0);
-	menubar->add("&Show/&Events", (const char*) NULL, showeventscb, 0);
+	menubar->add("&Edit/&Clear", (const char*) nullptr, clearcb, 0);
+	menubar->add("&Edit/C&lear History", (const char*) nullptr, clearhistorycb, 0);
+	menubar->add("&Show/&Events", (const char*) nullptr, showeventscb, 0);
 
 	for (int c = 0; c < 2; c++)
 	{
@@ -151,7 +151,7 @@ CommandWindow::~CommandWindow()
 
 CommandWindow* CommandWindow::getCommandWindow(Fl_Widget* w)
 {
-	CommandWindow* commandWindow = NULL;
+	CommandWindow* commandWindow = nullptr;
 	Fl_Widget* widget = w;
 	while (widget)
 	{
@@ -364,7 +364,7 @@ void CommandWindow::ctrlEntercb(int key, Fl_Text_Editor* editor)
 
 void CommandWindow::UpdateOutput(char *text, bool origCommand)
 {
-	if(textDisplay == NULL) return;
+	if(textDisplay == nullptr) return;
 
 	// if the display is approaching capacity, then keep the last minOutputSize characters
 	int bufferLength = textDisplay->buffer()->length();
@@ -453,7 +453,7 @@ void CommandWindow::addHistoryItem(const char* item, int index)
 	{
 		freeHistorySpace(index);
 	}
-	this->historyItems[index].push_back(item);
+	this->historyItems[index].emplace_back(item);
 	this->historyLocation[index] = this->historyItems[index].size();
 }
 

@@ -435,14 +435,14 @@ void PPRAgent::runLongTermPlanningPhase()
 					else {
 						// this is the common case... we reach the end of the path while popping
 						// so we need to add the very last target location as the last waypoint.
-						_waypoints.push_back(_currentGoal.targetLocation);
+						_waypoints.emplace_back(_currentGoal.targetLocation);
 					}
 				}
 
 				// every time we successfully popped that many nodes in the path, we can add the next one as a waypoint.
 				Point waypoint;
 				gSpatialDatabase->getLocationFromIndex(mostRecentNode,waypoint);
-				_waypoints.push_back(waypoint);
+				_waypoints.emplace_back(waypoint);
 			}
 
 			/*
@@ -456,15 +456,15 @@ void PPRAgent::runLongTermPlanningPhase()
 			while (nextWaypointIndex > 0) {
 				Point waypoint;
 				gSpatialDatabase->getLocationFromIndex(longTermAStar.getPath()[nextWaypointIndex],waypoint);
-				_waypoints.push_back(waypoint);
+				_waypoints.emplace_back(waypoint);
 				nextWaypointIndex -= PED_NEXT_WAYPOINT_DISTANCE;
 			}
-			_waypoints.push_back(_currentGoal.targetLocation);
+			_waypoints.emplace_back(_currentGoal.targetLocation);
 			
 			*/
 		}
 		else {
-			_waypoints.push_back(_currentGoal.targetLocation);
+			_waypoints.emplace_back(_currentGoal.targetLocation);
 		}
 
 
@@ -474,7 +474,7 @@ void PPRAgent::runLongTermPlanningPhase()
 	else {
 		// can't do A-star if we are outside the database.
 		// this happens rarely, if ever, but still needs to be robustly handled... this seems like a reasonable decision to make in the extreme case.
-		_waypoints.push_back(_currentGoal.targetLocation);
+		_waypoints.emplace_back(_currentGoal.targetLocation);
 	}
 
 }
@@ -510,7 +510,7 @@ void PPRAgent::runMidTermPlanningPhase()
 	if (reachedCurrentWaypoint()) {
 		_currentWaypointIndex++;
 		if (_currentWaypointIndex == (int)_waypoints.size()) {
-			_waypoints.push_back(_currentGoal.targetLocation);
+			_waypoints.emplace_back(_currentGoal.targetLocation);
 		}
 	}
 
@@ -835,7 +835,7 @@ void PPRAgent::runPredictivePhase()
 								if ((dot(dirToOtherGuy, _rightSide) > 0.0f) && (dot(-dirToOtherGuy,otherGuy->rightSide()) > 0.0f)) {
 									newThreat.oncomingToRightSide = true;
 								}
-								_threatList.push_back(newThreat);
+								_threatList.emplace_back(newThreat);
 							}
 						}
 						else {
@@ -854,14 +854,14 @@ void PPRAgent::runPredictivePhase()
 									if (my_t < his_t) {
 										newThreat.threatType = PredictedThreat::THREAT_TYPE_CROSSING_SOON;
 										threatListChanged = true;
-										_threatList.push_back(newThreat);
+										_threatList.emplace_back(newThreat);
 										threat_min_t = min(minTimeOfThreat*_currentSpeed, threat_min_t);
 										threat_max_t = max(maxTimeOfThreat*_currentSpeed, threat_max_t);
 									}
 									else {
 										newThreat.threatType = PredictedThreat::THREAT_TYPE_CROSSING_LATE;
 										threatListChanged = true;
-										_threatList.push_back(newThreat);
+										_threatList.emplace_back(newThreat);
 										threat_min_t = min(minTimeOfThreat*_currentSpeed, threat_min_t);
 										threat_max_t = max(maxTimeOfThreat*_currentSpeed, threat_max_t);
 									}

@@ -54,7 +54,7 @@ SkSkeleton::SkSkeleton (SkSkeleton* origSkel)  : SmartBody::SBAsset()
 	}
 	_root = new SmartBody::SBJoint(this, 0, origSkel->root()->rot_type(), origSkel->root()->index());
 	copy_joint(_root, origSkel->root());
-	_joints.push_back(_root);
+	_joints.emplace_back(_root);
 	SkJoint* origParent = origSkel->root();
 	SkJoint* thisParent = _root;
 	create_joints(origParent, thisParent);
@@ -110,7 +110,7 @@ void SkSkeleton::copy(SkSkeleton* origSkel)
 	//	_root = new SkJoint(this, 0, origSkel->root()->rot_type(), origSkel->root()->index());
 	_root = new SmartBody::SBJoint(this, 0, origSkel->root()->rot_type(), origSkel->root()->index());
 	copy_joint(_root, origSkel->root());
-	_joints.push_back(_root);
+	_joints.emplace_back(_root);
 	SkJoint* origParent = origSkel->root();
 	SkJoint* thisParent = _root;
 	create_joints(origParent, thisParent);
@@ -180,7 +180,7 @@ void SkSkeleton::refresh_joints()
 		SkJoint* joint = queue.front();
 		joint->set_index(curIndex);
 		curIndex++;
-		_joints.push_back(joint);
+		_joints.emplace_back(joint);
 		for (int c = 0; c < joint->num_children(); c++)
 			queue.push(joint->child(c));
 		queue.pop();
@@ -210,7 +210,7 @@ SkJoint* SkSkeleton::add_joint ( SkJoint::RotType rtype, int parentid )
 	}
 
 	SkJoint* j = new SmartBody::SBJoint ( this, parent, rtype, _joints.size() );
-	_joints.push_back(j);
+	_joints.emplace_back(j);
 
 	// should set the root explicitly
 	//if ( parent==nullptr )
@@ -225,13 +225,13 @@ SkJoint* SkSkeleton::insert_new_root_joint ( SkJoint::RotType rtype )
 	SkJoint* old_root = _root;
 
 	_root = new SmartBody::SBJoint ( this, 0, rtype, _joints.size() );
-	_joints.push_back(_root);
+	_joints.emplace_back(_root);
 
 	if( old_root ) {
 		old_root->_parent = _root;
 
 		/* thiebaux 6/19/2006 */
-		_root->_children.push_back( old_root );
+		_root->_children.emplace_back( old_root );
 	}
 
 	return _root;
@@ -463,7 +463,7 @@ void SkSkeleton::create_joints(SkJoint* origParent, SkJoint* parent)
 	{
 		SkJoint* newJoint = new SmartBody::SBJoint(this, parent, origParent->child(i)->rot_type(), origParent->child(i)->index());
 		// ??? SkJoint* newJoint = new SkJoint(this, parent, origParent->child(i)->rot_type(), _joints.size());
-		_joints.push_back(newJoint);
+		_joints.emplace_back(newJoint);
 
 		copy_joint(newJoint, origParent->child(i));
 		create_joints(origParent->child(i), newJoint);

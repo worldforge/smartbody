@@ -1,30 +1,29 @@
 
 #include "ObjectManipulationHandle.h"
+#include "Session.h"
 #include <sb/SBScene.h>
 #include <sb/SBCharacter.h>
 #include <sr/sr_gl.h>
-
+#include "Session.h"
 bool ObjectManipulationHandle::renderSelectedBoundingBox = true;
 
-ObjectManipulationHandle::ObjectManipulationHandle(void)
+ObjectManipulationHandle::ObjectManipulationHandle()
 {
-	active_control = NULL;
+	active_control = nullptr;
 	bHasPicking = false;
 	pickType = CONTROL_SELECTION;
 	defaultColor.set(1, 0, 0);
 }
 
-ObjectManipulationHandle::~ObjectManipulationHandle(void)
-{
-}
+ObjectManipulationHandle::~ObjectManipulationHandle() = default;
 
 void ObjectManipulationHandle::get_pawn_list(std::vector<SbmPawn*>& pawn_list)
 {
 	const std::vector<std::string>& pawnNames = SmartBody::SBScene::getScene()->getPawnNames();
-	for (size_t i = 0; i < pawnNames.size(); i++)
+	for (const auto & pawnName : pawnNames)
 	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnNames[i]);
-		pawn_list.push_back(pawn);
+		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+		pawn_list.emplace_back(pawn);
 	}
 }
 
@@ -35,7 +34,7 @@ SbmPawn* ObjectManipulationHandle::get_selected_pawn()
 		PawnPosControl* active_pawn_control = (PawnPosControl*) get_active_control();
 		return active_pawn_control->get_attach_pawn();
 	}
-	return NULL;
+	return nullptr;
 }
 
 void ObjectManipulationHandle::draw(SrCamera& cam)
@@ -130,15 +129,15 @@ SbmPawn* ObjectManipulationHandle::getPickingPawn( float x, float y, SrCamera* c
 	for (unsigned int i=0;i<pawn_list.size();i++)
 	{
 		SbmPawn* pawn = pawn_list[i];
-		SmartBody::SBPawn* sbpawn = dynamic_cast<SmartBody::SBPawn*>(pawn);
+		auto* sbpawn = dynamic_cast<SmartBody::SBPawn*>(pawn);
 		// ignore the active camera from the picking selection
-		SmartBody::SBPawn* activeCamera = SmartBody::SBScene::getScene()->getActiveCamera();
+		SmartBody::SBPawn* activeCamera = Session::current->renderScene.getActiveCamera();
 		if (activeCamera && sbpawn == activeCamera)
 			continue;
 		SrVec pawn_pos = PawnPosControl::get_pawn_pos(pawn);
 		glPushName(0xffffffff);
 		glLoadName(i);
-		SmartBody::SBCharacter* curChar = dynamic_cast<SmartBody::SBCharacter*>(pawn);
+		auto* curChar = dynamic_cast<SmartBody::SBCharacter*>(pawn);
 		//PositionControl::drawSphere(pawn_pos, pawnSize);				
 		if (active_control && active_control->get_attach_pawn() == pawn)
 		{			
@@ -174,7 +173,7 @@ SbmPawn* ObjectManipulationHandle::getPickingPawn( float x, float y, SrCamera* c
 	glFlush();
 	hits = glRenderMode(GL_RENDER);
 	//SmartBody::util::log("num of hits = %d",hits);
-	SbmPawn* selectPawn = NULL;
+	SbmPawn* selectPawn = nullptr;
 	if (hits != 0){
 		//processHits2(hits,selectBuf,0);
 		hitNames = this->process_hit(selectBuf,hits);		
@@ -273,7 +272,7 @@ void ObjectManipulationHandle::picking(float x,float y,SrCamera* cam)
 		{
 			active_control->detach_pawn();
 			//pawnPosControl.active = false;
-			active_control = NULL;
+			active_control = nullptr;
 		}		
 	}	
 	// stop picking
@@ -308,7 +307,7 @@ std::vector<int> ObjectManipulationHandle::process_hit(unsigned int *pickbuffer,
 		//return pickbuffer[3+sel];
 		int n = pickbuffer[sel];
 		for (int k=0;k<n;k++)
-			hitNames.push_back(pickbuffer[3+sel+k]);
+			hitNames.emplace_back(pickbuffer[3+sel+k]);
 	}
 	return hitNames;
 }

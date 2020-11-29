@@ -525,7 +525,7 @@ int srCmdLine::pending_cmd( bool )	{
 				if( cmds->size() >= max_cmdlines )
 					cmds->pop_front();
 
-				cmds->push_back( stream.str() );
+				cmds->emplace_back( stream.str() );
 				iter = cmds->end();
 			}
 			fflush( stdout );
@@ -753,7 +753,7 @@ int srCmdLine::pending_cmd( bool )	{
 					}
 					if( match )
 					{
-						options.push_back( keyString );
+						options.emplace_back( keyString );
 						numMatches++;
 					}
 				}
@@ -875,7 +875,7 @@ int srCmdLine::pending_cmd( bool )	{
 				if( cmds->size() >= max_cmdlines )
 					cmds->pop_front();
 
-				cmds->push_back( stream.str() );
+				cmds->emplace_back( stream.str() );
 			}
 
 			iter = cmds->end();

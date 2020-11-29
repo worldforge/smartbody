@@ -175,11 +175,11 @@ std::vector<VisemeData*>* text_speech::extractVisemes(DOMNode* node, vector<Vise
 				{
 					if (*(visemes->back()->id()) != '_'){
 						VisemeData *resetViseme= new VisemeData (visemes->back()->id(),0, singleViseme->time());
-						visemes->push_back(resetViseme);
+						visemes->emplace_back(resetViseme);
 					}
 				}
 
-				visemes->push_back(singleViseme);
+				visemes->emplace_back(singleViseme);
 			} else {
 				SmartBody::util::log("ERROR: text_speech::extractVisemes(..): <viseme> without type= attribute found... Ignoring");
 			}

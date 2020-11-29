@@ -45,8 +45,8 @@ RetargetStepWindow::RetargetStepWindow(int x, int y, int w, int h, char* name) :
 	int windowGroupW = tabGroupW- 30;
 	int windowGroupH = tabGroupH - 5 * yDis;
 
-	jointMapViewer = NULL;
-	retargetViewer = NULL;
+	jointMapViewer = nullptr;
+	retargetViewer = nullptr;
 	_removeCharacterName = "";
 	_removePawnName = "";
 
@@ -165,13 +165,13 @@ void RetargetStepWindow::updateCharacterList()
 		_choiceCharacters->remove(s);		
 	bool hasOldCharacter = false;
 	int charCount = 0;
-	for (size_t c = 0; c < allPawns.size(); c++)
+	for (const auto & allPawn : allPawns)
 	{
-		if (allPawns[c] == _removeCharacterName) // don't add remove character name
+		if (allPawn == _removeCharacterName) // don't add remove character name
 			continue;
 
-		_choiceCharacters->add(allPawns[c].c_str());		
-		if (allPawns[c] == oldCharacterName)
+		_choiceCharacters->add(allPawn.c_str());
+		if (allPawn == oldCharacterName)
 		{
 			_choiceCharacters->value(charCount);
 			hasOldCharacter = true;
@@ -181,7 +181,7 @@ void RetargetStepWindow::updateCharacterList()
 
 	if (!hasOldCharacter) // no character, set to default character
 	{
-		std::string newCharName = "";
+		std::string newCharName;
 		for (int c = 0; c < _choiceCharacters->size(); c++)
 		{
 			if (_choiceCharacters->text(c))
@@ -194,7 +194,7 @@ void RetargetStepWindow::updateCharacterList()
 	}	
 }
 
-void RetargetStepWindow::setCharacterName( std::string charName )
+void RetargetStepWindow::setCharacterName( const std::string& charName )
 {
 	_charName = charName;
 	for (int c = 0; c < _choiceCharacters->size(); c++)
@@ -232,7 +232,7 @@ void RetargetStepWindow::updateSkinWeight( int weightType /*= 0*/ )
 void RetargetStepWindow::applyRetargetSteps()
 {
 	jointMapViewer->applyJointMap();
-	retargetViewer->RetargetCB(NULL,retargetViewer);
+	retargetViewer->RetargetCB(nullptr,retargetViewer);
 }
 
 
@@ -284,7 +284,7 @@ void RetargetStepWindow::ApplyJointMapCB( Fl_Widget* widget, void* data )
 void RetargetStepWindow::ApplyBehaviorSetCB( Fl_Widget* widget, void* data )
 {
 	RetargetStepWindow* viewer = (RetargetStepWindow*) data;
-	viewer->retargetViewer->RetargetCB(NULL,viewer->retargetViewer);
+	viewer->retargetViewer->RetargetCB(nullptr,viewer->retargetViewer);
 	viewer->hide();
 }
 
@@ -342,7 +342,8 @@ void RetargetStepWindow::show()
 void RetargetStepWindow::SaveCharacterCB( Fl_Widget* widget, void* data )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();	
+	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
+	auto& renderAssetManager = Session::current->renderAssetManager;
 	RetargetStepWindow* retargetWindow = (RetargetStepWindow*)data;
 	std::string charName = retargetWindow->getCharName();
 	SmartBody::SBCharacter* selectChar = scene->getCharacter(charName);
@@ -356,7 +357,7 @@ void RetargetStepWindow::SaveCharacterCB( Fl_Widget* widget, void* data )
 	std::string skelName = skel->getName();
 
 	std::string defMeshName = selectChar->getStringAttribute("deformableMesh");
-	DeformableMesh* defMesh = assetManager->getDeformableMesh(defMeshName);
+	DeformableMesh* defMesh = renderAssetManager.getDeformableMesh(defMeshName);
 	if (!defMesh)
 	{
 		SmartBody::util::log("Save Character Fail : the character '%s' doesn't have a deformable mesh.", charName.c_str());
@@ -364,11 +365,11 @@ void RetargetStepWindow::SaveCharacterCB( Fl_Widget* widget, void* data )
 	}
 
 	std::string mediaPath = SmartBody::SBScene::getSystemParameter("mediapath");
-	std::string outDir = "";
+	std::string outDir;
 	outDir = BaseWindow::chooseDirectory("Save To:", mediaPath);	
 	std::vector<std::string> moNames;
 	SrVec meshScale = selectChar->getVec3Attribute("deformableMeshScale");
-	bool ok = ParserOpenCOLLADA::exportCollada(outDir,skelName,defMeshName,moNames,true,true,false, meshScale.x);
+	bool ok = ParserOpenCOLLADA::exportCollada(renderAssetManager, outDir,skelName,defMeshName,moNames,true,true,false, meshScale.x);
 	if (ok)
 	{
 		std::stringstream strstr;

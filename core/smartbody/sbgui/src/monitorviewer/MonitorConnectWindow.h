@@ -6,18 +6,21 @@
 #include <FL/Fl_Button.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Input.H>
+#include "sb/SBDebuggerClient.h"
+
 
 class MonitorConnectWindow : public Fl_Double_Window
 {
 public:
-	MonitorConnectWindow(int x, int y, int w, int h, char* label, bool quickConnect);
-	~MonitorConnectWindow();
+	MonitorConnectWindow(int x, int y, int w, int h, char* label, bool quickConnect, SmartBody::SBDebuggerClient& debuggerClient);
+	~MonitorConnectWindow() override;
 
 	void loadProcesses();
-	void show();
-	void hide();
+	void show() override;
+	void hide() override;
 
 protected:
+	SmartBody::SBDebuggerClient& mDebuggerClient;
 	Fl_Hold_Browser* _browserSBProcesses;
 	Fl_Input* _inputServerName;
 	Fl_Input* _inputPort;

@@ -121,7 +121,7 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 			Fl_Check_Button* checkMorph = new Fl_Check_Button(10, curY, 100, 25, "Show Morphs");
 			checkMorph->callback(ShowMorphsCB, faceViewer);
 			checkMorph->value(true);
-			faceViewer->checkShowMorphs.push_back(checkMorph);
+			faceViewer->checkShowMorphs.emplace_back(checkMorph);
 			faceViewer->bottomGroup->add(checkMorph);
 		}
 		else
@@ -148,7 +148,7 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 				if (!found)
 					checkMorph->value(true);
 
-				faceViewer->checkShowMorphs.push_back(checkMorph);
+				faceViewer->checkShowMorphs.emplace_back(checkMorph);
 				faceViewer->bottomGroup->add(checkMorph);
 				counter++;
 
@@ -175,8 +175,8 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 				slider->range(0.0, 1.0);
 				slider->callback(FaceCB, faceViewer);
 				faceViewer->bottomGroup->add(slider);
-				faceViewer->_sliders.push_back(slider);
-				faceViewer->_weights.push_back(NULL);
+				faceViewer->_sliders.emplace_back(slider);
+				faceViewer->_weights.emplace_back(nullptr);
 				curY += 30;
 			}
 
@@ -188,8 +188,8 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 				slider->range(0.0, 1.0);
 				slider->callback(FaceCB, faceViewer);
 				faceViewer->bottomGroup->add(slider);
-				faceViewer->_sliders.push_back(slider);
-				faceViewer->_weights.push_back(NULL);
+				faceViewer->_sliders.emplace_back(slider);
+				faceViewer->_weights.emplace_back(nullptr);
 				curY += 30;
 			}
 
@@ -201,8 +201,8 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 				slider->range(0.0, 1.0);
 				slider->callback(FaceCB, faceViewer);
 				faceViewer->bottomGroup->add(slider);
-				faceViewer->_sliders.push_back(slider);
-				faceViewer->_weights.push_back(NULL);
+				faceViewer->_sliders.emplace_back(slider);
+				faceViewer->_weights.emplace_back(nullptr);
 				curY += 30;
 			}
 
@@ -221,7 +221,7 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 			slider->range(0.0, 1.0);
 			slider->callback(FaceCB, faceViewer);
 			faceViewer->bottomGroup->add(slider);
-			faceViewer->_sliders.push_back(slider);
+			faceViewer->_sliders.emplace_back(slider);
 			double maxWeight = 1.0;
 			SmartBody::SBAttribute* maxWeightAttribute = character->getAttribute("maxVisemeWeight");
 			if (!maxWeightAttribute)
@@ -238,7 +238,7 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 			// set the initial weight
 			float initialWeight = faceDefinition->getVisemeWeight(visemeNames[v]);
 			weightSlider->value(initialWeight);
-			faceViewer->_weights.push_back(weightSlider);
+			faceViewer->_weights.emplace_back(weightSlider);
 
 			curY += 25;
 		}
@@ -271,8 +271,8 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 					slider->range(0.0, 1.0);
 					slider->callback(FaceCB, faceViewer);
 					faceViewer->bottomGroup->add(slider);
-					faceViewer->_sliders.push_back(slider);
-					faceViewer->_weights.push_back(NULL);
+					faceViewer->_sliders.emplace_back(slider);
+					faceViewer->_weights.emplace_back(nullptr);
 					curY += 30;
 				}
 			}
@@ -378,8 +378,8 @@ void FaceViewer::DefaultFaceCB(Fl_Widget* widget, void* data)
 			if (slider)
 			{
 				std::string name = slider->label();
-				defaultFacePoses.push_back(name);
-				defaultFaceValues.push_back((float)slider->value());
+				defaultFacePoses.emplace_back(name);
+				defaultFaceValues.emplace_back((float)slider->value());
 
 			}
 
@@ -594,7 +594,7 @@ void FaceViewer::OnCharacterCreate( const std::string & name, const std::string 
 	{
 		for (int c = 0; c < choiceCharacters->menu()->size(); c++)
 		{
-			if (choiceCharacters->menu()[c].label() == NULL)
+			if (choiceCharacters->menu()[c].label() == nullptr)
 				continue;
 
 			if (selectedCharacter == choiceCharacters->menu()[c].label())

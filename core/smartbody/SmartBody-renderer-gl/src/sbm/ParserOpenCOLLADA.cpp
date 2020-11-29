@@ -43,15 +43,15 @@ class TextLineSplitter
 {
 public:
 
-    TextLineSplitter( const size_t max_line_len );
+    TextLineSplitter( size_t max_line_len );
 
     ~TextLineSplitter();
 
     void            SplitLine( const char *line,
-                               const char sep_char = ','
+                               char sep_char = ','
                              );
 
-    inline size_t   NumTokens( void ) const
+    inline size_t   NumTokens( ) const
     {
         return mNumTokens;
     }
@@ -67,9 +67,9 @@ private:
 
     char           *mBuff;
     char          **mTokens;
-    size_t          mNumTokens;
+    size_t          mNumTokens{};
 
-    inline void     ResetContent( void )
+    inline void     ResetContent( )
     {
         memset( mBuff, 0, mStorageSize );
         // mark all items as empty:
@@ -159,7 +159,7 @@ bool ParserOpenCOLLADA::parse(SkSkeleton& skeleton, SkMotion& motion, std::strin
 		int order;
 		std::string filebasename = boost::filesystem::basename(pathName);
 		std::string fileextension = boost::filesystem::extension(pathName);
-		motion.setName(filebasename.c_str());
+		motion.setName(filebasename);
 		std::stringstream strstr;
 		if (fileextension.size() > 0 && fileextension[0] == '.')
 			strstr << filebasename << fileextension;
@@ -228,13 +228,13 @@ bool ParserOpenCOLLADA::parse(SkSkeleton& skeleton, SkMotion& motion, std::strin
 	}
 	catch (const XMLException& toCatch) 
 	{
-		std::string message = "";
+		std::string message;
 		xml_utils::xml_translate(&message, toCatch.getMessage());
 		std::cout << "Exception message is: \n" << message << "\n";
 		return false;
 	}
 	catch (const DOMException& toCatch) {
-		std::string message = "";
+		std::string message;
 		xml_utils::xml_translate(&message, toCatch.msg);
 		std::cout << "Exception message is: \n" << message << "\n";
 		return false;
@@ -255,7 +255,7 @@ void ParserOpenCOLLADA::getChildNodes(const std::string& nodeName, DOMNode* node
 	std::string value;
 	xml_utils::xml_translate(&value, node->getNodeValue());
 	if (name == nodeName && node->getNodeType() ==  DOMNode::ELEMENT_NODE)
-		childs.push_back(node);
+		childs.emplace_back(node);
 
 	//if (!node->hasChildNodes()) // no child nodes
 	//	return;
@@ -336,7 +336,7 @@ DOMNode* ParserOpenCOLLADA::getNode(const std::string& nodeName, DOMNode* node, 
 }
 
 
-XercesDOMParser* ParserOpenCOLLADA::getParserFromFile( std::string fileName )
+ParserOpenCOLLADA::ParserContext ParserOpenCOLLADA::getParserFromFile( std::string fileName )
 {
 	try 
 	{
@@ -344,154 +344,151 @@ XercesDOMParser* ParserOpenCOLLADA::getParserFromFile( std::string fileName )
 	}
 	catch (const XMLException& toCatch) 
 	{
-		std::string message = "";
+		std::string message;
 		xml_utils::xml_translate(&message, toCatch.getMessage());
 		std::cout << "Error during initialization! :\n" << message << "\n";
-		return nullptr;
+		return {};
 	}
 
-	XercesDOMParser* parser = new XercesDOMParser();
+	auto parser = std::make_unique<XercesDOMParser>();
 	parser->setValidationScheme(XercesDOMParser::Val_Always);
 	parser->setDoNamespaces(true);    // optional
 
-	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
-	parser->setErrorHandler(errHandler);
+	auto errHandler = std::make_unique<HandlerBase>();
+	parser->setErrorHandler(errHandler.get());
 
 	try 
 	{
 		std::string filebasename = boost::filesystem::basename(fileName);
 		parser->parse(fileName.c_str());		
-		return parser;
+		return {std::move(parser), std::move(errHandler)};
 	}
 	catch (const XMLException& toCatch) 
 	{
-		std::string message = "";
+		std::string message;
 		xml_utils::xml_translate(&message, toCatch.getMessage());
 		SmartBody::util::log("Exception message is: %s", message.c_str());
-		delete parser;
-		return nullptr;
+		return {};
 	}
 	catch (const DOMException& toCatch) {
-		std::string message = "";
+		std::string message;
 		xml_utils::xml_translate(&message, toCatch.msg);
 		SmartBody::util::log("Exception message is: %s", message.c_str());
-		delete parser;
-		return nullptr;
+		return {};
 	}
 	catch (...) {
 		SmartBody::util::log("Unexpected Exception in ParserOpenCOLLADA::getNode()");
-		delete parser;
-		return nullptr;
+		return {};
 	}
 	
 }
 
-DOMNode* ParserOpenCOLLADA::getNode(const std::string& nodeName, std::string fileName, int maximumDepth)
-{
-	try 
-	{
-		XMLPlatformUtils::Initialize();
-	}
-	catch (const XMLException& toCatch) 
-	{
-		std::string message = "";
-		xml_utils::xml_translate(&message, toCatch.getMessage());
-		std::cout << "Error during initialization! :\n" << message << "\n";
-		return nullptr;
-	}
-
-	XercesDOMParser* parser = new XercesDOMParser();
-	parser->setValidationScheme(XercesDOMParser::Val_Always);
-	parser->setDoNamespaces(true);    // optional
-
-	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
-	parser->setErrorHandler(errHandler);
-
-	try 
-	{
-		std::string filebasename = boost::filesystem::basename(fileName);
-		parser->parse(fileName.c_str());
-		DOMDocument* doc = parser->getDocument();
-		
-		int depth = 0;
-		//delete parser;
-		return getNode(nodeName, doc, depth, maximumDepth);
-	}
-	catch (const XMLException& toCatch) 
-	{
-		std::string message = "";
-		xml_utils::xml_translate(&message, toCatch.getMessage());
-		SmartBody::util::log("Exception message is: %s", message.c_str());
-		return nullptr;
-	}
-	catch (const DOMException& toCatch) {
-		std::string message = "";
-		xml_utils::xml_translate(&message, toCatch.msg);
-		SmartBody::util::log("Exception message is: %s", message.c_str());
-		return nullptr;
-	}
-		catch (...) {
-		SmartBody::util::log("Unexpected Exception in ParserOpenCOLLADA::getNode()");
-		return nullptr;
-	}
-
-//  delete parser;
-//  delete errHandler;
-//  return nullptr;
-}
-
-
-DOMNode* ParserOpenCOLLADA::getNode(const std::string& nodeName, std::string fileName)
-{
-	try 
-	{
-		XMLPlatformUtils::Initialize();
-	}
-	catch (const XMLException& toCatch) 
-	{
-		std::string message = "";
-		xml_utils::xml_translate(&message, toCatch.getMessage());
-		std::cout << "Error during initialization! :\n" << message << "\n";
-		return nullptr;
-	}
-
-	XercesDOMParser* parser = new XercesDOMParser();
-	parser->setValidationScheme(XercesDOMParser::Val_Always);
-	parser->setDoNamespaces(true);    // optional
-
-	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
-	parser->setErrorHandler(errHandler);
-
-	try 
-	{
-		std::string filebasename = boost::filesystem::basename(fileName);
-		parser->parse(fileName.c_str());
-		DOMDocument* doc = parser->getDocument();
-		
-		return getNode(nodeName, doc);
-	}
-	catch (const XMLException& toCatch) 
-	{
-		std::string message = "";
-		xml_utils::xml_translate(&message, toCatch.getMessage());
-		SmartBody::util::log("Exception message is: %s", message.c_str());
-		return nullptr;
-	}
-	catch (const DOMException& toCatch) {
-		std::string message = "";
-		xml_utils::xml_translate(&message, toCatch.msg);
-		SmartBody::util::log("Exception message is: %s", message.c_str());
-		return nullptr;
-	}
-		catch (...) {
-		SmartBody::util::log("Unexpected Exception in ParserOpenCOLLADA::getNode()");
-		return nullptr;
-	}
-
-//  delete parser;
-//  delete errHandler;
-//  return nullptr;
-}
+//DOMNode* ParserOpenCOLLADA::getNode(const std::string& nodeName, std::string fileName, int maximumDepth)
+//{
+//	try
+//	{
+//		XMLPlatformUtils::Initialize();
+//	}
+//	catch (const XMLException& toCatch)
+//	{
+//		std::string message;
+//		xml_utils::xml_translate(&message, toCatch.getMessage());
+//		std::cout << "Error during initialization! :\n" << message << "\n";
+//		return nullptr;
+//	}
+//
+//	XercesDOMParser* parser = new XercesDOMParser();
+//	parser->setValidationScheme(XercesDOMParser::Val_Always);
+//	parser->setDoNamespaces(true);    // optional
+//
+//	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
+//	parser->setErrorHandler(errHandler);
+//
+//	try
+//	{
+//		std::string filebasename = boost::filesystem::basename(fileName);
+//		parser->parse(fileName.c_str());
+//		DOMDocument* doc = parser->getDocument();
+//
+//		int depth = 0;
+//		//delete parser;
+//		return getNode(nodeName, doc, depth, maximumDepth);
+//	}
+//	catch (const XMLException& toCatch)
+//	{
+//		std::string message;
+//		xml_utils::xml_translate(&message, toCatch.getMessage());
+//		SmartBody::util::log("Exception message is: %s", message.c_str());
+//		return nullptr;
+//	}
+//	catch (const DOMException& toCatch) {
+//		std::string message;
+//		xml_utils::xml_translate(&message, toCatch.msg);
+//		SmartBody::util::log("Exception message is: %s", message.c_str());
+//		return nullptr;
+//	}
+//		catch (...) {
+//		SmartBody::util::log("Unexpected Exception in ParserOpenCOLLADA::getNode()");
+//		return nullptr;
+//	}
+//
+////  delete parser;
+////  delete errHandler;
+////  return nullptr;
+//}
+//
+//
+//DOMNode* ParserOpenCOLLADA::getNode(const std::string& nodeName, std::string fileName)
+//{
+//	try
+//	{
+//		XMLPlatformUtils::Initialize();
+//	}
+//	catch (const XMLException& toCatch)
+//	{
+//		std::string message = "";
+//		xml_utils::xml_translate(&message, toCatch.getMessage());
+//		std::cout << "Error during initialization! :\n" << message << "\n";
+//		return nullptr;
+//	}
+//
+//	XercesDOMParser* parser = new XercesDOMParser();
+//	parser->setValidationScheme(XercesDOMParser::Val_Always);
+//	parser->setDoNamespaces(true);    // optional
+//
+//	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
+//	parser->setErrorHandler(errHandler);
+//
+//	try
+//	{
+//		std::string filebasename = boost::filesystem::basename(fileName);
+//		parser->parse(fileName.c_str());
+//		DOMDocument* doc = parser->getDocument();
+//
+//		return getNode(nodeName, doc);
+//	}
+//	catch (const XMLException& toCatch)
+//	{
+//		std::string message = "";
+//		xml_utils::xml_translate(&message, toCatch.getMessage());
+//		SmartBody::util::log("Exception message is: %s", message.c_str());
+//		return nullptr;
+//	}
+//	catch (const DOMException& toCatch) {
+//		std::string message = "";
+//		xml_utils::xml_translate(&message, toCatch.msg);
+//		SmartBody::util::log("Exception message is: %s", message.c_str());
+//		return nullptr;
+//	}
+//		catch (...) {
+//		SmartBody::util::log("Unexpected Exception in ParserOpenCOLLADA::getNode()");
+//		return nullptr;
+//	}
+//
+////  delete parser;
+////  delete errHandler;
+////  return nullptr;
+//}
 
 void ParserOpenCOLLADA::nodeStr(const XMLCh* s, std::string& out)
 {
@@ -623,11 +620,11 @@ void ParserOpenCOLLADA::parseLibraryControllers(DOMNode* node, DeformableMesh* m
 												jointName.erase(0, jointPrefix.size());
 											}
 											//cout << "joint name = " << jointName << endl;	
-											skinWeight->infJointName.push_back(jointName);
+											skinWeight->infJointName.emplace_back(jointName);
 										}
 										//if ( sourceId == bindWeightName && realNodeName == "float_array") // joint weights
 										if ( isBindWeights && realNodeName == "float_array") // joint weights
-											skinWeight->bindWeight.push_back((float)atof((*it).c_str()));
+											skinWeight->bindWeight.emplace_back((float)atof((*it).c_str()));
 										//if ( sourceId == bindPoseMatName && realNodeName == "float_array") // bind pose matrices
 										if ( isBindPoseMatrices && realNodeName == "float_array") // bind pose matrices
 										{
@@ -641,7 +638,7 @@ void ParserOpenCOLLADA::parseLibraryControllers(DOMNode* node, DeformableMesh* m
 												//newMat = skinWeight->bindShapeMat.inverse()*newMat;
 												SrVec newTran = newMat.get_translation()*scaleFactor;
 												newMat.setl4(newTran);
-												skinWeight->bindPoseMat.push_back(newMat);
+												skinWeight->bindPoseMat.emplace_back(newMat);
 											}
 										}
 									}
@@ -670,7 +667,7 @@ void ParserOpenCOLLADA::parseLibraryControllers(DOMNode* node, DeformableMesh* m
 											it != tokens.end();
 											++it)
 										{
-											skinWeight->numInfJoints.push_back(atoi((*it).c_str()));
+											skinWeight->numInfJoints.emplace_back(atoi((*it).c_str()));
 										}
 									}
 									else if (indexNodeName == "v")
@@ -679,9 +676,9 @@ void ParserOpenCOLLADA::parseLibraryControllers(DOMNode* node, DeformableMesh* m
 											it != tokens.end();
 											++it)
 										{
-											skinWeight->jointNameIndex.push_back(atoi((*it).c_str()));
+											skinWeight->jointNameIndex.emplace_back(atoi((*it).c_str()));
 											it++;
-											skinWeight->weightIndex.push_back(atoi((*it).c_str()));
+											skinWeight->weightIndex.emplace_back(atoi((*it).c_str()));
 										}
 									}
 									else
@@ -695,7 +692,7 @@ void ParserOpenCOLLADA::parseLibraryControllers(DOMNode* node, DeformableMesh* m
 							childOfSkinCurNode = childOfSkinCurNode->getNextSibling();
 						}
 						if (mesh)
-							mesh->skinWeights.push_back(skinWeight);
+							mesh->skinWeights.emplace_back(skinWeight);
 					} // end of if (childName == "skin")
 					if (childName == "morph")	// parsing morph targets
 					{
@@ -729,7 +726,7 @@ void ParserOpenCOLLADA::parseLibraryControllers(DOMNode* node, DeformableMesh* m
 									if (childNameOfSource == "IDREF_array" || childNameOfSource == "Name_array")
 									{
 										std::vector<std::string> refMesh;
-										refMesh.push_back(morphName);
+										refMesh.emplace_back(morphName);
 										std::string tokenBlock;
 										nodeStr(childNodeOfSource->getTextContent(), tokenBlock);
 										boost::char_separator<char> sep2(" \n");
@@ -738,7 +735,7 @@ void ParserOpenCOLLADA::parseLibraryControllers(DOMNode* node, DeformableMesh* m
 											it != tokens.end();
 											++it)
 										{
-											refMesh.push_back((*it));
+											refMesh.emplace_back((*it));
 										}
 										mesh->morphTargets.insert(make_pair(morphFullName, refMesh));
 									}
@@ -766,7 +763,7 @@ void ParserOpenCOLLADA::parseLibraryControllers(DOMNode* node, DeformableMesh* m
 			{
 				std::string& jointName = skinWeight->infJointName[j];
 				SkJoint* curJoint = char_p->getSkeleton()->search_joint(jointName.c_str());
-				skinWeight->infJoint.push_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
+				skinWeight->infJoint.emplace_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
 			}
 		}
 	}
@@ -915,9 +912,9 @@ void ParserOpenCOLLADA::parseJoints(DOMNode* node, SkSkeleton& skeleton, SkMotio
 						rotx = euler[0];
 						roty = euler[1];
 						rotz = euler[2];					
-						orderVec.push_back("Y");
-						orderVec.push_back("X");
-						orderVec.push_back("Z");
+						orderVec.emplace_back("Y");
+						orderVec.emplace_back("X");
+						orderVec.emplace_back("Z");
 					}
 					if (infoNodeName == "translate")
 					{
@@ -956,7 +953,7 @@ void ParserOpenCOLLADA::parseJoints(DOMNode* node, SkSkeleton& skeleton, SkMotio
 							if (sidAttr == "jointOrientY") jorienty = finalValue;
 							if (sidAttr == "jointOrientZ") jorientz = finalValue;
 							if (orderVec.size() != 3)
-								orderVec.push_back(sidAttr.substr(11, 1));
+								orderVec.emplace_back(sidAttr.substr(11, 1));
 						}
 						if (sidAttr.substr(0, 6) == "rotate")
 						{
@@ -971,7 +968,7 @@ void ParserOpenCOLLADA::parseJoints(DOMNode* node, SkSkeleton& skeleton, SkMotio
 							if (sidAttr == "rotateY") roty = finalValue;
 							if (sidAttr == "rotateZ") rotz = finalValue;
 							if (orderVec.size() != 3)
-								orderVec.push_back(sidAttr.substr(6, 1));
+								orderVec.emplace_back(sidAttr.substr(6, 1));
 						}
 						if (sidAttr.substr(0, 8) == "rotation")
 						{
@@ -986,7 +983,7 @@ void ParserOpenCOLLADA::parseJoints(DOMNode* node, SkSkeleton& skeleton, SkMotio
 							if (sidAttr == "rotationY") roty = finalValue;
 							if (sidAttr == "rotationZ") rotz = finalValue;
 							if (orderVec.size() != 3)
-								orderVec.push_back(sidAttr.substr(8, 1));
+								orderVec.emplace_back(sidAttr.substr(8, 1));
 						}
 					}
 					infoCurNode = infoCurNode->getNextSibling();
@@ -1312,7 +1309,7 @@ void ParserOpenCOLLADA::parseLibraryAnimations( DOMNode* node, SkSkeleton& skele
 					jointRotationOrderMap[jointName] = emptyString;
 				}
 				std::string rotationOrder = channelType.substr(channelType.size()-1,1);
-				jointRotationOrderMap[jointName].push_back(rotationOrder);
+				jointRotationOrderMap[jointName].emplace_back(rotationOrder);
 			}
 			if (channelType == "translate")
 			{
@@ -1346,7 +1343,7 @@ void ParserOpenCOLLADA::parseLibraryAnimations( DOMNode* node, SkSkeleton& skele
 			int quatIdx = motionChannels.float_position(channelID);
 			if (zaxis && jointName == skeleton.root()->jointName())
 				rootIdx = quatIdx;
-			quatIndices.push_back(quatIdx);
+			quatIndices.emplace_back(quatIdx);
 		}		
 	}
 
@@ -1462,7 +1459,7 @@ void ParserOpenCOLLADA::parseLibraryAnimations2(DOMNode* node, SkSkeleton& skele
 					jointRotationOrderMap[jointName] = emptyString;
 				}
 				std::string rotationOrder = channelType.substr(channelType.size()-1,1);
-				jointRotationOrderMap[jointName].push_back(rotationOrder);
+				jointRotationOrderMap[jointName].emplace_back(rotationOrder);
 			}
 			if (channelType == "translate")
 			{
@@ -1681,7 +1678,7 @@ void ParserOpenCOLLADA::parseLibraryAnimations2(DOMNode* node, SkSkeleton& skele
 		if (chan.type == SkChannel::Quat)
 		{
 			int id = motionChannels.float_position(i);
-			quatIndices.push_back(id);
+			quatIndices.emplace_back(id);
 		}
 	}
 	*/
@@ -1695,7 +1692,7 @@ void ParserOpenCOLLADA::parseLibraryAnimations2(DOMNode* node, SkSkeleton& skele
 		int channelID = motionChannels.search(jointName,SkChannel::Quat);
 		if (channelID != -1)
 		{
-			quatIndices.push_back(motionChannels.float_position(channelID));
+			quatIndices.emplace_back(motionChannels.float_position(channelID));
 		}		
 	}
 
@@ -1743,7 +1740,7 @@ void ParserOpenCOLLADA::animationPostProcessByChannels(SkSkeleton& skeleton, SkM
 		SkJoint* joint = skeleton.search_joint(chanName.c_str());
 		if (!joint)
 		{
-			jointIndexMap.push_back(std::pair<SkJoint*, int>());
+			jointIndexMap.emplace_back(std::pair<SkJoint*, int>());
 			continue;
 		}
 
@@ -1751,10 +1748,10 @@ void ParserOpenCOLLADA::animationPostProcessByChannels(SkSkeleton& skeleton, SkM
 		int dataId = motion.channels().float_position(id);
 		if (dataId < 0)
 		{
-			jointIndexMap.push_back(std::pair<SkJoint*, int>());
+			jointIndexMap.emplace_back(std::pair<SkJoint*, int>());
 			continue;
 		}
-		jointIndexMap.push_back(std::pair<SkJoint*, int>(joint, dataId));
+		jointIndexMap.emplace_back(std::pair<SkJoint*, int>(joint, dataId));
 	}
 
 	
@@ -2098,7 +2095,7 @@ void ParserOpenCOLLADA::parseLibraryGeometries( DOMNode* node, const char* file,
 							tempV[k] = (float)atof((*it).c_str());
 							it++;
 						}
-						floatArrayMap[sourceID].push_back(tempV);
+						floatArrayMap[sourceID].emplace_back(tempV);
 					}
 					/*
 					std::vector<std::string> tokens;
@@ -2113,7 +2110,7 @@ void ParserOpenCOLLADA::parseLibraryGeometries( DOMNode* node, const char* file,
 						{
 							tempV[k] = (float)atof(tokens[i+k].c_str());
 						}
-						floatArrayMap[sourceID].push_back(tempV);
+						floatArrayMap[sourceID].emplace_back(tempV);
 					}
 					*/
 
@@ -2260,7 +2257,7 @@ void ParserOpenCOLLADA::parseLibraryGeometries( DOMNode* node, const char* file,
 							std::vector<std::string> tokens;
 							SmartBody::util::tokenize(vcountString, tokens, " \n");
 							for (int i = 0; i < count; i++)
-								vcountList.push_back(atoi(tokens[i].c_str()));
+								vcountList.emplace_back(atoi(tokens[i].c_str()));
 						}
 
 						triangleCurNode = triangleCurNode->getNextSibling();
@@ -2272,7 +2269,7 @@ void ParserOpenCOLLADA::parseLibraryGeometries( DOMNode* node, const char* file,
 					if (vcountList.size() == 0)
 					{
 						for (int i = 0; i < count; i++)
-							vcountList.push_back(3);
+							vcountList.emplace_back(3);
 					}
 
 					//DOMNode* pNode = ParserOpenCOLLADA::getNode("p", node1);
@@ -2318,15 +2315,15 @@ void ParserOpenCOLLADA::parseLibraryGeometries( DOMNode* node, const char* file,
 								if (semantic == "VERTEX")
 								{
 									if (vertexSemantics.find("POSITION") != vertexSemantics.end())																								
-										fVec.push_back(atoi((*it).c_str()));
+										fVec.emplace_back(atoi((*it).c_str()));
 									if (vertexSemantics.find("NORMAL") != vertexSemantics.end())
-										fnVec.push_back(atoi((*it).c_str()));									
+										fnVec.emplace_back(atoi((*it).c_str()));									
 								}
 								if (semantic == "TEXCOORD")
-									ftVec.push_back(atoi((*it).c_str()));
+									ftVec.emplace_back(atoi((*it).c_str()));
 
 								if (semantic == "NORMAL" && vertexSemantics.find("NORMAL") == vertexSemantics.end())
-									fnVec.push_back(atoi((*it).c_str()));
+									fnVec.emplace_back(atoi((*it).c_str()));
 								it++;
 								index++;
 							}
@@ -2335,16 +2332,16 @@ void ParserOpenCOLLADA::parseLibraryGeometries( DOMNode* node, const char* file,
 						// process each polylist
 						for (size_t x = 2; x < fVec.size(); x++)
 						{
-							newModel->F.push_back(SrVec3i(fVec[0], fVec[x - 1], fVec[x]));
-							newModel->Fm.push_back(curmtl);
+							newModel->F.emplace_back(SrVec3i(fVec[0], fVec[x - 1], fVec[x]));
+							newModel->Fm.emplace_back(curmtl);
 							if (ftVec.size() > x)
-								newModel->Ft.push_back(SrVec3i(ftVec[0], ftVec[x - 1], ftVec[x]));
+								newModel->Ft.emplace_back(SrVec3i(ftVec[0], ftVec[x - 1], ftVec[x]));
 							else
-								newModel->Ft.push_back(SrVec3i(0, 0, 0));
+								newModel->Ft.emplace_back(SrVec3i(0, 0, 0));
 							if (fnVec.size() > x)
-								newModel->Fn.push_back(SrVec3i(fnVec[0], fnVec[x - 1], fnVec[x]));
+								newModel->Fn.emplace_back(SrVec3i(fnVec[0], fnVec[x - 1], fnVec[x]));
 							else
-								newModel->Fn.push_back(SrVec3i(0, 1, 0));
+								newModel->Fn.emplace_back(SrVec3i(0, 1, 0));
 						}
 					}
 					/*
@@ -2368,7 +2365,7 @@ void ParserOpenCOLLADA::parseLibraryGeometries( DOMNode* node, const char* file,
 			newModel->remove_redundant_materials();
 //			newModel->remove_redundant_normals();
 			newModel->compress();
-			meshModelVec.push_back(newModel);
+			meshModelVec.emplace_back(newModel);
 
 			SrString path = file;
 			SrString filename;
@@ -2408,7 +2405,7 @@ void ParserOpenCOLLADA::setModelVertexSource( std::string& sourceName, std::stri
 			sourceArray = &vecMap[srcName];
 	}
 
-	if ( semanticName == "POSITION" && sourceArray && model->V.size() == 0)
+	if ( semanticName == "POSITION" && sourceArray && model->V.empty())
 	{
 		bool printOut = false;
 // 		if (sourceName.find("LEyeLashShape-positions") != std::string::npos || sourceName.find("REyelashShape-positions") != std::string::npos)
@@ -2416,29 +2413,28 @@ void ParserOpenCOLLADA::setModelVertexSource( std::string& sourceName, std::stri
 // 			SmartBody::util::log("sourname = %s",sourceName.c_str());
 // 			printOut = true;
 // 		}
-		for (unsigned int i=0;i<sourceArray->size();i++)
+		for (auto & i : *sourceArray)
 		{
 // 			if (printOut)
 // 			{
 // 				SrVec pos = (*sourceArray)[i];
 // 				SmartBody::util::log("pos = %f %f %f",pos[0],pos[1],pos[2]);
 // 			}
-			model->V.push_back((*sourceArray)[i]);										
+			model->V.emplace_back(i);										
 		}
 	}
-	else if (semanticName == "NORMAL" && sourceArray && model->N.size() == 0)
+	else if (semanticName == "NORMAL" && sourceArray && model->N.empty())
 	{
-		for (unsigned int i=0;i<sourceArray->size();i++)
+		for (auto & i : *sourceArray)
 		{
-			model->N.push_back((*sourceArray)[i]);										
+			model->N.emplace_back(i);										
 		}
 	}
-	else if (semanticName == "TEXCOORD" && sourceArray && model->T.size() == 0)
+	else if (semanticName == "TEXCOORD" && sourceArray && model->T.empty())
 	{
-		for (unsigned int i=0;i<sourceArray->size();i++)
+		for (auto ts : *sourceArray)
 		{
-			SrVec ts = (*sourceArray)[i];
-			model->T.push_back(SrVec2(ts[0],ts[1]));										
+				model->T.emplace_back(ts[0],ts[1]);										
 		}
 	}
 }
@@ -2488,7 +2484,7 @@ void ParserOpenCOLLADA::parseLibraryMaterials(DOMNode* node, std::map<std::strin
 			std::string urlString;
 			xml_utils::xml_translate(&urlString, urlNode->getNodeValue());
 			// get ride of the "#" in front, potential bug here if other file has different format
-			if (urlString != "")
+			if (!urlString.empty())
 			{
 				std::string effectId = urlString.substr(1);
 				if (effectId2MaterialId.find(effectId) == effectId2MaterialId.end())
@@ -2559,9 +2555,9 @@ void ParserOpenCOLLADA::parseLibraryEffects( DOMNode* node, std::map<std::string
 			//std::string materialName = materialId2Name[materialId];
 			SrMaterial material;
 			material.init();
-			M.push_back(material);
+			M.emplace_back(material);
 			SrString matName(materialId.c_str());
-			mnames.push_back((const char*) matName);
+			mnames.emplace_back((const char*) matName);
 
 			std::vector<DOMNode*> initNodes;
 			ParserOpenCOLLADA::getChildNodes("init_from", node, initNodes);
@@ -2669,11 +2665,10 @@ void ParserOpenCOLLADA::parseLibraryEffects( DOMNode* node, std::map<std::string
 			//DOMNode* initFromNode = ParserOpenCOLLADA::getNode("init_from", node);
 			//if (initFromNode)
 			// get all textures
-			for (unsigned int i=0;i<initNodes.size();i++)
+			for (auto initFromNode : initNodes)
 			{
 				std::string imageId;
-				DOMNode* initFromNode = initNodes[i];
-				xml_utils::xml_translate(&imageId, initFromNode->getTextContent());
+					xml_utils::xml_translate(&imageId, initFromNode->getTextContent());
 				std::string imageName = imageId;
 				if (pictureId2Name.find(imageId) != pictureId2Name.end())
 					imageName = pictureId2Name[imageId];
@@ -2767,7 +2762,7 @@ void ParserOpenCOLLADA::parseLibraryEffects( DOMNode* node, std::map<std::string
 
 std::string ParserOpenCOLLADA::getNodeAttributeString( DOMNode* node, XMLCh* attrName )
 {
-	std::string sourceIdAttr = "";
+	std::string sourceIdAttr;
 	DOMNamedNodeMap* sourceAttr = node->getAttributes();
 	DOMNode* sourceIdNode = sourceAttr->getNamedItem(attrName);					
 	if (sourceIdNode)
@@ -2878,7 +2873,7 @@ void ParserOpenCOLLADA::parseNodeAnimation( DOMNode* node1, std::map<std::string
 		{
 			std::string target = getNodeAttributeString(node2,BML::BMLDefs::ATTR_TARGET);
 			std::string source = getNodeAttributeString(node2,BML::BMLDefs::ATTR_SOURCE);
-			channelSamplerNameMap.push_back(ColladChannel());
+			channelSamplerNameMap.emplace_back();
 			ColladChannel& colChannel = channelSamplerNameMap.back();
 			colChannel.sourceName = source.substr(1);
 			//SmartBody::util::log("colChannel input name = %s",colChannel.sourceName.c_str());
@@ -2901,15 +2896,15 @@ void ParserOpenCOLLADA::parseNodeAnimation( DOMNode* node1, std::map<std::string
 
 bool ParserOpenCOLLADA::parseStaticMesh( std::vector<SrModel*>& meshModelVecs, std::string fileName )
 {
-	XercesDOMParser* parser = ParserOpenCOLLADA::getParserFromFile(fileName);
-	if (!parser)
+	auto parserContext = ParserOpenCOLLADA::getParserFromFile(fileName);
+	if (!parserContext.parser)
 	{
 		SmartBody::util::log("Could not load from file %s",fileName.c_str());
 		return false;
 	}
 
 	//DOMNode* geometryNode = ParserOpenCOLLADA::getNode("library_geometries", fileName, 2);	
-	DOMDocument* doc = parser->getDocument();
+	DOMDocument* doc = parserContext.parser->getDocument();
 	int depth = 0;
 	DOMNode* geometryNode = getNode("library_geometries", doc, depth, 2);		 
 	if (geometryNode)
@@ -2965,12 +2960,10 @@ bool ParserOpenCOLLADA::parseStaticMesh( std::vector<SrModel*>& meshModelVecs, s
 	else
 	{
 		SmartBody::util::log( "Could not load mesh from file '%s'", fileName.c_str());
-		if (parser)
-			delete parser;
+
 		return false;
 	}
-	if (parser)
-		delete parser;
+
 	return true;
 }
 
@@ -3030,7 +3023,7 @@ bool ParserOpenCOLLADA::exportCollada(SmartBody::SBRenderAssetManager& renderAss
 		for (unsigned int i=0;i<defMesh->subMeshList.size();i++)
 		{
 			SbmSubMesh* subMesh = defMesh->subMeshList[i];
-			auto tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE,subMesh->texName.c_str());
+			auto tex = texManager.findTexture(subMesh->texName.c_str());
 			if (tex) // copy texture
 			{
 				std::string ext = boost::filesystem::extension( tex->getFileName() );
@@ -3066,7 +3059,7 @@ bool ParserOpenCOLLADA::exportMaterials(SmartBody::SBRenderAssetManager& renderA
 	// write out submeshes for the deformable mesh
 	for (auto & i : defMesh->subMeshList)
 	{
-		submeshes.push_back(i);
+		submeshes.emplace_back(i);
 	}
 	// if there are any composited blendshapes, add those submeshes as well
 	for (auto & iter : defMesh->morphTargets)
@@ -3082,7 +3075,7 @@ bool ParserOpenCOLLADA::exportMaterials(SmartBody::SBRenderAssetManager& renderA
 				morphMesh->rebuildVertexBuffer(true);
 				for (auto & i : morphMesh->subMeshList)
 				{
-					submeshes.push_back(i);
+					submeshes.emplace_back(i);
 				}
 			}
 		}
@@ -3107,9 +3100,9 @@ bool ParserOpenCOLLADA::exportMaterials(SmartBody::SBRenderAssetManager& renderA
 			std::string effectID = subMesh->matName + "-fx";
 		fprintf(fp,"<effect id=\"%s\">\n",effectID.c_str());
 		fprintf(fp,"<profile_COMMON>\n");
-		auto diffTex = texManger.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
+		auto diffTex = texManger.findTexture(subMesh->texName.c_str());
 		//SbmTexture* bumpTex = texManger.findTexture(SbmTextureManager::TEXTURE_NORMALMAP, subMesh->normalMapName.c_str());
-		//SbmTexture* specTex = texManger.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP, subMesh->specularMapName.c_str());
+		//SbmTexture* specTex = texManger.findTexture(subMesh->specularMapName.c_str());
 
 		std::string diffuseTexSamplerID;
 		if (diffTex) // only export diffuse texture for now
@@ -3156,7 +3149,7 @@ bool ParserOpenCOLLADA::exportMaterials(SmartBody::SBRenderAssetManager& renderA
 	fprintf(fp,"<library_images>\n");
 	for (auto subMesh : submeshes)
 	{
-			auto diffTex = texManger.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());
+			auto diffTex = texManger.findTexture(subMesh->texName.c_str());
 		if (diffTex) 
 		{
 			fprintf(fp,"<image id=\"%s\" name=\"%s\">\n",diffTex->getName().c_str(), diffTex->getName().c_str());
@@ -3707,7 +3700,7 @@ void ParserOpenCOLLADA::writeJointNode( FILE* fp, SmartBody::SBJoint* joint, dou
 	fprintf(fp,"</node>\n");
 }
 
-std::string ParserOpenCOLLADA::exportMaerialTexParam( FILE* fp, std::string texName )
+std::string ParserOpenCOLLADA::exportMaerialTexParam( FILE* fp, const std::string& texName )
 {
 	std::string texSurfaceID = texName + "-surface";
 	std::string texSamplerID = texName + "-sampler";

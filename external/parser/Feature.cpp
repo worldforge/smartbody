@@ -143,7 +143,7 @@ init(ECString& path, ECString& conditioned)
 	  dataStrm >> tmp;
 	  if(tmp == "|") break;
 	  int f = atoi(tmp.c_str());
-	  featList.push_back(f);
+	  featList.emplace_back(f);
 	}
       SubFeature::fromInt(n, whichInt)
 	= new SubFeature(n, nm, fn, featList);

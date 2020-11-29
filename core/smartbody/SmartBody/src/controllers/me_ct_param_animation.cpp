@@ -556,7 +556,7 @@ void MeCtParamAnimation::schedule( PABlend* state, const std::vector<double>& we
 			return;
 		}
 	}
-	waitingList.push_back(unit);
+	waitingList.emplace_back(unit);
 }
 
 void MeCtParamAnimation::schedule(PABlend* blendData, const std::vector<double>& weights, PABlendData::WrapMode wrap, PABlendData::ScheduleMode scheduleMode, PABlendData::BlendMode blend, std::string jName, double timeOffset, double stateTimeOffset, double stateTimeTrim, double transitionLen, bool directPlay)
@@ -641,7 +641,7 @@ void MeCtParamAnimation::schedule(PABlend* blendData, const std::vector<double>&
 		}
 	}
 
-	waitingList.push_back(unit);
+	waitingList.emplace_back(unit);
 #endif
 }
 
@@ -896,7 +896,7 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 				SkJoint::recursive_children(jVec, j);
 				for (size_t i = 0; i < jVec.size(); i++)
 				{
-					joints.push_back(jVec[i]->getMappedJointName());//jointName());
+					joints.emplace_back(jVec[i]->getMappedJointName());//jointName());
 				}
 			}
 		}
@@ -1047,7 +1047,7 @@ void MeCtParamAnimation::updateIK( PABlendData* curBlendData, SrMat& woMat, SrMa
 	if (ikScenario.ikTreeNodes.size() == 0) // initialize ik nodes
 	{
 		std::vector<std::string> stopJoint;
-		stopJoint.push_back("spine1");
+		stopJoint.emplace_back("spine1");
 		ikScenario.buildIKTreeFromJointRoot(character->getSkeleton()->getJointByMappedName("base"),stopJoint);
 	}	
 	
@@ -1188,6 +1188,6 @@ void MeCtParamAnimation::getCharacterJointTrajectory( std::vector<SrVec> &curSta
 	for (unsigned int i=0;i<jointConsNames.size();i++)
 	{
 		SmartBody::TrajectoryRecord* traj = character->getJointTrajectoryConstraint(jointConsNames[i]);
-		curStatePosList.push_back(traj->jointTrajGlobalPos);
+		curStatePosList.emplace_back(traj->jointTrajGlobalPos);
 	}
 }

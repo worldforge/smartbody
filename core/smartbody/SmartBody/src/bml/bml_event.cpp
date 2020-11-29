@@ -71,7 +71,7 @@ void BML::EventRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene*
 	}
 
 	string str = cmd.str();
-	commands.push_back( new SbmCommand( str, (float) eventTime ) );
+	commands.emplace_back( new SbmCommand( str, (float) eventTime ) );
 
 	realize_sequence( commands, scene );
 }

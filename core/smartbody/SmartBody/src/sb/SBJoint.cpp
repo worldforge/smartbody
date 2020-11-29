@@ -293,7 +293,7 @@ std::vector<SBJoint*> SBJoint::getDescendants()
 		SBJoint* firstInQueue = jointQueue.front();
 		jointQueue.pop();
 		if (firstInQueue != this)
-			joints.push_back(firstInQueue);
+			joints.emplace_back(firstInQueue);
 		for (int i=0;i<firstInQueue->getNumChildren();i++)
 		{
 			SBJoint* child = firstInQueue->getChild(i);
@@ -310,7 +310,7 @@ std::vector<SBJoint*> SBJoint::getAncestors()
 	SmartBody::SBJoint* tempJoint = getParent();
 	while (tempJoint)
 	{
-		joints.push_back(tempJoint);
+		joints.emplace_back(tempJoint);
 		tempJoint = tempJoint->getParent();
 	}
 	return joints;
@@ -342,7 +342,7 @@ void SBJoint::setAsfChannels(std::vector<std::string>& channels)
 	_asfChannels.clear();
 	for (size_t c = 0; c < channels.size(); c++)
 	{
-		_asfChannels.push_back(channels[c]);
+		_asfChannels.emplace_back(channels[c]);
 	}
 }
 

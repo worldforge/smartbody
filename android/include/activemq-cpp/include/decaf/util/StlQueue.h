@@ -184,7 +184,7 @@ namespace util{
          * @param t - Queue Object Type reference.
          */
         void push( const T &t ) {
-            queue.push_back( t );
+            queue.emplace_back( t );
         }
 
         /**

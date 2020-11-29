@@ -59,7 +59,7 @@ void SBMotionFrameBuffer::initFrameBuffer( SkChannelArray& channelArray, std::ve
 {
 	motionFrameBuffer.size(channelArray.floats());
 	std::vector<SkChannel::Type> typeList; 
-	typeList.push_back(SkChannel::Quat); typeList.push_back(SkChannel::XPos); typeList.push_back(SkChannel::YPos); typeList.push_back(SkChannel::ZPos);
+	typeList.emplace_back(SkChannel::Quat); typeList.emplace_back(SkChannel::XPos); typeList.emplace_back(SkChannel::YPos); typeList.emplace_back(SkChannel::ZPos);
 	channelIdxMap.clear();
 	quatChannelNames.clear();
 	posChannelNames.clear();
@@ -84,14 +84,14 @@ void SBMotionFrameBuffer::initFrameBuffer( SkChannelArray& channelArray, std::ve
 				// maintain a list of names for all quat channel & position channel
 				if (typeList[k] == SkChannel::Quat)
 				{
-					quatChannelNames.push_back(chanName);
+					quatChannelNames.emplace_back(chanName);
 				}
 				else if (typeList[k] <= SkChannel::ZPos)
 				{
 					if (posChannelMap.find(chanName) == posChannelMap.end())
 					{
 						posChannelMap[chanName] = 1;
-						posChannelNames.push_back(chanName);
+						posChannelNames.emplace_back(chanName);
 					}
 				}
 			}
@@ -115,14 +115,14 @@ void SBMotionFrameBuffer::initFrameBuffer( SkChannelArray& channelArray, std::ve
 			// maintain a list of names for all quat channel & position channel
 			if (chanType == SkChannel::Quat)
 			{
-				quatChannelNames.push_back(chanName);
+				quatChannelNames.emplace_back(chanName);
 			}
 			else if (chanType <= SkChannel::ZPos)
 			{
 				if (posChannelMap.find(chanName) == posChannelMap.end())
 				{
 					posChannelMap[chanName] = 1;
-					posChannelNames.push_back(chanName);
+					posChannelNames.emplace_back(chanName);
 				}
 			}
 		}
@@ -347,17 +347,17 @@ void SBMotionNode::initTimeWarp()
 	std::vector<double> refKey;
 	float step = 1.f/(animBlend->getNumKeys()-1.f);
 	for (int i=0;i<animBlend->getNumKeys();i++)
-		refKey.push_back(step*i); // normalize the reference time to [0,1]
+		refKey.emplace_back(step*i); // normalize the reference time to [0,1]
 	for (int i=0;i<animBlend->getNumMotions();i++)
 	{
 		std::string motionName = animBlend->getMotionName(i);
 		std::vector<double> motionKeys;
 		for (int k=0;k<animBlend->getNumKeys(); k++)
 		{
-			motionKeys.push_back(animBlend->getMotionKey(motionName,k));
+			motionKeys.emplace_back(animBlend->getMotionKey(motionName,k));
 		}
 		MotionTimeWarpFunc* timeWarp = new MultiLinearTimeWarp(refKey, motionKeys);
-		timeWarpFuncs.push_back(timeWarp);
+		timeWarpFuncs.emplace_back(timeWarp);
 	}
 }
 
@@ -370,7 +370,7 @@ void SBMotionNode::getDeltaAlignTransform( float u, float du , const std::vector
 	{
 		if (weights[i] == 0.f)
 			continue;
-		moIndex.push_back(i);
+		moIndex.emplace_back(i);
 	}
 	
 	SrMat tempWoMat, tempBaseMat;
@@ -451,7 +451,7 @@ void SBMotionNode::getBlendedMotionFrame( float u, const std::vector<float>& wei
 	{
 		if (weights[i] == 0.f)
 			continue;
-		moIndex.push_back(i);
+		moIndex.emplace_back(i);
 	}
 
 	const std::vector<std::string>& quatChannelNames = outFrame.getQuatChannelNames();
@@ -543,7 +543,7 @@ float SBMotionNode::getRefDuration()
 
 void SBMotionNode::addOutEdge( SBMotionTransitionEdge* edge )
 {
-	outEdges.push_back(edge);
+	outEdges.emplace_back(edge);
 }
 
 const std::vector<SBMotionTransitionEdge*>& SBMotionNode::getOutEdges()
@@ -558,7 +558,7 @@ float SBMotionNode::getRefDeltaTime( float u, float dt, const std::vector<float>
 	{
 		if (weights[i] == 0.f)
 			continue;
-		moIndex.push_back(i);
+		moIndex.emplace_back(i);
 	}
 
 	float du = 0.f;
@@ -578,7 +578,7 @@ float SBMotionNode::getActualTime( float u, const std::vector<float>& weights  )
 	{
 		if (weights[i] == 0.f)
 			continue;
-		moIndex.push_back(i);
+		moIndex.emplace_back(i);
 	}
 
 	float t = 0.f;
@@ -598,7 +598,7 @@ float SBMotionNode::getActualDuration( const std::vector<float>& weights )
 	{
 		if (weights[i] == 0.f)
 			continue;
-		moIndex.push_back(i);
+		moIndex.emplace_back(i);
 	}
 
 	float t = 0.f;
@@ -652,7 +652,7 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromBlend( SBAnimationBlend* ble
 	}
 	int nodeIdx = motionNodes.size();
 	node = new SBMotionNode(blend, nodeIdx);
-	motionNodes.push_back(node);
+	motionNodes.emplace_back(node);
 	motionNodeMap[blend->getName()] = node;
 	return node;
 }
@@ -681,13 +681,13 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromMotionRef( const std::string
 	animBlend->addMotionFromRef(sbMotion, 0.f);		
 	animBlend->setBlendSkeleton(sbMotion->getMotionSkeletonName());
 	std::vector<std::string> moNames;
-	moNames.push_back(motionName);
+	moNames.emplace_back(motionName);
 	std::vector<double> animationKey(1);
 	animationKey[0] = sbMotion->keytime(startFrame);	
 	animBlend->addCorrespondencePoints(moNames, animationKey);
 	animationKey[0] = sbMotion->keytime(endFrame);
 	animBlend->addCorrespondencePoints(moNames, animationKey);
-	motioAnimBlends.push_back(animBlend); // maintain the list of animBlends created this way inside the Motion Graph
+	motioAnimBlends.emplace_back(animBlend); // maintain the list of animBlends created this way inside the Motion Graph
 	return addMotionNodeFromBlend(animBlend);
 }
 
@@ -762,7 +762,7 @@ SBMotionNode* SBMotionGraph::addMotionNodeFromMotionTransition( const std::strin
 		std::vector<float> tempFrame;
 		SrBuffer<float>& buffer = outFrame.getBuffer();
 		for (int m=0;m<buffer.size();m++)
-			tempFrame.push_back(buffer[m]);
+			tempFrame.emplace_back(buffer[m]);
 		transMotion->addFrame(frameStep*i, tempFrame);	
 	}
 	transMotion->setName(nodeName);
@@ -817,7 +817,7 @@ SBAPI SBMotionTransitionEdge* SBMotionGraph::addMotionEdge( const std::string& f
 	// by default, the transition is from the end of first node to the beginning of second node
 	edge->initTransitionEdge(fromNode, toNode, fromNode->getRefDuration(), 0.f);
 	fromNode->addOutEdge(edge);
-	motionEdges.push_back(edge);
+	motionEdges.emplace_back(edge);
 	motionEdgeMap[edgeName] = edge;
 	return edge;
 }
@@ -866,9 +866,9 @@ SBAPI void SBMotionGraph::synthesizePath( SteerPath& desiredPath, const std::str
 			SrVec curPos = dMat.get_translation();
 			if (retarget)
 				curPos = retarget->applyRetargetJointTranslationVec("base", curPos);
-			nodeCache.pathLocalPts.push_back(curPos);
+			nodeCache.pathLocalPts.emplace_back(curPos);
 			float dist = (curPos - prevPos).norm();
-			nodeCache.pathDists.push_back(dist);
+			nodeCache.pathDists.emplace_back(dist);
 			nodeCache.totalArcLength += dist;
 		}
 
@@ -921,7 +921,7 @@ SBAPI void SBMotionGraph::synthesizePath( SteerPath& desiredPath, const std::str
 
 			float nodeError = pathError(desiredPath, node, finalGraphTraverse.curTransform, pathDeltaTransformCache[node->getName()], finalGraphTraverse.traversePathDist);
 			finalGraphTraverse.curTransform = deltaT*finalGraphTraverse.curTransform;			
-			finalGraphTraverse.graphEdges.push_back(edge);
+			finalGraphTraverse.graphEdges.emplace_back(edge);
 			finalGraphTraverse.traversePathDist += deltaT.get_translation().norm();		
 			finalGraphTraverse.traverseError += nodeError;
 			finalGraphTraverse.distToTarget = (finalGraphTraverse.curTransform.get_translation() - desiredPath.pathPoint(desiredPath.pathLength()*0.99f)).norm();
@@ -959,7 +959,7 @@ SBAPI void SBMotionGraph::synthesizePath( SteerPath& desiredPath, const std::str
 	{
 		std::pair<int,int>& edge = bestEdgeList[i];
 		//SmartBody::util::log("Edge %d, node %s to node %s", i, motionNodes[edge.first]->getName().c_str(), motionNodes[edge.second]->getName().c_str() );
-		graphTraverseEdges.push_back(std::pair<std::string,std::string>(motionNodes[edge.first]->getName(), motionNodes[edge.second]->getName()));				
+		graphTraverseEdges.emplace_back(std::pair<std::string,std::string>(motionNodes[edge.first]->getName(), motionNodes[edge.second]->getName()));
 	}
 
 }
@@ -1015,7 +1015,7 @@ float SBMotionGraph::traverseGraph(SteerPath& curPath, MotionGraphTraverse& curG
 	{
 		SBMotionNode* node = motionNodes[mi->second];		
 		MotionGraphTraverse tempTraverse = curGraphTraverse;		
-		tempTraverse.graphEdges.push_back(std::pair<int,int>(curGraphTraverse.curNodeIdx, node->getIndex()));
+		tempTraverse.graphEdges.emplace_back(std::pair<int,int>(curGraphTraverse.curNodeIdx, node->getIndex()));
 		tempTraverse.curNodeIdx = node->getIndex();
 		MotionNodeCache& nodeCache = deltaTransformMap[node->getName()];
 		SrMat& deltaT = nodeCache.deltaTransform;
@@ -1084,7 +1084,7 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 	std::vector<std::string> affectedJointNames;
 	for (unsigned int i=0;i<ikTree.ikTreeNodes.size();i++)
 	{
-		affectedJointNames.push_back(ikTree.ikTreeNodes[i]->joint->getMappedJointName());
+		affectedJointNames.emplace_back(ikTree.ikTreeNodes[i]->joint->getMappedJointName());
 	}
 
 	std::vector<std::vector<int> > fromToList; // store all splited frames by transition
@@ -1124,8 +1124,8 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 // 					else
 // 						continue;
 // 				}		
-				motion1FromToList.push_back(elem.first);
-				motion2FromToList.push_back(elem.second);
+				motion1FromToList.emplace_back(elem.first);
+				motion2FromToList.emplace_back(elem.second);
 			}
 			//SmartBody::util::log("Num of transitions = %d", outTransition.size());
 			transitionMap[IntPair(i,j)] = outTransition;
@@ -1160,9 +1160,9 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 			if (!firstNode)
 			{
 				// add a default edge to forward the animation
-				forwardEdgeList.push_back(IntPair(motionNodeList.size()-1, motionNodeList.size()));
+				forwardEdgeList.emplace_back(IntPair(motionNodeList.size()-1, motionNodeList.size()));
 			}
-			motionNodeList.push_back(node);
+			motionNodeList.emplace_back(node);
 			startFrameNodeMap[IntPair(node.moIndex,node.startFrame)] = node.nodeIdx;
 			endFrameNodeMap[IntPair(node.moIndex,node.endFrame)] = node.nodeIdx;
 			if (firstNode)
@@ -1434,7 +1434,7 @@ void SBMotionGraph::computeMotionTransitionFast( const std::string& moName1, con
 			// determine if i,j is a local minimum
 			bool isLocalMinimum = findLocalMinimum(transitionMat,i,j);
 			if (isLocalMinimum && transitionMat(i,j) <= threshold)
-				outTransition.push_back(std::pair<int,int>(i,j));
+				outTransition.emplace_back(std::pair<int,int>(i,j));
 		}
 	}
 
@@ -1568,7 +1568,7 @@ void SBMotionGraph::computeMotionTransition( const std::string& moName1, const s
 			// determine if i,j is a local minimum
 			bool isLocalMinimum = findLocalMinimum(transitionMat,i,j);
 			if (isLocalMinimum && transitionMat(i,j) <= threshold)
-				outTransition.push_back(std::pair<int,int>(i,j));
+				outTransition.emplace_back(std::pair<int,int>(i,j));
 		}
 	}
 
@@ -1655,7 +1655,7 @@ SBAPI std::vector<std::string> SBMotionGraph::getMotionNodeNames()
 	std::vector<std::string> nodeNames;
 	for (unsigned int i=0;i<motionNodes.size();i++)
 	{
-		nodeNames.push_back(motionNodes[i]->getName());
+		nodeNames.emplace_back(motionNodes[i]->getName());
 	}
 	return nodeNames;
 }
@@ -2071,7 +2071,7 @@ SBAPI std::vector<std::string> SBMotionGraphManager::getMotionGraphNames()
 		  mi != _motionGraphMap.end();
 		  mi++)
 	{
-		moGraphNames.push_back(mi->first);
+		moGraphNames.emplace_back(mi->first);
 	}
 	return moGraphNames;
 }

@@ -125,7 +125,7 @@ size_t ExampleFrameListener::getParentWindowHandle(size_t winHandle)
         Window parentReturn;
         Window *childrenReturn;
 	unsigned int nchildrenReturn;	
-	XQueryTree(XOpenDisplay(NULL),winHandle,&rootReturn,&parentReturn,&childrenReturn,&nchildrenReturn);
+	XQueryTree(XOpenDisplay(nullptr),winHandle,&rootReturn,&parentReturn,&childrenReturn,&nchildrenReturn);
 	printf("window handle  =%d, parent handle = %d\n",winHandle,parentReturn);
   	return parentReturn;
 #endif

@@ -106,7 +106,7 @@ inputTreeFromBsts(Val* at, short& pos, SentRep& sr)
             }
           InputTree* sit = inputTreeFromBsts(sb.nth(vval), pos,sr);
           assert(sit);
-          subtrs.push_back(sit);
+          subtrs.emplace_back(sit);
           vpos++;
         }
     }

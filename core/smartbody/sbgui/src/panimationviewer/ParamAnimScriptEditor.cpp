@@ -79,7 +79,7 @@ void PAScriptEditor::addState(Fl_Widget* widget, void* data)
 				editor->stateTimeOffset.erase(iter);
 			editor->stateTimeOffset.insert(std::make_pair(selectedState, 0.1));
 		
-			int loopValue = fl_choice("Is this loop mode", "yes", "no", NULL);
+			int loopValue = fl_choice("Is this loop mode", "yes", "no", nullptr);
 			bool loop;
 			if (loopValue == 0)	loop = true;
 			else				loop = false;
@@ -152,7 +152,7 @@ void PAScriptEditor::updateStateInfo(Fl_Widget* widget, void* data)
 			if (shouldAddTimeOffset)
 			{
 				const char* offsetString = fl_input("time offset from previous state", "0.0");
-				if (offsetString != NULL)
+				if (offsetString != nullptr)
 				{
 					double offset = atof(offsetString);
 					std::map<std::string, double>::iterator iter = editor->stateTimeOffset.find(selectedState);
@@ -164,7 +164,7 @@ void PAScriptEditor::updateStateInfo(Fl_Widget* widget, void* data)
 			if (state->getNumMotions() > 1)
 			{
 /*				const char* ws = fl_input("weights (separate by white space)", "");
-				if (ws == NULL)	return;
+				if (ws == nullptr)	return;
 				std::string weights = ws;
 				std::vector<std::string> weight = editor->paWindow->tokenize(weights, " ");
 				if (state->getNumMotions() == weight.size())

@@ -113,7 +113,7 @@ Vectorn<double> getEigensystem(Matrixn<double> m, Matrixn<double> *vectors)
     //now sort by decreasing eigenvalue
     vector<pair<double, int> > perm;
     for(i = 0; i < sz; ++i) {
-        perm.push_back(make_pair(fabs(out[i]), i));
+        perm.emplace_back(make_pair(fabs(out[i]), i));
     }
     sort(perm.begin(), perm.end());
     reverse(perm.begin(), perm.end());

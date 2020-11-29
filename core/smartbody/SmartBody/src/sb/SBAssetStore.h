@@ -69,6 +69,9 @@ public:
 	srPathList* getPathList(const std::string& type);
 	std::string findFileName(const std::string& type, const std::string& filename);
 
+	void addAssetProcessor(SBAssetsProcessor* processor);
+	void removeAssetProcessor(SBAssetsProcessor* processor);
+
 protected:
 
 	std::string findAssetFromLocation(const std::string& filepath, const std::string& assetName);

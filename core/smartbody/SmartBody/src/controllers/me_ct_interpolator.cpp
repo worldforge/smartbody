@@ -191,10 +191,10 @@ void MeCtInterpolator::initKeys()
 
 	if (key1.empty() && key2.empty())
 	{
-		key1.push_back(0.0);
-		key2.push_back(0.0);
-		key1.push_back(motion1->duration());
-		key2.push_back(motion2->duration());
+		key1.emplace_back(0.0);
+		key2.emplace_back(0.0);
+		key1.emplace_back(motion1->duration());
+		key2.emplace_back(motion2->duration());
 	}
 
 	// if keys are not in order, should add on a cycle
@@ -271,7 +271,7 @@ void MeCtInterpolator::getTiming(double t, double& t1, double& t2)
 	{
 		double k = key1[i] * weight + key2[i] * (1 - weight);
 		k = k - offset;
-		key.push_back(k);
+		key.emplace_back(k);
 	}
 
 	bool err = true;
@@ -326,10 +326,10 @@ void MeCtInterpolator::adjustStartTime(double origW, double newW)
 	{
 		double k = key1[i] * origW + key2[i] * (1 - origW);
 		k = k - offset;
-		key.push_back(k);
+		key.emplace_back(k);
 		k = key1[i] * newW + key2[i] * (1 - newW);
 		k = k - offsetP;
-		keyP.push_back(k);
+		keyP.emplace_back(k);
 	}
 
 	double t = SmartBody::SBScene::getScene()->getSimulationManager()->getTime() - startTime;

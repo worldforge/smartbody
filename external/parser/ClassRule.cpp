@@ -102,8 +102,8 @@ readCRules(ECString path)
       assert(is);
       ClassRule cr(d,m,r,t);
       //cerr << "RR " << cr << endl;
-      if(wh == 3) rBundles3_[d][m-modm].push_back(cr);
-      else rBundles2_[d][m-modm].push_back(cr);
+      if(wh == 3) rBundles3_[d][m-modm].emplace_back(cr);
+      else rBundles2_[d][m-modm].emplace_back(cr);
     }
   flnm = path;
   flnm += "rules.m";
@@ -124,7 +124,7 @@ readCRules(ECString path)
       t = Term::get(tmp)->toInt();
       assert(ism);
       ClassRule cr(d,m,0,t);
-      rBundlesm_[d][m].push_back(cr);
+      rBundlesm_[d][m].emplace_back(cr);
     }
 }
       

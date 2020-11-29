@@ -207,7 +207,7 @@ extern "C"
           light.quadratic_attenuation = 0.0f;
         }
         
-        _lights.push_back(light);
+        _lights.emplace_back(light);
       }
     }
     
@@ -226,7 +226,7 @@ extern "C"
       light.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
       //  light.constant_attenuation = 1.0f/cam.scale;
       light.constant_attenuation = 1.0f;
-      _lights.push_back(light);
+      _lights.emplace_back(light);
       
       SrLight light2 = light;
       light2.directional = true;
@@ -237,7 +237,7 @@ extern "C"
       light2.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
       //  light2.constant_attenuation = 1.0f;
       //  light2.linear_attenuation = 2.0f;
-      _lights.push_back(light2);
+      _lights.emplace_back(light2);
     }
     
     
@@ -684,7 +684,7 @@ extern "C"
   void SBDrawBackground(ESContext* esContext)
   {
 #if 0
-    SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE,"background_img");
+    SbmTexture* tex = SbmTextureManager::singleton().findTexture("background_img");
     if (!tex)
     {
       //SmartBody::util::log("cannot find texture image .....");

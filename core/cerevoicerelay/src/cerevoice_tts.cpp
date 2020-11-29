@@ -324,8 +324,8 @@ std::string removeXMLTagsAndNewLines( const std::string & txt , SpeechRequestMes
 #endif
 						   /// Words can be used to match up which tags we need to see
 							/// Push tag and word into xmlMetaData
-							xmlMetaData.tags.push_back(markString);
-							xmlMetaData.words.push_back(temporaryText);
+							xmlMetaData.tags.emplace_back(markString);
+							xmlMetaData.words.emplace_back(temporaryText);
 
 							actualText += temporaryText;
 					   }
@@ -954,8 +954,8 @@ std::string cerevoice_tts::tts( const char * text, const char * cereproc_file_na
 		  for (int wordTimingIndex = 0; wordTimingIndex < numberOfWords * 2; ++wordTimingIndex)
 		  {
 			  std::string timeStamp = "T" + wordTimingIndex;
-			  xmlMetaData.tags.push_back(timeStamp);
-			  xmlMetaData.words.push_back(words.at(wordTimingIndex));
+			  xmlMetaData.tags.emplace_back(timeStamp);
+			  xmlMetaData.words.emplace_back(words.at(wordTimingIndex));
 		  }
 	  }*/
 	  //commenting replacing pause punctuations

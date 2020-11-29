@@ -17,7 +17,7 @@
 
 PawnControl::PawnControl()
 {
-	pawn = NULL;
+	pawn = nullptr;
 }
 
 PawnControl::~PawnControl()
@@ -54,7 +54,7 @@ void PawnControl::detach_pawn()
 {
 	if (pawn)
 		pawn->unregisterObserver(this);
-	pawn = NULL;
+	pawn = nullptr;
 }
 
 SrVec PawnControl::get_pawn_pos(SbmPawn* pawn)
@@ -169,8 +169,8 @@ PawnPosControl::PawnPosControl(void) : PositionControl()
 	worldPt = SrVec(0,170,100);
 	*/
 
-	//label = NULL;	
-	pawn = NULL;
+	//label = nullptr;
+	pawn = nullptr;
 	//init_font();
 }
 
@@ -233,7 +233,7 @@ void PawnPosControl::setWorldPt(SrVec& newPt)
 
 PawnRotationControl::PawnRotationControl(void) : RotationControl()
 {
-	pawn = NULL;
+	pawn = nullptr;
 }
 
 PawnRotationControl::~PawnRotationControl()

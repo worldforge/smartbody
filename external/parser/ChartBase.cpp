@@ -94,7 +94,7 @@ addtochart(const Term* trm)
   if(numItemsToDelete >= itemsToDeletesize)
     {
       Item* dummy = new Item(trm, 0, 0);
-      itemsToDelete.push_back(dummy);
+      itemsToDelete.emplace_back(dummy);
       itemsToDeletesize++;
     }
   Item* ans = itemsToDelete[numItemsToDelete++];

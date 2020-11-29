@@ -27,9 +27,12 @@
 #include "ExportWindow.h"
 #include "resourceViewer/AttributeEditor.h"
 #include "posecreator/PoseCreator.h"
+#include "Session.h"
 
 namespace SmartBody {
 	class SBRenderScene;
+	class SBDebuggerClient;
+	class SBDebuggerServer;
 }
 
 class SbmCharacter;
@@ -41,22 +44,22 @@ class  BaseWindow : public SrViewer, public Fl_Double_Window
 {
 	public:	
 		BaseWindow(bool useEditor, int x, int y, int w, int h, const char* name);
-		~BaseWindow();
+		~BaseWindow() override;
 
-		virtual void show_viewer();
-		virtual void hide_viewer();	
-		virtual void set_camera(const SrCamera* cam);
-		virtual SrCamera* get_camera();
-		void render();
-		void root(SrSn* r);
-		SrSn* root();
+		void show_viewer() override;
+		void hide_viewer() override;
+		void set_camera(const SrCamera* cam) override;
+		SrCamera* get_camera() override;
+		void render() override;
+		void root(SrSn* r) override;
+		SrSn* root() override;
 
 		void resetWindow();
 
 		static std::string chooseFile(const std::string& label, const std::string& filter, const std::string& defaultDirectory);
 		static std::string chooseDirectory(const std::string& label, const std::string& defaultDirectory);
 
-		void runScript(std::string filename);
+		void runScript(const std::string& filename);
 		void reloadScripts(std::string scriptsDir);
 		void reloadScriptsByDir(std::string scriptsDir, std::string parentStr);
 		SbmCharacter* getSelectedCharacter();
@@ -89,8 +92,13 @@ class  BaseWindow : public SrViewer, public Fl_Double_Window
 		//JointMapViewer* jointMapViewer;
 		RetargetStepWindow* retargetStepWindow;
 
-		std::unique_ptr<SmartBody::SBScene> mScene;
-		std::unique_ptr<SmartBody::SBRenderScene> mRenderScene;
+		std::unique_ptr<SmartBody::SBDebuggerClient> mDebuggerClient;
+		//Initially I wanted the session to be owned by this window, but that requires more refactoring. For now it's global and references from here.
+		Session* mSession;
+		//std::unique_ptr<Session> mSession;
+//		std::unique_ptr<SmartBody::SBScene> mScene;
+//		std::unique_ptr<SmartBody::SBRenderAssetManager> mRenderAssetManager;
+//		std::unique_ptr<SmartBody::SBRenderScene> mRenderScene;
 		
 		Fl_Group* _mainGroup;
 		Fl_Menu_Bar* menubar;
@@ -254,9 +262,9 @@ class FltkViewerFactory : public SrViewerFactory
 		FltkViewerFactory();
 
 		//void setFltkViewer(FltkViewer* viewer);
-		virtual SrViewer* create(int x, int y, int w, int h);
-		virtual void remove(SrViewer* viewer);
-		virtual void reset(SrViewer* viewer);
+		SrViewer* create(int x, int y, int w, int h) override;
+		void remove(SrViewer* viewer) override;
+		void reset(SrViewer* viewer) override;
 		void setUseEditor(bool val);
 		void setMaximize(bool val);
 		void setWindowName(std::string name);

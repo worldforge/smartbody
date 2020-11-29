@@ -287,7 +287,7 @@ void SBDebuggerServer::Update()
       if (socket)
       {
          vhcl::SocketSetBlocking(socket, false);
-         m_sockConnectionsTCP.push_back(socket);
+         m_sockConnectionsTCP.emplace_back(socket);
       }
 	  else
 	  {

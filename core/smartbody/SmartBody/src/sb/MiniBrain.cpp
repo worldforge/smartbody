@@ -98,7 +98,7 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 			data.velocity = (curPosition - data.position) / (float) dt;
 			if ((int)data.cachePositions.size() > _cacheLimit)
 				data.cachePositions.pop_front();
-			data.cachePositions.push_back(curPosition);
+			data.cachePositions.emplace_back(curPosition);
 			SrVec temp;
 			for (	std::list<SrVec>::iterator iter = data.cachePositions.begin();
 					iter != data.cachePositions.end();
@@ -139,7 +139,7 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 			data.position = curPosition;
 			if ((int)data.cachePositions.size() > _cacheLimit)
 				data.cachePositions.pop_front();
-			data.cachePositions.push_back(curPosition);
+			data.cachePositions.emplace_back(curPosition);
 			data.startGazeTime = -1;
 			_data.insert(std::pair<std::string, ObjectData>(pawn->getName(), data));
 		}

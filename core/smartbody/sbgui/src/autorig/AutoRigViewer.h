@@ -24,10 +24,10 @@ class ModelViewer : public MouseViewer
 {
 public:
 	ModelViewer(int x, int y, int w, int h, char* name);
-	~ModelViewer();
+	~ModelViewer() override;
 	void setModel(SrModel& model);
 	void focusOnModel();
-	virtual void draw();
+	void draw() override;
 
 protected:
 	void updateFancyLights();
@@ -38,10 +38,10 @@ class SkinViewer : public MouseViewer
 {
 public:
 	SkinViewer(int x, int y, int w, int h, char* name);
-	~SkinViewer();
+	~SkinViewer() override;
 	void setSkeleton(SmartBody::SBSkeleton* sk);
 	void setDeformableMesh(DeformableMesh* mesh);
-	virtual void draw();
+	void draw() override;
 	void focusOnSkeleton();
 protected:
 	void drawSkinWeight();
@@ -56,9 +56,9 @@ class AutoRigViewer : public Fl_Double_Window, AutoRigCallBack
 	public:
 		AutoRigViewer(int x, int y, int w, int h, char* name);
 		
-		~AutoRigViewer();
+		~AutoRigViewer() override;
 		
-		virtual void draw();
+		void draw() override;
 		void applyAutoRig(int riggingType = 0);
 		static void ApplyAutoRigCB(Fl_Widget* widget, void* data);
 		void updateAutoRigViewer();
@@ -66,9 +66,9 @@ class AutoRigViewer : public Fl_Double_Window, AutoRigCallBack
 
 		void setRetargetStepWindow(RetargetStepWindow* val) { retargetStepWindow = val; }
 
-		virtual void voxelComplete(SrModel& voxelModel);
-		virtual void skeletonComplete(SmartBody::SBSkeleton* sk);
-		virtual void skinComplete(DeformableMesh* defMesh);
+		void voxelComplete(SrModel& voxelModel) override;
+		void skeletonComplete(SmartBody::SBSkeleton* sk) override;
+		void skinComplete(DeformableMesh* defMesh) override;
 
 		std::string _characterName;
 		std::string _deletePawnName;

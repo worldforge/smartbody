@@ -43,9 +43,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 /************************************************************************/
 SbmTextureManager* SbmTextureManager::_singleton = nullptr;
 
-SbmTextureManager::SbmTextureManager( )
-{
-	
+SbmTextureManager::SbmTextureManager( ) {
+
 }
 
 SbmTextureManager::~SbmTextureManager( )
@@ -54,7 +53,7 @@ SbmTextureManager::~SbmTextureManager( )
 }
 
 void SbmTextureManager::updateEnvMaps()
-{	
+{
 	std::vector<std::string> hdrTexNames = getTextureNames(SbmTextureManager::TEXTURE_HDR_MAP);
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	SmartBody::StringAttribute* envMapAttr = dynamic_cast<SmartBody::StringAttribute*>(scene->getAttribute("Renderer.envMapName"));
@@ -68,13 +67,7 @@ void SbmTextureManager::updateEnvMaps()
 
 SBAPI void SbmTextureManager::deleteTexture(int type, const char* textureName)
 {
-	StrTextureMap& texMap = findMap(type);
-	auto I = texMap.find(textureName);
-	if (I != texMap.end())
-	{
-		SmartBody::util::log("Delete texture '%s'", I->second->textureName.c_str());
-		texMap.erase(I);
-	}
+	textureMap.erase(textureName);
 }
 
 
@@ -82,11 +75,8 @@ SBAPI void SbmTextureManager::deleteTexture(int type, const char* textureName)
 void SbmTextureManager::releaseAllTextures()
 {
 	textureMap.clear();
-	normalTexMap.clear();
-	specularTexMap.clear();
-	glossyTexMap.clear();
 
-	
+
 #if USE_CUBE_MAP
     StrCubeTextureMap::iterator it;
     for(it = cubeTextureMap.begin(); it != cubeTextureMap.end(); ++it){
@@ -97,35 +87,17 @@ void SbmTextureManager::releaseAllTextures()
 #endif
 }
 
-StrTextureMap& SbmTextureManager::findMap( int type )
-{
-    if (type == TEXTURE_DIFFUSE)
-        return textureMap;
-    else if (type == TEXTURE_NORMALMAP)
-        return normalTexMap;
-    else if (type == TEXTURE_SPECULARMAP)
-		return specularTexMap;
-	else if (type == TEXTURE_GLOSSYMAP)
-		return glossyTexMap;
-	else if (type == TEXTURE_HDR_MAP)
-		return hdrTexMap;
-	
-    return textureMap;
-}
-
 
 std::vector<std::string> SbmTextureManager::getTextureNames( int type )
 {
-    StrTextureMap& texMap = findMap(type);
-    
     std::vector<std::string> texNames;
-    StrTextureMap::iterator vi;
-    for ( vi  = texMap.begin();
-        vi != texMap.end();
-        vi++)
-    {
-        texNames.push_back(vi->first);		
+
+    for (auto& entry : textureMap) {
+    	if (entry.second.type == type) {
+    		texNames.emplace_back(entry.first);
+    	}
     }
+
     return texNames;
 }
 
@@ -136,7 +108,6 @@ void SbmTextureManager::loadTexture(int iType, const char* textureName, const ch
     std::string strTex		= textureName;
 	//SmartBody::util::log("Loading texture '%s'.", textureName);
     // Retrieves texture map type: DIFFUSE, SPECULAR, GLOSSY, or NORMAL
-    StrTextureMap& texMap	= findMap(iType);
 
     // overwrite the existing textures
 	/*if (texMap.find(strTex) != texMap.end())
@@ -151,22 +122,27 @@ void SbmTextureManager::loadTexture(int iType, const char* textureName, const ch
 		}
 		texture->loadImage(fileName);
 	}
-	else //*/if (texMap.find(strTex) == texMap.end()) 
+	else //*/if (textureMap.find(strTex) == textureMap.end())
     {
-        auto texture = std::make_shared<SbmTextureData>();
-        texture->textureName = textureName;
+        auto texture = std::make_shared<SbmTexture>();
+        texture->data.textureName = textureName;
         if(!texture->loadImage(fileName))
         {
             SmartBody::util::log("ERROR: Can't load image %s from %s. Invalid path? Is it an 8-bit image?", textureName, fileName);
 			return;
-        }		
+        }
 
         SmartBody::util::log("Just loaded texture %s from %s type %d", textureName, fileName, iType);
 
-        texMap[strTex] = texture;
+		textureMap[strTex] = {iType, texture};
     }
 
 }
+
+void SbmTextureManager::addTexture(std::string name, int type, std::shared_ptr<SbmTexture> texture) {
+	textureMap.emplace(std::move(name), TextureHolder{type, std::move(texture)});
+}
+
 
 void SbmTextureManager::createWhiteTexture(const char* textureName, int width, int height)
 {
@@ -175,13 +151,13 @@ void SbmTextureManager::createWhiteTexture(const char* textureName, int width, i
     StrTextureMap& texMap	= findMap(SbmTextureManager::TEXTURE_DIFFUSE);
 
     // If the texture does not exist in the texture map, create a new one
-    if (texMap.find(std::string(textureName)) == texMap.end()) 
+    if (texMap.find(std::string(textureName)) == texMap.end())
     {
         SbmTexture* texture = new SbmTexture(textureName);
         texture->createWhiteTexture(width, height);
         texMap[std::string(textureName)] = texture;
         texture->buildTexture(false);
-    }	
+    }
 #endif
 }
 
@@ -191,32 +167,29 @@ SBAPI void SbmTextureManager::createBlackTexture(const char* textureName, int wi
 	createColorTexture(textureName, SrColor::black, width, height);
 }
 
-SBAPI void SbmTextureManager::createColorTexture(const char* textureName, SrColor initColor, int width /*= 1*/, int height /*= 1*/) 
+SBAPI void SbmTextureManager::createColorTexture(const char* textureName, SrColor initColor, int width /*= 1*/, int height /*= 1*/)
 {
-	StrTextureMap& texMap = findMap(SbmTextureManager::TEXTURE_DIFFUSE);
-
 	// If the texture does not exist in the texture map, create a new one
-	if (texMap.find(std::string(textureName)) == texMap.end())
+	if (textureMap.find(std::string(textureName)) == textureMap.end())
 	{
-		auto texture = std::make_shared<SbmTextureData>();
-		texture->createEmptyTexture(width, height, 4, GL_UNSIGNED_BYTE, initColor);
-		texMap[std::string(textureName)] = texture;
+		auto texture = std::make_shared<SbmTexture>();
+		texture->data.createEmptyTexture(width, height, 4, GL_UNSIGNED_BYTE, initColor);
+		textureMap[std::string(textureName)] = {SbmTextureManager::TEXTURE_DIFFUSE, texture};
 		texture->buildTexture(false);
 	}
 }
 
-SBAPI std::unique_ptr<SbmTexture> SbmTextureManager::createTexture(int type, const char* textureName)
+SBAPI std::shared_ptr<SbmTexture> SbmTextureManager::createTexture(int type, const char* textureName)
 {
 	std::string strTex = textureName;
-	StrTextureMap& texMap = findMap(type);
-	auto I = texMap.find(strTex);
-	if (I != texMap.end())
-		return std::make_unique<SbmTexture>(I->second);
-	
-	auto tex = std::make_shared<SbmTextureData>();
-	tex->textureName = textureName;
-	texMap[strTex] = tex;
-	return std::make_unique<SbmTexture>(tex);
+	auto I = textureMap.find(strTex);
+	if (I != textureMap.end())
+		return I->second.texture;
+
+	auto tex = std::make_shared<SbmTexture>();
+	tex->data.textureName = textureName;
+	textureMap[strTex] = {SbmTextureManager::TEXTURE_DIFFUSE, tex};
+	return tex;
 }
 
 SBAPI GLuint SbmTextureManager::createFBO( const char* fboName, bool recreateFBO )
@@ -235,7 +208,7 @@ SBAPI GLuint SbmTextureManager::createFBO( const char* fboName, bool recreateFBO
 SBAPI GLuint SbmTextureManager::findFBO( const char* fboName )
 {
     std::string strFBO = fboName;
-    if (FBOMap.find(strFBO) != FBOMap.end()) 
+    if (FBOMap.find(strFBO) != FBOMap.end())
     {
         return FBOMap[strFBO];
     }
@@ -246,23 +219,8 @@ SBAPI GLuint SbmTextureManager::findFBO( const char* fboName )
 void SbmTextureManager::updateTexture()
 {
 	for (auto& entry: textureMap) {
-		if (!entry.second->finishBuild) {
-			entry.second->buildTexture();
-		}
-	}
-	for (auto& entry: normalTexMap) {
-		if (!entry.second->finishBuild) {
-			entry.second->buildTexture();
-		}
-	}
-	for (auto& entry: specularTexMap) {
-		if (!entry.second->finishBuild) {
-			entry.second->buildTexture();
-		}
-	}
-	for (auto& entry: hdrTexMap) {
-		if (!entry.second->finishBuild) {
-			entry.second->buildTexture();
+		if (!entry.second.texture->data.finishBuild) {
+			entry.second.texture->buildTexture();
 		}
 	}
 
@@ -280,17 +238,9 @@ void SbmTextureManager::updateTexture()
 SBAPI void SbmTextureManager::reloadTexture()
 {
 	for (auto& entry: textureMap) {
-		entry.second->buildTexture();
+		entry.second.texture->buildTexture();
 	}
-	for (auto& entry: normalTexMap) {
-		entry.second->buildTexture();
-	}
-	for (auto& entry: specularTexMap) {
-		entry.second->buildTexture();
-	}
-	for (auto& entry: hdrTexMap) {
-		entry.second->buildTexture();
-	}
+
 
 	// recreate FBO when reloading texture
 	for (auto& entry: FBOMap) {
@@ -313,14 +263,13 @@ SBAPI void SbmTextureManager::reloadTexture()
 
 
 
-std::unique_ptr<SbmTexture> SbmTextureManager::findTexture(int type, const char* textureName )
+std::shared_ptr<SbmTexture> SbmTextureManager::findTexture(const char* textureName )
 {
     std::string strTex = textureName;
     //SmartBody::util::log("Tex name: %s\tType: %d", strTex.c_str(), type);
-    StrTextureMap& texMap = findMap(type);
-    auto I = texMap.find(strTex);
-    if (I != texMap.end()) {
-		return std::make_unique<SbmTexture>(I->second);
+    auto I = textureMap.find(strTex);
+    if (I != textureMap.end()) {
+		return I->second.texture;
 	}
     return {};
 }
@@ -337,9 +286,9 @@ void SbmTextureManager::loadCubeMapTextures(const std::string cubeMapName, const
         SmartBody::util::log("Textures provided are not enough to build cube map!\n");
         return;
     }
-    
+
     // If the texture does not exist in the texture map, create a new one
-    if (cubeTextureMap.find(cubeMapName) == cubeTextureMap.end()) 
+    if (cubeTextureMap.find(cubeMapName) == cubeTextureMap.end())
     {
         SbmCubeMapTexture* texture = new SbmCubeMapTexture(textureNames, textureFileNames);
         for(int i = 0; i < textureNames.size(); ++i){
@@ -348,7 +297,7 @@ void SbmTextureManager::loadCubeMapTextures(const std::string cubeMapName, const
                 SmartBody::util::log("ERROR: Can't load image %s. Invalid path? Is it an 8-bit image?", textureFileNames[i].c_str());
             }
         }
-        
+
         cubeTextureMap[cubeMapName] = texture;
     }
 
@@ -364,15 +313,12 @@ SbmTextureData::~SbmTextureData() {
 }
 
 
-SbmTexture::SbmTexture(std::shared_ptr<SbmTextureData> data) : data(std::move(data)) {
-	
-}
+SbmTexture::SbmTexture() = default;
 
 
 SbmTexture::SbmTexture( const char* texName )
-: data(std::make_shared<SbmTextureData>())
 {
-	data->textureName = texName;
+	data.textureName = texName;
 }
 
 
@@ -423,7 +369,7 @@ bool SbmTextureData::loadImage( const char* fileName )
 	buffer.resize(width*height*channels);
 	std::memcpy(buffer.data(), tmpBuffer.get(), buffer.size());
 #if 0
-    buffer = SOIL_load_image(fileName, &width, &height, &channels, SOIL_LOAD_AUTO);	
+    buffer = SOIL_load_image(fileName, &width, &height, &channels, SOIL_LOAD_AUTO);
 	if (width < 0 || height < 0 || channels < 0)
 	{
 		const char* errorString = SOIL_last_result();
@@ -449,7 +395,7 @@ bool SbmTextureData::loadImage( const char* fileName )
             buffer[index1] = buffer[index2];
             buffer[index2] = temp;
             ++index1;
-            ++index2;			
+            ++index2;
         }
     }
 #endif
@@ -466,7 +412,7 @@ bool SbmTextureData::loadImage( const char* fileName )
             }
         }
     }
-    
+
 
     if (transparentPixel*50 > height*width)
     {
@@ -481,7 +427,7 @@ bool SbmTextureData::loadImage( const char* fileName )
 	imgBuffer = buffer;
 
     // set the texture file name
-	textureFileName = fileName;	
+	textureFileName = fileName;
 	finishBuild = false;
 
 
@@ -490,18 +436,18 @@ bool SbmTextureData::loadImage( const char* fileName )
 }
 
 void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
-{	
+{
 	//SmartBody::util::log("Building texture '%s'", this->getName().c_str());
     //SmartBody::util::log("Start Build Texture");
 #if !defined(__native_client__)
-    //SbmShaderProgram::printOglError("SbmTexture.cpp:10");		
+    //SbmShaderProgram::printOglError("SbmTexture.cpp:10");
     GLuint iType = GL_TEXTURE_2D;
 #if !defined(EMSCRIPTEN) && !defined(__ANDROID__) && !defined(SB_IPHONE)   //OpenGL ES 2.0 no EMUN for GL_TEXTURE_2D
     myGLEnable(GL_TEXTURE_2D);
 #endif
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 #if !defined(EMSCRIPTEN) && !defined(__ANDROID__) && !defined(SB_IPHONE)
-    myGLEnable(iType);	
+    myGLEnable(iType);
 #endif
 
 	if (texID == 0 || recreateTexture)
@@ -521,7 +467,7 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 #define GL_RGBA8 GL_RGBA
 #endif
 #endif
-    
+
     //glTexParameteri(iType,GL_TEXTURE_WRAP_S, GL_REPEAT);
     //glTexParameteri(iType,GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -544,7 +490,7 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 
 	//glTexParameteri(iType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(iType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(iType, GL_TEXTURE_MAG_FILTER,GL_LINEAR); 
+    glTexParameteri(iType, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 	bool isFloatTexture = (dataType == GL_FLOAT);
 	//if (isFloatTexture)
@@ -554,7 +500,7 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 #if !defined(EMSCRIPTEN)
         internal_format = isFloatTexture ? GL_RGB32F : GL_RGB8;
         texture_format = GL_RGB;
-#else 
+#else
         internal_format = GL_RGB;
         texture_format = GL_RGB;
 #endif
@@ -564,10 +510,10 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 #if !defined(EMSCRIPTEN)
         internal_format = isFloatTexture ? GL_RGBA32F : GL_RGBA8;
         texture_format = GL_RGBA;
-#else 
+#else
         internal_format = GL_RGBA;
         texture_format = GL_RGBA;
-#endif			
+#endif
     }
 	else if (channels == 1) // single channel
 	{
@@ -577,7 +523,7 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 	unsigned char* buffer = nullptr;
 	if (!imgBuffer.empty())
 		buffer = imgBuffer.data();
-    //glTexImage2D(iType,0,texture_format,width,height,0,texture_format,GL_UNSIGNED_BYTE,buffer);	
+    //glTexImage2D(iType,0,texture_format,width,height,0,texture_format,GL_UNSIGNED_BYTE,buffer);
 #if !defined (__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(__linux__) &!defined(EMSCRIPTEN)
     //if (buildMipMap)
     //    gluBuild2DMipmaps(iType, channels, width, height, texture_format, dataType, buffer);
@@ -589,7 +535,7 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
     glTexImage2D(iType,0,internal_format, width,height,0,texture_format, dataType, buffer);
 	//if (buildMipMap)
 	//	glGenerateMipmap(GL_TEXTURE_2D);
-#elif defined(EMSCRIPTEN)    
+#elif defined(EMSCRIPTEN)
     glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 	if (buildMipMap)
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -603,9 +549,9 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 #if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
     GLclampf iPrority = 1.0;
     glPrioritizeTextures(1,&texID,&iPrority);
-#endif    
-    glBindTexture(iType,0);	
-    finishBuild = true;    
+#endif
+    glBindTexture(iType,0);
+    finishBuild = true;
 #endif
 }
 
@@ -646,29 +592,30 @@ SBAPI void SbmTextureData::rotateTexture(RotateEnum rotate)
 			{
 				imgBuffer[(i*newWidth + j)*pixelSize + k] = imgCopy[(ti*width + tj)*pixelSize + k];
 			}
-		}	
+		}
 	width = newWidth;
 	height = newHeight;
 }
 
 unsigned char* SbmTexture::getBuffer()
 {
-    if (data->imgBuffer.size() == 0) return nullptr;
-    
-    return data->imgBuffer.data();
+    if (data.imgBuffer.empty())
+    	return nullptr;
+
+    return data.imgBuffer.data();
 }
 
 int SbmTexture::getBufferSize()
 {
-    return data->imgBuffer.size();
+    return data.imgBuffer.size();
 }
 
 void SbmTexture::setBuffer(unsigned char* buffer, int size)
 {
-	data->imgBuffer.clear();
+	data.imgBuffer.clear();
     for (int i = 0; i < size; ++i)
     {
-		data->imgBuffer.push_back(buffer[i]);
+		data.imgBuffer.emplace_back(buffer[i]);
     }
 }
 
@@ -703,7 +650,7 @@ void SbmTextureData::createWhiteTexture(int w, int h)
     }
 #endif
 	createEmptyTexture(w, h, 4, GL_UNSIGNED_BYTE, SrColor::white);
-    //textureFileName		= "white";	
+    //textureFileName		= "white";
     //textureName			= "white";
 }
 
@@ -733,7 +680,7 @@ void SbmTextureData::createEmptyTexture(int w /*= 1*/, int h /*= 1*/, int numCha
 			for (int j = 0; j < channels; j++)
 			{
 				floatData[i*channels + j] = color[j];
-			}			
+			}
 		}
 	}
 	else // (dataType == GL_UNSIGNED_BYTE)
@@ -755,15 +702,15 @@ void SbmTextureData::createEmptyTexture(int w /*= 1*/, int h /*= 1*/, int numCha
 	{
 		imgBuffer[i] = data[i];
 	}
-	delete [] data;	
+	delete [] data;
 }
 
 
 
 void SbmTextureData::bakeAlphaIntoTexture(SbmTexture* alphaTex, bool useAlphaBlend)
 {
-	unsigned char* alphaBuf = alphaTex->getBuffer();	
-	
+	unsigned char* alphaBuf = alphaTex->getBuffer();
+
 	if (alphaTex->getWidth() != width || alphaTex->getHeight() != height)
 	{
 		SmartBody::util::log("Warning! Alpha texture size (%d, %d) do not match diffuse texture '%s' size (%d, %d)", alphaTex->getWidth(), alphaTex->getHeight(), textureName.c_str(), width, height);
@@ -779,13 +726,13 @@ void SbmTextureData::bakeAlphaIntoTexture(SbmTexture* alphaTex, bool useAlphaBle
 			for (int i = 0; i < width; i++)
 			{
 				for (int k=0;k<channels;k++)
-					tempBuffer[j*width*4 + i*4 + k] = imgBuffer[j*width*channels + i*channels + k];				
+					tempBuffer[j*width*4 + i*4 + k] = imgBuffer[j*width*channels + i*channels + k];
 			}
 		}
 		imgBuffer = tempBuffer;
 		channels = 4;
 	}
-	
+
 	int numAlphaChannel = alphaTex->getNumChannels();
 	for (int j = 0; j < height; j++)
 	{
@@ -815,7 +762,7 @@ void SbmTextureData::bakeAlphaIntoTexture(SbmTexture* alphaTex, bool useAlphaBle
 			float luminance = (tr * .212671f) +
 				(tg * .715160f) +
 			(tb * .072169f);
-			
+
 			if (useAlphaBlend)
 			{
 				// A_ONE
@@ -827,7 +774,7 @@ void SbmTextureData::bakeAlphaIntoTexture(SbmTexture* alphaTex, bool useAlphaBle
 				//imgBuffer[j*width * 4 + i * 4 + 1] = fg * tb;
 				//imgBuffer[j*width * 4 + i * 4 + 2] = fb * tg;
 				//imgBuffer[j*width * 4 + i * 4 + 3] = fa * ta;
-			
+
 				imgBuffer[j*width * 4 + i * 4 + 3] = 1.0f - fa;
 			}
 			else
@@ -837,18 +784,50 @@ void SbmTextureData::bakeAlphaIntoTexture(SbmTexture* alphaTex, bool useAlphaBle
 				//imgBuffer[j*width * 4 + i * 4 + 1] = fg * (transg * transparency) + tg * (1.0f - transg * transparency);
 				//imgBuffer[j*width * 4 + i * 4 + 2] = fb * (transb * transparency) + tb * (1.0f - transb * transparency);
 				//imgBuffer[j*width * 4 + i * 4 + 3] = fa * (luminance * transparency) + ta * (1.0f - luminance * transparency);
-				
+
 				imgBuffer[j*width * 4 + i * 4 + 3] = luminance;
-				
+
 			}
-				
-							
+
+
 			//imgBuffer[j*width * 4 + i * 4 + 3] = 1.0;
 
-			
+
 		}
 	}
 	transparentTexture = true;
+}
+
+bool SbmTexture::loadImage(const char* fileName) {
+	return data.loadImage(fileName);
+}
+
+bool SbmTexture::loadHDRImage(const char* fileName) {
+	return data.loadHDRImage(fileName);
+}
+
+void SbmTexture::buildTexture(bool buildMipMap, bool recreateTexture) {
+	data.buildTexture(buildMipMap, recreateTexture);
+
+}
+
+void SbmTexture::rotateTexture(SbmTextureData::RotateEnum rotate) {
+	data.rotateTexture(rotate);
+}
+
+void SbmTexture::setTextureSize(int w, int h, int numChannels) {
+	data.setTextureSize(w, h, numChannels);
+}
+
+void SbmTexture::bakeAlphaIntoTexture(SbmTexture* alphaTex, bool useAlphaBlend) { data.bakeAlphaIntoTexture(alphaTex, useAlphaBlend); }
+
+void SbmTexture::createWhiteTexture(int w, int h) {
+	data.createWhiteTexture(w, h);
+}
+
+void SbmTexture::createEmptyTexture(int w, int h, int numChannels, GLenum type, SrColor initColor) {
+	data.createEmptyTexture(w, h, numChannels, type, initColor);
+
 }
 
 #if USE_CUBE_MAP
@@ -870,20 +849,20 @@ SbmCubeMapTexture::~SbmCubeMapTexture(){
     if (buffer)
         delete [] buffer;
     if (texID != 0)
-        glDeleteTextures(1,&texID);	
+        glDeleteTextures(1,&texID);
 }
 
 
 
 bool SbmCubeMapTexture::loadImage(const char* fileName){
-    
-	buffer = SOIL_load_image(fileName, &width, &height, &channels, SOIL_LOAD_AUTO);	
+
+	buffer = SOIL_load_image(fileName, &width, &height, &channels, SOIL_LOAD_AUTO);
     if (width < 0 || height < 0 || channels < 0)
         return false;
     else {
         SmartBody::util::log("Loading image       :%s\t%d\t%d\t%d", fileName, width, height, channels );
     }
-    
+
     int transparentPixel = 0;
     // invert the image in y-axis
     for(int j = 0; j*2 < height; ++j )
@@ -896,7 +875,7 @@ bool SbmCubeMapTexture::loadImage(const char* fileName){
             buffer[index1] = buffer[index2];
             buffer[index2] = temp;
             ++index1;
-            ++index2;			
+            ++index2;
         }
     }
 
@@ -933,12 +912,12 @@ bool SbmCubeMapTexture::loadImage(const char* fileName){
     return true;
 }
 void SbmCubeMapTexture::buildCubeMapTexture(bool buildMipMap){
-    if (!getBuffer()) return;	
+    if (!getBuffer()) return;
     GLuint iType = GL_TEXTURE_CUBE_MAP;
     glGenTextures ( 1, &texID );
     // Bind the texture object
     glBindTexture ( iType, texID );
-    
+
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     //we bind them into one texId
     glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
@@ -946,19 +925,19 @@ void SbmCubeMapTexture::buildCubeMapTexture(bool buildMipMap){
     if (channels == 3)
     {
         internal_format = GL_RGB;
-        texture_format = GL_RGB;		
+        texture_format = GL_RGB;
     }
     else if (channels == 4)
     {
         internal_format = GL_RGBA;
-        texture_format = GL_RGBA;				
+        texture_format = GL_RGBA;
     }
     //loading texture to the cube
 
     for(int i = 0, offset = 0; i < 6; ++i, offset += width * height * channels){
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texture_format, width, height, 0, texture_format, GL_UNSIGNED_BYTE, &(imgBuffer[offset]));
     }
-    //glBindTexture(iType, 0);	
+    //glBindTexture(iType, 0);
     finishBuild = true;
 }
 unsigned char* SbmCubeMapTexture::getBuffer()
@@ -978,7 +957,7 @@ void SbmCubeMapTexture::setBuffer(unsigned char* buffer, int size)
     imgBuffer.clear();
     for (int i = 0; i < size; ++i)
     {
-        imgBuffer.push_back(buffer[i]);
+        imgBuffer.emplace_back(buffer[i]);
     }
 }
 

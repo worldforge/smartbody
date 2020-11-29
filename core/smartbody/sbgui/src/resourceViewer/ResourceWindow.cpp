@@ -36,21 +36,21 @@
 #include <sb/sbm_character.hpp>
 #include "SBUtilities.h"
 #include "FLTKListener.h"
-
+#include "Session.h"
 
 ResourceWindow::ResourceWindow(int x, int y, int w, int h, char* name) : Fl_Group(x, y, w, h, name), SBWindowListener(), SelectionListener()
 {
-	itemInfoWidget = NULL;
+	itemInfoWidget = nullptr;
 	lastClickedItemPath = " ";
 	emptyString = "";
 
 	/*
-	_itemNameList.push_back("controller");
-	_itemNameList.push_back("physics");
-	_itemNameList.push_back("neutral");
-	_itemNameList.push_back("au");
-	_itemNameList.push_back("viseme");	
-	_itemNameList.push_back("default");
+	_itemNameList.emplace_back("controller");
+	_itemNameList.emplace_back("physics");
+	_itemNameList.emplace_back("neutral");
+	_itemNameList.emplace_back("au");
+	_itemNameList.emplace_back("viseme");
+	_itemNameList.emplace_back("default");
 	*/
 
 	// create Tree Info Object
@@ -145,7 +145,7 @@ Fl_Tree_Item* ResourceWindow::getTreeFromName(const std::string& name)
 			return (*iter).first;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 std::string ResourceWindow::getNameFromItem(Fl_Tree_Item* item)
@@ -212,8 +212,7 @@ bool ResourceWindow::processedDragAndDrop( std::string& dndText )
 	}
 	else
 	{
-		SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
-		assetManager->loadAssetsFromPath(dndText);
+		scene->getAssetStore().loadAssetsFromPath(dndText);
 	}
 	
 	updateGUI();
@@ -306,7 +305,7 @@ int ResourceWindow::handle( int event )
 						if (child->is_selected())
 						{
 							const char* name = child->label();
-							int confirm = fl_choice(SmartBody::util::format("Are you sure you want to delete '%s'?",name).c_str(), "No", "Yes", NULL);
+							int confirm = fl_choice(SmartBody::util::format("Are you sure you want to delete '%s'?",name).c_str(), "No", "Yes", nullptr);
 							if (confirm == 0)
 								return 0;
 							SmartBody::SBScene::getScene()->removePawn(name);
@@ -323,7 +322,7 @@ int ResourceWindow::handle( int event )
 						if (child->is_selected())
 						{
 							const char* name = child->label();
-							int confirm = fl_choice(SmartBody::util::format("Are you sure you want to delete '%s'?",name).c_str(), "No", "Yes", NULL);
+							int confirm = fl_choice(SmartBody::util::format("Are you sure you want to delete '%s'?",name).c_str(), "No", "Yes", nullptr);
 							if (confirm == 0)
 								return 0;
 							SmartBody::SBScene::getScene()->removeCharacter(name);
@@ -375,6 +374,7 @@ void ResourceWindow::updateGUI()
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
+	auto& renderAssetManager = Session::current->renderAssetManager;
 
 	resourceTree->sortorder(FL_TREE_SORT_ASCENDING);	
 	// update path tree	
@@ -388,26 +388,26 @@ void ResourceWindow::updateGUI()
 
 	const std::vector<std::string> scriptPaths = SmartBody::SBScene::getScene()->getAssetPaths("script");
 	resourceTree->clear_children(getTreeFromName("scriptfiles"));
-	for (size_t p = 0; p < scriptPaths.size(); p++)
+	for (const auto & scriptPath : scriptPaths)
 	{
-		updateScriptFiles(getTreeFromName("scriptfiles"), scriptPaths[p]);
+		updateScriptFiles(getTreeFromName("scriptfiles"), scriptPath);
 	}	
 
 	// update runtime scripts
 	resourceTree->clear_children(getTreeFromName("script"));
 	std::vector<std::string> scriptName = scene->getScriptNames();
-	for (size_t i = 0; i < scriptName.size(); i++)
+	for (auto & i : scriptName)
 	{
-		SmartBody::SBScript* script = scene->getScript(scriptName[i]);
+		SmartBody::SBScript* script = scene->getScript(i);
 		updateScript(getTreeFromName("script"), script);
 	}
 
 	// update skeleton
 	resourceTree->clear_children(getTreeFromName("skeleton"));
 	std::vector<std::string> skeletons = scene->getSkeletonNames();
-	for (size_t c = 0; c < skeletons.size(); c++)
+	for (auto & skeleton : skeletons)
 	{
-		SmartBody::SBSkeleton * skel = scene->getSkeleton(skeletons[c]);
+		SmartBody::SBSkeleton * skel = scene->getSkeleton(skeleton);
 		updateSkeleton(getTreeFromName("skeleton"), skel);
 	}
 
@@ -415,33 +415,29 @@ void ResourceWindow::updateGUI()
 	resourceTree->clear_children(getTreeFromName("jointmap"));	
 	SmartBody::SBJointMapManager* jointMapManager = scene->getJointMapManager();
 	std::vector<std::string> jointMapNames = jointMapManager->getJointMapNames();
-	for (std::vector<std::string>::iterator iter = jointMapNames.begin();
-		 iter != jointMapNames.end(); 
-		 iter++)
+	for (auto & jointMapName : jointMapNames)
 	{
-		Fl_Tree_Item* boneMapItem = resourceTree->add(getTreeFromName("jointmap"), (*iter).c_str());
-		updateJointMap(boneMapItem, jointMapManager->getJointMap((*iter)));
+		Fl_Tree_Item* boneMapItem = resourceTree->add(getTreeFromName("jointmap"), jointMapName.c_str());
+		updateJointMap(boneMapItem, jointMapManager->getJointMap(jointMapName));
 	}
 
 	// update gesture maps
 	resourceTree->clear_children(getTreeFromName("gesturemap"));
 	SmartBody::SBGestureMapManager* gestureMapManager = scene->getGestureMapManager();
 	std::vector<std::string> gestureMapNames = gestureMapManager->getGestureMapNames();
-	for (std::vector<std::string>::iterator iter = gestureMapNames.begin();
-		 iter != gestureMapNames.end(); 
-		 iter++)
+	for (auto & gestureMapName : gestureMapNames)
 	{
-		Fl_Tree_Item* gestureMapItem = resourceTree->add(getTreeFromName("gesturemap"), (*iter).c_str());
-		updateGestureMap(gestureMapItem, gestureMapManager->getGestureMap((*iter)));
+		Fl_Tree_Item* gestureMapItem = resourceTree->add(getTreeFromName("gesturemap"), gestureMapName.c_str());
+		updateGestureMap(gestureMapItem, gestureMapManager->getGestureMap(gestureMapName));
 	}
 
 	// update motion map
 	resourceTree->clear_children(getTreeFromName("motion"));
 	std::vector<std::string> motionNames = scene->getMotionNames();
-	for (size_t i = 0; i < motionNames.size(); i++)
+	for (auto & motionName : motionNames)
 	{
 		//resourceTree->add(treeItemList[ITEM_MOTION],mi->first.c_str());
-		SmartBody::SBMotion * motion = scene->getMotion(motionNames[i]);
+		SmartBody::SBMotion * motion = scene->getMotion(motionName);
 		if (motion)
 			updateMotion(getTreeFromName("motion"), motion);
 	}
@@ -450,29 +446,29 @@ void ResourceWindow::updateGUI()
 	// update animation blend map
 	resourceTree->clear_children(getTreeFromName("blend"));
 	std::vector<std::string> blendNames = blendManager->getBlendNames();
-	for (size_t i = 0; i < blendNames.size(); i++)
+	for (auto & blendName : blendNames)
 	{
 		//resourceTree->add(treeItemList[ITEM_MOTION],mi->first.c_str());
-		SmartBody::SBAnimationBlend * blend = blendManager->getBlend(blendNames[i]);
+		SmartBody::SBAnimationBlend * blend = blendManager->getBlend(blendName);
 		updateAnimationBlend(getTreeFromName("blend"), blend);
 	}
 
 	// update blend transition map
 	resourceTree->clear_children(getTreeFromName("transition"));
 	std::vector<std::string> transitionNames = blendManager->getTransitionNames();
-	for (size_t i = 0; i < transitionNames.size(); i++)
+	for (auto & transitionName : transitionNames)
 	{
 		//resourceTree->add(treeItemList[ITEM_MOTION],mi->first.c_str());
-		SmartBody::SBAnimationTransition * transition = blendManager->getTransitionByName(transitionNames[i]);
+		SmartBody::SBAnimationTransition * transition = blendManager->getTransitionByName(transitionName);
 		updateBlendTransition(getTreeFromName("transition"), transition);
 	}
 
 	// update mesh map
 	resourceTree->clear_children(getTreeFromName("mesh"));
-	std::vector<std::string> meshNames = assetManager->getDeformableMeshNames();
-	for (size_t i = 0; i < meshNames.size(); i++)
+	std::vector<std::string> meshNames = renderAssetManager.getDeformableMeshNames();
+	for (auto & meshName : meshNames)
 	{
-		DeformableMesh* mesh = assetManager->getDeformableMesh(meshNames[i]);
+		DeformableMesh* mesh = renderAssetManager.getDeformableMesh(meshName);
 		Fl_Tree_Item* meshItem = resourceTree->add(getTreeFromName("mesh"), mesh->getName().c_str());
 		updateMesh(meshItem, mesh);
 	}
@@ -481,20 +477,20 @@ void ResourceWindow::updateGUI()
 	resourceTree->clear_children(getTreeFromName("envmap"));
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
 	std::vector<std::string> envMaps = texManager.getTextureNames(SbmTextureManager::TEXTURE_HDR_MAP);
-	for (size_t i = 0; i < envMaps.size(); i++)
+	for (auto & envMap : envMaps)
 	{
-		SbmTexture* texture = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, envMaps[i].c_str());
+		auto texture = texManager.findTexture(envMap.c_str());
 		Fl_Tree_Item* meshItem = resourceTree->add(getTreeFromName("envmap"), texture->getName().c_str());
-		updateEnvMap(meshItem, texture);
+		updateEnvMap(meshItem, texture.get());
 	}
 
 	// update face definition map
 	resourceTree->clear_children(getTreeFromName("facedefinition"));
 	std::vector<std::string> faceNames = scene->getFaceDefinitionNames();
-	for (size_t i = 0; i < faceNames.size(); i++)
+	for (auto & faceName : faceNames)
 	{
 		//resourceTree->add(treeItemList[ITEM_MOTION],mi->first.c_str());
-		SmartBody::SBFaceDefinition * face = scene->getFaceDefinition(faceNames[i]);
+		SmartBody::SBFaceDefinition * face = scene->getFaceDefinition(faceName);
 		if (!face)
 			continue;
 		Fl_Tree_Item* faceTree = resourceTree->add(getTreeFromName("facedefinition"), face->getName().c_str());
@@ -517,18 +513,18 @@ void ResourceWindow::updateGUI()
 	// update pawn objects
 	resourceTree->clear_children(getTreeFromName("pawn"));
 	const std::vector<std::string>& pawnNames = scene->getPawnNames();
-	for (size_t i = 0; i < pawnNames.size(); i++)
+	for (const auto & pawnName : pawnNames)
 	{
-		SmartBody::SBPawn* pawn = scene->getPawn(pawnNames[i]);
+		SmartBody::SBPawn* pawn = scene->getPawn(pawnName);
 		updatePawn(getTreeFromName("pawn"), pawn);
 	}
 
 	// update characters
 	resourceTree->clear_children(getTreeFromName("character"));
 	const std::vector<std::string>& charNames = scene->getCharacterNames();
-	for (size_t i = 0; i < charNames.size(); i++)
+	for (const auto & charName : charNames)
 	{
-		SmartBody::SBCharacter* character = scene->getCharacter(charNames[i]);
+		SmartBody::SBCharacter* character = scene->getCharacter(charName);
 		resourceTree->sortorder(FL_TREE_SORT_ASCENDING);
 		updateCharacter(getTreeFromName("character"), character);
 	}
@@ -539,7 +535,7 @@ void ResourceWindow::updateGUI()
 // 		 iter++)
 // 	{
 // 		SBPhysicsObj* obj = (*iter).second;
-// 		if (dynamic_cast<SbmJointObj*>(obj) == NULL)
+// 		if (dynamic_cast<SbmJointObj*>(obj) == nullptr)
 // 		{
 // 
 // 		}
@@ -550,13 +546,11 @@ void ResourceWindow::updateGUI()
 	std::map<std::string, SmartBody::SBService*>& serviceMap = serviceManager->getServices();
 
 	resourceTree->clear_children(getTreeFromName("service"));
-	for (std::map<std::string, SmartBody::SBService*>::iterator iter = serviceMap.begin();
-		iter != serviceMap.end();
-		iter++)
+	for (auto & iter : serviceMap)
 	{
-		SmartBody::SBService* service = (*iter).second;
+		SmartBody::SBService* service = iter.second;
 		resourceTree->sortorder(FL_TREE_SORT_ASCENDING);	
-		SmartBody::SBPhysicsManager* phyManager = dynamic_cast<SmartBody::SBPhysicsManager*>(service);
+		auto* phyManager = dynamic_cast<SmartBody::SBPhysicsManager*>(service);
 		if (phyManager)
 			updatePhysicsManager(getTreeFromName("service"),phyManager);
 		else
@@ -566,11 +560,9 @@ void ResourceWindow::updateGUI()
 	// update behavior sets
 	resourceTree->clear_children(getTreeFromName("behaviorset"));
 	std::map<std::string, SmartBody::SBBehaviorSet*>& behaviorSets = scene->getBehaviorSetManager()->getBehaviorSets();
-	for (std::map<std::string, SmartBody::SBBehaviorSet*>::iterator iter = behaviorSets.begin();
-		 iter != behaviorSets.end();
-		 iter++)
+	for (auto & iter : behaviorSets)
 	{
-		SmartBody::SBBehaviorSet* behaviorSet = (*iter).second;
+		SmartBody::SBBehaviorSet* behaviorSet = iter.second;
 		updateBehaviorSet(getTreeFromName("behaviorset"), behaviorSet);
 	}
 
@@ -640,7 +632,7 @@ void ResourceWindow::updateFaceDefinition( Fl_Tree_Item* tree, SmartBody::SBFace
 		std::string auType = "bilateral:";
 		if (au->is_bilateral())
 		{	
-			Fl_Tree_Item* item = NULL;
+			Fl_Tree_Item* item = nullptr;
 			if (au->left)
 				item = resourceTree->add(auItem,(auType+ au->left->getName()).c_str());
 			else
@@ -651,7 +643,7 @@ void ResourceWindow::updateFaceDefinition( Fl_Tree_Item* tree, SmartBody::SBFace
 			if (au->is_left())
 			{
 				auType = "left:";
-				Fl_Tree_Item* item = NULL;
+				Fl_Tree_Item* item = nullptr;
 				if (au->left)
 				{
 					item = resourceTree->add(auItem,(auType+au->left->getName()).c_str());
@@ -693,9 +685,9 @@ void ResourceWindow::updateFaceDefinition( Fl_Tree_Item* tree, SmartBody::SBFace
 void ResourceWindow::updatePath( Fl_Tree_Item* tree, const std::vector<std::string>& pathList )
 {
 	resourceTree->clear_children(tree);	
-	for (size_t p = 0; p < pathList.size(); p++)
+	for (const auto & p : pathList)
 	{
-		Fl_Tree_Item* item = resourceTree->add(tree, pathList[p].c_str());
+		Fl_Tree_Item* item = resourceTree->add(tree, p.c_str());
 		item->user_data(tree->user_data());
 	}	
 }
@@ -713,13 +705,11 @@ void ResourceWindow::updateScript( Fl_Tree_Item* tree, SmartBody::SBScript* scri
 void ResourceWindow::updateScriptFiles( Fl_Tree_Item* tree, std::string pname )
 {	
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	const std::vector<std::string>& scriptPaths = scene->getAssetManager()->getAssetPaths("script");
+	const std::vector<std::string>& scriptPaths = scene->getAssetStore().getAssetPaths("script");
 	
-	for (std::vector<std::string>::const_iterator pathIter = scriptPaths.begin();
-		 pathIter != scriptPaths.end(); 
-		 pathIter++)
+	for (const auto & scriptPath : scriptPaths)
 	{
-		boost::filesystem::path path(*pathIter);
+		boost::filesystem::path path(scriptPath);
 		if (boost::filesystem::is_directory(path))
 		{
 			boost::filesystem::directory_iterator end;
@@ -797,25 +787,23 @@ void ResourceWindow::updateMesh( Fl_Tree_Item* tree, DeformableMesh* mesh )
 			std::string materialName = model.mtlnames[m];
 			Fl_Tree_Item* materialItem = resourceTree->add(item, materialName.c_str());	
 		}
-		if (mesh->blendShapeMap.size() > 0)
+		if (!mesh->blendShapeMap.empty())
 		{
 			Fl_Tree_Item* morphTargetsItem = resourceTree->add(item, "morph targets");
 			// display the blend shapes
-			for (std::map<std::string, std::vector<SrSnModel*> >::iterator blendShapeIter = mesh->blendShapeMap.begin();
-				blendShapeIter != mesh->blendShapeMap.end();
-				blendShapeIter++)
+			for (auto & blendShapeIter : mesh->blendShapeMap)
 			{
-				std::string baseShape = (*blendShapeIter).first;
+				std::string baseShape = blendShapeIter.first;
 				if (strcmp(meshName.c_str(), baseShape.c_str()) != 0)
 				{
 					continue;
 				}
 
-				std::vector<SrSnModel*>& models = (*blendShapeIter).second;
-				for (unsigned int i = 0; i < models.size(); i++)
+				std::vector<SrSnModel*>& models = blendShapeIter.second;
+				for (auto & model : models)
 				{
-					if (models[i])
-						resourceTree->add(morphTargetsItem, (const char*)models[i]->shape().name);
+					if (model)
+						resourceTree->add(morphTargetsItem, (const char*)model->shape().name);
 				}
 			}
 		}
@@ -850,7 +838,7 @@ void ResourceWindow::updateMotion( Fl_Tree_Item* tree, SmartBody::SBMotion* moti
 
 void ResourceWindow::updatePawn( Fl_Tree_Item* tree, SmartBody::SBPawn* pawn )
 {
-	if (dynamic_cast<SbmCharacter*>(pawn) != NULL)
+	if (dynamic_cast<SbmCharacter*>(pawn) != nullptr)
 		return; // this is actually a character
 
 	Fl_Tree_Item* item = resourceTree->add(tree,pawn->getName().c_str());
@@ -864,10 +852,9 @@ void ResourceWindow::updatePhysicsCharacter( Fl_Tree_Item* tree, SmartBody::SBPh
 //	item->user_data((void*)ITEM_PHYSICS);
 	resourceTree->sortorder(FL_TREE_SORT_NONE);	
 	std::vector<SmartBody::SBPhysicsJoint*> jointList = phyChar->getPhyJointList();
-	for (unsigned int i=0;i<jointList.size();i++)
+	for (auto phyJoint : jointList)
 	{
-		SmartBody::SBPhysicsJoint* phyJoint = jointList[i];
-		Fl_Tree_Item* jointItem = resourceTree->add(item,phyJoint->getSBJoint()->getName().c_str());
+			Fl_Tree_Item* jointItem = resourceTree->add(item,phyJoint->getSBJoint()->getName().c_str());
 //		jointItem->user_data((void*)ITEM_PHYSICS);
 		//Fl_Tree_Item* rigidBodyItem = resourceTree->add(jointItem,"body");
 		//rigidBodyItem->user_data((void*)ITEM_PHYSICS);
@@ -1024,24 +1011,22 @@ void ResourceWindow::OnSelect(const std::string& value)
 	if (value == "")
 	{
 		// deselect all
-		resourceTree->select_only(NULL);
+		resourceTree->select_only(nullptr);
 	}
 	SmartBody::SBObject* object = SmartBody::SBScene::getScene()->getObjectFromString(value);
 	if (!object)
 		return;
 
-	Fl_Tree_Item* item = NULL;
-	SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(object);
+	Fl_Tree_Item* item = nullptr;
+	auto* character = dynamic_cast<SmartBody::SBCharacter*>(object);
 	if (character)
 	{
 		// select a character
-		for (std::map<Fl_Tree_Item*, std::string>::iterator iter = _treeMap.begin();
-			 iter != _treeMap.end();
-			 iter++)
+		for (auto & iter : _treeMap)
 		{
-			if ((*iter).second == "character")
+			if (iter.second == "character")
 			{
-				item = (*iter).first;
+				item = iter.first;
 				// make sure that the parent is open so that the selection can be seen
 				resourceTree->open(item);
 			}
@@ -1055,13 +1040,11 @@ void ResourceWindow::OnSelect(const std::string& value)
 		if (pawn)
 		{
 			// select a pawn
-			for (std::map<Fl_Tree_Item*, std::string>::iterator iter = _treeMap.begin();
-				 iter != _treeMap.end();
-				 iter++)
+			for (auto & iter : _treeMap)
 			{
-				if ((*iter).second == "pawn")
+				if (iter.second == "pawn")
 				{
-					item = (*iter).first;
+					item = iter.first;
 					// make sure that the parent is open so that the selection can be seen
 					resourceTree->open(item);
 				}
@@ -1138,7 +1121,7 @@ void ResourceWindow::OnSimulationStart()
 
 int ResourceWindow::addSpecialName(const std::string& name)
 {
-	std::map<std::string, int>::iterator iter = _reverseSpecialNames.find(name);
+	auto iter = _reverseSpecialNames.find(name);
 	if (iter != _reverseSpecialNames.end())
 	{
 		return (*iter).second;
@@ -1153,12 +1136,12 @@ int ResourceWindow::addSpecialName(const std::string& name)
 
 void ResourceWindow::removeSpecialName(const std::string& name)
 {
-	std::map<std::string, int>::iterator iter = _reverseSpecialNames.find(name);
+	auto iter = _reverseSpecialNames.find(name);
 	if (iter != _reverseSpecialNames.end())
 	{
 		int val = (*iter).second;
 		_reverseSpecialNames.erase(iter);
-		std::map<int, std::string>::iterator iter2 = _specialNames.find(val);
+		auto iter2 = _specialNames.find(val);
 		_specialNames.erase(iter2);
 
 	

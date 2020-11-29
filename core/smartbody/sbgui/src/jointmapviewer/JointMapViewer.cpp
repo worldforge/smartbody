@@ -22,6 +22,7 @@
 #include <sr/sr_sn_shape.h>
 #include "gwiz_math.h"
 #include <boost/algorithm/string/replace.hpp>
+#include <Session.h>
 
 #ifndef WIN32
 #define _strdup strdup
@@ -656,15 +657,14 @@ char commenSkString[] = "# SK Skeleton Definition - M. Kallmann 2004\n"
 	"end\n"
 	"";
 
-MouseViewer::MouseViewer( int x, int y, int w, int h, char* name ) : Fl_Gl_Window(x,y,w,h,name)
+MouseViewer::MouseViewer( int x, int y, int w, int h, char* name ) :
+	Fl_Gl_Window(x,y,w,h,name),
+	cam(Session::current->renderScene)
 {
 
 }
 
-MouseViewer::~MouseViewer()
-{
-
-}
+MouseViewer::~MouseViewer() = default;
 
 void MouseViewer::preRender()
 {
@@ -750,7 +750,7 @@ void MouseViewer::updateLights()
 	light.position = SrVec( 100.0, 250.0, 400.0 );
 	//	light.constant_attenuation = 1.0f/cam.scale;
 	light.constant_attenuation = 1.0f;
-	lights.push_back(light);
+	lights.emplace_back(light);
 
 	SrLight light2 = light;
 	light2.directional = true;
@@ -758,7 +758,7 @@ void MouseViewer::updateLights()
 	light2.position = SrVec( 100.0, 500.0, -1000.0 );
 	//	light2.constant_attenuation = 1.0f;
 	//	light2.linear_attenuation = 2.0f;
-	lights.push_back(light2);
+	lights.emplace_back(light2);
 }
 
 
@@ -961,15 +961,15 @@ SrVec MouseViewer::rotate_point(SrVec point, SrVec origin, SrVec direction, floa
 
 SkeletonViewer::SkeletonViewer( int x, int y, int w, int h, char* name ) : MouseViewer(x,y,w,h,name)
 {
-	skeletonScene = NULL;
-	skeleton = NULL;
+	skeletonScene = nullptr;
+	skeleton = nullptr;
 	jointMapName = "";
 	focusJointName = "";
 	showJointLabels = 0;
 	curTime = 0.f;
 	prevTime = 0.f;
 	motionTime = 0.f;
-	testMotion = NULL;
+	testMotion = nullptr;
 	playMotion = false;
 }
 
@@ -1124,7 +1124,7 @@ std::vector<int> SkeletonViewer::process_hit(unsigned int *pickbuffer,int nhits)
 		//return pickbuffer[3+sel];
 		int n = pickbuffer[sel];
 		for (int k=0;k<n;k++)
-			hitNames.push_back(pickbuffer[3+sel+k]);
+			hitNames.emplace_back(pickbuffer[3+sel+k]);
 	}
 	return hitNames;
 }
@@ -1199,7 +1199,7 @@ bool SkeletonViewer::updateSkeleton()
 	if (skeletonScene)
 	{
 		delete skeletonScene;
-		skeletonScene = NULL;
+		skeletonScene = nullptr;
 	}
 	if (!skeleton) return false;		
 	skeletonScene = new SkScene();
@@ -1406,7 +1406,7 @@ const std::string rightLegJointNames[5] = { "r_hip", "r_knee", "r_ankle", "r_for
 
 JointMapViewer::JointMapViewer(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h, name)
 {
-	rootWindow = NULL;
+	rootWindow = nullptr;
 	
 	begin();	
 	int curY = 10;
@@ -1454,13 +1454,13 @@ JointMapViewer::JointMapViewer(int x, int y, int w, int h, char* name) : Fl_Doub
 // 	std::map<std::string, SmartBody::SBBehaviorSet*>& behavSets = behavMgr->getBehaviorSets();
 // 
 	
-	for (int i=0;i<7;i++) standardJointNames.push_back(spineJointNames[i]);
-	for (int i=0;i<5;i++) standardJointNames.push_back(leftArmJointNames[i]);
-	for (int i=0;i<5;i++) standardJointNames.push_back(rightArmJointNames[i]);
-	for (int i=0;i<20;i++) standardJointNames.push_back(leftHandJointNames[i]);
-	for (int i=0;i<20;i++) standardJointNames.push_back(rightHandJointNames[i]);
-	for (int i=0;i<5;i++) standardJointNames.push_back(leftLegJointNames[i]);
-	for (int i=0;i<5;i++) standardJointNames.push_back(rightLegJointNames[i]);
+	for (int i=0;i<7;i++) standardJointNames.emplace_back(spineJointNames[i]);
+	for (int i=0;i<5;i++) standardJointNames.emplace_back(leftArmJointNames[i]);
+	for (int i=0;i<5;i++) standardJointNames.emplace_back(rightArmJointNames[i]);
+	for (int i=0;i<20;i++) standardJointNames.emplace_back(leftHandJointNames[i]);
+	for (int i=0;i<20;i++) standardJointNames.emplace_back(rightHandJointNames[i]);
+	for (int i=0;i<5;i++) standardJointNames.emplace_back(leftLegJointNames[i]);
+	for (int i=0;i<5;i++) standardJointNames.emplace_back(rightLegJointNames[i]);
 
 	curY += 35;
 	
@@ -1532,7 +1532,7 @@ JointMapViewer::JointMapViewer(int x, int y, int w, int h, char* name) : Fl_Doub
 // 	}
 
 	//testCommonSkMotion = scene->getMotion(commonSkMotionName);
-	testTargetMotion = NULL;
+	testTargetMotion = nullptr;
 	standardSkeletonViewer->setSkeleton(commonSkName);
 	//standardSkeletonViewer->setTestMotion(testCommonSkMotion);	
 
@@ -1571,7 +1571,7 @@ void JointMapViewer::updateJointLists()
 		for (unsigned int i=0;i<skel->joints().size();i++)
 		{
 			SmartBody::SBJoint* joint = skel->getJoint(i);
-			skelJointNames.push_back(joint->extName());
+			skelJointNames.emplace_back(joint->extName());
 		}
 		//skelJointNames = skel->getJointNames();
 	}
@@ -1591,7 +1591,7 @@ void JointMapViewer::updateJointLists()
 		//Fl_Group* jointMapGroup = new Fl_Group(20, curY , 200, 20, _strdup(name.c_str()));
 		//Fl_Input* input = new Fl_Input(100 , scrollY, 150, 20, _strdup(name.c_str()));
 		JointMapInputChoice* choice = new JointMapInputChoice(140, tempY, 190, 20, _strdup(name.c_str()));
-		_jointChoiceList.push_back(choice);		
+		_jointChoiceList.emplace_back(choice);
 		choice->input()->when(FL_WHEN_CHANGED);
 		choice->input()->callback(JointNameChange,this);
 		choice->menubutton()->when(FL_WHEN_CHANGED);
@@ -1681,7 +1681,7 @@ void JointMapViewer::JointNameChange( Fl_Widget* widget, void* data )
 	Fl_Input* input = dynamic_cast<Fl_Input*>(widget);
 	Fl_Menu_Button* menuButton = dynamic_cast<Fl_Menu_Button*>(widget);
 
-	Fl_Input_Choice* inputChoice = NULL;
+	Fl_Input_Choice* inputChoice = nullptr;
 	if (input)
 		inputChoice = dynamic_cast<JointMapInputChoice*>(input->parent());
 	if (menuButton)
@@ -1832,7 +1832,7 @@ void JointMapViewer::applyJointMap()
 	jointMap->applySkeleton(curChar->getSkeleton());
 	
 	// in addition to update the skeleton, we also need to update the character controllers so all joint names are mapped correctly.
-	//curChar->ct_tree_p->child_channels_updated(NULL);
+	//curChar->ct_tree_p->child_channels_updated(nullptr);
 }
 
 void JointMapViewer::SelectMapCB( Fl_Widget* widget, void* data )
@@ -2064,20 +2064,20 @@ void JointMapViewer::testPlayMotion()
 		std::vector<std::string> relativeJoints;
 		std::map<std::string, SrVec> offsetJoints;	
 
-		endJoints.push_back("l_forefoot");
-		endJoints.push_back("l_toe");
-		endJoints.push_back("l_acromioclavicular");
-		endJoints.push_back("r_forefoot");	
-		endJoints.push_back("r_toe");
-		endJoints.push_back("r_acromioclavicular");
-		endJoints.push_back("l_sternoclavicular");
-		endJoints.push_back("r_sternoclavicular");
+		endJoints.emplace_back("l_forefoot");
+		endJoints.emplace_back("l_toe");
+		endJoints.emplace_back("l_acromioclavicular");
+		endJoints.emplace_back("r_forefoot");
+		endJoints.emplace_back("r_toe");
+		endJoints.emplace_back("r_acromioclavicular");
+		endJoints.emplace_back("l_sternoclavicular");
+		endJoints.emplace_back("r_sternoclavicular");
 
-		relativeJoints.push_back("spine1");
-		relativeJoints.push_back("spine2");
-		relativeJoints.push_back("spine3");
-		relativeJoints.push_back("spine4");
-		relativeJoints.push_back("spine5");
+		relativeJoints.emplace_back("spine1");
+		relativeJoints.emplace_back("spine2");
+		relativeJoints.emplace_back("spine3");
+		relativeJoints.emplace_back("spine4");
+		relativeJoints.emplace_back("spine5");
 
 		jointMap.applySkeleton(targetSk);	
 		SmartBody::SBMotion* retargetMotion = dynamic_cast<SmartBody::SBMotion*>(testCommonSkMotion->buildRetargetMotionV2(commonSk,targetSk,endJoints,relativeJoints,offsetJoints));
@@ -2158,7 +2158,7 @@ void JointMapViewer::updateJointMapList()
 
 JointMapInputChoice::JointMapInputChoice( int x, int y, int w, int h, char* name ) : Fl_Input_Choice(x,y,w,h,name)
 {
-	skelViewer = NULL;
+	skelViewer = nullptr;
 }
 
 JointMapInputChoice::~JointMapInputChoice()

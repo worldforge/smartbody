@@ -47,7 +47,7 @@ bool PoseExampleSet::addPose( const PoseExample& poseEx, float fMinDist )
 	vector<PoseExample*> KNN;
 	if (fMinDist <= 0.f) // just add the pose
 	{
-		poseData.push_back(poseEx);	
+		poseData.emplace_back(poseEx);
 		return true;
 	}
 	else
@@ -55,7 +55,7 @@ bool PoseExampleSet::addPose( const PoseExample& poseEx, float fMinDist )
 		int nK = linearKNN(poseEx.poseParameter,dists,KNN,1); // find closest pose data in parameter space
 		if (dists[0] > fMinDist)
 		{
-			poseData.push_back(poseEx);
+			poseData.emplace_back(poseEx);
 			return true;
 		}
 	}

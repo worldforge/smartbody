@@ -39,7 +39,7 @@ public:
     {
         vector<int> out(1, vtx);
         while(prev[vtx] >= 0)
-            out.push_back(vtx = prev[vtx]);
+            out.emplace_back(vtx = prev[vtx]);
         return out;
     }
     double distFrom(int vtx) const { return dist[vtx]; }
@@ -65,7 +65,7 @@ public:
     AllShortestPather(const PtGraph &g)
     {
         for(int i = 0; i < (int)g.verts.size(); ++i)
-            paths.push_back(ShortestPather(g, i));
+            paths.emplace_back(ShortestPather(g, i));
     }
     
     vector<int> path(int from, int to) const { return paths[to].pathFrom(from); }

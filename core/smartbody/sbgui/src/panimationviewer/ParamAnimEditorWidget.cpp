@@ -274,7 +274,7 @@ int ParamAnimEditorWidget::handle(int event)
 			switch (event)
 			{
 			case FL_DRAG:
-				nle::Mark* selectedMarker = NULL;
+				nle::Mark* selectedMarker = nullptr;
 				int selectedMarkerId = -1;
 				for (int t = 0; t < model->getNumTracks(); t++)
 				{
@@ -455,6 +455,6 @@ nle::Mark* ParamAnimEditorWidget::getSelectedCorrespondancePointIndex(int& selec
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 

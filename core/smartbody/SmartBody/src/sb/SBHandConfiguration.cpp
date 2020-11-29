@@ -49,7 +49,7 @@ void SBHandConfiguration::addMotion(std::string motionName)
 	}
 
 	// add motion
-	_motions.push_back(motion);
+	_motions.emplace_back(motion);
 }
 
 void SBHandConfiguration::removeMotion(std::string motionName)
@@ -104,7 +104,7 @@ std::vector<std::string> SBHandConfiguration::getMotionNames()
 	for (; iter != _motions.end() ; iter++)
 	{
 		SBMotion* motion = *iter;
-		motionNames.push_back(motion->getName());
+		motionNames.emplace_back(motion->getName());
 	}
 
 	return motionNames;

@@ -65,7 +65,7 @@ public:
         for(d = 0; d < Dim; ++d) {
             orders[d].reserve(objs.size());
             for(i = 0; i < (int)objs.size(); ++i)
-                orders[d].push_back(i);
+                orders[d].emplace_back(i);
             sort(orders[d].begin(), orders[d].end(), DLess(d, objs));
         }
     
@@ -165,9 +165,9 @@ private:
                 orders2[d].reserve((num + 1) / 2);
                 for(i = 0; i < num; ++i) {
                     if(left.count(orders[d][i]))
-                        orders1[d].push_back(orders[d][i]);
+                        orders1[d].emplace_back(orders[d][i]);
                     else
-                        orders2[d].push_back(orders[d][i]);
+                        orders2[d].emplace_back(orders[d][i]);
                 }
             }
         

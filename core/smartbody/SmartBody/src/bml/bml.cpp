@@ -387,7 +387,7 @@ void BmlRequest::faceRequestProcess()
 		VisemeRequest* viseme = dynamic_cast<VisemeRequest*> (behavior);
 		if (viseme)
 		{
-			visemes.push_back(viseme);
+			visemes.emplace_back(viseme);
 		}
 	}
 
@@ -592,7 +592,7 @@ int evaluateGestureCompatibility(std::vector<GestureRequest*>& gestures, bool sh
 	std::sort(gestures.begin(), gestures.end(), prioritySortFunction);
 	std::vector<GestureRequest*> timeSortedGestures;
 	for (size_t i = 0; i < gestures.size(); i++)
-		timeSortedGestures.push_back(gestures[i]);
+		timeSortedGestures.emplace_back(gestures[i]);
 	std::sort(timeSortedGestures.begin(), timeSortedGestures.end(), timeSortFunction);
 
 	// evaluate by priority each gesture and the next candidate gesture
@@ -781,7 +781,7 @@ void BmlRequest::gestureRequestProcess()
 	SmartBody::util::tokenize(str, tokens, "|");
 	for (size_t t = 0; t < tokens.size(); t++)
 	{
-		lastChoices.push_back(atoi(tokens[t].c_str()));
+		lastChoices.emplace_back(atoi(tokens[t].c_str()));
 	}
 	
 	if (actor->getBoolAttribute("gestureRequest.experimentalCoarticulation"))
@@ -798,7 +798,7 @@ void BmlRequest::gestureRequestProcess()
 			GestureRequest* gesture = dynamic_cast<GestureRequest*> (behavior);
 			if (gesture)
 			{
-				gestures.push_back(gesture);
+				gestures.emplace_back(gesture);
 				if (priorityAdjustment > 0)
 				{
 					gesture->priority += std::rand()/((RAND_MAX + 1u)/priorityAdjustment);
@@ -819,7 +819,7 @@ void BmlRequest::gestureRequestProcess()
     /*
 		std::vector<GestureRequest*> gesturePriorityList;
 		for (size_t g = 0; g < gestures.size(); g++)
-			gesturePriorityList.push_back(gestures[g]);
+			gesturePriorityList.emplace_back(gestures[g]);
 		if (actor->getBoolAttribute("gestureRequest.experimentalPriorityCoarticulation"))
 		{
 			std::sort(gesturePriorityList.begin(), gesturePriorityList.end(), prioritySortFunction);
@@ -1239,7 +1239,7 @@ void BmlRequest::gestureRequestProcess()
 			EventRequest* blend = dynamic_cast<EventRequest*> (behavior);
 			if (blend)
 			{
-				blends.push_back(blend);
+				blends.emplace_back(blend);
 			}
 		}
 		for (size_t i = 0; i < blends.size(); ++i)
@@ -1303,7 +1303,7 @@ void BmlRequest::gestureRequestProcess()
 				std::vector<double> floatWeights;
 				for (size_t k = 0; k < weights.size(); ++k)
 				{
-					floatWeights.push_back(weights[k]);
+					floatWeights.emplace_back(weights[k]);
 				} 
 				PABlendData* tempBlendData = new PABlendData(nullptr, blendObject, floatWeights);
 				tempBlendData->timeManager->updateWeights();
@@ -1362,7 +1362,7 @@ void BmlRequest::gestureRequestProcess()
 		GestureRequest* gesture = dynamic_cast<GestureRequest*> (behavior);
 		if (gesture)
 		{
-			gestures.push_back(gesture);
+			gestures.emplace_back(gesture);
 		}
 	}
 	if (gestures.size() <= 1)
@@ -1454,7 +1454,7 @@ void BmlRequest::gestureRequestProcess()
 			std::vector<std::string> currGestureList = gestures[i]->gestureList;
 			if (currGestureList.size() == 0)
 			{
-				currGestureList.push_back(sbMotion->getName());
+				currGestureList.emplace_back(sbMotion->getName());
 				closestMotion = sbMotion;
 			}
 			for (size_t l = 0; l < currGestureList.size(); ++l)
@@ -1753,12 +1753,12 @@ void BML::BmlRequest::speechRequestProcess()
 				if (iter == groupMap.end())
 				{
 					std::vector<BehaviorRequest*> behVec;
-					behVec.push_back(behavior);
+					behVec.emplace_back(behavior);
 					groupMap.insert(std::make_pair(behavior->group_id, behVec));
 				}
 				else
 				{
-					iter->second.push_back(behavior);
+					iter->second.emplace_back(behavior);
 				}
 			}
 		}
@@ -1808,9 +1808,9 @@ void BML::BmlRequest::speechRequestProcess()
 				if (gestureRequest->group_id == "")	// if group id is not specified, should probably also pass it down to Cerebella
 					continue;
 
-				behList.push_back(gestureRequest->group_id);
-				types.push_back("gesture");
-				times.push_back(readyTime);
+				behList.emplace_back(gestureRequest->group_id);
+				types.emplace_back("gesture");
+				times.emplace_back(readyTime);
 				SmartBody::SBSkeleton* connectedSkeleton = dynamic_cast<SmartBody::SBSkeleton*>(sbMotion->connected_skeleton());
 				SmartBody::SBSkeleton* skeleton = new SmartBody::SBSkeleton(actor->getSkeleton());
 				sbMotion->disconnect();
@@ -1820,18 +1820,18 @@ void BML::BmlRequest::speechRequestProcess()
 				if (lWristSpeed > rWristSpeed)
 				{
 					std::string target = actor->getName() + ":l_wrist";
-					targets.push_back(target);
+					targets.emplace_back(target);
 					stringstream ss;
 					ss << lWristSpeed;
-					info.push_back(ss.str());
+					info.emplace_back(ss.str());
 				}
 				else
 				{
 					std::string target = actor->getName() + ":r_wrist";
-					targets.push_back(target);
+					targets.emplace_back(target);
 					stringstream ss;
 					ss << rWristSpeed;
-					info.push_back(ss.str());
+					info.emplace_back(ss.str());
 				}
 				sbMotion->disconnect();
 				delete skeleton;
@@ -1844,10 +1844,10 @@ void BML::BmlRequest::speechRequestProcess()
 	/*
 	for (std::map<std::string, float>::const_iterator iter = nodReqTimeMap.begin(); iter != nodReqTimeMap.end(); ++iter)
 	{
-		behList.push_back(iter->first);
-		times.push_back(iter->second);
-		targets.push_back("");
-		info.push_back("");
+		behList.emplace_back(iter->first);
+		times.emplace_back(iter->second);
+		targets.emplace_back("");
+		info.emplace_back("");
 	}
 	*/
 	for (std::map<std::string, std::vector<BehaviorRequest*> >::iterator iter = groupMap.begin(); iter != groupMap.end(); ++iter)
@@ -1870,11 +1870,11 @@ void BML::BmlRequest::speechRequestProcess()
 		}
 		if (hasHead)
 		{
-			behList.push_back(iter->first);
-			types.push_back("head");
-			times.push_back(startTime);
-			targets.push_back("");
-			info.push_back("");
+			behList.emplace_back(iter->first);
+			types.emplace_back("head");
+			times.emplace_back(startTime);
+			targets.emplace_back("");
+			info.emplace_back("");
 		}
 	}
 
@@ -2217,10 +2217,10 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 				continue;
 
 			MeCtMotion* motionCt = dynamic_cast<MeCtMotion*> (gRequest->anim_ct);
-			gestureBMLAnimations.push_back(motionCt->motion()->getName());
+			gestureBMLAnimations.emplace_back(motionCt->motion()->getName());
 			if (SmartBody::SBScene::getScene()->getBoolAttribute("enableExportProcessedBMLLOG"))
 				SmartBody::util::log("BML gesture use animation: %s, filtered: %s)", motionCt->motion()->getName().c_str(), gRequest->filtered? "true" : "false");
-			skippedGestures.push_back(gRequest->filtered);
+			skippedGestures.emplace_back(gRequest->filtered);
 		}
 
 
@@ -2471,7 +2471,7 @@ TriggerEventPtr BmlRequest::createTrigger( const wstring& name ) {
 	TriggerEventPtr trigger( new TriggerEvent( name, weak_ptr.lock() ) );
 	trigger->init( trigger );
 
-	triggers.push_back( trigger );
+	triggers.emplace_back( trigger );
 	return trigger;
 }
 
@@ -2484,7 +2484,7 @@ bool BmlRequest::registerBehavior( const std::wstring& id, BehaviorRequestPtr be
 	}
 
 	span.unset();
-	behaviors.push_back( behavior );
+	behaviors.emplace_back( behavior );
 
 	if( id.size() > 0 ) {
 		importNamedSyncPoints( behavior->behav_syncs, id, L"BehaviorRequest" );
@@ -3602,8 +3602,8 @@ void VisemeRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene* sce
 */
 	VecOfSbmCommand commands;
 	string start_string = start_cmd.str();
-   	commands.push_back( new SbmCommand( start_string, (float)startAt ) );
-  // 	commands.push_back( new SbmCommand( stop_cmd.str(), (float)relaxAt ) );
+   	commands.emplace_back( new SbmCommand( start_string, (float)startAt ) );
+  // 	commands.emplace_back( new SbmCommand( stop_cmd.str(), (float)relaxAt ) );
 
 	realize_sequence( commands, scene );
 

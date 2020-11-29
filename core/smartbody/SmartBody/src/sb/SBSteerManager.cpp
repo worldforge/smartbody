@@ -200,13 +200,13 @@ void SBSteerManager::start()
 			delete (*iter);
 		}
 		SteerLib::BoxObstacle* top = new SteerLib::BoxObstacle((float) -gridSizeX / 2.0f, (float) gridSizeX / 2.0f, 0.0f,  1.0f, (float) -gridSizeZ / 2.0f, (float) -gridSizeZ / 2.0f + 1.0f);
-		_boundaryObstacles.push_back(top);
+		_boundaryObstacles.emplace_back(top);
 		SteerLib::BoxObstacle* bottom = new SteerLib::BoxObstacle((float) -gridSizeX / 2.0f, (float) gridSizeX / 2.0f, 0.0f,  1.0f, (float) gridSizeZ / 2.0f - 1.0f, (float) gridSizeZ / 2.0f);
-		_boundaryObstacles.push_back(bottom);
+		_boundaryObstacles.emplace_back(bottom);
 		SteerLib::BoxObstacle* left = new SteerLib::BoxObstacle((float) -gridSizeX / 2.0f, (float) -gridSizeX / 2.0f + 1.0f, 0.0f,  1.0f, (float) -gridSizeZ / 2.0f, (float) gridSizeZ / 2.0f);
-		_boundaryObstacles.push_back(left);
+		_boundaryObstacles.emplace_back(left);
 		SteerLib::BoxObstacle* right = new SteerLib::BoxObstacle((float) gridSizeX / 2.0f - 1.0f, (float) gridSizeX / 2.0f, 0.0f,  1.0f, (float) -gridSizeZ / 2.0f, (float) gridSizeZ / 2.0f);
-		_boundaryObstacles.push_back(right);
+		_boundaryObstacles.emplace_back(right);
 	}
 
 	//	customize the item per grid cell
@@ -421,7 +421,7 @@ std::vector<std::string> SBSteerManager::getSteerAgentNames()
 		 iter != _steerAgents.end();
 		 iter++)
 	{
-		steerAgentNames.push_back((*iter).first);
+		steerAgentNames.emplace_back((*iter).first);
 	}
 
 	return steerAgentNames;

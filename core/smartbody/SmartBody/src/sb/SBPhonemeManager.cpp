@@ -150,7 +150,7 @@ std::vector<std::string> SBPhonemeManager::getCommonPhonemes()
 		 iter != commonPhonemeSet.end();
 		 iter++)
 	{
-		commonPhonemesVector.push_back(*iter);
+		commonPhonemesVector.emplace_back(*iter);
 	}
 	return commonPhonemesVector;
 }
@@ -193,7 +193,7 @@ SBDiphone* SBPhonemeManager::createDiphone(const std::string& fromPhoneme, const
 	else
 	{
 		diphone = new SBDiphone(upperCaseFromPhoneme, upperCaseToPhoneme);
-		_diphoneMap[name].push_back(diphone);
+		_diphoneMap[name].emplace_back(diphone);
 	}
 
 	_fastMapDirty = true;
@@ -278,7 +278,7 @@ std::vector<std::string> SBPhonemeManager::getDiphoneMapNames()
 		 iter != _diphoneMap.end();
 		 iter++)
 	{
-		diphoneMaps.push_back((*iter).first);
+		diphoneMaps.emplace_back((*iter).first);
 		
 	}
 
@@ -402,11 +402,11 @@ void SBPhonemeManager::loadDictionary(const std::string& language, const std::st
 				// for vowel sounds, remove the emphasis
 				if (tokens[t].size() == 3)
 				{
-					phonemes.push_back(tokens[t].substr(0,2));
+					phonemes.emplace_back(tokens[t].substr(0,2));
 				}
 				else
 				{
-					phonemes.push_back(tokens[t]);
+					phonemes.emplace_back(tokens[t]);
 				}
 			}
 				
@@ -503,7 +503,7 @@ std::vector<std::string> SBPhonemeManager::getPhonemesRealtime(const std::string
 		{
 			if (num >= amount)
 				break;
-			phonemes.push_back((*phonemeIter).phoneme);
+			phonemes.emplace_back((*phonemeIter).phoneme);
 			num++;
 		}
 
@@ -528,7 +528,7 @@ std::vector<double> SBPhonemeManager::getPhonemesRealtimeTimings(const std::stri
 		{
 			if (num >= amount)
 				break;
-			phonemeTimings.push_back((*phonemeIter).time);
+			phonemeTimings.emplace_back((*phonemeIter).time);
 			num++;
 		}
 
@@ -597,7 +597,7 @@ void SBPhonemeManager::setPhonemesRealtime(const std::string& character, const s
 	RealTimePhoneme rtp;
 	rtp.phoneme = phoneme;
 	rtp.time = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
-	(*iter).second.push_back(rtp);
+	(*iter).second.emplace_back(rtp);
 	SmartBody::util::log("Got phoneme %s at time %f",  rtp.phoneme.c_str(), rtp.time);
 }
 
@@ -641,13 +641,13 @@ void SBPhonemeManager::generatePhoneTrigrams(const std::string& lipsyncSetName)
 				continue;
 
 			VisemeData* phoneme1 = new VisemeData(fromPhoneme, 0);
-			visemes.push_back(phoneme1);
+			visemes.emplace_back(phoneme1);
 			VisemeData* phoneme2 = new VisemeData(toPhoneme, 1);
-			visemes.push_back(phoneme2);
+			visemes.emplace_back(phoneme2);
 			VisemeData* phoneme3 = new VisemeData(fromPhoneme2, 1);
-			visemes.push_back(phoneme3);
+			visemes.emplace_back(phoneme3);
 			VisemeData* phoneme4 = new VisemeData(toPhoneme2, 2);
-			visemes.push_back(phoneme4);
+			visemes.emplace_back(phoneme4);
 
 			//std::map<std::string, std::vector<float> > trigramCurves = BML::SpeechRequest::generateCurvesGivenDiphoneSet(&visemes, lipsyncSetName, std::string characterName)
 		
@@ -787,7 +787,7 @@ void SBPhonemeManager::saveLipSyncAnimation(const std::string characterName, con
 		float weight = (float) atof( articulation.c_str());
 		VisemeData* curViseme = new VisemeData(viseme, weight, startTime,  endTime - startTime);
 
-		visemes.push_back(curViseme);
+		visemes.emplace_back(curViseme);
 
 		node = node->next_sibling("lips");
 	}

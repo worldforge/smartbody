@@ -23,7 +23,7 @@
 
 FLTKOgreWindow::FLTKOgreWindow( int x, int y, int w, int h, const char *label/*=0 */ ) : FltkViewer(x,y,w,h,label)//Fl_Gl_Window(x,y,w,h,label), SrViewer(x, y, w, h)
 {
-	ogreInterface = NULL;
+	ogreInterface = nullptr;
 }
 
 FLTKOgreWindow::~FLTKOgreWindow()
@@ -65,11 +65,11 @@ void FLTKOgreWindow::hide_viewer()
 void FLTKOgreWindow::initOgreWindow()
 {
 	//fl_open_display();
-	//GLChoiceType* glChoice = GLChoiceType::find( CAP_DEPTH_BUFFER | CAP_DOUBLE_BUFFER, NULL );
+	//GLChoiceType* glChoice = GLChoiceType::find( CAP_DEPTH_BUFFER | CAP_DOUBLE_BUFFER, nullptr );
 	//Fl_X::make_xid( this, glChoice->vis, glChoice->colormap );	
     
 	void* flHwnd = (void*)fl_xid(this); // get hwnd	
-	void* flParentHwnd = NULL;
+	void* flParentHwnd = nullptr;
 	if (parent())
 	{
 		Fl_Window* parentWindow = dynamic_cast<Fl_Window*>(parent());
@@ -668,10 +668,10 @@ void FLTKOgreWindow::updateOptions()
 
 #if 0
 // Ogre viewer factory
-SrViewer* OgreViewerFactory::s_viewer = NULL;
+SrViewer* OgreViewerFactory::s_viewer = nullptr;
 OgreViewerFactory::OgreViewerFactory()
 {
-	s_viewer = NULL;
+	s_viewer = nullptr;
 }
 SrViewer* OgreViewerFactory::create(int x, int y, int w, int h)
 {

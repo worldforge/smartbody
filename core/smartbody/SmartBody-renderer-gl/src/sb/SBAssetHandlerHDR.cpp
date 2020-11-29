@@ -19,26 +19,21 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "SBAssetHandlerHDR.h"
-#include <boost/version.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-#include <boost/algorithm/string.hpp>
 #include "sbm/GPU/SbmTexture.h"
 #include <sb/SBScene.h>
 #include <sb/SBAttribute.h>
 
 namespace SmartBody {
 
-SBAssetHandlerHdr::SBAssetHandlerHdr()
-{
+SBAssetHandlerHdr::SBAssetHandlerHdr() {
 	assetTypes.emplace_back("hdr");
 }
 
 SBAssetHandlerHdr::~SBAssetHandlerHdr() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerHdr::getAssets(const std::string& path)
-{
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerHdr::getAssets(const std::string& path) {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
 	std::string convertedPath = checkPath(path);
@@ -46,19 +41,18 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerHdr::getAssets(const std::st
 		return assets;
 
 	boost::filesystem::path p(convertedPath);
-	std::string fileName = boost::filesystem::basename( p );
-	std::string extension =  boost::filesystem::extension( p );
+	std::string fileName = boost::filesystem::basename(p);
+	std::string extension = boost::filesystem::extension(p);
 
-	SbmTextureManager& texManager = SbmTextureManager::singleton();
 	std::string textureName = fileName + extension;
-	texManager.loadTexture(SbmTextureManager::TEXTURE_HDR_MAP, textureName.c_str(), convertedPath.c_str());
-	auto tex = texManager.findTexture(SbmTextureManager::TEXTURE_HDR_MAP, textureName.c_str());
-	if (tex)
-	{		
-		assets.emplace_back(std::move(tex));
-	}
 
-	texManager.updateEnvMaps();
+	auto texture = std::make_unique<SbmTexture>();
+	texture->data.textureName = textureName;
+	if (!texture->loadImage(fileName.c_str())) {
+		SmartBody::util::log("ERROR: Can't load image %s from %s. Invalid path? Is it an 8-bit image?", textureName.c_str(), fileName.c_str());
+	} else {
+		assets.emplace_back(std::move(texture));
+	}
 
 	return assets;
 }

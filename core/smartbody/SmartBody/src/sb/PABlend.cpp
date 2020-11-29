@@ -48,15 +48,15 @@ PABlend::PABlend(PABlend* data) : SBObject()
 	stateName = data->stateName;
 	for (unsigned int i = 0; i < data->motions.size(); i++)
 	{
-		motions.push_back(data->motions[i]);
+		motions.emplace_back(data->motions[i]);
 	}
 
 	for (unsigned int i = 0; i < data->keys.size(); i++)
 	{
 		std::vector<double> tempVec;
 		for (unsigned int j = 0; j <data->keys[i].size(); j++)
-			tempVec.push_back(data->keys[i][j]);
-		keys.push_back(tempVec);
+			tempVec.emplace_back(data->keys[i][j]);
+		keys.emplace_back(tempVec);
 	}
 	
 	cycle = data->cycle;
@@ -66,12 +66,12 @@ PABlend::PABlend(PABlend* data) : SBObject()
 	incrementWorldOffsetY = data->incrementWorldOffsetY;
 	
 	for (unsigned int i = 0; i < data->getParameters().size(); i++)
-		parameters.push_back(data->getParameters()[i]);
+		parameters.emplace_back(data->getParameters()[i]);
 
 	for (unsigned int i = 0; i < data->getTriangles().size(); i++)
-		triangles.push_back(data->getTriangles()[i]);
+		triangles.emplace_back(data->getTriangles()[i]);
 	for (unsigned int i = 0; i < data->getTetrahedrons().size(); i++)
-		tetrahedrons.push_back(data->getTetrahedrons()[i]);
+		tetrahedrons.emplace_back(data->getTetrahedrons()[i]);
 
 	
 	parameterScale.x = 1.0f;
@@ -141,9 +141,9 @@ PATransition::PATransition(PATransition* data, PABlend* from, PABlend* to)
 	this->fromMotionName = data->fromMotionName;
 	this->toMotionName = data->toMotionName;
 	for (unsigned int i = 0; i < data->easeOutStart.size(); i++)
-		this->easeOutStart.push_back(data->easeOutStart[i]);
+		this->easeOutStart.emplace_back(data->easeOutStart[i]);
 	for (unsigned int i = 0; i < data->easeOutEnd.size(); i++)
-		this->easeOutEnd.push_back(data->easeOutEnd[i]);
+		this->easeOutEnd.emplace_back(data->easeOutEnd[i]);
 	this->easeInStart = data->easeInStart;
 	this->easeInEnd = data->easeInEnd;
 }
@@ -499,7 +499,7 @@ void PABlend::getParametersFromWeights(float& x, float& y, std::vector<double>& 
 	for (int i = 0; i < getNumMotions(); i++)
 	{
 		if (weights[i] > 0.0)
-			indices.push_back(i);
+			indices.emplace_back(i);
 	}
 	if (indices.size() == 0)
 		return;
@@ -521,7 +521,7 @@ void PABlend::getParametersFromWeights(float& x, float& y, std::vector<double>& 
 		{
 			int id = getMotionId(motions[indices[i]]->getName());
 			if (id >= 0)
-				vecs.push_back(getVec(id));
+				vecs.emplace_back(getVec(id));
 			else
 				return;
 		}
@@ -539,7 +539,7 @@ void PABlend::getParametersFromWeights(float& x, float& y, float& z, std::vector
 	for (int i = 0; i < getNumMotions(); i++)
 	{
 		if (weights[i] > 0.0)
-			indices.push_back(i);
+			indices.emplace_back(i);
 	}
 	if (indices.size() == 0)
 		return;
@@ -562,7 +562,7 @@ void PABlend::getParametersFromWeights(float& x, float& y, float& z, std::vector
 		{
 			int id = getMotionId(motions[indices[i]]->getName());
 			if (id >= 0)
-				vecs.push_back(getVec(id));
+				vecs.emplace_back(getVec(id));
 			else
 				return;
 		}
@@ -638,14 +638,14 @@ void PABlend::setParameter(const std::string& motion, double x)
 		if ( motions[i]->getName() == motion)
 		{
 			if (parameters.size() <= i)
-				parameters.push_back(vec);
+				parameters.emplace_back(vec);
 			else
 			parameters[i] = vec;
 			updateParameterScale();
 			return;
 		}
 	} 
-	parameters.push_back(vec);
+	parameters.emplace_back(vec);
 	updateParameterScale();
 }
 
@@ -660,14 +660,14 @@ void PABlend::setParameter(const std::string& motion, double x, double y)
 		if (motions[i]->getName() == motion)
 		{
 			if (parameters.size() <= i)
-				parameters.push_back(vec);
+				parameters.emplace_back(vec);
 			else
 				parameters[i] = vec;
 			updateParameterScale();
 			return;
 		}
 	}
-	parameters.push_back(vec);
+	parameters.emplace_back(vec);
 	updateParameterScale();
 }
 
@@ -683,7 +683,7 @@ void PABlend::setParameter(const std::string& motion, double x, double y, double
 		if (motions[i]->getName() == motion)
 		{
 			if (parameters.size() <= i)
-				parameters.push_back(vec);
+				parameters.emplace_back(vec);
 			else
 				parameters[i] = vec;
 			updateParameterScale();
@@ -691,7 +691,7 @@ void PABlend::setParameter(const std::string& motion, double x, double y, double
 		}
 	}
 
-	parameters.push_back(vec);
+	parameters.emplace_back(vec);
 	updateParameterScale();
 }
 
@@ -777,7 +777,7 @@ void PABlend::addTriangle(const std::string& motion1, const std::string& motion2
 	tInfo.motion1 = motion1;
 	tInfo.motion2 = motion2;
 	tInfo.motion3 = motion3;
-	triangles.push_back(tInfo);
+	triangles.emplace_back(tInfo);
 }
 
 int PABlend::getTriangleIndex(const std::string& motion1, const std::string& motion2, const std::string& motion3)
@@ -785,13 +785,13 @@ int PABlend::getTriangleIndex(const std::string& motion1, const std::string& mot
 	for (size_t i = 0; i < triangles.size(); i++)
 	{
 		std::vector<std::string> inputTriangle;
-		inputTriangle.push_back(motion1);
-		inputTriangle.push_back(motion2);
-		inputTriangle.push_back(motion3);
+		inputTriangle.emplace_back(motion1);
+		inputTriangle.emplace_back(motion2);
+		inputTriangle.emplace_back(motion3);
 		std::vector<std::string> triangle;
-		triangle.push_back(triangles[i].motion1);
-		triangle.push_back(triangles[i].motion2);
-		triangle.push_back(triangles[i].motion3);
+		triangle.emplace_back(triangles[i].motion1);
+		triangle.emplace_back(triangles[i].motion2);
+		triangle.emplace_back(triangles[i].motion3);
 		std::sort(inputTriangle.begin(), inputTriangle.end());
 		std::sort(triangle.begin(), triangle.end());
 
@@ -855,7 +855,7 @@ void PABlend::addTetrahedron(const std::string& motion1, const std::string& moti
 	tetraInfo.motion2 = motion2;
 	tetraInfo.motion3 = motion3;
 	tetraInfo.motion4 = motion4;
-	tetrahedrons.push_back(tetraInfo);
+	tetrahedrons.emplace_back(tetraInfo);
 }
 
 int PABlend::getTetrahedronIndex(const std::string& motion1, const std::string& motion2, const std::string& motion3, const std::string& motion4)
@@ -863,15 +863,15 @@ int PABlend::getTetrahedronIndex(const std::string& motion1, const std::string& 
 	for (size_t i = 0; i < tetrahedrons.size(); i++)
 	{
 		std::vector<std::string> inputTetra;
-		inputTetra.push_back(motion1);
-		inputTetra.push_back(motion2);
-		inputTetra.push_back(motion3);
-		inputTetra.push_back(motion4);
+		inputTetra.emplace_back(motion1);
+		inputTetra.emplace_back(motion2);
+		inputTetra.emplace_back(motion3);
+		inputTetra.emplace_back(motion4);
 		std::vector<std::string> tetra;
-		tetra.push_back(tetrahedrons[i].motion1);
-		tetra.push_back(tetrahedrons[i].motion2);
-		tetra.push_back(tetrahedrons[i].motion3);
-		tetra.push_back(tetrahedrons[i].motion4);
+		tetra.emplace_back(tetrahedrons[i].motion1);
+		tetra.emplace_back(tetrahedrons[i].motion2);
+		tetra.emplace_back(tetrahedrons[i].motion3);
+		tetra.emplace_back(tetrahedrons[i].motion4);
 		std::sort(inputTetra.begin(), inputTetra.end());
 		std::sort(tetra.begin(), tetra.end());
 
@@ -1308,7 +1308,7 @@ void PABlend::addEventToMotion(const std::string& motion, SmartBody::SBMotionEve
 		SmartBody::util::log("Could not add event to state %s: no motion named %s found.", stateName.c_str(), motion.c_str());
 	}
 
-	_events.push_back(std::pair<SmartBody::SBMotionEvent*, int>(motionEvent, index));
+	_events.emplace_back(std::pair<SmartBody::SBMotionEvent*, int>(motionEvent, index));
 	// make sure that the motion events are ordered by time
 //	std::sort(_events.begin(), _events.end(), ascendingTime2);
 }

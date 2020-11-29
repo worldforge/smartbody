@@ -555,7 +555,7 @@ extern "C"
 					light.specular = SrColor( 0.0f, 0.0f, 0.0f );
 				}
 
-				_lights.push_back(light);
+				_lights.emplace_back(light);
 			}
 		}
 		//no lights in the scene and no lights enabled
@@ -570,7 +570,7 @@ extern "C"
 			SrVec up(0,1,0);
 			SrVec lightDirection = -up * orientation;
 			light.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
-			_lights.push_back(light);
+			_lights.emplace_back(light);
 
 			SrLight light2 = light;
 			light2.diffuse = SrColor( 0.8f, 0.8f, 0.8f );
@@ -578,7 +578,7 @@ extern "C"
 			SrQuat orientation2(mat);
 			lightDirection = -up * orientation2;
 			light2.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
-			_lights.push_back(light2);
+			_lights.emplace_back(light2);
 		}
 
 		GLint loc;
@@ -720,9 +720,9 @@ extern "C"
 			for(size_t i = 0; i < shape->transformBuffer.size(); ++i){
 				SrQuat temp = SrQuat(shape->transformBuffer[i].get_rotation());
 				temp.normalize();
-				QuaternionBuf.push_back(SrVec4(temp.getData(1), temp.getData(2), temp.getData(3), temp.getData(0)));
+				QuaternionBuf.emplace_back(SrVec4(temp.getData(1), temp.getData(2), temp.getData(3), temp.getData(0)));
 				SrVec tempT = SrVec(shape->transformBuffer[i].get_translation());
-				TranslationBuf.push_back(SrVec4(tempT.getData(0), tempT.getData(1), tempT.getData(2), 0.0));
+				TranslationBuf.emplace_back(SrVec4(tempT.getData(0), tempT.getData(1), tempT.getData(2), 0.0));
 			}
 			//submit QT to the Vertex shader
 			glUniform4fv(meshData->QuaternionLoc, QuaternionBuf.size(), (GLfloat*)&QuaternionBuf[0]);
@@ -757,7 +757,7 @@ extern "C"
 			if( texturesType == "static" || texturesType == "dynamic")
 			{
 				
-				SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, subMesh->texName.c_str());		
+				SbmTexture* tex = SbmTextureManager::singleton().findTexture(subMesh->texName.c_str());
 				//printf("tex = %d", tex);
 				if (tex && !showSkinWeight)
 				{

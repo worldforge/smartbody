@@ -14,8 +14,8 @@ VoxelizerWindow::VoxelizerWindow( int x, int y, int w, int h, char* name ) : Fl_
 {
 	startBuildVoxels = false;
 	finishBuildVoxels = false;
-	voxels = NULL;
-	voxelMesh = NULL;
+	voxels = nullptr;
+	voxelMesh = nullptr;
 }
 
 VoxelizerWindow::~VoxelizerWindow()
@@ -130,7 +130,7 @@ void VoxelizerWindow::voxelFindConnectedComponents(PolyVox::SimpleVolume<uint8_t
 					largestComponentCount = voxelCount;
 					largestComponentIdx = curComponentIdx;
 				}
-				componentCount.push_back(voxelCount);
+				componentCount.emplace_back(voxelCount);
 				curComponentIdx++;
 			}
 		}
@@ -620,7 +620,7 @@ std::vector<SrVec3i> VoxelizerWindow::getNeighborCells( SrVec3i& voxID )
 				SrVec3i nextID = SrVec3i(x+voxID[0],y+voxID[1],z+voxID[2]);
 				if (!isValidVoxelID(nextID))
 					continue;
-				neighborCells.push_back(nextID);
+				neighborCells.emplace_back(nextID);
 			}
 		}
 	}
@@ -706,7 +706,7 @@ std::vector<SrVec3i> VoxelizerWindow::rasterizeVoxelLine( SrVec3i& voxID1, SrVec
 			for (;;)
 			{
 				//point3d(x, y, z);
-				rasterLine.push_back(SrVec3i(x,y,z));
+				rasterLine.emplace_back(SrVec3i(x,y,z));
 				if (x == x2)
 				{
 					return rasterLine;
@@ -733,7 +733,7 @@ std::vector<SrVec3i> VoxelizerWindow::rasterizeVoxelLine( SrVec3i& voxID1, SrVec
 			zd = az - (ay >> 1);
 			for (;;)
 			{
-				rasterLine.push_back(SrVec3i(x,y,z));
+				rasterLine.emplace_back(SrVec3i(x,y,z));
 				if (y == y2)
 				{
 					return rasterLine;
@@ -760,7 +760,7 @@ std::vector<SrVec3i> VoxelizerWindow::rasterizeVoxelLine( SrVec3i& voxID1, SrVec
 			yd = ay - (az >> 1);
 			for (;;)
 			{
-				rasterLine.push_back(SrVec3i(x,y,z));
+				rasterLine.emplace_back(SrVec3i(x,y,z));
 				if (z == z2)
 				{
 					return rasterLine;

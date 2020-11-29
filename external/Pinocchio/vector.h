@@ -103,7 +103,7 @@ public:
     Vector() { }
     Vector(const Self &other) : m(other.m) { }
     Vector(const vector<Real> &inM) : m(inM) { }
-    explicit Vector(const Real &inM) { m.push_back(inM); }
+    explicit Vector(const Real &inM) { m.emplace_back(inM); }
 
     Real &operator[](int n) { if((int)m.size() <= n) m.resize(n + 1); return m[n]; }
     const Real &operator[](int n) const { if((int)m.size() <= n) const_cast<Vector<Real, -1> *>(this)->m.resize(n + 1); return m[n]; }

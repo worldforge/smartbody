@@ -96,8 +96,8 @@ int main( int argc, char ** argv )
 			if (++i < argc) {
 				SmartBody::util::log("    Adding sequence path '%s'\n", argv[i]);
 
-				//seq_paths.push_back( argv[i] );
-				py_paths.push_back(argv[i]);
+				//seq_paths.emplace_back( argv[i] );
+				py_paths.emplace_back(argv[i]);
 			}
 			else {
 				SmartBody::util::log("ERROR: Expected directory path to follow -seqpath\n");
@@ -118,7 +118,7 @@ int main( int argc, char ** argv )
 					if (extension == "py")
 					{
 						SmartBody::util::log("    Loading Python scrypt '%s'\n", argv[i]);
-						init_pys.push_back(argv[i]);
+						init_pys.emplace_back(argv[i]);
 					}					
 				}				
 			}

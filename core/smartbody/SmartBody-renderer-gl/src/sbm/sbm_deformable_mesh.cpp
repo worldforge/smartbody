@@ -114,25 +114,25 @@ void SkinWeight::copyWeights(SkinWeight* copy, const std::string& morphName)
 	infJointName.clear();
 	for (size_t jn = 0; jn < copy->infJointName.size(); jn++)
 	{
-		infJointName.push_back(copy->infJointName[jn]);
+		infJointName.emplace_back(copy->infJointName[jn]);
 	}
 
 	infJoint.clear();
 	for (size_t j = 0; j < copy->infJoint.size(); j++)
 	{
-		infJoint.push_back(copy->infJoint[j]);
+		infJoint.emplace_back(copy->infJoint[j]);
 	}
 
 	bindWeight.clear();
 	for (size_t bw = 0; bw < copy->bindWeight.size(); bw++)
 	{
-		bindWeight.push_back(copy->bindWeight[bw]);
+		bindWeight.emplace_back(copy->bindWeight[bw]);
 	}
 
 	bindPoseMat.clear();
 	for (size_t bp = 0; bp < copy->bindPoseMat.size(); bp++)
 	{
-		bindPoseMat.push_back(copy->bindPoseMat[bp]);
+		bindPoseMat.emplace_back(copy->bindPoseMat[bp]);
 	}
 
 	bindShapeMat = copy->bindShapeMat;
@@ -141,19 +141,19 @@ void SkinWeight::copyWeights(SkinWeight* copy, const std::string& morphName)
 	numInfJoints.clear();
 	for (size_t n = 0; n < copy->numInfJoints.size(); n++)
 	{
-		numInfJoints.push_back(copy->numInfJoints[n]);
+		numInfJoints.emplace_back(copy->numInfJoints[n]);
 	}
 
 	weightIndex.clear();
 	for (size_t wi = 0; wi < copy->weightIndex.size(); wi++)
 	{
-		weightIndex.push_back(copy->weightIndex[wi]);
+		weightIndex.emplace_back(copy->weightIndex[wi]);
 	}
 
 	jointNameIndex.clear();
 	for (size_t jni = 0; jni < copy->jointNameIndex.size(); jni++)
 	{
-		jointNameIndex.push_back(copy->jointNameIndex[jni]);
+		jointNameIndex.emplace_back(copy->jointNameIndex[jni]);
 	}
 }
 
@@ -167,8 +167,8 @@ SBAPI void SkinWeight::initWeights(std::string srcMesh, std::vector<SrVec4i>& bo
 	bindPoseMat.clear();
 	for (unsigned int i=0;i<boneJointNameList.size();i++)
 	{
-		bindPoseMat.push_back(bindPoseMatList[i]);
-		infJointName.push_back(boneJointNameList[i]);
+		bindPoseMat.emplace_back(bindPoseMatList[i]);
+		infJointName.emplace_back(boneJointNameList[i]);
 	}
 
 	numInfJoints.clear();
@@ -179,12 +179,12 @@ SBAPI void SkinWeight::initWeights(std::string srcMesh, std::vector<SrVec4i>& bo
 	int icount = 0;
 	for (unsigned int i=0;i<boneID.size();i++)
 	{
-		numInfJoints.push_back(4);
+		numInfJoints.emplace_back(4);
 		for (int k=0;k<4;k++)
 		{
-			weightIndex.push_back(icount++);
-			jointNameIndex.push_back(boneID[i][k]);
-			bindWeight.push_back(boneWeights[i][k]);
+			weightIndex.emplace_back(icount++);
+			jointNameIndex.emplace_back(boneID[i][k]);
+			bindWeight.emplace_back(boneWeights[i][k]);
 		}
 	}
 }
@@ -205,8 +205,8 @@ SBAPI void SkinWeight::addWeight( SkinWeight* weight )
 		{
 			newJointMap[jointName] = infJointName.size();
 			// update new joint name and bind pose matrix
-			infJointName.push_back(jointName);
-			bindPoseMat.push_back(weight->bindPoseMat[i]);
+			infJointName.emplace_back(jointName);
+			bindPoseMat.emplace_back(weight->bindPoseMat[i]);
 		}
 	}
 	// append bind weights
@@ -214,10 +214,10 @@ SBAPI void SkinWeight::addWeight( SkinWeight* weight )
 	bindWeight.insert(bindWeight.end(), weight->bindWeight.begin(), weight->bindWeight.end());
 	numInfJoints.insert(numInfJoints.end(), weight->numInfJoints.begin(), weight->numInfJoints.end());
 	for (unsigned int i=0;i<weight->weightIndex.size();i++)
-		weightIndex.push_back(weight->weightIndex[i] + weightIdxOffset);
+		weightIndex.emplace_back(weight->weightIndex[i] + weightIdxOffset);
 	for (unsigned int i=0;i<weight->jointNameIndex.size();i++)
 	{
-		jointNameIndex.push_back(newJointMap[weight->infJointName[weight->jointNameIndex[i]]]);
+		jointNameIndex.emplace_back(newJointMap[weight->infJointName[weight->jointNameIndex[i]]]);
 	}
 }
 
@@ -240,11 +240,11 @@ SBAPI void SkinWeight::mergeRedundantWeight( std::vector<int>& vtxIdxMap )
 		unsigned int newIdx = vtxIdxMap[i];
 		if (newIdx >= newNumInfJoints.size())
 		{
-			newNumInfJoints.push_back(numJoint);
+			newNumInfJoints.emplace_back(numJoint);
 			for (int k=0;k<numJoint;k++)
 			{
-				newWeightIdx.push_back(weightIndex[icount+k]);
-				newJointNameIdx.push_back(jointNameIndex[icount+k]);
+				newWeightIdx.emplace_back(weightIndex[icount+k]);
+				newJointNameIdx.emplace_back(jointNameIndex[icount+k]);
 			}
 		}
 		icount += numJoint;
@@ -263,7 +263,7 @@ SBAPI void SkinWeight::mergeRedundantWeight( std::vector<int>& vtxIdxMap )
 	{
 		if (useBindWeight[i])
 		{
-			newBindWeight.push_back(bindWeight[i]);
+			newBindWeight.emplace_back(bindWeight[i]);
 			weightIdxMap[i] = idx++;
 		}
 	}
@@ -300,7 +300,7 @@ SBAPI void SkinWeight::buildSkinWeightBuf()
 			{
 				float jointWeight = bindWeight[weightIndex[globalCounter]];
 				int    jointIndex = jointNameIndex[globalCounter];
-				weightList.push_back(IntFloatPair(jointIndex,jointWeight));							
+				weightList.emplace_back(IntFloatPair(jointIndex,jointWeight));
 				globalCounter ++;									
 			}
 		}
@@ -355,7 +355,7 @@ std::vector<int> SkinWeight::getInfluenceJoints(int infIndex)
 	std::vector<int> influenceJoints;
 	for (int w = 0; w < numInfluences; w++)
 	{
-		influenceJoints.push_back(this->jointNameIndex[index + w]);
+		influenceJoints.emplace_back(this->jointNameIndex[index + w]);
 	}
 
 	return influenceJoints;
@@ -375,7 +375,7 @@ std::vector<float> SkinWeight::getInfluenceWeights(int infIndex)
 	std::vector<float> influenceWeights;
 	for (int w = 0; w < numInfluences; w++)
 	{
-		influenceWeights.push_back(bindWeight[index + w]);
+		influenceWeights.emplace_back(bindWeight[index + w]);
 	}
 
 	return influenceWeights;
@@ -394,7 +394,7 @@ std::vector<int> SkinWeight::getInfluencesByJointIndex(int index)
 		{
 			if (influence[x] == index)
 			{
-				vertices.push_back(id);
+				vertices.emplace_back(id);
 				break;
 			}
 		}
@@ -421,7 +421,7 @@ void SkinWeight::createCache()
 
 	for (size_t i = 0; i < numInfJoints.size(); i++)
 	{
-		indexCache.push_back(count);
+		indexCache.emplace_back(count);
 		count += numInfJoints[i];
 	}
 }
@@ -516,9 +516,9 @@ SBAPI void DeformableMesh::initDeformMesh( std::vector<SrModel*>& meshModelVec )
 		srSnModelDynamic->visible(false);
 		srSnModelDynamic->shape().name = meshModelVec[i]->name;
 
-		dMeshStatic_p.push_back(srSnModelStatic);
+		dMeshStatic_p.emplace_back(srSnModelStatic);
 		//srSnModelStatic->ref();
-		dMeshDynamic_p.push_back(srSnModelDynamic);
+		dMeshDynamic_p.emplace_back(srSnModelDynamic);
 		//srSnModelDynamic->ref();
 	}
 	
@@ -644,7 +644,7 @@ bool DeformableMesh::buildBlendShapes()
 // 				{
 // 					blendShapeNewVtxIdxMap[i] = std::vector<int>();
 // 				}
-// 				blendShapeNewVtxIdxMap[i].push_back(knnPtIdxs[k]);
+// 				blendShapeNewVtxIdxMap[i].emplace_back(knnPtIdxs[k]);
 // 			}
 // 		}
 // 	}
@@ -698,11 +698,11 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 	defaultMaterial.specular = SrColor(101,101,101);//SrColor::gray;
 	defaultMaterial.shininess = 29;
 
-	allMatList.push_back(defaultMaterial);
-	allMatNameList.push_back("defaultMaterial");
-	allTexNameList.push_back("");
-	allNormalTexNameList.push_back("");
-	allSpecularTexNameList.push_back("");
+	allMatList.emplace_back(defaultMaterial);
+	allMatNameList.emplace_back("defaultMaterial");
+	allTexNameList.emplace_back("");
+	allNormalTexNameList.emplace_back("");
+	allSpecularTexNameList.emplace_back("");
 	meshSubsetMap[0] = std::vector<int>(); // default material group : gray color
 
 	//std::vector<int> meshIndexList;
@@ -723,13 +723,13 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 			//SmartBody::util::log("skinWeight->sourceMesh = %s, pos = %d", skinWeight->sourceMesh.c_str(), pos);
 			if (pos != -1)
 			{
-				meshIndexList.push_back(pos);
-				skinWeightList.push_back(skinWeight);
+				meshIndexList.emplace_back(pos);
+				skinWeightList.emplace_back(skinWeight);
 				for (size_t j = 0; j < skinWeight->infJointName.size(); j++)
 				{
 					std::string& jointName = skinWeight->infJointName[j];
 					SkJoint* curJoint = skeleton->search_joint(jointName.c_str());		
-					skinWeight->infJoint.push_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
+					skinWeight->infJoint.emplace_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
 				}
 
 				for (unsigned int k=0;k<skinWeight->infJointName.size();k++)
@@ -740,10 +740,10 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 					{
 						//SmartBody::util::log("BoneJointIdxMap, joint name = %s, idx = %d", jointName.c_str(), nTotalBones);
 						boneJointIdxMap[jointName] = nTotalBones++;		
-						boneJointList.push_back(curJoint);
-						boneJointNameList.push_back(jointName);
-						//bindPoseMatList.push_back(skinWeight->bindShapeMat*skinWeight->bindPoseMat[k]);
-						bindPoseMatList.push_back(skinWeight->bindPoseMat[k]);
+						boneJointList.emplace_back(curJoint);
+						boneJointNameList.emplace_back(jointName);
+						//bindPoseMatList.emplace_back(skinWeight->bindShapeMat*skinWeight->bindPoseMat[k]);
+						bindPoseMatList.emplace_back(skinWeight->bindPoseMat[k]);
 					}
 				}
 			}	
@@ -752,7 +752,7 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 	else
 	{
 		for (size_t i=0;i<dMeshDynamic_p.size();i++)
-			meshIndexList.push_back(i);
+			meshIndexList.emplace_back(i);
 	}
 
 	//SmartBody::util::log("meshIndexList.size() = %d \n", meshIndexList.size());
@@ -774,33 +774,33 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 			std::string mtlName = dMeshDynamic->shape().mtlnames[j];
 			if (mtlTexMap.find(mtlName) != mtlTexMap.end())
 			{
-				allTexNameList.push_back(mtlTexMap[mtlName]);					
+				allTexNameList.emplace_back(mtlTexMap[mtlName]);
 			}
 			else
 			{
-				allTexNameList.push_back("");
+				allTexNameList.emplace_back("");
 			}	
 
 			if (mtlNormalTexMap.find(mtlName) != mtlNormalTexMap.end())
 			{
-				allNormalTexNameList.push_back(mtlNormalTexMap[mtlName]);
+				allNormalTexNameList.emplace_back(mtlNormalTexMap[mtlName]);
 			}
 			else
 			{
-				allNormalTexNameList.push_back("");
+				allNormalTexNameList.emplace_back("");
 			}
 
 			if (mtlSpecularTexMap.find(mtlName) != mtlSpecularTexMap.end())
 			{
-				allSpecularTexNameList.push_back(mtlSpecularTexMap[mtlName]);
+				allSpecularTexNameList.emplace_back(mtlSpecularTexMap[mtlName]);
 			}
 			else
 			{
-				allSpecularTexNameList.push_back("");
+				allSpecularTexNameList.emplace_back("");
 			}
 			allMaterialMeshMap[mtlName] = meshName;
-			allMatList.push_back(mat);
-			allMatNameList.push_back(mtlName);
+			allMatList.emplace_back(mat);
+			allMatNameList.emplace_back(mtlName);
 			//colorArray[j%6].get(fcolor);				
 			meshSubsetMap[nMaterial] = std::vector<int>(); 
 			nMaterial++;
@@ -826,7 +826,7 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 		size_t nTexture = dMeshStatic->shape().T.size();
 		for (int i=0;i<nVtx;i++)
 		{
-			vtxNormalIdxMap.push_back(std::set<IntPair>());				
+			vtxNormalIdxMap.emplace_back(std::set<IntPair>());
 		}
 
 		nTotalVtxs += nVtx;				
@@ -871,7 +871,7 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 					nMatIdx = 0;
 				}
 			}
-			meshSubsetMap[nMatIdx].push_back(iFace);			
+			meshSubsetMap[nMatIdx].emplace_back(iFace);
 			iFace++;
 		}
 		iFaceIdxOffset += nVtx;
@@ -901,7 +901,7 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 				si != idxMap.end();
 				si++)
 			{
-				vtxNewVtxIdxMap[i].push_back(nTotalVtxs);
+				vtxNewVtxIdxMap[i].emplace_back(nTotalVtxs);
 				ntNewVtxIdxMap[*si] = nTotalVtxs;
 				nTotalVtxs++;
 			}
@@ -954,9 +954,9 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 		SrColor boneColor = SrColor::interphue(i*step);
 		boneColor.get(floatBuf);
 // 		if (i == 3)
-// 			boneColorMap.push_back(SrVec(1.f,0.f,0.f));
+// 			boneColorMap.emplace_back(SrVec(1.f,0.f,0.f));
 // 		else
-		boneColorMap.push_back(SrVec(floatBuf[0],floatBuf[1],floatBuf[2]));				
+		boneColorMap.emplace_back(SrVec(floatBuf[0],floatBuf[1],floatBuf[2]));
 	}	
 	
 	for (unsigned int c=0;c<meshIndexList.size();c++)
@@ -1028,7 +1028,7 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 						// 					 					if (numOfInfJoints > 8)
 						// 					 						printf("w = %d : %f\n",jointIndex,jointWeight);
 	
-						weightList.push_back(IntFloatPair(jointIndex,jointWeight));							
+						weightList.emplace_back(IntFloatPair(jointIndex,jointWeight));
 						globalCounter ++;									
 					}
 				}
@@ -1207,7 +1207,7 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 
 		mesh->matName = allMatNameList[iMaterial];
 		mesh->modelName = allMaterialMeshMap[mesh->matName];
-		auto tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, mesh->texName.c_str());
+		auto tex = SbmTextureManager::singleton().findTexture(mesh->texName.c_str());
 		//if (lowMatName.find("hair") != std::string::npos || lowMatName.find("lash") != std::string::npos 
 		//	|| lowMatName.find("shadow") != std::string::npos || lowMatName.find("shell") != std::string::npos)
 #if TEST_HAIR_RENDER		
@@ -1216,14 +1216,14 @@ bool DeformableMesh::buildSkinnedVertexBuffer()
 		if (mesh->material.useAlphaBlend)
 		{
 			//SmartBody::util::log("alpha mesh = %s",mesh->matName.c_str());
-			alphaMeshList.push_back(mesh);
+			alphaMeshList.emplace_back(mesh);
 		}
 		else
 		{
-			subMeshList.push_back(mesh);
+			subMeshList.emplace_back(mesh);
 		}
 #else
-		subMeshList.push_back(mesh);
+		subMeshList.emplace_back(mesh);
 #endif			
 	}		
 	subMeshList.insert(subMeshList.end(),hairMeshList.begin(),hairMeshList.end());
@@ -1252,7 +1252,7 @@ void DeformableMesh::saveToStaticMeshBinary(SmartBodyBinary::StaticMesh* outputS
 	// prepare models
 	for (size_t i = 0; i < dMeshStatic_p.size(); ++i)
 	{
-		modelsToSave.push_back(&(dMeshStatic_p[i]->shape()));
+		modelsToSave.emplace_back(&(dMeshStatic_p[i]->shape()));
 	}
 	// prepare morph targets
 	for (std::map<std::string, std::vector<SrSnModel*> >::iterator iter = blendShapeMap.begin();
@@ -1265,7 +1265,7 @@ void DeformableMesh::saveToStaticMeshBinary(SmartBodyBinary::StaticMesh* outputS
 			if (targets[t] == nullptr)
 				continue;
 			SrModel& curModel = targets[t]->shape();
-			modelsToSave.push_back(&curModel);
+			modelsToSave.emplace_back(&curModel);
 		}
 	}
 
@@ -1596,37 +1596,37 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 			// 7 useAlphaBlend
 			newMat.useAlphaBlend = material.usealphablend();
 
-			newModel->M.push_back(newMat);
+			newModel->M.emplace_back(newMat);
 		}
 		// 3
 		for (int x = 0; x < meshModel.vertexcoordinates_size() / 3; ++x)
 		{
 			SrPnt newPoint(meshModel.vertexcoordinates(x * 3 + 0), meshModel.vertexcoordinates(x * 3 + 1), meshModel.vertexcoordinates(x * 3 + 2));
-			newModel->V.push_back(newPoint);
+			newModel->V.emplace_back(newPoint);
 		}
 		// 4
 		for (int x = 0; x < meshModel.normals_size() / 3; ++x)
 		{
 			SrPnt newPoint(meshModel.normals(x * 3 + 0), meshModel.normals(x * 3 + 1), meshModel.normals(x * 3 + 2));
-			newModel->N.push_back(newPoint);
+			newModel->N.emplace_back(newPoint);
 		}
 		// 5
 		for (int x = 0; x < meshModel.tangents_size() / 3; ++x)
 		{
 			SrPnt newPoint(meshModel.tangents(x * 3 + 0), meshModel.tangents(x * 3 + 1), meshModel.tangents(x * 3 + 2));
-			newModel->Tangent.push_back(newPoint);
+			newModel->Tangent.emplace_back(newPoint);
 		}
 		// 6
 		for (int x = 0; x < meshModel.binormals_size() / 3; ++x)
 		{
 			SrPnt newPoint(meshModel.binormals(x * 3 + 0), meshModel.binormals(x * 3 + 1), meshModel.binormals(x * 3 + 2));
-			newModel->BiNormal.push_back(newPoint);
+			newModel->BiNormal.emplace_back(newPoint);
 		}
 		// 7
 		for (int x = 0; x < meshModel.texturecoordinates_size() / 2; ++x)
 		{
 			SrPnt2 newPoint(meshModel.texturecoordinates(x * 2 + 0), meshModel.texturecoordinates(x * 2 + 1));
-			newModel->T.push_back(newPoint);
+			newModel->T.emplace_back(newPoint);
 		}
 		// 8
 		for (int x = 0; x < meshModel.trianglefaceindices_size() / 3; ++x)
@@ -1635,12 +1635,12 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 			newFace[0] = meshModel.trianglefaceindices(x * 3 + 0);
 			newFace[1] = meshModel.trianglefaceindices(x * 3 + 1);
 			newFace[2] = meshModel.trianglefaceindices(x * 3 + 2);
-			newModel->F.push_back(newFace);
+			newModel->F.emplace_back(newFace);
 		}
 		// 9
 		for (int x = 0; x < meshModel.materialindices_size(); ++x)
 		{
-			newModel->Fm.push_back(meshModel.materialindices(x));
+			newModel->Fm.emplace_back(meshModel.materialindices(x));
 		}
 		// 10
 		for (int x = 0; x < meshModel.normalindices_size() / 3; ++x)
@@ -1649,7 +1649,7 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 			newFace[0] = meshModel.normalindices(x * 3 + 0);
 			newFace[1] = meshModel.normalindices(x * 3 + 1);
 			newFace[2] = meshModel.normalindices(x * 3 + 2);
-			newModel->Fn.push_back(newFace);
+			newModel->Fn.emplace_back(newFace);
 		}
 		// 11
 		for (int x = 0; x < meshModel.texturecoordinatesindices_size() / 3; ++x)
@@ -1658,7 +1658,7 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 			newFace[0] = meshModel.texturecoordinatesindices(x * 3 + 0);
 			newFace[1] = meshModel.texturecoordinatesindices(x * 3 + 1);
 			newFace[2] = meshModel.texturecoordinatesindices(x * 3 + 2);
-			newModel->Ft.push_back(newFace);
+			newModel->Ft.emplace_back(newFace);
 		}
 		// 12
 		newModel->culling = meshModel.culling();
@@ -1667,7 +1667,7 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 		{
 
 			std::string fromName = buildName(getName(), meshModel.materialnames(x).c_str());
-			newModel->mtlnames.push_back(fromName);
+			newModel->mtlnames.emplace_back(fromName);
 		}
 		// 14
 		for (int x = 0; x < meshModel.materialtodiffusetexturemapping_size(); ++x)
@@ -1699,7 +1699,7 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 			const SmartBodyBinary::StringToIntVectorMap& m2d = meshModel.materialtofaceindices(x);
 			std::vector<int> indices;
 			for (int z = 0; z < m2d.to_size(); ++z)
-				indices.push_back(m2d.to(z));
+				indices.emplace_back(m2d.to(z));
 
 			std::string fromName = buildName(getName(), m2d.from());
 			newModel->mtlFaceIndices.insert(std::make_pair(fromName, indices));
@@ -1742,7 +1742,7 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 
 				if (newModel->mtlTransparentTexNameMap.find(matName) != newModel->mtlTransparentTexNameMap.end())
 				{
-					auto diffuseTex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, prefixedName.c_str());
+					auto diffuseTex = texManager.findTexture(prefixedName.c_str());
 					SbmTexture* transTex = new SbmTexture("Dummy");
 					std::string transpTexFile = (*newModel->mtlTransparentTexNameMap.find(matName)).second;
 					std::string finalTextureName = ParserCOLLADAFast::getFinalTextureFileName(transpTexFile, paths);
@@ -1761,7 +1761,7 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 			if (newModel->mtlSpecularTexNameMap.find(matName) != newModel->mtlSpecularTexNameMap.end())
 			{
 				std::string prefixedName = newModel->mtlSpecularTexNameMap[matName];
-				std::string::size_type index = prefixedName.find_first_of("|");
+				std::string::size_type index = prefixedName.find_first_of('|');
 				std::string fileName = prefixedName;
 
 				if (index != std::string::npos)
@@ -1770,7 +1770,7 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 
 				if (newModel->mtlGlossyTexNameMap.find(matName) != newModel->mtlGlossyTexNameMap.end())
 				{
-					auto specularTex = texManager.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP, prefixedName.c_str());
+					auto specularTex = texManager.findTexture(prefixedName.c_str());
 					SbmTexture glossyTex("Dummy");
 					std::string glossyTexFile = (*newModel->mtlGlossyTexNameMap.find(matName)).second;
 					std::string finalTextureName = ParserCOLLADAFast::getFinalTextureFileName(glossyTexFile, paths);
@@ -1793,16 +1793,16 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 			newModel->computeNormals();
 		}
 
-		models.push_back(newModel);
+		models.emplace_back(newModel);
 	}
 }
 
 
 SBAPI void DeformableMesh::addTransform( const SrMat& transform )
 {
-	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
+	for (auto & i : dMeshDynamic_p)
 	{
-		dMeshDynamic_p[i]->shape().addTransform(transform);
+		i->shape().addTransform(transform);
 	}
 	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
 	{
@@ -1813,9 +1813,9 @@ SBAPI void DeformableMesh::addTransform( const SrMat& transform )
 
 void DeformableMesh::translate(SrVec trans)
 {
-	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
+	for (auto & i : dMeshDynamic_p)
 	{
-		dMeshDynamic_p[i]->shape().translate(trans);
+		i->shape().translate(trans);
 	}
 	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
 	{
@@ -1825,9 +1825,9 @@ void DeformableMesh::translate(SrVec trans)
 
 void DeformableMesh::rotate(SrVec rot)
 {
-	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
+	for (auto & i : dMeshDynamic_p)
 	{
-		dMeshDynamic_p[i]->shape().rotate(rot);
+		i->shape().rotate(rot);
 	}
 	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
 	{
@@ -1837,9 +1837,9 @@ void DeformableMesh::rotate(SrVec rot)
 
 void DeformableMesh::scale(float factor)
 {
-	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
+	for (auto & i : dMeshDynamic_p)
 	{
-		dMeshDynamic_p[i]->shape().scale(factor);
+		i->shape().scale(factor);
 	}
 	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
 	{
@@ -1849,9 +1849,9 @@ void DeformableMesh::scale(float factor)
 
 void DeformableMesh::centralize()
 {
-	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
+	for (auto & i : dMeshDynamic_p)
 	{
-		dMeshDynamic_p[i]->shape().centralize();
+		i->shape().centralize();
 	}
 	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
 	{
@@ -1861,9 +1861,9 @@ void DeformableMesh::centralize()
 
 void DeformableMesh::computeNormals()
 {
-	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
+	for (auto & i : dMeshDynamic_p)
 	{
-		dMeshDynamic_p[i]->shape().computeNormals();
+		i->shape().computeNormals();
 		//dMeshDynamic_p[i]->shape().computeTangentBiNormal();
 	}
 	for (unsigned int i = 0; i < dMeshDynamic_p.size(); i++)
@@ -1876,7 +1876,7 @@ void DeformableMesh::computeNormals()
 
 bool DeformableMesh::saveToSmb(std::string inputFileName)
 {
-	SmartBodyBinary::StaticMesh* outputStaticMesh = new SmartBodyBinary::StaticMesh();
+	auto* outputStaticMesh = new SmartBodyBinary::StaticMesh();
 
 	
 	// set properly the binary static mesh to be output file name (fileName + extension)
@@ -1921,7 +1921,7 @@ bool DeformableMesh::saveToDae(SmartBody::SBRenderAssetManager& renderAssetManag
 	}
 	std::string filePath = p.parent_path().string();
 
-	SmartBodyBinary::DeformableMesh* outputDeformableMesh = new SmartBodyBinary::DeformableMesh();
+	auto* outputDeformableMesh = new SmartBodyBinary::DeformableMesh();
 
 	std::vector<std::string> moNames;
 	double scale = 1.0;
@@ -1952,7 +1952,7 @@ bool DeformableMesh::saveToDmb(std::string inputFileName)
 		inputFileName = fileName + extension;
 	}
 
-	SmartBodyBinary::DeformableMesh* outputDeformableMesh = new SmartBodyBinary::DeformableMesh();
+	auto* outputDeformableMesh = new SmartBodyBinary::DeformableMesh();
 	// 1 DeformableMesh
 	outputDeformableMesh->set_deformablemeshname(fileName + extension);
 	// 2
@@ -1962,40 +1962,39 @@ bool DeformableMesh::saveToDmb(std::string inputFileName)
 	outputStaticMesh->set_staticmeshname(fileName + extension);
 
 	// save skin weights
-	for (size_t i = 0; i < skinWeights.size(); ++i)
+	for (auto & skinWeight : skinWeights)
 	{
 		SmartBodyBinary::SkinWeight* newSkinWeight = outputDeformableMesh->add_skinweights();
 		// 1 SkinWeight
-		newSkinWeight->set_sourcemeshname(skinWeights[i]->sourceMesh);
+		newSkinWeight->set_sourcemeshname(skinWeight->sourceMesh);
 		// 2
-		for (size_t x = 0; x < skinWeights[i]->infJointName.size(); ++x)
+		for (auto & x : skinWeight->infJointName)
 		{
-			newSkinWeight->add_influencejointnames(skinWeights[i]->infJointName[x]);
+			newSkinWeight->add_influencejointnames(x);
 		}
 		// 3
-		for (size_t x = 0; x < skinWeights[i]->bindWeight.size(); ++x)
+		for (float x : skinWeight->bindWeight)
 		{
-			newSkinWeight->add_bindweights(skinWeights[i]->bindWeight[x]);
+			newSkinWeight->add_bindweights(x);
 		}
 		// 4
-		for (size_t x = 0; x < skinWeights[i]->bindPoseMat.size(); ++x)
+		for (auto & mat : skinWeight->bindPoseMat)
 		{
-			const SrMat& mat = skinWeights[i]->bindPoseMat[x];
-			for (int m = 0; m < 16; ++m)
+				for (int m = 0; m < 16; ++m)
 				newSkinWeight->add_bindposematrice(mat.get(m));
 		}
 		// 5
 		for (int m = 0; m < 16; ++m)
-			newSkinWeight->add_bindshapematrix(skinWeights[i]->bindShapeMat.get(m));
+			newSkinWeight->add_bindshapematrix(skinWeight->bindShapeMat.get(m));
 		// 6
-		for (size_t x = 0; x < skinWeights[i]->numInfJoints.size(); ++x)
-			newSkinWeight->add_numberofinfluencejoints(skinWeights[i]->numInfJoints[x]);
+		for (unsigned int numInfJoint : skinWeight->numInfJoints)
+			newSkinWeight->add_numberofinfluencejoints(numInfJoint);
 		// 7
-		for (size_t x = 0; x < skinWeights[i]->weightIndex.size(); ++x)
-			newSkinWeight->add_weightindices(skinWeights[i]->weightIndex[x]);
+		for (unsigned int x : skinWeight->weightIndex)
+			newSkinWeight->add_weightindices(x);
 		// 8
-		for (size_t x = 0; x < skinWeights[i]->jointNameIndex.size(); ++x)
-			newSkinWeight->add_jointnameindices(skinWeights[i]->jointNameIndex[x]);
+		for (unsigned int x : skinWeight->jointNameIndex)
+			newSkinWeight->add_jointnameindices(x);
 	}
 	
 	// save morph targets
@@ -2004,9 +2003,9 @@ bool DeformableMesh::saveToDmb(std::string inputFileName)
 	{
 		SmartBodyBinary::StringToStringVectorMap* morphMap = outputDeformableMesh->add_morphtargets();
 		morphMap->set_from(iter->first);
-		for (size_t x = 0; x < iter->second.size(); ++x)
+		for (auto & x : iter->second)
 		{
-			morphMap->add_to(iter->second[x]);
+			morphMap->add_to(x);
 		}
 	}
 	
@@ -2046,7 +2045,7 @@ bool DeformableMesh::readFromSmb(std::string inputFileName)
 		srSnModelStatic->shape().name = models[m]->name;
 		srSnModelStatic->ref();
 		
-		dMeshStatic_p.push_back(srSnModelStatic);
+		dMeshStatic_p.emplace_back(srSnModelStatic);
 		
 		SrSnModel* srSnModelDynamic = new SrSnModel();
 		srSnModelDynamic->shape(*(models[m]));
@@ -2055,7 +2054,7 @@ bool DeformableMesh::readFromSmb(std::string inputFileName)
 		srSnModelDynamic->shape().name = models[m]->name;
 		srSnModelDynamic->ref();
 		
-		dMeshDynamic_p.push_back(srSnModelDynamic);
+		dMeshDynamic_p.emplace_back(srSnModelDynamic);
 		//delete models[m];
 	}
 
@@ -2064,8 +2063,8 @@ bool DeformableMesh::readFromSmb(std::string inputFileName)
 	std::string filePath = p.parent_path().string();
 	loadAllFoundTextures(filePath);
   
-  for (unsigned int i=0;i<models.size();i++)
-    delete models[i];
+  for (auto & model : models)
+    delete model;
   models.clear();
   
 	
@@ -2098,14 +2097,14 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 	// make the models easier to access
 	std::map<std::string, SrSnModel*> modelMap;
 	std::map<std::string, bool> modelsUsed;
-	for (size_t m = 0; m < models.size(); m++)
+	for (auto & model : models)
 	{
 		SrSnModel* srSnModelStatic = new SrSnModel();
-		srSnModelStatic->shape(*models[m]);
-		srSnModelStatic->shape().name = models[m]->name;
+		srSnModelStatic->shape(*model);
+		srSnModelStatic->shape().name = model->name;
     srSnModelStatic->ref();
-		modelMap.insert(std::pair<std::string, SrSnModel*>(std::string(models[m]->name), srSnModelStatic));
-		modelsUsed.insert(std::pair<std::string, bool>(std::string(models[m]->name), false));
+		modelMap.insert(std::pair<std::string, SrSnModel*>(std::string(model->name), srSnModelStatic));
+		modelsUsed.insert(std::pair<std::string, bool>(std::string(model->name), false));
 	}
 	// keep track of the models used for morphs; non-morph models are assumed to be part of the basic mesh
 
@@ -2117,7 +2116,7 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 		
 		for (int x = 0; x < morphMap.to_size(); ++x)
 		{
-			morphs.push_back(morphMap.to(x));
+			morphs.emplace_back(morphMap.to(x));
 		}
 		// morphTargets contains a morphgroup->morphname relationship
 		morphTargets.insert(std::make_pair(morphMap.from(), morphs));
@@ -2127,35 +2126,32 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 		std::vector<SrSnModel*> morphModels;
 		for (size_t n = 0; n < morphs.size(); n++)
 		{
-			std::map<std::string, SrSnModel*>::iterator iter = modelMap.find(morphs[n]);
+			auto iter = modelMap.find(morphs[n]);
 			if (iter != modelMap.end())
 			{
 				SrSnModel* model = (*iter).second;
 				SrSnModel* baseModelCopy = new SrSnModel();
 				baseModelCopy->shape(model->shape());
 				baseModelCopy->ref();
-				morphModels.push_back(baseModelCopy);
+				morphModels.emplace_back(baseModelCopy);
 				if (n > 0) // mark non-base models as morph targets so that they are not added as static/dynamic meshes
 					modelsUsed[morphs[n]] = true;
 			}
 		}
-		if (morphs.size() > 0)
+		if (!morphs.empty())
 			blendShapeMap.insert(std::make_pair(morphs[0], morphModels));
 	}
 
-	for (std::vector<SrModel*>::iterator iter = models.begin();
-		iter != models.end();
-		iter++)
+	for (auto model : models)
 	{
-		SrModel* model = (*iter);
-		std::string modelName((const char*) model->name);
+			std::string modelName((const char*) model->name);
 
-		std::map<std::string, bool>::iterator iter2 = modelsUsed.find(modelName);
-		if ((*iter2).second == false)
+		auto iter2 = modelsUsed.find(modelName);
+		if (!(*iter2).second)
 		{
-			std::map<std::string, SrSnModel*>::iterator iter3 = modelMap.find(modelName);
+			auto iter3 = modelMap.find(modelName);
 			SrSnModel* srsnmodel = (*iter3).second;
-			dMeshStatic_p.push_back(srsnmodel);
+			dMeshStatic_p.emplace_back(srsnmodel);
 			srsnmodel->ref();
 
 			SrSnModel* srSnModelDynamic = new SrSnModel();
@@ -2164,7 +2160,7 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 			srSnModelDynamic->visible(false);
 			srSnModelDynamic->shape().name = srsnmodel->shape().name;
 			
-			dMeshDynamic_p.push_back(srSnModelDynamic);
+			dMeshDynamic_p.emplace_back(srSnModelDynamic);
 			srSnModelDynamic->ref();
 			//delete models[m];
 		}
@@ -2173,18 +2169,18 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 	// load skin weights
 	for (int i = 0; i < deformableMesh.skinweights_size(); ++i)
 	{
-		SkinWeight* newSkinWeights = new SkinWeight();
+		auto* newSkinWeights = new SkinWeight();
 		// 1 SkinWeight
 		newSkinWeights->sourceMesh = deformableMesh.skinweights(i).sourcemeshname();
 		// 2
 		for (int x = 0; x < deformableMesh.skinweights(i).influencejointnames_size(); ++x)
 		{
-			newSkinWeights->infJointName.push_back(deformableMesh.skinweights(i).influencejointnames(x));
+			newSkinWeights->infJointName.emplace_back(deformableMesh.skinweights(i).influencejointnames(x));
 		}
 		// 3
 		for (int x = 0; x < deformableMesh.skinweights(i).bindweights_size(); ++x)
 		{
-			newSkinWeights->bindWeight.push_back(deformableMesh.skinweights(i).bindweights(x));
+			newSkinWeights->bindWeight.emplace_back(deformableMesh.skinweights(i).bindweights(x));
 		}
 		// 4
 		for (int x = 0; x < deformableMesh.skinweights(i).bindposematrice_size() / 16; ++x)
@@ -2194,7 +2190,7 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 			{
 				mat.set(m, deformableMesh.skinweights(i).bindposematrice(x * 16 + m));
 			}
-			newSkinWeights->bindPoseMat.push_back(mat);
+			newSkinWeights->bindPoseMat.emplace_back(mat);
 		}
 		// 5
 		for (int m = 0; m < deformableMesh.skinweights(i).bindshapematrix_size(); ++m)
@@ -2204,20 +2200,20 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 		// 6
 		for (int x = 0; x < deformableMesh.skinweights(i).numberofinfluencejoints_size(); ++x)
 		{
-			newSkinWeights->numInfJoints.push_back(deformableMesh.skinweights(i).numberofinfluencejoints(x));
+			newSkinWeights->numInfJoints.emplace_back(deformableMesh.skinweights(i).numberofinfluencejoints(x));
 		}
 		// 7
 		for (int x = 0; x < deformableMesh.skinweights(i).weightindices_size(); ++x)
 		{
-			newSkinWeights->weightIndex.push_back(deformableMesh.skinweights(i).weightindices(x));
+			newSkinWeights->weightIndex.emplace_back(deformableMesh.skinweights(i).weightindices(x));
 		}
 		// 8
 		for (int x = 0; x < deformableMesh.skinweights(i).jointnameindices_size(); ++x)
 		{
-			newSkinWeights->jointNameIndex.push_back(deformableMesh.skinweights(i).jointnameindices(x));
+			newSkinWeights->jointNameIndex.emplace_back(deformableMesh.skinweights(i).jointnameindices(x));
 		}
 
-		this->skinWeights.push_back(newSkinWeights);
+		this->skinWeights.emplace_back(newSkinWeights);
 	}
 
 	
@@ -2227,8 +2223,8 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 	std::string filePath = p.parent_path().string();
 	loadAllFoundTextures(filePath);
   
-  for (unsigned int i=0;i<models.size();i++)
-    delete models[i];
+  for (auto & model : models)
+    delete model;
   models.clear();
   
   std::map<std::string, SrSnModel*>::iterator it;
@@ -2255,7 +2251,7 @@ void DeformableMesh::loadAllFoundTextures(std::string textureDirectory)
 		{
 			SbmTextureManager& texManager = SbmTextureManager::singleton();
 
-			auto tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, iter->first.c_str());
+			auto tex = texManager.findTexture(iter->first.c_str());
 			/*
 			if (tex)
 			{
@@ -2266,7 +2262,7 @@ void DeformableMesh::loadAllFoundTextures(std::string textureDirectory)
 			{
 				// separate the texture prefix and |
 				std::string textureLabel = iter->second;
-				std::string::size_type labelIndex = textureLabel.find_first_of("|");
+				std::string::size_type labelIndex = textureLabel.find_first_of('|');
 				std::string textureFile = textureLabel.substr(labelIndex + 1);
 				//SmartBody::util::log("loading texture label = %s, textureFile = %s", textureLabel.c_str(), textureFile.c_str());
 #if 0
@@ -2288,7 +2284,7 @@ void DeformableMesh::loadAllFoundTextures(std::string textureDirectory)
 		for (iter = i->shape().mtlNormalTexNameMap.begin(); iter != i->shape().mtlNormalTexNameMap.end(); ++iter)
 		{
 			SbmTextureManager& texManager = SbmTextureManager::singleton();
-			auto tex = texManager.findTexture(SbmTextureManager::TEXTURE_NORMALMAP, iter->second.c_str());
+			auto tex = texManager.findTexture(iter->second.c_str());
 
 			/*
 			if (tex)
@@ -2301,7 +2297,7 @@ void DeformableMesh::loadAllFoundTextures(std::string textureDirectory)
 			{
 				// separate the texture prefix and |
 				std::string textureLabel = iter->second;
-				std::string::size_type labelIndex = textureLabel.find_first_of("|");
+				std::string::size_type labelIndex = textureLabel.find_first_of('|');
 				std::string textureFile = textureLabel.substr(labelIndex + 1);
 				SmartBody::util::log("loading normal map label = %s, textureFile = %s", textureLabel.c_str(), textureFile.c_str());
 #if 0
@@ -2322,7 +2318,7 @@ void DeformableMesh::loadAllFoundTextures(std::string textureDirectory)
 		for (iter = i->shape().mtlSpecularTexNameMap.begin(); iter != i->shape().mtlSpecularTexNameMap.end(); ++iter)
 		{
 			SbmTextureManager& texManager = SbmTextureManager::singleton();
-			auto tex = texManager.findTexture(SbmTextureManager::TEXTURE_SPECULARMAP, iter->second.c_str());
+			auto tex = texManager.findTexture(iter->second.c_str());
 
 			/*
 			if (tex)
@@ -2571,7 +2567,7 @@ void DeformableMeshInstance::GPUblendShapes(glm::mat4x4 translation, glm::mat4x4
 			std::vector<std::string> materials;
 			std::map<std::string, std::string> textures_map = mIter->second[i]->shape().mtlTextureNameMap;
 			for(std::map<std::string,std::string>::iterator it = textures_map.begin(); it != textures_map.end(); ++it) {
-				materials.push_back(it->first);
+				materials.emplace_back(it->first);
 			}
 
 			//	In a face there will be just one texture, material name will be always the first
@@ -2583,7 +2579,7 @@ void DeformableMeshInstance::GPUblendShapes(glm::mat4x4 translation, glm::mat4x4
 			if (strcmp(mIter->first.c_str(), (const char*)mIter->second[i]->shape().name) == 0)
 			{
 				std::string fileName = (std::string)mIter->second[i]->shape().mtlTextureNameMap[matName];
-				SbmTexture* tex		= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, fileName.c_str());
+				SbmTexture* tex		= SbmTextureManager::singleton().findTexture(fileName.c_str());
 				if (tex)
 				{
 					texIDs[i]		= tex->getID();
@@ -2603,7 +2599,7 @@ void DeformableMeshInstance::GPUblendShapes(glm::mat4x4 translation, glm::mat4x4
 
 			// Rest of the models
 			std::string fileName = (std::string)mIter->second[i]->shape().mtlTextureNameMap[matName];
-			SbmTexture* tex		= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, fileName.c_str());
+			SbmTexture* tex		= SbmTextureManager::singleton().findTexture(fileName.c_str());
 			if (tex)
 			{
 				texIDs[i]		= tex->getID();
@@ -2741,7 +2737,7 @@ void DeformableMeshInstance::blendShapes()
 		{
 			//SmartBody::util::log("base model to write to cannot be found");
 			//continue;
-			if (_mesh->dMeshStatic_p.size() == 0 || targets.size() == 0)
+			if (_mesh->dMeshStatic_p.empty() || targets.empty())
 				continue;
 			if (_mesh->dMeshStatic_p[0]->shape().V.size() == targets[0]->shape().V.size())
 			{
@@ -2800,7 +2796,7 @@ void DeformableMeshInstance::blendShapes()
 				// optimize the blend shape maps as needed
 				for (size_t i = 0; i < targets.size(); ++i)
 				{
-					optimizedShapeData.push_back(BlendShapeData());
+					optimizedShapeData.emplace_back();
 					if (i == 0)
 					{
 						continue;
@@ -2827,7 +2823,7 @@ void DeformableMeshInstance::blendShapes()
 							std::pair<int, SrVec> temp;
 							temp.first = v;
 							temp.second = vVec;
-							blendData.diffV.push_back(temp);
+							blendData.diffV.emplace_back(temp);
 						}
 					}
 					for (unsigned int n = 0; n < visemeN.size(); ++n)
@@ -2837,7 +2833,7 @@ void DeformableMeshInstance::blendShapes()
 							fabs(nVec[1]) >  blendShapeProximity ||
 							fabs(nVec[2]) >  blendShapeProximity)	
 						{
-							blendData.diffN.push_back(std::pair<int, SrVec>(n, nVec));
+							blendData.diffN.emplace_back(n, nVec);
 						}
 					}
 					SmartBody::util::log("Optimized blend %s has %d/%d vertices, %d/%d normals.", (const char*) targets[i]->shape().name, blendData.diffV.size(), visemeV.size(), blendData.diffN.size(), visemeN.size());
@@ -2880,7 +2876,7 @@ void DeformableMeshInstance::blendShapes()
 			{
 				const std::string& mappedCName	= _character->getStringAttribute(ss.str());
 				SmartBody::SBSkeleton* sbSkel	= _character->getSkeleton();
-				if (sbSkel && mappedCName != "")
+				if (sbSkel && !mappedCName.empty())
 				{
 					//SmartBody::util::log("blendShape, mappedCName = %s", mappedCName.c_str());
 					SmartBody::SBJoint* joint = sbSkel->getJointByName(mappedCName);
@@ -2936,7 +2932,7 @@ void DeformableMeshInstance::blendShapes()
 				if (_character->getBoolAttribute("useOptimizedBlendShapes"))
 				{
 					// loop through a shorter list of different vertices and normals
-					std::map<std::string, std::vector<BlendShapeData> >::iterator optIter = _mesh->optimizedBlendShapeData.find(baseModelName);
+					auto optIter = _mesh->optimizedBlendShapeData.find(baseModelName);
 					std::vector<BlendShapeData>& optimizedShapeData = (*optIter).second;
 					BlendShapeData& blendData = optimizedShapeData[i];
 					size_t vSize = optimizedShapeData[i].diffV.size();
@@ -2976,9 +2972,9 @@ void DeformableMeshInstance::blendShapes()
 				}
 			}
 		}
-		for (unsigned int n = 0; n < newN.size(); ++n)
+		for (auto & n : newN)
 		{
-			newN[n].normalize();
+			n.normalize();
 		}
 
 		//SmartBody::util::log("%s", weightsStr.c_str());
@@ -3005,19 +3001,19 @@ void DeformableMeshInstance::blendShapes()
 #if 0
 			std::map<std::string, std::string> textures_map = mIter->second[i]->shape().mtlTextureNameMap;
 			for(std::map<std::string,std::string>::iterator it = textures_map.begin(); it != textures_map.end(); ++it) {
-				materials.push_back(it->first);
+				materials.emplace_back(it->first);
 			}
 #endif
 			//	In a face there will be just one texture, material name will be always the first
-			std::string matName = "";
-			if (materials.size() > 0)
+			std::string matName;
+			if (!materials.empty())
 				matName = materials[0];
 
 			// If base model
 			if (strcmp(mIter.first.c_str(), (const char*) targets[i]->shape().name) == 0)
 			{
 				std::string fileName = (std::string) targets[i]->shape().mtlTextureNameMap[matName];
-				auto tex		= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, fileName.c_str());
+				auto tex		= SbmTextureManager::singleton().findTexture(fileName.c_str());
 				if (tex)
 				{
 					texIDs[i]		= tex->getID();
@@ -3036,7 +3032,7 @@ void DeformableMeshInstance::blendShapes()
 
 			// Rest of the models
 			std::string fileName = (std::string) targets[i]->shape().mtlTextureNameMap[matName];
-			auto tex		= SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, fileName.c_str());
+			auto tex		= SbmTextureManager::singleton().findTexture(fileName.c_str());
 			if (tex)
 			{
 				texIDs[i]		= tex->getID();
@@ -3063,7 +3059,7 @@ void DeformableMeshInstance::blendShapes()
 			std::string FBOName = "TempFBO";
 			for (unsigned int i=0;i<weights.size();i++)
 			{
-				std::string tempName = FBOName + "_weight" + boost::lexical_cast<std::string>(i);
+				std::string tempName = FBOName + "_weight" + std::to_string(i);
 				texManager.createFBO(tempName.c_str());
 		}
 		}
@@ -3093,7 +3089,7 @@ void DeformableMeshInstance::blendShapes()
 			
 			for (unsigned int i=0;i<weights.size();i++)
 			{
-				std::string tempTexName = meshName + "_weight" + boost::lexical_cast<std::string>(i);
+				std::string tempTexName = meshName + "_weight" + std::to_string(i);
 				texManager.createWhiteTexture(tempTexName.c_str(), tex_w, tex_h);
 			}
 #else
@@ -3117,8 +3113,8 @@ void DeformableMeshInstance::blendShapes()
 		for (unsigned int i=0;i<weights.size();i++)
 		{
 			std::string meshName = this->getDeformableMesh()->getName();
-			std::string tempTexName = meshName + "_weight" + boost::lexical_cast<std::string>(i);
-			auto tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, tempTexName.c_str());
+			std::string tempTexName = meshName + "_weight" + std::to_string(i);
+			auto tex = texManager.findTexture(tempTexName.c_str());
 			if (tex)
 			{
 				_tempTexPairs[i] = tex->getID();
@@ -3129,7 +3125,7 @@ void DeformableMeshInstance::blendShapes()
 			}
 		}		
 
-		if (texIDs.size() > 0 && texIDs[0] != 0)
+		if (!texIDs.empty() && texIDs[0] != 0)
 		{		
 #if !defined(EMSCRIPTEN)
 			// Computes blended texture pairwise, and saves it into _tempTexPairs[0], which is going to be used later as a texture (in the normal blendshape pipeline)
@@ -3168,17 +3164,15 @@ void DeformableMeshInstance::updateJointList()
 	if (!_skeleton || !_mesh) return;
 	std::vector<SkinWeight*>& skinWeights = _mesh->skinWeights;
 	_boneJointList.clear();
-	for (unsigned int skinCounter = 0; skinCounter < skinWeights.size(); skinCounter++)
+	for (auto skinWeight : skinWeights)
 	{
-		SkinWeight* skinWeight = skinWeights[skinCounter];
-		SkJointList jlist;
-		for (unsigned int k=0;k<skinWeight->infJointName.size();k++)
+			SkJointList jlist;
+		for (auto & jname : skinWeight->infJointName)
 		{
-			std::string& jname = skinWeight->infJointName[k];
-			SkJoint* joint = _skeleton->search_joint(jname.c_str());
-			jlist.push_back(joint);				
+				SkJoint* joint = _skeleton->search_joint(jname.c_str());
+			jlist.emplace_back(joint);
 		}
-		_boneJointList.push_back(jlist);
+		_boneJointList.emplace_back(jlist);
 	}
 }
 
@@ -3186,7 +3180,7 @@ void DeformableMeshInstance::setVisibility(int deformableMesh)
 {
 	if (deformableMesh != -1)
 	{		
-		_updateMesh = deformableMesh? true:false;
+		_updateMesh = deformableMesh != 0;
 		meshVisibleType = deformableMesh;
 	}
 }
@@ -3434,30 +3428,28 @@ SBAPI void DeformableMeshInstance::blendShapeStaticMesh()
 	if (_character)
 		mergeBoundary = _character->getBoolAttribute("blendShape.mergeBoundary");
 
-	for (std::map<std::string, std::vector<SrSnModel*> >::iterator mIter = _mesh->blendShapeMap.begin();
-		mIter != _mesh->blendShapeMap.end();
-		mIter++)
+	for (auto & mIter : _mesh->blendShapeMap)
 	{
 		SrSnModel* writeToBaseModel = nullptr;
 		int vtxBaseIdx = 0;
-		std::vector<SrSnModel*>& targets = (*mIter).second;
-		for (size_t i = 0; i < _mesh->dMeshStatic_p.size(); ++i)
+		std::vector<SrSnModel*>& targets = mIter.second;
+		for (auto & i : _mesh->dMeshStatic_p)
 		{
-			if (strcmp(_mesh->dMeshStatic_p[i]->shape().name, mIter->first.c_str()) == 0)
+			if (strcmp(i->shape().name, mIter.first.c_str()) == 0)
 			{
-				writeToBaseModel = _mesh->dMeshStatic_p[i];
+				writeToBaseModel = i;
 				break;
 			}
 			else
 			{
 				// skip vertices for this sub mesh
-				vtxBaseIdx += _mesh->dMeshStatic_p[i]->shape().V.size();
+				vtxBaseIdx += i->shape().V.size();
 			}
 		}
 
 		if (!writeToBaseModel)
 		{
-			if (_mesh->dMeshStatic_p.size() == 0 || targets.size() == 0)
+			if (_mesh->dMeshStatic_p.size() == 0 || targets.empty())
 				continue;
 			if (_mesh->dMeshStatic_p[0]->shape().V.size() == targets[0]->shape().V.size())
 			{
@@ -3485,10 +3477,9 @@ SBAPI void DeformableMeshInstance::blendShapeStaticMesh()
 			{
 				std::vector<int>& idxMap = vtxNewVtxIdxMap[iVtx];
 				// copy related vtx components 
-				for (unsigned int k = 0; k < idxMap.size(); k++)
+				for (int idx : idxMap)
 				{
-					int idx = idxMap[k];
-					newPosBuf[idx] = basePos;	// Here copies blended vertices position
+						newPosBuf[idx] = basePos;	// Here copies blended vertices position
 				}
 			}			
 			//if (origPos[0] != basePos[0] || origPos[1] != basePos[1] || origPos[2] != basePos[2])
@@ -3497,10 +3488,9 @@ SBAPI void DeformableMeshInstance::blendShapeStaticMesh()
 			{
 			 	std::vector<int>& idxMap = vtxBlendShapeVtxIdxMap[i];
 			 	// copy related vtx components 
-			 	for (unsigned int k=0;k<idxMap.size();k++)
+			 	for (int idx : idxMap)
 			 	{
-			 		int idx				= idxMap[k];
-			 		newPosBuf[idx]	= basePos;	// Here copies blended vertices position
+			 			newPosBuf[idx]	= basePos;	// Here copies blended vertices position
 			 	}
 			}
 		}
@@ -3514,7 +3504,7 @@ int DeformableMesh::getNumMeshes()
 	return dMeshStatic_p.size();
 }
 
-const std::string DeformableMesh::getMeshName(int index)
+std::string DeformableMesh::getMeshName(int index)
 {
 	if ((int) dMeshStatic_p.size() > index &&
 		index >= 0)
@@ -3536,10 +3526,9 @@ void DeformableMesh::copySkinWeights(DeformableMesh* fromMesh, const std::string
 {
 	SmartBody::util::log("Start copy skin weights");
 	// clear any existing skin weights
-	for (size_t w = 0; w < this->skinWeights.size(); w++)
+	for (auto weight : this->skinWeights)
 	{
-		SkinWeight* weight = this->skinWeights[w];
-		delete weight;
+			delete weight;
 	}
 	this->skinWeights.clear();
 
@@ -3547,9 +3536,9 @@ void DeformableMesh::copySkinWeights(DeformableMesh* fromMesh, const std::string
 	for (size_t w = 0; w < fromMesh->skinWeights.size(); w++)
 	{
 		SmartBody::util::log("copy weight %d...", w);
-		SkinWeight* weight = new SkinWeight();
+		auto* weight = new SkinWeight();
 		weight->copyWeights(fromMesh->skinWeights[w], morphName);
-		this->skinWeights.push_back(weight);
+		this->skinWeights.emplace_back(weight);
 	}
 	SmartBody::util::log("Finish copy skin weights");
 }
@@ -3563,8 +3552,8 @@ void DeformableMesh::copyClosestSkinWeights(DeformableMesh* fromMesh)
 	}
 
 	// make sure that the skeletons match between the two deformable meshes
-	SmartBody::SBSkeleton* sbskeleton1 = dynamic_cast<SmartBody::SBSkeleton*>(skeleton);
-	SmartBody::SBSkeleton* sbskeleton2 = dynamic_cast<SmartBody::SBSkeleton*>(fromMesh->skeleton);
+	auto* sbskeleton1 = dynamic_cast<SmartBody::SBSkeleton*>(skeleton);
+	auto* sbskeleton2 = dynamic_cast<SmartBody::SBSkeleton*>(fromMesh->skeleton);
 	
 	if (sbskeleton1->getNumJoints() != sbskeleton2->getNumJoints())
 	{
@@ -3581,17 +3570,16 @@ void DeformableMesh::copyClosestSkinWeights(DeformableMesh* fromMesh)
 
 	SmartBody::util::log("Start copy skin weights");
 	// clear any existing skin weights
-	for (size_t w = 0; w < this->skinWeights.size(); w++)
+	for (auto weight : this->skinWeights)
 	{
-		SkinWeight* weight = this->skinWeights[w];
-		delete weight;
+			delete weight;
 	}
 	skinWeights.clear();
 
 	for (size_t m = 0; m < this->getNumMeshes(); m++)
 	{
-		SkinWeight* weight = new SkinWeight();
-		skinWeights.push_back(weight);
+		auto* weight = new SkinWeight();
+		skinWeights.emplace_back(weight);
 		weight->copyWeights(fromMesh->skinWeights[m], (const char*) this->dMeshStatic_p[m]->shape().name);
 
 		weight->numInfJoints.clear();
@@ -3600,11 +3588,10 @@ void DeformableMesh::copyClosestSkinWeights(DeformableMesh* fromMesh)
 
 		std::vector<int> mapping;
 		int count = 0;
-		for (size_t n = 0; n < fromMesh->skinWeights[m]->numInfJoints.size(); n++)
+		for (int numInfluences : fromMesh->skinWeights[m]->numInfJoints)
 		{
-			mapping.push_back(count);
-			int numInfluences = fromMesh->skinWeights[m]->numInfJoints[n];
-			count += numInfluences;
+			mapping.emplace_back(count);
+				count += numInfluences;
 		}
 
 		for (int v = 0; v < this->dMeshStatic_p[m]->shape().V.size(); v++)
@@ -3612,13 +3599,13 @@ void DeformableMesh::copyClosestSkinWeights(DeformableMesh* fromMesh)
 			int closestIndex = fromMesh->dMeshStatic_p[m]->shape().getClosestIndex(this->dMeshStatic_p[m]->shape().V[v]);
 			
 			int numInfluences = fromMesh->skinWeights[m]->numInfJoints[closestIndex];
-			weight->numInfJoints.push_back(numInfluences);
+			weight->numInfJoints.emplace_back(numInfluences);
 			int index = mapping[closestIndex];
 
 			for (int i = 0; i < numInfluences; i++)
 			{
-				weight->weightIndex.push_back(fromMesh->skinWeights[m]->weightIndex[index + i]);
-				weight->jointNameIndex.push_back(fromMesh->skinWeights[m]->jointNameIndex[index + i]);
+				weight->weightIndex.emplace_back(fromMesh->skinWeights[m]->weightIndex[index + i]);
+				weight->jointNameIndex.emplace_back(fromMesh->skinWeights[m]->jointNameIndex[index + i]);
 			}
 		}
 	}

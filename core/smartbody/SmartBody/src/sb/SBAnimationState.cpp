@@ -105,7 +105,7 @@ void SBAnimationBlend::setIncrementWorldOffsetY(bool flag)
 //
 //			//surf_model->V.push(pnt); // set sphere as surf
 //			SrVec tempV; tempV.set(grid_array[i*dim + j]);
-//			surf_model->V.push_back(tempV);
+//			surf_model->V.emplace_back(tempV);
 //			//surf_model->V.push().set(grid_array[i*dim + j]);
 //			VecOfInt adjs;
 //			for (int x=-1;x<=1;x++) // get adjacent vertices
@@ -116,13 +116,13 @@ void SBAnimationBlend::setIncrementWorldOffsetY(bool flag)
 //					int nx = (i+x); int ny = (j+y);
 //					if (nx < 0 || nx >= dim || ny < 0 || ny >= dim) continue;
 //					int adjIdx = nx*dim + (ny);
-//					adjs.push_back(adjIdx);
+//					adjs.emplace_back(adjIdx);
 //				}
 //			}
-//			surf->vtxAdjList.push_back(adjs);
+//			surf->vtxAdjList.emplace_back(adjs);
 //			temp_c = SrColor::interphue((float)i / dim);
 //			mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)255);
-//			surf_model->M.push_back(mtl);
+//			surf_model->M.emplace_back(mtl);
 //		}
 //	}
 //
@@ -133,8 +133,8 @@ void SBAnimationBlend::setIncrementWorldOffsetY(bool flag)
 //		{
 //			//surf_model->F.push().set( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 );
 //			//surf_model->F.push().set( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j );
-//			surf_model->F.push_back(SrVec3i(i*dim+j, i*dim+j+1, (i+1)*dim+j+1 ));
-//			surf_model->F.push_back(SrVec3i(i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j ));
+//			surf_model->F.emplace_back(SrVec3i(i*dim+j, i*dim+j+1, (i+1)*dim+j+1 ));
+//			surf_model->F.emplace_back(SrVec3i(i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j ));
 //
 //		}
 //	}
@@ -154,10 +154,10 @@ void SBAnimationBlend::backupMotionKey()
 
 	for (size_t i = 0; i < keys.size(); ++i)
 	{
-		backupKeys.push_back(std::vector<double>());
+		backupKeys.emplace_back(std::vector<double>());
 		for (size_t j = 0; j < keys[i].size(); ++j)
 		{
-			backupKeys[i].push_back(keys[i][j]);
+			backupKeys[i].emplace_back(keys[i][j]);
 		}
 	}
 }
@@ -211,7 +211,7 @@ void SBAnimationBlend::backupMotionKey()
 //			//surf_model->V.push(pnt); // set sphere as surf
 //			//surf_model->V.push().set(grid_array[i*dim + j]);
 //			SrVec tempV; tempV.set(grid_array[i*dim + j]);
-//			surf_model->V.push_back(tempV);
+//			surf_model->V.emplace_back(tempV);
 //			VecOfInt adjs;
 //			for (int x=-1;x<=1;x++) // get adjacent vertices
 //			{
@@ -221,14 +221,14 @@ void SBAnimationBlend::backupMotionKey()
 //					int nx = (i+x); int ny = (j+y);
 //					if (nx < 0 || nx >= dim || ny < 0 || ny >= dim) continue;
 //					int adjIdx = nx*dim + (ny);
-//					adjs.push_back(adjIdx);
+//					adjs.emplace_back(adjIdx);
 //				}
 //			}
-//			surf->vtxAdjList.push_back(adjs);
+//			surf->vtxAdjList.emplace_back(adjs);
 //
 //			temp_c = SrColor::interphue((float)i / dim);
 //			mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)255);
-//			surf_model->M.push_back(mtl);
+//			surf_model->M.emplace_back(mtl);
 //		}
 //	}
 //
@@ -240,8 +240,8 @@ void SBAnimationBlend::backupMotionKey()
 //			//surf_model->F.push().set( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 );
 //			//surf_model->F.push().set( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j );
 //
-//			surf_model->F.push_back(SrVec3i( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 ));
-//			surf_model->F.push_back(SrVec3i( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j  ));
+//			surf_model->F.emplace_back(SrVec3i( i*dim+j, i*dim+j+1, (i+1)*dim+j+1 ));
+//			surf_model->F.emplace_back(SrVec3i( i*dim+j, (i+1)*dim+j+1, (i+1)*dim+j  ));
 //		}
 //	}
 //	surf->changed(true); // force update surf
@@ -293,7 +293,7 @@ void SBAnimationBlend::backupMotionKey()
 //		{
 //			float radius = (minDist+maxDist)*0.5f;
 //			SrSnColorSurf* Surf = createCurveSurface(radius, dimensions, center, phiRange, thetaRange);
-//			surfList.push_back(Surf);
+//			surfList.emplace_back(Surf);
 //		}
 //		else
 //		{
@@ -301,7 +301,7 @@ void SBAnimationBlend::backupMotionKey()
 //			for (float radius = minDist; radius <= maxDist + distOffset*0.05f; radius+= distOffset)
 //			{
 //				SrSnColorSurf* Surf = createCurveSurface(radius, dimensions, center, phiRange, thetaRange);
-//				surfList.push_back(Surf);
+//				surfList.emplace_back(Surf);
 //				//updateErrorSurace(Surf, center);
 //			}
 //		}
@@ -336,7 +336,7 @@ void SBAnimationBlend::backupMotionKey()
 //		{
 //			float depth = (minDist+maxDist)*0.5f;
 //			SrSnColorSurf* Surf = createFlatSurface(depth, dimensions, topLeft, lowerRight);
-//			surfList.push_back(Surf);
+//			surfList.emplace_back(Surf);
 //		}
 //		else
 //		{
@@ -344,7 +344,7 @@ void SBAnimationBlend::backupMotionKey()
 //			for (float depth = minDist; depth <= maxDist; depth+= distOffset)
 //			{
 //				SrSnColorSurf* Surf = createFlatSurface(depth, dimensions, topLeft, lowerRight);
-//				surfList.push_back(Surf);
+//				surfList.emplace_back(Surf);
 //				Surf->surfaceScale = SrVec(surfaceScale/surfSize[0], surfaceScale/surfSize[1], 1.f);
 //				//updateErrorSurace(Surf, center);
 //			}
@@ -363,7 +363,7 @@ void SBAnimationBlend::backupMotionKey()
 //		SrVec para = surfModel->V[i];
 //		std::vector<double> weights;
 //		PABlend::getWeightsFromParameters(para[0],para[1],para[2],weights);
-//		weightList.push_back(weights);
+//		weightList.emplace_back(weights);
 //	}
 //
 //
@@ -392,7 +392,7 @@ void SBAnimationBlend::backupMotionKey()
 //		smooth = sqrtf(smooth);
 //		totalSmooth += smooth;
 //		if (smooth > maxSmooth) maxSmooth = smooth;
-//		smoothList.push_back(smooth);
+//		smoothList.emplace_back(smooth);
 //	}
 //
 //	totalSmooth /= smoothList.size();
@@ -409,7 +409,7 @@ void SBAnimationBlend::backupMotionKey()
 //
 //		temp_c = SrColor::interphue(curError);
 //		mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)160);
-//		surfModel->M.push_back(mtl);
+//		surfModel->M.emplace_back(mtl);
 //	}
 //	surf->changed(true);
 //}
@@ -433,8 +433,8 @@ void SBAnimationBlend::backupMotionKey()
 //		float paraError = (para - SrVec(x,y,z)).norm();
 //		if (paraError > maxError)
 //			maxError = paraError;
-//		errorList.push_back(paraError);
-//		weightList.push_back(weights);
+//		errorList.emplace_back(paraError);
+//		weightList.emplace_back(weights);
 //		totalError += paraError;
 //	}
 //
@@ -453,7 +453,7 @@ void SBAnimationBlend::backupMotionKey()
 //
 //		temp_c = SrColor::interphue(curError);
 //		mtl.diffuse.set(temp_c.r, temp_c.g, temp_c.b, (srbyte)160);
-//		surfModel->M.push_back(mtl);
+//		surfModel->M.emplace_back(mtl);
 //	}
 //	errorSurf->changed(true);
 //}
@@ -592,7 +592,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 	{
 		SrSnLines* l = new SrSnLines; l->ref();
 		l->resolution(VFLOW_LINE_WIDTH); // change vector flow lines thickness
-		vecflowLinesArray.push_back(l);
+		vecflowLinesArray.emplace_back(l);
 		SrLines& line = l->shape();
 		line.init();
 		for(int k=0; k<jsize; k++)
@@ -695,7 +695,7 @@ void SBAnimationBlend::plotMotion(const std::string& motionName, const std::stri
 		sk->update_global_matrices();
 
 		SrSnLines* l = new SrSnLines; l->ref();
-		plotMotionLinesArray.push_back(l);
+		plotMotionLinesArray.emplace_back(l);
 		SrLines& line = l->shape();
 
 		line.init();
@@ -754,7 +754,7 @@ void SBAnimationBlend::plotMotionFrameTime(const std::string& motionName, const 
 	sk->update_global_matrices();
 
 	SrSnLines* l = new SrSnLines; l->ref();
-	plotMotionLinesArray.push_back(l);
+	plotMotionLinesArray.emplace_back(l);
 	SrLines& line = l->shape();
 	line.init();
 	if(useRandomColor)
@@ -834,7 +834,7 @@ void SBAnimationBlend::plotMotionJointTrajectory(const std::string& motionName, 
 		if(hue>1.0f) hue = 0.0f;
 	}
 	SrSnLines* l = new SrSnLines; l->ref();
-	plotMotionLinesArray.push_back(l);
+	plotMotionLinesArray.emplace_back(l);
 	SrLines& line = l->shape();
 	line.init();
 	mo->apply(start_t);
@@ -937,22 +937,22 @@ void SBAnimationBlend::createJointExclusionArray(const std::vector<SkJoint*>& or
 	{
 		SkJoint* j = orig_list[i];
 		SrString jname(j->jointName().c_str());
-		if(jname.search("face")>=0) { plot_excld_list.push_back(j); continue; }
-		if(jname.search("brow")>=0) { plot_excld_list.push_back(j); continue; }
-		if(jname.search("eye")>=0)  { plot_excld_list.push_back(j); continue; }
-		if(jname.search("nose")>=0) { plot_excld_list.push_back(j); continue; }
-		if(jname.search("lid")>=0)  { plot_excld_list.push_back(j); continue; }
-		if(jname.search("jaw")>=0)  { plot_excld_list.push_back(j); continue; }
-		if(jname.search("tongue")>=0) { plot_excld_list.push_back(j); continue; }
-		if(jname.search("lip")>=0)    { plot_excld_list.push_back(j); continue; }
-		if(jname.search("cheek")>=0)  { plot_excld_list.push_back(j); continue; }
+		if(jname.search("face")>=0) { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("brow")>=0) { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("eye")>=0)  { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("nose")>=0) { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("lid")>=0)  { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("jaw")>=0)  { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("tongue")>=0) { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("lip")>=0)    { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("cheek")>=0)  { plot_excld_list.emplace_back(j); continue; }
 
-		if(jname.search("finger")>=0) { plot_excld_list.push_back(j); continue; }
-		if(jname.search("thumb")>=0)  { plot_excld_list.push_back(j); continue; }
-		if(jname.search("index")>=0)  { plot_excld_list.push_back(j); continue; }
-		if(jname.search("middle")>=0) { plot_excld_list.push_back(j); continue; }
-		if(jname.search("pinky")>=0)  { plot_excld_list.push_back(j); continue; }
-		if(jname.search("ring")>=0)   { plot_excld_list.push_back(j); continue; }
+		if(jname.search("finger")>=0) { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("thumb")>=0)  { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("index")>=0)  { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("middle")>=0) { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("pinky")>=0)  { plot_excld_list.emplace_back(j); continue; }
+		if(jname.search("ring")>=0)   { plot_excld_list.emplace_back(j); continue; }
 	}
 }
 
@@ -1173,13 +1173,13 @@ bool SBAnimationBlend::validateState()
 		SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motions[i]->getName());		
 		if ((int)keys.size() < i) // no keys for this state
 		{			
-			keys.push_back(std::vector<double>());			
+			keys.emplace_back(std::vector<double>());
 		}		
 		std::vector<double>& keyVec = keys[i];
 		if (keyVec.size() == 0) // if no keys for the motion, automatically set up this based on motion duration
 		{
-			keyVec.push_back(0.0);
-			keyVec.push_back(motion->duration());
+			keyVec.emplace_back(0.0);
+			keyVec.emplace_back(motion->duration());
 		}
 	}
 	_isFinalized = true;
@@ -1430,7 +1430,7 @@ void SBAnimationBlend::addKeyTagValue( const std::string& motionName, int iType,
 	KeyTag& tags = tagMap[iType];
 	if (tags.find(tagName) == tags.end())		
 		tags[tagName] = std::vector<double>();		
-	tags[tagName].push_back(value);	
+	tags[tagName].emplace_back(value);
 }
 
 KeyTagMap* SBAnimationBlend::getKeyTagMap( const std::string& motionName )
@@ -1505,7 +1505,7 @@ bool SBAnimationBlend::addMotionRef( SBMotion* sbmotion)
 	if (sbmotion)
 	{
 		std::string motionName = sbmotion->getName();
-		motions.push_back(sbmotion);
+		motions.emplace_back(sbmotion);
 		/*		
 		// adding two correspondence points when the first motion got inserted
 		if (motions.size() == 1)
@@ -1514,7 +1514,7 @@ bool SBAnimationBlend::addMotionRef( SBMotion* sbmotion)
 		keyVec.resize(2);
 		keyVec[0] = 0.0f;
 		keyVec[1] = skMotion->duration();
-		keys.push_back(keyVec);
+		keys.emplace_back(keyVec);
 		}
 		else
 		*/
@@ -1540,11 +1540,11 @@ bool SBAnimationBlend::addMotionRef( SBMotion* sbmotion)
 					keyVec[i] = double(i) * step;
 				}
 			}
-			keys.push_back(keyVec);
-			keyTagList.push_back(KeyTagMap());
+			keys.emplace_back(keyVec);
+			keyTagList.emplace_back(KeyTagMap());
 		}
 
-		getParameters().push_back(SrVec());
+		getParameters().emplace_back(SrVec());
 		return true;
 	}
 	else

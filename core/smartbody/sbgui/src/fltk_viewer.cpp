@@ -201,8 +201,8 @@ static void menucb ( Fl_Widget* o, void* v )
 	 Fl_Widget* widget = o->parent();
 	
 	 std::vector<Fl_Menu_Item>* pmenu = (std::vector<Fl_Menu_Item>*) v;
-	 FltkViewer* viewer = NULL;
-	 while (!viewer && widget && widget->parent() != NULL)
+	 FltkViewer* viewer = nullptr;
+	 while (!viewer && widget && widget->parent() != nullptr)
 	 {
 		widget = widget->parent();
 		viewer = dynamic_cast<FltkViewer*>(widget);
@@ -222,10 +222,10 @@ static std::vector<Fl_Menu_Item> gaze_submenus[NUM_GAZE_TYPES];
 
 Fl_Menu_Item GazeMenuTable[] = 
 {
-	{ gaze_type_name[0],   0, MCB, 0 },			
-	{ gaze_type_name[1],   0, MCB, 0 },
-	{ gaze_type_name[2],   0, MCB, 0 },
-	{ gaze_type_name[3],   0, MCB, 0 },
+	{ gaze_type_name[0],   0, MCB, nullptr },
+	{ gaze_type_name[1],   0, MCB, nullptr },
+	{ gaze_type_name[2],   0, MCB, nullptr },
+	{ gaze_type_name[3],   0, MCB, nullptr },
 	{ "&remove all gazes",   0, MCB, CMD(CmdRemoveAllGazeTarget) },
 	{ 0 }
 };
@@ -243,7 +243,7 @@ Fl_Menu_Item MenuTable[] =
    { "&view all",   0, MCB, CMD(CmdViewAll) },
    { "&background", 0, MCB, CMD(CmdBackground) }, // FL_FL_MENU_DIVIDER
 
-   { "&draw style", 0, 0, 0, FL_SUBMENU },
+   { "&draw style", 0, nullptr, 0, FL_SUBMENU },
 		 { "&as is",   0, MCB, CMD(CmdAsIs),    FL_MENU_RADIO },
 		 { "d&efault", 0, MCB, CMD(CmdDefault), FL_MENU_RADIO },
 		 { "&smooth",  0, MCB, CMD(CmdSmooth),  FL_MENU_RADIO },
@@ -355,28 +355,28 @@ void FltkViewer::initializePopUpMenus()
 	Fl_Menu_Item temp = {0};
 
 	selectionPopUpMenu.clear();
-	selectionPopUpMenu.push_back(createMenuItem("Frame Selected Object", ((Fl_Callback*)BaseWindow::CameraFrameObjectCB), baseWin, 0));
-	selectionPopUpMenu.push_back(createMenuItem("Face Camera", ((Fl_Callback*)BaseWindow::FaceCameraCB), baseWin, 0));
-	selectionPopUpMenu.push_back(createMenuItem("Track Character", ((Fl_Callback*)BaseWindow::TrackCharacterCB), baseWin, 0));
-	selectionPopUpMenu.push_back(createMenuItem("Rotate Around Character", ((Fl_Callback*)BaseWindow::RotateSelectedCB), baseWin, FL_MENU_DIVIDER));
-	selectionPopUpMenu.push_back(createMenuItem("Delete Selected Object", ((Fl_Callback*)BaseWindow::DeleteSelectionCB), baseWin, 0));	
-	selectionPopUpMenu.push_back(temp);
+	selectionPopUpMenu.emplace_back(createMenuItem("Frame Selected Object", ((Fl_Callback*)BaseWindow::CameraFrameObjectCB), baseWin, 0));
+	selectionPopUpMenu.emplace_back(createMenuItem("Face Camera", ((Fl_Callback*)BaseWindow::FaceCameraCB), baseWin, 0));
+	selectionPopUpMenu.emplace_back(createMenuItem("Track Character", ((Fl_Callback*)BaseWindow::TrackCharacterCB), baseWin, 0));
+	selectionPopUpMenu.emplace_back(createMenuItem("Rotate Around Character", ((Fl_Callback*)BaseWindow::RotateSelectedCB), baseWin, FL_MENU_DIVIDER));
+	selectionPopUpMenu.emplace_back(createMenuItem("Delete Selected Object", ((Fl_Callback*)BaseWindow::DeleteSelectionCB), baseWin, 0));
+	selectionPopUpMenu.emplace_back(temp);
 
 
 	nonSelectionPopUpMenu.clear();
-	nonSelectionPopUpMenu.push_back(createMenuItem("Create Character...", ((Fl_Callback*)BaseWindow::CreateCharacterCB), baseWin, 0));
-	nonSelectionPopUpMenu.push_back(createMenuItem("Create Pawn...", ((Fl_Callback*)BaseWindow::CreatePawnCB), baseWin, 0));
-	nonSelectionPopUpMenu.push_back(createMenuItem("Create Light...", ((Fl_Callback*)BaseWindow::CreateLightCB), baseWin, 0));
-	nonSelectionPopUpMenu.push_back(createMenuItem("Create Camera...", ((Fl_Callback*)BaseWindow::CreateCameraCB), baseWin, FL_MENU_DIVIDER));
-	nonSelectionPopUpMenu.push_back(createMenuItem("Camera Reset", ((Fl_Callback*)BaseWindow::CameraResetCB), baseWin, 0));
-	nonSelectionPopUpMenu.push_back(createMenuItem("Camera Frame All", ((Fl_Callback*)BaseWindow::CameraFrameCB), baseWin, 0));	
-	nonSelectionPopUpMenu.push_back(temp);
+	nonSelectionPopUpMenu.emplace_back(createMenuItem("Create Character...", ((Fl_Callback*)BaseWindow::CreateCharacterCB), baseWin, 0));
+	nonSelectionPopUpMenu.emplace_back(createMenuItem("Create Pawn...", ((Fl_Callback*)BaseWindow::CreatePawnCB), baseWin, 0));
+	nonSelectionPopUpMenu.emplace_back(createMenuItem("Create Light...", ((Fl_Callback*)BaseWindow::CreateLightCB), baseWin, 0));
+	nonSelectionPopUpMenu.emplace_back(createMenuItem("Create Camera...", ((Fl_Callback*)BaseWindow::CreateCameraCB), baseWin, FL_MENU_DIVIDER));
+	nonSelectionPopUpMenu.emplace_back(createMenuItem("Camera Reset", ((Fl_Callback*)BaseWindow::CameraResetCB), baseWin, 0));
+	nonSelectionPopUpMenu.emplace_back(createMenuItem("Camera Frame All", ((Fl_Callback*)BaseWindow::CameraFrameCB), baseWin, 0));
+	nonSelectionPopUpMenu.emplace_back(temp);
 }
 
 void FltkViewer::createRightClickMenu( bool isSelected, int x, int y )
 {
 	initializePopUpMenus();
-	Fl_Menu_Item* popUp = NULL;
+	Fl_Menu_Item* popUp = nullptr;
 	if (isSelected)
 		popUp = &selectionPopUpMenu[0];
 	else
@@ -395,11 +395,11 @@ static void get_pawn_submenus(void* user_data, std::vector<Fl_Menu_Item>& menu_l
 		SbmPawn* pawn = pawn_list[i];
 		//printf("pawn name = %s\n",pawn->name);
 		Fl_Menu_Item temp_pawn = { pawn->getName().c_str(), 0, MCB, user_data } ;
-		menu_list.push_back(temp_pawn);		
+		menu_list.emplace_back(temp_pawn);
 	}
 
 	Fl_Menu_Item temp = {0};
-	menu_list.push_back(temp);
+	menu_list.emplace_back(temp);
 }
 
 
@@ -413,7 +413,7 @@ void FltkViewer::update_submenus()
 		menu_list = std::vector<Fl_Menu_Item>();
 		int iCmd = FltkViewer::CmdGazeOnTargetType1+i;
 		Fl_Menu_Item select_pawn = { "selected pawn",   0, MCB,((void*)iCmd)  };
-		menu_list.push_back(select_pawn);			
+		menu_list.emplace_back(select_pawn);
 		get_pawn_submenus(select_pawn.user_data(),menu_list);
 		std::vector<Fl_Menu_Item>* pmenu = &menu_list;
 		gaze_menu.user_data((void*)pmenu);				
@@ -464,8 +464,7 @@ static void _callback_func ( Fl_Widget* win, void* pt )
 
 FltkViewer::FltkViewer ( int x, int y, int w, int h, const char *label )
 //         : SrViewer(x, y, w, h) , Fl_Gl_Window ( x, y, w, h, label )
-		 : Fl_Gl_Window ( x, y, w, h, label ), SelectionListener(),
-		   mRenderScene(nullptr)
+		 : Fl_Gl_Window ( x, y, w, h, label ), SelectionListener()
  {
 	 Fl::gl_visual( FL_RGB | FL_DOUBLE | FL_DEPTH | FL_MULTISAMPLE);//| FL_ALPHA );
 
@@ -504,8 +503,8 @@ FltkViewer::FltkViewer ( int x, int y, int w, int h, const char *label )
 
    init_foot_print();
    _lastSelectedCharacter = "";   
-   _retargetStepWindow = NULL;
-   fltkListener = NULL;
+   _retargetStepWindow = nullptr;
+   fltkListener = nullptr;
    // register gesture event handler
 	GestureVisualizationHandler* gv = new GestureVisualizationHandler();
 	gv->setGestureData(_gestureData);
@@ -534,7 +533,7 @@ FltkViewer::~FltkViewer ()
 void FltkViewer::registerUIControls()
 {
 	// add UI controls to the scene
-	SmartBody::SBAttribute* attribute = NULL;
+	SmartBody::SBAttribute* attribute = nullptr;
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	attribute = scene->createBoolAttribute("GUI.ShowCameras",false,true,"GUI",10,false,false,false,"Show/hide the cameras.");
 	attribute->registerObserver(this);
@@ -588,7 +587,7 @@ void FltkViewer::OnSelect(const std::string& value)
 		SbmPawn* selectedPawn = _objManipulator.get_selected_pawn();
 		if (selectedPawn)
 		{
-			_objManipulator.set_selected_pawn(NULL);
+			_objManipulator.set_selected_pawn(nullptr);
 		}
 		_objManipulator.removeActiveControl();
 		return;
@@ -856,7 +855,7 @@ void FltkViewer::menu_cmd ( MenuCmd s, const char* label  )
 					   set_gaze_target(s-CmdGazeOnTargetType1,label);
 					   break;
 	  case CmdRemoveAllGazeTarget:
-					   set_gaze_target(-1,NULL);
+					   set_gaze_target(-1,nullptr);
 					   break;	  
 	  case CmdReachShowExamples:
 		  _data->reachRenderMode = ModeShowExamples;
@@ -944,11 +943,11 @@ bool FltkViewer::menu_cmd_activated ( MenuCmd c )
 	  case CmdAxis        : return _data->displayaxis? true:false;
 	  case CmdBoundingBox : return _data->boundingbox? true:false;
 	  case CmdStatistics  : return _data->statistics? true:false;
-	  case CmdCharacterShowGeometry : return _data->showgeometry? true:false;
+	  case CmdCharacterShowGeometry : return _data->showgeometry;
 	  case CmdCharacterShowCollisionGeometry : return _data->showcollisiongeometry? true:false;
-	  case CmdCharacterShowDeformableGeometry : return _data->showdeformablegeometry? true:false;
-	  case CmdCharacterShowBones : return _data->showbones? true:false;
-	  case CmdCharacterShowAxis : return _data->showaxis? true:false;
+	  case CmdCharacterShowDeformableGeometry : return _data->showdeformablegeometry;
+	  case CmdCharacterShowBones : return _data->showbones;
+	  case CmdCharacterShowAxis : return _data->showaxis;
 	  default : return false;
 	}
  }
@@ -1034,12 +1033,12 @@ void FltkViewer::background ( SrColor c )
 
 SrCamera* FltkViewer::get_camera()
 {
-	return SmartBody::SBScene::getScene()->getActiveCamera();
+	return Session::current->renderScene.getActiveCamera();
 }
 
 void FltkViewer::set_camera ( const SrCamera* cam )
  {
-   SmartBody::SBScene::getScene()->setActiveCamera(const_cast<SrCamera*>(cam));
+	 Session::current->renderScene.setActiveCamera(const_cast<SrCamera*>(cam));
 
  //  if ( _data->viewmode==ModeExaminer )
 //    { _data->trackball.init();
@@ -1095,19 +1094,19 @@ void FltkViewer::initShadowMap()
 
 	glGenTextures(1, &_data->shadowMapID);
 	glBindTexture(GL_TEXTURE_2D, _data->shadowMapID);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, depth_size, depth_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);	
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, depth_size, depth_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, depth_size, depth_size, 0, GL_RGBA, GL_FLOAT, NULL);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, depth_size, depth_size, 0, GL_RGBA, GL_FLOAT, nullptr);
 	glBindTexture(GL_TEXTURE_2D,0);
 
 
 	glGenTextures(1, &_data->depthMapID);
 	glBindTexture(GL_TEXTURE_2D, _data->depthMapID);	
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, depth_size, depth_size, 0, GL_RGBA, GL_FLOAT, NULL);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, depth_size, depth_size, 0, GL_RGBA, GL_FLOAT, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -1120,7 +1119,7 @@ void FltkViewer::initShadowMap()
 	glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, depth_size, depth_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, depth_size, depth_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glBindTexture(GL_TEXTURE_2D,0);
 
 	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,GL_TEXTURE_2D, _data->depthMapID,0);
@@ -1385,7 +1384,7 @@ void FltkViewer::updateLights()
 				light.quadratic_attenuation = 0.0f;
 			}
 			
-			_lights.push_back(light);
+			_lights.emplace_back(light);
 		}
 	}
 	//SmartBody::util::log("light size = %d\n",_lights.size());
@@ -1408,7 +1407,7 @@ void FltkViewer::updateLights()
 		//light.position = SrVec(lightDirection.x, lightDirection.y, lightDirection.z);
 		light.position = SrVec(.019f, .437f, .898f);
 		light.constant_attenuation = 1.0f;
-		_lights.push_back(light);
+		_lights.emplace_back(light);
 
 		SrLight light2 = light;
 		light2.directional = true;
@@ -1419,7 +1418,7 @@ void FltkViewer::updateLights()
 		SrVec lightDirection2 = -up * orientation2;
 		//light2.position = SrVec(lightDirection2.x, lightDirection2.y, lightDirection2.z);
 		light2.position = SrVec(.820f, -.525f, .227f);
-		_lights.push_back(light2);
+		_lights.emplace_back(light2);
 
 		SrLight light3 = light;
 		light3.directional = true;
@@ -1430,7 +1429,7 @@ void FltkViewer::updateLights()
 		SrVec lightDirection3 = -up * orientation3;
 		//light3.position = SrVec(lightDirection3.x, lightDirection3.y, lightDirection3.z);
 		light3.position = SrVec(.707f, .705f, .044f);
-		_lights.push_back(light3);
+		_lights.emplace_back(light3);
 	}
 	
 }
@@ -1613,7 +1612,8 @@ void FltkViewer::resize(int x, int y, int w, int h)
 void FltkViewer::drawSBRender(bool useDeferredShading)
 {
 	if (!visible()) return;
-	SBBaseRenderer* renderer = NULL;
+	auto& renderScene = Session::current->renderScene;
+	SBBaseRenderer* renderer = nullptr;
 	if (useDeferredShading)
 		renderer = &SBRenderer::singleton();
 	else
@@ -1657,9 +1657,9 @@ void FltkViewer::drawSBRender(bool useDeferredShading)
 	}
 	updateLights();
 	renderer->setBackgroundColor(_data->bcolor);
-	renderer->draw(mRenderScene,_lights, _data->showFloor);
+	renderer->draw(_lights, _data->showFloor);
 	
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* cam = renderScene.getActiveCamera();
 	cam->setAspectRatio((float)w() / (float)h());
 	SrMat mat(SrMat::NotInitialized);
 	glMatrixMode(GL_PROJECTION);
@@ -2117,33 +2117,34 @@ void FltkViewer::translate_keyboard_state()
 
 void FltkViewer::processDragAndDrop( std::string dndMsg, float x, float y )
 {
+	auto& renderScene = Session::current->renderScene;
+	auto& renderAssetManager = Session::current->renderAssetManager;
+	auto& scene = Session::current->scene;
 	static int characterCount = 0;
 	static int pawnCount = 0;
 	std::vector<std::string> toks;
 	SmartBody::util::tokenize(dndMsg,toks,":");
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	SrVec p1;
 	SrVec p2;
-	scene->getActiveCamera()->get_ray(x,y, p1, p2);
+	renderScene.getActiveCamera()->get_ray(x,y, p1, p2);
 	SrPlane ground(SrVec(0,0,0), SrVec(0, 1, 0));
 	SrVec dest = ground.intersect(p1, p2);
 	if (toks[0] == "SKELETON")
 	{
 		//dest.y = 102;		
 		std::string skelName = toks[1].c_str();
-		SmartBody::SBSkeleton* skel = scene->getSkeleton(skelName);
+		SmartBody::SBSkeleton* skel = scene.getSkeleton(skelName);
 		if (skel)
 		{
-			SmartBody::SBScene* scene = SmartBody::SBScene::getScene();		
-			SmartBody::SBCharacter* character = NULL;
+			SmartBody::SBCharacter* character = nullptr;
 			while (!character)
 			{
 				std::stringstream strstr;
 				strstr << "char" << characterCount;
-				character = scene->createCharacter(strstr.str(), "");
+				character = scene.createCharacter(strstr.str(), "");
 				characterCount++;
 			}
-			SmartBody::SBSkeleton* skeleton = scene->createSkeleton(toks[1]);
+			SmartBody::SBSkeleton* skeleton = scene.createSkeleton(toks[1]);
 			if (!skeleton)
 			{
 				SmartBody::util::log("Could not find skeleton named %s, character will not be created.", toks[1].c_str());
@@ -2198,10 +2199,10 @@ void FltkViewer::processDragAndDrop( std::string dndMsg, float x, float y )
 			if (pFile!=0)
 			{
 				SrInput file_in (pFile);
-				SrCamera* camera = SmartBody::SBScene::getScene()->createCamera("cameraDefault");
+				SrCamera* camera = renderScene.createCamera("cameraDefault");
 				file_in >> *(camera);
 				fclose (pFile);
-				SmartBody::SBScene::getScene()->setActiveCamera(camera);
+				renderScene.setActiveCamera(camera);
 			}
 			else
 				SmartBody::util::log("WARNING: can not load cam file!");
@@ -2228,7 +2229,7 @@ void FltkViewer::processDragAndDrop( std::string dndMsg, float x, float y )
 			fullPathName = fullPathName.substr(pos + 7);
 		}
 std::cout << "LOADING [" << fullPathName << "]" << std::endl;
-		assetManager->loadAsset(fullPathName);	
+		scene.getAssetStore().loadAsset(fullPathName);	
 
 #if 0 // the code is replaced by the new asset loading mechanism, which provides cleaner handling. So there is no need to copy the files to retarget folders. 
 		if ( boost::iequals(fileextension,".skm") || boost::iequals(fileextension,".bvh") || boost::iequals(fileextension,".amc") ) // a motion extension
@@ -2346,7 +2347,7 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 		std::string meshName = filebasename+fileextension;
 		// check the filename extension
 		SmartBody::SBSkeleton* dndSkel = assetManager->getSkeleton(skelName);
-		DeformableMesh* dndMesh = assetManager->getDeformableMesh(meshName);
+		DeformableMesh* dndMesh = renderAssetManager.getDeformableMesh(meshName);
 
 		if (!dndMesh && !dndSkel) // the file doesn't contain skeleton or mesh. Just return after loading the assets.
 		{
@@ -2359,9 +2360,12 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 			strstr << "defaultPawn";
 			strstr << pawnCount;
 			pawnCount++;
-			SmartBody::SBPawn* pawn = scene->createPawn(strstr.str());			
+			SmartBody::SBPawn* pawn = scene.createPawn(strstr.str());			
 			pawn->setStringAttribute("mesh",dndMesh->getName());	
-			pawn->dStaticMeshInstance_p->setVisibility(2);
+			auto renderable = renderScene.getRenderable(strstr.str());
+			if (renderable && renderable->staticMeshInstance) {
+				renderable->staticMeshInstance->setVisibility(2);
+			}
 			return;
 		}
 		
@@ -2369,7 +2373,7 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 
 		// create the joint mapping before creating the skeleton for the character
 		std::string jointMapName = skelName + "-autoMap";
-		SmartBody::SBJointMapManager* jointMapManager = scene->getJointMapManager();
+		SmartBody::SBJointMapManager* jointMapManager = scene.getJointMapManager();
 		SmartBody::SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
 		if (!jointMap)
 		{
@@ -2385,7 +2389,7 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 		characterCount++;
 		std::string charName = strstr.str();
 
-		SmartBody::SBCharacter* character = scene->createCharacter(charName, "");
+		SmartBody::SBCharacter* character = scene.createCharacter(charName, "");
 		character->setSkeleton(skel);
 		character->createStandardControllers();
 		if (dndMesh) // set the deformable mesh if the file contatins it
@@ -2401,20 +2405,20 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 		
 
 		// load the behavior sets if they have not yet been loaded
-		SmartBody::SBBehaviorSetManager* manager = scene->getBehaviorSetManager();
+		SmartBody::SBBehaviorSetManager* manager = scene.getBehaviorSetManager();
 		if (manager->getNumBehaviorSets() == 0)
 		{
 			// look for the behavior set directory under the media path
-			scene->addAssetPath("script", "behaviorsets");
-			scene->runScript("default-behavior-sets.py");
+			scene.addAssetPath("script", "behaviorsets");
+			scene.runScript("default-behavior-sets.py");
 
 			if (manager->getNumBehaviorSets() == 0)
 			{
-				SmartBody::util::log("Can not find any behavior sets under path %s/behaviorsets.", scene->getMediaPath().c_str());
+				SmartBody::util::log("Can not find any behavior sets under path %s/behaviorsets.", scene.getMediaPath().c_str());
 			}
 			else
 			{
-				SmartBody::util::log("Found %d behavior sets under path %s/behaviorsets", manager->getNumBehaviorSets(), scene->getMediaPath().c_str());
+				SmartBody::util::log("Found %d behavior sets under path %s/behaviorsets", manager->getNumBehaviorSets(), scene.getMediaPath().c_str());
 			}
 		}
 
@@ -2451,6 +2455,9 @@ int FltkViewer::handle ( int event )
    // find any interface listeners
 
    std::vector<SBInterfaceListener*> interfaceListeners = SBInterfaceManager::getInterfaceManager()->getInterfaceListeners();
+
+	auto& scene = Session::current->scene;
+	auto& renderScene = Session::current->renderScene;
 
    int ret = SBGUIManager::singleton().handleEvent(event);  
    std::string dndText;
@@ -2499,12 +2506,12 @@ int FltkViewer::handle ( int event )
 	   { 
 		   bool earlyReturn = false;
 		   translate_event ( e, SrEvent::EventPush, w(), h(), this );
-		   for (size_t l = 0; l < interfaceListeners.size(); l++)
+		   for (auto & interfaceListener : interfaceListeners)
 		   {
 				int mouseX = Fl::event_x();
 				int mouseY = Fl::event_y();
 				int button = Fl::event_button();
-				bool ret = interfaceListeners[l]->onMouseClick(mouseX, mouseY, button);
+				bool ret = interfaceListener->onMouseClick(mouseX, mouseY, button);
 				if (ret)
 					earlyReturn = true;
 		   }
@@ -2530,17 +2537,16 @@ int FltkViewer::handle ( int event )
 		 //char exe_cmd[256];
 		 if (e.button1 && (!e.alt) && (!e.ctrl) && !(e.shift))
 		 {
-			 {				 			 
-				 SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+			 {
 				 makeGLContext();
-				 _objManipulator.picking(e.mouse.x, e.mouse.y,scene->getActiveCamera());
+				 _objManipulator.picking(e.mouse.x, e.mouse.y,renderScene.getActiveCamera());
 				 SbmPawn* selectedPawn = _objManipulator.get_selected_pawn();
 				 if (selectedPawn)
 				 {
 					 std::string selectString = SmartBody::SBScene::getScene()->getStringFromObject(selectedPawn);
 					 SBSelectionManager::getSelectionManager()->select(selectString);
 
-					 SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*> (selectedPawn);
+					 auto* character = dynamic_cast<SmartBody::SBCharacter*> (selectedPawn);
 					 if (character)
 					 {
 						 _lastSelectedCharacter = character->getName();
@@ -2557,42 +2563,40 @@ int FltkViewer::handle ( int event )
 		 {
 			 SmartBody::util::log("Create Right Click Pop-up Menus");
 			 SbmPawn* selectedPawn = _objManipulator.get_selected_pawn();
-			 bool hasSelection = (selectedPawn != NULL)? true : false;
+			 bool hasSelection = (selectedPawn != nullptr);
 			 createRightClickMenu(hasSelection,Fl::event_x(), Fl::event_y());
 		 }
 		 else if (SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->isInitialized() && e.button3 && !e.alt)
 		 {
 		
 			 SbmPawn* selectedPawn = _objManipulator.get_selected_pawn();
-			 SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(selectedPawn);
+			 auto* character = dynamic_cast<SmartBody::SBCharacter*>(selectedPawn);
 			 if (!character)
 				 return ret;
 			 SmartBody::SBSteerAgent* steerAgent = SmartBody::SBScene::getScene()->getSteerManager()->getSteerAgent(character->getName());
 			 if (steerAgent)
 			 {
 				 PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-				ppraiAgent->setTargetAgent(NULL);
+				ppraiAgent->setTargetAgent(nullptr);
 				SrVec p1;
 				SrVec p2;
-				SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-				scene->getActiveCamera()->get_ray(e.mouse.x, e.mouse.y, p1, p2);
+				renderScene.getActiveCamera()->get_ray(e.mouse.x, e.mouse.y, p1, p2);
 				bool intersectGround = true;
 				SrVec dest, src;				
-				if (scene->getNavigationMesh())				
+				if (scene.getNavigationMesh())				
 				{
 					std::vector<SrVec> pathList;
-					dest = scene->getNavigationMesh()->queryMeshPointByRayCast(p1,p2);
+					dest = scene.getNavigationMesh()->queryMeshPointByRayCast(p1,p2);
 					if (dest.x != 0.f || dest.y != 0.f || dest.z != 0.f)
 					{
 						intersectGround = false;
 						src = ppraiAgent->getCharacter()->getPosition();
-						pathList = scene->getNavigationMesh()->findPath(src,dest);
+						pathList = scene.getNavigationMesh()->findPath(src,dest);
 						std::stringstream command;
 						command << "steer move " << character->getName() << " normal ";
-						for (unsigned int k=0; k < pathList.size(); k++)
+						for (auto & pt : pathList)
 						{
-							SrVec& pt = pathList[k];
-							std::string xstr, ystr, zstr;
+								std::string xstr, ystr, zstr;
 							xstr = boost::lexical_cast<std::string>(pt.x);
 							ystr = boost::lexical_cast<std::string>(pt.y);
 							zstr = boost::lexical_cast<std::string>(pt.z);
@@ -2625,12 +2629,12 @@ int FltkViewer::handle ( int event )
 	  case FL_RELEASE:
 		  {
 		  bool earlyReturn = false;
-		  for (size_t l = 0; l < interfaceListeners.size(); l++)
+		  for (auto & interfaceListener : interfaceListeners)
 		   {
 				int mouseX = Fl::event_x();
 				int mouseY = Fl::event_y();
 				int button = Fl::event_button();
-				bool ret = interfaceListeners[l]->onMouseRelease(mouseX, mouseY, button);
+				bool ret = interfaceListener->onMouseRelease(mouseX, mouseY, button);
 				if (ret)
 					earlyReturn = true;
 		   }
@@ -2659,11 +2663,11 @@ int FltkViewer::handle ( int event )
 	  case FL_MOVE:
 		  {
 			bool earlyReturn = false;
-		   for (size_t l = 0; l < interfaceListeners.size(); l++)
+		   for (auto & interfaceListener : interfaceListeners)
 		   {
 				int mouseX = Fl::event_x();
 				int mouseY = Fl::event_y();
-			   bool ret = interfaceListeners[l]->onMouseMove(e.mouse.x, e.mouse.y);
+			   bool ret = interfaceListener->onMouseMove(e.mouse.x, e.mouse.y);
 			   if (ret)
 				   earlyReturn = true;
 		   }
@@ -2680,11 +2684,11 @@ int FltkViewer::handle ( int event )
 	  case FL_DRAG:
 		  {
 		  bool earlyReturn = false;
-		   for (size_t l = 0; l < interfaceListeners.size(); l++)
+		   for (auto & interfaceListener : interfaceListeners)
 		   {
 				int mouseX = Fl::event_x();
 				int mouseY = Fl::event_y();
-			   bool ret = interfaceListeners[l]->onMouseDrag(e.mouse.x, e.mouse.y);
+			   bool ret = interfaceListener->onMouseDrag(e.mouse.x, e.mouse.y);
 			   if (ret)
 				   earlyReturn = true;
 		   }
@@ -2708,9 +2712,9 @@ int FltkViewer::handle ( int event )
 		 e.key = Fl::event_key();
 
 		 bool earlyReturn = false;
-		for (size_t l = 0; l < interfaceListeners.size(); l++)
+		for (auto & interfaceListener : interfaceListeners)
 		{	
-				bool ret = interfaceListeners[l]->onKeyboardPress(e.key);
+				bool ret = interfaceListener->onKeyboardPress(e.key);
 				if (ret)
 					earlyReturn = true;
 		}
@@ -2728,7 +2732,7 @@ int FltkViewer::handle ( int event )
 					PawnControl* selControl = _objManipulator.getPawnControl(ObjectManipulationHandle::CONTROL_SELECTION);
 					_transformMode = ObjectManipulationHandle::CONTROL_POS;					
 					
-					SbmPawn* newAttachPawn = NULL;
+					SbmPawn* newAttachPawn = nullptr;
 					if (rotControl->get_attach_pawn()) newAttachPawn = rotControl->get_attach_pawn();
 					if (selControl->get_attach_pawn()) newAttachPawn = selControl->get_attach_pawn();
 					if (newAttachPawn)
@@ -2748,7 +2752,7 @@ int FltkViewer::handle ( int event )
 					PawnControl* selControl = _objManipulator.getPawnControl(ObjectManipulationHandle::CONTROL_SELECTION);
 					_transformMode = ObjectManipulationHandle::CONTROL_ROT;
 
-					SbmPawn* newAttachPawn = NULL;
+					SbmPawn* newAttachPawn = nullptr;
 					if (posControl->get_attach_pawn()) newAttachPawn = posControl->get_attach_pawn();
 					if (selControl->get_attach_pawn()) newAttachPawn = selControl->get_attach_pawn();
 					if (newAttachPawn)
@@ -2769,7 +2773,7 @@ int FltkViewer::handle ( int event )
 					PawnControl* selControl = _objManipulator.getPawnControl(ObjectManipulationHandle::CONTROL_SELECTION);
 					_transformMode = ObjectManipulationHandle::CONTROL_SELECTION;
 
-					SbmPawn* newAttachPawn = NULL;
+					SbmPawn* newAttachPawn = nullptr;
 					if (posControl->get_attach_pawn()) newAttachPawn = posControl->get_attach_pawn();
 					if (rotControl->get_attach_pawn()) newAttachPawn = rotControl->get_attach_pawn();
 					if (newAttachPawn)
@@ -2787,7 +2791,7 @@ int FltkViewer::handle ( int event )
 			case 'f': // frame selected object
 				{
 				SrBox sceneBox;
-				SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+				SrCamera* camera = renderScene.getActiveCamera();
 				if (!camera)
 					return ret;
 				
@@ -2805,11 +2809,9 @@ int FltkViewer::handle ( int event )
 				else
 				{
 					const std::vector<std::string>& pawnNames =  SmartBody::SBScene::getScene()->getPawnNames();
-					for (std::vector<std::string>::const_iterator iter = pawnNames.begin();
-						 iter != pawnNames.end();
-						  iter++)
+					for (const auto & pawnName : pawnNames)
 					{
-						SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(*iter);
+						SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
 						bool visible = pawn->getBoolAttribute("visible");
 						if (!visible)
 							continue;
@@ -2847,9 +2849,9 @@ int FltkViewer::handle ( int event )
 
 			 if (lastKey != e.key)
 			 {
-				for (size_t l = 0; l < interfaceListeners.size(); l++)
+				for (auto & interfaceListener : interfaceListeners)
 				{
-					bool ret = interfaceListeners[l]->onKeyboardRelease(e.key);
+					bool ret = interfaceListener->onKeyboardRelease(e.key);
 					if (ret)
 						earlyReturn = true;
 				}
@@ -2914,7 +2916,7 @@ int FltkViewer::handle ( int event )
 
    if ( event==FL_PUSH || event==FL_DRAG )
 	{ 
-		SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+		SrCamera* camera = renderScene.getActiveCamera();
 		SrPlane plane ( camera->getCenter(), SrVec::k );
 	  camera->get_ray ( e.mouse.x, e.mouse.y, e.ray.p1, e.ray.p2 );
 	  camera->get_ray ( e.lmouse.x, e.lmouse.y, e.lray.p1, e.lray.p2 );
@@ -2990,6 +2992,8 @@ int FltkViewer::handle_event ( const SrEvent &e )
 
 int FltkViewer::handle_object_manipulation( const SrEvent& e)
 {
+	auto& scene = Session::current->scene;
+	auto& renderScene = Session::current->renderScene;
 	if (e.type==SrEvent::EventPush)
 	 {
 		 if (e.button1)
@@ -3016,7 +3020,7 @@ int FltkViewer::handle_object_manipulation( const SrEvent& e)
 		 {
 			SrVec2 pickVec(e.mouse.x, e.mouse.y);
 			_objManipulator.setPicking(pickVec);
-			_objManipulator.picking(e.mouse.x, e.mouse.y, SmartBody::SBScene::getScene()->getActiveCamera());
+			_objManipulator.picking(e.mouse.x, e.mouse.y, renderScene.getActiveCamera());
 			SbmPawn* selectedPawn = _objManipulator.get_selected_pawn();
 			if (selectedPawn)
 			{
@@ -3039,7 +3043,7 @@ int FltkViewer::handle_object_manipulation( const SrEvent& e)
 	{
 		if (e.button1)// && _posControl.dragging)
 		{			
-			_objManipulator.drag(*(SmartBody::SBScene::getScene()->getActiveCamera()),e.lmouse.x,e.lmouse.y,e.mouse.x,e.mouse.y);			
+			_objManipulator.drag(*(renderScene.getActiveCamera()),e.lmouse.x,e.lmouse.y,e.mouse.x,e.mouse.y);			
 		}
 	}
 	else if (e.type==SrEvent::EventRelease)
@@ -3057,7 +3061,7 @@ int FltkViewer::handle_object_manipulation( const SrEvent& e)
 std::string FltkViewer::create_pawn()
 {
 	static int numPawn = 0;
-	std::string pawnName = "pawn" + boost::lexical_cast<std::string>(numPawn);
+	std::string pawnName = "pawn" + std::to_string(numPawn);
 	
 	const char* pawn_name = fl_input("Input Pawn Name",pawnName.c_str());
 	if (!pawn_name) // no name is input
@@ -3075,15 +3079,13 @@ std::string FltkViewer::create_pawn()
 void FltkViewer::set_reach_target( int itype, const char* targetname )
 {
 	char exe_cmd[256];
-	SbmCharacter* actor = NULL;
+	SbmCharacter* actor = nullptr;
 	int counter = 0;
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
+	for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = scene->getCharacter((*iter));
+		SmartBody::SBCharacter* character = scene->getCharacter(characterName);
 		//if (counter == _locoData->char_index)
 		{
 			actor = character;
@@ -3109,7 +3111,7 @@ void FltkViewer::set_reach_target( int itype, const char* targetname )
 		else
 			strcpy(pawn_name,targetname);
 
-		sprintf(exe_cmd,"bml char %s <sbm:reach target=\"%s\" reach-arm=\"%s\"/>",actor->getName().c_str(),pawn_name,reach_type[itype]);
+		sprintf(exe_cmd,R"(bml char %s <sbm:reach target="%s" reach-arm="%s"/>)",actor->getName().c_str(),pawn_name,reach_type[itype]);
 		scene->commandAt(1.0, exe_cmd); // delay execution for one second to avoid popping
 	}
 }
@@ -3166,7 +3168,9 @@ void FltkViewer::set_gaze_target(int itype, const char* label)
 
 int FltkViewer::handle_examiner_manipulation ( const SrEvent &e )
  {
-	SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+	 auto& scene = Session::current->scene;
+	 auto& renderScene = Session::current->renderScene;
+	SrCamera* camera = renderScene.getActiveCamera();
 	switch (getData()->cameraMode)
 	{
 	case Default:
@@ -3410,8 +3414,8 @@ void FltkViewer::show_viewer()
 	SBGUIManager::singleton().init();	
 	if (!fltkListener)
 	{
-		fltkListener = new FLTKListener();
-		SmartBody::SBScene::getScene()->addSceneListener(fltkListener);
+		fltkListener = new FLTKListener(*this);
+		Session::current->scene.addSceneListener(fltkListener);
 	}
 }
 
@@ -3677,7 +3681,7 @@ void FltkViewer::drawEyeLids()
 		MeControllerTreeRoot* controllerTree = character->ct_tree_p;
 		int numControllers = controllerTree->count_controllers();
 	
-		MeCtEyeLid* eyelidCt = NULL;
+		MeCtEyeLid* eyelidCt = nullptr;
 		for (int c = 0; c < numControllers; c++)
 		{
 			MeController* controller = controllerTree->controller(c);
@@ -4005,33 +4009,30 @@ void FltkViewer::drawPawns()
 	if (_data->pawnmode == ModeNoPawns)
 		return;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = Session::current->scene;
+	auto& renderScene = Session::current->renderScene;
 
 	// determine the size of the pawns relative to the size of the characters
 	float pawnSize = 1.0;
-	const std::vector<std::string>& characterNames = scene->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
+	const std::vector<std::string>& characterNames = scene.getCharacterNames();
+	for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = scene->getCharacter((*iter));
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		pawnSize = character->getHeight()/ 30.0f;
 		break;
 	}
 
-	SrCamera* currentCamera = scene->getActiveCamera();
+	SrCamera* currentCamera = renderScene.getActiveCamera();
 
-	const std::vector<std::string>& pawnNames = scene->getPawnNames();
-	for (std::vector<std::string>::const_iterator iter = pawnNames.begin();
-		iter != pawnNames.end();
-		iter++)
+	const std::vector<std::string>& pawnNames = scene.getPawnNames();
+	for (const auto & pawnName : pawnNames)
 	{
 
-		SmartBody::SBPawn* pawn = scene->getPawn((*iter));
+		SmartBody::SBPawn* pawn = scene.getPawn(pawnName);
 		SrCamera* camera = dynamic_cast<SrCamera*>(pawn);
 		if (camera)
 		{ 
-			if ((scene->getNumCameras() == 1) ||
+			if ((renderScene.getNumCameras() == 1) ||
 				(camera == currentCamera)) // don't draw the current active camera
 			 continue;
 		}
@@ -4039,7 +4040,7 @@ void FltkViewer::drawPawns()
 			
 		if (!pawn->getSkeleton()) 
 			continue;
-		SbmCharacter* character = dynamic_cast<SbmCharacter*>(pawn);
+		auto* character = dynamic_cast<SbmCharacter*>(pawn);
 		if (character)
 			continue;
 
@@ -4048,7 +4049,7 @@ void FltkViewer::drawPawns()
 			continue;
 
 		SrMat gmat = pawn->get_world_offset();//pawn->get_world_offset_joint()->gmat();		
-		if (pawn->getGeomObject() && dynamic_cast<SBGeomNullObject*>(pawn->getGeomObject()) == NULL)
+		if (pawn->getGeomObject() && dynamic_cast<SBGeomNullObject*>(pawn->getGeomObject()) == nullptr)
 		{
 			//pawn->colObj_p->updateTransform(gmat);
 			//gmat = pawn->colObj_p->worldState.gmat();
@@ -4070,7 +4071,7 @@ void FltkViewer::drawPawns()
 			SmartBody::SBAttribute* attr = pawn->getAttribute("color");
 			if (attr)
 			{
-				SmartBody::Vec3Attribute* colorAttribute = dynamic_cast<SmartBody::Vec3Attribute*>(attr);
+				auto* colorAttribute = dynamic_cast<SmartBody::Vec3Attribute*>(attr);
 				if (colorAttribute)
 				{
 					const SrVec& color = colorAttribute->getValue();
@@ -4125,10 +4126,10 @@ void FltkViewer::drawTetra( SrVec vtxPos[4], SrVec& color )
 	static int edgeIdx[6][2] = { {0,1}, {0,2}, {0,3}, {1,2}, {1,3}, {2,3} };
 	glColor4f(color.x,color.y,color.z,1.f);
 	glBegin(GL_LINES);
-	for (int i=0;i<6;i++)
+	for (auto & i : edgeIdx)
 	{
-		SrVec& p1 = vtxPos[edgeIdx[i][0]];
-		SrVec& p2 = vtxPos[edgeIdx[i][1]];
+		SrVec& p1 = vtxPos[i[0]];
+		SrVec& p2 = vtxPos[i[1]];
 		glVertex3f(p1.x,p1.y,p1.z);
 		glVertex3f(p2.x,p2.y,p2.z);
 	}
@@ -4745,12 +4746,12 @@ void FltkViewer::drawGestures()
 		std::list<SrVec>& leftWriteData = _gestureData->gestureSections[_gestureData->gestureSections.size() - 2].data;
 		if ((int)leftWriteData.size() >= _gestureData->displayMaximum)
 			leftWriteData.pop_front();
-		leftWriteData.push_back(wristLfVec);
+		leftWriteData.emplace_back(wristLfVec);
 		
 		std::list<SrVec>& rightWriteData = _gestureData->gestureSections[_gestureData->gestureSections.size() - 1].data;
 		if ((int)rightWriteData.size() >= _gestureData->displayMaximum)
 			rightWriteData.pop_front();
-		rightWriteData.push_back(wristRtVec);
+		rightWriteData.emplace_back(wristRtVec);
 	}
 
 	glBegin(GL_LINES);
@@ -4779,13 +4780,13 @@ void FltkViewer::drawGestures()
 		left.type = _gestureData->currentStatus;
 		left.location = wristLfVec;
 		left.color = _gestureData->getSyncPointColor(_gestureData->currentStatus);
-		_gestureData->syncPoints.push_back(left);
+		_gestureData->syncPoints.emplace_back(left);
 		GestureData::SyncPointData right;
 		right.side = 1;
 		right.type = _gestureData->currentStatus;
 		right.location = wristRtVec;
 		right.color = _gestureData->getSyncPointColor(_gestureData->currentStatus);
-		_gestureData->syncPoints.push_back(right);
+		_gestureData->syncPoints.emplace_back(right);
 		_gestureData->currentStatus = GestureData::OTHER;
 	}
 
@@ -4862,7 +4863,7 @@ void FltkViewer::drawLocomotion()
 			if (character->trajectoryBuffer.size())
 				prevBaseVec = character->trajectoryBuffer.back();
 			//if ((baseVec-prevBaseVec).len() > character->getHeight()*0.01f)
-				character->trajectoryBuffer.push_back(baseVec);
+				character->trajectoryBuffer.emplace_back(baseVec);
 			std::list<SrVec>::iterator iter = character->trajectoryBuffer.begin();
 			glColor3f(1.0f, 1.0f, 0.0f);
 			glBegin(GL_LINES);
@@ -5094,7 +5095,7 @@ SbmCharacter* FltkViewer::getCurrentCharacter()
 	 if (!selectedPawn)
 	 {
 		 if (_lastSelectedCharacter == "")
-			 return NULL;
+			 return nullptr;
 		 SbmCharacter* character = scene->getCharacter(_lastSelectedCharacter);
 		 if (character)
 		 {
@@ -5111,7 +5112,7 @@ SbmCharacter* FltkViewer::getCurrentCharacter()
 			 }
 			 else
 			 {
-				 return NULL;
+				 return nullptr;
 			 }
 		 }
 	 }
@@ -5126,9 +5127,9 @@ SmartBody::SBAnimationBlend* FltkViewer::getCurrentCharacterAnimationBlend()
 	SbmCharacter* sbmChar = getCurrentCharacter();
 	SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(sbmChar);
 	if (!character)
-		return NULL;
+		return nullptr;
 
-	SmartBody::SBAnimationBlend* animBlend = NULL;
+	SmartBody::SBAnimationBlend* animBlend = nullptr;
 
 	MeCtParamAnimation* panimCt = character->param_animation_ct;
 	if (panimCt)
@@ -5144,17 +5145,17 @@ MeCtExampleBodyReach* FltkViewer::getCurrentCharacterBodyReachController()
 {
 	SbmCharacter* character = getCurrentCharacter();
 
-	MeCtExampleBodyReach* reachCt = NULL;
+	MeCtExampleBodyReach* reachCt = nullptr;
 	if ( character )
 	{
 		MeCtSchedulerClass* reachSched = character->reach_sched_p;
 		if (!reachSched)
-			return NULL;
+			return nullptr;
 		MeCtSchedulerClass::VecOfTrack reach_tracks = reachSched->tracks();		
-		MeCtReach* tempCt = NULL;
-		for (unsigned int c = 0; c < reach_tracks.size(); c++)
+		MeCtReach* tempCt = nullptr;
+		for (auto & reach_track : reach_tracks)
 		{
-			MeController* controller = reach_tracks[c]->animation_ct();		
+			MeController* controller = reach_track->animation_ct();
 			//reachCt = dynamic_cast<MeCtConstraint*>(controller);
 			reachCt = dynamic_cast<MeCtExampleBodyReach*>(controller);
 			//tempCt  = dynamic_cast<MeCtReach*>(controller);
@@ -5169,17 +5170,17 @@ MeCtConstraint* FltkViewer::getCurrentCharacterConstraintController()
 {
 	SbmCharacter* character = getCurrentCharacter();
 
-	MeCtConstraint* reachCt = NULL;
+	MeCtConstraint* reachCt = nullptr;
 	if ( character )
 	{
 		MeCtSchedulerClass* reachSched = character->constraint_sched_p;
 		if (!reachSched)
-			return NULL;
+			return nullptr;
 		MeCtSchedulerClass::VecOfTrack reach_tracks = reachSched->tracks();		
-		MeCtReach* tempCt = NULL;
-		for (unsigned int c = 0; c < reach_tracks.size(); c++)
+		MeCtReach* tempCt = nullptr;
+		for (auto & reach_track : reach_tracks)
 		{
-			MeController* controller = reach_tracks[c]->animation_ct();		
+			MeController* controller = reach_track->animation_ct();
 			reachCt = dynamic_cast<MeCtConstraint*>(controller);
 			//tempCt  = dynamic_cast<MeCtReach*>(controller);
 			if (reachCt)
@@ -5498,18 +5499,16 @@ void FltkViewer::drawSteeringInfo()
 
 	//comment out for now, have to take a look at the steering code
 	const std::vector<SteerLib::AgentInterface*>& agents = scene->getSteerManager()->getEngineDriver()->_engine->getAgents();
-	for (size_t x = 0; x < agents.size(); x++)
+	for (auto agent : agents)
 	{
-		scene->getSteerManager()->getEngineDriver()->_engine->selectAgent(agents[x]);
-		agents[x]->draw();
+		scene->getSteerManager()->getEngineDriver()->_engine->selectAgent(agent);
+		agent->draw();
 	}
 
 	const std::set<SteerLib::ObstacleInterface*>& obstacles = scene->getSteerManager()->getEngineDriver()->_engine->getObstacles();
-	for (std::set<SteerLib::ObstacleInterface*>::const_iterator iter = obstacles.begin();
-		iter != obstacles.end();
-		iter++)
+	for (auto obstacle : obstacles)
 	{
-		(*iter)->draw();
+		obstacle->draw();
 	}
 	
 	if (_data->steerMode == ModeSteerAll)
@@ -5536,11 +5535,9 @@ void FltkViewer::drawCollisionInfo()
 	glLineWidth(5.f);
 	glPushMatrix();
 	std::map<std::string, SBGeomObject*>& collisionObjects = scene->getCollisionManager()->getAllCollisionObjects();
-	for (std::map<std::string, SBGeomObject*>::iterator iter = collisionObjects.begin();
-		 iter != collisionObjects.end();
-		 iter++)
+	for (auto & iter : collisionObjects)
 	{
-		SBGeomObject* collisionObject = (*iter).second;
+		SBGeomObject* collisionObject = iter.second;
 		SrMat mat = collisionObject->getGlobalTransform().gmat();
 		drawColObject(collisionObject, mat, .5);
 	}
@@ -5562,9 +5559,9 @@ void FltkViewer::drawMotionVectorFlow()
 	glMultMatrixf((const float*) mat);
 
 	std::vector<SrSnLines*>& vecflow_lines = animBlend->getVectorFlowSrSnLines();
-	for(unsigned int i=0; i<vecflow_lines.size(); i++)
+	for(auto & vecflow_line : vecflow_lines)
 	{
-		SrSnShapeBase* sp = dynamic_cast<SrSnShapeBase*>(vecflow_lines[i]);
+		SrSnShapeBase* sp = dynamic_cast<SrSnShapeBase*>(vecflow_line);
 		SrGlRenderFuncs::render_lines(sp);
 	}
 	glPopMatrix();
@@ -5582,9 +5579,9 @@ void FltkViewer::drawPlotMotion()
 	glMultMatrixf((const float*) mat);
 
 	std::vector<SrSnLines*>& plotmotion_lines = animBlend->getPlotMotionSrSnLines();
-	for(unsigned int i=0; i<plotmotion_lines.size(); i++)
+	for(auto & plotmotion_line : plotmotion_lines)
 	{
-		SrSnShapeBase* sp = dynamic_cast<SrSnShapeBase*>(plotmotion_lines[i]);
+		SrSnShapeBase* sp = dynamic_cast<SrSnShapeBase*>(plotmotion_line);
 		SrGlRenderFuncs::render_lines(sp);
 	}
 	glPopMatrix();
@@ -5593,19 +5590,19 @@ void FltkViewer::drawPlotMotion()
 
 void FltkViewer::notify(SmartBody::SBSubject* subject)
 {
-	SmartBody::SBAttribute* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
 	if (attribute)
 	{
 		std::string attrName = attribute->getName();
 		if (attrName == "GUI.ShowCameras")
 		{
+			auto& renderScene = Session::current->renderScene;
 			SmartBody::BoolAttribute* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 			bool value = boolAttribute->getValue();
-			SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-			std::vector<std::string> camNames = scene->getCameraNames();
+			std::vector<std::string> camNames = renderScene.getCameraNames();
 			for (unsigned int i=0;i<camNames.size();i++)
 			{
-				SrCamera* cam = scene->getCamera(camNames[i]);
+				SrCamera* cam = renderScene.getCamera(camNames[i]);
 				if (cam)
 				{
 					cam->setBoolAttribute("visible", value);
@@ -5614,14 +5611,13 @@ void FltkViewer::notify(SmartBody::SBSubject* subject)
 		}
 		else if (attrName == "GUI.ShowLights")
 		{
-			SmartBody::BoolAttribute* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
+			auto* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 			bool value = boolAttribute->getValue();
 			SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 			const std::vector<std::string>& pawnNames = scene->getPawnNames();
-			for (unsigned int i=0;i<pawnNames.size();i++)
+			for (auto name : pawnNames)
 			{
-				std::string name = pawnNames[i];
-				SmartBody::SBPawn* pawn = scene->getPawn(name);
+					SmartBody::SBPawn* pawn = scene->getPawn(name);
 				if (name.find("light") == 0 && pawn) // is light
 				{
 					pawn->setBoolAttribute("visible", value);			
@@ -5633,9 +5629,9 @@ void FltkViewer::notify(SmartBody::SBSubject* subject)
 			SmartBody::BoolAttribute* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 			bool value = boolAttribute->getValue();
 			if (getData()->gridMode != FltkViewer::ModeShowGrid)
-				menu_cmd(FltkViewer::CmdGrid, NULL);
+				menu_cmd(FltkViewer::CmdGrid, nullptr);
 			else
-				menu_cmd(FltkViewer::CmdNoGrid, NULL);
+				menu_cmd(FltkViewer::CmdNoGrid, nullptr);
 		}
 		else if (attrName == "GUI.ShowFloor")
 		{
@@ -5754,8 +5750,8 @@ void FltkViewer::drawNavigationMesh()
 	SmartBody::SBNavigationMesh* navigationMesh = SmartBody::SBScene::getScene()->getNavigationMesh();
 	if (!navigationMesh) return;
 
-	SrModel* drawMesh = NULL;
-	SrModel* naviMesh = NULL;
+	SrModel* drawMesh = nullptr;
+	SrModel* naviMesh = nullptr;
 	SrSnModel model;
 	if (_data->navigationMeshMode == ModeRawMesh)
 	{
@@ -5826,7 +5822,7 @@ void FltkViewer::resetViewer()
 
 	// clear object selection
 
-	_objManipulator.set_selected_pawn(NULL);
+	_objManipulator.set_selected_pawn(nullptr);
 	if (_objManipulator.get_active_control())
 		_objManipulator.get_active_control()->detach_pawn();
 	_objManipulator.removeActiveControl();
@@ -5844,14 +5840,14 @@ void FltkViewer::updateOptions()
 void FltkViewer::drawDeformableModels()
 {
 	printOglError2("drawDeformableModels()", 1);
+	auto& scene = Session::current->scene;
+	auto& renderScene = Session::current->renderScene;
 
-	const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
-	for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-		pawnIter != pawns.end();
-		pawnIter++)
-	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn((*pawnIter));
-		DeformableMeshInstance* meshInstance = pawn->getActiveMesh();
+	for (auto& entry : renderScene.getRenderables()) {
+		auto& renderable = entry.second;
+		auto pawn = renderable.pawn;
+
+		DeformableMeshInstance* meshInstance = renderable.getActiveMesh();
 		if(meshInstance)
 		{
 			meshInstance->blendShapeStaticMesh();
@@ -5912,13 +5908,13 @@ int FltkViewer::deleteSelectedObject( int ret )
 	//SmartBody::util::log("1");
 	if (selectedPawn)
 	{	
-		int confirm = fl_choice(SmartBody::util::format("Are you sure you want to delete '%s'?", selectedPawn->getName().c_str()).c_str(), "No", "Yes", NULL);
+		int confirm = fl_choice(SmartBody::util::format("Are you sure you want to delete '%s'?", selectedPawn->getName().c_str()).c_str(), "No", "Yes", nullptr);
 		if (confirm == 0)
 			return ret;
-		//_objManipulator.set_selected_pawn(NULL);
+		//_objManipulator.set_selected_pawn(nullptr);
 		//_objManipulator.removeActiveControl();
 		SBSelectionManager::getSelectionManager()->select("");
-		SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(selectedPawn);
+		auto* character = dynamic_cast<SmartBody::SBCharacter*>(selectedPawn);
 		if (character)
 		{
 			SmartBody::SBScene::getScene()->removeCharacter(character->getName());
@@ -5927,7 +5923,7 @@ int FltkViewer::deleteSelectedObject( int ret )
 		}
 		else
 		{
-			SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(selectedPawn);
+			auto* pawn = dynamic_cast<SmartBody::SBPawn*>(selectedPawn);
 			SmartBody::SBScene::getScene()->removePawn(pawn->getName());
 			ret = 1;
 			//SmartBody::util::log("3");
@@ -5952,7 +5948,7 @@ void FltkViewer::addPoint(const std::string& pointName, SrVec point, SrVec color
 
 void FltkViewer::removePoint(const std::string& pointName)
 {
-	std::map<std::string, Point3D>::iterator iter = _points3D.find(pointName);
+	auto iter = _points3D.find(pointName);
 	if (iter != _points3D.end())
 	{
 		_points3D.erase(pointName);
@@ -5968,9 +5964,9 @@ void FltkViewer::addLine(const std::string& lineName, std::vector<SrVec>& points
 {
 	removeLine(lineName);
 	Line3D l;
-	for (size_t i = 0; i < points.size(); i++)
+	for (auto & point : points)
 	{
-		l.points.push_back(points[i]);
+		l.points.emplace_back(point);
 	}
 	l.color.r = color.x;
 	l.color.g = color.y;
@@ -5981,7 +5977,7 @@ void FltkViewer::addLine(const std::string& lineName, std::vector<SrVec>& points
 
 void FltkViewer::removeLine(const std::string& lineName)
 {
-	std::map<std::string, Line3D>::iterator iter = _lines3D.find(lineName);
+	auto iter = _lines3D.find(lineName);
 	if (iter != _lines3D.end())
 	{
 		_lines3D.erase(lineName);
@@ -5995,12 +5991,12 @@ void FltkViewer::removeAllLines()
 
 GestureVisualizationHandler::GestureVisualizationHandler()
 {
-	_gestureData = NULL;
+	_gestureData = nullptr;
 }
 
 GestureVisualizationHandler::~GestureVisualizationHandler()
 {
-	_gestureData = NULL;
+	_gestureData = nullptr;
 }
 
 void GestureVisualizationHandler::setGestureData(GestureData* data)
@@ -6025,11 +6021,11 @@ void GestureVisualizationHandler::executeAction(SmartBody::SBEvent* event)
 			GestureData::GestureSection newSectionL;
 			newSectionL.side = 0;
 			newSectionL.color = _gestureData->getColor();
-			_gestureData->gestureSections.push_back(newSectionL);
+			_gestureData->gestureSections.emplace_back(newSectionL);
 			GestureData::GestureSection newSectionR;
 			newSectionR.side = 0;
 			newSectionR.color = _gestureData->getColor();
-			_gestureData->gestureSections.push_back(newSectionR);
+			_gestureData->gestureSections.emplace_back(newSectionR);
 
 			_gestureData->currentStatus = GestureData::START;
 
@@ -6066,14 +6062,14 @@ GestureData::GestureData()
 	currentCharacter = ""; 
 
 	// note: the number below representing the color is for approximate, not accurate
-	colorTables.push_back(SrVec(0.8f, 0.5f, 0.8f));			// violet
-	colorTables.push_back(SrVec(0.7f, 0.7f, 0.7f));			// silver
-	colorTables.push_back(SrVec(1.0f, 0.8f, 0.0f));			// gold
-	colorTables.push_back(SrVec(0.5f, 0.5f, 0.5f));			// gray
-	colorTables.push_back(SrVec(1.0f, 0.7f, 0.75f));		// pink
-	colorTables.push_back(SrVec(1.0f, 0.0f, 1.0f));			// fuscia
-	colorTables.push_back(SrVec(0.0f, 1.0f, 1.0f));			// aqua
-	colorTables.push_back(SrVec(0.95f, 0.85f, 0.6f));		// khaki
+	colorTables.emplace_back(SrVec(0.8f, 0.5f, 0.8f));			// violet
+	colorTables.emplace_back(SrVec(0.7f, 0.7f, 0.7f));			// silver
+	colorTables.emplace_back(SrVec(1.0f, 0.8f, 0.0f));			// gold
+	colorTables.emplace_back(SrVec(0.5f, 0.5f, 0.5f));			// gray
+	colorTables.emplace_back(SrVec(1.0f, 0.7f, 0.75f));		// pink
+	colorTables.emplace_back(SrVec(1.0f, 0.0f, 1.0f));			// fuscia
+	colorTables.emplace_back(SrVec(0.0f, 1.0f, 1.0f));			// aqua
+	colorTables.emplace_back(SrVec(0.95f, 0.85f, 0.6f));		// khaki
 
 	syncPointColorMap.insert(std::make_pair(GestureData::START, SrVec(0.0f, 0.0f, 1.0f)));				// blue
 	syncPointColorMap.insert(std::make_pair(GestureData::READY, SrVec(0.0f, 0.0f, 0.0f)));				// black
@@ -6178,8 +6174,8 @@ void FltkViewerData::setupData()
 	scenebox = new SrSnLines;
 	sceneaxis = new SrSnLines;
 
-	_coneOfSight			= false;
-	_coneOfSight_leftEye	= nullptr;
+//	_coneOfSight			= false;
+//	_coneOfSight_leftEye	= nullptr;
 }
 
 //================================ End of File =================================================

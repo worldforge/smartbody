@@ -430,8 +430,8 @@ extern "C"
 				std::string textureFileName = "textures/" + textureNames[i];
 				if (!boost::filesystem::exists(boost::filesystem::path(textureFileName)))
 					SmartBody::util::log("Texture %s doesn't exist under same path of mesh %s", textureNames[i].c_str(), textureFileName.c_str());
-				textureNames_v.push_back(textureNames[i]);
-				textureFileNames_v.push_back(textureFileName);
+				textureNames_v.emplace_back(textureNames[i]);
+				textureFileNames_v.emplace_back(textureFileName);
 			}
 			
 			texManager.loadCubeMapTextures("skybox", textureNames_v, textureFileNames_v);

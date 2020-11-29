@@ -415,8 +415,8 @@ bool MeCtConstraint::addEffectorJointPair( SmartBody::SBJoint* targetJoint, cons
 		cons->posOffset = posOffset;
 		cons->rotOffset = rotOffset;
 		jEffectorMap[str] = cons;
-		//effectorList.push_back(effectorName);
-		//jEffectorList.push_back(cons);		
+		//effectorList.emplace_back(effectorName);
+		//jEffectorList.emplace_back(cons);
 	}
 	return true;
 }

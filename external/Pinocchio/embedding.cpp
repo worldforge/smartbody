@@ -62,7 +62,7 @@ vector<vector<int> > computePossibilities(const PtGraph &graph, const vector<Sph
     vector<vector<int> > out(skeleton.cGraph().verts.size());
     vector<int> allVerts, limbVerts, fatVerts;
     for(i = 0; i < (int)graph.verts.size(); ++i) {
-        allVerts.push_back(i);
+        allVerts.emplace_back(i);
         const vector<int> &edg = graph.edges[i];
         double rad = spheres[i].radius;
         Vector3 cur = graph.verts[i];
@@ -78,18 +78,18 @@ vector<vector<int> > computePossibilities(const PtGraph &graph, const vector<Sph
             }
             if(k < (int)edg.size())
                 continue;
-            limbVerts.push_back(i);
+            limbVerts.emplace_back(i);
             break;
         }
     }
     vector<double> rads;
     for(i = 0; i < (int)graph.verts.size(); ++i)
-        rads.push_back(spheres[i].radius);
+        rads.emplace_back(spheres[i].radius);
     sort(rads.begin(), rads.end());
     double cutoff = (int)rads.size() < 50 ? 0. : rads[rads.size() - 50];
     for(i = 0; i < (int)graph.verts.size(); ++i)
         if(spheres[i].radius >= cutoff)
-            fatVerts.push_back(i);
+            fatVerts.emplace_back(i);
     std::cout  << "Extrem, fat verts " << limbVerts.size() << " " << fatVerts.size() << endl;
     
     for(i = 0; i < (int)out.size(); ++i) {
@@ -178,7 +178,7 @@ vector<int> discreteEmbed(const PtGraph &graph, const vector<Sphere> &spheres,
                 std::cout  << "ERR = " << extraPenalty << endl;
             if(cur.penalty + extraPenalty < 1.) {
                 PartialMatch next = cur;
-                next.match.push_back(candidate);
+                next.match.emplace_back(candidate);
                 next.penalty += extraPenalty;
                 next.heuristic = next.penalty;
                 
@@ -227,9 +227,9 @@ vector<Vector3> splitPath(FP *fp, int joint, int curIdx, int prevIdx)
     vector<int> newPath = fp->paths.path(prevIdx, curIdx);
 
     vector<int> uncompIdx; //stores the indices of the path in the unsimplified skeleton
-    uncompIdx.push_back(fp->given.cfMap()[joint]);
+    uncompIdx.emplace_back(fp->given.cfMap()[joint]);
     do {
-        uncompIdx.push_back(fp->given.fPrev()[uncompIdx.back()]);
+        uncompIdx.emplace_back(fp->given.fPrev()[uncompIdx.back()]);
     } while(fp->given.fcMap()[uncompIdx.back()] == -1);
     reverse(uncompIdx.begin(), uncompIdx.end());
 
@@ -240,7 +240,7 @@ vector<Vector3> splitPath(FP *fp, int joint, int curIdx, int prevIdx)
         
         vector<double> lengths(1, 0.);
         for(i = 1; i < (int)uncompIdx.size(); ++i) {
-            lengths.push_back(lengths.back() + dist * fp->given.fcFraction()[uncompIdx[i]]);
+            lengths.emplace_back(lengths.back() + dist * fp->given.fcFraction()[uncompIdx[i]]);
         }
         
         vector<Vector3> newPathPts(newPath.size());
@@ -274,7 +274,7 @@ vector<Vector3> splitPaths(const vector<int> &discreteEmbedding, const PtGraph &
 
     vector<Vector3> out;
 
-    out.push_back(graph.verts[discreteEmbedding[0]]);
+    out.emplace_back(graph.verts[discreteEmbedding[0]]);
     for(int i = 1; i < (int)discreteEmbedding.size(); ++i) {
         int prev = skeleton.cPrev()[i];
     
@@ -373,9 +373,9 @@ public:
         }
 
         vector<int> uncompIdx;
-        uncompIdx.push_back(fp->given.cfMap()[idx]);
+        uncompIdx.emplace_back(fp->given.cfMap()[idx]);
         do {
-            uncompIdx.push_back(fp->given.fPrev()[uncompIdx.back()]);
+            uncompIdx.emplace_back(fp->given.fPrev()[uncompIdx.back()]);
         } while(fp->given.fcMap()[uncompIdx.back()] == -1);
         reverse(uncompIdx.begin(), uncompIdx.end());
         
@@ -580,15 +580,15 @@ vector<PenaltyFunction *> getPenaltyFunctions(FP *fp) //user responsible for del
 {
     vector<PenaltyFunction *> out;
 
-    out.push_back(new DistPF(fp));
-    out.push_back(new GlobalDotPF(fp));
-    out.push_back(new SymPF(fp));
-    out.push_back(new DoublePF(fp));
-    out.push_back(new FootPF(fp));
-    out.push_back(new DupPF(fp));
-    out.push_back(new DotPF(fp));
-    out.push_back(new ExtremPF(fp));
-    out.push_back(new DisjointPF(fp));
+    out.emplace_back(new DistPF(fp));
+    out.emplace_back(new GlobalDotPF(fp));
+    out.emplace_back(new SymPF(fp));
+    out.emplace_back(new DoublePF(fp));
+    out.emplace_back(new FootPF(fp));
+    out.emplace_back(new DupPF(fp));
+    out.emplace_back(new DotPF(fp));
+    out.emplace_back(new ExtremPF(fp));
+    out.emplace_back(new DisjointPF(fp));
 
     double weights[9] = { 0.027, 0.023, 0.007, 0.046, 0.014, 0.012, 0.072, 0.005, 0.033 };
 

@@ -194,31 +194,33 @@ struct SBInterfaceListenerWrap : SBInterfaceListener, boost::python::wrapper<SBI
 
 void setPawnMesh(const std::string& pawnName, const std::string& meshName, SrVec meshScale)
 {
+	auto& renderAssetManager = Session::current->renderAssetManager;
+	auto& renderScene = Session::current->renderScene;
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
-	SmartBody::SBPawn* pawn = scene->getPawn(pawnName);
-	if (!pawn)
+	auto renderable = renderScene.getRenderable(pawnName);
+	if (!renderable || !renderable->pawn)
 		return;
 
-	DeformableMesh* mesh = assetManager->getDeformableMesh(meshName);
+	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(meshName);
 	if (!mesh)
 	{
 		return;
 	}
 	if (mesh)
 	{
-		pawn->dStaticMeshInstance_p = new SbmDeformableMeshGPUInstance();
-		pawn->dStaticMeshInstance_p->setToStaticMesh(true);
-		DeformableMeshInstance* meshInsance = pawn->dStaticMeshInstance_p;
-		meshInsance->setDeformableMesh(mesh);
+		renderable->staticMeshInstance = std::make_unique<SbmDeformableMeshGPUInstance>();
+		renderable->staticMeshInstance->setToStaticMesh(true);
+		renderable->staticMeshInstance->setDeformableMesh(mesh);
 		//meshInsance->setSkeleton(pawn->getSkeleton());	
-		meshInsance->setPawn(pawn);
-		meshInsance->setMeshScale(meshScale);
+		renderable->staticMeshInstance->setPawn(renderable->pawn);
+		renderable->staticMeshInstance->setMeshScale(meshScale);
 	}
 }
 
 void saveDeformableMesh(const std::string& meshName, const std::string& skelName, const std::string& outDir)
 {
+	auto& renderAssetManager = Session::current->renderAssetManager;
 	std::vector<std::string> moNames;
 	double scale = 1.0;
 	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(skelName);
@@ -228,14 +230,15 @@ void saveDeformableMesh(const std::string& meshName, const std::string& skelName
 		scale = scale3.x;
 	}
 
-	ParserOpenCOLLADA::exportCollada(outDir, skelName, meshName, moNames, true, true, false, scale);
+	ParserOpenCOLLADA::exportCollada(renderAssetManager, outDir, skelName, meshName, moNames, true, true, false, scale);
 }
 
 void saveDeformableMeshScale(const std::string& meshName, const std::string& skelName, const std::string& outDir, float meshScale)
 {
+	auto& renderAssetManager = Session::current->renderAssetManager;
 	std::vector<std::string> moNames;
 	double scale = meshScale;
-	ParserOpenCOLLADA::exportCollada(outDir, skelName, meshName, moNames, true, true, false, scale);
+	ParserOpenCOLLADA::exportCollada(renderAssetManager, outDir, skelName, meshName, moNames, true, true, false, scale);
 }
 
 inline float clamp(float x, float a, float b) { return std::max(a, std::min(b, x)); }
@@ -366,10 +369,11 @@ void computeImageMeanAndStd(float* lab, unsigned char* mask, int imgSize, SrVec&
 	SmartBody::util::log("Image Mean = %s, Std = %s", outMean.toString().c_str(), outStd.toString().c_str());
 }
 
-void deformableMeshTextureReplace(std::string meshName, std::string textureName, std::string inputImageFileName)
+void deformableMeshTextureReplace(const std::string& meshName, const std::string& textureName, std::string inputImageFileName)
 {
+	auto& renderAssetManager = Session::current->renderAssetManager;
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	DeformableMesh* mesh = assetManager->getDeformableMesh(meshName);
+	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(meshName);
 	if (!mesh)
 	{
 		SmartBody::util::log("Error replacing texture '%s', mesh '%s' doesn't exist.", textureName.c_str(), meshName.c_str());
@@ -377,11 +381,10 @@ void deformableMeshTextureReplace(std::string meshName, std::string textureName,
 	}
 
 	bool meshTextureExist = false;
-	std::string finalTextureName = "";
-	for (unsigned int i = 0; i < mesh->subMeshList.size(); i++)
+	std::string finalTextureName;
+	for (auto subMesh : mesh->subMeshList)
 	{
-		SbmSubMesh* subMesh = mesh->subMeshList[i];
-		//if (subMesh->texName == textureName)
+			//if (subMesh->texName == textureName)
 		//	meshTextureExist = true;
 		if (subMesh->texName.find(textureName) != std::string::npos) // texture name exists in the submesh
 		{
@@ -398,7 +401,7 @@ void deformableMeshTextureReplace(std::string meshName, std::string textureName,
 
 	SmartBody::util::log("Found texture '%s' in the deformable mesh '%s'.", finalTextureName.c_str(), meshName.c_str());
 	// replace textures with new image files
-	SbmTexture* texture = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE, finalTextureName.c_str());
+	auto texture = SbmTextureManager::singleton().findTexture(finalTextureName.c_str());
 	if (!texture)
 	{
 		SmartBody::util::log("Error replacing texture '%s', texture doesn't exist.", finalTextureName.c_str(), meshName.c_str());
@@ -453,8 +456,9 @@ void imageColorTransfer(std::string srcImg, std::string srcMask, std::string tgt
 
 void addModelToMesh(std::string templateMeshName, std::string modelFile, std::string newModelName, std::string rigidBindJoint, std::string bindPoseCopySubMeshName)
 {
+	auto& renderAssetManager = Session::current->renderAssetManager;
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	DeformableMesh* mesh = assetManager->getDeformableMesh(templateMeshName);
+	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(templateMeshName);
 	if (!mesh)
 	{
 		SmartBody::util::log("Cannot find template mesh %s in order to add mesh via file %s.", templateMeshName.c_str(), modelFile.c_str());
@@ -500,8 +504,8 @@ void addModelToMesh(std::string templateMeshName, std::string modelFile, std::st
 
 	if (!found)
 	{
-		mesh->dMeshStatic_p.push_back(modelSrSn);
-		mesh->dMeshDynamic_p.push_back(modelSrSn);
+		mesh->dMeshStatic_p.emplace_back(modelSrSn);
+		mesh->dMeshDynamic_p.emplace_back(modelSrSn);
 	}
 
 	if (mesh->skinWeights.size() == 0)
@@ -529,23 +533,24 @@ void addModelToMesh(std::string templateMeshName, std::string modelFile, std::st
 	}
 
 	modelSkin->bindShapeMat = existingBindShapeMat;
-	modelSkin->bindPoseMat.push_back(modelBindPose);
-	modelSkin->infJointName.push_back(rigidBindJoint);
+	modelSkin->bindPoseMat.emplace_back(modelBindPose);
+	modelSkin->infJointName.emplace_back(rigidBindJoint);
 	modelSkin->sourceMesh = newModelName;
-	modelSkin->bindWeight.push_back(1.0f);
+	modelSkin->bindWeight.emplace_back(1.0f);
 	for (unsigned int i = 0; i < model.V.size(); i++)
 	{
-		modelSkin->jointNameIndex.push_back(0);
-		modelSkin->numInfJoints.push_back(1);
-		modelSkin->weightIndex.push_back(0);
+		modelSkin->jointNameIndex.emplace_back(0);
+		modelSkin->numInfJoints.emplace_back(1);
+		modelSkin->weightIndex.emplace_back(0);
 	}
-	mesh->skinWeights.push_back(modelSkin);
+	mesh->skinWeights.emplace_back(modelSkin);
 }
 
 void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, std::string shapeName, std::string submeshName)
 {
+	auto& renderAssetManager = Session::current->renderAssetManager;
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	DeformableMesh* mesh = assetManager->getDeformableMesh(templateMeshName);
+	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(templateMeshName);
 	if (!mesh)
 	{
 		SmartBody::util::log("Cannot find template mesh %s in order to add blendshape via file %s.", templateMeshName.c_str(), modelFile.c_str());
@@ -575,7 +580,7 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 				return;
 			}
 			// loop through the morph target to see if this controller already exists
-			std::map<std::string, std::vector<SrSnModel*> >::iterator mapIter = mesh->blendShapeMap.find(submeshName);
+			auto mapIter = mesh->blendShapeMap.find(submeshName);
 			if (mapIter == mesh->blendShapeMap.end())
 			{
 				// no controller for this exists yet, set one up
@@ -591,10 +596,10 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 				mesh->dMeshStatic_p[m]->shape().N = baseModel->shape().N;
 
 				std::vector<SrSnModel*> modelList;
-				modelList.push_back(baseModel);
+				modelList.emplace_back(baseModel);
 				mesh->blendShapeMap.insert(std::pair<std::string, std::vector<SrSnModel*> >(submeshName, modelList));
 				std::vector<std::string> morphTargetList;
-				morphTargetList.push_back(shapeName);
+				morphTargetList.emplace_back(shapeName);
 				mesh->morphTargets.insert(std::pair<std::string, std::vector<std::string> >(submeshName, morphTargetList));
 			}
 			else
@@ -602,15 +607,15 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 				// controller exists, see if the shape also exists
 				bool found = false;
 				std::vector<SrSnModel*>& existingShapeModels = (*mapIter).second;
-				for (size_t s = 0; s < existingShapeModels.size(); s++)
+				for (auto & existingShapeModel : existingShapeModels)
 				{
-					std::string modelName = (const char*) existingShapeModels[s]->shape().name;
+					std::string modelName = (const char*) existingShapeModel->shape().name;
 					if (modelName == shapeName)
 					{
 						// shape already exists
 						// replace it if the vertices match
-						existingShapeModels[s]->shape().V = blendshapeModel.V;
-						existingShapeModels[s]->shape().N = blendshapeModel.N;
+						existingShapeModel->shape().V = blendshapeModel.V;
+						existingShapeModel->shape().N = blendshapeModel.N;
 
 						found = true;
 						break;
@@ -625,14 +630,14 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 					baseModel->visible(false);
 					baseModel->ref();
 
-					existingShapeModels.push_back(baseModel);
-					std::map<std::string, std::vector<std::string> >::iterator morphNameIter = mesh->morphTargets.find(submeshName);
+					existingShapeModels.emplace_back(baseModel);
+					auto morphNameIter = mesh->morphTargets.find(submeshName);
 					if (morphNameIter == mesh->morphTargets.end())
 					{
 						SmartBody::util::log("Couldn't find controller name %s in morph target list, strange...", submeshName.c_str());
 						return;
 					}
-					(*morphNameIter).second.push_back(shapeName);
+					(*morphNameIter).second.emplace_back(shapeName);
 				}
 
 			}
@@ -643,22 +648,23 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 
 void createCustomMeshFromBlendshapes(std::string templateMeshName, std::string blendshapesDir, std::string baseMeshName, std::string hairMeshName, std::string outMeshName)
 {
+	auto& renderAssetManager = Session::current->renderAssetManager;
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	DeformableMesh* mesh = assetManager->getDeformableMesh(templateMeshName);
+	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(templateMeshName);
 	if (!mesh)
 	{
 		SmartBody::util::log("Error creating custom mesh from blendshapes :: mesh '%s' does not exist.", templateMeshName.c_str());
 		return;
 	}
 
-	for (std::map<std::string, std::vector<SrSnModel*> >::iterator iter = mesh->blendShapeMap.begin();
+	for (auto iter = mesh->blendShapeMap.begin();
 		iter != mesh->blendShapeMap.end();
 		iter++)
 	{
 		std::vector<SrSnModel*>& targets = (*iter).second;
 		for (size_t t = 0; t < targets.size(); t++) // ignore first target since it is a base mesh
 		{
-			if (targets[t] == NULL)
+			if (targets[t] == nullptr)
 				continue;
 			SrModel& curModel = targets[t]->shape();
 			SrModel newShape;
@@ -692,7 +698,7 @@ void createCustomMeshFromBlendshapes(std::string templateMeshName, std::string b
 				std::string hairName = "HairMesh";
 				hairSrSn->shape(hairModel);
 				hairSrSn->shape().name = hairName.c_str();
-				mesh->dMeshStatic_p.push_back(hairSrSn);
+				mesh->dMeshStatic_p.emplace_back(hairSrSn);
 
 				SkinWeight* hairSkin = new SkinWeight();
 				SkinWeight* headSkin = mesh->skinWeights[0];
@@ -711,17 +717,17 @@ void createCustomMeshFromBlendshapes(std::string templateMeshName, std::string b
 				}
 
 				hairSkin->bindShapeMat = hairBindShape;
-				hairSkin->bindPoseMat.push_back(hairBindPose);
-				hairSkin->infJointName.push_back(headJointName);
+				hairSkin->bindPoseMat.emplace_back(hairBindPose);
+				hairSkin->infJointName.emplace_back(headJointName);
 				hairSkin->sourceMesh = hairName;
-				hairSkin->bindWeight.push_back(1.0f);
+				hairSkin->bindWeight.emplace_back(1.0f);
 				for (unsigned int i = 0; i < hairModel.V.size(); i++)
 				{
-					hairSkin->jointNameIndex.push_back(0);
-					hairSkin->numInfJoints.push_back(1);
-					hairSkin->weightIndex.push_back(0);
+					hairSkin->jointNameIndex.emplace_back(0);
+					hairSkin->numInfJoints.emplace_back(1);
+					hairSkin->weightIndex.emplace_back(0);
 				}
-				mesh->skinWeights.push_back(hairSkin);
+				mesh->skinWeights.emplace_back(hairSkin);
 			}
 		}
 	}
@@ -740,22 +746,21 @@ void createCustomMeshFromBlendshapes(std::string templateMeshName, std::string b
 std::vector<std::string> checkVisibility(const std::string& character)
 {
 	bool DEBUG_CHECK_VISIBILITY			= true;
-	
+
+	auto& renderScene = Session::current->renderScene;
 	SmartBody::SBScene* scene			= SmartBody::SBScene::getScene();
 
 	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
 	if (window && window->curViewer)
 		window->curViewer->make_current(); // make sure the OpenGL context is current
 
-	std::vector<std::string> visible	= scene->checkVisibility(character);
+	std::vector<std::string> visible	= renderScene.checkVisibility(character);
 	
 	if(DEBUG_CHECK_VISIBILITY) {
 		SmartBody::util::log ("Visible pawns from %s: ", character.c_str());
-		for( std::vector<std::string>::const_iterator i = visible.begin(); 
-			 i != visible.end(); 
-			 i++)
+		for(const auto & i : visible)
 		{
-			SmartBody::util::log("%s, ", (*i).c_str());
+			SmartBody::util::log("%s, ", i.c_str());
 		}
 	}
 
@@ -768,11 +773,12 @@ std::vector<std::string> checkVisibility_current_view()
 	bool DEBUG_CHECK_VISIBILITY			= true;
 	
 	SmartBody::SBScene* scene			= SmartBody::SBScene::getScene();
+	auto& renderScene = Session::current->renderScene;
 
 	// make current
 	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
 	if (window && window->curViewer) {
-		std::vector<std::string> visible = window->curViewer->checkVisibility_current_view();
+		std::vector<std::string> visible = renderScene.checkVisibility_current_view();
 		if(DEBUG_CHECK_VISIBILITY) {
 			SmartBody::util::log("Visible pawns: ");
 			for( std::vector<std::string>::const_iterator i = visible.begin(); i != visible.end(); ++i)  {

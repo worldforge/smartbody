@@ -735,7 +735,7 @@ void TransparentViewer::updateLights()
 	light.position = SrVec( 100.0, 250.0, 400.0 );
 //	light.constant_attenuation = 1.0f/cam.scale;
 	light.constant_attenuation = 1.0f;
-	_lights.push_back(light);
+	_lights.emplace_back(light);
 
 	SrLight light2 = light;
 	light2.directional = false;
@@ -743,7 +743,7 @@ void TransparentViewer::updateLights()
 	light2.position = SrVec( 100.0, 500.0, -200.0 );
 //	light2.constant_attenuation = 1.0f;
 //	light2.linear_attenuation = 2.0f;
-	_lights.push_back(light2);
+	_lights.emplace_back(light2);
 }
 
 void TransparentViewer::init_opengl ( int w, int h )

@@ -321,7 +321,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 		if (j->getJointType() != SkJoint::TypeJoint)
 		{
 			if (j->getJointType() == SkJoint::TypeOther)
-				otherJoints.push_back(i); // collect the 'other' joins
+				otherJoints.emplace_back(i); // collect the 'other' joins
 			continue;
 		}
 

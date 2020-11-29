@@ -146,7 +146,7 @@ void SrModel::validate ()
 	   }
 	   if (mtlFaceIndices.find(matName) == mtlFaceIndices.end())
 		   mtlFaceIndices[matName] = std::vector<int>();
-	   mtlFaceIndices[matName].push_back(i);
+	   mtlFaceIndices[matName].emplace_back(i);
    }   
  }
 
@@ -252,7 +252,7 @@ void SrModel::remove_redundant_texcoord()
 				int newIdx = newTexCoordList.size();
 				tMap[T[i]] = newIdx;
 				tNewIdxMap[i] = newIdx;
-				newTexCoordList.push_back(T[i]);
+				newTexCoordList.emplace_back(T[i]);
 			}
 			else
 			{
@@ -1062,7 +1062,7 @@ static void gen_normal ( int v, SrArray<SrVec>& vec, SrArray<int>& vi, SrModel *
             if ( v==fn[0] ) fn[0] = N.size();
 	         else if ( v==fn[1] ) fn[1] = N.size();
 	          else fn[2] = N.size();
-            N.push_back(n);
+            N.emplace_back(n);
           }
 
          init = i+1;
@@ -1235,7 +1235,7 @@ void SrModel::add_model ( const SrModel& m )
    for ( i=0; i<m.mtlnames.size(); i++ )
    {
 	   bool newMat = true;
-	   mtlnames.push_back ( m.mtlnames[i] );
+	   mtlnames.emplace_back ( m.mtlnames[i] );
    }   
    
    // insert material map to texture name
@@ -1342,10 +1342,10 @@ void SrModel::make_cylinder ( const SrCylinder& c, float resolution, bool smooth
    int i=1;
 
    do { if ( smooth )
-         { N.push_back((a1-c.a)/c.radius); //normalized normal
+         { N.emplace_back((a1-c.a)/c.radius); //normalized normal
          }
         //V.push()=a1; V.push()=b1;
-		V.push_back(a1); V.push_back(b1);
+		V.emplace_back(a1); V.emplace_back(b1);
         if ( i==nfaces ) break;
         a1=a2; b1=b2; a2=a1*rot; b2=a2+vaxis;
         i++;
@@ -1360,13 +1360,13 @@ void SrModel::make_cylinder ( const SrCylinder& c, float resolution, bool smooth
 	  i1 = (i+1)%V.size();//V.validate ( i+1 );
       i2 = (i+2)%V.size();//V.validate ( i+2 );
       i3 = (i+3)%V.size();//V.validate ( i+3 );
-      F.push_back(SrVec3i(i, i2, i1));
-      F.push_back(SrVec3i( i1, i2, i3 ));
+      F.emplace_back(SrVec3i(i, i2, i1));
+      F.emplace_back(SrVec3i( i1, i2, i3 ));
 
       if ( smooth )
        { n1 = (n+1)%N.size();//N.validate ( n+1 );
-         Fn.push_back(SrVec3i( n, n1, n ));
-         Fn.push_back(SrVec3i( n, n1, n1 ));
+         Fn.emplace_back(SrVec3i( n, n1, n ));
+         Fn.emplace_back(SrVec3i( n, n1, n1 ));
          n++;
        }
     }
@@ -1378,22 +1378,22 @@ void SrModel::make_cylinder ( const SrCylinder& c, float resolution, bool smooth
     { i1 = (i+1)%V.size();//V.validate ( i+1 );
       i2 = (i+2)%V.size();//V.validate ( i+2 );
       i3 = (i+3)%V.size();//V.validate ( i+3 );
-      F.push_back(SrVec3i(V.size(), i2, i ));
-      F.push_back(SrVec3i(V.size()+1, i1, i3 ));
+      F.emplace_back(SrVec3i(V.size(), i2, i ));
+      F.emplace_back(SrVec3i(V.size()+1, i1, i3 ));
 
       if ( smooth )
        { n1 = (n+1)%N.size();//N.validate ( n+1 );
-         Fn.push_back(SrVec3i(N.size(), N.size(), N.size() ));
-         Fn.push_back(SrVec3i(N.size()+1, N.size()+1, N.size()+1 ));
+         Fn.emplace_back(SrVec3i(N.size(), N.size(), N.size() ));
+         Fn.emplace_back(SrVec3i(N.size()+1, N.size()+1, N.size()+1 ));
          n++;
        }
     }
 
-   V.push_back(c.a);
-   V.push_back(c.b);
+   V.emplace_back(c.a);
+   V.emplace_back(c.b);
    if ( smooth )
-    { N.push_back(minus_va);
-      N.push_back(va);
+    { N.emplace_back(minus_va);
+      N.emplace_back(va);
     }
 
    compress ();
@@ -1436,7 +1436,7 @@ SBAPI SrVec SrModel::intersectLine( const SrLine& line ) const
 		{ faces.push() = (float)i;
 		faces.push() = t; // t==0:p1, t==1:p2
 		SrVec interPos = V[f[0]]*(1.f-u-v) + V[f[1]]*u +  V[f[2]]*v;
-		posList.push_back(interPos);
+		posList.emplace_back(interPos);
 		}
 	}
 

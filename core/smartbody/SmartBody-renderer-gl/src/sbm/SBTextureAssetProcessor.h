@@ -1,6 +1,5 @@
-/*************************************************************
-Copyright (C) 2020 Erik Ogenvik <erik@ogenvik.org>
-Copyright (C) 2017 University of Southern California
+/*
+ Copyright (C) 2020 Erik Ogenvik
 
 This file is part of Smartbody.
 
@@ -17,19 +16,23 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
-**************************************************************/
+ */
 
-#ifndef SMARTBODY_SBSCENEHELPER_H
-#define SMARTBODY_SBSCENEHELPER_H
+#ifndef SMARTBODY_SBTEXTUREASSETPROCESSOR_H
+#define SMARTBODY_SBTEXTUREASSETPROCESSOR_H
 
-#include "sbm/SBRenderScene.h"
+#include "sbm/GPU/SbmTexture.h"
+#include "sb/SBAssetStore.h"
 
-namespace SmartBody {
-struct SBSceneHelper {
-	SmartBody::SBObject* getObjectFromString(SBRenderScene& scene, const std::string& value);
+class SBTextureAssetProcessor : public SmartBody::SBAssetsProcessor {
+public:
+	explicit SBTextureAssetProcessor(SbmTextureManager& textureManager);
 
+	void processAssets(std::vector<std::unique_ptr<SmartBody::SBAsset>>&) override;
+
+protected:
+	SbmTextureManager& _textureManager;
 };
-}
 
 
-#endif //SMARTBODY_SBSCENEHELPER_H
+#endif //SMARTBODY_SBTEXTUREASSETPROCESSOR_H

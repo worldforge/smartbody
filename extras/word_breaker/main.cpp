@@ -695,7 +695,7 @@ void parse_ltf_file( const string & ltf_file_name, Utterance & utterance )
 
       string strVisemeIndex = phonemeToViseme[ atoi( strPhonemeIndex.c_str() ) ];
 
-      utterance.visemes.push_back( Viseme( strVisemeIndex, strStartTime, strEndTime ) );
+      utterance.visemes.emplace_back( Viseme( strVisemeIndex, strStartTime, strEndTime ) );
    }
 
    fclose( f );
@@ -838,7 +838,7 @@ int main( int argc, char * argv[] )
             {
                it->second.markers.clear();
 
-               error_utterances.push_back( it->second.utterance_id );
+               error_utterances.emplace_back( it->second.utterance_id );
                m_reply_received = true;  // force thread to exit
                Sleep( 1000 );    // give thread time to exit
             }

@@ -219,7 +219,7 @@ bestParse(Item* itm, FullHist* h, Val* cval, Val* gcval, int cdir)
           Val* nval = new Val();
 	  Val* oldval0 = bst2.nth(0);
           nval->prob() = oldval0->prob()*hhprob;
-          nval->bsts().push_back(&bst2);
+          nval->bsts().emplace_back(&bst2);
 	  nval->status = EXTRAVAL;
           bst.push(nval);
           bst.sum() += bst2.sum()*hhprob;
@@ -423,7 +423,7 @@ fillInHeads()
 		  hm[*itm->word()];
 		  continue;
 		}
-	      else doover.push_back(itm);
+	      else doover.emplace_back(itm);
 	      headsFromEdges(itm);
 	    }
 	  bool cont = true;

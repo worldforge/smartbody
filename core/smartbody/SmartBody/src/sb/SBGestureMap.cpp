@@ -92,7 +92,7 @@ void SBGestureMap::addGestureMapping(const std::string& name, const std::string&
 	gInfo._style = style;
 	gInfo._posture = posture;
 
-	_gestureMaps.push_back(gInfo);
+	_gestureMaps.emplace_back(gInfo);
 
 	SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(name);
 	if (!motion)
@@ -122,15 +122,15 @@ std::vector<std::string> SBGestureMap::getGestureListByInfo(const std::string& l
 {
 	std::vector<std::string> compTypes;
 	if (lexeme != "")
-		compTypes.push_back("lexeme");
+		compTypes.emplace_back("lexeme");
 	if (type != "")
-		compTypes.push_back("type");
+		compTypes.emplace_back("type");
 	if (hand != "")
-		compTypes.push_back("hand");
+		compTypes.emplace_back("hand");
 	if (style != "")
-		compTypes.push_back("style");
+		compTypes.emplace_back("style");
 	if (posture != "")
-		compTypes.push_back("posture");
+		compTypes.emplace_back("posture");
 
 
 	std::vector<std::string> retAnimations;
@@ -149,7 +149,7 @@ std::vector<std::string> SBGestureMap::getGestureListByInfo(const std::string& l
 		}
 
 		if (hasMatching)
-			retAnimations.push_back(iter->_animation);
+			retAnimations.emplace_back(iter->_animation);
 	}
 
 	return retAnimations;

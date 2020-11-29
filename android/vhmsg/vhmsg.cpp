@@ -477,7 +477,7 @@ bool Client::Subscribe( const char * req )
       return false;
    }
 
-   pimpl->m_consumers.push_back( std::make_pair( req, consumer ) );
+   pimpl->m_consumers.emplace_back( std::make_pair( req, consumer ) );
 
    try
    {
@@ -725,7 +725,7 @@ void ClientImpl::InternalListener::onMessage( const cms::Message * message ) thr
 
          //printf( "onMessage: '%s'\n", message.GetString().c_str() );
 
-         m_client->m_messages.push_back( m );  // this makes a copy
+         m_client->m_messages.emplace_back( m );  // this makes a copy
 
          pthread_mutex_unlock( &m_client->m_messageLock );
 

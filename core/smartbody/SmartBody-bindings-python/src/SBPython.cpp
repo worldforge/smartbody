@@ -30,6 +30,7 @@
 #include <sb/SBGestureMapManager.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBAssetManager.h>
+#include <sb/SBAssetManager.h>
 #include <sb/SBJointMap.h>
 #include <sb/SBJointMapManager.h>
 #include <sb/SBParser.h>
@@ -130,6 +131,8 @@ namespace boost
 }
 #endif
 #endif
+
+std::vector<std::function<void()>> pythonExtraModuleDeclarations;
 
 
 namespace SmartBody
@@ -432,8 +435,8 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("setDataFrame", &SBRealtimeManager::setDataFrame, "Sets data per frame based on the channel metadata.")
 		;
 
-	boost::python::class_<SBDebuggerServer, boost::python::bases<SBService> >("SBDebuggerServer")
-		;
+//	boost::python::class_<SBDebuggerServer, boost::python::bases<SBService> >("SBDebuggerServer")
+//		;
 
 	boost::python::class_<SBPhysicsManager, boost::python::bases<SBService> >("SBPhysicsManager")
 		.def("createPhysicsCharacter", &SBPhysicsManager::createPhysicsCharacter, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Create a physics character.")
@@ -856,40 +859,44 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("OnChannel", &SBSceneListener::OnChannel, &CharacterListenerWrap::default_OnChannel, "Channel data.")
 		.def("OnLogMessage", &SBSceneListener::OnLogMessage, &CharacterListenerWrap::default_OnLogMessage, "Log message.")
 		;
-	
-	boost::python::class_<SBAssetManager, boost::python::bases<SBObject> >("SBAssetManager")
+
+	boost::python::class_<SBAssetStore, boost::noncopyable >("SBAssetStore", boost::python::no_init)
+			.def("addAssetPath", &SBAssetStore::addAssetPath, "Add path resource given path type and actual path string. \n Input: type(can be seq|me|ME), path \n Output: NULL")
+			.def("removeAssetPath", &SBAssetStore::removeAssetPath, "Removes a  path resource given path type and actual path string. \n Input: type(can be cript|motion|audio), path \n Output: NULL")
+			.def("removeAllAssetPaths", &SBAssetStore::removeAllAssetPaths, "Removes all paths resource given path type and actual path string. \n Input: type(can be script|motion|audio), path \n Output: NULL")
+			.def("getAssetPaths", &SBAssetStore::getAssetPaths, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of all path names for a given type: seq, me, audio, mesh.")
+			.def("getLocalAssetPaths", &SBAssetStore::getLocalAssetPaths, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of all path names for a given type excluding the media path: seq, me, audio, mesh.")
+			.def("loadAsset", &SBAssetStore::loadAsset, boost::python::return_value_policy<boost::python::return_by_value>(), "Loads the skeletons and motions from the file.")
+			.def("loadAssets", &SBAssetStore::loadAssets, "Loads the skeletons and motions from the asset paths.")
+			.def("loadAssetsFromPath", &SBAssetStore::loadAssetsFromPath, "Loads the skeletons and motions from a given path. The path will not be stored for later use.")
+			;
+
+
+	boost::python::class_<SBAssetManager, boost::python::bases<SBObject>, boost::noncopyable>("SBAssetManager", boost::python::no_init)
 		.def("addSkeletonDefinition", &SBAssetManager::addSkeletonDefinition, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a new skeleton given a name.")
 		.def("removeSkeletonDefinition", &SBAssetManager::removeSkeletonDefinition, "Removes a skeleton with a given name.")
 		.def("createMotion", &SBAssetManager::createMotion, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a new motion given a name.")
 		.def("createSkeleton", &SBAssetManager::createSkeleton, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a new skeleton given a skeleton definition.")
 		.def("getSkeleton", &SBAssetManager::getSkeleton, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the skeleton object given its name. \n Input: skeleton name \nOutput: skeleton object")
-		.def("addAssetPath", &SBAssetManager::addAssetPath, "Add path resource given path type and actual path string. \n Input: type(can be seq|me|ME), path \n Output: NULL")
-		.def("removeAssetPath", &SBAssetManager::removeAssetPath, "Removes a  path resource given path type and actual path string. \n Input: type(can be cript|motion|audio), path \n Output: NULL")
-		.def("removeAllAssetPaths", &SBAssetManager::removeAllAssetPaths, "Removes all paths resource given path type and actual path string. \n Input: type(can be script|motion|audio), path \n Output: NULL")
-		.def("getAssetPaths", &SBAssetManager::getAssetPaths, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of all path names for a given type: seq, me, audio, mesh.")
-		.def("getLocalAssetPaths", &SBAssetManager::getLocalAssetPaths, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of all path names for a given type excluding the media path: seq, me, audio, mesh.")
-		.def("loadAsset", &SBAssetManager::loadAsset, boost::python::return_value_policy<boost::python::return_by_value>(), "Loads the skeletons and motions from the file.")
-		.def("loadAssets", &SBAssetManager::loadAssets, "Loads the skeletons and motions from the asset paths.")
-		.def("loadAssetsFromPath", &SBAssetManager::loadAssetsFromPath, "Loads the skeletons and motions from a given path. The path will not be stored for later use.")
-		.def("addMotion", &SBAssetManager::addMotion, "Adds a motion to the scene.")
+		//.def("addMotion", &SBAssetManager::addMotion, "Adds a motion to the scene.")
 		.def("addMotionDefinition", &SBAssetManager::addMotionDefinition, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Adds a motion definition with blank frames.")
 		.def("removeMotion", &SBAssetManager::removeMotion, "Removes a motion from the scene.")
-		.def("addMotions", &SBAssetManager::addMotions, "Add motion resource given filepath and recursive flag. \n Input: path, recursive flag(boolean variable indicating whether to tranverse all the children directories) \n Output: NULL")
+//		.def("addMotions", &SBAssetManager::addMotions, "Add motion resource given filepath and recursive flag. \n Input: path, recursive flag(boolean variable indicating whether to tranverse all the children directories) \n Output: NULL")
 		.def("getMotion", &SBAssetManager::getMotion, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns a the motion of given name.")
 		.def("getNumMotions", &SBAssetManager::getNumMotions, "Returns the number of motions available.")
 		.def("getMotionNames", &SBAssetManager::getMotionNames, "Returns the names of motions available.")
 		.def("getNumSkeletons", &SBAssetManager::getNumSkeletons, "Returns the number of skeletons available.")
 		.def("getSkeletonNames", &SBAssetManager::getSkeletonNames, "Returns a list of all skeleton names.\n Input: NULL \nOutput: list of skeleton names")
-		.def("addMesh", &SBAssetManager::addMesh, "Adds a mesh to the scene.")
-		.def("removeMesh", &SBAssetManager::removeMesh, "Removes a mesh from the scene.")
-		.def("removeDeformableMesh", &SBAssetManager::removeDeformableMesh, "Removes a mesh from the scene.")
-		.def("getMeshNames", &SBAssetManager::getMeshNames, "Returns a list of all mesh names.\n Input: NULL \nOutput: list of skeleton names")
-		.def("getDeformableMesh", &SBAssetManager::getDeformableMesh, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Return a deformable mesh given name")
-		.def("getMesh", &SBAssetManager::getDeformableMesh, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Return a deformable mesh given name")
-		.def("createMeshFromBlendMasks", &SBAssetManager::createMeshFromBlendMasks, "Writes out a mesh and texture based on: neutralShapeFile, neutralTextureFile, expressiveShapeFile, expressiveTextureFile, maskTextureFile, outputMeshFile, outputTextureFile")
-		.def("addModelToMesh", &SBAssetManager::addModelToMesh, "Adds a submesh to a model.")
-		.def("addBlendshapeToModel", &SBAssetManager::addBlendshapeToModel, "Adds a blendshape to a mesh, or replaces the blendshape within the mesh.")
-		.def("handlePenetrations", &SBAssetManager::handlePenetrations, "Handles penetrations within a mesh given a base model and a penetrative model.")
+//		.def("addMesh", &SBAssetManager::addMesh, "Adds a mesh to the scene.")
+//		.def("removeMesh", &SBAssetManager::removeMesh, "Removes a mesh from the scene.")
+//		.def("removeDeformableMesh", &SBAssetManager::removeDeformableMesh, "Removes a mesh from the scene.")
+//		.def("getMeshNames", &SBAssetManager::getMeshNames, "Returns a list of all mesh names.\n Input: NULL \nOutput: list of skeleton names")
+//		.def("getDeformableMesh", &SBAssetManager::getDeformableMesh, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Return a deformable mesh given name")
+//		.def("getMesh", &SBAssetManager::getDeformableMesh, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Return a deformable mesh given name")
+//		.def("createMeshFromBlendMasks", &SBAssetManager::createMeshFromBlendMasks, "Writes out a mesh and texture based on: neutralShapeFile, neutralTextureFile, expressiveShapeFile, expressiveTextureFile, maskTextureFile, outputMeshFile, outputTextureFile")
+//		.def("addModelToMesh", &SBAssetManager::addModelToMesh, "Adds a submesh to a model.")
+//		.def("addBlendshapeToModel", &SBAssetManager::addBlendshapeToModel, "Adds a blendshape to a mesh, or replaces the blendshape within the mesh.")
+//		.def("handlePenetrations", &SBAssetManager::handlePenetrations, "Handles penetrations within a mesh given a base model and a penetrative model.")
 		;
 
 
@@ -911,6 +918,10 @@ BOOST_PYTHON_MODULE(SmartBody)
 		;
 
 	pythonFuncsScene();
+
+	for (auto& func : pythonExtraModuleDeclarations) {
+		func();
+	}
 
 #endif
 	}

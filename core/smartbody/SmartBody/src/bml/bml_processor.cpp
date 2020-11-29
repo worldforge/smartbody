@@ -980,8 +980,8 @@ void BML::Processor::interrupt( SbmCharacter* actor, time_sec duration, SmartBod
 	for ( ; iter != bml_requests.end(); iter++)
 	{
 		BmlRequestPtr request = iter->second;
-        requestsToInterrupt.push_back(request);
-        requestsNames.push_back(iter->first);
+        requestsToInterrupt.emplace_back(request);
+        requestsNames.emplace_back(iter->first);
 	}
     for (unsigned int i = 0; i < requestsToInterrupt.size(); ++i)
     {
@@ -990,7 +990,7 @@ void BML::Processor::interrupt( SbmCharacter* actor, time_sec duration, SmartBod
 		{
 			if (interrupt(actor, requestsNames[i], duration, scene) == CMD_SUCCESS)
 			{
-				keysToErase.push_back(requestsNames[i]);
+				keysToErase.emplace_back(requestsNames[i]);
 			}
 		}
     }
@@ -1029,7 +1029,7 @@ int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performan
 			double lastTime = (*iter).second;
 			if (lastTime - SmartBody::SBScene::getScene()->getSimulationManager()->getTime() > 60.0) // has a minute elapsed?
 			{
-				interruptsToDelete.push_back(request_id);
+				interruptsToDelete.emplace_back(request_id);
 			}
 		}
 		for (size_t d = 0; d < interruptsToDelete.size(); d++)

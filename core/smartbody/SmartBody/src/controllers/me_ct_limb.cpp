@@ -86,8 +86,8 @@ bool MeCtLimb::buildJointChain(SrArray<const char*>& joint_names, SrArray<MeCtIK
 			continue;
 		}
 		//joint->rot_type(SkJoint::TypeSwingTwist);
-		joint_chain.push_back(joint);
-		joint_chain_limit.push_back(joint_limit[i]);
+		joint_chain.emplace_back(joint);
+		joint_chain_limit.emplace_back(joint_limit[i]);
 		//joint_chain[i] = joint;		
 	}	
 	buf_index.resize(joint_chain.size());

@@ -62,7 +62,7 @@ void Intersector::init()
         getIndex(triRect.getHi(), tox, toy);
         
         for(j = fromy; j <= toy; ++j) for(k = fromx; k <= tox; ++k) {
-            triangles[j * cells + k].push_back(i);
+            triangles[j * cells + k].emplace_back(i);
         }
         
         Vector3 cross = (vtc[edg[i + 1].vertex].pos - vtc[edg[i].vertex].pos) % (vtc[edg[i + 2].vertex].pos - vtc[edg[i].vertex].pos);
@@ -107,17 +107,17 @@ vector<Vector3> Intersector::intersect(const Vector3 &pt, vector<int> *outIndice
             continue; //no intersection
 
         if(outIndices)
-	       outIndices->push_back(tris[i]);
+	       outIndices->emplace_back(tris[i]);
         
         //now compute the plane intersection
         const Vector3 &n = sNormals[tris[i] / 3];
         if(n.lengthsq() == 0) { //triangle and line coplanar --just project the triangle center to the line and hope for the best
             Vector3 ctr = (vtc[idx[0]].pos + vtc[idx[1]].pos + vtc[idx[2]].pos) * (1. / 3.);
-            out.push_back(projToLine(ctr, pt, dir));
+            out.emplace_back(projToLine(ctr, pt, dir));
             continue;
         }
 
-        out.push_back(pt + dir * (n * (vtc[idx[0]].pos - pt))); //intersection
+        out.emplace_back(pt + dir * (n * (vtc[idx[0]].pos - pt))); //intersection
     }
     
     return out;

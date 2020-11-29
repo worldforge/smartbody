@@ -290,7 +290,7 @@ void setupLights()
 				light.quadratic_attenuation = 0.0f;
 			}
 			
-			_lights.push_back(light);
+			_lights.emplace_back(light);
 		}
 	}
 
@@ -309,7 +309,7 @@ void setupLights()
 		light.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
 	//	light.constant_attenuation = 1.0f/cam.scale;
 		light.constant_attenuation = 1.0f;
-		_lights.push_back(light);
+		_lights.emplace_back(light);
 
 		SrLight light2 = light;
 		light2.directional = true;
@@ -320,7 +320,7 @@ void setupLights()
 		light2.position = SrVec( lightDirection.x, lightDirection.y, lightDirection.z);
 	//	light2.constant_attenuation = 1.0f;
 	//	light2.linear_attenuation = 2.0f;
-		_lights.push_back(light2);
+		_lights.emplace_back(light2);
 	}
     
     
@@ -451,13 +451,13 @@ void SBSetBackground(const char* fileName, const char* textureName, int textureR
 
 	if (newTex == "none") return; // delete texture directly
 
-	if (texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, textureName) == NULL) // need to load the texture
+	if (texManager.findTexture(textureName) == NULL) // need to load the texture
 	{		
 		texManager.loadTexture(SbmTextureManager::TEXTURE_DIFFUSE, textureName, fileName);
 		/*
 		if (textureRotate == 90)
 		{
-			SbmTexture* tex = texManager.findTexture(SbmTextureManager::TEXTURE_DIFFUSE, textureName);
+			SbmTexture* tex = texManager.findTexture(textureName);
 			tex->rotateTexture(SbmTexture::ROTATE_90);
 		}
 		*/
@@ -829,7 +829,7 @@ void SBCreateCustomMeshFromBlendshapes(std::string templateMeshName, std::string
 				std::string hairName = "HairMesh";
 				hairSrSn->shape(hairModel);
 				hairSrSn->shape().name = hairName.c_str();
-				mesh->dMeshStatic_p.push_back(hairSrSn);
+				mesh->dMeshStatic_p.emplace_back(hairSrSn);
 
 				SkinWeight* hairSkin = new SkinWeight();
 				SkinWeight* headSkin = mesh->skinWeights[0];
@@ -848,17 +848,17 @@ void SBCreateCustomMeshFromBlendshapes(std::string templateMeshName, std::string
 				}
 
 				hairSkin->bindShapeMat = hairBindShape;
-				hairSkin->bindPoseMat.push_back(hairBindPose);
-				hairSkin->infJointName.push_back(headJointName);
+				hairSkin->bindPoseMat.emplace_back(hairBindPose);
+				hairSkin->infJointName.emplace_back(headJointName);
 				hairSkin->sourceMesh = hairName;
-				hairSkin->bindWeight.push_back(1.0f);
+				hairSkin->bindWeight.emplace_back(1.0f);
 				for (unsigned int i = 0; i < hairModel.V.size(); i++)
 				{
-					hairSkin->jointNameIndex.push_back(0);
-					hairSkin->numInfJoints.push_back(1);
-					hairSkin->weightIndex.push_back(0);
+					hairSkin->jointNameIndex.emplace_back(0);
+					hairSkin->numInfJoints.emplace_back(1);
+					hairSkin->weightIndex.emplace_back(0);
 				}
-				mesh->skinWeights.push_back(hairSkin);
+				mesh->skinWeights.emplace_back(hairSkin);
 			}
 		}
 	}
@@ -978,7 +978,7 @@ void SBDrawFrame(int width, int height, SrMat eyeViewMat)
 void SBDrawBackground(ESContext* esContext)
 {
 #if 0
-	SbmTexture* tex = SbmTextureManager::singleton().findTexture(SbmTextureManager::TEXTURE_DIFFUSE,"background_img");
+	auto tex = SbmTextureManager::singleton().findTexture("background_img");
 	if (!tex)
 	{
 		//SmartBody::util::log("cannot find texture image .....");

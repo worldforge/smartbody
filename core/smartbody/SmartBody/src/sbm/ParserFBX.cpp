@@ -100,7 +100,7 @@ bool ParserFBX::parseSkin(const std::string& fileName, const char* char_name, fl
          {
             std::string& jointName = skinWeight->infJointName[j];
             SkJoint* curJoint = char_p->skeleton_p->search_joint(jointName.c_str());
-            skinWeight->infJoint.push_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
+            skinWeight->infJoint.emplace_back(curJoint); // NOTE: If joints are added/removed during runtime, this list will contain stale data
          }
       }*/
 
@@ -118,8 +118,8 @@ bool ParserFBX::parseSkin(const std::string& fileName, const char* char_name, fl
          srSnModelDynamic->visible(false);
          srSnModelStatic->shape().name = meshModelVec[i]->name;
          srSnModelDynamic->shape().name = meshModelVec[i]->name;
-         char_p->dMesh_p->dMeshDynamic_p.push_back(srSnModelDynamic);
-         char_p->dMesh_p->dMeshStatic_p.push_back(srSnModelStatic);
+         char_p->dMesh_p->dMeshDynamic_p.emplace_back(srSnModelDynamic);
+         char_p->dMesh_p->dMeshStatic_p.emplace_back(srSnModelStatic);
          mcu_p->root_group_p->add(srSnModelDynamic);	
       }
    }
@@ -169,12 +169,12 @@ void ParserFBX::parseSkinRecursive(KFbxNode* pNode, const char* char_name, float
          }
          skinWeight->bindShapeMat.set(matBuffer);
          SrMat sbmMatrix(matBuffer);
-         skinWeight->bindPoseMat.push_back(sbmMatrix);
+         skinWeight->bindPoseMat.emplace_back(sbmMatrix);
 
          //const char* pClusterName = pCluster->GetName();
          const char* pBoneName = pBone->GetName();
 
-         skinWeight->infJointName.push_back(pBoneName);
+         skinWeight->infJointName.emplace_back(pBoneName);
 
          //SrModel* objModel = new SrModel();
          // set up the drawing data that will be used in the viewer
@@ -183,18 +183,18 @@ void ParserFBX::parseSkinRecursive(KFbxNode* pNode, const char* char_name, float
          //SkJoint* joint = char_p->skeleton_p->search_joint(pBoneName);
          //if (joint)
          {
-            skinWeight->jointNameIndex.push_back(1/*joint->index()*/);
-            skinWeight->weightIndex.push_back(1/*joint->index()*/);
+            skinWeight->jointNameIndex.emplace_back(1/*joint->index()*/);
+            skinWeight->weightIndex.emplace_back(1/*joint->index()*/);
          }
          
          int AffectedVertexCount = pCluster->GetControlPointIndicesCount();
          for (int k = 0; k < AffectedVertexCount; ++k) 
          {         
             int AffectedVertexIndex = pCluster->GetControlPointIndices()[k];
-            //skinWeight->numInfJoints.push_back(AffectedVertexIndex);
+            //skinWeight->numInfJoints.emplace_back(AffectedVertexIndex);
 
             float Weight = (float)pCluster->GetControlPointWeights()[k]; 
-            skinWeight->bindWeight.push_back(Weight);
+            skinWeight->bindWeight.emplace_back(Weight);
 
             // get the vertex associated with this index
             /*KFbxVector4 vertex = pMesh->GetControlPointAt(AffectedVertexIndex);
@@ -224,7 +224,7 @@ void ParserFBX::parseSkinRecursive(KFbxNode* pNode, const char* char_name, float
          //   objModel->N.push(pnt);
          //}
 
-         //meshModelVec.push_back(objModel);
+         //meshModelVec.emplace_back(objModel);
       } 
 
                   // set up the drawing data that will be used in the viewer
@@ -303,7 +303,7 @@ void ParserFBX::parseSkinRecursive(KFbxNode* pNode, const char* char_name, float
                //pMesh->GetNormalsIndices(
                   
 
-                  meshModelVec.push_back(objModel);
+                  meshModelVec.emplace_back(objModel);
 
       //int layerCount = pMesh->GetLayerCount();
       //for (int i = 0; i < layerCount; i++)
@@ -314,7 +314,7 @@ void ParserFBX::parseSkinRecursive(KFbxNode* pNode, const char* char_name, float
 
       if (char_p)
       {
-         //char_p->dMesh_p->skinWeights.push_back(skinWeight);
+         //char_p->dMesh_p->skinWeights.emplace_back(skinWeight);
       }
    }
 
@@ -594,7 +594,7 @@ void ParserFBX::ParseKeyData(const KFbxAnimCurve* pCurve, const SkChannel::Type 
       pNewAnimData->keyFrameDataFrame[i - 1] = value;
    }
 
-   fbxAnimData.push_back(pNewAnimData);
+   fbxAnimData.emplace_back(pNewAnimData);
 }
 
 void ParserFBX::AddAnimationRecursive(KFbxAnimLayer* pAnimLayer, KFbxNode* pNode, std::string &takeName, SkSkeleton& skeleton,
