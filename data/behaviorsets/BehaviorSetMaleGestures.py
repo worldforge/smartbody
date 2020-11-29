@@ -5,6 +5,7 @@ def setupBehaviorSet():
     print("Setting up behavior set for gestures...")
     scene.addAssetPath("script", "behaviorsets/MaleGestures/scripts")
 
+    assetStore = scene.getAssetStore()
     assetManager = scene.getAssetManager()
     motionPath = "behaviorsets/MaleGestures/motions/"
     skel = scene.getSkeleton("ChrGarza.sk")
@@ -66,7 +67,7 @@ def setupBehaviorSet():
     for i in range(0, len(gestureMotions)):
         motion = scene.getMotion(gestureMotions[i])
         if motion == None:
-            assetManager.loadAsset(motionPath + gestureMotions[i] + '.skm')
+            assetStore.loadAsset(motionPath + gestureMotions[i] + '.skm')
             motion = scene.getMotion(gestureMotions[i])
         if motion != None:
             motion = scene.getMotion(gestureMotions[i])

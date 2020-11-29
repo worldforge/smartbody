@@ -6,6 +6,7 @@ def setupBehaviorSet():
     print("Setting up behavior set for Reaching ...")
     scene.addAssetPath("script", "behaviorsets/reaching/scripts")
 
+    assetStore = scene.getAssetStore()
     assetManager = scene.getAssetManager()
     # motionPath = "behaviorsets/reaching/motions/"
     motionPath = "behaviorsets/reaching/motionsBinary/"
@@ -92,7 +93,7 @@ def setupBehaviorSet():
         motion = scene.getMotion(rightHandMotions[i])
         if motion == None:
             # assetManager.loadAsset(motionPath+rightHandMotions[i]+'.skm')
-            assetManager.loadAsset(motionPath + rightHandMotions[i] + '.skmb')
+            assetStore.loadAsset(motionPath + rightHandMotions[i] + '.skmb')
             motion = scene.getMotion(rightHandMotions[i])
         # print 'motionName = ' + locoMotions[i]
         if motion != None:

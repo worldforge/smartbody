@@ -7,6 +7,7 @@ def setupBehaviorSet():
     # scene.loadAssetsFromPath("behaviorsets/punching/motions")
     scene.addAssetPath("script", "behaviorsets/punching/scripts")
 
+    assetStore = scene.getAssetStore()
     assetManager = scene.getAssetManager()
     motionPath = "behaviorsets/punching/motions/"
     skel = scene.getSkeleton("ChrGarza.sk")
@@ -46,7 +47,7 @@ def setupBehaviorSet():
     for i in range(0, len(punchMotions)):
         motion = scene.getMotion(punchMotions[i])
         if motion == None:
-            assetManager.loadAsset(motionPath + punchMotions[i] + '.skm')
+            assetStore.loadAsset(motionPath + punchMotions[i] + '.skm')
             motion = scene.getMotion(punchMotions[i])
         # print 'motionName = ' + locoMotions[i]
         if motion != None:

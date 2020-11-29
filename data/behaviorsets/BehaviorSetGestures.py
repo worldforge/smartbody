@@ -6,6 +6,7 @@ def setupBehaviorSet():
     scene.addAssetPath("script", "behaviorsets/Gestures2/scripts")
 
     assetManager = scene.getAssetManager()
+    assetStore = scene.getAssetStore()
     #	motionPath = "behaviorsets/Gestures2/motions/"
     motionPath = "behaviorsets/Gestures2/motionsBinary/"
     skel = scene.getSkeleton("ChrBrad2.sk")
@@ -103,7 +104,7 @@ def setupBehaviorSet():
         motion = scene.getMotion(gestureMotions[i])
         if motion == None:
             # assetManager.loadAsset(motionPath+gestureMotions[i]+'.skm')
-            assetManager.loadAsset(motionPath + gestureMotions[i] + '.skmb')
+            assetStore.loadAsset(motionPath + gestureMotions[i] + '.skmb')
             motion = scene.getMotion(gestureMotions[i])
         # print 'motionName = ' + locoMotions[i]
         if motion != None:

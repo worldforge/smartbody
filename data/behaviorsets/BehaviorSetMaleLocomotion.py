@@ -7,6 +7,7 @@ def setupBehaviorSet():
     # scene.loadAssetsFromPath("behaviorsets/MaleLocomotion/motions")
     scene.addAssetPath("script", "behaviorsets/MaleLocomotion/scripts")
 
+    assetStore = scene.getAssetStore()
     assetManager = scene.getAssetManager()
     motionPath = "behaviorsets/MaleLocomotion/motions/"
     skel = scene.getSkeleton("test_utah.sk")
@@ -52,7 +53,7 @@ def setupBehaviorSet():
     for i in range(0, len(locoMotions)):
         motion = scene.getMotion(locoMotions[i])
         if motion == None:
-            assetManager.loadAsset(motionPath + locoMotions[i] + '.skm')
+            assetStore.loadAsset(motionPath + locoMotions[i] + '.skm')
             motion = scene.getMotion(locoMotions[i])
         # print 'motionName = ' + locoMotions[i]
         if motion != None:

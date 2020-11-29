@@ -7,6 +7,7 @@ def setupBehaviorSet():
     # scene.loadAssetsFromPath("behaviorsets/swatting/motions")
     scene.addAssetPath("script", "behaviorsets/swatting/scripts")
 
+    assetStore = scene.getAssetStore()
     assetManager = scene.getAssetManager()
     motionPath = "behaviorsets/swatting/motions/"
     skel = scene.getSkeleton("SwatSkeleton.bvh")
@@ -38,7 +39,7 @@ def setupBehaviorSet():
     for i in range(0, len(swatMotions)):
         motion = scene.getMotion(swatMotions[i])
         if motion == None:
-            assetManager.loadAsset(motionPath + swatMotions[i])
+            assetStore.loadAsset(motionPath + swatMotions[i])
             motion = scene.getMotion(swatMotions[i])
         if motion != None:
             motion.setMotionSkeletonName("SwatSkeleton.bvh")

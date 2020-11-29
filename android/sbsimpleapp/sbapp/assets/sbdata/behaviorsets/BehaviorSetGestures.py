@@ -3,8 +3,9 @@ scene.run("BehaviorSetCommon.py")
 def setupBehaviorSet():
 	print "Setting up behavior set for gestures..."
 	scene.addAssetPath("script", "behaviorsets/Gestures2/scripts")
-	
-	assetManager = scene.getAssetManager()	
+
+	assetManager = scene.getAssetManager()
+	assetStore = scene.getAssetStore()
 	motionPath = "behaviorsets/Gestures2/motions/"
 	skel = scene.getSkeleton("ChrBrad2.sk")
 	if skel == None:
@@ -14,9 +15,9 @@ def setupBehaviorSet():
 	zebra2Map = scene.getJointMapManager().getJointMap("zebra2")
 	bradSkeleton = scene.getSkeleton("ChrBrad2.sk")
 	zebra2Map.applySkeleton(bradSkeleton)
-	
+
 	gestureMotions = StringVec()
-	
+
 	gestureMotions.append("ChrBrad@Idle01")
 	gestureMotions.append("ChrBrad@Idle01_ArmStretch01")
 	gestureMotions.append("ChrBrad@Idle01_BeatFistMidLf01")
@@ -96,18 +97,18 @@ def setupBehaviorSet():
 	gestureMotions.append("ChrBrad@Idle01_YouLf03")
 	gestureMotions.append("ChrBrad@Idle01_YouPointLf01")
 	gestureMotions.append("ChrBrad@Idle01_YouRt01")
-	
-	
+
+
 	for i in range(0, len(gestureMotions)):
-		motion = scene.getMotion(gestureMotions[i])		
+		motion = scene.getMotion(gestureMotions[i])
 		if motion == None:
-			assetManager.loadAsset(motionPath+gestureMotions[i]+'.skm')
+			assetStore.loadAsset(motionPath+gestureMotions[i]+'.skm')
 			motion = scene.getMotion(gestureMotions[i])
 		#print 'motionName = ' + locoMotions[i]
 		if motion != None:
 			motion.setMotionSkeletonName("ChrBrad2.sk")
-			zebra2Map.applyMotion(motion)				
-		
+			zebra2Map.applyMotion(motion)
+
 	print "| BradGestureMap.py |"
 
 	# establish gesture data set
@@ -274,10 +275,10 @@ def setupBehaviorSet():
 	gMapB3.addGestureMapping("ChrBrad@Idle01_BeatLowLf02", "METAPHORIC", "INDIFFERENCE", "LEFT_HAND", "", "ChrBrad@Idle01")
 	gMapB3.addGestureMapping("ChrBrad@Idle01_BeatLowLf02", "METAPHORIC", "UNCERTAINTY", "LEFT_HAND", "", "ChrBrad@Idle01")
 
-		
-		
-		
-		
+
+
+
+
 
 def retargetBehaviorSet(charName):
 	gestureMotions = StringVec()
@@ -360,22 +361,22 @@ def retargetBehaviorSet(charName):
 	gestureMotions.append("ChrBrad@Idle01_YouLf03")
 	gestureMotions.append("ChrBrad@Idle01_YouPointLf01")
 	gestureMotions.append("ChrBrad@Idle01_YouRt01")
-	
+
 	sbChar = scene.getCharacter(charName)
 	if sbChar == None:
 		return
 	skelName = sbChar.getSkeleton().getName()
-	
+
 	motions = StringVec()
 	assetManager = scene.getAssetManager()
 	for i in range(0, len(gestureMotions)):
 		sbMotion = assetManager.getMotion(gestureMotions[i])
 		if sbMotion != None:
-			sbMotion.setMotionSkeletonName("ChrBrad2.sk")		
-			
-	
+			sbMotion.setMotionSkeletonName("ChrBrad2.sk")
+
+
 	createRetargetInstance('ChrBrad2.sk', skelName)
-	
+
 	#outDir = scene.getMediaPath() + '/retarget/motion/' + skelName + '/';
 	#print 'outDir = ' + outDir ;
 	#if not os.path.exists(outDir):
@@ -388,9 +389,9 @@ def retargetBehaviorSet(charName):
 	#		retargetMotion(gestureMotions[n], 'ChrBrad.sk', skelName, outDir + 'Gestures/');
 	#	else:
 	#		print "Cannot find motion " + gestureMotions[n] + ", it will be excluded from the gesture setup..."
-	
+
 	sbChar.setStringAttribute("gestureMap", "BradGesture")
 	sbChar.setStringAttribute("gestureMapAngry", "BradGestureAngry")
 	sbChar.setStringAttribute("gestureMapSad", "BradGestureSad")
 
-		
+

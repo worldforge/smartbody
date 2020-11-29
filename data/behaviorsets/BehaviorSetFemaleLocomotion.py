@@ -8,6 +8,7 @@ def setupBehaviorSet():
     scene.addAssetPath("script", "behaviorsets/FemaleLocomotion/scripts")
 
     assetManager = scene.getAssetManager()
+    assetStore = scene.getAssetStore()
     motionPath = "behaviorsets/FemaleLocomotion/motions/"
     skel = scene.getSkeleton("ChrHarmony.sk")
     if skel == None:
@@ -51,7 +52,7 @@ def setupBehaviorSet():
     for i in range(0, len(locoMotions)):
         motion = scene.getMotion(locoMotions[i])
         if motion == None:
-            assetManager.loadAsset(motionPath + locoMotions[i] + '.skm')
+            assetStore.loadAsset(motionPath + locoMotions[i] + '.skm')
             motion = scene.getMotion(locoMotions[i])
         if motion != None:
             motion.setMotionSkeletonName('ChrHarmony.sk')

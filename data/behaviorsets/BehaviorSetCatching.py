@@ -8,6 +8,7 @@ def setupBehaviorSet():
     scene.addAssetPath("script", "behaviorsets/catching/scripts")
 
     assetManager = scene.getAssetManager()
+    assetStore = scene.getAssetStore()
     motionPath = "behaviorsets/catching/motions/"
     skel = scene.getSkeleton("CatchSkeleton.bvh")
     if skel == None:
@@ -44,7 +45,7 @@ def setupBehaviorSet():
     for i in range(0, len(catchMotions)):
         motion = scene.getMotion(catchMotions[i])
         if motion == None:
-            assetManager.loadAsset(motionPath + catchMotions[i])
+            assetStore.loadAsset(motionPath + catchMotions[i])
             motion = scene.getMotion(catchMotions[i])
         if motion != None:
             motion.setMotionSkeletonName("CatchSkeleton.bvh")

@@ -583,15 +583,15 @@ void SBBaseRenderer::renderMesh(DeformableMeshInstance* meshInstance, SbmShaderP
 		//SbmTexture* glossyTex = texManager.findTexture(subMesh->specularMapName.c_str());
 
 		if (!tex)
-			tex = std::move(whiteTex);
+			tex = whiteTex;
 		if (!normalTex)
 		{
 			//SmartBody::util::log("No normal texture name = %s", subMesh->normalMapName.c_str());
-			normalTex = std::move(defaultNormalTex); // to use only original normal
+			normalTex = defaultNormalTex; // to use only original normal
 		}
 
 		if (!specularTex)
-			specularTex = std::move(blackTex);
+			specularTex = blackTex;
 
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);

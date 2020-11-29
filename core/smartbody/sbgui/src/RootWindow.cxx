@@ -714,6 +714,10 @@ void BaseWindow::ResetScene()
 		}
 	}
 
+	//HACK: To avoid having the UI crash when trying to handle the updates emitted when clearing the scene we'll just
+	//remove all listeners here and rely on the UI correctly listening to "OnSimulationStart" to reset itself.
+	mSession->scene.removeAllSceneListeners();
+
 	delete Session::current;
 	Session::current = new Session();
 	mSession = Session::current;
@@ -2688,15 +2692,16 @@ void BaseWindow::updateCameraList()
 	Fl_Menu_Item& deleteCameraSubMenu = menuList[deleteCameraMenuIndex];	
 	loadCameraList.clear();
 	deleteCameraList.clear();
-	std::vector<std::string> cameraNames = mSession->renderScene.getCameraNames();
-	for (auto & cameraName : cameraNames)
-	{		
-		const std::string& camName = cameraName;
-		Fl_Menu_Item temp_LoadCam = { strdup(camName.c_str()), 0, ChooseCameraCB, this };		
-		loadCameraList.emplace_back(temp_LoadCam);
+	if (Session::current) {
+		std::vector<std::string> cameraNames = Session::current->renderScene.getCameraNames();
+		for (auto& cameraName : cameraNames) {
+			const std::string& camName = cameraName;
+			Fl_Menu_Item temp_LoadCam = {strdup(camName.c_str()), 0, ChooseCameraCB, this};
+			loadCameraList.emplace_back(temp_LoadCam);
 
-		Fl_Menu_Item temp_DeleteCam = { strdup(camName.c_str()), 0, DeleteCameraCB, this };		
-		deleteCameraList.emplace_back(temp_DeleteCam);
+			Fl_Menu_Item temp_DeleteCam = {strdup(camName.c_str()), 0, DeleteCameraCB, this};
+			deleteCameraList.emplace_back(temp_DeleteCam);
+		}
 	}
 	Fl_Menu_Item temp = {nullptr};
 	loadCameraList.emplace_back(temp);

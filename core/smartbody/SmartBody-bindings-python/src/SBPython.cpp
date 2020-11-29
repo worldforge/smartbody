@@ -134,6 +134,12 @@ namespace boost
 
 std::vector<std::function<void()>> pythonExtraModuleDeclarations;
 
+namespace {
+	//boost.python can't handle std::unique_ptrs in a good way, so we'll provide this version which does away with the result
+	void SBAssetStore_loadAsset(SmartBody::SBAssetStore* store, const std::string& assetPath) {
+		store->loadAsset(assetPath);
+	}
+}
 
 namespace SmartBody
 {
@@ -866,7 +872,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 			.def("removeAllAssetPaths", &SBAssetStore::removeAllAssetPaths, "Removes all paths resource given path type and actual path string. \n Input: type(can be script|motion|audio), path \n Output: NULL")
 			.def("getAssetPaths", &SBAssetStore::getAssetPaths, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of all path names for a given type: seq, me, audio, mesh.")
 			.def("getLocalAssetPaths", &SBAssetStore::getLocalAssetPaths, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of all path names for a given type excluding the media path: seq, me, audio, mesh.")
-			.def("loadAsset", &SBAssetStore::loadAsset, boost::python::return_value_policy<boost::python::return_by_value>(), "Loads the skeletons and motions from the file.")
+			.def("loadAsset", &SBAssetStore_loadAsset, "Loads the skeletons and motions from the file.")
 			.def("loadAssets", &SBAssetStore::loadAssets, "Loads the skeletons and motions from the asset paths.")
 			.def("loadAssetsFromPath", &SBAssetStore::loadAssetsFromPath, "Loads the skeletons and motions from a given path. The path will not be stored for later use.")
 			;

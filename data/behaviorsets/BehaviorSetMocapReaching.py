@@ -8,6 +8,7 @@ def setupBehaviorSet():
     scene.addAssetPath("script", "behaviorsets/MocapReaching/scripts")
     # map the zebra2 skeleton
 
+    assetStore = scene.getAssetStore()
     assetManager = scene.getAssetManager()
     motionPath = "behaviorsets/MocapReaching/motions/"
     skel = scene.getSkeleton("ChrGarza.sk")
@@ -107,7 +108,7 @@ def setupBehaviorSet():
     for i in range(0, len(mocapRReachMotions)):
         motion = scene.getMotion(mocapRReachMotions[i])
         if motion == None:
-            assetManager.loadAsset(motionPath + mocapRReachMotions[i] + '.skm')
+            assetStore.loadAsset(motionPath + mocapRReachMotions[i] + '.skm')
             motion = scene.getMotion(mocapRReachMotions[i])
         # print 'motionName = ' + locoMotions[i]
         if motion != None:

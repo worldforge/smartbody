@@ -7,6 +7,7 @@ def setupBehaviorSet():
     # scene.loadAssetsFromPath("behaviorsets/jumping/motions")
     scene.addAssetPath("script", "behaviorsets/jumping/scripts")
 
+    assetStore = scene.getAssetStore()
     assetManager = scene.getAssetManager()
     motionPath = "behaviorsets/jumping/motions/"
     skel = scene.getSkeleton("ChrGarza.sk")
@@ -42,7 +43,7 @@ def setupBehaviorSet():
     for i in range(0, len(jumpMotions)):
         motion = scene.getMotion(jumpMotions[i])
         if motion == None:
-            assetManager.loadAsset(motionPath + jumpMotions[i] + '.skm')
+            assetStore.loadAsset(motionPath + jumpMotions[i] + '.skm')
             motion = scene.getMotion(jumpMotions[i])
         if motion != None:
             motion.setMotionSkeletonName("ChrGarza.sk")

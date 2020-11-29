@@ -4,12 +4,13 @@ print("|--------------------------------------------|")
 
 print('media path = ' + scene.getMediaPath())
 # Add asset paths
+assetStore = scene.getAssetStore()
 assetManager = scene.getAssetManager()
-assetManager.addAssetPath('motion', 'ChrBrad')
-assetManager.addAssetPath('mesh', 'mesh')
-assetManager.addAssetPath('script', 'scripts')
+assetStore.addAssetPath('motion', 'ChrBrad')
+assetStore.addAssetPath('mesh', 'mesh')
+assetStore.addAssetPath('script', 'scripts')
 # Load assets based on asset paths
-assetManager.loadAssets()
+assetStore.loadAssets()
 
 # set scene scale and reset the camera
 scene.setScale(1.0)
