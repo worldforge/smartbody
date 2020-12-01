@@ -165,9 +165,9 @@ void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody:
 			to_seq_p->insert_ref( absolute_offset, cmd );
       cmd = nullptr;
 		}
-    if (cmd) {
+
       delete [] cmd;
-    }
+
 	}
 	delete fr_seq_p;
 }
@@ -332,7 +332,7 @@ double parseMotionParameters(std::string m, std::string parameter, double min, d
 {
 	std::string skeletonName = tokenize(parameter, "|");
 	SmartBody::SBSkeleton* sk = nullptr;
-	if (parameter != "")
+	if (!parameter.empty())
 	{
 
 		sk = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonName);
@@ -377,7 +377,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		std::string nextString = args.read_token();
 		if (nextString == "cycle")
 		{
-      PABlend* newState = new PABlend(blendName);
+      auto* newState = new PABlend(blendName);
 			std::string cycle = args.read_token();
 			if (cycle == "true")
 				newState->cycle = true;
@@ -455,11 +455,11 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 				else if (type == "3D")
 				{
 					double param[3];
-					for (int pc = 0; pc < 3; pc++)
+					for (double & pc : param)
 					{
 						std::string para = args.read_token();
-						param[pc] = parseMotionParameters(m, para, blend->keys[blend->getMotionId(m)][0], blend->keys[blend->getMotionId(m)][blend->getNumKeys() - 1]);
-						if (param[pc] < -9000) param[pc] = atof(para.c_str());
+						pc = parseMotionParameters(m, para, blend->keys[blend->getMotionId(m)][0], blend->keys[blend->getMotionId(m)][blend->getNumKeys() - 1]);
+						if (pc < -9000) pc = atof(para.c_str());
 					}
 					blend->setParameter(m, param[0], param[1], param[2]);
 				}
@@ -2079,184 +2079,6 @@ int mcu_vrSpeech_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	return CMD_SUCCESS;
 }
 
-int mcu_sbmdebugger_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
-{
-#ifndef SB_NO_PYTHON	
-#if !defined(__ANDROID__)
-#ifndef __native_client__
-	std::string instanceId = args.read_token();
-	// make sure this instance id matches
-	// ...
-	// ...
-
-	std::string messageId = args.read_token();
-	std::string type = args.read_token();
-	if (type == "response")
-		return CMD_SUCCESS;
-
-	if (type != "request")
-		return CMD_SUCCESS;
-
-	std::string returnType = args.read_token();
-	std::string code = args.read_token();
-	//SmartBody::util::log("mcu_sbmdebugger_func code: %s", code.c_str());
-	if (code.size() == 0)
-	{
-		std::stringstream strstr;
-		strstr << instanceId << " " << messageId << " response-fail ";
-		strstr << "No Python code sent.";
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-		return CMD_FAILURE;
-	}
-
-	PyObject* pyResult = nullptr;
-	if (returnType == "void")
-	{
-		try {
-			boost::python::exec(code.c_str(), *(SmartBody::SBScene::getScene()->getPythonMainDict()));
-		} catch (...) {
-			PyErr_Print();
-		}
-		return CMD_SUCCESS;
-	}
-	else if (returnType == "bool")
-	{
-		try {
-			boost::python::object mainDict = SmartBody::SBScene::getScene()->getPythonMainDict();
-			boost::python::object obj = boost::python::exec(code.c_str(), mainDict);
-			bool result = boost::python::extract<bool>(mainDict["ret"]);
-			std::stringstream strstr;
-			strstr << instanceId << " " << messageId << " response ";
-			strstr << result;
-			SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-			return CMD_SUCCESS;
-		} catch (...) {
-			PyErr_Print();
-		}
-	}
-	else if (returnType == "int")
-	{
-		try {
-			boost::python::object mainDict = SmartBody::SBScene::getScene()->getPythonMainDict();
-			boost::python::object obj = boost::python::exec(code.c_str(), mainDict);
-			int result = boost::python::extract<int>(mainDict["ret"]);
-			std::stringstream strstr;
-			strstr << instanceId << " " << messageId << " response ";
-			strstr << result;
-			SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-			return CMD_SUCCESS;
-		} catch (...) {
-			PyErr_Print();
-		}
-	}
-	else if (returnType == "float")
-	{
-		try {
-			boost::python::object mainDict = SmartBody::SBScene::getScene()->getPythonMainDict();
-			boost::python::object obj = boost::python::exec(code.c_str(), SmartBody::SBScene::getScene()->getPythonMainDict());
-			float result = boost::python::extract<float>(mainDict["ret"]);
-			std::stringstream strstr;
-			strstr << instanceId << " " << messageId << " response ";
-			strstr << result;
-			SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-			return CMD_SUCCESS;
-		} catch (...) {
-			PyErr_Print();
-		}
-	}
-	else if (returnType == "string")
-	{
-		try {
-			boost::python::object mainDict = SmartBody::SBScene::getScene()->getPythonMainDict();
-			boost::python::object obj = boost::python::exec(code.c_str(), SmartBody::SBScene::getScene()->getPythonMainDict());
-			std::string result = boost::python::extract<std::string>(mainDict["ret"]);
-			std::stringstream strstr;
-			strstr << instanceId << " " << messageId << " response ";
-			strstr << result;
-			SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-			return CMD_SUCCESS;
-		} catch (...) {
-			PyErr_Print();
-		}
-	}
-	else if (returnType == "int-array")
-	{
-		try {
-			boost::python::object mainDict = SmartBody::SBScene::getScene()->getPythonMainDict();
-			boost::python::object obj = boost::python::exec(code.c_str(), mainDict);
-			boost::python::object obj2 = boost::python::exec("size = len(ret)", mainDict);
-			int size =  boost::python::extract<int>(mainDict["size"]);
-			std::stringstream strstr;
-			strstr << instanceId << " " << messageId << " response ";
-			for (int x = 0; x < size; x++)
-			{
-				int val =  boost::python::extract<int>(mainDict["ret"][x]);
-				strstr << " " << val;
-			}
-			SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-			return CMD_SUCCESS;
-		} catch (...) {
-			PyErr_Print();
-		}
-	}
-	else if (returnType == "float-array")
-	{
-		try {
-			boost::python::object mainDict = SmartBody::SBScene::getScene()->getPythonMainDict();
-			boost::python::object obj = boost::python::exec(code.c_str(), SmartBody::SBScene::getScene()->getPythonMainDict());
-			boost::python::object obj2 = boost::python::exec("size = len(ret)", SmartBody::SBScene::getScene()->getPythonMainDict());
-			int size =  boost::python::extract<int>(mainDict["size"]);
-			std::stringstream strstr;
-			strstr << instanceId << " " << messageId << " response ";
-			for (int x = 0; x < size; x++)
-			{
-				float val =  boost::python::extract<float>(mainDict["ret"][x]);
-				strstr << " " << val;
-			}
-			SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-			return CMD_SUCCESS;
-		} catch (...) {
-			PyErr_Print();
-		}
-	}
-	else if (returnType == "string-array")
-	{
-		try {
-			boost::python::object mainDict = SmartBody::SBScene::getScene()->getPythonMainDict();
-			boost::python::object obj = boost::python::exec(code.c_str(), SmartBody::SBScene::getScene()->getPythonMainDict());
-			boost::python::object obj2 = boost::python::exec("size = len(ret)", SmartBody::SBScene::getScene()->getPythonMainDict());
-			int size =  boost::python::extract<int>(mainDict["size"]);
-			std::stringstream strstr;
-			strstr << instanceId << " " << messageId << " response ";
-			for (int x = 0; x < size; x++)
-			{
-				std::string val =  boost::python::extract<std::string>(mainDict["ret"][x]);
-				strstr << " " << val;
-			}
-			SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-			return CMD_SUCCESS;
-		} catch (...) {
-			PyErr_Print();
-		}
-	}
-	else
-	{
-		std::stringstream strstr;
-		strstr << instanceId << " " << messageId << " response-fail ";
-		strstr << "Unknown return type: " << returnType;
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-		return CMD_FAILURE;
-	}
-
-	std::stringstream strstr;
-	strstr << instanceId << " " << messageId << " response-fail ";
-	strstr << "Problem executing code." << returnType;
-	SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "sbmdebugger", strstr.str().c_str() );
-#endif	
-#endif
-#endif
-	return CMD_FAILURE;
-}
 
 /////////////////////////////////////////////////////////////
 

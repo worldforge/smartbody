@@ -6,8 +6,13 @@
 #include <vector>
 #include <functional>
 
-SBAPI void initPython(std::string pythonLibPath);
-SBAPI void setupPython();
+namespace SmartBody {
+class SBScene;
+}
+
+SBAPI void initPython();
+
+SBAPI void setupPython(SmartBody::SBScene& scene);
 
 extern std::vector<std::function<void()>> pythonExtraModuleDeclarations;
 

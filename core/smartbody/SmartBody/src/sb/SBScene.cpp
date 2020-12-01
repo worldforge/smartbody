@@ -74,6 +74,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotionGraph.h>
 #include "SBUtilities.h"
 #include <sbm/sbm_audio.h>
+#include <utility>
 #include <boost/version.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -84,10 +85,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBJointMap.h>
 #include <sb/SBSceneListener.h>
 #include <sb/SBNavigationMesh.h>
-#include <sbm/ParserBVH.h>
-//#include <sbm/ParserCOLLADAFast.h>
-//#include <sbm/ParserOpenCOLLADA.h>
-//#include <sbm/ParserOgre.h>
 #include <sbm/Heightfield.h>
 #include <sbm/action_unit.hpp>
 #include <sbm/xercesc_utils.hpp>
@@ -162,12 +159,6 @@ _assetStore(std::make_unique<SBAssetStore>(*this))
 
 {
 	_scene = this;
-#ifndef SB_NO_PYTHON
-#ifndef __native_client__
-//	_mainModule = nullptr;
-//	_mainDict = nullptr;
-#endif
-#endif
 	_processId = "";
 	_lastScriptDirectory = "";
 
@@ -484,56 +475,7 @@ void SBScene::cleanup()
 //	SbmShaderManager::destroy_singleton();
 //#endif
 
-#ifndef SB_NO_PYTHON
-//	Py_Finalize();
 
-#if defined(WIN_BUILD)
-	{
-		// According to the python docs, .pyd files are not unloaded during Py_Finalize().
-		// This causes issues when trying to re-load the smartbody dll over and over.
-		// So, we force unload these .pyd files.  This list is all the standard .pyd files included in the Python26 DLLs folder.
-		// For reference:  http://docs.python.org/2/c-api/init.html  "Dynamically loaded extension modules loaded by Python are not unloaded"
-
-		// initPythonLibPath - eg:  "../../../../core/smartbody/Python26/Lib"
-		std::string pythonLibPath = Py_GetPythonHome();
-		HMODULE hmodule;
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/bz2.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/pyexpat.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/select.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/unicodedata.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/winsound.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_bsddb.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_ctypes.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_ctypes_test.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_elementtree.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_hashlib.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_msi.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_multiprocessing.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_socket.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_sqlite3.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_ssl.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_testcapi.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-		hmodule = GetModuleHandle(SmartBody::util::format("%s/../DLLs/_tkinter.pyd", pythonLibPath.c_str()).c_str());
-		FreeLibrary(hmodule);
-	}
-#endif  // WIN_BUILD
-#endif  // USE_PYTHON
 }
 
 SBScene::~SBScene()
@@ -1364,81 +1306,33 @@ void SBScene::sendVHMsg2(const std::string& message, const std::string& message2
 	getVHMsgManager()->send2(message.c_str(), message2.c_str());
 }
 
+void SBScene::setCommandRunner(std::function<bool(const std::string&)> commandRunner) {
+	_commandRunner = std::move(commandRunner);
+}
+
+void SBScene::setScriptRunner(std::function<bool(const std::string&)> scriptRunner) {
+	_scriptRunner = std::move(scriptRunner);
+}
+
+
 bool SBScene::run(const std::string& command)
 {
-#ifndef SB_NO_PYTHON
-	try {
-		//SmartBody::util::log("executePython = %s",command.c_str());
-		boost::python::exec(command.c_str(), _mainDict, _mainDict);
-
-
-		return true;
-	} catch (...) {
-		if (PyErr_Occurred()) {
-			PyErr_Print();
-		}
-		SBEvent* event = this->getEventManager()->createEvent("error", command, this->getStringFromObject(this));
-		this->getEventManager()->handleEvent(event);
-		delete event;
+	if (_commandRunner) {
+		return _commandRunner(command);
+	} else {
+		SmartBody::util::log("No command runner registered in the Scene.");
 		return false;
 	}
-#endif
-#if defined(EMSCRIPTEN)
-#ifndef SB_NO_JAVASCRIPT
-	emscripten_run_script(
-		command.c_str()
-	);
-	//otehr options:
-	//int emscripten_run_script_int(const char *script)
-	//char *emscripten_run_script_string(const char *script)
-#endif
-#endif
-	return true;
 }
 
 bool SBScene::runScript(const std::string& script)
 {
-#ifndef SB_NO_PYTHON
-	// add the .seq extension if necessary
-	std::string candidateSeqName = script;
-	if (candidateSeqName.find(".py") == std::string::npos)
-	{
-		candidateSeqName.append(".py");
+	if (_scriptRunner) {
+		return _scriptRunner(script);
+	} else {
+		SmartBody::util::log("No script runner registered in the Scene.");
+		return false;
 	}
-
-	std::string curFilename = SmartBody::SBScene::getScene()->getAssetManager()->findFileName("script", candidateSeqName);
-	SmartBody::util::log("script name = '%s', curFilename = '%s'", script.c_str(), curFilename.c_str());
-	if (!curFilename.empty())
-	{
-		try {
-			// save the last directory so that a script path can be used as a relative pathing for asset loading or other use
-			boost::filesystem::path scriptPath = curFilename;
-			boost::filesystem::path scriptDir = scriptPath.parent_path();
-			this->setLastScriptDirectory(scriptDir.string());
-
-			boost::python::exec_file(curFilename.c_str(), _mainDict, _mainDict);
-			return true;
-		} catch (...) {
-			if (PyErr_Occurred()) {
-				PyErr_Print();
-			}
-			SBEvent* event = this->getEventManager()->createEvent("error", script, this->getStringFromObject(this));
-			this->getEventManager()->handleEvent(event);
-			delete event;
-			return false;
-		}
-	}
-
-	SmartBody::util::log("Could not find Python script '%s'", script.c_str());
-	return false;
-
-#endif
-#if defined(EMSCRIPTEN)
-#ifndef SB_NO_JAVASCRIPT
-	emscripten_run_script(script.c_str());
-#endif
-#endif
-	return true;
 }
 
 SBSimulationManager* SBScene::getSimulationManager()
@@ -2408,27 +2302,6 @@ float SBScene::queryTerrain( float x, float z, float *normal_p )
 	return( 0.0 );
 }
 
-#ifndef SB_NO_PYTHON
-void SBScene::setPythonMainModule(boost::python::object& pyobject)
-{
-	_mainModule = pyobject;
-}
-
-void SBScene::setPythonMainDict(boost::python::object& pyobject)
-{
-	_mainDict = pyobject;
-}
-
-boost::python::object& SBScene::getPythonMainModule()
-{
-	return _mainModule;
-}
-
-boost::python::object& SBScene::getPythonMainDict()
-{
-	return _mainDict;
-}
-#endif
 
 //
 //bool SBScene::setCameraConeOfSight(const std::string& characterName) {
@@ -3192,15 +3065,12 @@ std::string SBScene::getStringFromObject(SmartBody::SBObject* object)
 }
 
 void SBScene::registerObjectProvider(std::string prefix, Provider provider) {
-	_objectProviders.emplace(prefix, std::move(provider));
+	_objectProviders.emplace(std::move(prefix), std::move(provider));
 }
 
 void SBScene::removeObjectProvider(const std::string& prefix) {
 	_objectProviders.erase(prefix);
 }
-
-
-
 
 SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 {
@@ -3214,7 +3084,7 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 	if (prefix == "character")
 	{
 		// check for a second level name
-		int prefixPos2 = suffix.find("/");
+		int prefixPos2 = suffix.find('/');
 		if (prefixPos2 == std::string::npos)
 		{
 			SmartBody::SBCharacter* character = this->getCharacter(suffix);
@@ -3228,7 +3098,7 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 
 		std::string remainder = suffix.substr(prefixPos2 + 1);
 
-		int prefixPos3 = remainder.find("/");
+		int prefixPos3 = remainder.find('/');
 		if (prefixPos3 != std::string::npos)
 		{
 			std::string part = remainder.substr(0, prefixPos3);		
@@ -3293,7 +3163,7 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 //	}
 	else if (prefix == "controller")
 	{
-		int prefixPos2 = suffix.find("/");
+		int prefixPos2 = suffix.find('/');
 		if (prefixPos2 == std::string::npos)
 			return nullptr;
 		std::string prefix2 = suffix.substr(0, prefixPos2 - 1);
@@ -3354,7 +3224,7 @@ std::string SBScene::getLastScriptDirectory()
 
 void SBScene::setLastScriptDirectory(std::string dir)
 {
-	_lastScriptDirectory = dir;
+	_lastScriptDirectory = std::move(dir);
 }
 
 };

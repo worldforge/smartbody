@@ -63,11 +63,9 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 
-#ifndef SB_NO_PYTHON
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp> 
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include <boost/python/args.hpp>
-#endif
 
 #include "SBPythonInternal.h"
 
@@ -76,7 +74,6 @@ typedef std::map<std::string,SrVec> VecMap;
 typedef std::map<std::string, std::string> StringMap;
 typedef std::vector<SrVec> VecArray;
 
-#ifndef SB_NO_PYTHON
 
 #if defined(_MSC_FULL_VER) && (_MSC_FULL_VER == 190024210 || _MSC_FULL_VER == 190024215)
 namespace boost
@@ -130,7 +127,6 @@ namespace boost
 
 }
 #endif
-#endif
 
 std::vector<std::function<void()>> pythonExtraModuleDeclarations;
 
@@ -143,7 +139,6 @@ namespace {
 
 namespace SmartBody
 {
-#ifndef SB_NO_PYTHON
 
 
 void pythonFuncsAnimation();
@@ -161,7 +156,6 @@ void pythonFuncsSystem();
 BOOST_PYTHON_MODULE(SmartBody)
 {
 	boost::python::def("printlog", printLog, "Write to the log. \n Input: message string \n Output: NULL");
-#if 1
 	boost::python::docstring_options local_docstring_options(true, true, false);
 
 	boost::python::class_<std::vector<std::string> >("StringVec")
@@ -929,9 +923,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		func();
 	}
 
-#endif
 	}
-#endif
 
 
 }
@@ -997,18 +989,15 @@ extern "C" {
 }
 #endif
 
-void appendPythonModule(const char* moduleName, PyObject* (*initfunc)(void))
+void appendPythonModule(const char* moduleName, PyObject* (*initfunc)())
 {
-#ifndef SB_NO_PYTHON
 	int result = PyImport_AppendInittab(moduleName, initfunc);
 	SmartBody::util::log("initialize module %s, result = %d",moduleName, result);
-#endif
 }
 
 
-void initPython(std::string pythonLibPath)
+void initPython()
 {	
-#ifndef SB_NO_PYTHON
 	XMLPlatformUtils::Initialize();
 
 	Py_NoSiteFlag = 1;
@@ -1076,32 +1065,81 @@ void initPython(std::string pythonLibPath)
 	PyImport_AppendInittab("SmartBody", &SmartBody::PyInit_SmartBody);
 
 	Py_InitializeEx(0);
-	try {
-#ifndef SB_NO_PYTHON
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		boost::python::object module = boost::python::import("__main__");
-		scene->setPythonMainModule(module);
-		boost::python::object dict  = module.attr("__dict__");
-		scene->setPythonMainDict(dict);
-#endif
+	if (PyErr_Occurred())
+		PyErr_Print();
 
-		auto smartBodyModule = boost::python::import("SmartBody");
-
-		if (PyErr_Occurred())
-			PyErr_Print();
-
-
-		setupPython();
-	} catch (...) {
-		if (PyErr_Occurred())
-			PyErr_Print();
-	}
-#endif
+//	try {
+//
+//		if (PyErr_Occurred())
+//			PyErr_Print();
+//
+//		setupPython();
+//	} catch (...) {
+//		if (PyErr_Occurred())
+//			PyErr_Print();
+//	}
 }
 
-void setupPython()
+void setupPython(SmartBody::SBScene& scene)
 {
-#ifndef SB_NO_PYTHON
+
+	boost::python::object module = boost::python::import("__main__");
+	boost::python::object dict  = module.attr("__dict__");
+	auto smartBodyModule = boost::python::import("SmartBody");
+
+	scene.setCommandRunner([dict, &scene](const std::string& command){
+		try {
+			//SmartBody::util::log("executePython = %s",command.c_str());
+			boost::python::exec(command.c_str(), dict, dict);
+
+
+			return true;
+		} catch (...) {
+			if (PyErr_Occurred()) {
+				PyErr_Print();
+			}
+			auto event = scene.getEventManager()->createEvent("error", command, scene.getStringFromObject(&scene));
+			scene.getEventManager()->handleEvent(event);
+			delete event;
+			return false;
+		}
+	});
+
+	scene.setScriptRunner([dict, &scene](const std::string& script){
+		// add the .seq extension if necessary
+		std::string candidateSeqName = script;
+		if (candidateSeqName.find(".py") == std::string::npos)
+		{
+			candidateSeqName.append(".py");
+		}
+
+		std::string curFilename = SmartBody::SBScene::getScene()->getAssetManager()->findFileName("script", candidateSeqName);
+		SmartBody::util::log("script name = '%s', curFilename = '%s'", script.c_str(), curFilename.c_str());
+		if (!curFilename.empty())
+		{
+			try {
+				// save the last directory so that a script path can be used as a relative pathing for asset loading or other use
+				boost::filesystem::path scriptPath = curFilename;
+				boost::filesystem::path scriptDir = scriptPath.parent_path();
+				scene.setLastScriptDirectory(scriptDir.string());
+
+				boost::python::exec_file(curFilename.c_str(), dict, dict);
+				return true;
+			} catch (...) {
+				if (PyErr_Occurred()) {
+					PyErr_Print();
+				}
+				auto event = scene.getEventManager()->createEvent("error", script, scene.getStringFromObject(&scene));
+				scene.getEventManager()->handleEvent(event);
+				delete event;
+				return false;
+			}
+		}
+
+		SmartBody::util::log("Could not find Python script '%s'", script.c_str());
+		return false;
+	});
+
 	try {
 #ifdef PYLOG
 #if defined(__ANDROID__) || defined(SB_IPHONE)
@@ -1149,5 +1187,4 @@ void setupPython()
 	} catch (...) {
 		PyErr_Print();
 	}
-#endif
 }

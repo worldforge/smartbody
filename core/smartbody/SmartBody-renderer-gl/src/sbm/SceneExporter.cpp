@@ -1155,7 +1155,7 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 			ostream << "motion = scene.getMotion(\"" << smoothedMotionAttr->getValue() << "\")\n";
 			DoubleAttribute* smoothIntervalAttr = dynamic_cast<DoubleAttribute*>(motion->getAttribute("smoothInterval"));
 			if (smoothIntervalAttr) {
-				ostream << "smoothMotion = motion.smoothCycle(\"" << motion->getName() << "\", " << boost::lexical_cast<std::string>(smoothIntervalAttr->getValue()) << ")\n";
+				ostream << "smoothMotion = motion.smoothCycle(\"" << motion->getName() << "\", " << std::to_string(smoothIntervalAttr->getValue()) << ")\n";
 			}
 		}
 	}
@@ -1167,7 +1167,7 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 		ostream << "sbSk = scene.getSkeleton(\"" << skName << "\")\n";
 		//ostream << "print 'numSkeleton = ' + str(scene.getNumSkeletons())\n";
 		ostream << "if sbSk != None:\n";
-		ostream << "\tsbSk.rescale(" << boost::lexical_cast<std::string>(sbSk->getScale()) << ")\n";
+		ostream << "\tsbSk.rescale(" << std::to_string(sbSk->getScale()) << ")\n";
 	}
 
 #endif

@@ -30,19 +30,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sr/sr_viewer.h>
 #include <sbm/general_param_setting.h>
 
-#ifndef SB_NO_PYTHON
-#ifndef __native_client__
-#include <boost/python.hpp>
-#endif
-#endif
-
-#ifndef SB_NO_JAVASCRIPT
-#if defined(EMSCRIPTEN)
-#include <emscripten.h>
-#endif
-#endif
 
 #include <memory>
+#include <functional>
 
 class SrSnGroup;
 class SbmPawn;
@@ -164,7 +154,10 @@ class SBScene : public SBObject
 
 		SBAPI void startFileLogging(const std::string& filename);
 		SBAPI void stopFileLogging();
-	
+
+		/**
+		* HACK: executes commands, which are Python scripts. This should be moved out of the core Scene instance, but we'll keep it for now to avoid updating all scripts.
+		*/
 		SBAPI bool run(const std::string& command);
 		SBAPI bool runScript(const std::string& script);
 
@@ -299,15 +292,6 @@ class SBScene : public SBObject
 		SBAPI KinectProcessor* getKinectProcessor();
 		SBAPI std::map<std::string, GeneralParam*>& getGeneralParameters();
 
-#ifndef SB_NO_PYTHON
-#ifndef __native_client__
-		SBAPI void setPythonMainModule(boost::python::object& pyobject);
-		SBAPI void setPythonMainDict(boost::python::object& pyobject);
-		SBAPI boost::python::object& getPythonMainModule();
-		SBAPI boost::python::object& getPythonMainDict();
-#endif
-#endif
-	
 		SBAPI SrViewer* getViewer();
 		SBAPI SrViewer* getOgreViewer();
 		SBAPI void setViewer(SrViewer* viewer);
@@ -327,32 +311,16 @@ class SBScene : public SBObject
 		//HACK: emitted when all pawns are removed. Used to allow SBRenderScene to know when to clear all cameras. For now.
 		std::function<void()> _removeAllPawnsCallback;
 
-		struct OcclusionTester {
-
-		};
-
 		SBAssetStore& getAssetStore() {
 			return *_assetStore;
 		}
-				
+
+	void setCommandRunner(std::function<bool(const std::string&)> commandRunner);
+	void setScriptRunner(std::function<bool(const std::string&)> commandRunner);
+
 	protected:
 
-		void initialize();
 		void cleanup();
-//		void saveScene(std::stringstream& strstr, bool remoteSetup);
-//		void saveAssets(std::stringstream& strstr, bool remoteSetup, std::string mediaPath);
-//		void saveCameras(std::stringstream& strstr, bool remoteSetup);
-//		void savePawns(std::stringstream& strstr, bool remoteSetup);
-//		void saveCharacters(std::stringstream& strstr, bool remoteSetup);
-//		void saveLights(std::stringstream& strstr, bool remoteSetup);
-//		void saveRetargets(std::stringstream& strstr, bool remoteSetup);
-//		void saveBlends(std::stringstream& strstr, bool remoteSetup);
-//		void saveJointMaps(std::stringstream& strstr, bool remoteSetup);
-//		void saveFaceDefinitions(std::stringstream& strstr, bool remoteSetup);
-//		void saveGestureMaps(std::stringstream& strstr, bool remoteSetup);
-//		void saveLipSyncing(std::stringstream& strstr, bool remoteSetup);
-//		void saveServices(std::stringstream& strstr, bool remoteSetup);
-//		void savePositions(std::stringstream& strstr, bool remoteSetup);
 		void createDefaultControllers();
 		void removeDefaultControllers();
 
@@ -435,12 +403,15 @@ class SBScene : public SBObject
 		 */
 		std::map<std::string, Provider> _objectProviders;
 
-#ifndef SB_NO_PYTHON
-#ifndef __native_client__
-		boost::python::object _mainModule;
-		boost::python::object _mainDict;
-#endif
-#endif
+		/**
+		 * HACK: executes commands, which are Python scripts. This should be moved out of the core Scene instance, but we'll keep it for now to avoid updating all scripts.
+		 */
+		std::function<bool(const std::string&)> _commandRunner;
+
+		/**
+		 * HACK: executes scripts. This should be moved out of the core Scene instance, but we'll keep it for now to avoid updating all scripts.
+		 */
+		std::function<bool(const std::string&)> _scriptRunner;
 };
 
 

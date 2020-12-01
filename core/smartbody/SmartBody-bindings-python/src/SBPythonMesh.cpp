@@ -3,13 +3,10 @@
 #include <sbm/sbm_deformable_mesh.h>
 #include "sb/SBRenderAssetManager.h"
 
-#ifndef SB_NO_PYTHON
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp> 
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include <boost/python/args.hpp>
-#endif
 
-#ifndef SB_NO_PYTHON
 
 #if 0//defined(_MSC_FULL_VER) && (_MSC_FULL_VER == 190024210 || _MSC_FULL_VER == 190024215)
 namespace boost
@@ -56,5 +53,3 @@ namespace SmartBody
 	}
 }
 
-
-#endif

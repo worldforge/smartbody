@@ -18,6 +18,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
+#include <SBPythonClass.h>
 #include "Session.h"
 
 #include "sb/SBAssetHandlerSkm.h"
@@ -32,6 +33,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBAssetHandlerBvh.h"
 #include "sb/SBAssetHandlerHDR.h"
 #include "sb/SBAssetHandlerSBMeshBinary.h"
+
+#include "sbm/mcontrol_debugger.h"
 
 Session* Session::current = nullptr;
 
@@ -51,5 +54,10 @@ Session::Session()
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerBvh>());
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerHdr>());
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerSBMeshBinary>());
+
+
+	SmartBody::installDebuggerCommand(*scene.getCommandManager());
+	SmartBody::PythonInterface::renderScene = &renderScene;
+
 
 }

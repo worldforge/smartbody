@@ -38,10 +38,10 @@ namespace SmartBody {
 			std::string m_filename;
 
 		public:
-			SBAPI FileListener(const char * filename);
-			SBAPI virtual ~FileListener();
+			SBAPI explicit FileListener(const char * filename);
+			SBAPI ~FileListener() override;
 
-			SBAPI virtual void OnMessage(const std::string & message);
+			SBAPI void OnMessage(const std::string & message) override;
 		};
 
 
@@ -49,9 +49,9 @@ namespace SmartBody {
 		{
 		public:
 			SBAPI DebuggerListener();
-			SBAPI virtual ~DebuggerListener();
+			SBAPI ~DebuggerListener() override;
 
-			SBAPI virtual void OnMessage(const std::string & message);
+			SBAPI void OnMessage(const std::string & message) override;
 		};
 
 
@@ -90,9 +90,9 @@ namespace SmartBody {
 		{
 		public:
 			SBAPI StdoutListener();
-			SBAPI virtual ~StdoutListener();
+			SBAPI ~StdoutListener() override;
 
-			SBAPI virtual void OnMessage(const std::string & message);
+			SBAPI void OnMessage(const std::string & message) override;
 		};
 
 

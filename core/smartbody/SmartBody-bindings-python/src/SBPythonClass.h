@@ -17,18 +17,16 @@
 #endif
 //#endif
 
-#ifndef SB_NO_PYTHON
 #include <boost/python.hpp>
 #include <sbm/SBRenderScene.h>
 
-#endif
+
 namespace SmartBody 
 {
 
 SrViewer* getViewer();
 
 
-#ifndef SB_NO_PYTHON
 class PyLogger
 {
 protected:
@@ -154,7 +152,6 @@ public:
 protected:
 	SkChannelArray channels;
 };
-#endif
 
 }
 

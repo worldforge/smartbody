@@ -650,11 +650,7 @@ SBAPI bool SBM_PythonCommandVoid( SBMHANDLE sbmHandle, const char * command)
       return false;
    }
 
-#ifndef SB_NO_PYTHON
    return SmartBody::SBScene::getScene()->run(command);
-#else
-   return false;
-#endif
 }
 
 SBAPI bool SBM_PythonCommandBool( SBMHANDLE sbmHandle, const char * command )

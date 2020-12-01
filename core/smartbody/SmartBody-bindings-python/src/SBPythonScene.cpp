@@ -60,11 +60,9 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 
-#ifndef SB_NO_PYTHON
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp> 
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include <boost/python/args.hpp>
-#endif
 
 #include "SBPythonInternal.h"
 
@@ -74,7 +72,6 @@ typedef std::map<std::string,SrVec> VecMap;
 typedef std::map<std::string, std::string> StringMap;
 
 
-#ifndef SB_NO_PYTHON
 
 #if defined(_MSC_FULL_VER) && (_MSC_FULL_VER == 190024210 || _MSC_FULL_VER == 190024215)
 namespace boost
@@ -234,4 +231,3 @@ void pythonFuncsScene()
 }
 
 
-#endif

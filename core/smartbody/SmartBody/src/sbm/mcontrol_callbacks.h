@@ -69,8 +69,6 @@ int mcu_vrBCFeedback_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMg
 //speech
 int mcu_vrSpeech_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
-int mcu_sbmdebugger_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-
 // examine the motion for specific skeleton
 int mcu_check_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 

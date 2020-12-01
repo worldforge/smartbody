@@ -12,6 +12,8 @@ add_library(
         src/SBPythonSkeleton.cpp
         src/SBPythonSystem.cpp
         src/SBPythonClass.cpp
+
+        src/sbm/mcontrol_debugger.cpp
 )
 
 target_include_directories(SmartBody-bindings-python PUBLIC

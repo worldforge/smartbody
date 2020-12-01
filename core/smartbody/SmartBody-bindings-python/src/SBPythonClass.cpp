@@ -18,7 +18,6 @@
 
 namespace SmartBody 
 {
-#ifndef SB_NO_PYTHON
 
 SBRenderScene* PythonInterface::renderScene = nullptr;
 std::function<SrViewer*()> PythonInterface::getViewerFn;
@@ -109,7 +108,6 @@ SrCamera* getCamera()
 	return nullptr;
 }
 
-#endif
 
 ////////////////////////////////////////////
 #if 0

@@ -13,12 +13,10 @@
 #include <vector>
 #include <string>
 
-#ifndef SB_NO_PYTHON
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp> 
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include <boost/python/args.hpp>
 #include <boost/python.hpp>
-#endif
 
 #include <RootWindow.h>
 #include <fltk_viewer.h>
@@ -30,7 +28,6 @@
 
 
 
-#ifndef SB_NO_PYTHON
 
 
 struct SBInterfaceListenerWrap : SBInterfaceListener, boost::python::wrapper<SBInterfaceListener>
@@ -927,4 +924,3 @@ void initAutoRigPythonModule()
 
 
 
-#endif

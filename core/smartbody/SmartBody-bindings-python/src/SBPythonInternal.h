@@ -7,7 +7,6 @@
 #include <sb/SBParser.h>
 #include <sr/sr_vec.h>
 
-#ifndef SB_NO_PYTHON
 
 namespace SmartBody 
 {
@@ -682,6 +681,5 @@ struct map_item
 	}
 };
 
-#endif
 
 #endif

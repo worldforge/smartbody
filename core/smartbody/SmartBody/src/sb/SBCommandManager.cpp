@@ -161,9 +161,7 @@ SBCommandManager::SBCommandManager()
 	registerCallbacks();
 }
 
-SBCommandManager::~SBCommandManager()
-{
-}
+SBCommandManager::~SBCommandManager() = default;
 
 bool SBCommandManager::hasCommand(const std::string& command)
 {
@@ -285,7 +283,6 @@ void SBCommandManager::registerCallbacks()
 	insert( "vrPerception", mcu_vrPerception_func );
 	insert( "vrBCFeedback", mcu_vrBCFeedback_func );
 	insert( "vrSpeech", mcu_vrSpeech_func );
-	insert( "sbmdebugger", mcu_sbmdebugger_func );
 
 	insert( "text_speech", text_speech::text_speech_func ); // [BMLR]
 	insert( "triggerevent",		   deprecatedMessage );

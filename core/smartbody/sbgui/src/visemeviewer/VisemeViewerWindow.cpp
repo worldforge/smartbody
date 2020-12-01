@@ -22,11 +22,13 @@
 #include "VisemeRunTimeWindow.h"
 #include "ImageSequencePlayer.h"
 #include "RootWindow.h"
+#include <boost/python.hpp>
 
 #ifndef WIN32
 #define _stricmp strcasecmp
 #endif
- 
+
+
 VisemeViewerWindow::VisemeViewerWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h), SBWindowListener()
 {
 	_phonemesSelected[0] = false;

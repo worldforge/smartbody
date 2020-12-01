@@ -505,7 +505,7 @@ std::string BaseWindow::chooseFile(const std::string& label, const std::string& 
 	fnfc.filter(filter.c_str());
 	fnfc.directory(defaultDirectory.c_str()); 
 
-	std::string ret = "";
+	std::string ret;
 
 	switch ( fnfc.show() )
 	{
@@ -531,7 +531,7 @@ std::string BaseWindow::chooseDirectory(const std::string& label, const std::str
 	fnfc.type(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
 	fnfc.directory(defaultDirectory.c_str()); 
 
-	std::string ret = "";
+	std::string ret;
 
 	switch ( fnfc.show() )
 	{
@@ -748,14 +748,12 @@ void BaseWindow::ResetScene()
 	camera->reset();
 
 	// setup python
-#ifndef SB_NO_PYTHON
-	boost::python::object module = boost::python::import("__main__");
-	mSession->scene.setPythonMainModule(module);
-	boost::python::object dict  = module.attr("__dict__");
-	mSession->scene.setPythonMainDict(dict);
+	auto& scene = Session::current->scene;
+
+
+
 	std::string pythonLibPath = SmartBody::SBScene::getSystemParameter("pythonlibpath");
-	setupPython();
-#endif
+	setupPython(scene);
 	if (!mediaPath.empty()) {
 		mSession->scene.setMediaPath(mediaPath);
 	} else {

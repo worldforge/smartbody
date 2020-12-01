@@ -901,7 +901,6 @@ int main( int argc, char **argv )	{
 
 	//Create the global session here.
 	Session::current = new Session();
-	SmartBody::PythonInterface::renderScene = &Session::current->renderScene;
 
 	SmartBody::PythonInterface::getViewerFn = []() {
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -918,6 +917,8 @@ int main( int argc, char **argv )	{
 		}
 		return scene->getViewer();
 	};
+	
+	auto& scene = Session::current->scene;
 
 	// EDF - taken from tre_main.cpp, a fancier command line parser can be put here if desired.
 	//	check	command line parameters:
@@ -1175,7 +1176,6 @@ int main( int argc, char **argv )	{
 		}
 	}
 
-#ifndef SB_NO_PYTHON
 	// initialize python
 	SmartBody::util::log("Initializing Python.");
 
@@ -1187,33 +1187,29 @@ int main( int argc, char **argv )	{
 		initPythonRenderer();
 	});
 
-	initPython(python_lib_path);
-
-
-#endif
-
+	initPython();
+	setupPython(scene);
 	
 	mcu_register_callbacks();
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	//scene->addSceneListener(&fltkListener);
+	//scene.addSceneListener(&fltkListener);
 
 	SmartBody::util::log("Logging to file %s", logFile.c_str());
-	scene->startFileLogging(logFile);
+	scene.startFileLogging(logFile);
 
 
-	scene->getSimulationManager()->setupTimer();
+	scene.getSimulationManager()->setupTimer();
 
 	if( lock_dt_mode )	{ 
-		scene->getSimulationManager()->setSleepLock();
+		scene.getSimulationManager()->setSleepLock();
 	}
 
 	if (sleepFPS != -1.f)
-		scene->getSimulationManager()->setSleepFps( sleepFPS) ;
+		scene.getSimulationManager()->setSleepFps( sleepFPS) ;
 	if (intervalAmount != -1.f)
-		scene->getSimulationManager()->printPerf(intervalAmount);
+		scene.getSimulationManager()->printPerf(intervalAmount);
 
-	scene->setMediaPath(mediaPath);
+	scene.setMediaPath(mediaPath);
 
 // change the default font size
 	FL_NORMAL_SIZE = 11;
@@ -1299,16 +1295,14 @@ int main( int argc, char **argv )	{
 
 	Session::current->debuggerServer.setStringAttribute("id", "sbgui");
 
-#ifndef SB_NO_PYTHON
 	// initialize any Python environment variables from the command line
 	for (unsigned int x = 0; x < envNames.size(); x++)
 	{
 		std::stringstream strstr;
 		strstr << envNames[x] << " = \"" << envValues[x] << "\"";
 		SmartBody::util::log(strstr.str().c_str());
-		scene->run(strstr.str());
+		scene.run(strstr.str());
 	}
-#endif
 
 //	(void)signal( SIGABRT, signal_handler );
 //	(void)signal( SIGFPE, signal_handler );
@@ -1403,7 +1397,7 @@ int main( int argc, char **argv )	{
 	srArgBuffer argBuff("");
 	mcu_vrAllCall_func( argBuff, SmartBody::SBScene::getScene()->getCommandManager() );
 
-	scene->getSimulationManager()->start();
+	scene.getSimulationManager()->start();
 
 #if ENABLE_808_TEST
 	return( 0 );
