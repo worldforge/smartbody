@@ -219,13 +219,14 @@ public:
 	virtual void removeCollisionObjects(const std::string& objName);
 	virtual void addExcludePair(const std::string& objName1, const std::string& objName2);
 	virtual void getPotentialCollisionPairs(std::vector<SbmCollisionPair>& collisionPairs) = 0;
+	virtual void collisionDetection(SBGeomObject* obj1, SBGeomObject* obj2, std::vector<SBGeomContact>& contactPts) = 0;
+
 };
 
 class SBCollisionUtil
 {
 public:
 	static bool checkIntersection(SBGeomObject* obj1, SBGeomObject* obj2);
-	static void collisionDetection(SBGeomObject* obj1, SBGeomObject* obj2, std::vector<SBGeomContact>& contactPts);
 };
 
 #endif

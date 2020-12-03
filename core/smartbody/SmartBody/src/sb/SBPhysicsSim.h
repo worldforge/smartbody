@@ -180,10 +180,10 @@ protected:
 	std::vector<CollisionRecord> collisionRecords;
 public:
 	SBAPI SBPhysicsCharacter();
-	SBAPI virtual void initPhysicsCharacter(std::string& charName, std::vector<std::string>& jointNameList, bool buildGeometry = false);	
+	SBAPI virtual void initPhysicsCharacter(const std::string& charName, std::vector<std::string>& jointNameList, bool buildGeometry = false);
 
-	SBAPI virtual void enablePhysicsSim(bool bPhy);
-	SBAPI virtual void enableCollisionSim(bool bCol);
+	SBAPI void enablePhysicsSim(bool bPhy) override;
+	SBAPI void enableCollisionSim(bool bCol) override;
 	SBAPI std::vector<CollisionRecord>& getCollisionRecords() { return collisionRecords; }
 
 	SBAPI std::string getPhysicsCharacterName() { return characterName; }		
@@ -193,7 +193,7 @@ public:
 	SBAPI std::vector<SbmJointObj*> getJointObjList();
 	SBAPI std::vector<SBPhysicsJoint*> getPhyJointList();
 	SBAPI std::map<std::string,SbmJointObj*>& getJointObjMap();
-	SBAPI virtual void notify(SBSubject* subject);
+	SBAPI void notify(SBSubject* subject) override;
 	SBAPI void updatePDTorque();
 protected:
 	void cleanUpJoints();

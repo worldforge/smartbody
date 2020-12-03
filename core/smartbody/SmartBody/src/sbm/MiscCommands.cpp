@@ -68,9 +68,9 @@ int set_attribute( SbmPawn* pawn, std::string& attribute, srArgBuffer& args)
 		{
 			SkSkeleton* skeleton = pawn->_skeleton;
 			std::vector<SkJoint*>& joints = skeleton->get_joint_array();
-			for (size_t j = 0; j < joints.size(); j++)
+			for (auto & joint : joints)
 			{
-				SmartBody::util::log("%s : %f", joints[j]->jointName().c_str(), joints[j]->mass());
+				SmartBody::util::log("%s : %f", joint->jointName().c_str(), joint->mass());
 
 			}
 			return CMD_SUCCESS;

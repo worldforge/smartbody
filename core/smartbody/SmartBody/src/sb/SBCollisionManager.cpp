@@ -27,14 +27,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBEvent.h>
 #include "SBUtilities.h"
-#include <sbm/ODEPhysicsSim.h>
 #include <boost/lexical_cast.hpp>
 #include <sr/sr_color.h>
 
 
 namespace SmartBody {
 
-SBCollisionManager::SBCollisionManager()
+SBCollisionManager::SBCollisionManager(std::unique_ptr<SBCollisionSpace> collisionSpace)
+: _collisionSpace(std::move(collisionSpace))
 {
 	setName("collision");
 
@@ -56,9 +56,7 @@ SBCollisionManager::SBCollisionManager()
 	_jointBVLenRadRatio = 4.0f;
 }
 
-SBCollisionManager::~SBCollisionManager()
-{
-}
+SBCollisionManager::~SBCollisionManager() = default;
 
 void SBCollisionManager::setEnable(bool enable)
 {
@@ -70,7 +68,7 @@ void SBCollisionManager::setEnable(bool enable)
 	SmartBody::SBAttribute* attribute = getAttribute("enable");
 	if (attribute)
 	{
-		SmartBody::BoolAttribute* enableAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
+		auto* enableAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 		enableAttribute->setValueFast(enable);
 	}
 }
@@ -94,19 +92,17 @@ void SBCollisionManager::start()
 	}
 	_positions.clear();
 	_velocities.clear();
-	if (!collisionSpace)
-	{
-		collisionSpace = new ODECollisionSpace();
-
-	}
+//	if (!collisionSpace)
+//	{
+//		collisionSpace = new ODECollisionSpace();
+//
+//	}
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		 iter != characterNames.end();
-		 iter++)
+	for (const auto & characterName : characterNames)
 	{
-		_positions.insert(std::pair<std::string, SrVec>((*iter), SrVec()));
-		_velocities.insert(std::pair<std::string, SrVec>((*iter), SrVec()));
-		SBCharacter* character = scene->getCharacter(*iter);
+		_positions.insert(std::pair<std::string, SrVec>(characterName, SrVec()));
+		_velocities.insert(std::pair<std::string, SrVec>(characterName, SrVec()));
+		SBCharacter* character = scene->getCharacter(characterName);
 		if (!character->getGeomObject() || character->getGeomObject()->geomType() == "null") // no collision geometry setup for the character
 		{
 			if(_singleChrCapsuleMode)
@@ -129,10 +125,9 @@ void SBCollisionManager::start()
 				const std::vector<SkJoint*>& origJnts = sk->joints();
 				sk->update_global_matrices();
 				std::vector<SkJoint*> jnt_excld_list;
-				for(unsigned int i=0; i<origJnts.size(); i++)
+				for(auto j : origJnts)
 				{
-					SkJoint* j = origJnts[i];
-					SrString jname(j->jointName().c_str());
+						SrString jname(j->jointName().c_str());
 					if(jname.search("world_offset")>=0) { jnt_excld_list.emplace_back(j); continue; } // skip world_offset
 					if(jname.search("face")>=0) { jnt_excld_list.emplace_back(j); continue; }
 					if(jname.search("brow")>=0) { jnt_excld_list.emplace_back(j); continue; }
@@ -152,10 +147,9 @@ void SBCollisionManager::start()
 				}
 				std::string chrName = character->getGeomObjectName();
 				float chrHeight = character->getHeight();
-				for(unsigned int i=0; i<origJnts.size(); i++)
+				for(auto j : origJnts)
 				{
-					SkJoint* j = origJnts[i];
-					if(isJointExcluded(j, jnt_excld_list)) continue;
+						if(isJointExcluded(j, jnt_excld_list)) continue;
 					SrString jname(j->jointName().c_str());
 					for(int k=0; k<j->num_children(); k++)
 					{
@@ -178,10 +172,9 @@ void SBCollisionManager::start()
 	}
 
 	const std::vector<std::string>& pawnNames = scene->getPawnNames();
-	for (std::vector<std::string>::const_iterator iter = pawnNames.begin();
-		 iter != pawnNames.end(); iter++)
+	for (const auto & pawnName : pawnNames)
 	{
-		SBPawn* pawn = scene->getPawn(*iter);
+		SBPawn* pawn = scene->getPawn(pawnName);
 		if(pawn->getGeomObject()->geomType() != "null")
 		{
 			//SBGeomObject* obj = pawn->getGeomObject();
@@ -196,8 +189,8 @@ void SBCollisionManager::start()
 
 bool SBCollisionManager::isJointExcluded(SkJoint* j, const std::vector<SkJoint*>& jnt_excld_list)
 {
-	for(unsigned int i=0; i<jnt_excld_list.size(); i++)
-		if(jnt_excld_list[i] == j)
+	for(auto i : jnt_excld_list)
+		if(i == j)
 			return true;
 	return false;
 }
@@ -220,16 +213,14 @@ void SBCollisionManager::afterUpdate(double time)
 		timeDt = .016;
 	
 	const std::vector<std::string>& characters = scene->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characters.begin();
-		 iter != characters.end();
-		 iter++)
+	for (const auto & iter : characters)
 	{
-		SBCharacter* character =  scene->getCharacter((*iter));
+		SBCharacter* character =  scene->getCharacter(iter);
 		SrVec position = character->getPosition();
 		position[1] = 0.0;
-		SrVec& oldPosition = _positions[(*iter)];		
-		_velocities[(*iter)] = (position - oldPosition) / (float) timeDt;		
-		_positions[(*iter)] = position;
+		SrVec& oldPosition = _positions[iter];
+		_velocities[iter] = (position - oldPosition) / (float) timeDt;
+		_positions[iter] = position;
 	}
 
 	int curIteration = 0;
@@ -243,14 +234,14 @@ void SBCollisionManager::afterUpdate(double time)
 	{
 		needMoreIterations = false;
 		SbmCollisionPairList potentialCollisions;		
-		collisionSpace->getPotentialCollisionPairs(potentialCollisions);
+		_collisionSpace->getPotentialCollisionPairs(potentialCollisions);
 
-		for (unsigned int i=0;i<potentialCollisions.size();i++)
+		for (auto & potentialCollision : potentialCollisions)
 		{
 			// unfiltered
 			//SmartBody::util::log("Collision Pair = %s %s",potentialCollisions[i].first.c_str(), potentialCollisions[i].second.c_str());
-			SBGeomObject* g1 = getCollisionObject(potentialCollisions[i].first);
-			SBGeomObject* g2 = getCollisionObject(potentialCollisions[i].second);
+			SBGeomObject* g1 = getCollisionObject(potentialCollision.first);
+			SBGeomObject* g2 = getCollisionObject(potentialCollision.second);
 
 			// skip self-collision within skeleton/character's joints
 			if(!_singleChrCapsuleMode) 
@@ -265,8 +256,8 @@ void SBCollisionManager::afterUpdate(double time)
 			//SmartBody::util::log("Potential Collision Pair: %s %s",potentialCollisions[i].first.c_str(), potentialCollisions[i].second.c_str());
 
 			std::vector<SBGeomContact> contactPts;
-			SBCollisionUtil::collisionDetection(g1,g2,contactPts);
-			if (contactPts.size() > 0)	
+			_collisionSpace->collisionDetection(g1,g2,contactPts);
+			if (!contactPts.empty())
 			{
 				// collision handling here
 				if(_singleChrCapsuleMode)
@@ -338,12 +329,12 @@ void SBCollisionManager::afterUpdate(double time)
 					//	delete collisionEvent; // free the memory
 					//}
 
-					const std::string& obj1 = potentialCollisions[i].first;
-					const std::string& obj2 = potentialCollisions[i].second;
+					const std::string& obj1 = potentialCollision.first;
+					const std::string& obj2 = potentialCollision.second;
 
 					//SmartBody::util::log("Collision detected between %s and %s", obj1.c_str(), obj2.c_str());
 
-					SBEvent* collisionEvent = eventManager->createEvent("collision",obj1+"/"+obj2, potentialCollisions[i].first);
+					SBEvent* collisionEvent = eventManager->createEvent("collision",obj1+"/"+obj2, potentialCollision.first);
 					eventManager->handleEvent(collisionEvent);
 					delete collisionEvent; // free the memory
 				}
@@ -489,7 +480,7 @@ bool SBCollisionManager::addObjectToCollisionSpace( const std::string& geomName 
 	SBGeomObject* geomObj = getCollisionObject(geomName);
 	if (geomObj)
 	{
-		collisionSpace->addCollisionObjects(geomName);
+		_collisionSpace->addCollisionObjects(geomName);
 		return true;
 	}
 	return false;
@@ -501,8 +492,8 @@ bool SBCollisionManager::removeObjectFromCollisionSpace( const std::string& geom
 	SBGeomObject* geomObj = getCollisionObject(geomName);
 	if (geomObj)
 	{
-		if (collisionSpace)
-			collisionSpace->removeCollisionObjects(geomName);
+		if (_collisionSpace)
+			_collisionSpace->removeCollisionObjects(geomName);
 		return true;
 	}
 	return false;

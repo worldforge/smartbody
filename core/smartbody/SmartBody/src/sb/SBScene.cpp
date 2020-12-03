@@ -154,9 +154,9 @@ class ForwardLogListener : public SmartBody::util::Listener
 };
 
 
-SBScene::SBScene() : SBObject(),
-_assetStore(std::make_unique<SBAssetStore>(*this))
-
+SBScene::SBScene(CoreServices coreServices) : SBObject(),
+_assetStore(std::make_unique<SBAssetStore>(*this)),
+_coreServices(std::move(coreServices))
 {
 	_scene = this;
 	_processId = "";
@@ -174,11 +174,9 @@ _assetStore(std::make_unique<SBAssetStore>(*this))
 	_steerManager = new SBSteerManager();
 	_realtimeManager = new SBRealtimeManager();
 	_serviceManager = new SBServiceManager();
-	_physicsManager = new SBPhysicsManager();
 	_gestureMapManager = new SBGestureMapManager();
 	_jointMapManager = new SBJointMapManager();
 	_boneBusManager = new SBBoneBusManager();
-	_collisionManager = new SBCollisionManager();
 	_phonemeManager = new SBPhonemeManager();
 	_behaviorSetManager = new SBBehaviorSetManager();
 	_retargetManager = new SBRetargetManager();
@@ -197,9 +195,9 @@ _assetStore(std::make_unique<SBAssetStore>(*this))
 
 	// add the services
 	_serviceManager->addService(_steerManager);
-	_serviceManager->addService(_physicsManager);
+	_serviceManager->addService(_coreServices.physicsManager.get());
 	_serviceManager->addService(_boneBusManager);
-	_serviceManager->addService(_collisionManager);
+	_serviceManager->addService(_coreServices.collisionManager.get());
 	_serviceManager->addService(_vhmsgManager);
 	_serviceManager->addService(_realtimeManager);
 	_serviceManager->addService(_phonemeManager);
@@ -335,17 +333,17 @@ _assetStore(std::make_unique<SBAssetStore>(*this))
 
 }
 
-void SBScene::cleanup()
+SBScene::~SBScene()
 {
 	// stop the simulation
 	getSimulationManager()->stop();
-	
+
 	// reset the simulation parameters
 	getSimulationManager()->setSimFps(0);
 
 	// remove the characters
 	removeAllCharacters();
-	
+
 	// remove the pawns
 	removeAllPawns();
 
@@ -388,7 +386,7 @@ void SBScene::cleanup()
 	removeAllAssetPaths("script");
 	removeAllAssetPaths("motion");
 	removeAllAssetPaths("mesh");
-	removeAllAssetPaths("audio");	
+	removeAllAssetPaths("audio");
 
 	delete _sim;
 	delete _profiler;
@@ -397,11 +395,9 @@ void SBScene::cleanup()
 	delete _reachManager;
 	delete _steerManager;
 	delete _serviceManager;
-	delete _physicsManager;
 	delete _gestureMapManager;
 	delete _jointMapManager;
 	delete _boneBusManager;
-	delete _collisionManager;
 	delete _phonemeManager;
 	delete _behaviorSetManager;
 	delete _retargetManager;
@@ -421,11 +417,9 @@ void SBScene::cleanup()
 	_reachManager = nullptr;
 	_steerManager= nullptr;
 	_serviceManager = nullptr;
-	_physicsManager = nullptr;
 	_gestureMapManager= nullptr;
 	_jointMapManager = nullptr;
 	_boneBusManager = nullptr;
-	_collisionManager = nullptr;
 	_phonemeManager = nullptr;
 	_behaviorSetManager = nullptr;
 	_retargetManager = nullptr;
@@ -458,7 +452,7 @@ void SBScene::cleanup()
 	_ogreViewer = nullptr;
 	_viewerFactory = nullptr;
 	_ogreViewerFactory = nullptr;
-	
+
 #ifndef SB_NO_VHCL_AUDIO
 	AUDIO_Close();
 	AUDIO_Init();
@@ -466,8 +460,8 @@ void SBScene::cleanup()
 
 	if (_vhmsgManager->isEnable() && _vhmsgManager->isConnected())
 		_vhmsgManager->send( "vrProcEnd sbm" );
-	
-//	delete _vhmsgManager;	
+
+//	delete _vhmsgManager;
 //	_vhmsgManager = nullptr;
 
 //#if !defined(SB_IPHONE)
@@ -475,12 +469,6 @@ void SBScene::cleanup()
 //	SbmShaderManager::destroy_singleton();
 //#endif
 
-
-}
-
-SBScene::~SBScene()
-{
-	cleanup();
 	for (auto iter = _scripts.begin();
 		 iter != _scripts.end();
 		 iter++)
@@ -642,11 +630,9 @@ void SBScene::update()
 
 	this->getProfiler()->mark("pawn", 1, "controller evaluation");
 	const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
-	for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-		pawnIter != pawns.end();
-		pawnIter++)
+	for (const auto & pawnIter : pawns)
 	{
-		SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn((*pawnIter));
+		SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
 		this->getProfiler()->mark(pawn->getName().c_str(), 1, "controller evaluation");
 		pawn->reset_all_channels();
 		pawn->ct_tree_p->evaluate( getSimulationManager()->getTime() );
@@ -700,63 +686,53 @@ void SBScene::update()
 	
 	this->getProfiler()->mark("pawn", 1, "afterUpdate()");
 	const std::vector<std::string>& pawnNames = getPawnNames();
-	for (std::vector<std::string>::const_iterator iter = pawnNames.begin();
-		iter != pawnNames.end();
-		iter++)
+	for (const auto & pawnName : pawnNames)
 	{
-		SBPawn* pawn = getPawn(*iter);
+		SBPawn* pawn = getPawn(pawnName);
 		pawn->afterUpdate(getSimulationManager()->getTime());
 	}
 	this->getProfiler()->mark("pawn");
 
 	this->getProfiler()->mark("listeners", 1, "OnSimulationUpdate()");
 	std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
-	for (size_t i = 0; i < listeners.size(); i++)
+	for (auto & listener : listeners)
 	{
-		listeners[i]->OnSimulationUpdate( );
+		listener->OnSimulationUpdate( );
 	}
 	this->getProfiler()->mark("listeners");
 	//SmartBody::util::log("After listener update");
 	this->getProfiler()->mark("scripts", 1, "update()");
-	for (std::map<std::string, SmartBody::SBScript*>::iterator iter = scripts.begin();
-		iter != scripts.end();
-		iter++)
+	for (auto & script : scripts)
 	{
-		if ((*iter).second->isEnable())
-			(*iter).second->update(getSimulationManager()->getTime());
+		if (script.second->isEnable())
+			script.second->update(getSimulationManager()->getTime());
 	}
 	this->getProfiler()->mark("scripts");
 	//SmartBody::util::log("After running scripts");
 	this->getProfiler()->mark("services", 1, "update()");
-	for (std::map<std::string, SmartBody::SBService*>::iterator iter = services.begin();
-		iter != services.end();
-		iter++)
+	for (auto & service : services)
 	{
-		if ((*iter).second->isEnable())
-			(*iter).second->update(getSimulationManager()->getTime());
+		if (service.second->isEnable())
+			service.second->update(getSimulationManager()->getTime());
 	}
 	this->getProfiler()->mark("services");
 	//SmartBody::util::log("After service update");
 	// services
 	this->getProfiler()->mark("services", 1, "afterUpdate()");
-	for (std::map<std::string, SmartBody::SBService*>::iterator iter = services.begin();
-		iter != services.end();
-		iter++)
+	for (auto & service : services)
 	{
-		if ((*iter).second->isEnable())
-			(*iter).second->afterUpdate(getSimulationManager()->getTime());
+		if (service.second->isEnable())
+			service.second->afterUpdate(getSimulationManager()->getTime());
 	}
 	this->getProfiler()->mark("services");
 
 
 	// scripts
 	this->getProfiler()->mark("scripts", 1, "afterUpdate()");
-	for (std::map<std::string, SmartBody::SBScript*>::iterator iter = scripts.begin();
-		iter != scripts.end();
-		iter++)
+	for (auto & script : scripts)
 	{
-		if ((*iter).second->isEnable())
-			(*iter).second->afterUpdate(getSimulationManager()->getTime());
+		if (script.second->isEnable())
+			script.second->afterUpdate(getSimulationManager()->getTime());
 	}
 	this->getProfiler()->mark("scripts");
 
@@ -783,12 +759,6 @@ float SBScene::getScale()
 {
 	return _scale;
 }
-
-//void SBScene::reset()
-//{
-//	cleanup();
-//	initialize();
-//}
 
 void SBScene::notify( SBSubject* subject )
 {
@@ -1378,7 +1348,7 @@ SBServiceManager* SBScene::getServiceManager()
 
 SBCollisionManager* SBScene::getCollisionManager()
 {
-	return _collisionManager;
+	return _coreServices.collisionManager.get();
 }
 
 SBPhonemeManager* SBScene::getDiphoneManager()
@@ -1413,7 +1383,7 @@ SBSpeechManager* SBScene::getSpeechManager()
 
 SBPhysicsManager* SBScene::getPhysicsManager()
 {
-	return _physicsManager;
+	return _coreServices.physicsManager.get();
 }
 
 SBBoneBusManager* SBScene::getBoneBusManager()
@@ -1855,14 +1825,14 @@ void SBScene::createDefaultControllers()
 	 _defaultControllers.emplace_back(new MeCtGenericHand());
 	 _defaultControllers.emplace_back(new RealTimeLipSyncController());
 
-	 for (size_t x = 0; x < _defaultControllers.size(); x++)
-		 _defaultControllers[x]->ref();
+	 for (auto & _defaultController : _defaultControllers)
+		 _defaultController->ref();
 }
 
 void SBScene::removeDefaultControllers()
 {
-	 for (size_t x = 0; x < _defaultControllers.size(); x++)
-		 _defaultControllers[x]->unref();
+	 for (auto & _defaultController : _defaultControllers)
+		 _defaultController->unref();
 	 _defaultControllers.clear();
 }
 

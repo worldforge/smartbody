@@ -704,16 +704,13 @@ void ODEObj::cleanGeometry()
 
 ODEJoint::ODEJoint()
 {
-	jointID = 0;
-	aMotorID = 0;
-	parentID = childID = 0;
+	jointID = nullptr;
+	aMotorID = nullptr;
+	parentID = childID = nullptr;
 	joint = nullptr;
 }
 
-ODEJoint::~ODEJoint()
-{
-	
-}
+ODEJoint::~ODEJoint() = default;
 
 /************************************************************************/
 /* Collision Space ODE                                                  */
@@ -816,6 +813,30 @@ std::string ODECollisionSpace::getODEGeomName( dGeomID geomID )
 SbmCollisionPairList& ODECollisionSpace::getCurrentCollisionPairList()
 {
 	return curCollisionPairs;
+}
+
+void ODECollisionSpace::collisionDetection(SBGeomObject* obj1, SBGeomObject* obj2, std::vector<SBGeomContact>& contactPts) {
+	dGeomID odeGeom1 = ODEPhysicsSim::createODERawGeometry(obj1);
+	dGeomID odeGeom2 = ODEPhysicsSim::createODERawGeometry(obj2);
+
+	ODEPhysicsSim::updateODEGeometryTransform(obj1,odeGeom1);
+	ODEPhysicsSim::updateODEGeometryTransform(obj2,odeGeom2);
+
+	const int N = 1;
+	dContact contact[N];
+	contactPts.clear();
+	int nContact = dCollide(odeGeom1,odeGeom2,N,&contact[0].geom,sizeof(dContact));
+	for (int i=0;i<nContact;i++)
+	{
+		SBGeomContact geomContact;
+		dContactGeom& ct = contact[i].geom;
+		geomContact.contactPoint = SrVec((float)ct.pos[0],(float)ct.pos[1],(float)ct.pos[2]);
+		geomContact.contactNormal = SrVec((float)ct.normal[0],(float)ct.normal[1],(float)ct.normal[2]);
+		geomContact.penetrationDepth = (float)ct.depth;
+		contactPts.emplace_back(geomContact);
+	}
+	dGeomDestroy(odeGeom1);
+	dGeomDestroy(odeGeom2);
 }
 
 #endif

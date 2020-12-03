@@ -34,12 +34,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBAssetHandlerHDR.h"
 #include "sb/SBAssetHandlerSBMeshBinary.h"
 
+#include "sb/SBPhysicsManager.h"
+#include "sb/SBCollisionManager.h"
+
 #include "sbm/mcontrol_debugger.h"
+
+#include "sbm/ODEPhysicsSim.h"
 
 Session* Session::current = nullptr;
 
 Session::Session()
-		: renderAssetManager(scene, scene.getAssetStore()),
+		: scene(SmartBody::SBScene::CoreServices{std::make_unique<SmartBody::SBPhysicsManager>(std::make_unique<ODEPhysicsSim>()),
+												 std::make_unique<SmartBody::SBCollisionManager>(std::make_unique<ODECollisionSpace>())}),
+		  renderAssetManager(scene, scene.getAssetStore()),
 		  renderScene(scene, renderAssetManager),
 		  debuggerServer(renderScene) {
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerSkm>());

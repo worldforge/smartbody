@@ -85,12 +85,17 @@ class SBScene : public SBObject
 {
 	public:
 
+	struct CoreServices {
+		std::unique_ptr<SBPhysicsManager> physicsManager;
+		std::unique_ptr<SBCollisionManager> collisionManager;
+	};
+
 		struct Provider {
 			std::function<SmartBody::SBObject*(const std::string&)> objectProvider;
 			std::function<std::string(SmartBody::SBObject&)> stringProvider;
 		};
 
-		SBAPI SBScene();
+		SBAPI SBScene(CoreServices coreServices);
 		SBAPI ~SBScene();
 
 		SBAPI void setProcessId(const std::string& id);
@@ -320,11 +325,11 @@ class SBScene : public SBObject
 
 	protected:
 
-		void cleanup();
 		void createDefaultControllers();
 		void removeDefaultControllers();
 
 		std::unique_ptr<SBAssetStore> _assetStore;
+		CoreServices _coreServices;
 
 		SBSimulationManager* _sim;
 		SBProfiler* _profiler;
@@ -334,11 +339,9 @@ class SBScene : public SBObject
 		SBSteerManager* _steerManager;
 		SBRealtimeManager* _realtimeManager;
 		SBServiceManager* _serviceManager;
-		SBPhysicsManager* _physicsManager;
 		SBBoneBusManager* _boneBusManager;
 		SBGestureMapManager* _gestureMapManager;
 		SBJointMapManager* _jointMapManager;
-		SBCollisionManager* _collisionManager;
 		SBPhonemeManager* _phonemeManager;
 		SBRetargetManager* _retargetManager;
 		SBEventManager* _eventManager;

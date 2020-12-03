@@ -117,12 +117,13 @@ public:
 	ODECollisionSpace();
 	~ODECollisionSpace();
 
-	virtual void addCollisionObjects(const std::string& objName);
-	virtual void removeCollisionObjects(const std::string& objName);
-	virtual void getPotentialCollisionPairs(SbmCollisionPairList& collisionPairs);
+	void addCollisionObjects(const std::string& objName) override;
+	void removeCollisionObjects(const std::string& objName) override;
+	void getPotentialCollisionPairs(SbmCollisionPairList& collisionPairs) override;
 	static  void collisionSpaceNearCallBack(void *data, dGeomID o1, dGeomID o2);
 	std::string getODEGeomName(dGeomID geomID);
 	SbmCollisionPairList& getCurrentCollisionPairList();
+	void collisionDetection(SBGeomObject* obj1, SBGeomObject* obj2, std::vector<SBGeomContact>& contactPts);
 protected:
 	dGeomID getODEGeomID(const std::string& geomName);	
 };

@@ -26,26 +26,27 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSubject.h>
 #include <sb/SBColObject.h>
 #include <sk/sk_joint.h>
-
+#include <memory>
+#include <boost/noncopyable.hpp>
 namespace SmartBody {
 
-class SBCollisionManager : public SBService
+class SBCollisionManager : public SBService, public boost::noncopyable
 {
 	public:
-		SBAPI SBCollisionManager();
+		SBAPI SBCollisionManager(std::unique_ptr<SBCollisionSpace> collisionSpace);
 		SBAPI ~SBCollisionManager();
 
-		SBAPI virtual void setEnable(bool enable);
-		SBAPI virtual void start();
+		SBAPI void setEnable(bool enable) override;
+		SBAPI void start() override;
 		SBAPI virtual bool getJointCollisionMode() { return _singleChrCapsuleMode; }
-		SBAPI virtual void beforeUpdate(double time);
-		SBAPI virtual void update(double time);
-		SBAPI virtual void afterUpdate(double time);
-		SBAPI virtual void stop();
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void beforeUpdate(double time) override;
+		SBAPI void update(double time) override;
+		SBAPI void afterUpdate(double time) override;
+		SBAPI void stop() override;
+		SBAPI void notify(SBSubject* subject) override;
 
-		SBAPI virtual void onCharacterDelete(SBCharacter* character);
-		SBAPI virtual void onPawnDelete(SBPawn* character);
+		SBAPI void onCharacterDelete(SBCharacter* character) override;
+		SBAPI void onPawnDelete(SBPawn* character) override;
 
 		SBAPI SBGeomObject* createCollisionObject(const std::string& geomName, const std::string& geomType, SrVec size, SrVec from = SrVec(), SrVec to = SrVec());	
 		SBAPI SBGeomObject* getCollisionObject(const std::string& geomName);
@@ -55,7 +56,7 @@ class SBCollisionManager : public SBService
 		SBAPI std::map<std::string, SBGeomObject*>& getAllCollisionObjects();
 
 	protected:
-		SBCollisionSpace* collisionSpace;
+		std::unique_ptr<SBCollisionSpace> _collisionSpace;
 		float _characterRadius;
 		int _maxIterations;
 		std::map<std::string, SrVec> _velocities;

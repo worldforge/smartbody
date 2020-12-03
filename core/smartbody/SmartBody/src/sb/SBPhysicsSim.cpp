@@ -52,9 +52,7 @@ SBPhysicsSim::SBPhysicsSim()
 	SBObject::createBoolAttribute("enable",false,true, "Basic", 20, false, false, false, "?");	
 }
 
-SBPhysicsSim::~SBPhysicsSim()
-{
-}
+SBPhysicsSim::~SBPhysicsSim() = default;
 
 void SBPhysicsSim::updateSimulation( float timestep )
 {
@@ -134,7 +132,7 @@ bool SBPhysicsSim::hasPhysicsCharacter( SBPhysicsCharacter* phyChar )
 
 SBPhysicsObj* SBPhysicsSim::getPhysicsPawn( const std::string& pawnName )
 {
-	SBPhysicsPawnMap::iterator iter = pawnObjMap.find(pawnName);
+	auto iter = pawnObjMap.find(pawnName);
 	if (iter == pawnObjMap.end())
 		return nullptr;
 	else
@@ -143,7 +141,7 @@ SBPhysicsObj* SBPhysicsSim::getPhysicsPawn( const std::string& pawnName )
 
 SBPhysicsCharacter* SBPhysicsSim::getPhysicsCharacter( const std::string& charName )
 {
-	SBPhysicsCharacterMap::iterator iter = characterMap.find(charName);
+	auto iter = characterMap.find(charName);
 	if (iter == characterMap.end())
 		return nullptr;
 	else
@@ -194,7 +192,7 @@ void SBPhysicsSim::updateAllPhysicsJoints()
 
 SBPhysicsSim* SBPhysicsSim::getPhysicsEngine()
 {
-	
+
 	if ( SmartBody::SBScene::getScene())
 		return SmartBody::SBScene::getScene()->getPhysicsManager()->getPhysicsEngine();
 	else
@@ -619,7 +617,7 @@ SBPhysicsJoint* SBPhysicsCharacter::getPhyJoint(const std::string& jointName )
 std::vector<SbmJointObj*> SBPhysicsCharacter::getJointObjList()
 {
 	std::vector<SbmJointObj*> jointObjList;
-	std::map<std::string, SbmJointObj*>::iterator mi = jointObjMap.begin();
+	auto mi = jointObjMap.begin();
 	for ( mi  = jointObjMap.begin();
 		 mi != jointObjMap.end();
 		 mi++)
@@ -633,7 +631,7 @@ std::vector<SbmJointObj*> SBPhysicsCharacter::getJointObjList()
 std::vector<SBPhysicsJoint*> SBPhysicsCharacter::getPhyJointList()
 {
 	std::vector<SBPhysicsJoint*> jointList;
-	std::map<std::string, SBPhysicsJoint*>::iterator mi = jointMap.begin();
+	auto mi = jointMap.begin();
 	for ( mi  = jointMap.begin();
 		  mi != jointMap.end();
 		  mi++)
@@ -649,7 +647,7 @@ std::map<std::string,SbmJointObj*>& SBPhysicsCharacter::getJointObjMap()
 	return jointObjMap;
 }
 
-void SBPhysicsCharacter::initPhysicsCharacter( std::string& charName, std::vector<std::string>& jointNameList, bool buildGeometry )
+void SBPhysicsCharacter::initPhysicsCharacter(const std::string& charName, std::vector<std::string>& jointNameList, bool buildGeometry )
 {
 	
 	SBScene* scene = SmartBody::SBScene::getScene();
@@ -677,7 +675,7 @@ void SBPhysicsCharacter::initPhysicsCharacter( std::string& charName, std::vecto
 			//jointGeometryMap[jointNameList[i]] = jointGeom;
 		}
 		jointObj->initJoint(phyJoint);
-		jointObjMap[jointNameList[i]] = jointObj;	
+		jointObjMap[jointNameList[i]] = jointObj;
 		jointMap[jointNameList[i]] = phyJoint;
 		
 	}

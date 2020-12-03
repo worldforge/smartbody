@@ -49,7 +49,7 @@ class SBService : public SBObject
 		SBAPI virtual void onCharacterCreate(SBCharacter* character);
 		SBAPI virtual void onCharacterDelete(SBCharacter* character);
 
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 
 	protected:
 		bool _enabled;

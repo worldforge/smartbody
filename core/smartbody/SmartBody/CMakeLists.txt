@@ -302,8 +302,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sbm/xercesc_utils.cpp
 
 
-        src/sbm/ODEPhysicsSim.cpp
-
         src/sbm/PPRAISteeringAgent.cpp
         src/sbm/SteerSuiteEnginerDriver.cpp
         src/sbm/sr_path_list.cpp

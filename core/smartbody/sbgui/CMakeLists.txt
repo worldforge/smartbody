@@ -200,6 +200,7 @@ target_link_libraries(sbgui
         SmartBody-bindings-python
         SmartBody-debugger
         SmartBody-renderer-gl-bindings-python
+        SmartBody-physics-ode
         jpge
         pinocchio
         ${MORE_LIBS}
@@ -214,7 +215,9 @@ target_include_directories(sbgui PUBLIC
         $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-renderer-gl-bindings-python,INCLUDE_DIRECTORIES>)
+        $<TARGET_PROPERTY:SmartBody-renderer-gl-bindings-python,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-physics-ode,INCLUDE_DIRECTORIES>
+        )
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     conan_target_link_libraries(sbgui)

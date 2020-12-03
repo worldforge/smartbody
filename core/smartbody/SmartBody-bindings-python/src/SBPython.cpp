@@ -415,7 +415,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("stop", &SBSteerManager::stop, "Stop the steer simulation.")
 		;
 
-	boost::python::class_<SBCollisionManager, boost::python::bases<SBService> >("SBCollisionManager")
+	boost::python::class_<SBCollisionManager, boost::python::bases<SBService>, boost::noncopyable >("SBCollisionManager", boost::python::no_init)
 		.def("start", &SBCollisionManager::start, "Starts the collision manager.")
 		.def("stop", &SBCollisionManager::stop, "Stops the collision manager.")
 		;
@@ -438,7 +438,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 //	boost::python::class_<SBDebuggerServer, boost::python::bases<SBService> >("SBDebuggerServer")
 //		;
 
-	boost::python::class_<SBPhysicsManager, boost::python::bases<SBService> >("SBPhysicsManager")
+	boost::python::class_<SBPhysicsManager, boost::python::bases<SBService>, boost::noncopyable >("SBPhysicsManager", boost::python::no_init)
 		.def("createPhysicsCharacter", &SBPhysicsManager::createPhysicsCharacter, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Create a physics character.")
 		.def("createPhysicsPawn", &SBPhysicsManager::createPhysicsPawn, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Create a physics rigid body and attach it to the pawn.")
 		.def("getPhysicsEngine", &SBPhysicsManager::getPhysicsSimulationEngine, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Return the current physics engine")

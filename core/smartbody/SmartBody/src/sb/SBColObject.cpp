@@ -21,7 +21,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBColObject.h"
 #include "SBPhysicsSim.h"
 #include "gwiz_math.h"
-#include <sbm/ODEPhysicsSim.h>
 #include <ode/collision.h>
 #include <sb/SBCollisionManager.h>
 #include <sb/SBScene.h>
@@ -499,10 +498,7 @@ SBGeomCapsule::SBGeomCapsule( const SrVec& p1, const SrVec& p2, float r )
 	//updateGlobalTransform(SrMat::id);
 }
 
-SBGeomCapsule::~SBGeomCapsule()
-{
-
-}
+SBGeomCapsule::~SBGeomCapsule() = default;
 
 void SBGeomCapsule::setGeomSize(SrVec& size) 
 { 
@@ -571,25 +567,19 @@ SrBox SBGeomCapsule::getBoundingBox()
 
 
 
-SBGeomContact& SBGeomContact::operator=( const SBGeomContact& rt )
-{
-	contactPoint  = rt.contactPoint;
-	contactNormal = rt.contactNormal;
-	penetrationDepth = rt.penetrationDepth;	
-	return *this;
-}
+SBGeomContact& SBGeomContact::operator=( const SBGeomContact& rt ) = default;
 
 
 bool SBCollisionUtil::checkIntersection( SBGeomObject* obj1, SBGeomObject* obj2 )
 {
 	if (dynamic_cast<SBGeomSphere*>(obj1))
 	{
-		SBGeomSphere* sph = dynamic_cast<SBGeomSphere*>(obj1);
+		auto* sph = dynamic_cast<SBGeomSphere*>(obj1);
 		return obj2->isInside(obj1->getCombineTransform().tran,sph->radius);
 	}
 	else if (dynamic_cast<SBGeomCapsule*>(obj1))
 	{
-		SBGeomCapsule* cap = dynamic_cast<SBGeomCapsule*>(obj1);
+		auto* cap = dynamic_cast<SBGeomCapsule*>(obj1);
 		SrVec g1,g2;
 		g1 = cap->endPts[0]*cap->getCombineTransform().gmat();
 		g2 = cap->endPts[1]*cap->getCombineTransform().gmat();
@@ -606,46 +596,14 @@ bool SBCollisionUtil::checkIntersection( SBGeomObject* obj1, SBGeomObject* obj2 
 }
 
 
-void SBCollisionUtil::collisionDetection( SBGeomObject* obj1, SBGeomObject* obj2, std::vector<SBGeomContact>& contactPts )
-{
-#ifndef SB_NO_ODE_PHYSICS
-	dGeomID odeGeom1 = ODEPhysicsSim::createODERawGeometry(obj1);
-	dGeomID odeGeom2 = ODEPhysicsSim::createODERawGeometry(obj2);
-
-	ODEPhysicsSim::updateODEGeometryTransform(obj1,odeGeom1);
-	ODEPhysicsSim::updateODEGeometryTransform(obj2,odeGeom2);
-
-	const int N = 1;
-	dContact contact[N];
-	contactPts.clear();
-	int nContact = dCollide(odeGeom1,odeGeom2,N,&contact[0].geom,sizeof(dContact));
-	for (int i=0;i<nContact;i++)
-	{
-		SBGeomContact geomContact;
-		dContactGeom& ct = contact[i].geom;
-		geomContact.contactPoint = SrVec((float)ct.pos[0],(float)ct.pos[1],(float)ct.pos[2]);	
-		geomContact.contactNormal = SrVec((float)ct.normal[0],(float)ct.normal[1],(float)ct.normal[2]);
-		geomContact.penetrationDepth = (float)ct.depth;
-		contactPts.emplace_back(geomContact);
-	}
-	dGeomDestroy(odeGeom1);
-	dGeomDestroy(odeGeom2);
-#endif
-}
 
 /************************************************************************/
 /* Collision Space                                                      */
 /************************************************************************/
 
-SBCollisionSpace::SBCollisionSpace()
-{
+SBCollisionSpace::SBCollisionSpace() = default;
 
-}
-
-SBCollisionSpace::~SBCollisionSpace()
-{
-
-}
+SBCollisionSpace::~SBCollisionSpace() = default;
 
 void SBCollisionSpace::addCollisionObjects( const std::string& objName )
 {	
