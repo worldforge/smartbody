@@ -31,6 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 namespace SmartBody {
 
 SBProfiler::SBProfiler()
+: profiler_p(std::make_unique<TimeIntervalProfiler>())
 {
 	setName("Profiler");
 
@@ -46,16 +47,10 @@ SBProfiler::SBProfiler()
 	createDoubleAttribute("decaying", .95,true,"Settings",90,false,false,false,"");
 	createIntAttribute("rolling", 1 ,true,"Settings",100,false,false,false,"");
 
-	profiler_p = new TimeIntervalProfiler();
-
-	internal_profiler_p = nullptr;
-	external_profiler_p = nullptr;
 	setEnable(false);
 }
 
-SBProfiler::~SBProfiler()
-{
-}
+SBProfiler::~SBProfiler() = default;
 
 void SBProfiler::setEnable(bool val)
 {
@@ -86,13 +81,7 @@ void SBProfiler::printReport()
 
 void SBProfiler::setupProfiler()
 {
-	external_profiler_p = new TimeIntervalProfiler();
-	profiler_p = external_profiler_p;
-}
-
-void SBProfiler::switch_internal_profiler( void )	{
-	if( internal_profiler_p == nullptr ) internal_profiler_p = new TimeIntervalProfiler;
-	profiler_p = internal_profiler_p;
+	profiler_p = std::make_unique<TimeIntervalProfiler>();
 }
 
 void SBProfiler::mark( const char* group_name, int level, const char* label )	{
@@ -192,31 +181,15 @@ void SBProfiler::notify( SBSubject* subject )
 }
 
 SBSimulationManager::SBSimulationManager()
+: _simStarted(false),
+  _simPlaying(false),
+  _simStopped(false),
+  time(0.0),
+  time_dt(0.16)
 {
-	_simStarted = false;
-	_simPlaying = false;
-	_hasTimer = false;
-	_simStopped = false;
-
-	
-	internal_timer_p = nullptr;
-	external_timer_p = nullptr;
-	timer_p = nullptr;
-	time = 0.0;
-	time_dt = 0.16;
 }
 
-SBSimulationManager::~SBSimulationManager()
-{
-	if (_hasTimer)
-	{
-		timer_p;
-	}
-
-	internal_timer_p = nullptr;
-	external_timer_p = nullptr;
-	timer_p = nullptr;
-}
+SBSimulationManager::~SBSimulationManager() = default;
 
 void SBSimulationManager::printInfo()
 {
@@ -326,11 +299,9 @@ void SBSimulationManager::start()
 {
 	// run the start scripts
 	std::map<std::string, SBScript*>& scripts = SmartBody::SBScene::getScene()->getScripts();
-	for (std::map<std::string, SBScript*>::iterator iter = scripts.begin();
-		 iter != scripts.end();
-		 iter++)
+	for (auto & script : scripts)
 	{
-		(*iter).second->start();
+		script.second->start();
 	}
 	
 
@@ -348,11 +319,9 @@ void SBSimulationManager::stop()
 {
 	// run the stop scripts
 	std::map<std::string, SBScript*>& scripts = SmartBody::SBScene::getScene()->getScripts();
-	for (std::map<std::string, SBScript*>::iterator iter = scripts.begin();
-		 iter != scripts.end();
-		 iter++)
+	for (auto & script : scripts)
 	{
-		(*iter).second->stop();
+		script.second->stop();
 	}
 	
 	if (timer_p)	
@@ -469,10 +438,8 @@ void SBSimulationManager::setSpeed(float v)
 
 void SBSimulationManager::setupTimer()
 {
-	TimeRegulator* timer = new TimeRegulator();
-	_hasTimer = true;
 
-	register_timer( *timer );
+	register_timer( std::make_unique<TimeRegulator>() );
 }
 
 void SBSimulationManager::setSleepLock()
@@ -491,14 +458,10 @@ void SBSimulationManager::set_perf(float val)
 		timer_p->set_perf(val);
 }
 
-void SBSimulationManager::register_timer( TimeRegulator& time_reg )	{
-	external_timer_p = &( time_reg );
-	timer_p = external_timer_p;
+void SBSimulationManager::register_timer( std::unique_ptr<TimeRegulator> time_reg )	{
+	timer_p = std::move(time_reg);
 }
-void SBSimulationManager::switch_internal_timer( void )	{
-	if( internal_timer_p == nullptr ) internal_timer_p = new TimeRegulator;
-	timer_p = internal_timer_p;
-}
+
 
 bool SBSimulationManager::updateTimer( double in_time)
 {

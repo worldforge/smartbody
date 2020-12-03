@@ -23,24 +23,24 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sb/SBService.h>
-
+#include <boost/noncopyable.hpp>
+#include <memory>
 class TimeRegulator;
 class TimeIntervalProfiler;
 
 namespace SmartBody {
 
-class SBProfiler : public SBService
+class SBProfiler : public SBService, public boost::noncopyable
 {
 	public:
 		SBAPI SBProfiler();
 		SBAPI ~SBProfiler();
 
-		SBAPI virtual void setEnable(bool val);
-		SBAPI virtual bool isEnable();
+		SBAPI void setEnable(bool val) override;
+		SBAPI bool isEnable() override;
 
 		SBAPI void setupProfiler();
 		SBAPI void updateProfiler(double in_time = -1.0 );
-		void switch_internal_profiler( void );
 		void mark( const char* group_name, int level, const char* label );
 		void mark_time( const char* group_name, int level, const char* label, double time );
 		int mark( const char* group_name );
@@ -49,17 +49,15 @@ class SBProfiler : public SBService
 		SBAPI void printStats();
 		SBAPI void printReport();
 
-		void notify( SBSubject* subject );
+		void notify( SBSubject* subject ) override;
 
 	protected:
-		TimeIntervalProfiler* internal_profiler_p;
-		TimeIntervalProfiler* external_profiler_p;
-		TimeIntervalProfiler* profiler_p;
+		std::unique_ptr<TimeIntervalProfiler> profiler_p;
 };
 
 
 
-class SBSimulationManager : public SBObject
+class SBSimulationManager : public SBObject, public boost::noncopyable
 {
 	public:
 		SBAPI SBSimulationManager();
@@ -76,8 +74,8 @@ class SBSimulationManager : public SBObject
 		SBAPI double getTimeDt();
 		SBAPI void setTime(double time);
 		SBAPI void stepDt(double dt);
-		SBAPI void start();
-		SBAPI void stop();
+		SBAPI void start() override;
+		SBAPI void stop() override;
 		SBAPI void reset();
 		SBAPI void pause();
 		SBAPI void resume();
@@ -96,19 +94,15 @@ class SBSimulationManager : public SBObject
 		
 		void set_perf(float val);
 
-		void register_timer( TimeRegulator& time_reg );
-		void switch_internal_timer( void );
+		void register_timer( std::unique_ptr<TimeRegulator> time_reg );
 		SBAPI bool updateTimer( double in_time = -1.0 );
 
 	protected:
 		bool _simStarted;
 		bool _simPlaying;
 		bool _simStopped;
-		bool _hasTimer;
 
-		TimeRegulator* internal_timer_p;
-		TimeRegulator* external_timer_p;
-		TimeRegulator* timer_p;
+		std::unique_ptr<TimeRegulator> timer_p;
 		
 		double			time;
 		double			time_dt;
@@ -116,6 +110,6 @@ class SBSimulationManager : public SBObject
 		SBProfiler* _profiler;
 };
 
-};
+}
 
 #endif

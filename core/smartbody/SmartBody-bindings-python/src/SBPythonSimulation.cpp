@@ -44,7 +44,7 @@ namespace SmartBody
 void pythonFuncsSimulation()
 {
 
-	boost::python::class_<SBSimulationManager>("SBSimulationManager")
+	boost::python::class_<SBSimulationManager, boost::noncopyable>("SBSimulationManager", boost::python::no_init)
 		.def("isRunning", &SBSimulationManager::isRunning, "Returns true if the simulation is currently running.")
 		.def("isStarted", &SBSimulationManager::isStarted, "Returns true if the simulation has been started.")
 		.def("printInfo", &SBSimulationManager::printInfo, "Print all the timing statistics. ")
@@ -67,7 +67,7 @@ void pythonFuncsSimulation()
 		.def("setSpeed", &SBSimulationManager::setSpeed, "Set the speed for real clock time. Actual time would be real time times speed.")
 		;
 
-	boost::python::class_<SBProfiler>("Profiler")
+	boost::python::class_<SBProfiler, boost::noncopyable>("Profiler", boost::python::no_init)
 		.def("printLegend", &SBProfiler::printLegend, "Print time profiler legend. ")
 		.def("printStats", &SBProfiler::printStats, "Print time profiler statistics. ")
 		.def("printReport", &SBProfiler::printReport, "Print time profiler report. ")
