@@ -61,10 +61,11 @@ class text_speech: public SmartBody::SpeechInterface {
 	private:
 		std::vector<SmartBody::VisemeData *>* extractVisemes(DOMNode* node, std::vector<SmartBody::VisemeData*>* visemes, const SbmCharacter* character);
 		std::string forPlaysound;
-		srHashMap<DOMNode>     uttLookUp;
+		std::map<std::string, std::unique_ptr<DOMNode>>     uttLookUp;
 		srHashMap<srCmdSeq>    scheduleLookUp;
 		srHashMap<std::string> charLookUp;
 		unsigned int           msgNumber;
+
 };
 
 

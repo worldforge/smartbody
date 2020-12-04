@@ -47,8 +47,7 @@ class AudioFileSpeech : public SpeechInterface
       };
 
    private:
-      XercesDOMParser * m_xmlParser;
-      HandlerBase * m_xmlHandler;
+      XmlContext xmlContext;
       int m_requestIdCounter;
 	  bool visemeCurveMode;
 	  bool useMotionByDefault;
@@ -88,7 +87,7 @@ class AudioFileSpeech : public SpeechInterface
 	  virtual void ReadSpeechTimingFast( const char * filename, std::map< std::string, float > & timeMarkers, rapidxml::xml_document<>& bmlDoc);
 	  virtual void ReadVisemeDataBMLFast( const char * filename, std::vector< VisemeData > & visemeData, const SbmCharacter* character, rapidxml::xml_document<>& bmldoc);
 
-	  std::map<std::string, DOMDocument*> xmlCache;
+	  std::map<std::string, std::unique_ptr<DOMDocument>> xmlCache;
 };
 
 };

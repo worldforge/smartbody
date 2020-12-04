@@ -119,9 +119,9 @@ void SBBMLSchedule::remove()
 }
 
 SBBmlProcessor::SBBmlProcessor()
+: _bmlProcessor(std::make_unique<BML::Processor>())
 {
-	_bmlProcessor = new BML::Processor();
-	
+
 	BMLObject* obj = nullptr;
 	obj = new BMLAnimationObject();
 	_bmlHandlers[obj->getName()] = obj;
@@ -170,10 +170,7 @@ SBBmlProcessor::SBBmlProcessor()
 	
 }
 
-SBBmlProcessor::~SBBmlProcessor()
-{
-	delete _bmlProcessor;
-}
+SBBmlProcessor::~SBBmlProcessor() = default;
 
 // This command is inside bml_processor.cpp. So unable to rewrite, instead, re-routine to bp.
 void SBBmlProcessor::vrSpeak(std::string agent, std::string recip, std::string msgId, std::string msg)
@@ -451,7 +448,7 @@ void SBBmlProcessor::interruptBML(const std::string& character, const std::strin
 
 BML::Processor* SBBmlProcessor::getBMLProcessor()
 {
-	return _bmlProcessor;
+	return _bmlProcessor.get();
 }
 
 std::vector<BMLObject*> SBBmlProcessor::parseBML(const std::string& bml)

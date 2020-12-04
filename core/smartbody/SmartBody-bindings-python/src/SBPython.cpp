@@ -386,7 +386,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 	pythonFuncsSimulation();
 
 
-	boost::python::class_<SBBmlProcessor>("BmlProcessor")
+	boost::python::class_<SBBmlProcessor, boost::noncopyable>("BmlProcessor", boost::python::no_init)
 		.def("execBML", &SBBmlProcessor::execBML, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute a generic BML instruction to a given character. Adds the <?xml..> and <act><bml>...</bml></act> elements.")
 		.def("execBMLFile", &SBBmlProcessor::execBMLFile, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute the BML instructions contained in a file for a given character.")
 		.def("execBMLFileId", &SBBmlProcessor::execBMLFileId, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute the BML instructions contained in a file for a given character.")

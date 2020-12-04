@@ -36,6 +36,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 XERCES_CPP_NAMESPACE_USE
 
+struct XmlContext {
+	XmlContext();
+
+	HandlerBase     errorHandler;
+	XercesDOMParser parser;
+};
+
 namespace xml_utils {
 
 ////////////
@@ -144,7 +151,7 @@ namespace xml_utils {
 	DOMElement* getNextElement( const DOMNode* node );
 
 	//  parse a c-string as XML
-	int parseCString( const char* data, AbstractDOMParser* parser );
+	int parseCString( const char* data, AbstractDOMParser& parser );
 
 	//  Convert XMLCh string to ascii c-string.
 	//  chars > 127 are represented as 127 (an unused character in both ascii and Unicode)
@@ -153,12 +160,12 @@ namespace xml_utils {
 	//  Read XMLCh string as a float
 	//  assumes the presence of wcstod(..).
 	//  resets, but does not check errno for errors
-	const float xcstof( const XMLCh* str );
+	float xcstof( const XMLCh* str );
 
 	//  Read XMLCh string as a double
 	//  assumes the presence of wcstod(..).
 	//  resets, but does not check errno for errors
-	const double xcstod( const XMLCh* str );
+	double xcstod( const XMLCh* str );
 
 	//  Convert Text and Elements of DOMNode (and children) into a 8bit-per-char string
 	void xmlToString( const DOMNode* node, std::string& converted );
@@ -169,7 +176,7 @@ namespace xml_utils {
     //  and parses the file contents as XML (again, returning the DOMDocument).
     //
     //  Returns nullptr if there was an error during parsing.
-	XERCES_CPP_NAMESPACE::DOMDocument* parseMessageXml( XercesDOMParser* xmlParser, const char *str );
+	std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> parseMessageXml( XercesDOMParser& xmlParser, const char *str );
 
 	//  STL Comparason operator for XMLCh* using XMLString::compareString(..)
 	class XMLStringCmp {

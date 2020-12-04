@@ -25,6 +25,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/sr_cmd_map.h>
 #include <sbm/sr_cmd_seq.h>
 
+#include <functional>
+
 
 class SequenceManager
 {
@@ -52,6 +54,7 @@ namespace SmartBody {
 class SBCommandManager : public SBObject
 {
 	public:
+		typedef std::function<int(srArgBuffer&)> Callback;
 		SBAPI SBCommandManager();
 		SBAPI ~SBCommandManager();
 
@@ -72,19 +75,23 @@ class SBCommandManager : public SBObject
 		SBAPI int deleteSequence( const char* name );
 
 		SBAPI int insert_set_cmd( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp );
+		SBAPI int insert_set_cmd( std::string key, Callback callback );
 		SBAPI int insert_print_cmd( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp );
+		SBAPI int insert_print_cmd( std::string key, Callback callback );
 		SBAPI int insert_test_cmd( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp );
+		SBAPI int insert_test_cmd( std::string key, Callback callback );
 		SBAPI int insert( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp, char* description = nullptr );
+		SBAPI int insert( std::string key, Callback callback );
 
 		SBAPI SequenceManager* getPendingSequences();
 		SBAPI SequenceManager* getActiveSequences();
 
-		/*! Executes a variable setting sub-command.   See mcuCBHandle::insert_set_cmd(..). */
-		static int mcu_set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-		/*! Executes a variable printing/data debugging sub-command.   See mcuCBHandle::insert_print_cmd(..). */
-		static int mcu_print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-		/*! Executes a test sub-command.   See mcuCBHandle::insert_test_cmd(..). */
-		static int mcu_test_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+//		/*! Executes a variable setting sub-command.   See mcuCBHandle::insert_set_cmd(..). */
+//		static int mcu_set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+//		/*! Executes a variable printing/data debugging sub-command.   See mcuCBHandle::insert_print_cmd(..). */
+//		static int mcu_print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+//		/*! Executes a test sub-command.   See mcuCBHandle::insert_test_cmd(..). */
+//		static int mcu_test_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
 
 	protected:
@@ -92,10 +99,14 @@ class SBCommandManager : public SBObject
 		SequenceManager	pendingSequences;
 		SequenceManager activeSequences;
 
-		srCmdMap<SBCommandManager>		cmd_map;
 		srCmdMap<SBCommandManager>		set_cmd_map;
 		srCmdMap<SBCommandManager>		print_cmd_map;
 		srCmdMap<SBCommandManager>		test_cmd_map;
+
+	std::map<std::string, Callback> _cmd_map;
+	std::map<std::string, Callback> _set_cmd_map;
+	std::map<std::string, Callback> _print_cmd_map;
+	std::map<std::string, Callback> _test_cmd_map;
 };
 
 }

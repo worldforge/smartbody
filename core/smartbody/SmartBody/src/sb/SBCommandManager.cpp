@@ -34,9 +34,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <bml/bml.hpp>
 
 
-SequenceManager::SequenceManager()
-{
-}
+SequenceManager::SequenceManager() = default;
 
 SequenceManager::~SequenceManager()
 {
@@ -45,9 +43,9 @@ SequenceManager::~SequenceManager()
 
 void SequenceManager::clear()
 {
-	for (size_t x = 0; x < _sequences.size(); x++)
+	for (auto & _sequence : _sequences)
 	{
-		delete _sequences[x].second;
+		delete _sequence.second;
 	}
 
 	_sequenceSet.clear();
@@ -66,17 +64,15 @@ bool SequenceManager::addSequence(const std::string& seqName, srCmdSeq* seq)
 
 bool SequenceManager::removeSequence(const std::string& seqName, bool deleteSequence)
 {
-	std::set<std::string>::iterator iter = _sequenceSet.find(seqName);
+	auto iter = _sequenceSet.find(seqName);
 	if (iter == _sequenceSet.end())
 		return false;
 
 	_sequenceSet.erase(iter);
 
-	for (std::vector<std::pair<std::string, srCmdSeq*> >::iterator iter = _sequences.begin();
-		iter != _sequences.end();
-		iter++)
+	for (auto & _sequence : _sequences)
 	{
-		if ((*iter).first == seqName)
+		if (_sequence.first == seqName)
 		{
 			/*
 			if (deleteSequence)
@@ -84,7 +80,7 @@ bool SequenceManager::removeSequence(const std::string& seqName, bool deleteSequ
 			_sequences.erase(iter);
 			*/
 			// need to mark the sequences as invalid for later removal
-			(*iter).second->setValid(false);
+			_sequence.second->setValid(false);
 
 			return true;
 		}
@@ -96,13 +92,11 @@ bool SequenceManager::removeSequence(const std::string& seqName, bool deleteSequ
 
 srCmdSeq* SequenceManager::getSequence(const std::string& name)
 {
-	for (std::vector<std::pair<std::string, srCmdSeq*> >::iterator iter = _sequences.begin();
-		iter != _sequences.end();
-		iter++)
+	for (auto & _sequence : _sequences)
 	{
-		if ((*iter).first == name)
+		if (_sequence.first == name)
 		{
-			return (*iter).second;
+			return _sequence.second;
 		}
 	}
 
@@ -133,7 +127,7 @@ void SequenceManager::cleanupMarkedSequences()
 	while (hasInvalidSequences)
 	{
 		hasInvalidSequences = false;
-		for (std::vector<std::pair<std::string, srCmdSeq*> >::iterator iter = _sequences.begin();
+		for (auto iter = _sequences.begin();
 			iter != _sequences.end();
 			iter++)
 		{
@@ -165,11 +159,7 @@ SBCommandManager::~SBCommandManager() = default;
 
 bool SBCommandManager::hasCommand(const std::string& command)
 {
-	int ret = cmd_map.is_command(command.c_str());
-	if (ret == 1)
-		return true;
-	else
-		return false;
+	return _cmd_map.find(command) != _cmd_map.end();
 }
 
 
@@ -179,21 +169,41 @@ int SBCommandManager::insert_set_cmd( const char *key, srCmdMap<SBCommandManager
 	return( set_cmd_map.insert( key, fp ) );
 }
 
+int SBCommandManager::insert_set_cmd( std::string key, Callback callback )
+{
+	auto result = _set_cmd_map.emplace(std::move(key), std::move(callback));
+	return result.second ? 1 : 0;}
+
 int SBCommandManager::insert_print_cmd( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp )
 {
 	return( print_cmd_map.insert( key, fp ) );
 }
 
+int SBCommandManager::insert_print_cmd( std::string key, Callback callback )
+{
+	auto result = _print_cmd_map.emplace(std::move(key), std::move(callback));
+	return result.second ? 1 : 0;}
+
 int SBCommandManager::insert_test_cmd( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp )
 {
 	return( test_cmd_map.insert( key, fp ) );
 }
+
+int SBCommandManager::insert_test_cmd( std::string key, Callback callback )
+{
+	auto result = _test_cmd_map.emplace(std::move(key), std::move(callback));
+	return result.second ? 1 : 0;}
+
 int SBCommandManager::insert( const char *key, srCmdMap<SBCommandManager>::sr_cmd_callback_fp fp, char* description )
 {
-//if (cmd_map.is_command(key))
-return( cmd_map.insert( key, fp ) );
-//else
-//	return CMD_SUCCESS;
+	auto func = [=](srArgBuffer& args) {return fp(args, this);};
+	return insert(key, func);
+}
+
+int SBCommandManager::insert( std::string key, Callback callback )
+{
+	auto result = _cmd_map.emplace(std::move(key), std::move(callback));
+	return result.second ? 1 : 0;
 }
 
 void SBCommandManager::registerCallbacks()
@@ -208,9 +218,57 @@ void SBCommandManager::registerCallbacks()
 	insert( "send",			sbm_vhmsg_send_func );
 
 	//  cmd prefixes "set" and "print"
-	insert( "set",          mcu_set_func );
-	insert( "print",        mcu_print_func );
-	insert( "test",			mcu_test_func );
+	insert("set", [this](srArgBuffer& args) {
+			   auto arg = args.read_token();
+			   if (arg) {
+				   auto I = _set_cmd_map.find(arg);
+				   if (I != _set_cmd_map.end()) {
+					   auto result = I->second(args);
+					   if (result == CMD_NOT_FOUND) {
+						   SmartBody::util::log("SmartBody error: Unknown Variable, Cannot set: '%s'\n> ", arg);  // Clarify this as a set command error
+						   return CMD_SUCCESS; // Avoid multiple error messages
+					   } else {
+						   return result;
+					   }
+				   }
+			   }
+			   return CMD_NOT_FOUND;
+		   }
+	);
+	insert("print", [this](srArgBuffer& args) {
+			   auto arg = args.read_token();
+			   if (arg) {
+				   auto I = _print_cmd_map.find(arg);
+				   if (I != _print_cmd_map.end()) {
+					   auto result = I->second(args);
+					   if (result == CMD_NOT_FOUND) {
+						   SmartBody::util::log("SmartBody error: Print command NOT FOUND: '%s'\n> ", arg );  // Clarify this as a print command error
+						   return CMD_SUCCESS; // Avoid multiple error messages
+					   } else {
+						   return result;
+					   }
+				   }
+			   }
+			   return CMD_NOT_FOUND;
+		   }
+	);
+	insert("test", [this](srArgBuffer& args) {
+			   auto arg = args.read_token();
+			   if (arg) {
+				   auto I = _test_cmd_map.find(arg);
+				   if (I != _test_cmd_map.end()) {
+					   auto result = I->second(args);
+					   if (result == CMD_NOT_FOUND) {
+						   SmartBody::util::log("SmartBody error: Test command NOT FOUND: '%s'\n> ", arg );  // Clarify this as a test command error
+						   return CMD_SUCCESS; // Avoid multiple error messages
+					   } else {
+						   return result;
+					   }
+				   }
+			   }
+			   return CMD_NOT_FOUND;
+		   }
+	);
 
 	insert( "terrain",		mcu_terrain_func );
 	insert( "time",			mcu_time_func );
@@ -225,9 +283,9 @@ void SBCommandManager::registerCallbacks()
 	insert( "ctrl",			mcu_controller_func );
 	insert( "create_remote_pawn", create_remote_pawn_func );
 
-	insert( "vrAgentBML",   BML::Processor::vrAgentBML_cmd_func );
-	insert( "bp",		    BML::Processor::bp_cmd_func );
-	insert( "vrSpeak",		BML::Processor::vrSpeak_func );
+//	insert( "vrAgentBML",   BML::Processor::vrAgentBML_cmd_func );
+//	insert( "bp",		    BML::Processor::bp_cmd_func );
+//	insert( "vrSpeak",		BML::Processor::vrSpeak_func );
 	insert( "vrExpress",  mcu_vrExpress_func );
 
 	insert( "receiver",		mcu_joint_datareceiver_func );
@@ -256,12 +314,12 @@ void SBCommandManager::registerCallbacks()
 	insert( "startheapprofile",			   startheapprofile_func );
 	insert( "stopheapprofile",			   stopheapprofile_func );
 #endif
-	insert_set_cmd( "bp",             BML::Processor::set_func );
+//	insert_set_cmd( "bp",             BML::Processor::set_func );
 	insert_set_cmd( "pawn",           pawn_set_cmd_funcx );
 	insert_set_cmd( "character",      character_set_cmd_func );
 	insert_set_cmd( "char",           character_set_cmd_func );
 	
-	insert_print_cmd( "bp",           BML::Processor::print_func );
+//	insert_print_cmd( "bp",           BML::Processor::print_func );
 	
 	insert_test_cmd( "bml",  test_bml_func );
 	insert_test_cmd( "fml",  test_fml_func );
@@ -320,13 +378,15 @@ void SBCommandManager::registerCallbacks()
 
 int SBCommandManager::execute( const char *key, srArgBuffer& args )
 { 
-	std::stringstream strstr;
-	strstr << key << " " << args.peek_string();
+//	std::stringstream strstr;
+//	strstr << key << " " << args.peek_string();
 			
-
-	int ret = ( cmd_map.execute( key, args, this ) );
-
-	return ret; 
+	auto I = _cmd_map.find(key);
+	if (I != _cmd_map.end()) {
+		return I->second(args);
+	} else {
+		return 0;
+	}
 }
 
 int SBCommandManager::execute( const char *key, char* strArgs )
@@ -335,25 +395,23 @@ int SBCommandManager::execute( const char *key, char* strArgs )
 	strstr << key << " " << strArgs;
 
     srArgBuffer args( strArgs );
-			
-	int ret = ( cmd_map.execute( key, args, this ) );
-
-	return ret; 
+    return execute(key, args);
 }
 
 int SBCommandManager::execute( char *cmd )
 { 
-	//SmartBody::util::log("execute cmd = %s\n",cmd);
-	// check to see if this is a sequence command
-	// if so, save the command id
-	std::string checkCmd = cmd;
-	size_t startpos = checkCmd.find_first_not_of(" \t");
-	if( std::string::npos != startpos )
-		checkCmd = checkCmd.substr( startpos );
+//	//SmartBody::util::log("execute cmd = %s\n",cmd);
+//	// check to see if this is a sequence command
+//	// if so, save the command id
+//	std::string checkCmd = cmd;
+//	size_t startpos = checkCmd.find_first_not_of(" \t");
+//	if( std::string::npos != startpos )
+//		checkCmd = checkCmd.substr( startpos );
 
-	int ret = ( cmd_map.execute( cmd, this ) );
+	srArgBuffer argb( cmd );
+	char *key = argb.read_token();
+	return execute( key, argb);
 
-	return ret;
 }
 
 int SBCommandManager::execute_seq( srCmdSeq *seq )
@@ -382,8 +440,8 @@ int SBCommandManager::execute_seq( srCmdSeq *seq, const char* seq_name )
 
 int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_names, const char* error_prefix )
 {
-	std::vector<std::string>::const_iterator it  = seq_names.begin();
-	std::vector<std::string>::const_iterator end = seq_names.end();
+	auto it  = seq_names.begin();
+	auto end = seq_names.end();
 
 	if( it == end ) {
 		// No sequences -> NOOP
@@ -413,7 +471,7 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 	}
 
 	// Test remaining sequence names, error early if invalid
-	std::vector<std::string>::const_iterator second = ++it;
+	auto second = ++it;
 	for( ; it != end; ++it ) {
 		const std::string& next_seq = *it;  // convenience reference
 
@@ -556,49 +614,49 @@ SequenceManager* SBCommandManager::getActiveSequences()
 	return &activeSequences;
 }
 
-int SBCommandManager::mcu_set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
-    char* arg = args.read_token();
-    int result = SmartBody::SBScene::getScene()->getCommandManager()->set_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
-	if( result == CMD_NOT_FOUND ) {
-		// TODO: Differentiate between not finding this var and subargs
-		SmartBody::util::log("SmartBody error: Unknown Variable, Cannot set: '%s'\n> ", arg );  // Clarify this as a set command error
-		return CMD_SUCCESS; // Avoid multiple error messages
-	} else {
-		return result;
-	}
-}
-
-/*
-	Executes a command to print to the console some debug data.
-	See insert_print_cmd and its call in main
-*/
-
-int SBCommandManager::mcu_print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
-    char* arg = args.read_token();
-    int result = SmartBody::SBScene::getScene()->getCommandManager()->print_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
-	if( result == CMD_NOT_FOUND ) {
-		// TODO: Differentiate between not finding this var and subargs
-		SmartBody::util::log("SmartBody error: Print command NOT FOUND: '%s'\n> ", arg );  // Clarify this as a print command error
-		return CMD_SUCCESS; // Avoid multiple error messages
-	} else {
-		return result;
-	}
-}
-
-/*
-	Executes a test sub-command.
-	See insert_test_cmd and its call in main
-*/
-
-int SBCommandManager::mcu_test_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
-    char* arg = args.read_token();
-    int result = SmartBody::SBScene::getScene()->getCommandManager()->test_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
-	if( result == CMD_NOT_FOUND ) {
-		SmartBody::util::log("SmartBody error: Test command NOT FOUND: '%s'\n> ", arg );  // Clarify this as a test command error
-		return CMD_SUCCESS; // Avoid multiple error messages
-	} else {
-		return result;
-	}
-}
+//int SBCommandManager::mcu_set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
+//    char* arg = args.read_token();
+//    int result = SmartBody::SBScene::getScene()->getCommandManager()->set_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
+//	if( result == CMD_NOT_FOUND ) {
+//		// TODO: Differentiate between not finding this var and subargs
+//		SmartBody::util::log("SmartBody error: Unknown Variable, Cannot set: '%s'\n> ", arg );  // Clarify this as a set command error
+//		return CMD_SUCCESS; // Avoid multiple error messages
+//	} else {
+//		return result;
+//	}
+//}
+//
+///*
+//	Executes a command to print to the console some debug data.
+//	See insert_print_cmd and its call in main
+//*/
+//
+//int SBCommandManager::mcu_print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
+//    char* arg = args.read_token();
+//    int result = SmartBody::SBScene::getScene()->getCommandManager()->print_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
+//	if( result == CMD_NOT_FOUND ) {
+//		// TODO: Differentiate between not finding this var and subargs
+//		SmartBody::util::log("SmartBody error: Print command NOT FOUND: '%s'\n> ", arg );  // Clarify this as a print command error
+//		return CMD_SUCCESS; // Avoid multiple error messages
+//	} else {
+//		return result;
+//	}
+//}
+//
+///*
+//	Executes a test sub-command.
+//	See insert_test_cmd and its call in main
+//*/
+//
+//int SBCommandManager::mcu_test_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
+//    char* arg = args.read_token();
+//    int result = SmartBody::SBScene::getScene()->getCommandManager()->test_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
+//	if( result == CMD_NOT_FOUND ) {
+//		SmartBody::util::log("SmartBody error: Test command NOT FOUND: '%s'\n> ", arg );  // Clarify this as a test command error
+//		return CMD_SUCCESS; // Avoid multiple error messages
+//	} else {
+//		return result;
+//	}
+//}
 
 }

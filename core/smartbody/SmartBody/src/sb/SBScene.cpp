@@ -331,6 +331,31 @@ _coreServices(std::move(coreServices))
 	_logListener = nullptr;
 
 
+	auto bmlCopy = _bml;
+
+
+	auto lambda = [](){};
+
+	_commandManager->insert("vrAgentBML", [this](srArgBuffer& args) -> int {
+		return _bml->getBMLProcessor()->vrAgentBML_cmd_func(args, nullptr);
+	});
+	_commandManager->insert("bp", [this](srArgBuffer& args) -> int {
+		return _bml->getBMLProcessor()->bp_cmd_func(args, nullptr);
+	});
+	_commandManager->insert("vrSpeak", [this](srArgBuffer& args) -> int {
+		return _bml->getBMLProcessor()->vrSpeak_func(args, nullptr);
+	});
+
+	_commandManager->insert_set_cmd("bp", [this](srArgBuffer& args) -> int {
+		return _bml->getBMLProcessor()->set_func(args, nullptr);
+	});
+	_commandManager->insert_print_cmd("bp", [this](srArgBuffer& args) -> int {
+		return _bml->getBMLProcessor()->print_func(args, nullptr);
+	});
+
+
+
+
 }
 
 SBScene::~SBScene()

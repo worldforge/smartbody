@@ -214,13 +214,13 @@ BmlRequest::BmlRequest( const SbmCharacter* actor, const string & actorId, const
 	actorId( actorId ),
 	recipientId( recipientId ),
 #else
-BmlRequest::BmlRequest( SbmCharacter* actor, const string & actorId, const string & requestId, const string & msgId, const DOMDocument* xmlDoc )
+BmlRequest::BmlRequest( SbmCharacter* actor, const string & actorId, const string & requestId, const string & msgId, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> xmlDoc )
 :	actor( actor ),
 	actorId( actorId ),
 #endif
 	requestId( requestId ),
 	msgId( msgId ),
-	doc (xmlDoc)
+	doc (std::move(xmlDoc))
 {
 }
 
@@ -1850,19 +1850,19 @@ void BML::BmlRequest::speechRequestProcess()
 		info.emplace_back("");
 	}
 	*/
-	for (std::map<std::string, std::vector<BehaviorRequest*> >::iterator iter = groupMap.begin(); iter != groupMap.end(); ++iter)
+	for (auto & iter : groupMap)
 	{
 		float startTime = -1.0f;
 		bool hasHead = false;
-		std::vector<BehaviorRequest*>& behVec = iter->second;
-		for (size_t i = 0; i < behVec.size(); i++)
+		std::vector<BehaviorRequest*>& behVec = iter.second;
+		for (auto & i : behVec)
 		{
-			float behStartTime = (float)behVec[i]->behav_syncs.sync_start()->time() - curTime;
+			float behStartTime = (float)i->behav_syncs.sync_start()->time() - curTime;
 			if (startTime < 0)
 				startTime = behStartTime;
 			else
 				startTime = startTime < behStartTime ? startTime : behStartTime;
-			NodRequest* nodRequest = dynamic_cast<NodRequest*> (behVec[i]);
+			NodRequest* nodRequest = dynamic_cast<NodRequest*> (i);
 			if (nodRequest)
 			{
 				hasHead = true;
@@ -1870,7 +1870,7 @@ void BML::BmlRequest::speechRequestProcess()
 		}
 		if (hasHead)
 		{
-			behList.emplace_back(iter->first);
+			behList.emplace_back(iter.first);
 			types.emplace_back("head");
 			times.emplace_back(startTime);
 			targets.emplace_back("");
@@ -1885,7 +1885,7 @@ void BML::BmlRequest::speechRequestProcess()
 void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 	// Self reference to pass on...
 
-	VecOfBehaviorRequest::iterator behav_end = behaviors.end();
+	auto behav_end = behaviors.end();
 	time_sec now = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
 	this->bml_start->time = now;
 
@@ -1896,7 +1896,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 	// Find earliest BehaviorRequest start time schedule before speech
 	{
 		time_sec min_time = std::numeric_limits<time_sec>::max();
-		for( VecOfBehaviorRequest::iterator i = behaviors.begin(); i != behav_end;  ++i ) {
+		for( auto i = behaviors.begin(); i != behav_end;  ++i ) {
 			BehaviorRequestPtr behavior = *i;
 			if (behavior->ignore == true)
 				continue;
@@ -2006,12 +2006,12 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 						// queue the behaviors such that they coincide with the end of the current utterance
 						double lastTime = character->getLastScheduledSpeechBehavior();
 						time_sec offset = lastTime - now ;
-						for( VecOfBehaviorRequest::iterator i = behaviors.begin(); i != behav_end;  ++i )
+						for( auto i = behaviors.begin(); i != behav_end;  ++i )
 						{
 							BehaviorRequestPtr behavior = *i;
 					
-							BehaviorSyncPoints::iterator syncs_end = behavior->behav_syncs.end();
-							for( BehaviorSyncPoints::iterator j = behavior->behav_syncs.begin(); j != syncs_end; ++j )
+							auto syncs_end = behavior->behav_syncs.end();
+							for( auto j = behavior->behav_syncs.begin(); j != syncs_end; ++j )
 							{
 								j->sync()->time += offset;
 							}
@@ -2076,7 +2076,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 			SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(actorId);
 			std::string characterObjectStr = scene->getStringFromObject(character);
 			std::stringstream strstr;
-			strstr << "sb scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent(\"bmlstatus\", \"blockstart " << actorId << " " << request->msgId << ":" << request->localId  << "\", \"" << characterObjectStr << "\"))";
+			strstr << R"(sb scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent("bmlstatus", "blockstart )" << actorId << " " << request->msgId << ":" << request->localId  << "\", \"" << characterObjectStr << "\"))";
 			if (start_seq->insert( (float) start_time, strstr.str().c_str()) != CMD_SUCCESS)
 			{
 				std::stringstream strstr;
@@ -2157,7 +2157,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 			SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(actorId);
 			std::string characterObjectStr = scene->getStringFromObject(character);
 			std::stringstream strstr;
-			strstr << "sb scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent(\"bmlstatus\", \"blockend " << actorId << " " << request->msgId << ":" << request->localId << "\", \"" << characterObjectStr << "\"))";
+			strstr << R"(sb scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent("bmlstatus", "blockend )" << actorId << " " << request->msgId << ":" << request->localId << "\", \"" << characterObjectStr << "\"))";
 			if (cleanup_seq->insert( (float) end_time, strstr.str().c_str()) != CMD_SUCCESS)
 			{
 				std::stringstream strstr;
@@ -2230,8 +2230,8 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 		dc->setParameter( XMLUni::fgDOMWRTDiscardDefaultContent,true); 
 		dc->setParameter( XMLUni::fgDOMWRTEntities,true);
 
-		DOMDocument* xmlDoc = xml_utils::parseMessageXml(bp->getXMLParser(), xmlBody.c_str());
-		DOMNode* bmlNode = getNode("bml", xmlDoc);
+		auto xmlDoc = xml_utils::parseMessageXml(bp->getXMLParser(), xmlBody.c_str());
+		DOMNode* bmlNode = getNode("bml", xmlDoc.get());
 		const DOMNodeList* nodeList = bmlNode->getChildNodes();
 		int numGestures = 0;
 		for (unsigned int i = 0; i < nodeList->getLength(); ++i)
@@ -2294,7 +2294,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 		xmlstream->setSystemId(xml_utils::UTF16(SmartBody::SBScene::getScene()->getStringAttribute("processedBMLPath").c_str()));
 		try
 		{
-			if (!pSerializer->write(xmlDoc, xmlstream))
+			if (!pSerializer->write(xmlDoc.get(), xmlstream))
 			{
 				SmartBody::util::log("There was a problem writing processed BML file: %s", SmartBody::SBScene::getScene()->getStringAttribute("processedBMLPath").c_str());
 			}

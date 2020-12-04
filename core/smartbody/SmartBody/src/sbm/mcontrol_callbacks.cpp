@@ -2709,11 +2709,9 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 		const std::vector<std::string>& characterNames = scene->getCharacterNames();
 		std::vector<SmartBody::SBCharacter*> controlledCharacters;
-		for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-				iter != characterNames.end();
-				iter++)
+		for (const auto & characterName : characterNames)
 		{
-			SmartBody::SBCharacter* character = scene->getCharacter((*iter));
+			SmartBody::SBCharacter* character = scene->getCharacter(characterName);
 			std::string receiverName = character->getStringAttribute("receiverName");
 			if (receiverName == skelName || character->getName() == skelName)
 			{
@@ -2748,12 +2746,9 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			float y = args.read_float();
 			float z = args.read_float();
 
-			for (std::vector<SmartBody::SBCharacter*>::iterator iter = controlledCharacters.begin();
-				 iter != controlledCharacters.end();
-				 iter++)
+			for (auto character : controlledCharacters)
 			{
-				SmartBody::SBCharacter* character = (*iter);
-				double characterScale = character->getDoubleAttribute("receiverScale");
+					double characterScale = character->getDoubleAttribute("receiverScale");
 				float scaledX = x * characterScale;
 				float scaledY = y * characterScale;
 				float scaledZ = z * characterScale;
@@ -2788,12 +2783,9 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			quat.x = args.read_float();
 			quat.y = args.read_float();
 			quat.z = args.read_float();
-			for (std::vector<SmartBody::SBCharacter*>::iterator iter = controlledCharacters.begin();
-				 iter != controlledCharacters.end();
-				 iter++)
+			for (auto character : controlledCharacters)
 			{
-				SmartBody::SBCharacter* character = (*iter);
-				character->datareceiver_ct->setLocalRotation(jName, quat);
+					character->datareceiver_ct->setLocalRotation(jName, quat);
 			}
 		}
 		else if (skeletonType == "norotation")
@@ -2805,12 +2797,9 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			else
 				jName = args.read_token();
 
-			for (std::vector<SmartBody::SBCharacter*>::iterator iter = controlledCharacters.begin();
-				 iter != controlledCharacters.end();
-				 iter++)
+			for (auto character : controlledCharacters)
 			{
-				SmartBody::SBCharacter* character = (*iter);
-				character->datareceiver_ct->removeLocalRotation(jName);
+					character->datareceiver_ct->removeLocalRotation(jName);
 			}
 		}
 		else if (skeletonType == "noposition")
@@ -2822,12 +2811,9 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			else
 				jName = args.read_token();
 
-			for (std::vector<SmartBody::SBCharacter*>::iterator iter = controlledCharacters.begin();
-				 iter != controlledCharacters.end();
-				 iter++)
+			for (auto character : controlledCharacters)
 			{
-				SmartBody::SBCharacter* character = (*iter);
-				character->datareceiver_ct->removeLocalPosition(jName);
+					character->datareceiver_ct->removeLocalPosition(jName);
 			}
 		}
 		else if (skeletonType == "rotations")
@@ -2860,12 +2846,9 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 				scene->getKinectProcessor()->filterRotation(quats);
 				std::vector<SrQuat> retargetQuats;
 				SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();				
-				for (std::vector<SmartBody::SBCharacter*>::iterator iter = controlledCharacters.begin();
-				 iter != controlledCharacters.end();
-				 iter++)
+				for (auto character : controlledCharacters)
 				{
-					SmartBody::SBCharacter* character = (*iter);					
-					scene->getKinectProcessor()->processRetargetRotation(character->getSkeleton()->getName(),quats, retargetQuats);
+						scene->getKinectProcessor()->processRetargetRotation(character->getSkeleton()->getName(),quats, retargetQuats);
 					if (retargetQuats.size() >= 25)
 					{
 						for (int i = 0; i < 25; i++)

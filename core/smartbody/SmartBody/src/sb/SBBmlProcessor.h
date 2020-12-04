@@ -25,6 +25,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <ostream>
 #include <sb/SBObject.h>
+#include <boost/noncopyable.hpp>
+#include <memory>
 
 namespace BML {
 	class Processor;
@@ -33,16 +35,6 @@ namespace BML {
 class BMLObject;
 
 namespace SmartBody {
-
-class SBBMLBlock : public SBObserver
-{
-	public:
-		SBAPI SBBMLBlock();
-		SBAPI ~SBBMLBlock();
-
-		SBAPI virtual void notify(SBSubject* subject);
-
-};
 
 class SBTrigger : public SBSubject
 {
@@ -70,7 +62,7 @@ class SBTrigger : public SBSubject
 class SBSyncPoint : public SBSubject
 {
 	public:
-		SBSyncPoint(const std::string& name);
+		explicit SBSyncPoint(const std::string& name);
 		~SBSyncPoint();
 
 	protected:
@@ -92,7 +84,7 @@ class SBBMLSchedule
 };
 
 
-class SBBmlProcessor
+class SBBmlProcessor : boost::noncopyable
 {
 	public:
 		SBAPI SBBmlProcessor();
@@ -125,7 +117,7 @@ class SBBmlProcessor
 		std::string send_vrX( const char* cmd, const std::string& char_id, const std::string& recip_id,
 			const std::string& seq_id, bool echo, bool send, const std::string& bml, std::string candidateMsgId = "");
 
-		BML::Processor* _bmlProcessor;
+		std::unique_ptr<BML::Processor> _bmlProcessor;
 		std::map<std::string, BMLObject*> _bmlHandlers;
 		std::map<std::string, SBBMLSchedule*> _bmlSchedules;
 };

@@ -361,7 +361,7 @@ ParserOpenCOLLADA::ParserContext ParserOpenCOLLADA::getParserFromFile( std::stri
 	{
 		std::string filebasename = boost::filesystem::basename(fileName);
 		parser->parse(fileName.c_str());		
-		return {std::move(parser), std::move(errHandler)};
+		return ParserContext{std::move(parser), std::move(errHandler)};
 	}
 	catch (const XMLException& toCatch) 
 	{
@@ -398,17 +398,17 @@ ParserOpenCOLLADA::ParserContext ParserOpenCOLLADA::getParserFromFile( std::stri
 //	}
 //
 //	XercesDOMParser* parser = new XercesDOMParser();
-//	parser->setValidationScheme(XercesDOMParser::Val_Always);
-//	parser->setDoNamespaces(true);    // optional
+//	parser.setValidationScheme(XercesDOMParser::Val_Always);
+//	parser.setDoNamespaces(true);    // optional
 //
 //	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
-//	parser->setErrorHandler(errHandler);
+//	parser.setErrorHandler(errHandler);
 //
 //	try
 //	{
 //		std::string filebasename = boost::filesystem::basename(fileName);
-//		parser->parse(fileName.c_str());
-//		DOMDocument* doc = parser->getDocument();
+//		parser.parse(fileName.c_str());
+//		DOMDocument* doc = parser.getDocument();
 //
 //		int depth = 0;
 //		//delete parser;
@@ -453,17 +453,17 @@ ParserOpenCOLLADA::ParserContext ParserOpenCOLLADA::getParserFromFile( std::stri
 //	}
 //
 //	XercesDOMParser* parser = new XercesDOMParser();
-//	parser->setValidationScheme(XercesDOMParser::Val_Always);
-//	parser->setDoNamespaces(true);    // optional
+//	parser.setValidationScheme(XercesDOMParser::Val_Always);
+//	parser.setDoNamespaces(true);    // optional
 //
 //	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
-//	parser->setErrorHandler(errHandler);
+//	parser.setErrorHandler(errHandler);
 //
 //	try
 //	{
 //		std::string filebasename = boost::filesystem::basename(fileName);
-//		parser->parse(fileName.c_str());
-//		DOMDocument* doc = parser->getDocument();
+//		parser.parse(fileName.c_str());
+//		DOMDocument* doc = parser.getDocument();
 //
 //		return getNode(nodeName, doc);
 //	}

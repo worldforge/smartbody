@@ -130,7 +130,7 @@ namespace BML {
 		
 		scene->getVHMsgManager()->send2( "vrAgentBML", buff2.str().c_str() );
 	}
-};
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -140,12 +140,12 @@ BML::Processor::BMLProcessorMsg::BMLProcessorMsg( const char *actorId, const cha
 :	actorId(actorId),
 	recipientId(recipientId),
 #else
-BML::Processor::BMLProcessorMsg::BMLProcessorMsg( const char *actorId, const char *msgId, SbmCharacter *actor, DOMDocument *xml, const char* args )
+BML::Processor::BMLProcessorMsg::BMLProcessorMsg( const char *actorId, const char *msgId, SbmCharacter *actor, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> xmlIn, const char* args )
 :	actorId(actorId),
 #endif
 	msgId(msgId),
 	actor(actor),
-	xml(xml),
+	xml(std::move(xmlIn)),
 	requestId( buildRequestId( actor, msgId ) ),
 	args( args )  // constructor does handle nullptr
 {}
@@ -155,12 +155,12 @@ BML::Processor::BMLProcessorMsg::BMLProcessorMsg( const char *actorId, const cha
 :	actorId(actorId),
 	recipientId(recipientId),
 #else
-BML::Processor::BMLProcessorMsg::BMLProcessorMsg( const char *actorId, const char *msgId, SbmCharacter *actor, DOMDocument *xml, srArgBuffer& args )
+BML::Processor::BMLProcessorMsg::BMLProcessorMsg( const char *actorId, const char *msgId, SbmCharacter *actor, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> xmlIn, srArgBuffer& args )
 :	actorId(actorId),
 #endif
 	msgId(msgId),
 	actor(actor),
-	xml(xml),
+	xml(std::move(xmlIn)),
 	requestId( buildRequestId( actor, msgId ) ),
 	args( args.read_remainder_raw() )
 {}
@@ -192,22 +192,6 @@ BML::Processor::Processor()
 {
 	//BMLDefs* bmlDefs = new BMLDefs();
 	BMLDefs bmlDefs;
-	try {
-		xmlParser = new XercesDOMParser();
-
-		xmlErrorHandler = new HandlerBase();
-		xmlParser->setErrorHandler( xmlErrorHandler );
-		//ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
-		//xmlParser->setErrorHandler(errHandler);
-		//xmlParser->setErrorHandler( new HandlerBase() );
-	} catch( const XMLException& e ) {
-		SmartBody::util::log("ERROR: BML Processor:  XMLException during constructor: %s", e.getMessage());
-	} catch( const std::exception& e ) {
-		SmartBody::util::log("ERROR: BML Processor:  std::exception during constructor: %s", e.what());
-	} catch(...) {
-		SmartBody::util::log("ERROR: BML Processor:  UNKNOWN EXCEPTION DURING CONSTRUCTOR.     <<==================");
-	}
-
 	exportXMLCounter = 0;
 }
 
@@ -219,17 +203,7 @@ void BML::Processor::registerRequestCallback(void (*cb)(BmlRequest* request, voi
 
 
 
-BML::Processor::~Processor()
-{
-	/*
-	if (xmlErrorHandler)
-		delete xmlErrorHandler;
-	xmlErrorHandler = nullptr;
-	if (xmlParser)
-		delete xmlParser; 
-	xmlParser = nullptr;
-	*/
-}
+BML::Processor::~Processor() = default;
 
 
 void BML::Processor::reset() {
@@ -246,12 +220,12 @@ BmlRequestPtr BML::Processor::createBmlRequest(
 	const std::string & recipientId,
 #endif
 	const std::string & msgId,
-	const DOMDocument* xmlDoc)
+	std::unique_ptr<DOMDocument> xmlDoc)
 {
 #if USE_RECIPIENT
 	BmlRequestPtr request( new BmlRequest( agent, actorId, requestId, recipientId, msgId ) );
 #else
-	BmlRequestPtr request( new BmlRequest( agent, actorId, requestId, msgId, xmlDoc) );
+	BmlRequestPtr request( new BmlRequest( agent, actorId, requestId, msgId, std::move(xmlDoc)) );
 #endif
 	request->init( request );  // passes the smart pointer back to BmlRequest so is can create a weak copy for later use.
 
@@ -267,15 +241,16 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 	int suppress = 2;
 	//BmlRequest *request = requests.lookup( bpMsg.requestId.c_str() );  // srHashMap
 
-	MapOfBmlRequest::iterator result = bml_requests.find( bpMsg.requestId );
+	auto result = bml_requests.find( bpMsg.requestId );
     if( result != bml_requests.end() ) {
 		SmartBody::util::log("Duplicate BML Request Message ID: %s", bpMsg.requestId.c_str());
 		//  TODO: call vrSpeakFailed?  How do we show we're not failing on the original agent/message-id request?
 		return;
     }
 
-   const DOMDocument* xml = bpMsg.xml;
-	DOMElement* root = xml->getDocumentElement();  
+    auto& xml = bpMsg.xml;
+	DOMElement* root = xml->getDocumentElement();
+
 	if( XMLString::compareString( root->getTagName(), BMLDefs::TAG_ACT )!=0 )
 	{
 		SmartBody::util::log("WARNING: BodyPlanner: Expected <act> tag as XML root.");
@@ -283,10 +258,10 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 	else
 	{
 		std::string targetProcId = xml_utils::xml_parse_string( BMLDefs::ATTR_PROCID, root );
-		if (targetProcId != "")
+		if (!targetProcId.empty())
 		{
 			const std::string& procId = scene->getProcessId();
-			if (procId != "" && 
+			if (!procId.empty() &&
 				procId != targetProcId)
 			{
 				// message intended for a different SmartBody instance
@@ -312,7 +287,7 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 #if USE_RECIPIENT
 		BmlRequestPtr request( createBmlRequest( bpMsg.actor, bpMsg.actorId, bpMsg.requestId, string(bpMsg.recipientId), string(bpMsg.msgId) ) );
 #else
-		BmlRequestPtr request( createBmlRequest( bpMsg.actor, bpMsg.actorId, bpMsg.requestId, std::string(bpMsg.msgId), xml ) );
+		BmlRequestPtr request( createBmlRequest( bpMsg.actor, bpMsg.actorId, bpMsg.requestId, std::string(bpMsg.msgId), std::unique_ptr<DOMDocument>((DOMDocument*)xml->cloneNode(true)) ) );
 #endif
 
 		try {
@@ -324,7 +299,7 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 			DOMConfiguration* dc = pSerializer->getDomConfig(); 
 			dc->setParameter( XMLUni::fgDOMWRTDiscardDefaultContent,true); 
 			dc->setParameter( XMLUni::fgDOMWRTEntities,true);
-			XMLCh* theXMLString_Unicode = pSerializer->writeToString(xml); 
+			XMLCh* theXMLString_Unicode = pSerializer->writeToString(xml.get());
 			std::string xmlBodyString = xml_utils::xml_translate_string(theXMLString_Unicode);
       XMLString::release(&theXMLString_Unicode);
       pSerializer->release();
@@ -336,7 +311,7 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 			}
 
 			// make sure that the request id isn't in the pending interrupt list
-			std::map<std::string, double>::iterator isPendingInterruptIter = pendingInterrupts.find(bpMsg.requestId);
+			auto isPendingInterruptIter = pendingInterrupts.find(bpMsg.requestId);
 			if (isPendingInterruptIter != pendingInterrupts.end())
 			{
 				SmartBody::util::log("BML with id %s will not be processed because a recent interrupt request was made.", bpMsg.requestId.c_str());
@@ -534,7 +509,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 						msg << "<sbm:event message=\"scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent('bmlstatus', 'syncpointprogress " << request->actorId << " " << request->msgId << ":" << localId << " " << option << "', '" << actorString << "'))\"" << " start=\"" << localId << ":" << option << "\"/>";
 						std::string newId = unique_id + "_" + option;
 						std::string finalMsg = msg.str();
-						DOMElement* textXml = xml_utils::parseMessageXml( SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->xmlParser, finalMsg.c_str())->getDocumentElement();
+						DOMElement* textXml = xml_utils::parseMessageXml( xmlContext.parser, finalMsg.c_str())->getDocumentElement();
 						feedbackSyncStart.parseStandardSyncPoints( textXml, request, newId );
 						BehaviorRequestPtr startRequestBehavior = parse_bml_event(textXml, newId, feedbackSyncStart, required, request, scene);
 						startRequestBehavior->required = false;
@@ -1050,7 +1025,7 @@ int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performan
 // Cleanup Callback
 int BML::Processor::bml_end( BMLProcessorMsg& bpMsg, SmartBody::SBScene* scene ) {
 	const char* requestId = bpMsg.requestId.c_str();
-	MapOfBmlRequest::iterator find_result = bml_requests.find( requestId );
+	auto find_result = bml_requests.find( requestId );
 	if( find_result == bml_requests.end() ) {
 		// Assume already cleaned up...
 		//strstr << "WARNING: BodyPlannerImpl::bml_end(..): " << bpMsg.actorId << ": Unknown msgId=" << bpMsg.msgId << endl;
@@ -1126,13 +1101,11 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 	SmartBody::util::log(args.peek_string());
 #endif
 
-	Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-
 	const char   *character_id     = args.read_token();
 	SmartBody::SBCharacter *character        = SmartBody::SBScene::getScene()->getCharacter( character_id );
 	if( character == nullptr ) {
 		//  Character is not managed by this SBM process
-		if( bp->warn_unknown_agents )
+		if( warn_unknown_agents )
 		{
 			std::stringstream strstr;
 			strstr << "WARNING: BmlProcessor: Unknown agent \"" << character_id << "\".";
@@ -1172,8 +1145,8 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 		}
 
 		try {
-			DOMDocument *xmlDoc = xml_utils::parseMessageXml( bp->xmlParser, xml );
-			if( xmlDoc == nullptr ) {
+			auto xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, xml );
+			if( !xmlDoc ) {
 				bml_error( character_id, message_id, "XML parser returned nullptr document.", SmartBody::SBScene::getScene() );
 				return CMD_FAILURE;
 			}
@@ -1181,11 +1154,9 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 #if USE_RECIPIENT
 			BMLProcessorMsg bpMsg( character_id, recipient_id, message_id, character, xmlDoc, args );
 #else
-			BMLProcessorMsg bpMsg( character_id, message_id, character, xmlDoc, args );
+			BMLProcessorMsg bpMsg( character_id, message_id, character, std::move(xmlDoc), args );
 #endif
-			bp->bml_request( bpMsg, SmartBody::SBScene::getScene() );
-			if (xmlDoc)
-				xmlDoc->release();
+			bml_request( bpMsg, SmartBody::SBScene::getScene() );
 
 			return( CMD_SUCCESS );
 		} catch( BML::BmlException& e ) {
@@ -1219,7 +1190,7 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 			return bp.bml_end( BMLProcessorMsg( character_id, recipient_id, message_id, character, nullptr, args ), mcu );
 #else
 			BMLProcessorMsg msg( character_id, message_id, character, nullptr, args );
-			int ret = bp->bml_end( msg, SmartBody::SBScene::getScene() );
+			int ret = bml_end( msg, SmartBody::SBScene::getScene() );
 
 			SmartBody::Nvbg* nvbg = character->getNvbg();
 			if (nvbg)
@@ -1264,7 +1235,6 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 	
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	Processor* bp = scene->getBmlProcessor()->getBMLProcessor();
 	int suppress = 1;
 
 	const char *agent_id     = args.read_token();
@@ -1301,7 +1271,7 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 		SmartBody::SBCharacter* agent = scene->getCharacter( agent_id );
 		if( agent==nullptr ) {
 			//  Agent is not managed by this SBM process
-			if( bp->warn_unknown_agents )
+			if( warn_unknown_agents )
 			{
 				std::stringstream strstr;
 				strstr << "WARNING: BmlProcessor: Unknown agent \"" << agent_id << "\".";
@@ -1318,7 +1288,7 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 			return CMD_FAILURE;
 		}
 
-		DOMDocument* xmlDoc = nullptr;
+		std::unique_ptr<DOMDocument> xmlDoc;
 		// check the cache to see if it exists first
 		if (scene->getBoolAttribute("useXMLCache"))
 		{
@@ -1330,12 +1300,12 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 #endif
 			std::string absPathStr = absPath.string();
 			
-			xmlDoc = xml_utils::parseMessageXml( bp->xmlParser, xml );
+			xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, xml );
 			
 		}
 		else
 		{
-			xmlDoc = xml_utils::parseMessageXml( bp->xmlParser, xml );
+			xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, xml );
 		}
 
 		if( xmlDoc == nullptr ) {
@@ -1346,11 +1316,9 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 #if USE_RECIPIENT
 		BMLProcessorMsg bpMsg( agent_id, recipient_id, message_id, agent, xmlDoc, args );
 #else
-		BMLProcessorMsg bpMsg( agent_id, message_id, agent, xmlDoc, args );
+		BMLProcessorMsg bpMsg( agent_id, message_id, agent, std::move(xmlDoc), args );
 #endif
-		bp->bml_request( bpMsg, scene );
-		if (xmlDoc)
-			xmlDoc->release();
+		bml_request( bpMsg, scene );
 
 		return( CMD_SUCCESS );
 	} catch( BmlException& e ) {
@@ -1689,7 +1657,7 @@ int BML::Processor::print_func( srArgBuffer& args, SmartBody::SBCommandManager* 
 	}
 }
 
-XercesDOMParser* BML::Processor::getXMLParser()
+XercesDOMParser& BML::Processor::getXMLParser()
 {
-	return xmlParser;
+	return xmlContext.parser;
 }

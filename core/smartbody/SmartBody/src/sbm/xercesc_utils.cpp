@@ -349,7 +349,7 @@ DOMElement* xml_utils::getNextElement( const DOMNode* node ) {
  *
  *   Potentially throws OutOfMemoryException, XMLException
  */
-int xml_utils::parseCString( const char *str, AbstractDOMParser* parser ) {
+int xml_utils::parseCString( const char *str, AbstractDOMParser& parser ) {
 	//if( str[0]=='<' && str[1]=='?' && str[2]=='x' && str[3]=='m' && str[4]=='l' ) {
 	//	//  Xerces doesn't seem to like the XML prolog in C strings
 	//	char *orig = str;
@@ -363,9 +363,9 @@ int xml_utils::parseCString( const char *str, AbstractDOMParser* parser ) {
 	//}
 
 	const MemBufInputSource inputSource( (const XMLByte*)str, (unsigned int)strlen(str), "XMLBuffer" );
-	parser->parse( inputSource );
+	parser.parse( inputSource );
 
-	return parser->getErrorCount();
+	return parser.getErrorCount();
 }
 
 std::string xml_utils::asciiString( const XMLCh* wstr ) {
@@ -380,7 +380,7 @@ std::string xml_utils::asciiString( const XMLCh* wstr ) {
 	return str;
 }
 
-const float xml_utils::xcstof( const XMLCh* value ) {
+float xml_utils::xcstof( const XMLCh* value ) {
 
 	char *cp = XMLString::transcode( value );
 	float f = (float)atof( cp );
@@ -394,7 +394,7 @@ const float xml_utils::xcstof( const XMLCh* value ) {
 #endif
 }
 
-const double xml_utils::xcstod( const XMLCh* value ) {
+double xml_utils::xcstod( const XMLCh* value ) {
 
 	char *cp = XMLString::transcode( value );
 	double d = atof( cp );
@@ -467,10 +467,11 @@ void xml_utils::xmlToString( const DOMNode* node, string& converted ){ //recursi
 }
 
 
-DOMDocument* xml_utils::parseMessageXml( XercesDOMParser* xmlParser, const char *str ) {
+std::unique_ptr<DOMDocument> xml_utils::parseMessageXml( XercesDOMParser& xmlParser, const char *str ) {
+	xmlParser.reset();
 	try {
 		if (!str || strlen(str) == 0)
-			return xmlParser->getDocument();
+			return std::unique_ptr<DOMDocument>(xmlParser.adoptDocument());
 		// xml in a file?
 		if( str[0]=='<' ) {
 #if USELOG
@@ -490,14 +491,14 @@ DOMDocument* xml_utils::parseMessageXml( XercesDOMParser* xmlParser, const char 
 								 (std::istreambuf_iterator<char>()    ) );
 			int numErrors = xml_utils::parseCString(content.c_str(), xmlParser );
 		}
-		int errorCount = xmlParser->getErrorCount();
+		int errorCount = xmlParser.getErrorCount();
 		if( errorCount > 0 ) {
 			stringstream strstr;
 			strstr << "xml_utils::parseMessageXml(): "<<errorCount<<" errors while parsing xml: ";
 			SmartBody::util::log(strstr.str().c_str());
 			return nullptr;
 		}
-		return xmlParser->getDocument();
+		return std::unique_ptr<DOMDocument>(xmlParser.adoptDocument());
 	} catch( const XMLException& e ) {
 		std::string message = "";
 		xml_utils::xml_translate(&message, e.getMessage());
@@ -535,4 +536,8 @@ std::string convertWStringToString(std::wstring w)
 {
 	std::string str(w.begin(), w.end());
 	return str;
+}
+
+XmlContext::XmlContext() {
+	parser.setErrorHandler(&errorHandler);
 }

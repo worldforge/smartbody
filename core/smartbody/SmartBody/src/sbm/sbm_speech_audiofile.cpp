@@ -44,9 +44,6 @@ using namespace SmartBody;
 
 AudioFileSpeech::AudioFileSpeech()
 {
-   m_xmlParser = new XercesDOMParser();
-   m_xmlHandler = new HandlerBase();
-   m_xmlParser->setErrorHandler( m_xmlHandler );
 
    m_requestIdCounter = 1;  // start with 1, in case 0 is a special case
    useMotion = false;
@@ -54,20 +51,7 @@ AudioFileSpeech::AudioFileSpeech()
 }
 
 
-AudioFileSpeech::~AudioFileSpeech()
-{
-   delete m_xmlParser;  m_xmlParser = nullptr;
-   delete m_xmlHandler;  m_xmlHandler = nullptr;
-
-   	// remove the XML cache
-	for (std::map<std::string, DOMDocument*>::iterator xmlIter = xmlCache.begin();
-		xmlIter != xmlCache.end();
-		xmlIter++)
-	{
-		(*xmlIter).second->release();
-	}
-	xmlCache.clear();
-}
+AudioFileSpeech::~AudioFileSpeech() = default;
 
 
 RequestId AudioFileSpeech::requestSpeechAudio( const char * agentName, const std::string voiceCode, const DOMNode * node, const char * callbackCmd )
@@ -255,7 +239,7 @@ RequestId AudioFileSpeech::requestSpeechAudio( const char * agentName, std::stri
    // parse .bml file to get viseme timings
    // parse .bml file to get mark timings
 
-   DOMDocument * doc = xml_utils::parseMessageXml( m_xmlParser, text.c_str() );
+   auto doc = xml_utils::parseMessageXml( xmlContext.parser, text.c_str() );
 
    DOMElement * speech = doc->getDocumentElement();
 
@@ -663,7 +647,8 @@ void AudioFileSpeech::ReadMotionDataBML(const char * filename, std::vector< Vise
 	if (!useMotionByDefault)
 		return;
 
-	DOMDocument* xmlDoc = nullptr;
+	std::unique_ptr<DOMDocument> xmlDoc;
+	DOMDocument* xmlPtr = nullptr;
 	if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCache"))
 	{
 		boost::filesystem::path path(filename);
@@ -673,24 +658,26 @@ void AudioFileSpeech::ReadMotionDataBML(const char * filename, std::vector< Vise
 		boost::filesystem::path absPath = boost::filesystem::complete(path);
 #endif
 		std::string absPathStr = absPath.string();
-		std::map<std::string, DOMDocument*>::iterator iter = xmlCache.find(absPathStr);
+		auto iter = xmlCache.find(absPathStr);
 		if (iter !=  xmlCache.end())
 		{
-			xmlDoc = (*iter).second;
+			xmlPtr = (*iter).second.get();
 		}
 		else
 		{
-			xmlDoc = xml_utils::parseMessageXml( m_xmlParser, filename );
+			xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, filename );
+			xmlPtr = xmlDoc.get();
 			if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCacheAuto"))
 			{
 				// add to the cache if in auto cache mode
-				xmlCache.insert(std::pair<std::string, DOMDocument*>(absPathStr, xmlDoc));
+				xmlCache.emplace(absPathStr, std::move(xmlDoc));
 			}
 		}
 	}
 	else
 	{
-		xmlDoc = xml_utils::parseMessageXml(m_xmlParser, filename);
+		xmlDoc = xml_utils::parseMessageXml(xmlContext.parser, filename);
+		xmlPtr = xmlDoc.get();
 	}
 
 	if ( xmlDoc == nullptr )
@@ -698,7 +685,7 @@ void AudioFileSpeech::ReadMotionDataBML(const char * filename, std::vector< Vise
 		return;
 	}
 
-	DOMElement * bml = xmlDoc->getDocumentElement();
+	DOMElement * bml = xmlPtr->getDocumentElement();
 	DOMNodeList* motionNodeList = bml->getElementsByTagName(xml_utils::UTF16("motion"));
 	int motionNodeLength = motionNodeList->getLength();
 	if (motionNodeLength == 0)
@@ -722,7 +709,8 @@ void AudioFileSpeech::ReadVisemeDataBML( const char * filename, std::vector< Vis
 
    visemeData.clear();
 
-	DOMDocument* xmlDoc = nullptr;
+   	std::unique_ptr<DOMDocument> xmlDoc;
+	DOMDocument* xmlPtr = nullptr;
 	if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCache"))
 	{
 		boost::filesystem::path path(filename);
@@ -732,32 +720,34 @@ void AudioFileSpeech::ReadVisemeDataBML( const char * filename, std::vector< Vis
 		boost::filesystem::path absPath = boost::filesystem::complete(path);
 #endif
 		std::string absPathStr = absPath.string();
-		std::map<std::string, DOMDocument*>::iterator iter = xmlCache.find(absPathStr);
+		auto iter = xmlCache.find(absPathStr);
 		if (iter !=  xmlCache.end())
 		{
-			xmlDoc = (*iter).second;
+			xmlPtr = (*iter).second.get();
 		}
 		else
 		{
-			xmlDoc = xml_utils::parseMessageXml( m_xmlParser, filename );
+			xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, filename );
+			xmlPtr = xmlDoc.get();
 			if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCacheAuto"))
 			{
 				// add to the cache if in auto cache mode
-				xmlCache.insert(std::pair<std::string, DOMDocument*>(absPathStr, xmlDoc));
+				xmlCache.emplace(absPathStr, std::move(xmlDoc));
 			}
 		}
 	}
 	else
 	{
-		xmlDoc = xml_utils::parseMessageXml(m_xmlParser, filename);
+		xmlDoc = xml_utils::parseMessageXml(xmlContext.parser, filename);
+		xmlPtr = xmlDoc.get();
 	}
 
-   if ( xmlDoc == nullptr )
+   if ( xmlPtr == nullptr )
    {
       return;
    }
 
-   DOMElement * bml = xmlDoc->getDocumentElement();
+   DOMElement * bml = xmlPtr->getDocumentElement();
 
    // TODO: make sure it's "bml"
 
@@ -948,7 +938,7 @@ void AudioFileSpeech::ReadSpeechTiming( const char * filename, std::map< std::st
    timeMarkers.clear();
 
 
-   DOMDocument * doc = xml_utils::parseMessageXml( m_xmlParser, filename );
+   auto doc = xml_utils::parseMessageXml( xmlContext.parser, filename );
    if ( doc == nullptr )
    {
       return;

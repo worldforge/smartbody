@@ -58,7 +58,7 @@ namespace BML {
 #endif
 			const char			*msgId;
 			SbmCharacter	*actor;
-			const XERCES_CPP_NAMESPACE::DOMDocument	*xml;
+			std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument>	xml;
 
 			const std::string   requestId;
 
@@ -72,8 +72,8 @@ namespace BML {
 			BMLProcessorMsg( const char *actorId, const char *recipientId, const char *msgId, const SbmCharacter *actor, DOMDocument *xml, const char* args );
 			BMLProcessorMsg( const char *actorId, const char *recipientId, const char *msgId, const SbmCharacter *actor, DOMDocument *xml, srArgBuffer& arg );
 #else
-			BMLProcessorMsg( const char *actorId, const char *msgId,  SbmCharacter *actor, XERCES_CPP_NAMESPACE::DOMDocument *xml, const char* args );
-			BMLProcessorMsg( const char *actorId, const char *msgId,  SbmCharacter *actor, XERCES_CPP_NAMESPACE::DOMDocument *xml, srArgBuffer& arg );
+			BMLProcessorMsg( const char *actorId, const char *msgId,  SbmCharacter *actor, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> xml, const char* args );
+			BMLProcessorMsg( const char *actorId, const char *msgId,  SbmCharacter *actor, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> xml, srArgBuffer& arg );
 #endif
 			~BMLProcessorMsg();
 		};
@@ -82,7 +82,6 @@ namespace BML {
 		// Private Constants
 
 		// Private Data
-		HandlerBase*       xmlErrorHandler;
 		MapOfSpeechRequest speeches; // indexed by buildSpeechKey(..) string
 		MapOfBmlRequest    bml_requests;    // indexed by buildRequestId(..) string
 		std::map<std::string, double> pendingInterrupts;
@@ -93,7 +92,7 @@ namespace BML {
 		bool warn_unknown_agents;
 		bool bml_feedback;
 
-		XercesDOMParser* xmlParser;
+		XmlContext xmlContext;
 
 		float ct_speed_min;
 		float ct_speed_max;
@@ -179,42 +178,42 @@ namespace BML {
 		/**
 		 *  Notify BodyPlanner of vrAgentBML commands/messages.
 		 */
-		static int vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
 		/**
 		 *  Notify BodyPlanner of vrSpeak command/message.
 		 */
-		static int vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
 		/**
 		 *  Notify BodyPlanner of vrSpoke messages.
 		 */
-		static int vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
 		/**
 		 *  Notify BodyPlanner of completed speech request.
 		 */
-		static int bpSpeechReady_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int bpSpeechReady_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
 		/**
 		 *  Notify BodyPlanner of request timings.
 		 */
-		static int bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
 		/**
 		 *  Handles the command "set bodyplanner" or "set bp"
 		 */
-		static int set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
 		/**
  		 *  Handles the command "print bodyplanner" or "print bp"
 		 */
-		static int print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
 		void (*requestcb)(BmlRequest* request, void* data);
 		void* requestData;
 
-		XercesDOMParser* getXMLParser();
+		XercesDOMParser& getXMLParser();
 
 		void setExportXMLCounter(int i)	{ exportXMLCounter = i; }
 		int getExportXMLCounter()	{ return exportXMLCounter; }
@@ -227,7 +226,7 @@ namespace BML {
 #if USE_RECIPIENT
 		BmlRequestPtr createBmlRequest( SbmCharacter* agent, const std::string & actorId, const std::string & requestId, const std::string & recipientId, const std::string & msgId );
 #else
-		BmlRequestPtr createBmlRequest( SbmCharacter* agent, const std::string & actorId, const std::string & requestId, const std::string & msgId, const  XERCES_CPP_NAMESPACE::DOMDocument* xmlDoc );
+		BmlRequestPtr createBmlRequest( SbmCharacter* agent, const std::string & actorId, const std::string & requestId, const std::string & msgId, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> xmlDoc );
 #endif
 
 		/**

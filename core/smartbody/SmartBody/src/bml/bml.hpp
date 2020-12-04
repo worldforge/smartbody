@@ -112,7 +112,7 @@ namespace BML {
 		std::string			 xmlBody;
 		const std::string    msgId;
 		std::string          localId;
-		const XERCES_CPP_NAMESPACE::DOMDocument*		 doc;
+		std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument>		 doc;
 
 		VecOfTriggerEvent    triggers;
 		TriggerEventPtr      start_trigger;
@@ -141,7 +141,7 @@ namespace BML {
 #if VRAGENTBML_USES_RECIPIENT
 		BmlRequest( SbmCharacter* agent, const std::string& actorId, const std::string& requestId, const std::string& recipientId, const std::string & msgId, const XERCES_CPP_NAMESPACE::DOMDocument* doc );
 #else
-		BmlRequest( SbmCharacter* agent, const std::string& actorId, const std::string& requestId, const std::string & msgId, const  XERCES_CPP_NAMESPACE::DOMDocument* doc );
+	BmlRequest( SbmCharacter* agent, const std::string& actorId, const std::string& requestId, const std::string & msgId, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> doc );
 #endif
 		void init( BmlRequestPtr self );
 

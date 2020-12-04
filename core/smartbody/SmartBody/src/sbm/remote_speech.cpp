@@ -615,10 +615,8 @@ int remote_speech::handleRemoteSpeechResult( SbmCharacter* character, char* msgI
 	//SmartBody::util::log("Handle remote speech character = %s, status = %s, result = %s",character->getName().c_str(),status,result);
 	try{
 		if( strcmp( status, "OK:" )==0 ) {
-			XercesDOMParser *Prser;  
-			Prser = new XercesDOMParser();
-			Prser->setErrorHandler( new HandlerBase() );
-			DOMDocument *replyDoc = xml_utils::parseMessageXml( Prser, result );
+			XmlContext xmlContext;
+			auto replyDoc = xml_utils::parseMessageXml( xmlContext.parser, result );
 
 			if(replyDoc==nullptr) //if the reply document is nullptr print error message and return
 				{	
@@ -776,11 +774,9 @@ int remote_speech_test( srArgBuffer& args, SmartBody::SBCommandManager* manager)
 #endif
 //		char* x= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><speak> Something <mark name=\"hello\"/> to <mark name=\"mark\"/> say <mark name= \"wtf\"/>  </speak>";
 		char *x = (char*)"WTF?";
-		
-		XercesDOMParser *xmlParser;
-		xmlParser = new XercesDOMParser();
-		xmlParser->setErrorHandler( new HandlerBase() );
-		DOMDocument *xmlDoc = xml_utils::parseMessageXml( xmlParser, x);
+
+		XmlContext xmlContext;
+		auto xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, x);
 		DOMNode *funNode= xmlDoc->getDocumentElement();
 		remote_speech anchor;
 		char *tre= (char*)"doctor";

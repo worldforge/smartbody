@@ -98,12 +98,10 @@ RequestId text_speech::requestSpeechAudio( const char* agentName, std::string vo
 	}
 
 	// setup xml parser
-	XercesDOMParser *Prser;
-	Prser = new XercesDOMParser();
-	Prser->setErrorHandler( new HandlerBase() );
+	XmlContext xmlContext;
 
 	// schedule the text
-	DOMDocument* textXml = xml_utils::parseMessageXml( Prser, text.c_str() );
+	auto textXml = xml_utils::parseMessageXml( xmlContext.parser, text.c_str() );
 	DOMNode* speechNode = textXml->getFirstChild();
 	DOMNode* markNode = speechNode->getFirstChild();
 	float currentTime = 0.0;
@@ -134,8 +132,8 @@ RequestId text_speech::requestSpeechAudio( const char* agentName, std::string vo
 	charLookUp.insert(myStream.str().c_str(),agentNamePtr);
 	
 	// adds the document to accessable lookup table
-	DOMDocument *replyDoc = xml_utils::parseMessageXml( Prser, text.c_str() );
-	uttLookUp.insert(myStream.str().c_str(), replyDoc->getDocumentElement());
+	auto replyDoc = xml_utils::parseMessageXml( xmlContext.parser, text.c_str() );
+	uttLookUp.emplace(myStream.str(), std::unique_ptr<DOMNode>(replyDoc->getDocumentElement()->cloneNode(true)));
 
 	string seqName = "text_speech" + myStream.str();
 	SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->removeSequence(seqName, true);
@@ -156,7 +154,7 @@ std::vector<VisemeData*>* text_speech::extractVisemes(DOMNode* node, vector<Vise
 		DOMElement *element= (DOMElement *)node; //instantiate an element using this node
 		if( XMLString::compareString( element->getTagName(), BML::BMLDefs::TAG_VISEME )==0 ){
 			
-			std::string id = "";
+			std::string id;
 
 			DOMNamedNodeMap* attributes= element->getAttributes();
 			for(unsigned int i=0; i< (attributes->getLength()); i++){ //iterates through and includes all attributes (viseme type and start time)
@@ -168,8 +166,8 @@ std::vector<VisemeData*>* text_speech::extractVisemes(DOMNode* node, vector<Vise
 					startTime = xml_utils::xml_translate_float(attributes->item(i)->getNodeValue());
 				}
 			}
-			if( id != "") {
-				singleViseme= new VisemeData(id.c_str(), 1.0, startTime); //the weight is always made one
+			if( !id.empty()) {
+				singleViseme= new VisemeData(id, 1.0, startTime); //the weight is always made one
 
 				if (visemes->size()>0) //includes the reset visemes, prior to the next viseme being pushed the prior viseme is reset (reset viseme weight is always zero)
 				{
@@ -210,11 +208,12 @@ std::vector<VisemeData*>* text_speech::getVisemes( RequestId requestId, SbmChara
 	const char *Id= temp.c_str();
 	
 	//if dom document exists finds it and then extracts visemes from it placing them in vecto along with the appropriate viseme resets
-	if (uttLookUp.lookup(Id) !=nullptr)
+	auto I = uttLookUp.find(Id);
+	if (I != uttLookUp.end() && I->second)
 	{
-		DOMNode* docElement= uttLookUp.lookup(Id);  
+		auto& docElement= I->second;
 		vector<VisemeData *> *visemeVector= new vector<VisemeData *>;  
-		visemeVector = extractVisemes(docElement, visemeVector, character); //recursively extracts visemes from domdocument
+		visemeVector = extractVisemes(docElement.get(), visemeVector, character); //recursively extracts visemes from domdocument
 		return (visemeVector);
 	}
 	else //if viseme isn't found returns nullptr
@@ -236,9 +235,11 @@ float text_speech::getMarkTime( RequestId requestId, const XMLCh* markId ){
 	if(XMLString::indexOf(markId, '+') > -1 || XMLString::indexOf(markId, '-') > -1 ) return -1;
 	ostringstream markStream; //creates an ostringstream object
 	markStream << requestId << flush; //outputs the number into the string stream and then flushes the buffer
-	DOMDocument* XMLDoc= uttLookUp.lookup(markStream.str().c_str())->getOwnerDocument(); //gets the dom document
-	XMLCh* markTag= BML::BMLDefs::TAG_MARK; //the tag for any mark 
-	DOMNodeList* marks= XMLDoc->getElementsByTagName(markTag); //looks through the DOMDocument and extracts every mark tag and puts it in a list
+	auto I = uttLookUp.find(markStream.str());
+	if (I != uttLookUp.end() && I->second) {
+		DOMDocument* XMLDoc= I->second->getOwnerDocument(); //gets the dom document
+		XMLCh* markTag= BML::BMLDefs::TAG_MARK; //the tag for any mark
+		DOMNodeList* marks= XMLDoc->getElementsByTagName(markTag); //looks through the DOMDocument and extracts every mark tag and puts it in a list
 
 		int foundFlag=0; //this will be set to 1 when a mark tag matches the markId
 
@@ -251,7 +252,7 @@ float text_speech::getMarkTime( RequestId requestId, const XMLCh* markId ){
 				{ //if the attribute is a name then see if the value matches markId and then set foundFlag to 1
 					string value = "";
 					xml_utils::xml_translate(&value, attributes->item(r)->getNodeValue());
-					
+
 					string marker = "";
 					xml_utils::xml_translate(&marker, markId);
 
@@ -261,11 +262,14 @@ float text_speech::getMarkTime( RequestId requestId, const XMLCh* markId ){
 					}
 				}
 				if(foundFlag==1 && type=="time")
-				{ //if foundFlag==1 then find the time attribute and return it's value 
+				{ //if foundFlag==1 then find the time attribute and return it's value
 					return xml_utils::xml_translate_float(attributes->item(r)->getNodeValue());
 				}
 			}
 		}
+	}
+
+
 	std::wstringstream wstrstr;
 	wstrstr << "ERROR: text_speech::getMarkTime("<<requestId<<",\""<<markId<<"\"): Mark Id Not Found" << endl; //if nothing is found print error message and return -1
 	SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
@@ -276,12 +280,8 @@ void text_speech::requestComplete( RequestId requestId ){
 	
 	ostringstream complStream; //creates an ostringstream object
 	complStream << requestId << flush; //outputs the number into the string stream and then flushes the buffer
-	
-	//removes the item from all the lookupTables; deletes any allocated heap memory
-	if(uttLookUp.key_in_use(complStream.str().c_str()))
-	{
-		uttLookUp.remove(complStream.str().c_str());
-	}
+
+	uttLookUp.erase(complStream.str());
 }
 
 void text_speech::startSchedule( SmartBody::RequestId requestId ) {

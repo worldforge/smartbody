@@ -149,9 +149,9 @@ std::string SpeechRelayLocal::removeXMLTagsAndNewLines( const std::string & txt 
    /// Start an XML parser to parse the message we have received
 
    XMLPlatformUtils::Initialize();
-   XercesDOMParser *parser = new XercesDOMParser();
+   XmlContext xmlContext;
 
-   std::string truncatedTxt = txt.substr(txt.find_first_of(">")+1);
+   std::string truncatedTxt = txt.substr(txt.find_first_of('>')+1);
    
 
    //******************************************************************************************
@@ -202,8 +202,8 @@ std::string SpeechRelayLocal::removeXMLTagsAndNewLines( const std::string & txt 
 #endif
    /// Set up a parser for XML message in memory - code sourced from unknown online reference for Xerces XML library
    MemBufInputSource memIS((const XMLByte*)message, strlen(message), "XMLBuffer");
-   parser->parse(memIS);
-   DOMDocument *doc = parser->getDocument();
+   xmlContext.parser.parse(memIS);
+   DOMDocument *doc = xmlContext.parser.getDocument();
    if ( doc )
    {
 	   DOMElement *root = doc->getDocumentElement();
@@ -409,7 +409,7 @@ std::string SpeechRelayLocal::TransformTextWithTimes(std::string txt)
 
    /// Start an XML parser to parse the message we have received
    XMLPlatformUtils::Initialize();
-   XercesDOMParser *parser = new XercesDOMParser();
+   XmlContext xmlContext;
 
    std::string truncatedTxt = txt.substr(txt.find_first_of(">")+1);
    char * message = (char*)truncatedTxt.c_str();
@@ -420,8 +420,8 @@ std::string SpeechRelayLocal::TransformTextWithTimes(std::string txt)
 #endif
    /// Set up a parser for XML message in memory - code sourced from unknown online reference for Xerces XML library
    MemBufInputSource memIS((const XMLByte*)message, strlen(message), "XMLBuffer");
-   parser->parse(memIS);
-   DOMDocument *doc = parser->getDocument();
+   xmlContext.parser.parse(memIS);
+   DOMDocument *doc = xmlContext.parser.getDocument();
    if ( doc )
    {
 	   DOMElement *root = doc->getDocumentElement();
