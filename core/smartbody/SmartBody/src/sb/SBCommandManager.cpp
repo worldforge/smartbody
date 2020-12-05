@@ -25,8 +25,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSimulationManager.h>
 #include "SBUtilities.h"
 #include <sstream>
-#include <sbm/mcontrol_callbacks.h>
-#include <sbm/MiscCommands.h>
 #include <sbm/sbm_test_cmds.hpp>
 #include <sbm/text_speech.h>
 #include <sbm/local_speech.h>
@@ -206,14 +204,7 @@ int SBCommandManager::insert( std::string key, Callback callback )
 
 void SBCommandManager::registerCallbacks()
 {
-	insert( "sb",			sb_main_func );
-	insert( "sbm",			sbm_main_func );
 
-	insert( "echo",			mcu_echo_func );
-	
-	insert( "seq",			mcu_sequence_func );
-	insert( "seq-chain",	mcu_sequence_chain_func );
-	insert( "send",			sbm_vhmsg_send_func );
 
 	//  cmd prefixes "set" and "print"
 	insert("set", [this](srArgBuffer& args) {
@@ -268,43 +259,15 @@ void SBCommandManager::registerCallbacks()
 		   }
 	);
 
-	insert( "terrain",		mcu_terrain_func );
-	insert( "time",			mcu_time_func );
-	insert( "tip",			mcu_time_ival_prof_func );
 
-	insert( "panim",		mcu_panim_cmd_func );
-	insert( "motionplayer", mcu_motion_player_func);
 
-	insert( "pawn",			pawn_cmd_func );
-	insert( "char",			character_cmd_func );
 
-	insert( "ctrl",			mcu_controller_func );
-	insert( "create_remote_pawn", create_remote_pawn_func );
-
-//	insert( "vrAgentBML",   BML::Processor::vrAgentBML_cmd_func );
-//	insert( "bp",		    BML::Processor::bp_cmd_func );
-//	insert( "vrSpeak",		BML::Processor::vrSpeak_func );
-	insert( "vrExpress",  mcu_vrExpress_func );
-
-	insert( "receiver",		mcu_joint_datareceiver_func );
-	insert( "net_reset",           mcu_net_reset );
-	insert( "net_check",           mcu_net_check );
-	insert( "RemoteSpeechCmd"  ,   mcuFestivalRemoteSpeechCmd_func );
 	insert( "RemoteSpeechReply",   remoteSpeechResult_func );
 	insert( "RemoteSpeechTimeOut", remoteSpeechTimeOut_func);  // internally routed message
 //	insert( "locomotion",          locomotion_cmd_func );
 //	insert( "loco",                locomotion_cmd_func ); // shorthand
-	insert( "check",			   mcu_check_func);		// check matching between .skm and .sk
-	insert( "pythonscript",		   mcu_pythonscript_func);
-	insert( "python",			   mcu_python_func);
-	insert( "p",				   mcu_python_func);
 	insert( "bml",				   test_bml_func );
-	insert( "steer",			   mcu_steer_func);	
 	insert( "RemoteSpeechReplyRecieved", remoteSpeechReady_func);  // TODO: move to test commands
-	insert( "syncpoint",		   syncpoint_func);
-	insert( "vhmsgconnect",		   mcu_vhmsg_connect_func);
-	insert( "vhmsgdisconnect",	   mcu_vhmsg_disconnect_func);
-	insert( "vhmsglog",			   vhmsglog_func);
 
 #ifdef USE_GOOGLE_PROFILER
 	insert( "startprofile",			   startprofile_func );
@@ -312,37 +275,18 @@ void SBCommandManager::registerCallbacks()
 	insert( "startheapprofile",			   startheapprofile_func );
 	insert( "stopheapprofile",			   stopheapprofile_func );
 #endif
-//	insert_set_cmd( "bp",             BML::Processor::set_func );
-	insert_set_cmd( "pawn",           pawn_set_cmd_funcx );
-	insert_set_cmd( "character",      character_set_cmd_func );
-	insert_set_cmd( "char",           character_set_cmd_func );
+
 	
-//	insert_print_cmd( "bp",           BML::Processor::print_func );
-	
+
 	insert_test_cmd( "bml",  test_bml_func );
 	insert_test_cmd( "fml",  test_fml_func );
 	insert_test_cmd( "rhet", remote_speech_test);
 	insert_test_cmd( "bone_pos", test_bone_pos_func );
 	
 
-	insert( "net",	mcu_net_func );
-
-	insert( "PlaySound", mcu_play_sound_func );
-	insert( "StopSound", mcu_stop_sound_func );
-
-	insert( "uscriptexec", mcu_uscriptexec_func );
-
-	insert( "CommAPI", mcu_commapi_func );
-
-	insert( "vrKillComponent", mcu_vrKillComponent_func );
-	insert( "vrAllCall", mcu_vrAllCall_func );
-	insert( "vrPerception", mcu_vrPerception_func );
-	insert( "vrBCFeedback", mcu_vrBCFeedback_func );
-	insert( "vrSpeech", mcu_vrSpeech_func );
 
 	insert( "text_speech", text_speech::text_speech_func ); // [BMLR]
-	insert( "triggerevent",		   deprecatedMessage );
-	
+
 	/*
 	// deprecated callbacks
 	insert( "help",					deprecatedMessage);

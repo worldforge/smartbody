@@ -220,7 +220,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sbm/GenericViewer.cpp
         src/sbm/Heightfield.cpp
         src/sbm/lin_win.cpp
-        src/sbm/mcontrol_callbacks.cpp
         src/sbm/action_unit.cpp
 
         src/controllers/me_ct_basic_locomotion.cpp
@@ -383,7 +382,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBRealtimeManager.cpp
         src/sb/SBRigNode.cpp
         src/sbm/SteerPath.cpp
-        src/sbm/MiscCommands.cpp
 
         src/protocols/sbmotion.pb.cc
         src/protocols/sbutilities.pb.cc

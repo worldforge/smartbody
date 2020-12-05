@@ -74,7 +74,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 
-#include "sbm_audio.h"
+#include "sbm/sbm_audio.h"
 
 #include "sr/sr_model.h"
 #include "sb/sbm_pawn.hpp"
@@ -106,6 +106,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include "mcontrol_callbacks.h"
+
+
 
 using namespace std;
 
@@ -2608,7 +2610,7 @@ int syncpoint_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {
 	std::string motionStr = args.read_token();
 
-	if (motionStr == "")
+	if (motionStr.empty())
 	{
 		SmartBody::util::log("Usage: syncpoint <motion>");
 		SmartBody::util::log("Usage: syncpoint <motion> <start> <ready> <strokestart> <stroke> <strokeend> <relax> <end>");

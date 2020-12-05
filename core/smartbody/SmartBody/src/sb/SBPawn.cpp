@@ -20,7 +20,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBPawn.h"
 
-#include <sbm/mcontrol_callbacks.h>
 #include <sb/SBAttribute.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>

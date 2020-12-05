@@ -1,0 +1,17 @@
+add_library(
+        SmartBody-control
+
+        src/sbm/ControlCommands.cpp
+        src/sbm/MiscCommands.cpp
+        src/sbm/mcontrol_callbacks.cpp
+)
+
+target_include_directories(SmartBody-control PUBLIC
+        src
+        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
+        )
+
+
+target_link_libraries(SmartBody-control
+        SmartBody
+        )

@@ -21,7 +21,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBCharacter.h"
 #include <sb/SBSkeleton.h>
 
-#include <sbm/mcontrol_callbacks.h>
 #include "sb/SBController.h"
 #include "sb/SBBehavior.h"
 #include <sbm/PPRAISteeringAgent.h>

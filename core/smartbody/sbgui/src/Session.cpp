@@ -40,6 +40,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/mcontrol_debugger.h"
 
 #include "sbm/ODEPhysicsSim.h"
+#include "sbm/ControlCommands.h"
 
 Session* Session::current = nullptr;
 
@@ -65,6 +66,8 @@ Session::Session()
 
 	SmartBody::installDebuggerCommand(*scene.getCommandManager());
 	SmartBody::PythonInterface::renderScene = &renderScene;
+
+	registerControlCommands(*scene.getCommandManager());
 
 
 }

@@ -39,7 +39,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_blend.hpp>
 #include <controllers/me_ct_time_shift_warp.hpp>
 
-#include "sbm/mcontrol_callbacks.h"
 #include "sb/SBScene.h"
 #include <controllers/me_spline_1d.hpp>
 #include <controllers/me_ct_interpolator.h>

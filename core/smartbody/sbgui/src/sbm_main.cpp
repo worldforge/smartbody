@@ -49,7 +49,6 @@
 #include <sbm/text_speech.h> // [BMLR]
 #include <sbm/locomotion_cmds.hpp>
 #include <sbm/time_regulator.h>
-//#include "SBMWindow.h"
 #include "CommandWindow.h"
 #include "SBPython.h"
 #include <sb/SBSteerManager.h>
