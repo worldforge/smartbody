@@ -23,8 +23,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sbm/mcontrol_callbacks.h>
 #include "sb/SBController.h"
-#include "bml/bml_types.hpp"
-#include "bml/bml_speech.hpp"
 #include "sb/SBBehavior.h"
 #include <sbm/PPRAISteeringAgent.h>
 #include <sb/SBSteerAgent.h>
@@ -37,7 +35,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBSpeechManager.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBBmlProcessor.h>
 #include <sb/SBReach.h>
 #include <sb/SBSceneListener.h>
 #include <sb/SBMotionGraph.h>
@@ -582,46 +579,6 @@ SBBehavior* SBCharacter::getBehavior(int num)
 		return nullptr;
 }
 
-double SBCharacter::getLastScheduledSpeechBehavior()
-{
-	double lastTime =-1.0;
-
-	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
-	for (auto & iter : bmlRequestMap)
-	{
-		std::string requestName = iter.first;
-		BML::BmlRequestPtr bmlRequestPtr = iter.second;
-		if (bmlRequestPtr->actor->getName() == this->getName())
-		{
-			if (bmlRequestPtr->speech_request)
-			{
-				if (lastTime < bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time())
-					lastTime = bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time();
-
-			}
-		}
-	}
-	return lastTime;
-}
-
-std::string SBCharacter::hasSpeechBehavior()
-{
-	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
-	for (auto & iter : bmlRequestMap)
-	{
-		std::string requestName = iter.first;
-		BML::BmlRequestPtr bmlRequestPtr = iter.second;
-		if (bmlRequestPtr->actor->getName() == this->getName())
-		{
-			if (bmlRequestPtr->speech_request)
-			{
-				return (*bmlRequestPtr).msgId;
-			}
-		}
-	}
-
-	return "";
-}
 
 //std::vector<SBBehavior*>& SBCharacter::getBehaviors()
 //{

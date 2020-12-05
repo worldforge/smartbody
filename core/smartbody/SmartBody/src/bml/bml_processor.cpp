@@ -233,6 +233,28 @@ BmlRequestPtr BML::Processor::createBmlRequest(
 }
 
 
+double BML::Processor::getLastScheduledSpeechBehavior(SbmCharacter& character)
+{
+	double lastTime =-1.0;
+
+	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
+	for (auto & iter : bmlRequestMap)
+	{
+		std::string requestName = iter.first;
+		BML::BmlRequestPtr bmlRequestPtr = iter.second;
+		if (bmlRequestPtr->actor->getName() == character.getName())
+		{
+			if (bmlRequestPtr->speech_request)
+			{
+				if (lastTime < bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time())
+					lastTime = bmlRequestPtr->speech_request.get()->behav_syncs.sync_end()->time();
+
+			}
+		}
+	}
+	return lastTime;
+}
+
 
 void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* scene )
 {

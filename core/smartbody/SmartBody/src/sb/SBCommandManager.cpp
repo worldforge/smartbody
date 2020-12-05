@@ -30,8 +30,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/sbm_test_cmds.hpp>
 #include <sbm/text_speech.h>
 #include <sbm/local_speech.h>
-#include <bml/bml_processor.hpp>
-#include <bml/bml.hpp>
 
 
 SequenceManager::SequenceManager() = default;

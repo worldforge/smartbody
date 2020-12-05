@@ -40,14 +40,14 @@ class SBVHMsgManager : public SBService
 		SBAPI SBVHMsgManager();
 		SBAPI ~SBVHMsgManager();
 
-		SBAPI virtual void setEnable(bool val);
-		SBAPI virtual bool isEnable();
+		SBAPI void setEnable(bool val) override;
+		SBAPI bool isEnable() override;
 
 		SBAPI bool isConnected();
 		SBAPI bool connect();
 		SBAPI void disconnect();
 
-		SBAPI void stop();
+		SBAPI void stop() override;
 
 		SBAPI int sendOpMessage(const std::string& op, const std::string& message);
 		SBAPI int sendMessage(const std::string& message);

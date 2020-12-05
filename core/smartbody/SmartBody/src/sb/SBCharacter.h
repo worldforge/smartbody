@@ -86,10 +86,10 @@ class SBCharacter : public SbmCharacter
 
 		SBAPI int getNumBehaviors();
 		SBAPI SBBehavior* getBehavior(int num);
-		SBAPI std::vector<SBBehavior*>& getBehaviors();
+		//SBAPI std::vector<SBBehavior*>& getBehaviors();
 		
-		SBAPI double getLastScheduledSpeechBehavior();
-		SBAPI std::string hasSpeechBehavior();
+		//SBAPI double getLastScheduledSpeechBehavior();
+		//SBAPI std::string hasSpeechBehavior();
 
 		SBAPI virtual SBFaceDefinition* getFaceDefinition();
 		SBAPI virtual void setFaceDefinition(SBFaceDefinition* face);

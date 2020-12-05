@@ -220,6 +220,9 @@ namespace BML {
 
 		std::string hasSpeechBehavior(SbmCharacter& character);
 
+		double getLastScheduledSpeechBehavior(SbmCharacter& character);
+
+
 	protected:
 		//////////////////////////////////////////////////////////////////////////
 		// Protected Methods

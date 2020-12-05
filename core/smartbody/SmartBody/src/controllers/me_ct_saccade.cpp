@@ -28,6 +28,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBAttributeManager.h>
+#include "sb/SBBmlProcessor.h"
+#include "bml/bml_processor.hpp"
 #include "SBUtilities.h"
 
 using namespace gwiz;
@@ -412,10 +414,10 @@ bool MeCtSaccade::controller_evaluate(double t, MeFrameData& frame)
 		_dt = t - _prevTime;
 		_prevTime = t;
 	}
-	SmartBody::SBCharacter* sbCharacter = dynamic_cast<SmartBody::SBCharacter*> (_character);
-	if (sbCharacter->getStringAttribute("saccadePolicy") == "stopinutterance")
+	if (_character->getStringAttribute("saccadePolicy") == "stopinutterance")
 	{
-		if (sbCharacter->hasSpeechBehavior() != "")
+
+		if (!SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->hasSpeechBehavior(*_character).empty())
 		{
 			_validByPolicy = false;
 			reset(t);
