@@ -46,25 +46,24 @@ using std::vector;
 
 namespace SmartBody {
 
-SBDebuggerServer::SBDebuggerServer(SBRenderScene& renderScene) : SBService(), m_renderScene(renderScene)
+SBDebuggerServer::SBDebuggerServer(SBRenderScene& renderScene)
+		: SBService(),
+		  m_renderScene(renderScene),
+		  m_sbmFriendlyName("sb"),
+		  m_connectResult(false),
+		  m_updateFrequencyS(0),
+		  m_lastUpdate(m_timer.GetTime()),
+		  m_rendererIsRightHanded(true)
 {
 	this->setName("debugger");
-#ifndef SB_NO_VHMSG
-   m_sbmFriendlyName = "sb";
-   m_connectResult = false;
-   m_updateFrequencyS = 0;
-   m_lastUpdate = m_timer.GetTime();
-   m_rendererIsRightHanded = true;
-#endif
+
 
 	createStringAttribute("hostname", "", true, "Basic", 60, false, false, false, "IP address/hostname for connection with debugger.");
 	createStringAttribute("id", "sb", true, "Basic", 60, false, false, false, "Id of the debugging instance.");
 }
 
 
-SBDebuggerServer::~SBDebuggerServer()
-{
-}
+SBDebuggerServer::~SBDebuggerServer() = default;
 
 void SBDebuggerServer::setEnable(bool val)
 {
@@ -97,7 +96,7 @@ void SBDebuggerServer::Init()
    }
 
 
-   if (m_hostname == "")
+   if (m_hostname.empty())
    {
 	   m_hostname = vhcl::SocketGetHostname();
 	   SmartBody::util::log("Setting debugger server hostname to %s", m_hostname.c_str());
@@ -199,10 +198,10 @@ void SBDebuggerServer::Update()
          if (true)
          {
 			 const std::vector<std::string>& charNames = scene->getCharacterNames();
-			string msg = "";
-            for (size_t i = 0; i < charNames.size(); i++)
+			string msg;
+            for (const auto & charName : charNames)
             {
-				SmartBody::SBCharacter * c = scene->getCharacter(charNames[i]);
+				SmartBody::SBCharacter * c = scene->getCharacter(charName);
 
                size_t numBones = c->getSkeleton()->getNumJoints();
 
@@ -245,9 +244,9 @@ void SBDebuggerServer::Update()
                {
                   // sbmdebugger <sbmid> update pawn <name> pos <x y z> rot <x y z w> geom <s> size <s> 
                   const std::vector<std::string>& pawnNames = scene->getPawnNames();
-                  for (size_t i = 0; i < pawnNames.size(); i++)
+                  for (const auto & pawnName : pawnNames)
                   {
-                     SmartBody::SBPawn* p = scene->getPawn(pawnNames[i]);
+                     SmartBody::SBPawn* p = scene->getPawn(pawnName);
                      msg += vhcl::Format("sbmdebugger %s update pawn %s", m_fullId.c_str(), p->getName().c_str());
                      SrVec pos = p->getPosition();
                      SrQuat rot = p->getOrientation();
@@ -553,7 +552,7 @@ void SBDebuggerServer::afterUpdate(double time)
 		Update();
 
 	auto camera = m_renderScene.getActiveCamera();
-	if (SmartBody::SBScene::getScene()->getViewer() && camera)
+	if (camera)
 	{
 		SrMat m;
 		SrQuat quat = SrQuat(camera->get_view_mat(m).get_rotation());

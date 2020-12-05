@@ -27,7 +27,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBUtilities.h"
 #include <map>
 #include <sstream>
-#include <sr/sr_viewer.h>
 #include <sbm/general_param_setting.h>
 
 
@@ -77,8 +76,6 @@ class SBCommandManager;
 class SBNavigationMesh;
 class SBMotionGraphManager;
 class SBHandConfigurationManager;
-//class SBDebuggerServer;
-//class SBDebuggerClient;
 class SBAssetStore;
 
 class SBScene : public SBObject
@@ -95,7 +92,7 @@ class SBScene : public SBObject
 			std::function<std::string(SmartBody::SBObject&)> stringProvider;
 		};
 
-		SBAPI SBScene(CoreServices coreServices);
+		SBAPI explicit SBScene(CoreServices coreServices);
 		SBAPI ~SBScene();
 
 		SBAPI void setProcessId(const std::string& id);
@@ -108,15 +105,6 @@ class SBScene : public SBObject
 
 		SBAPI std::string getStringFromObject(SmartBody::SBObject* object);
 		SBAPI SmartBody::SBObject* getObjectFromString(const std::string& value);
-
-//		SBAPI std::string save(bool remoteSetup = false, std::string mediaPath = "");
-//		SBAPI std::string saveSceneSetting();
-//		SBAPI std::string exportScene(const std::vector<std::string>& aspects, std::string mediaPath = "", bool remoteSetup = false);
-
-#if !defined(__FLASHPLAYER__) && !defined(EMSCRIPTEN)
-//		SBAPI void exportScenePackage(std::string outDir, std::string outZipArchiveName = "");
-//		SBAPI void exportCharacter(std::string charName, std::string outDir);
-#endif
 
 		SBAPI static SBScene* getScene();		
 		SBAPI static void destroyScene();
@@ -169,8 +157,6 @@ class SBScene : public SBObject
 		SBAPI void setDefaultCharacter(const std::string& character);
 		SBAPI void setDefaultRecipient(const std::string& recipient);
 
-		//SBAPI void reset();
-
 		SBAPI std::string getLastScriptDirectory();
 		SBAPI void setLastScriptDirectory(std::string dir);
 
@@ -208,9 +194,6 @@ class SBScene : public SBObject
 
 		SBAPI SBParser* getParser();
 
-		//SBAPI SBDebuggerServer * getDebuggerServer();
-		//SBAPI SBDebuggerClient * getDebuggerClient();
-		//SBAPI SBDebuggerUtility* getDebuggerUtility();
 		SBAPI bool isRemoteMode();
 		SBAPI void setRemoteMode(bool val);
 
@@ -219,7 +202,7 @@ class SBScene : public SBObject
 		SBAPI void removeSceneListener(SBSceneListener* listener);
 		SBAPI void removeAllSceneListeners();
 
-		SBAPI void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 
 		SBAPI static void setSystemParameter(const std::string& name, const std::string& value);
 		SBAPI static std::string getSystemParameter(const std::string& name);
@@ -227,29 +210,6 @@ class SBScene : public SBObject
 		SBAPI static void removeAllSystemParameters();
 		SBAPI static std::vector<std::string> getSystemParameterNames();
 
-//		SBAPI SrCamera* createCamera(const std::string& name);
-//		SBAPI void removeCamera(SrCamera* camera);
-//		SBAPI void setActiveCamera(SrCamera* camera);
-//		SBAPI SrCamera* getActiveCamera();
-//		SBAPI SrCamera* getCamera(const std::string& name);
-//		SBAPI void SetCameraLocked(bool locked);
-//		SBAPI bool IsCameraLocked();
-//		SBAPI int getNumCameras();
-//		SBAPI std::vector<std::string> getCameraNames();
-//		SBAPI bool hasCameraTrack();
-//		SBAPI void setCameraTrack(const std::string& characterName, const std::string& jointName);
-//		SBAPI void removeCameraTrack();
-//		SBAPI void updateTrackedCameras();
-
-//		SBAPI void updateConeOfSight();
-//		SBAPI bool setCameraConeOfSight(const std::string& characterName);
-//		SBAPI bool hasConeOfSight();
-//		SBAPI void removeConeOfSight();
-//
-//		SBAPI std::vector<std::string> checkVisibility(const std::string& characterName);
-//		SBAPI std::vector<std::string> checkVisibility_current_view();
-//		std::vector<std::string> occlusionTest(const std::vector<std::string>& testPawns);
-//		std::vector<std::string> frustumTest(const std::vector<std::string>& testPawnNames);
 
 		// deprecated
 		SBAPI SBSkeleton* createSkeleton(const std::string&char_name);
@@ -262,8 +222,8 @@ class SBScene : public SBObject
 		SBAPI void loadAssets();
 		SBAPI void loadAsset(const std::string& assetPath);
 		SBAPI void loadAssetsFromPath(const std::string& assetPath);
-		SBAPI void loadMotions();
-		SBAPI void addMotions(const std::string& path, bool recursive);
+//		SBAPI void loadMotions();
+//		SBAPI void addMotions(const std::string& path, bool recursive);
 		SBAPI SBMotion* addMotionDefinition(const std::string& motionName, double duration, int numFrames );
 		SBAPI SBSkeleton* addSkeletonDefinition(const std::string& skelName);
 		SBAPI void removeSkeletonDefinition(const std::string& skelName);
@@ -279,7 +239,7 @@ class SBScene : public SBObject
 		SBAPI void updatePawnNames();
 		SBAPI void updateCharacterNames();
 
-		SBAPI void rescalePartialMeshSkeleton(const std::string& meshName, const std::string& skelName, const std::string& rootJointName, const std::vector<std::string>& skipMeshNames, float scaleRatio, float blendThreshold = 0.025f);
+//		SBAPI void rescalePartialMeshSkeleton(const std::string& meshName, const std::string& skelName, const std::string& rootJointName, const std::vector<std::string>& skipMeshNames, float scaleRatio, float blendThreshold = 0.025f);
 
 		//bool  blendScalePos(SrVec &v, SrVec &rootPos, int rootIdx, int headIdx, float blendThreshold, float scaleRatio);
 
@@ -297,10 +257,6 @@ class SBScene : public SBObject
 		SBAPI KinectProcessor* getKinectProcessor();
 		SBAPI std::map<std::string, GeneralParam*>& getGeneralParameters();
 
-		SBAPI SrViewer* getViewer();
-		SBAPI void setViewer(SrViewer* viewer);
-		SBAPI void setViewerFactory(SrViewerFactory* viewerFactory);
-		SBAPI SrViewerFactory* getViewerFactory();
 		SBAPI std::vector<SBController*>& getDefaultControllers();
 
 		/**
@@ -358,15 +314,7 @@ class SBScene : public SBObject
 		std::map<std::string, SBScript*> _scripts;
 		float _scale;
 		bool _isRemoteMode;
-//		bool _isCameraLocked;
 		static bool _firstTime;
-
-//		SBDebuggerServer*	_debuggerServer;
-//		SBDebuggerClient*	_debuggerClient;
-//		SBDebuggerUtility*	_debuggerUtility;
-//		std::map<std::string, SrCamera*> _cameras;
-//		std::string _activeCamera;
-//		std::vector<CameraTrack*> _cameraTracking;
 
 		std::map<std::string, SmartBody::SBFaceDefinition*> _faceDefinitions;
 
@@ -382,9 +330,6 @@ class SBScene : public SBObject
 		std::vector<std::string> _pawnNames;
 		std::map<std::string, SbmCharacter*> _characterMap;
 		std::vector<std::string> _characterNames;
-
-		SrViewer* _viewer;
-		SrViewerFactory* _viewerFactory;
 
 		SmartBody::util::Listener* _logListener;
 

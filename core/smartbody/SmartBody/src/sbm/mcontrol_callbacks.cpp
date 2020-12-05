@@ -93,9 +93,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include <math.h>
-//#include <sb/SBDebuggerServer.h>
-//#include <sb/SBDebuggerClient.h>
-
 #include <controllers/me_ct_gaze.h>
 #include <controllers/me_ct_motion_player.h>
 

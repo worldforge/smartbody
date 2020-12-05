@@ -2078,7 +2078,7 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 	std::fstream input(inputFileName.c_str(), std::ios::in | std::ios::binary);
   google::protobuf::io::IstreamInputStream raw_input(&input);
   google::protobuf::io::CodedInputStream coded_input(&raw_input);
-	coded_input.SetTotalBytesLimit(256000000, 256000000);
+	coded_input.SetTotalBytesLimit(256000000);
 
 	if (!deformableMesh.ParseFromCodedStream(&coded_input))
 	{

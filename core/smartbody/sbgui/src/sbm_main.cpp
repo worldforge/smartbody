@@ -10,7 +10,7 @@
 #include "vhmsg-tt.h"
 #endif
 #include <sbm/lin_win.h>
-#include <signal.h>
+#include <csignal>
 #include <iostream>
 #include <cstdio>
 #include <string>
@@ -159,88 +159,89 @@ void MyMeasure(const Fl_Label *o, int &W, int &H) {
 	viewer show|hide
 	
 */
-
-int mcu_viewer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
-{
-	auto& renderScene = Session::current->renderScene;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	char *view_cmd = args.read_token();
-	if( strcmp( view_cmd, "open" ) == 0 )
-	{
-		if( scene->getViewer() == nullptr )
-		{
-			int argc = args.calc_num_tokens();
-			int width = 1024;
-			int height = 768;
-			int px = 100;
-			int py = 100;
-			if( argc >= 4 )	{
-				width = args.read_int();
-				height = args.read_int();
-				px = args.read_int();
-				py = args.read_int();
-			}
-
-			if( scene->getViewer() == nullptr )
-			{
-				if (!scene->getViewerFactory())
-					return CMD_FAILURE;
-				scene->setViewer(scene->getViewerFactory()->create( px, py, width, height));
-				scene->getViewer()->label_viewer( "SB Viewer - Local Mode" );
-				SrCamera* camera = renderScene.createCamera("activeCamera");
-				scene->getViewer()->set_camera( camera );
-				//((FltkViewer*)viewer_p)->set_mcu(this);
-				scene->getViewer()->show_viewer();
-				if( scene->getRootGroup() )	{
-					scene->getViewer()->root( scene->getRootGroup() );
-				}
-#if !defined (__ANDROID__) && !defined(SBM_IPHONE) && !defined(__native_client__)
-				SbmShaderManager::singleton().setViewer(scene->getViewer());
-#endif
-				return( CMD_SUCCESS );
-			}
-			return( CMD_FAILURE );
-		}
-		else
-		{
-			scene->getViewer()->show_viewer();
-		}
-	}		
-	else if( strcmp( view_cmd, "close" ) == 0 )
-	{
-		if( scene->getViewer() )
-		{
-			scene->getViewerFactory()->remove(scene->getViewer());
-			scene->setViewer(nullptr);
-#if !defined (__ANDROID__) && !defined(SBM_IPHONE) && !defined(__native_client__)
-			SbmShaderManager::singleton().setViewer(nullptr);
-#endif		
-			return( CMD_SUCCESS );
-		}
-	}
-	else if( strcmp( view_cmd, "show" ) == 0 )
-	{
-		if( scene->getViewer() )
-		{
-			scene->getViewer()->show_viewer();
-			return( CMD_SUCCESS );
-		}
-	}
-	else if( strcmp( view_cmd, "hide" ) == 0 )
-	{
-		if( scene->getViewer() )
-		{
-			scene->getViewer()->hide_viewer();
-			return( CMD_SUCCESS );
-		}
-	}
-	else
-	{
-		return( CMD_NOT_FOUND );
-	}
-
-	return( CMD_FAILURE );
-}
+//
+//int mcu_viewer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+//{
+//	auto& renderScene = Session::current->renderScene;
+//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	char *view_cmd = args.read_token();
+////	if( strcmp( view_cmd, "open" ) == 0 )
+////	{
+////		if( scene->getViewer() == nullptr )
+////		{
+////			int argc = args.calc_num_tokens();
+////			int width = 1024;
+////			int height = 768;
+////			int px = 100;
+////			int py = 100;
+////			if( argc >= 4 )	{
+////				width = args.read_int();
+////				height = args.read_int();
+////				px = args.read_int();
+////				py = args.read_int();
+////			}
+////
+////			if( scene->getViewer() == nullptr )
+////			{
+////				if (!scene->getViewerFactory())
+////					return CMD_FAILURE;
+////				scene->setViewer(scene->getViewerFactory()->create( px, py, width, height));
+////				scene->getViewer()->label_viewer( "SB Viewer - Local Mode" );
+////				SrCamera* camera = renderScene.createCamera("activeCamera");
+////				scene->getViewer()->set_camera( camera );
+////				//((FltkViewer*)viewer_p)->set_mcu(this);
+////				scene->getViewer()->show_viewer();
+////				if( scene->getRootGroup() )	{
+////					scene->getViewer()->root( scene->getRootGroup() );
+////				}
+////#if !defined (__ANDROID__) && !defined(SBM_IPHONE) && !defined(__native_client__)
+////				SbmShaderManager::singleton().setViewer(scene->getViewer());
+////#endif
+////				return( CMD_SUCCESS );
+////			}
+////			return( CMD_FAILURE );
+////		}
+////		else
+////		{
+////			scene->getViewer()->show_viewer();
+////		}
+////	}
+////	else if( strcmp( view_cmd, "close" ) == 0 )
+////	{
+////		if( scene->getViewer() )
+////		{
+////			scene->getViewerFactory()->remove(scene->getViewer());
+////			scene->setViewer(nullptr);
+////#if !defined (__ANDROID__) && !defined(SBM_IPHONE) && !defined(__native_client__)
+////			SbmShaderManager::singleton().setViewer(nullptr);
+////#endif
+////			return( CMD_SUCCESS );
+////		}
+////	}
+////	else
+//		if( strcmp( view_cmd, "show" ) == 0 )
+//	{
+//		if( scene->getViewer() )
+//		{
+//			scene->getViewer()->show_viewer();
+//			return( CMD_SUCCESS );
+//		}
+//	}
+//	else if( strcmp( view_cmd, "hide" ) == 0 )
+//	{
+//		if( scene->getViewer() )
+//		{
+//			scene->getViewer()->hide_viewer();
+//			return( CMD_SUCCESS );
+//		}
+//	}
+//	else
+//	{
+//		return( CMD_NOT_FOUND );
+//	}
+//
+//	return( CMD_FAILURE );
+//}
 
 /*
 
@@ -255,7 +256,6 @@ int mcu_viewer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
 int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 
-	if( SmartBody::SBScene::getScene()->getViewer() )	{
 		auto& renderScene = Session::current->renderScene;
 		SrCamera* camera = renderScene.getActiveCamera();
 		if (!camera)
@@ -335,7 +335,7 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 			int preset = args.read_int();
 				
 			if( preset == 1 )	{
-				SmartBody::SBScene::getScene()->getViewer()->view_all();
+				BaseWindow::getInstance().view_all();
 			}
 		}
 		else if (strcmp( cam_cmd, "reset" ) == 0 ) {
@@ -357,11 +357,9 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 			SrBox sceneBox;
 			const std::vector<std::string>& pawnNames = SmartBody::SBScene::getScene()->getPawnNames();
 
-			for (std::vector<std::string>::const_iterator iter = pawnNames.begin();
-				iter != pawnNames.end();
-				iter++)
+			for (const auto & pawnName : pawnNames)
 			{
-				SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(*iter);
+				SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
 				bool visible = pawn->getBoolAttribute("visible");
 					if (!visible)
 						continue;
@@ -376,22 +374,18 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 			camera->setFarPlane(zfar);
 		}
 		return( CMD_SUCCESS );
-	}
+
 
 	return( CMD_FAILURE );
 }
 
 int mcu_snapshot_func2(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 {// get the image data
-	BaseWindow* rootWindow = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (!rootWindow)
-	{
-		SmartBody::util::log("Viewer doesn't exist. Cannot take snapshot.");
-		return CMD_FAILURE;
-	}
+	auto& rootWindow = BaseWindow::getInstance();
+
 	string output_file = args.read_token();
 
-	if (output_file == "")
+	if (output_file.empty())
 	{
 		std::stringstream output_file_os;
 		output_file_os << "snapshot_" << snapshotCounter << ".tga";	// default output name
@@ -399,12 +393,12 @@ int mcu_snapshot_func2(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		output_file = output_file_os.str();
 	}
 
-	int y = rootWindow->curViewer->h();
-	int x = rootWindow->curViewer->w();
+	int y = rootWindow.curViewer->h();
+	int x = rootWindow.curViewer->w();
 
 	long imageSize = x * y * 3;
 
-	unsigned char *data = new unsigned char[imageSize];
+	auto *data = new unsigned char[imageSize];
 	glReadPixels(0, 0, x, y, GL_BGR, GL_UNSIGNED_BYTE, data);// split x and y sizes into bytes
 	int xa = x % 256;
 	int xb = (x - xa) / 256; int ya = y % 256;
@@ -425,20 +419,15 @@ int mcu_snapshot_func2(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 // snapshot <output file>
 int mcu_snapshot_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {
-	BaseWindow* rootWindow = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (!rootWindow)
-	{
-		SmartBody::util::log("Viewer doesn't exist. Cannot take snapshot.");
-		return CMD_FAILURE;
-	}
+	auto& rootWindow = BaseWindow::getInstance();
 	string output_file = args.read_token();
 
-	int windowHeight = rootWindow->curViewer->h();
-	int windowWidth = rootWindow->curViewer->w();
+	int windowHeight = rootWindow.curViewer->h();
+	int windowWidth = rootWindow.curViewer->w();
 	int offsetHeight = 0;
 	int offsetWidth = 0;
 
-	if (output_file == "")
+	if (output_file.empty())
 	{
 		std::stringstream output_file_os;
 		output_file_os << "snapshot_" << snapshotCounter << ".ppm";	// default output name
@@ -484,15 +473,13 @@ int mcu_quit_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )	{
 		scene->getSteerManager()->getEngineDriver()->finish();
 	
 		const std::vector<std::string>& characterNames = scene->getCharacterNames();
-		for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-			iter != characterNames.end();
-			iter++)
+		for (const auto & characterName : characterNames)
 		{
-			SmartBody::SBCharacter* character = scene->getCharacter((*iter));
+			SmartBody::SBCharacter* character = scene->getCharacter(characterName);
 			SmartBody::SBSteerAgent* steerAgent = SmartBody::SBScene::getScene()->getSteerManager()->getSteerAgent(character->getName());
 			if (steerAgent)
 			{
-				PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
+				auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 				ppraiAgent->setAgent(nullptr);
 			}
 		}
@@ -502,7 +489,7 @@ int mcu_quit_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )	{
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void mcu_register_callbacks( void ) {
+void mcu_register_callbacks( ) {
 	
 	SmartBody::SBCommandManager* cmdMgr = SmartBody::SBScene::getScene()->getCommandManager();
 	
@@ -511,11 +498,11 @@ void mcu_register_callbacks( void ) {
 	cmdMgr->insert( "quit",			mcu_quit_func );
 	cmdMgr->insert( "snapshot",		mcu_snapshot_func );
 	cmdMgr->insert( "snapshot2",	mcu_snapshot_func2);
-	cmdMgr->insert( "viewer",		mcu_viewer_func );
+//	cmdMgr->insert( "viewer",		mcu_viewer_func );
 	cmdMgr->insert( "camera",		mcu_camera_func );
 }
 
-void cleanup( void )	{
+void cleanup( )	{
 	{
 
 
@@ -624,7 +611,7 @@ void signal_handler(int sig) {
 class SBMCrashCallback : public vhcl::Crash::CrashCallback
 {
    public:
-      virtual void OnCrash() { signal_handler( -1 ); }
+      void OnCrash() override { signal_handler( -1 ); }
 };
 
 
@@ -698,7 +685,7 @@ int main( int argc, char **argv )	{
 	//FltkViewer* viewer = new FltkViewer(100, 150, 640, 480, "SmartBody");
 
 	// register the log listener
-	SmartBody::util::StdoutListener* listener = new SmartBody::util::StdoutListener();
+	auto* listener = new SmartBody::util::StdoutListener();
 	SmartBody::util::g_log.AddListener(listener);
 
 	int err;
@@ -902,22 +889,6 @@ int main( int argc, char **argv )	{
 	//Create the global session here.
 	Session::current = new Session();
 
-	SmartBody::PythonInterface::getViewerFn = []() {
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		//TODO: remove the need for this magic
-		if (!scene->getViewer())
-		{
-			if (scene->getViewerFactory())
-			{
-				SrViewerFactory* viewerFactory = scene->getViewerFactory();
-				scene->setViewer(viewerFactory->create(viewerFactory->getX(), viewerFactory->getY(), viewerFactory->getW(), viewerFactory->getH()));
-				scene->getViewer()->label_viewer("Visual Debugger");
-				Session::current->renderScene.createCamera("cameraDefault");
-			}
-		}
-		return scene->getViewer();
-	};
-	
 	auto& scene = Session::current->scene;
 
 	// EDF - taken from tre_main.cpp, a fancier command line parser can be put here if desired.
@@ -931,10 +902,10 @@ int main( int argc, char **argv )	{
 	bool maximize = false;
 	std::string windowName = "SmartBody";
 
-	int locX = -1;
-	int locY = -1;
-	int locW = -1;
-	int locH = -1;
+	int locX = 0;
+	int locY =0;
+	int locW = 1024;
+	int locH = 768;
 
 	std::vector<std::string> envNames;
 	std::vector<std::string> envValues;
@@ -944,8 +915,8 @@ int main( int argc, char **argv )	{
 	{
 		SmartBody::util::log( "SmartBody ARG[%d]: '%s'", i, argv[i] );
 		std::string s = argv[i];
-		std::string mediapathstr = "";
-		std::string fpsStr = "";
+		std::string mediapathstr;
+		std::string fpsStr;
 		if (s.size() > 11)
 			mediapathstr = s.substr(0, 10);
 		if (s.size() > 5)
@@ -1045,16 +1016,16 @@ int main( int argc, char **argv )	{
 				// return -1
 			}
 		}
-		else if( s.compare( "-procid=" ) == 0 )  // argument starts with -procid=
+		else if( s == "-procid=" )  // argument starts with -procid=
 		{
 			proc_id = s;
 			proc_id.erase( 0, 8 );
 		}
-		else if( s.compare( "-audio" ) == 0 )  // argument equals -audio
+		else if( s == "-audio" )  // argument equals -audio
 		{
 			 SmartBody::SBScene::getScene()->setBoolAttribute("internalAudio", true);
 		}
-		else if( s.compare( "-lockdt" ) == 0 )  // argument equals -lockdt
+		else if( s == "-lockdt" )  // argument equals -lockdt
 		{
 			lock_dt_mode = true;
 		}
@@ -1064,24 +1035,24 @@ int main( int argc, char **argv )	{
 			fps.erase( 0, 5 );
 			sleepFPS = (float) atof( fps.c_str() );
 		}
-		else if( s.compare( "-perf=" ) == 0 )  // argument starts with -perf=
+		else if( s == "-perf=" )  // argument starts with -perf=
 		{
 			string interval = s;
 			interval.erase( 0, 6 );
 			intervalAmount = (float) atof( interval.c_str() );
 			
 		}
-		else if ( s.compare( "-facebone" ) == 0 )
+		else if ( s == "-facebone" )
 		{
 			SmartBody::util::log("-facebone option has been deprecated.");
 		}
-		else if ( s.compare( "-skscale=" ) == 0 )
+		else if ( s == "-skscale=" )
 		{
 			string skScale = s;
 			skScale.erase( 0, 9 );
 			SmartBody::SBScene::getScene()->getAssetManager()->setGlobalSkeletonScale(atof(skScale.c_str()));
 		}
-		else if ( s.compare( "-skmscale=" ) == 0 )
+		else if ( s == "-skmscale=" )
 		{
 			string skmScale = s;
 			skmScale.erase( 0, 10 );
@@ -1092,59 +1063,59 @@ int main( int argc, char **argv )	{
 			mediaPath = s.substr(11);
 			SmartBody::SBScene::getScene()->setMediaPath(mediaPath);
 		}
-        else if ( s.compare("-noninteractive") == 0)
+        else if ( s == "-noninteractive")
         {
                 isInteractive = false;
         }
-		else if ( s.compare("-noeditor") == 0)
+		else if ( s == "-noeditor")
         {
                 useEditor = false;
         }
-		else if ( s.compare("-maximize") == 0)
+		else if ( s == "-maximize")
         {
                 maximize = true;
         }
-		else if ( s.compare("-name") == 0)
+		else if ( s == "-name")
         {
             if( ++i < argc )
 			{
 				windowName = argv[i];
 			}
         }
-		else if ( s.compare("-x") == 0)
+		else if ( s == "-x")
 		{
             if( ++i < argc )
 			{
 				locX = atoi(argv[i]);
 			}
 		}
-		else if ( s.compare("-y") == 0)
+		else if ( s == "-y")
 		{
             if( ++i < argc )
 			{
 				locY = atoi(argv[i]);
 			}
 		}
-		else if ( s.compare("-w") == 0)
+		else if ( s == "-w")
 		{
             if( ++i < argc )
 			{
 				locW = atoi(argv[i]);
 			}
 		}
-		else if ( s.compare("-h") == 0)
+		else if ( s == "-h")
 		{
             if( ++i < argc )
 			{
 				locH = atoi(argv[i]);
 			}
 		}
-		else if ( s.compare("-renderer=") == 0)
+		else if ( s == "-renderer=")
         {
 				renderer = s;
 				renderer.erase( 0, 10 );
         }
-		else if (s.compare("-log") == 0)
+		else if (s == "-log")
 		{
 			if (++i < argc)
 			{
@@ -1154,7 +1125,7 @@ int main( int argc, char **argv )	{
 #endif
 			}
 		}
-		else if ( s.compare("-env") == 0)
+		else if ( s == "-env")
         {
 			if( ++i < argc )
 			{
@@ -1162,7 +1133,7 @@ int main( int argc, char **argv )	{
 				 std::string nameValuePair = argv[i];
 				 std::vector<string> strs;
 				 boost::split(strs, nameValuePair, boost::is_any_of("="));
-				 if (strs.size() > 0)
+				 if (!strs.empty())
 					 envNames.emplace_back(strs[0]);
 				 if (strs.size() > 1)
 					 envValues.emplace_back(strs[1]);
@@ -1213,14 +1184,28 @@ int main( int argc, char **argv )	{
 
 // change the default font size
 	FL_NORMAL_SIZE = 11;
-	FltkViewerFactory viewerFactory;
-	viewerFactory.setDefaultSize(locX, locY, locW, locH);
-	viewerFactory.setUseEditor(useEditor);
-	viewerFactory.setMaximize(maximize);
-	viewerFactory.setWindowName(windowName);
-	//viewerFactory->setFltkViewer(sbmWindow->getFltkViewer());
-	//viewerFactory->setFltkViewer(viewer);
-	SmartBody::SBScene::getScene()->setViewerFactory(&viewerFactory);
+//	FltkViewerFactory viewerFactory;
+//	viewerFactory.setDefaultSize(locX, locY, locW, locH);
+//	viewerFactory.setUseEditor(useEditor);
+//	viewerFactory.setMaximize(maximize);
+//	viewerFactory.setWindowName(windowName);
+
+
+	if (maximize)
+	{
+		Fl::screen_xywh(locX, locY, locW, locH);
+		//Why is this needed?
+		locY += 10;
+		locH -= 10;
+	}
+
+	BaseWindow baseWindow(useEditor, locX, locY, locW, locH, windowName.c_str());
+
+	SmartBody::PythonInterface::getViewerFn = [&]() {
+		return &baseWindow;
+	};
+	Session::current->renderScene.createCamera("cameraDefault");
+
 
 	SmartBody::SBScene::getScene()->getSpeechManager()->festivalRelay()->initSpeechRelay(festivalLibDir,festivalCacheDir);
 	SmartBody::SBScene::getScene()->getSpeechManager()->cereprocRelay()->initSpeechRelay(cereprocLibDir,festivalCacheDir);
@@ -1382,10 +1367,10 @@ int main( int argc, char **argv )	{
 		 it != init_pys.end();
 		 ++it )
 	{
-		std::string cmd = it->c_str();
+		std::string cmd = *it;
 		std::stringstream strstr;
 		strstr << "scene.run(\"" << cmd.c_str() << "\")";
-		SmartBody::SBScene::getScene()->run(strstr.str().c_str());
+		SmartBody::SBScene::getScene()->run(strstr.str());
 		SmartBody::util::log("Run Script = %s", strstr.str().c_str());
 	}
 	SmartBody::util::log("After running init python script");
@@ -1419,9 +1404,8 @@ int main( int argc, char **argv )	{
 	while((SmartBody::SBScene::getScene()->getSimulationManager()->isRunning()))	{
 
 
-		SmartBody::SBScene* theScene = SmartBody::SBScene::getScene();
 //		mcu.update_profiler( SBM_get_real_time() );
-		bool update_sim = theScene->getSimulationManager()->updateTimer();
+		bool update_sim = Session::current->scene.getSimulationManager()->updateTimer();
 //		bool update_sim = mcu.update_timer( SBM_get_real_time() );
 
 	//	mcu.mark( "main", 0, "fltk-check" );
@@ -1433,7 +1417,7 @@ int main( int argc, char **argv )	{
 			Fl::check();
 		}*/
 
-		theScene = SmartBody::SBScene::getScene();
+		auto& theScene = Session::current->scene;
 
 #if LINK_VHMSG_CLIENT
 		if (SmartBody::SBScene::getScene()->getVHMsgManager()->isEnable())
@@ -1447,7 +1431,7 @@ int main( int argc, char **argv )	{
 
 		vector<string> commands;// = mcu.bonebus.GetCommand();
 		for (auto & command : commands) {
-			theScene->command( (char *)command.c_str() );
+			theScene.command( (char *)command.c_str() );
 		}
 
 		if (isInteractive)
@@ -1473,7 +1457,7 @@ int main( int argc, char **argv )	{
 		}
 
 		if( update_sim )	{
-			theScene->update();
+			theScene.update();
 		}
 	}	
 	
@@ -1483,7 +1467,7 @@ int main( int argc, char **argv )	{
 	//delete listener;
 //	delete sbmWindow;
 	// finally, delete SBScene
-	SmartBody::SBScene::destroyScene();
+	Session::current = {};
 //	return( 0 ); // NOT NEEDED ??
 }
 

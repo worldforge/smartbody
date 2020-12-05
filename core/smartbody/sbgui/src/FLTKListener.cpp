@@ -13,7 +13,11 @@
 #include <fltk_viewer.h>
 
 
-FLTKListener::FLTKListener(FltkViewer& viewer) : SmartBody::SBSceneListener(), SmartBody::SBObserver(), mViewer(viewer), otherListener(nullptr)
+FLTKListener::FLTKListener(FltkViewer& viewer)
+		: SmartBody::SBSceneListener(),
+		  SmartBody::SBObserver(),
+		  mViewer(viewer),
+		  otherListener(nullptr)
 {
 }
 
@@ -23,52 +27,11 @@ void FLTKListener::OnCharacterCreate( const std::string & name, const std::strin
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	SmartBody::SBPawn* pawn = scene->getPawn(name);
-//	if (!pawn)
-//		return;
-//
-//	// add attribute observations
-//	SmartBody::SBAttribute* attr = pawn->getAttribute("mesh");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	attr = pawn->getAttribute("meshScale");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	attr = pawn->getAttribute("deformableMesh");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	attr = pawn->getAttribute("deformableMeshScale");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	attr = pawn->getAttribute("displayType");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	attr = pawn->getAttribute("showBones");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	attr = pawn->getAttribute("showJoints");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	attr = pawn->getAttribute("displayBoneScale");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	attr = pawn->getAttribute("displayJointScale");
-//	if (attr)
-//		attr->registerObserver(this);
-//
-//	FLTKListener::OnCharacterUpdate(name);
-	
+
 	if (otherListener)
 		otherListener->OnCharacterCreate(name,objectClass);
 
-	auto* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
+	auto* window = dynamic_cast<BaseWindow*>(&mViewer);
 	if (window)
 		window->updateObjectList();
 	if (name.find("light") == 0)
@@ -128,7 +91,7 @@ void FLTKListener::OnCharacterDelete( const std::string & name )
 
 
 	
-	auto* window = dynamic_cast<BaseWindow*>(scene->getViewer());
+	auto* window = dynamic_cast<BaseWindow*>(&mViewer);
 	if (window)
 	{
 		window->updateObjectList(name);
@@ -228,7 +191,7 @@ void FLTKListener::notify(SmartBody::SBSubject* subject)
 		if (pawn->getName().find("light") == 0)
 		{
 			// adjust the lights based on the new position and color
-			auto* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
+			auto* window = dynamic_cast<BaseWindow*>(&mViewer);
 			if (window)
 			{
 				window->curViewer->updateLights();
@@ -601,7 +564,7 @@ void FLTKListener::notify(SmartBody::SBSubject* subject)
 //		}
 		if (name == "useDefaultLights")
 		{
-			auto* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
+			auto* window = dynamic_cast<BaseWindow*>(&mViewer);
 			window->curViewer->updateLights();
 		}
 
@@ -701,9 +664,9 @@ void FLTKListener::OnLogMessage( const std::string& message )
 
 void FLTKListener::OnEvent( const std::string& eventName, const std::string& eventParameters )
 {
-	auto* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window->commandWindow && 
-		window->commandWindow->isShowEvents)
+	auto& window = BaseWindow::getInstance();
+	if (window.commandWindow &&
+		window.commandWindow->isShowEvents)
 	{
 #ifdef WIN32
 		SmartBody::util::log("Event: [%s] %s", eventName.c_str(), eventParameters.c_str());

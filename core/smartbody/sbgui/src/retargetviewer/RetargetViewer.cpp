@@ -40,9 +40,7 @@ RetargetViewer::RetargetViewer(int x, int y, int w, int h, char* name) : Fl_Doub
 	this->add(_cancelButton);
 }
 
-RetargetViewer::~RetargetViewer()
-{
-}
+RetargetViewer::~RetargetViewer() = default;
 
 int RetargetViewer::updateBehaviorSet()
 {
@@ -51,11 +49,9 @@ int RetargetViewer::updateBehaviorSet()
 	SmartBody::SBBehaviorSetManager* behavMgr = SmartBody::SBScene::getScene()->getBehaviorSetManager();
 	std::map<std::string, SmartBody::SBBehaviorSet*>& behavSets = behavMgr->getBehaviorSets();
 	_scrollGroup->clear();
-	for (std::map<std::string, SmartBody::SBBehaviorSet*>::iterator iter = behavSets.begin();
-		iter != behavSets.end();
-		iter++)
+	for (auto & behavSet : behavSets)
 	{
-		std::string name = (*iter).first;
+		std::string name = behavSet.first;
 		Fl_Check_Button* check = new Fl_Check_Button(40, widgetY, itemWidth, 20, _strdup(name.c_str()));
 		_scrollGroup->add(check);
 		widgetY += 25;

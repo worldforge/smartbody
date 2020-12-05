@@ -188,7 +188,6 @@ _coreServices(std::move(coreServices))
 	_naviMeshManager = new SBNavigationMeshManager();
 	_motionGraphManager = new SBMotionGraphManager();
 	_handConfigManager = new SBHandConfigurationManager();
-	//_debuggerServer = new SBDebuggerServer();
 
 	//_scale = .01f; // default scale is centimeters
 	_scale = 1.f;
@@ -266,8 +265,8 @@ _coreServices(std::move(coreServices))
 		// re-initialize
 	// initialize everything
 
-	_viewer = nullptr;
-	_viewerFactory = nullptr;
+//	_viewer = nullptr;
+//	_viewerFactory = nullptr;
 
 	_rootGroup = new SrSnGroup();
 	_rootGroup->ref();
@@ -308,15 +307,15 @@ _coreServices(std::move(coreServices))
 #endif
 #endif
 	*/	
-	if (_viewer)	
-	{
-		if (_viewerFactory)
-			_viewerFactory->reset(_viewer);
-		_viewer = nullptr;
-//#if !defined (__ANDROID__) && !defined(SB_IPHONE) && !defined(__native_client__) && !defined(EMSCRIPTEN)
-//		SbmShaderManager::singleton().setViewer(nullptr);
-//#endif
-	}
+//	if (_viewer)
+//	{
+////		if (_viewerFactory)
+////			_viewerFactory->reset(_viewer);
+//		_viewer = nullptr;
+////#if !defined (__ANDROID__) && !defined(SB_IPHONE) && !defined(__native_client__) && !defined(EMSCRIPTEN)
+////		SbmShaderManager::singleton().setViewer(nullptr);
+////#endif
+//	}
 
 	_logListener = nullptr;
 
@@ -423,7 +422,6 @@ SBScene::~SBScene()
 	delete _naviMeshManager;
 	delete _kinectProcessor;
 	delete _handConfigManager;
-	//delete _debuggerServer;
 
 	_sim = nullptr;
 	_profiler = nullptr;
@@ -463,8 +461,7 @@ SBScene::~SBScene()
 	_rootGroup->unref();
 	_rootGroup = nullptr;
 
-	_viewer = nullptr;
-	_viewerFactory = nullptr;
+//	_viewer = nullptr;
 
 #ifndef SB_NO_VHCL_AUDIO
 	AUDIO_Close();
@@ -503,32 +500,9 @@ SBScene::~SBScene()
 	//mcu.reset();
 }
 
-//SBDebuggerServer* SBScene::getDebuggerServer()
-//{
-//	return _debuggerServer;
-//}
-//
-//SBDebuggerClient* SBScene::getDebuggerClient()
-//{
-//	return _debuggerClient;
-//}
-//
-//
-//SBDebuggerUtility* SBScene::getDebuggerUtility()
-//{
-//	return _debuggerUtility;
-//}
 
 SBScene* SBScene::getScene()
 {
-//	if (_firstTime)
-//	{
-//		XMLPlatformUtils::Initialize();
-//		_firstTime = false;
-//		_scene = new SBScene();
-//		_scene->initialize();
-//	}
-
 	return _scene;
 }
  
@@ -1946,27 +1920,16 @@ float SBScene::queryTerrain( float x, float z, float *normal_p )
 	return( 0.0 );
 }
 
-SrViewer* SBScene::getViewer()
-{
-	return _viewer;
-}
+//SrViewer* SBScene::getViewer()
+//{
+//	return _viewer;
+//}
 
-void SBScene::setViewer(SrViewer* viewer)
-{
-	_viewer = viewer;
-}
+//void SBScene::setViewer(SrViewer* viewer)
+//{
+//	_viewer = viewer;
+//}
 
-SrViewerFactory* SBScene::getViewerFactory()
-{
-	return _viewerFactory;
-}
-
-void SBScene::setViewerFactory(SrViewerFactory* viewerFactory)
-{
-	if (_viewerFactory)
-		delete _viewerFactory;
-	_viewerFactory = viewerFactory;
-}
 
 KinectProcessor* SBScene::getKinectProcessor()
 {

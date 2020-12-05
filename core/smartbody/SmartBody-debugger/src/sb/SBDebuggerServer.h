@@ -67,6 +67,7 @@ class SBDebuggerServer : public SBService
 
 	private:
 		SBRenderScene& m_renderScene;
+		vhcl::Timer m_timer;
 		std::vector<std::string> m_processIdList;
 		std::string m_sbmFriendlyName;
 		std::string m_hostname;
@@ -75,7 +76,6 @@ class SBDebuggerServer : public SBService
 		bool m_connectResult;
 		double m_updateFrequencyS;
 		double m_lastUpdate;
-		vhcl::Timer m_timer;
 
 public:
 

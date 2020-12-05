@@ -40,18 +40,14 @@ SBObject::SBObject() : SBSubject(), SBObserver()
 
 SBObject::~SBObject()
 {
-	for (std::set<SBObject*>::iterator iter = _dependenciesReverse.begin();
-		iter != _dependenciesReverse.end(); 
-		iter++)
+	for (auto iter : _dependenciesReverse)
 	{
-		(*iter)->onDependencyRemoval(this);
+		iter->onDependencyRemoval(this);
 	}
 
-	for (std::map<std::string, SBAttribute*>::iterator iter = m_attributeList.begin();
-		 iter != m_attributeList.end();
-		 iter++)
+	for (auto & iter : m_attributeList)
 	{
-		delete (*iter).second;
+		delete iter.second;
 	}
 	delete m_attributeManager;
 
@@ -97,7 +93,7 @@ void SBObject::copyAllAttributes( SBObject* origObj )
 void SBObject::addAttribute(SBAttribute* attr)
 {
 	 // check for the existence of the attribute
-	std::map<std::string, SBAttribute*>::iterator iter = m_attributeList.find(attr->getName());
+	auto iter = m_attributeList.find(attr->getName());
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
 	{
 		SBAttribute* rmattr = iter->second;
@@ -117,7 +113,7 @@ void SBObject::addAttribute(SBAttribute* attr)
 void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
 {
 	// check for the existence of the attribute
-	std::map<std::string, SBAttribute*>::iterator iter = m_attributeList.find(attr->getName());
+	auto iter = m_attributeList.find(attr->getName());
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
 	{
 		SBAttribute* attr = iter->second;
@@ -139,7 +135,7 @@ void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
 
  bool SBObject::hasAttribute(const std::string& name)
  {
-	std::map<std::string, SBAttribute*>::iterator iter = m_attributeList.find(name);
+	auto iter = m_attributeList.find(name);
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
 	{
 		return true;
@@ -152,7 +148,7 @@ void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
 
  SBAttribute* SBObject::getAttribute(const std::string& name)
  {
-	std::map<std::string, SBAttribute*>::iterator iter = m_attributeList.find(name);
+	auto iter = m_attributeList.find(name);
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
 	{
 		return iter->second;
@@ -165,7 +161,7 @@ void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
 
  void SBObject::clearAttributes()
  {
-	 std::map<std::string, SBAttribute*>::iterator iter = m_attributeList.begin();
+	 auto iter = m_attributeList.begin();
 	 std::vector<std::string> attrNameList;
 	 for ( iter  = m_attributeList.begin();
 		   iter != m_attributeList.end();
@@ -173,8 +169,8 @@ void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
 	 {
 		 attrNameList.emplace_back(iter->first);
 	 }		 
-	 for (unsigned int i=0;i<attrNameList.size();i++)
-		 removeAttribute(attrNameList[i]);
+	 for (auto & i : attrNameList)
+		 removeAttribute(i);
  }
  
 int SBObject::getNumAttributes()
@@ -185,11 +181,9 @@ int SBObject::getNumAttributes()
 std::vector<std::string> SBObject::getAttributeNames()
 {
 	std::vector<std::string> attrNameList;
-	for (std::map<std::string, SBAttribute*>::iterator iter = m_attributeList.begin();
-		 iter != m_attributeList.end();
-		 iter++)
+	for (auto & iter : m_attributeList)
 	 {
-		 attrNameList.emplace_back(iter->first);
+		 attrNameList.emplace_back(iter.first);
 	 }
 	 return attrNameList;
 }

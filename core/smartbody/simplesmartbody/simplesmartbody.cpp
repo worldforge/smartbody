@@ -50,7 +50,7 @@ int main( int argc, char ** argv )
 	SmartBody::util::log("Loading Python...");
 
 	// initialize the Python libraries
-	initPython(pythonPath);
+	initPython();
 
 	// get the scene object
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();

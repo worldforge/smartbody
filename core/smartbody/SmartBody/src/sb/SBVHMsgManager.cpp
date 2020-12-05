@@ -20,8 +20,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBVHMsgManager.h"
 #include <sb/SBScene.h>
-//#include "sb/SBDebuggerServer.h"
-//#include "sb/SBDebuggerClient.h"
 #include <sb/SBCommandManager.h>
 #include "SBUtilities.h"
 

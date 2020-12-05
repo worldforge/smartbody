@@ -45,12 +45,16 @@
 
 #define TEST_EXPORT_SMARTBODY_PACKAGE 1
 
+BaseWindow* BaseWindow::sInstance = nullptr;
+
+
 BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* name)
 : 	SrViewer(x, y, w, h),
 	Fl_Double_Window(x, y, w, h, name),
  	mDebuggerClient(std::make_unique<SmartBody::SBDebuggerClient>()),
 	 mSession(Session::current)
 {
+	sInstance = this;
 	standaloneResourceWindow = nullptr;
 	commandWindow = nullptr;
 	bmlCreatorWindow = nullptr;
@@ -399,7 +403,7 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 }
 
 BaseWindow::~BaseWindow() {
-
+	sInstance = nullptr;
 	delete customViewer;
 	delete commandWindow;
 	delete characterCreator;
@@ -415,6 +419,16 @@ BaseWindow::~BaseWindow() {
 	delete resourceWindow;
 	delete panimationWindow;
 
+}
+
+BaseWindow& BaseWindow::getInstance()
+{
+	return *sInstance;
+}
+
+BaseWindow* BaseWindow::getInstancePtr()
+{
+	return sInstance;
 }
 
 void BaseWindow::changeLayoutMode(int mode)
@@ -738,8 +752,8 @@ void BaseWindow::ResetScene()
 		listener->OnSimulationStart();
 	}
 	
-	mSession->scene.setViewer(this);
-	mSession->scene.getViewer()->root(mSession->scene.getRootGroup());
+//	mSession->scene.setViewer(this);
+	root(mSession->scene.getRootGroup());
 	SbmShaderManager::singleton().setViewer(this);
 
 	mSession->scene.getSimulationManager()->setupTimer();
@@ -1050,37 +1064,7 @@ void BaseWindow::NewCB(Fl_Widget* widget, void* data)
 	int confirm = fl_choice("This will reset the current session.\nContinue?", "No", "Yes", nullptr);
 	if (confirm == 1)
 	{
-#if 1
 		window->ResetScene(); // should call the same function to be consistent
-#else
-		SmartBody::SBSceneListener* listener = mSession->scene.getCharacterListener();
-		window->resetWindow();
-		
-		SmartBody::SBScene::destroyScene();
-
-		SmartBody::SBScene* scene = mScene;
-		scene.setViewer(window);
-		scene.getViewer()->root(scene.getRootGroup());
-		//mcu.kinectProcessor->initKinectSkeleton();
-		SbmShaderManager::singleton().setViewer(window);
-
-
-		std::string mediaPath = SmartBody::SBScene::getSystemParameter("mediapath");
-		if (mediaPath != "")
-			scene.setMediaPath(mediaPath);
-		scene.addSceneListener(listener);
-
-		scene.getSimulationManager()->setupTimer();
-		
-		SrCamera* camera = scene.createCamera("cameraDefault");
-		camera->reset(); 
-
-		std::string pythonLibPath = SmartBody::SBScene::getSystemParameter("pythonlibpath");
-		setupPython();
-		
-
-		scene.getVHMsgManager()->setEnable(true);	
-#endif
 	}
 }
 
@@ -2740,80 +2724,4 @@ void BaseWindow::DeleteSelectionCB( Fl_Widget* widget, void* data )
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->deleteSelectedObject(0);
 }
-
-//== Viewer Factory ========================================================
-SrViewer* FltkViewerFactory::s_viewer = nullptr;
-
-FltkViewerFactory::FltkViewerFactory()
-{
-	s_viewer = nullptr;
-	_useEditor = true;
-	_maximize = false;
-	_windowName = "SmartBody";
-	_x = 0;
-	_y = 0;
-	_w = 1024;
-	_h = 768;
-}
-
-void FltkViewerFactory::setUseEditor(bool val)
-{
-	_useEditor = val;
-}
-
-void FltkViewerFactory::setMaximize(bool val)
-{
-	_maximize = val;
-}
-
-void FltkViewerFactory::setWindowName(std::string name)
-{
-	_windowName = std::move(name);
-}
-
-SrViewer* FltkViewerFactory::create(int x, int y, int w, int h)
-{
-	if (!s_viewer)
-	{
-		if (_maximize)
-		{
-			int screenX, screenY, screenW, screenH;
-			Fl::screen_xywh(screenX, screenY, screenW, screenH);
-			s_viewer = new BaseWindow(_useEditor, screenX, screenY + 10, screenW, screenH - 10, _windowName.c_str());
-		}
-		else
-		{
-			s_viewer = new BaseWindow(_useEditor, x, y, w, h, _windowName.c_str());
-		}
-	}
-	return s_viewer;
-}
-
-void FltkViewerFactory::remove(SrViewer* viewer)
-{
-	if (viewer && (viewer == s_viewer))
-	{
-		viewer->hide_viewer();
-		auto* baseWindow = dynamic_cast<BaseWindow*> (s_viewer);
-		if (baseWindow)
-		{
-			baseWindow->resetWindow();
-			baseWindow->render();
-		}
-	}
-}
-
-void FltkViewerFactory::reset(SrViewer* viewer)
-{
-	if (viewer && (viewer == s_viewer))
-	{
-		auto* baseWindow = dynamic_cast<BaseWindow*> (s_viewer);
-		if (baseWindow)
-		{
-			baseWindow->resetWindow();
-			baseWindow->render();
-		}
-	}
-}
-
 

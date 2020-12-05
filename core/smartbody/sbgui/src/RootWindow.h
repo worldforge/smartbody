@@ -40,11 +40,14 @@ class SbmCharacter;
 class CharacterCreatorWindow;
 class ResolutionWindow;
 
-class  BaseWindow : public SrViewer, public Fl_Double_Window
+class BaseWindow : public SrViewer, public Fl_Double_Window
 {
 	public:	
 		BaseWindow(bool useEditor, int x, int y, int w, int h, const char* name);
 		~BaseWindow() override;
+
+		static BaseWindow& getInstance();
+		static BaseWindow* getInstancePtr();
 
 		void show_viewer() override;
 		void hide_viewer() override;
@@ -254,26 +257,8 @@ class  BaseWindow : public SrViewer, public Fl_Double_Window
 		static void ResizeWindowCB(Fl_Widget* widget, void* data);
 		static void DeleteSelectionCB(Fl_Widget* widget, void* data);
 		static void DeleteObjectCB(Fl_Widget* widget, void* data);
+	private:
+		static BaseWindow* sInstance;
 };
 
-class FltkViewerFactory : public SrViewerFactory
- {
-	public:
-		FltkViewerFactory();
-
-		//void setFltkViewer(FltkViewer* viewer);
-		SrViewer* create(int x, int y, int w, int h) override;
-		void remove(SrViewer* viewer) override;
-		void reset(SrViewer* viewer) override;
-		void setUseEditor(bool val);
-		void setMaximize(bool val);
-		void setWindowName(std::string name);
-
-	private:
-		static SrViewer* s_viewer;
-		bool _useEditor;
-		bool _maximize;
-		std::string _windowName;
-
- };
 #endif

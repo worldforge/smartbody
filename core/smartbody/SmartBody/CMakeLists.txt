@@ -273,9 +273,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sbm/ParserBVH.cpp
         src/sbm/ParserASFAMC.cpp
         src/sbm/ParserFBX.cpp
-       # src/sbm/ParserOgre.cpp
-       # src/sbm/ParserCOLLADAFast.cpp
-       # src/sbm/ParserOpenCOLLADA.cpp
         src/sbm/remote_speech.cpp
         src/sbm/sbm_audio.cpp
         src/controllers/MeCtBodyReachState.cpp
@@ -376,22 +373,13 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBNavigationMeshManager.cpp
 
         src/sb/SBAssetHandler.cpp
-#        src/sb/SBAssetHandlerHDR.cpp
- #       src/sb/SBAssetHandlerCOLLADA.cpp
         src/sb/SBAssetHandlerSk.cpp
         src/sb/SBAssetHandlerSkm.cpp
         src/sb/SBAssetHandlerAsf.cpp
         src/sb/SBAssetHandlerAmc.cpp
-       # src/sb/SBAssetHandlerOgre.cpp
-       # src/sb/SBAssetHandlerObj.cpp
         src/sb/SBAssetHandlerBvh.cpp
-#        src/sb/SBAssetHandlerPly.cpp
         src/sb/SBBehavior.cpp
         src/sb/SBAssetHandlerSkmb.cpp
-#        src/sb/SBAssetHandlerSBMeshBinary.cpp
-#        src/sb/SBDebuggerServer.cpp
-#        src/sb/SBDebuggerClient.cpp
-#        src/sb/SBDebuggerUtility.cpp
         src/sb/SBRealtimeManager.cpp
         src/sb/SBRigNode.cpp
         src/sbm/SteerPath.cpp

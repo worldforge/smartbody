@@ -747,9 +747,9 @@ std::vector<std::string> checkVisibility(const std::string& character)
 	auto& renderScene = Session::current->renderScene;
 	SmartBody::SBScene* scene			= SmartBody::SBScene::getScene();
 
-	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window && window->curViewer)
-		window->curViewer->make_current(); // make sure the OpenGL context is current
+	BaseWindow& window = BaseWindow::getInstance();
+	if (window.curViewer)
+		window.curViewer->make_current(); // make sure the OpenGL context is current
 
 	std::vector<std::string> visible	= renderScene.checkVisibility(character);
 	
@@ -773,8 +773,8 @@ std::vector<std::string> checkVisibility_current_view()
 	auto& renderScene = Session::current->renderScene;
 
 	// make current
-	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window && window->curViewer) {
+	BaseWindow& window = BaseWindow::getInstance();
+	if (window.curViewer) {
 		std::vector<std::string> visible = renderScene.checkVisibility_current_view();
 		if(DEBUG_CHECK_VISIBILITY) {
 			SmartBody::util::log("Visible pawns: ");
@@ -791,55 +791,55 @@ std::vector<std::string> checkVisibility_current_view()
 
 void addPoint(const std::string& pointName, SrVec point, SrVec color, int size)
 {
-	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window->curViewer)
+	BaseWindow& window = BaseWindow::getInstance();
+	if (window.curViewer)
 	{
-		window->curViewer->addPoint(pointName, point, color, size);
+		window.curViewer->addPoint(pointName, point, color, size);
 	}
 }
 
 void removePoint(const std::string& pointName)
 {
-	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window->curViewer)
+	BaseWindow& window = BaseWindow::getInstance();
+	if (window.curViewer)
 	{
-		window->curViewer->removePoint(pointName);
+		window.curViewer->removePoint(pointName);
 	}
 }
 
 void removeAllPoints()
 {
-	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window->curViewer)
+	BaseWindow& window = BaseWindow::getInstance();
+	if (window.curViewer)
 	{
-		window->curViewer->removeAllPoints();
+		window.curViewer->removeAllPoints();
 	}
 }
 
 void addLine(const std::string& lineName, std::vector<SrVec>& points, SrVec color, int width)
 {
-	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window->curViewer)
+	BaseWindow& window = BaseWindow::getInstance();
+	if (window.curViewer)
 	{
-		window->curViewer->addLine(lineName, points, color, width);
+		window.curViewer->addLine(lineName, points, color, width);
 	}
 }
 
 void removeLine(const std::string& lineName)
 {
-	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window->curViewer)
+	BaseWindow& window = BaseWindow::getInstance();
+	if (window.curViewer)
 	{
-		window->curViewer->removeLine(lineName);
+		window.curViewer->removeLine(lineName);
 	}
 }
 
 void removeAllLines()
 {
-	BaseWindow* window = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
-	if (window->curViewer)
+	BaseWindow& window = BaseWindow::getInstance();
+	if (window.curViewer)
 	{
-		window->curViewer->removeAllLines();
+		window.curViewer->removeAllLines();
 	}
 }
 
