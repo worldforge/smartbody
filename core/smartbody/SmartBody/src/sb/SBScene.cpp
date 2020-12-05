@@ -267,10 +267,8 @@ _coreServices(std::move(coreServices))
 	// initialize everything
 
 	_viewer = nullptr;
-	_ogreViewer = nullptr;
 	_viewerFactory = nullptr;
-	_ogreViewerFactory = nullptr;
-	
+
 	_rootGroup = new SrSnGroup();
 	_rootGroup->ref();
 
@@ -318,14 +316,6 @@ _coreServices(std::move(coreServices))
 //#if !defined (__ANDROID__) && !defined(SB_IPHONE) && !defined(__native_client__) && !defined(EMSCRIPTEN)
 //		SbmShaderManager::singleton().setViewer(nullptr);
 //#endif
-	}
-
-	if (_viewerFactory)
-		_viewerFactory->remove(_ogreViewer);
-	if (_ogreViewer)
-	{
-		delete _ogreViewer;
-		_ogreViewer = nullptr;
 	}
 
 	_logListener = nullptr;
@@ -474,9 +464,7 @@ SBScene::~SBScene()
 	_rootGroup = nullptr;
 
 	_viewer = nullptr;
-	_ogreViewer = nullptr;
 	_viewerFactory = nullptr;
-	_ogreViewerFactory = nullptr;
 
 #ifndef SB_NO_VHCL_AUDIO
 	AUDIO_Close();
@@ -1473,9 +1461,9 @@ SmartBody::SBFaceDefinition* SBScene::createFaceDefinition(const std::string& na
 
 	SBFaceDefinition* face = new SBFaceDefinition(name);
 	_faceDefinitions.insert(std::pair<std::string, SBFaceDefinition*>(name, face));
-	for (size_t l = 0; l < this->_sceneListeners.size(); l++)
+	for (auto & _sceneListener : this->_sceneListeners)
 	{
-		this->_sceneListeners[l]->OnObjectCreate(face);
+		_sceneListener->OnObjectCreate(face);
 	}
 
 	return face;
@@ -1486,15 +1474,15 @@ void SBScene::removeFaceDefinition(const std::string& name)
 	
 
 	// make sure the name doesn't already exist
-	std::map<std::string, SBFaceDefinition*>::iterator iter = _faceDefinitions.find(name);
+	auto iter = _faceDefinitions.find(name);
 	if (iter ==_faceDefinitions.end())
 	{
 		SmartBody::util::log("Face definition named '%s' does not exist.", name.c_str());
 		return;
 	}
-	for (size_t l = 0; l < this->_sceneListeners.size(); l++)
+	for (auto & _sceneListener : this->_sceneListeners)
 	{
-		this->_sceneListeners[l]->OnObjectDelete(iter->second);
+		_sceneListener->OnObjectDelete(iter->second);
 	}
 	delete iter->second;
 	iter->second = nullptr;
@@ -1505,7 +1493,7 @@ void SBScene::removeFaceDefinition(const std::string& name)
 SmartBody::SBFaceDefinition* SBScene::getFaceDefinition(const std::string& name)
 {
 	// make sure the name doesn't already exist
-	std::map<std::string, SBFaceDefinition*>::iterator iter = _faceDefinitions.find(name);
+	auto iter = _faceDefinitions.find(name);
 	if (iter == _faceDefinitions.end())
 	{
 		SmartBody::util::log("Face definition named '%s' does not exist.", name.c_str());
@@ -1523,11 +1511,9 @@ int SBScene::getNumFaceDefinitions()
 std::vector<std::string> SBScene::getFaceDefinitionNames()
 {
 	std::vector<std::string> faces;
-	for (std::map<std::string, SBFaceDefinition*>::iterator iter =  _faceDefinitions.begin();
-		 iter !=  _faceDefinitions.end();
-		 iter++)
+	for (auto & _faceDefinition : _faceDefinitions)
 	{
-		faces.emplace_back((*iter).second->getName());
+		faces.emplace_back(_faceDefinition.second->getName());
 	}
 
 	return faces;
@@ -1535,7 +1521,7 @@ std::vector<std::string> SBScene::getFaceDefinitionNames()
 
 void SBScene::addScript(const std::string& name, SBScript* script)
 {
-	std::map<std::string, SBScript*>::iterator iter = _scripts.find(name);
+	auto iter = _scripts.find(name);
 	if (iter != _scripts.end())
 	{
 		SmartBody::util::log("Script with name %s already exists. Remove current script.", name.c_str());
@@ -1550,7 +1536,7 @@ void SBScene::addScript(const std::string& name, SBScript* script)
 
 void SBScene::removeScript(const std::string& name)
 {
-	std::map<std::string, SBScript*>::iterator iter = _scripts.find(name);
+	auto iter = _scripts.find(name);
 	if (iter != _scripts.end())
 	{
 		(*iter).second->stop();
@@ -1571,11 +1557,9 @@ std::vector<std::string> SBScene::getScriptNames()
 {
 	std::vector<std::string> scriptNames;
 
-	for (std::map<std::string, SBScript*>::iterator iter = _scripts.begin();
-		 iter != _scripts.end();
-		 iter++)
+	for (auto & _script : _scripts)
 	{
-		scriptNames.emplace_back((*iter).first);
+		scriptNames.emplace_back(_script.first);
 	}
 
 	return scriptNames;
@@ -1584,7 +1568,7 @@ std::vector<std::string> SBScene::getScriptNames()
 
 SBScript* SBScene::getScript(const std::string& name)
 {
-	std::map<std::string, SBScript*>::iterator iter = _scripts.find(name);
+	auto iter = _scripts.find(name);
 	if (iter == _scripts.end())
 	{
 		SmartBody::util::log("Script with name %s already exists.", name.c_str());
@@ -1601,14 +1585,14 @@ std::map<std::string, SBScript*>& SBScene::getScripts()
 
 void SBScene::addSceneListener(SBSceneListener* listener)
 {
-	std::vector<SBSceneListener*>::iterator iter = std::find(_sceneListeners.begin(), _sceneListeners.end(), listener);
+	auto iter = std::find(_sceneListeners.begin(), _sceneListeners.end(), listener);
 	if (iter == _sceneListeners.end())
 		_sceneListeners.emplace_back(listener);
 }
 
 void SBScene::removeSceneListener(SBSceneListener* listener)
 {
-	std::vector<SBSceneListener*>::iterator iter = std::find(_sceneListeners.begin(), _sceneListeners.end(), listener);
+	auto iter = std::find(_sceneListeners.begin(), _sceneListeners.end(), listener);
 	if (iter != _sceneListeners.end())
 		_sceneListeners.erase(iter);
 }
@@ -1629,7 +1613,7 @@ std::vector<SBSceneListener*>& SBScene::getSceneListeners()
 
 void SBScene::setSystemParameter(const std::string& name, const std::string& value)
 {
-	std::map<std::string, std::string>::iterator iter = _systemParameters.find(name);
+	auto iter = _systemParameters.find(name);
 	if (iter != _systemParameters.end())
 	{
 		(*iter).second = value;
@@ -1643,7 +1627,7 @@ void SBScene::setSystemParameter(const std::string& name, const std::string& val
 
 std::string SBScene::getSystemParameter(const std::string& name)
 {
-	std::map<std::string, std::string>::iterator iter = _systemParameters.find(name);
+	auto iter = _systemParameters.find(name);
 	if (iter != _systemParameters.end())
 	{
 		return (*iter).second;
@@ -1656,7 +1640,7 @@ std::string SBScene::getSystemParameter(const std::string& name)
 
 void SBScene::removeSystemParameter(const std::string& name)
 {
-	std::map<std::string, std::string>::iterator iter = _systemParameters.find(name);
+	auto iter = _systemParameters.find(name);
 	if (iter != _systemParameters.end())
 	{
 		_systemParameters.erase(iter);
@@ -1676,162 +1660,13 @@ std::vector<std::string> SBScene::getSystemParameterNames()
 {
 
 	std::vector<std::string> names;
-	for (std::map<std::string, std::string>::iterator iter = _systemParameters.begin();
-		 iter != _systemParameters.end();
-		 iter++)
+	for (auto & _systemParameter : _systemParameters)
 	{
-		names.emplace_back((*iter).first);
+		names.emplace_back(_systemParameter.first);
 	}
 
 	return names;
 }
-
-//SrCamera* SBScene::createCamera(const std::string& name)
-//{
-//	SBPawn* pawn = getPawn(name);
-//	SrCamera* camera = dynamic_cast<SrCamera*>(pawn);
-//// 	if (camera)
-//// 	{
-//// 		SmartBody::util::log("A camera with name '%s' already exists.", name.c_str());
-//// 		return camera;
-//// 	}
-//// 	else
-//	if (pawn)
-//	{
-//		SmartBody::util::log("A pawn with name '%s' already exists. Camera will not be created.", name.c_str());
-//		return nullptr;
-//	}
-//	camera = new SrCamera();
-//	camera->setName(name);
-//	//SBSkeleton* skeleton = new SBSkeleton();
-//	//camera->setSkeleton(skeleton);
-//	//SkJoint* joint = skeleton->add_joint(SkJoint::TypeQuat);
-//	//joint->setName("world_offset");
-//
-//	_cameras.insert(std::pair<std::string, SrCamera*>(name, camera));
-//
-//	std::map<std::string, SbmPawn*>:: iterator iter = _pawnMap.find(camera->getName());
-//	if (iter != _pawnMap.end())
-//	{
-//		SmartBody::util::log( "Register pawn: pawn_map.insert(..) '%s' FAILED\n", camera->getName().c_str() );
-//	}
-//
-//	_pawnMap.insert(std::pair<std::string, SbmPawn*>(camera->getName(), camera));
-//	_pawnNames.emplace_back(camera->getName());
-//
-//	std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
-//	for (size_t i = 0; i < listeners.size(); i++)
-//	{
-//		listeners[i]->OnPawnCreate( camera->getName() );
-//	}
-//
-//	// notify the services
-//	std::map<std::string, SmartBody::SBService*>& services = getServiceManager()->getServices();
-//	for (std::map<std::string, SmartBody::SBService*>::iterator iter = services.begin();
-//		iter != services.end();
-//		iter++)
-//	{
-//		SBService* service = (*iter).second;
-//		service->onPawnCreate(camera);
-//	}
-//
-//
-//	// if this is the first camera that is created, make it the active camera
-//	if (_cameras.size() == 1)
-//	{
-//		this->setActiveCamera(camera);
-//	}
-//
-//	return camera;
-//}
-//
-//void SBScene::removeCamera(SrCamera* camera)
-//{
-//	SBPawn* pawn = getPawn(camera->getName());
-//	if (!pawn)
-//	{
-//		SmartBody::util::log("No camera with name '%s' already exists. Camera will not be removed.", camera->getName().c_str());
-//		return;
-//	}
-//
-//	std::map<std::string, SrCamera*>::iterator iter = _cameras.find(camera->getName());
-//	if (iter == _cameras.end())
-//	{
-//		SmartBody::util::log("Pawn with name '%s' already exists, but is not a camera. It will not be removed.", camera->getName().c_str());
-//		return;
-//	}
-//
-//	// is this the active camera?
-//	if (this->getActiveCamera() == camera)
-//	{
-//		setActiveCamera(nullptr);
-//	}
-//	_cameras.erase(iter);
-//	removePawn(camera->getName());
-//}
-//
-//void SBScene::setActiveCamera(SrCamera* camera)
-//{
-//	if (!camera)
-//	{
-//		_activeCamera = "";
-//		return;
-//	}
-//
-//	_activeCamera = camera->getName();
-//}
-//
-//SrCamera* SBScene::getActiveCamera()
-//{
-//	if (_activeCamera == "")
-//		return nullptr;
-//	std::map<std::string, SrCamera*>::iterator iter = _cameras.find(_activeCamera);
-//	if (iter == _cameras.end())
-//		return nullptr;
-//
-//	return (*iter).second;
-//}
-//
-//SrCamera* SBScene::getCamera(const std::string& name)
-//{
-//
-//	std::map<std::string, SrCamera*>::iterator iter = _cameras.find(name);
-//	if (iter == _cameras.end())
-//	{
-//		//SmartBody::util::log("No camera with name '%s' found.", name.c_str());
-//		return nullptr;
-//	}
-//	return (*iter).second;
-//}
-//
-//void SBScene::SetCameraLocked(bool locked)
-//{
-//   _isCameraLocked = locked;
-//}
-//
-//bool SBScene::IsCameraLocked()
-//{
-//   return _isCameraLocked;
-//}
-//
-//int SBScene::getNumCameras()
-//{
-//	return _cameras.size();
-//}
-//
-//std::vector<std::string> SBScene::getCameraNames()
-//{
-//	std::vector<std::string> cameraNames;
-//	for (std::map<std::string, SrCamera*>::iterator iter = _cameras.begin();
-//		iter != _cameras.end();
-//		iter++)
-//	{
-//		cameraNames.emplace_back((*iter).first);
-//	}
-//
-//	return cameraNames;
-//}
-
 
 std::vector<SBController*>& SBScene::getDefaultControllers()
 {
@@ -2044,21 +1879,17 @@ std::string SBScene::getValidName(const std::string& name)
 void SBScene::updatePawnNames()
 {
 	std::vector<SbmPawn*> allPawns;
-	for (std::map<std::string, SbmPawn*>::iterator iter = _pawnMap.begin();
-		 iter != _pawnMap.end();
-		 iter++)
+	for (auto & iter : _pawnMap)
 	{
-		allPawns.emplace_back((*iter).second);
+		allPawns.emplace_back(iter.second);
 	}
 	_pawnMap.clear();
 	_pawnNames.clear();
 
-	for (std::vector<SbmPawn*>::iterator iter = allPawns.begin();
-		 iter != allPawns.end();
-		 iter++)
+	for (auto & allPawn : allPawns)
 	{
-		_pawnMap.insert(std::pair<std::string, SbmPawn*>((*iter)->getName(), (*iter))); 
-		_pawnNames.emplace_back((*iter)->getName());
+		_pawnMap.insert(std::pair<std::string, SbmPawn*>(allPawn->getName(), allPawn));
+		_pawnNames.emplace_back(allPawn->getName());
 	}
 
 }
@@ -2066,201 +1897,20 @@ void SBScene::updatePawnNames()
 void SBScene::updateCharacterNames()
 {
 	std::vector<SbmCharacter*> allCharacters;
-	for (std::map<std::string, SbmCharacter*>::iterator iter = _characterMap.begin();
-		 iter != _characterMap.end();
-		 iter++)
+	for (auto & iter : _characterMap)
 	{
-		allCharacters.emplace_back((*iter).second);
+		allCharacters.emplace_back(iter.second);
 	}
 	_characterMap.clear();
 	_characterNames.clear();
 
-	for (std::vector<SbmCharacter*>::iterator iter = allCharacters.begin();
-		 iter != allCharacters.end();
-		 iter++)
+	for (auto & allCharacter : allCharacters)
 	{
-		_characterMap.insert(std::pair<std::string, SbmCharacter*>((*iter)->getName(), (*iter))); 
-		_characterNames.emplace_back((*iter)->getName());
+		_characterMap.insert(std::pair<std::string, SbmCharacter*>(allCharacter->getName(), allCharacter));
+		_characterNames.emplace_back(allCharacter->getName());
 	}
 }
 
-
-
-
-
-//SBAPI void SBScene::rescalePartialMeshSkeleton(const std::string& meshName, const std::string& skelName, const std::string& rootJointName, const std::vector<std::string>& skipMeshNames, float scaleRatio, float blendRatio)
-//{
-//	SmartBody::util::log("Rescale mesh and skeleton");
-//	SBAssetManager* assetManager = getAssetManager();
-//	DeformableMesh* mesh = assetManager->getDeformableMesh(meshName);
-//
-//
-//
-//	SmartBody::SBSkeleton* skel = assetManager->getSkeleton(skelName);
-//	if (!mesh || !skel)
-//	{
-//		SmartBody::util::log("Warning, can't find mesh '%s' or skeleton '%s'.", meshName.c_str(), skelName.c_str());
-//		return;
-//	}
-//
-//	SmartBody::SBJoint* rootJoint = skel->getJointByName(rootJointName);
-//	if (!rootJoint)
-//	{
-//		SmartBody::util::log("Warning, can't find joint '%s'.", rootJointName.c_str());
-//		return;
-//	}
-//	SmartBody::util::log("before build skin vertex buffer");
-//	mesh->buildSkinnedVertexBuffer();
-//	SmartBody::util::log("after build skin vertex buffer");
-//
-//	SmartBody::util::log("before skeleton update global matrices");
-//	skel->update_global_matrices();
-//	SrVec rootPos = rootJoint->gmat().get_translation();
-//	std::vector<std::string> belowJointNames;
-//	std::string headJointName = "none";
-//	belowJointNames.emplace_back(rootJointName);
-//	int rootJointIdx = mesh->boneJointIdxMap[rootJointName];
-//	int headJointIdx = -1;
-//	int neckJointIdx = -1;
-//	SmartBody::util::log("before find head joints");
-//	for (int i = 0; i < skel->getNumJoints(); i++)
-//	{
-//		SmartBody::SBJoint* joint = skel->getJoint(i);
-//#if 1
-//		//if (joint->getParent() == rootJoint) // children of root joint
-//		{
-//			std::string jointName = joint->getName();
-//			std::transform(jointName.begin(), jointName.end(), jointName.begin(), ::tolower);
-//			if (jointName.find("head") != std::string::npos)
-//			{
-//				SmartBody::util::log("Head Joint = %s", joint->getMappedJointName().c_str());
-//				headJointName = joint->getMappedJointName();
-//				headJointIdx = mesh->boneJointIdxMap[headJointName];
-//			}
-//		}
-//#endif
-//
-//		SrVec jpos = joint->gmat().get_translation();
-//		if (jpos.y < rootPos.y) // lower than root position
-//		{
-//			belowJointNames.emplace_back(joint->getMappedJointName());
-//		}
-//	}
-//	SrVec neckPos = rootJoint->getParent()->gmat().get_translation();
-//	neckJointIdx = mesh->boneJointIdxMap[rootJoint->getParent()->getMappedJointName()];
-//	SmartBody::util::log("Head Joint name = %s, idx = %d, Root Joint name = %s, idx = %d", headJointName.c_str(), headJointIdx, rootJointName.c_str(), rootJointIdx);
-//
-//	float blendThreshold = skel->getBoundingBox().size().y*blendRatio;
-//
-//	//rootPos = rootPos + SrVec(0, blendThreshold, 0);
-//	std::map<std::string, bool> skipMeshMap;
-//	for (unsigned int i = 0; i < skipMeshNames.size(); i++)
-//		skipMeshMap[skipMeshNames[i]] = true;
-//
-//	for (unsigned int i = 0; i < mesh->dMeshStatic_p.size(); i++)
-//	{
-//		SrModel& model = mesh->dMeshStatic_p[i]->shape();
-//		SrModel& dynModel = mesh->dMeshDynamic_p[i]->shape();
-//		SkinWeight* skinWeight = mesh->skinWeights[i];
-//		skinWeight->buildSkinWeightBuf();
-//		std::string modelName = (const char*)model.name;
-//		if (skipMeshMap.find(modelName) != skipMeshMap.end()) // skip the mesh
-//			continue;
-//		//std::map<std::string, std::vector<SrSnModel*> > blendShapeMap;
-//		for (unsigned int k = 0; k < model.V.size(); k++)
-//		{
-//			SrVec& v = model.V[k];
-//			SrVec4i gboneIdx;
-//			SrVec4i& lboneIdx = skinWeight->boneIDs[k];
-//			for (int b = 0; b < 4; b++)
-//			{
-//				gboneIdx[b] = mesh->boneJointIdxMap[skinWeight->infJointName[lboneIdx[b]]];
-//			}
-//			//LOG("old bone idx = %d %d %d %d", lboneIdx[0], lboneIdx[1], lboneIdx[2], lboneIdx[3]);
-//			//LOG("global bone idx = %d %d %d %d", gboneIdx[0], gboneIdx[1], gboneIdx[2], gboneIdx[3]);
-//			bool willScale = blendScalePos(v, rootPos, rootJointIdx, headJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
-//			//bool willScale = blendScalePos2(v, rootPos, neckPos, rootJointIdx, neckJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
-//			if (!willScale) continue;
-//
-//			model.V[k] = v; // update the new position
-//			dynModel.V[k] = v;
-//			//model.VOrig[k] = v;
-//		}
-//		model.computeNormals();
-//		dynModel.computeNormals();
-//		//std::string modelName = (const char*)model.name;
-//		if (mesh->blendShapeMap.find(modelName) != mesh->blendShapeMap.end()) // the shape is associated with blendshape
-//		{
-//			std::vector<SrSnModel*>& blendShapes = mesh->blendShapeMap[modelName];
-//			for (unsigned int j = 0; j < blendShapes.size(); j++)
-//			{
-//				SrModel& faceModel = blendShapes[j]->shape();
-//				for (unsigned int k = 0; k < faceModel.V.size(); k++)
-//				{
-//					SrVec v = faceModel.V[k];
-//#if 0
-//					if (v.y > rootPos.y + blendThreshold)
-//						continue;
-//
-//					float blendRatio = (v.y - rootPos.y) / (blendThreshold);
-//					if (blendRatio < 0.f) blendRatio = 0.0;
-//					float blendScaleRatio = (blendRatio)+(1.0 - blendRatio)*scaleRatio;
-//					v = rootPos + (v - rootPos)*blendScaleRatio;
-//#else
-//					SrVec4i gboneIdx;
-//					SrVec4i& lboneIdx = skinWeight->boneIDs[k];
-//					for (int b = 0; b < 4; b++)
-//					{
-//						gboneIdx[b] = mesh->boneJointIdxMap[skinWeight->infJointName[lboneIdx[b]]];
-//					}
-//					bool willScale = blendScalePos(v, rootPos, rootJointIdx, headJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
-//					//bool willScale = blendScalePos2(v, rootPos, neckPos, rootJointIdx, neckJointIdx, gboneIdx, skinWeight->boneWeights[k], blendThreshold, scaleRatio);
-//					if (!willScale) continue;
-//#endif
-//
-//					//v = rootPos + (v - rootPos)*scaleRatio;
-//					//faceModel.V[k] = v; // update the new position
-//					faceModel.V[k] = model.V[k];
-//				}
-//			}
-//
-//		}
-//	}
-//
-//	// rescale the offset for each joint below root joint
-//	for (auto & belowJointName : belowJointNames)
-//	{
-//		SmartBody::SBJoint* joint = skel->getJointByMappedName(belowJointName);
-//		joint->setOffset(joint->getOffset()*scaleRatio);
-//	}
-//
-//	skel->invalidate_global_matrices();
-//	skel->update_global_matrices();
-//	SrVec newRootPos = rootJoint->gmat().get_translation();
-//	SrVec rootOffset = rootPos - newRootPos;
-//	SmartBody::SBJoint* skelRoot = dynamic_cast<SmartBody::SBJoint*>(skel->root());
-//	skelRoot->setOffset(skelRoot->getOffset() + rootOffset);
-//
-//	skel->invalidate_global_matrices();
-//	skel->update_global_matrices();
-//	skel->updateGlobalMatricesZero();
-//
-//	// update bind pose matrices
-//	for (unsigned int i = 0; i < mesh->skinWeights.size(); i++)
-//	{
-//		SkinWeight* sw = mesh->skinWeights[i];
-//		for (unsigned int k = 0; k < sw->infJointName.size(); k++)
-//		{
-//			// manually add all joint names
-//			SmartBody::SBJoint* joint = skel->getJointByName(sw->infJointName[k]);
-//
-//			SrMat gmatZeroInv = joint->gmatZero().rigidInverse();
-//			sw->bindPoseMat[k] = gmatZeroInv;
-//		}
-//	}
-//
-//	mesh->rebuildVertexBuffer(true);
-//}
 
 Heightfield* SBScene::getHeightfield()
 {
@@ -2270,16 +1920,15 @@ Heightfield* SBScene::getHeightfield()
 
 Heightfield* SBScene::createHeightfield()
 {
-	if (_heightField)
-		delete _heightField;
+	delete _heightField;
 	_heightField = new Heightfield();
 	return _heightField;
 }
 
 void SBScene::removeHeightfield()
 {
-	if (_heightField)
-		delete _heightField;
+
+	delete _heightField;
 	_heightField = nullptr;
 }
 
@@ -2297,525 +1946,9 @@ float SBScene::queryTerrain( float x, float z, float *normal_p )
 	return( 0.0 );
 }
 
-
-//
-//bool SBScene::setCameraConeOfSight(const std::string& characterName) {
-//	SrCamera* camera = getActiveCamera();
-//	if (!camera)
-//	{
-//		SmartBody::util::log("No active camera found. Cannot create camera track.");
-//		return false;
-//	}
-//	SbmPawn* pawn = SmartBody::SBScene::getScene()->getPawn(characterName);
-//	if (!pawn)
-//	{
-//		SmartBody::util::log("Object %s was not found, cannot track.", characterName.c_str());
-//		return false;
-//	}
-//
-//	SkSkeleton* skeleton	= pawn->getSkeleton();
-//
-//	if(!skeleton->search_joint("eyeball_left")) {
-//		SmartBody::util::log("Can't enable coneOfsight: 'eyeball_left' joint not found.");
-//		return false;
-//	}
-//
-//	if(!skeleton->search_joint("eyeball_right")) {
-//		SmartBody::util::log("Can't enable coneOfsight: 'eyeball_right' joint not found.");
-//		return false;
-//	}
-//
-//	_coneOfSight			= true;
-//	_coneOfSight_character	= characterName;
-//
-//	return true;
-//}
-//
-//bool SBScene::hasConeOfSight() {
-//	return _coneOfSight;
-//}
-//
-//void SBScene::removeConeOfSight() {
-//	_coneOfSight			= false;
-//	_coneOfSight_character	= "";
-//}
-
-
-//
-////
-////		std::vector<std::string> SBScene::checkVisibility(const std::string& characterName)
-////
-////		Returns a list of visible pawns from a given chracter
-////
-//std::vector<std::string> SBScene::checkVisibility(const std::string& characterName)
-//{
-//	std::vector<std::string> visible_pawns, nonOccludePawns;
-//#if !defined(EMSCRIPTEN)
-//	//	Gets the character from which we want to look from
-//	SmartBody::SBCharacter* character = getCharacter(characterName);
-//
-//	if(!character) {
-//		SmartBody::util::log("Character %s not found.", characterName.c_str());
-//		return visible_pawns;
-//	}
-//
-//	character->getSkeleton()->invalidate_global_matrices();
-//	character->getSkeleton()->update_global_matrices();
-//
-//	//	Left eye world location
-//	SkJoint* leftEye			= character->getSkeleton()->search_joint("eyeball_left");
-//	if(!leftEye) {
-//		SmartBody::util::log("Can't find 'eyeball_left' joint.\n");
-//		return visible_pawns;
-//	}
-//	const SrMat& gmat_leftEye	= leftEye->gmat();
-//	SrVec leftEye_location		= SrVec(gmat_leftEye.get(3, 0), gmat_leftEye.get(3, 1), gmat_leftEye.get(3, 2));
-//
-//	//	Right eye world location
-//	SkJoint* rightEye			= character->getSkeleton()->search_joint("eyeball_right");
-//	if(!rightEye) {
-//		SmartBody::util::log("Can't find 'eyeball_right' joint.\n");
-//		return visible_pawns;
-//	}
-//	const SrMat& gmat_rightEye	= rightEye->gmat();
-//	SrVec rightEye_location		= SrVec(gmat_rightEye.get(3, 0), gmat_rightEye.get(3, 1), gmat_rightEye.get(3, 2));
-//
-//	//	Center of the eyse world coordinates
-//	SrVec center_eyes_location	= (leftEye_location + rightEye_location) / 2;
-//
-//	float scale					= 1.f / getScale();
-//	float znear					= 0.01f * scale;
-//	float zfar					= 100.0f * scale;
-//	float eyebeamLength			= 100 * character->getHeight() / 175.0f;
-//
-//	SrVec localAxis_right		= rightEye->localGlobalAxis(2)*eyebeamLength;
-//	SrVec eyes_look_at_right	= localAxis_right * rightEye->gmat();
-//	SrVec localAxis_left		= leftEye->localGlobalAxis(2)*eyebeamLength;
-//	SrVec eyes_look_at_left		= localAxis_left * leftEye->gmat();
-//	SrVec eyes_look_at			= (eyes_look_at_right + eyes_look_at_left)/2;
-//
-//	//	Stores current camera setup, to restore it at the end
-//	SrCamera * camera			= getActiveCamera();
-//	SrVec tmp_eye				= camera->getEye();
-//	SrVec tmp_center			= camera->getCenter();
-//	float tmp_near				= camera->getNearPlane();
-//	float tmp_far				= camera->getFarPlane();
-//
-//	//	Sets the camera setup to simulate characters viewport
-//	//	Sets FROM where the chararacter is looking
-//	camera->setEye(	center_eyes_location.x,
-//					center_eyes_location.y,
-//					center_eyes_location.z);
-//
-//	//	Sets where the character looking is AT
-//	camera->setCenter(	eyes_look_at.x,
-//						eyes_look_at.y,
-//						eyes_look_at.z);
-//
-//	//	Sets near clip plane
-//	camera->setNearPlane(znear);
-//
-//	//	Sets far clip plane
-//	camera->setFarPlane(zfar);
-//
-//#if USE_GL_FIXED_PIPELINE
-//	SrMat mat( SrMat::NotInitialized );
-//	glMatrixMode(GL_PROJECTION);
-//	glPushMatrix();
-//	glLoadMatrix( camera->get_perspective_mat(mat) );
-//	glMatrixMode(GL_MODELVIEW);
-//	glPushMatrix();
-//	glLoadMatrix( camera->get_view_mat(mat) );
-//	//	Creates characters frustrm
-//	SmartBody::SBScene * scene	= SmartBody::SBScene::getScene();
-//	std::vector<std::string> pawnNames = scene->getPawnNames();
-//	std::vector<std::string>::iterator removeItem = std::remove(pawnNames.begin(),pawnNames.end(), characterName);
-//	pawnNames.erase(removeItem, pawnNames.end());
-//	visible_pawns = frustumTest(pawnNames);
-//	nonOccludePawns = occlusionTest(visible_pawns);
-//	// Restores matrices and camera set up
-//	glMatrixMode(GL_PROJECTION);
-//	glPopMatrix();
-//	glMatrixMode(GL_MODELVIEW);
-//	glPopMatrix();
-//#endif
-//	//	Sets FROM where the chararacter is looking
-//	camera->setEye(	tmp_eye.x,
-//					tmp_eye.y,
-//					tmp_eye.z);
-//
-//	//	Sets where the character looking is AT
-//	camera->setCenter(	tmp_center.x,
-//						tmp_center.y,
-//						tmp_center.z);
-//
-//	//	Sets near clip plane
-//	camera->setNearPlane(tmp_near);
-//
-//	//	Sets near clip plane
-//	camera->setFarPlane(tmp_far);
-//#endif
-//	//	Returns visible pawns
-//	return nonOccludePawns;
-//}
-//
-//
-//std::vector<std::string> SBScene::occlusionTest( const std::vector<std::string>& testPawns)
-//{
-//	std::vector<std::string> visiblePawns;
-//#if !defined(__ANDROID__) && !defined(EMSCRIPTEN) && !defined(SB_IPHONE)
-//	float m[16];
-//	glGetFloatv(GL_MODELVIEW_MATRIX, m);
-//	SrMat modelViewMat = SrMat(m);
-//	SmartBody::SBScene * scene	= SmartBody::SBScene::getScene();
-//	// sort the pawn from front to back
-//	std::vector<std::pair<float,int> > pawnZSortedList;
-//	for (unsigned int i=0;i<testPawns.size();i++)
-//	{
-//		SmartBody::SBPawn* pawn		= scene->getPawn(testPawns[i]);
-//
-//		SBGeomObject* geomObject = pawn->getGeomObject();
-//		SBGeomBox* box = dynamic_cast<SBGeomBox*>(geomObject);
-//		SrBox pawn_bb;
-//		pawn_bb = pawn->getBoundingBox();
-//		std::vector<SrVec> bbPts = pawn_bb.getCorners();
-//		float zMin = -1e30f;
-//		for (unsigned int k=0;k<bbPts.size();k++)
-//		{
-//			SrVec camPt = bbPts[k]*modelViewMat;
-//			if (camPt.z >  zMin)
-//				zMin = camPt.z;
-//		}
-//		pawnZSortedList.emplace_back(std::pair<float,int>(zMin,i));
-//	}
-//	std::sort(pawnZSortedList.begin(),pawnZSortedList.end()); // sort pawns from back to front
-//	reverse(pawnZSortedList.begin(),pawnZSortedList.end()); // reverse the order so the order is front to back
-//
-//	//for (unsigned int i=0;i<pawnZSortedList.size();i++)
-//	//	SmartBody::util::log("Pawn %d, zMin = %f", pawnZSortedList[i].second, pawnZSortedList[i].first);
-//
-//	// occlusion window width/height
-//	int width = 256, height = 256;
-//	// create render buffer
-//	GLuint fb, color_rb, depth_rb;
-//	//RGBA8 RenderBuffer, 24 bit depth RenderBuffer, 256x256
-//	glGenFramebuffers(1, &fb);
-//    glBindFramebuffer(GL_FRAMEBUFFER, fb);
-//    //Create and attach a color buffer
-//    glGenRenderbuffers(1, &color_rb);
-//    //We must bind color_rb before we call glRenderbufferStorageEXT
-//    glBindRenderbuffer(GL_RENDERBUFFER, color_rb);
-//    //The storage format is RGBA8
-//    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, width, height);
-//    //Attach color buffer to FBO
-//    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, color_rb);
-//    //-------------------------
-//    glGenRenderbuffers(1, &depth_rb);
-//    glBindRenderbuffer(GL_RENDERBUFFER, depth_rb);
-//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
-//    //-------------------------
-//    //Attach depth buffer to FBO
-//    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_rb);
-//    //-------------------------
-//    //Does the GPU support current FBO configuration?
-//	/*
-//    GLenum status;
-//    status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-//    switch(status)
-//    {
-//		case GL_FRAMEBUFFER_COMPLETE:
-//            SmartBody::util::log("FrameBufferObject success");
-//			break;
-//
-//	   default:
-//			SmartBody::util::log("FrameBufferObject error");
-//	}
-//	*/
-//    //-------------------------
-//   	// bind FBO for rendering
-//    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb);
-//    glClearColor(0.0, 0.0, 0.0, 0.0);
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    //-------------------------
-//    glViewport(0, 0, width, height);
-//
-//    glDisable(GL_TEXTURE_2D);
-//    glDisable(GL_BLEND);
-//    glEnable(GL_DEPTH_TEST);
-//
-//	// perform occlusion test
-//	GLuint uiOcclusionQuery;
-//	glGenQueries(1, &uiOcclusionQuery);
-//	for (size_t i=0;i<pawnZSortedList.size();i++)
-//	{
-//		int pawnIdx = pawnZSortedList[i].second;
-//		SmartBody::SBPawn* pawn		= scene->getPawn(testPawns[pawnIdx]);
-//		SrBox pawn_bb;
-//		pawn_bb = pawn->getBoundingBox();
-//		//SmartBody::util::log("pawn %s, min = %.3f %.3f %.3f, max = %.3f %.3f %.3f", pawn->getName().c_str(), pawn_bb.a[0], pawn_bb.a[1], pawn_bb.a[2], pawn_bb.b[0], pawn_bb.b[1], pawn_bb.b[2]);
-//		glBeginQuery(GL_SAMPLES_PASSED, uiOcclusionQuery);
-//		// Every pixel that passes the depth test now gets added to the result
-//		glDrawBox(pawn_bb.a, pawn_bb.b);
-//		glEndQuery(GL_SAMPLES_PASSED);
-//		// Now get tthe number of pixels passed
-//		int iSamplesPassed = 0;
-//		glGetQueryObjectiv(uiOcclusionQuery, GL_QUERY_RESULT, &iSamplesPassed);
-//		if (iSamplesPassed > 0) // not occluded
-//		{
-//			//SmartBody::util::log("pawn %s, visible samples = %d", pawn->getName().c_str(), iSamplesPassed);
-//			visiblePawns.emplace_back(pawn->getName());
-//			//glDrawBox(pawn_bb.a, pawn_bb.b);
-//		}
-//	}
-//	glDeleteQueries(1, &uiOcclusionQuery);
-//    //Bind 0, which means render to back buffer
-//    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-//
-//	//Delete resources
-//	glDeleteRenderbuffersEXT(1, &color_rb);
-//	glDeleteRenderbuffersEXT(1, &depth_rb);
-//	//Bind 0, which means render to back buffer, as a result, fb is unbound
-//	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-//	glDeleteFramebuffersEXT(1, &fb);
-//
-//	//for (unsigned int i=0;i<visiblePawns.size();i++)
-//	//	SmartBody::util::log("Visible pawn %d = %s", i, visiblePawns[i].c_str());
-//#endif
-//	return visiblePawns;
-//}
-//
-//
-//std::vector<std::string> SBScene::frustumTest(const std::vector<std::string>& testPawnNames)
-//{
-//	std::vector<std::string> visiblePawns;
-//
-//	SrFrustum frustum;
-//	frustum.extractFrustum();
-//
-//	SmartBody::SBScene * scene	= SmartBody::SBScene::getScene();
-//	const std::vector<std::string>& pawns = testPawnNames;
-//
-//	//	Iterates over all pawns, to check which ones are visible from the characters viewport
-//	for (	std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-//		pawnIter != pawns.end();
-//		pawnIter++)
-//	{
-//		SmartBody::SBPawn* pawn		= scene->getPawn((*pawnIter));
-//
-//		SBGeomObject* geomObject = pawn->getGeomObject();
-//		SBGeomBox* box = dynamic_cast<SBGeomBox*>(geomObject);
-//		SrBox pawn_bb;
-//		if (box)
-//		{
-//			SBTransform& transform = pawn->getGlobalTransform();
-//			SrVec min(-box->extent[0] / 2.0, -box->extent[1] / 2.0, -box->extent[2] / 2.0);
-//			SrVec max(box->extent[0] / 2.0, box->extent[1] / 2.0, box->extent[2] / 2.0);
-//
-//			SrVec finalMin = transform.localToGlobal(min);
-//			SrVec finalMax = transform.localToGlobal(max);
-//			pawn_bb.set(finalMin, finalMax);
-//		}
-//		else
-//		{
-//			pawn_bb = pawn->getBoundingBox();
-//		}
-//
-//		float ax = pawn_bb.a.x;
-//		float ay = pawn_bb.a.y;
-//		float az = pawn_bb.a.z;
-//		float bx = pawn_bb.b.x;
-//		float by = pawn_bb.b.y;
-//		float bz = pawn_bb.b.z;
-//
-//		SrVec pointAAB(pawn_bb.a.x, pawn_bb.a.y, pawn_bb.b.z);
-//		SrVec pointABB(pawn_bb.a.x, pawn_bb.b.y, pawn_bb.b.z);
-//		SrVec pointBBA(pawn_bb.b.x, pawn_bb.b.y, pawn_bb.a.z);
-//		SrVec pointBAA(pawn_bb.b.x, pawn_bb.a.y, pawn_bb.a.z);
-//		SrVec pointABA(pawn_bb.a.x, pawn_bb.b.y, pawn_bb.a.z);
-//		SrVec pointBAB(pawn_bb.b.x, pawn_bb.a.y, pawn_bb.b.z);
-//
-//		//	If bounding box visible, adds pawn to list of visible pawns
-//		SrPnt center = pawn_bb.getCenter();
-//		if (frustum.pointInFrustum(pawn_bb.a) ||
-//			frustum.pointInFrustum(pawn_bb.b) ||
-//			frustum.pointInFrustum(center) ||
-//			frustum.pointInFrustum(pointAAB) ||
-//			frustum.pointInFrustum(pointABB) ||
-//			frustum.pointInFrustum(pointBBA) ||
-//			frustum.pointInFrustum(pointBAA) ||
-//			frustum.pointInFrustum(pointABA) ||
-//			frustum.pointInFrustum(pointBAB))
-//			visiblePawns.emplace_back(pawn->getName());
-//	}
-//	return visiblePawns;
-//}
-//
-
-
-
-
-
-/*
-void SBScene::checkVisibility() {
-	// Checks visibility 
-	const std::vector<std::string>& pawns = getPawnNames();
-	for (	std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-			pawnIter != pawns.end();
-			pawnIter++)
-	{
-		
-		SmartBody::SBPawn* pawn	= getPawn((*pawnIter));
-		SrCamera * camera		= getActiveCamera();
-				
-		SrVec p, l, u;
-		float angle, aspect, znear, zfar;
-		
-		angle	= camera->getFov() * 180 / 3.14159265358979323846;
-		aspect	= camera->getAspectRatio();
-		znear	= camera->getNearPlane();
-		zfar	= camera->getFarPlane();
-
-		p		= camera->getEye();
-		l		= camera->getCenter();
-		u		= camera->getUpVector();
-
-		//SmartBody::util::log("Eye:    %f, %f, %f", p.x, p.y, p.z);
-		//SmartBody::util::log("Center: %f, %f, %f", l.x, l.y, l.z);
-		//SmartBody::util::log("Up: %f, %f, %f", u.x, u.y, u.z);
-		//SmartBody::util::log("Fovy: %f\tAspect %f\tClip %f, %f\n", angle, aspect, znear, zfar);
-
-		SrFrustum frustum;
-		frustum.setCamInternals(angle, aspect, znear, zfar);
-		frustum.setCamDef(p, l, u);
-		
-		//if(frustum.pointInFrustum(SrVec(0,0,0)) != SrFrustum::OUTSIDE)
-		//	SmartBody::util::log("Center visible\n");
-		//else
-		//	SmartBody::util::log("Center NOt visible\n");
-		
-		SrCamera* check_is_camera = dynamic_cast<SrCamera*>(pawn);
-		if (!check_is_camera) {
-			
-	
-
-			
-			SrBox pawn_bb				= pawn->getBoundingBox();
-			SrVec min_point, max_point;
-
-			min_point.x = pawn_bb.a.x;
-			min_point.y = pawn_bb.a.y;
-			min_point.z = pawn_bb.a.z;
-
-			max_point.x = pawn_bb.b.x;
-			max_point.y = pawn_bb.b.y;
-			max_point.z = pawn_bb.b.z;
-
-			SmartBody::util::log("InFrustum: %d\t%d\n", frustum.pointInFrustum(min_point), frustum.pointInFrustum(min_point));
-
-			if(frustum.pointInFrustum(min_point) > 0 || frustum.pointInFrustum(max_point) > 0) 
-				SmartBody::util::log("Pawn %s is visible", pawn->getName().c_str());
-			
-		}
-	}
-}
-*/
-//
-//void SBScene::setCameraTrack(const std::string& characterName, const std::string& jointName)
-//{
-//	SrCamera* camera = getActiveCamera();
-//	if (!camera)
-//	{
-//		SmartBody::util::log("No active camera found. Cannot create camera track.");
-//		return;
-//	}
-//	SbmPawn* pawn = SmartBody::SBScene::getScene()->getPawn(characterName);
-//	if (!pawn)
-//	{
-//		SmartBody::util::log("Object %s was not found, cannot track.", characterName.c_str());
-//		return;
-//	}
-//	if (jointName == "")
-//	{
-//		SmartBody::util::log("Need to specify a joint to track.");
-//		return;
-//	}
-//
-//	SkSkeleton* skeleton = nullptr;
-//	skeleton = pawn->getSkeleton();
-//
-//	SkJoint* joint = pawn->getSkeleton()->search_joint(jointName.c_str());
-//	if (!joint)
-//	{
-//		SmartBody::util::log("Could not find joint %s on object %s.", jointName.c_str(), characterName.c_str());
-//		return;
-//	}
-//
-//	joint->skeleton()->update_global_matrices();
-//	joint->update_gmat();
-//	const SrMat& jointMat = joint->gmat();
-//	SrVec jointPos(jointMat[12], jointMat[13], jointMat[14]);
-//	CameraTrack* cameraTrack = new CameraTrack();
-//	cameraTrack->joint = joint;
-//	cameraTrack->jointToCamera = camera->getEye() - jointPos;
-//	SmartBody::util::log("Vector from joint to target is %f %f %f", cameraTrack->jointToCamera.x, cameraTrack->jointToCamera.y, cameraTrack->jointToCamera.z);
-//	cameraTrack->targetToCamera = camera->getEye() - camera->getCenter();
-//	SmartBody::util::log("Vector from target to eye is %f %f %f", cameraTrack->targetToCamera.x, cameraTrack->targetToCamera.y, cameraTrack->targetToCamera.z);
-//	_cameraTracking.emplace_back(cameraTrack);
-//	SmartBody::util::log("Object %s will now be tracked at joint %s.", characterName.c_str(), jointName.c_str());
-//}
-//
-//void SBScene::removeCameraTrack()
-//{
-//	if (_cameraTracking.size() > 0)
-//	{
-//		for (std::vector<CameraTrack*>::iterator iter = _cameraTracking.begin();
-//			 iter != _cameraTracking.end();
-//			 iter++)
-//		{
-//			CameraTrack* cameraTrack = (*iter);
-//			delete cameraTrack;
-//		}
-//		_cameraTracking.clear();
-//		SmartBody::util::log("Removing current tracked object.");
-//	}
-//}
-//
-//bool SBScene::hasCameraTrack()
-//{
-//	return _cameraTracking.size() > 0;
-//}
-//
-//
-//
-//void SBScene::updateTrackedCameras()
-//{
-//	for (size_t x = 0; x < _cameraTracking.size(); x++)
-//	{
-//		// move the camera relative to the joint
-//		SkJoint* joint = _cameraTracking[x]->joint;
-//		joint->skeleton()->update_global_matrices();
-//		joint->update_gmat();
-//		const SrMat& jointGmat = joint->gmat();
-//		SrVec jointLoc(jointGmat[12], jointGmat[13], jointGmat[14]);
-//		SrVec newJointLoc = jointLoc;
-//		if (fabs(jointGmat[13] - _cameraTracking[x]->yPos) < _cameraTracking[x]->threshold)
-//			newJointLoc.y = (float) _cameraTracking[x]->yPos;
-//		SrVec cameraLoc = newJointLoc + _cameraTracking[x]->jointToCamera;
-//		SrCamera* activeCamera = getActiveCamera();
-//		activeCamera->setEye(cameraLoc.x, cameraLoc.y, cameraLoc.z);
-//		SrVec targetLoc = cameraLoc - _cameraTracking[x]->targetToCamera;
-//		activeCamera->setCenter(targetLoc.x, targetLoc.y, targetLoc.z);
-//	}
-//}
-
 SrViewer* SBScene::getViewer()
 {
 	return _viewer;
-}
-
-SrViewer* SBScene::getOgreViewer()
-{
-	return _ogreViewer;
 }
 
 void SBScene::setViewer(SrViewer* viewer)
@@ -2823,19 +1956,9 @@ void SBScene::setViewer(SrViewer* viewer)
 	_viewer = viewer;
 }
 
-void SBScene::setOgreViewer(SrViewer* viewer)
-{
-	_ogreViewer = viewer;
-}
-
 SrViewerFactory* SBScene::getViewerFactory()
 {
 	return _viewerFactory;
-}
-
-SrViewerFactory* SBScene::getOgreViewerFactory()
-{
-	return _ogreViewerFactory;
 }
 
 void SBScene::setViewerFactory(SrViewerFactory* viewerFactory)
@@ -2843,13 +1966,6 @@ void SBScene::setViewerFactory(SrViewerFactory* viewerFactory)
 	if (_viewerFactory)
 		delete _viewerFactory;
 	_viewerFactory = viewerFactory;
-}
-
-void SBScene::setOgreViewerFactory(SrViewerFactory* viewerFactory)
-{
-	if (_ogreViewerFactory)
-		delete _ogreViewerFactory;
-	_ogreViewerFactory = viewerFactory;
 }
 
 KinectProcessor* SBScene::getKinectProcessor()
@@ -2861,60 +1977,6 @@ std::map<std::string, GeneralParam*>& SBScene::getGeneralParameters()
 {
 	return _generalParams;
 }
-
-#if 0
-SBAPI bool SBScene::createNavigationMesh( const std::string& meshfilename )
-{	
-	std::vector<SrModel*> meshVec;
-#if (BOOST_VERSION > 104400)
-	std::string ext = boost::filesystem::extension(meshfilename);
-#else
-	std::string ext = boost::filesystem2::extension(meshfilename);
-#endif
-	std::string file = boost::filesystem::basename(meshfilename);	
-	bool loadSuccess = false;
-	if (ext == ".obj" || ext == ".OBJ")
-	{
-		SrModel *mesh = new SrModel();
-		loadSuccess = mesh->import_obj(meshfilename.c_str());		
-		meshVec.emplace_back(mesh);
-	}
-	else if ( ext == ".xml" || ext == ".XML" )
-	{
-		std::vector<SkinWeight*> tempWeights;
-		std::string skeletonName;
-		loadSuccess = ParserOgre::parseSkinMesh(meshVec,tempWeights,meshfilename,skeletonName, 1.0,true,false);	
-	}
-	else if ( ext == ".dae" || ext == ".DAE" )
-	{
-		if (SmartBody::SBScene::getScene()->getBoolAttribute("useFastCOLLADAParsing"))
-			loadSuccess = ParserCOLLADAFast::parseStaticMesh(meshVec, meshfilename);
-		else
-			loadSuccess = ParserOpenCOLLADA::parseStaticMesh(meshVec, meshfilename);
-	}
-	
-	if (!loadSuccess || meshVec.size() == 0)
-	{
-		SmartBody::util::log("Error loading navigation mesh, filename = %s",meshfilename.c_str());
-		return false;
-	}
-	//mesh.scale(0.3f);
-	SrModel* srMesh = meshVec[0];
-	for (unsigned int i=1;i<meshVec.size();i++)
-		srMesh->add_model(*meshVec[i]); // adding all mesh together	
-	srMesh->remove_redundant_materials();
-	srMesh->validate();
-	srMesh->computeNormals();
-	if (_navigationMesh) 
-	{
-		delete _navigationMesh;
-		_navigationMesh = nullptr;
-	}
-	_navigationMesh = new SBNavigationMesh();
-	_navigationMesh->buildNavigationMesh(*srMesh);
-	return true;
-}
-#endif
 
 SBAPI void SBScene::setNavigationMesh( const std::string& naviMeshName )
 {
@@ -2985,13 +2047,6 @@ std::string SBScene::getStringFromObject(SmartBody::SBObject* object)
 		strstr << "service/" << service->getName();
 		return strstr.str();
 	}
-
-//	DeformableMesh* mesh = dynamic_cast<DeformableMesh*>(object);
-//	if (mesh)
-//	{
-//		strstr << "model/" << mesh->getName();
-//		return strstr.str();
-//	}
 
 	SmartBody::SBController* controller = dynamic_cast<SmartBody::SBController*>(object);
 	if (controller)
@@ -3145,17 +2200,6 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 		SmartBody::SBService* service = this->getServiceManager()->getService(suffix);
 		return service;
 	}
-//	else if (prefix == "mesh")
-//	{
-//		DeformableMesh* mesh = this->getAssetManager()->getDeformableMesh(suffix);
-//		return mesh;
-//	}
-//	else if (prefix == "envmap")
-//	{
-//		SbmTextureManager& texManager = SbmTextureManager::singleton();
-//		SbmTexture* texture = texManager.findTexture(suffix.c_str());
-//		return texture;
-//	}
 	else if (prefix == "controller")
 	{
 		int prefixPos2 = suffix.find('/');

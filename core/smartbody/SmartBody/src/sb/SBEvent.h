@@ -24,6 +24,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBTypes.h>
 #include <map>
 #include <string>
+#include <utility>
 #include <sb/SBObject.h>
 
 namespace SmartBody {
@@ -31,13 +32,13 @@ namespace SmartBody {
 class SBEvent
 {
 	public:
-		SBAPI SBEvent() : m_type(""), m_params(""), m_source("") {};
-		SBAPI ~SBEvent() {}
-		SBAPI virtual void setParameters(std::string params) { m_params = params; }
+		SBAPI SBEvent() = default;
+		SBAPI ~SBEvent() = default;
+		SBAPI virtual void setParameters(std::string params) { m_params = std::move(params); }
 		SBAPI virtual std::string getParameters() { return m_params; };
-		SBAPI virtual void setType(std::string type) { m_type = type; }
+		SBAPI virtual void setType(std::string type) { m_type = std::move(type); }
 		SBAPI virtual std::string getType() { return m_type; }
-		SBAPI virtual void setSource(std::string source) { m_source = source; }
+		SBAPI virtual void setSource(std::string source) { m_source = std::move(source); }
 		SBAPI virtual std::string getSource() { return m_source; }
 	
 	protected:
@@ -50,7 +51,7 @@ class SBEventHandler : public SBObject
 {
 	public:
 		SBAPI SBEventHandler();
-		SBAPI ~SBEventHandler() {}
+		SBAPI ~SBEventHandler() = default;
 
 		SBAPI void setEnable(bool val);
 		SBAPI bool isEnable();
@@ -58,7 +59,7 @@ class SBEventHandler : public SBObject
 	//	void setType(const std::string& type) { m_type = type; }
 	//	const std::string& getType() { return m_type; }
 		SBAPI virtual void executeAction(SBEvent* event) {}
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 
 	protected:
 		std::string m_type;

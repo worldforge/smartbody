@@ -121,17 +121,13 @@ void SBBasicHandler::notify(SBSubject* subject)
 
 
 
-SBEventManager::SBEventManager()
-{
-}
+SBEventManager::SBEventManager() = default;
 
 SBEventManager::~SBEventManager()
 {
-	for (std::map<std::string, SBEventHandler*>::iterator iter = eventHandlers.begin();
-		 iter != eventHandlers.end();
-		 iter++)
+	for (auto & eventHandler : eventHandlers)
 	{
-		SBEventHandler* handler = (*iter).second;
+		SBEventHandler* handler = eventHandler.second;
 //		delete handler;
 	}
 }
@@ -142,14 +138,14 @@ void SBEventManager::handleEvent(SBEvent* e)
 	std::string params = e->getParameters();
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		listeners[l]->OnEvent(type, params);
+		listener->OnEvent(type, params);
 	}
 	
 	// find the appropriate event handler
 
-	std::map<std::string, SBEventHandler*>::iterator iter = eventHandlers.find(e->getType());
+	auto iter = eventHandlers.find(e->getType());
 	if (iter == eventHandlers.end())
 		return;
 
@@ -185,7 +181,7 @@ void SBEventManager::addEventHandler(const std::string& type, SBEventHandler* ha
 
 void SBEventManager::removeEventHandler(const std::string& type)
 {
-	std::map<std::string, SBEventHandler*>::iterator iter = eventHandlers.find(type);
+	auto iter = eventHandlers.find(type);
 	if (iter != eventHandlers.end())
 	{
 		SBEventHandler* oldHandler = (*iter).second;
@@ -204,13 +200,11 @@ int SBEventManager::getNumEventHandlers()
 SBEventHandler* SBEventManager::getEventHandlerByIndex(int num)
 {
 	int counter = 0;
-	for (std::map<std::string, SBEventHandler*>::iterator iter = eventHandlers.begin();
-		 iter != eventHandlers.end();
-		 iter++)
+	for (auto & eventHandler : eventHandlers)
 	{
 		if (counter == num)
 		{
-			SBEventHandler* handler = (*iter).second;
+			SBEventHandler* handler = eventHandler.second;
 			return handler;
 		}
 	}
@@ -220,7 +214,7 @@ SBEventHandler* SBEventManager::getEventHandlerByIndex(int num)
 
 SBEventHandler* SBEventManager::getEventHandler(const std::string& type)
 {
-	std::map<std::string, SBEventHandler*>::iterator iter = eventHandlers.find(type);
+	auto iter = eventHandlers.find(type);
 	if (iter != eventHandlers.end())
 	{
 		SBEventHandler* handler = (*iter).second;

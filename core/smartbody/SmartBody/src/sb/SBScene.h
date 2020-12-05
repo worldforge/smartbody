@@ -298,13 +298,9 @@ class SBScene : public SBObject
 		SBAPI std::map<std::string, GeneralParam*>& getGeneralParameters();
 
 		SBAPI SrViewer* getViewer();
-		SBAPI SrViewer* getOgreViewer();
 		SBAPI void setViewer(SrViewer* viewer);
-		SBAPI void setOgreViewer(SrViewer* viewer);
 		SBAPI void setViewerFactory(SrViewerFactory* viewerFactory);
-		SBAPI void setOgreViewerFactory(SrViewerFactory* viewerFactory);
 		SBAPI SrViewerFactory* getViewerFactory();
-		SBAPI SrViewerFactory* getOgreViewerFactory();
 		SBAPI std::vector<SBController*>& getDefaultControllers();
 
 		/**
@@ -388,9 +384,7 @@ class SBScene : public SBObject
 		std::vector<std::string> _characterNames;
 
 		SrViewer* _viewer;
-		SrViewer* _ogreViewer;
 		SrViewerFactory* _viewerFactory;
-		SrViewerFactory* _ogreViewerFactory;
 
 		SmartBody::util::Listener* _logListener;
 
