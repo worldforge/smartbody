@@ -261,7 +261,7 @@ bool OgreSmartBody::frameRenderingQueued(const Ogre::FrameEvent& evt)
 		ogreBlendShape(entity, character->dMeshInstance_p);
 	
 		// Update joints
-		SmartBody::SBSkeleton* sbSkel = character->getSkeleton();
+		auto sbSkel = character->getSkeleton();
 			
 		int numJoints = sbSkel->getNumJoints();
 		for (int j = 0; j < numJoints; j++)

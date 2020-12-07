@@ -589,7 +589,7 @@ bool SBRenderScene::setCameraConeOfSight(const std::string& characterName) {
 		return false;
 	}
 
-	SkSkeleton* skeleton = pawn->getSkeleton();
+	auto skeleton = pawn->getSkeleton();
 
 	if (!skeleton->search_joint("eyeball_left")) {
 		SmartBody::util::log("Can't enable coneOfsight: 'eyeball_left' joint not found.");
@@ -728,8 +728,7 @@ void SBRenderScene::setCameraTrack(const std::string& characterName, const std::
 		return;
 	}
 
-	SkSkeleton* skeleton = nullptr;
-	skeleton = pawn->getSkeleton();
+	auto skeleton = pawn->getSkeleton();
 
 	SkJoint* joint = pawn->getSkeleton()->search_joint(jointName.c_str());
 	if (!joint) {
@@ -806,7 +805,7 @@ SBAPI void SBRenderScene::rescalePartialMeshSkeleton(const std::string& meshName
 	auto mesh = _renderAssetManager.getDeformableMesh(meshName);
 
 
-	SmartBody::SBSkeleton* skel = mScene.getAssetManager()->getSkeleton(skelName);
+	auto skel = mScene.getAssetManager()->getSkeleton(skelName);
 	if (!mesh || !skel) {
 		SmartBody::util::log("Warning, can't find mesh '%s' or skeleton '%s'.", meshName.c_str(), skelName.c_str());
 		return;

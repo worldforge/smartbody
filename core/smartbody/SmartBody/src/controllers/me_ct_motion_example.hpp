@@ -5,7 +5,7 @@
 #include <sb/SBMotion.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBJoint.h>
-
+#include "sr/sr_shared_ptr.hpp"
 using namespace std;
 
 class InterpolationExample;
@@ -163,8 +163,8 @@ public:
 
 class MotionExampleSet : public ExampleSet
 {
-protected:	
-	SmartBody::SBSkeleton*        skeletonRef; // reference to the connected skeleton
+protected:
+	boost::intrusive_ptr<SmartBody::SBSkeleton>     skeletonRef; // reference to the connected skeleton
 	vector<SmartBody::SBJoint*>   affectedJoints; // joints that will be affected by this motion set
 	VecOfBodyMotionPtr motionData;	
 	vector<MotionExample*> motionExamples;

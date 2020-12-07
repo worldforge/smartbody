@@ -80,9 +80,9 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAmc::getAssets(const std::st
 	if (SmartBody::SBScene::getScene()->getAttribute("globalMotionScale"))
 		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalMotionScale");
 
-	SmartBody::SBSkeleton* skeleton = nullptr;
+	boost::intrusive_ptr<SBSkeleton> skeleton;
 	// find a skeleton with a prefix that matches the first part of this motion file
-	int pos = fileName.find_first_of("_");
+	int pos = fileName.find_first_of('_');
 	if (pos != std::string::npos)
 	{
 		std::string skelPrefix = fileName.substr(0, pos);
@@ -104,7 +104,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAmc::getAssets(const std::st
 
 	
 	auto motion = std::make_unique<SmartBody::SBMotion>();
-	bool ok = ParserASFAMC::parseAmc(*motion, skeleton, filestream, float(scale));
+	bool ok = ParserASFAMC::parseAmc(*motion, skeleton.get(), filestream, float(scale));
 	if (ok)
 	{
 		motion->setName(fileName);

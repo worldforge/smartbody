@@ -366,7 +366,7 @@ bool OgreFrameListener::frameStarted( const FrameEvent & evt )
 			if (!skel) continue;
 
 			std::map<std::string, Ogre::Vector3>& intialBonePositionMap = m_initialBonePositions[name];			
-			SmartBody::SBSkeleton* sbSkel = character->getSkeleton();
+			auto sbSkel = character->getSkeleton();
 			for (int jId = 0; jId < sbSkel->getNumJoints(); jId++)
 			{
 				SmartBody::SBJoint* joint = sbSkel->getJoint(jId);

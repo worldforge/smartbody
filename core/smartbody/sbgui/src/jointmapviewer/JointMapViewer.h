@@ -56,7 +56,7 @@ public:
 	void focusOnSkeleton();
 	virtual int handle( int event );
 	virtual void draw();
-	SmartBody::SBSkeleton* getSkeleton();
+	boost::intrusive_ptr<SmartBody::SBSkeleton> getSkeleton();
 	
 protected:
 	
@@ -70,7 +70,7 @@ protected:
 	SrSaGlRender renderFunction;
 	int showJointLabels;	
 	SkScene* skeletonScene;
-	SmartBody::SBSkeleton* skeleton;
+	boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton;
 	std::string jointMapName;
 	std::string focusJointName;
 	float curTime, prevTime, deltaTime;

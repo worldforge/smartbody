@@ -116,18 +116,18 @@ void PAParameterEditor::confirmEditting(Fl_Widget* widget, void* data)
 	if (!currentState)
 		return;
 
-	SmartBody::SBAnimationBlend1D* state1D = dynamic_cast<SmartBody::SBAnimationBlend1D*>(currentState);
-	SmartBody::SBAnimationBlend2D* state2D = dynamic_cast<SmartBody::SBAnimationBlend2D*>(currentState);
-	SmartBody::SBAnimationBlend3D* state3D = dynamic_cast<SmartBody::SBAnimationBlend3D*>(currentState);
+	auto* state1D = dynamic_cast<SmartBody::SBAnimationBlend1D*>(currentState);
+	auto* state2D = dynamic_cast<SmartBody::SBAnimationBlend2D*>(currentState);
+	auto* state3D = dynamic_cast<SmartBody::SBAnimationBlend3D*>(currentState);
 	const std::vector<std::string>& selectedMotions = paramEditor->stateEditor->getSelectedMotions();
 	
-	for (size_t i = 0; i < selectedMotions.size(); i++)
+	for (const auto & selectedMotion : selectedMotions)
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotions[i]);
-		motion->connect(curCharacter->getSkeleton());
+		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotion);
+		motion->connect(curCharacter->getSkeleton().get());
 		
 		// get start time and end time
-		int index = currentState->getMotionId(selectedMotions[i]);
+		int index = currentState->getMotionId(selectedMotion);
 		if (index < 0)
 			continue;
 		std::vector<double>& key = currentState->keys[index];
@@ -170,25 +170,25 @@ void PAParameterEditor::confirmEditting(Fl_Widget* widget, void* data)
 		if (state1D)
 		{
 			if (dimensionName == "X")
-				state1D->setParameter(selectedMotions[i], param);
+				state1D->setParameter(selectedMotion, param);
 		}
 		if (state2D)
 		{
-			state2D->getParameter(selectedMotions[i], x, y);
+			state2D->getParameter(selectedMotion, x, y);
 			if (dimensionName == "X")
-				state2D->setParameter(selectedMotions[i], param, (float)y);
+				state2D->setParameter(selectedMotion, param, (float)y);
 			if (dimensionName == "Y")
-				state2D->setParameter(selectedMotions[i], (float)x, param);
+				state2D->setParameter(selectedMotion, (float)x, param);
 		}
 		if (state3D)
 		{
-			state3D->getParameter(selectedMotions[i], x, y, z);
+			state3D->getParameter(selectedMotion, x, y, z);
 			if (dimensionName == "X")
-				state3D->setParameter(selectedMotions[i], param, (float)y, (float)z);
+				state3D->setParameter(selectedMotion, param, (float)y, (float)z);
 			if (dimensionName == "Y")
-				state3D->setParameter(selectedMotions[i], (float)x, param, (float)z);
+				state3D->setParameter(selectedMotion, (float)x, param, (float)z);
 			if (dimensionName == "Z")
-				state3D->setParameter(selectedMotions[i], (float)x, (float)y, param);
+				state3D->setParameter(selectedMotion, (float)x, (float)y, param);
 		}
 		motion->disconnect();
 	}

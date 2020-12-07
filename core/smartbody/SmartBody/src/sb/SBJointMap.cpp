@@ -31,7 +31,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <controllers/me_controller_tree_root.hpp>
-#include<boost/algorithm/string/replace.hpp>
 
 #define USE_STL_MAP 0
 
@@ -42,9 +41,7 @@ SBJointMap::SBJointMap()
 	emptyString = "";
 }
 
-SBJointMap::~SBJointMap()
-{
-}
+SBJointMap::~SBJointMap() = default;
 
 void SBJointMap::applyMotion(SmartBody::SBMotion* motion)
 {
@@ -100,14 +97,12 @@ void SBJointMap::applyMotionRecurse(const std::string& directory)
 	}
 
 	std::vector<std::string> motionNames = scene->getMotionNames();
-	for (std::vector<std::string>::iterator iter = motionNames.begin();
-		 iter != motionNames.end();
-		 iter++)
+	for (auto & motionName : motionNames)
 	{
-		SBMotion* motion = scene->getMotion((*iter));
+		SBMotion* motion = scene->getMotion(motionName);
 		if (!motion)
 		{
-			SmartBody::util::log("Motion not found for name '%s'.", (*iter).c_str());
+			SmartBody::util::log("Motion not found for name '%s'.", motionName.c_str());
 			continue;
 		}
 		const std::string& fileName = motion->getMotionFileName();
@@ -174,7 +169,7 @@ void SBJointMap::applyMotionInverse( SmartBody::SBMotion* motion )
 	channels.rebuild_hash_table();
 #endif
 
-	for (std::vector<std::string>::iterator iter = _mappedMotions.begin();
+	for (auto iter = _mappedMotions.begin();
 		 iter != _mappedMotions.end();
 		 iter++)
 	{
@@ -227,7 +222,7 @@ void SBJointMap::applySkeletonInverse( SmartBody::SBSkeleton* skeleton )
 #endif
 	skeleton->resetSearchJoint();
 	skeleton->updateJointMap();	
-	for (std::vector<std::string>::iterator iter = _mappedSkeletons.begin();
+	for (auto iter = _mappedSkeletons.begin();
 		 iter != _mappedSkeletons.end();
 		 iter++)
 	{
@@ -307,9 +302,9 @@ std::vector<std::string>& SBJointMap::getMappedSkeletons()
 
 bool SBJointMap::isAppliedToMotion(const std::string& name)
 {
-	for (size_t i = 0; i < _mappedMotions.size(); ++i)
+	for (auto & _mappedMotion : _mappedMotions)
 	{
-		if (_mappedMotions[i] == name)
+		if (_mappedMotion == name)
 			return true;
 	}
 	return false;
@@ -317,9 +312,9 @@ bool SBJointMap::isAppliedToMotion(const std::string& name)
 
 bool SBJointMap::isAppliedToSkeleton(const std::string& name)
 {
-	for (size_t i = 0; i < _mappedSkeletons.size(); ++i)
+	for (auto & _mappedSkeleton : _mappedSkeletons)
 	{
-		if (_mappedSkeletons[i] == name)
+		if (_mappedSkeleton == name)
 			return true;
 	}
 	return false;
@@ -329,7 +324,7 @@ void SBJointMap::setMapping(const std::string& from, const std::string& to)
 {
 #ifdef USE_TWO_MAPS
 
-	std::map<std::string, std::string>::iterator iter = _sourceMap.find(from);
+	auto iter = _sourceMap.find(from);
 	if (iter != _sourceMap.end())
 	{
 		(*iter).second = to;
@@ -623,21 +618,21 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 	if (!skeleton)
 		return false;
 
-	SkJoint *base = 0;
-	SkJoint *spine1 = 0;
-	SkJoint *spine2 = 0;
-	SkJoint *spine3 = 0; // chest
-	SkJoint *spine4 = 0; // neck
-	SkJoint *spine5 = 0;
-	SkJoint *skullbase = 0; // head
-	SkJoint *eyeball_left=0,		*eyeball_right=0;
-	SkJoint *l_acromioclavicular=0,	*r_acromioclavicular=0; // shoulder
-	SkJoint *l_shoulder=0,	*r_shoulder=0; // uparm
-	SkJoint *l_elbow=0,		*r_elbow=0;
-	SkJoint *l_forearm=0,	*r_forearm=0; // forearm twist/roll
-	SkJoint *l_wrist=0,		*r_wrist=0;
-	SkJoint *l_hip=0,		*r_hip=0; // upleg
-	SkJoint *l_knee=0,		*r_knee=0;
+	SkJoint *base = nullptr;
+	SkJoint *spine1 = nullptr;
+	SkJoint *spine2 = nullptr;
+	SkJoint *spine3 = nullptr; // chest
+	SkJoint *spine4 = nullptr; // neck
+	SkJoint *spine5 = nullptr;
+	SkJoint *skullbase = nullptr; // head
+	SkJoint *eyeball_left=nullptr,		*eyeball_right=nullptr;
+	SkJoint *l_acromioclavicular=nullptr,	*r_acromioclavicular=nullptr; // shoulder
+	SkJoint *l_shoulder=nullptr,	*r_shoulder=nullptr; // uparm
+	SkJoint *l_elbow=nullptr,		*r_elbow=0;
+	SkJoint *l_forearm=nullptr,	*r_forearm=0; // forearm twist/roll
+	SkJoint *l_wrist=0,		*r_wrist=nullptr;
+	SkJoint *l_hip=nullptr,		*r_hip=0; // upleg
+	SkJoint *l_knee=nullptr,		*r_knee=0;
 	SkJoint *l_ankle=0,		*r_ankle=0;
 	SkJoint *l_forefoot=0,	*r_forefoot=0; // toebase
 	SkJoint *l_toe=0,		*r_toe=0; // toe

@@ -45,12 +45,7 @@ MeCtMotionPlayer::MeCtMotionPlayer(SbmCharacter* c) : MeCtContainer(new MeCtMoti
 
 MeCtMotionPlayer::~MeCtMotionPlayer()
 {
-	if (controller)
-	{
-		//controller->unref();
-		delete controller;
-	}
-	controller = nullptr;
+	delete controller;
 }
 
 void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, std::string name, double n)
@@ -76,7 +71,7 @@ void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, std::string name, double n)
 		return;
 	}
 	motionName = name;
-	motion->connect(character->getSkeleton());
+	motion->connect(character->getSkeleton().get());
 	controller = new MeCtMotion();
 	MeCtMotion* mController = dynamic_cast<MeCtMotion*> (controller);
 	//SmartBody::util::log("mController->init");

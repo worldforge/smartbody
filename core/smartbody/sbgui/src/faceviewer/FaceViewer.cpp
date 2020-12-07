@@ -519,7 +519,7 @@ void FaceViewer::updateGUI()
 	if (!choiceCharacters->menu())
 		return;
 
-	std::string selectedCharacter = "";
+	std::string selectedCharacter;
 	if (choiceCharacters->menu()->size() > 0)
 	{
 		selectedCharacter = choiceCharacters->menu()[choiceCharacters->value()].label();
@@ -531,7 +531,7 @@ void FaceViewer::updateGUI()
 	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(selectedCharacter);
 	if (character)
 	{	
-		SmartBody::SBSkeleton* skeleton = character->getSkeleton();
+		auto skeleton = character->getSkeleton();
 		SmartBody::SBFaceDefinition* faceDefinition = character->getFaceDefinition();
 
 		for (size_t s = 0; s < _sliders.size(); s++)

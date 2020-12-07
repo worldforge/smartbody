@@ -258,45 +258,37 @@ std::string LocomotionAnalyzer::getMotionName()
 /* Motion Analysis                                                      */
 /************************************************************************/
 
-MotionAnalysis::MotionAnalysis(void)
-{
-}
+MotionAnalysis::MotionAnalysis() = default;
 
-MotionAnalysis::~MotionAnalysis(void)
+MotionAnalysis::~MotionAnalysis()
 {
-	for (size_t i = 0; i < legInfos.size(); ++i)
+	for (auto & legInfo : legInfos)
 	{
-		if (legInfos[i])
+		if (legInfo)
 		{
-			delete legInfos[i];
-			legInfos[i] = nullptr;
+			delete legInfo;
+			legInfo = nullptr;
 		}
 	}
 	legInfos.clear();
 
-	for (size_t i = 0; i < locoAnalyzers.size(); ++i)
+	for (auto & locoAnalyzer : locoAnalyzers)
 	{
-		if (locoAnalyzers[i])
+		if (locoAnalyzer)
 		{
-			delete locoAnalyzers[i];
-			locoAnalyzers[i] = nullptr;
+			delete locoAnalyzer;
+			locoAnalyzer = nullptr;
 		}
 	}
 	locoAnalyzers.clear();
 
-	if (skelCopy)
-	{
-		delete skelCopy;
-		skelCopy = nullptr;
-	}
 }
 
 void MotionAnalysis::init(std::string skeletonName, std::string baseJoint, SmartBody::SBAnimationBlend* locomotionBlend, const std::vector<std::string>& motions, std::string motionPrefix )
 {		
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSkeleton* sbSkel = scene->getSkeleton(skeletonName);
-	skelCopy = new SmartBody::SBSkeleton(sbSkel);
-	skelCopy->ref();
+	auto sbSkel = scene->getSkeleton(skeletonName);
+	skelCopy = new SmartBody::SBSkeleton(sbSkel.get());
 	initLegInfos();
 	int numMotions = motions.size();	
 	for (int i=0;i<numMotions;i++)
@@ -305,7 +297,7 @@ void MotionAnalysis::init(std::string skeletonName, std::string baseJoint, Smart
 		KeyTagMap& keyTagMap = *locomotionBlend->getKeyTagMap(motionPrefix+motionName);
 		LocomotionAnalyzer* analyzer = new LocomotionAnalyzer();
 		analyzer->legInfos = legInfos;
-		analyzer->initLegCycles(motionName,locomotionBlend,keyTagMap,skelCopy);
+		analyzer->initLegCycles(motionName,locomotionBlend,keyTagMap,skelCopy.get());
 		locoAnalyzers.emplace_back(analyzer);
 	}	
 
@@ -386,7 +378,7 @@ float MotionAnalysis::getTerrainYOffset( LegCycleState& state, float flightTime 
 void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCharacter* sbChar, std::vector<double>& weights, PATimeManager* timeManager, SrMat worldOffsetMat, SrVec velocity, float angSpeed, BodyMotionFrame& inputFrame, BodyMotionFrame& outFrame )
 {
 	static SrQuat prevQuat;
-	SmartBody::SBSkeleton* charSk = sbChar->getSkeleton();
+	auto charSk = sbChar->getSkeleton();
 	ikScenario.ikGlobalMat = worldOffsetMat;
 	ikScenario.ikTreeRootPos = inputFrame.rootPos;
 	ikScenario.setTreeNodeQuat(inputFrame.jointQuat, QUAT_INIT);
@@ -396,18 +388,17 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
-	SmartBody::SBSkeleton* srcSk = assetManager->getSkeleton(skelCopy->getName());
-	SmartBody::SBSkeleton* tgtSk = assetManager->getSkeleton(charSk->getName());
+	auto srcSk = assetManager->getSkeleton(skelCopy->getName());
+	auto tgtSk = assetManager->getSkeleton(charSk->getName());
 	SmartBody::SBJoint* srcBase = srcSk->getJointByName(baseName);
 	SmartBody::SBJoint* tgtBase = tgtSk->getJointByName(baseName);
 
 	float tgtBaseHeight = tgtSk->getBaseHeight(baseName); // to decide the terrain compensation offset
 	float scaleRatio = tgtSk->getBaseHeight(baseName)/srcSk->getBaseHeight(baseName);
 
-	for (unsigned int i=0;i<legInfos.size();i++)
+	for (auto info : legInfos)
 	{
-		LegInfo* info = legInfos[i];
-		for (unsigned int k=0;k<info->supportJoints.size();k++)
+			for (unsigned int k=0;k<info->supportJoints.size();k++)
 		{
 			MeCtIKTreeNode* supNode = ikScenario.findIKTreeNode(info->supportJoints[k].c_str());
 			supNode->active = false;
@@ -423,15 +414,15 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 	SrQuat prerot = rootNode->joint->quat()->prerot();
 	SrMat prerotMat; prerot.get_mat(prerotMat);
 	SrMat gmatBase = prerotMat.inverse()*rootNode->gmat;
-	for (unsigned int k=0;k<legStates.size();k++)
+	for (auto & legState : legStates)
 	{
-		std::vector<SrVec>& supPos = legStates[k].curSupportPos;
-		std::vector<SrVec>& stancePos = legStates[k].stanceSupportPos;
+		std::vector<SrVec>& supPos = legState.curSupportPos;
+		std::vector<SrVec>& stancePos = legState.stanceSupportPos;
 		std::fill(supPos.begin(),supPos.end(),SrVec()); // clear the support position	
 		std::fill(stancePos.begin(),stancePos.end(),SrVec()); // clear the support position	
-		legStates[k].cycleTime = 0.f;
-		legStates[k].timeToNextCycle = 0.f;
-		legStates[k].newCycle = false;
+		legState.cycleTime = 0.f;
+		legState.timeToNextCycle = 0.f;
+		legState.newCycle = false;
 		
 	}
 	float transitionWeight = 0.0;

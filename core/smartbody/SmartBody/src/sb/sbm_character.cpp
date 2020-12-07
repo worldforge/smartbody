@@ -188,11 +188,11 @@ _soft_eyes_enabled( ENABLE_EYELID_CORRECTIVE_CT )
 
 
 //  Destructor
-SbmCharacter::~SbmCharacter( void )	{
+SbmCharacter::~SbmCharacter( )	{
 
 	//printf("delete character %s\n",this->getName().c_str());
 
-	if (_faceDefinition)
+
 		delete _faceDefinition;
 
 	if (posture_sched_p)
@@ -270,7 +270,7 @@ SbmCharacter::~SbmCharacter( void )	{
 		viseme_history_arr = nullptr;
 	}
 
-	if (_miniBrain)
+
 		delete _miniBrain;
 }
 
@@ -279,7 +279,7 @@ void SbmCharacter::copy( SbmCharacter* origChar )
 	// no matching skeleton ?
 	if (getSkeleton()->getName() != origChar->getSkeleton()->getName())
 	{
-		getSkeleton()->copy(origChar->getSkeleton());
+		getSkeleton()->copy(origChar->getSkeleton().get());
 	}	
 	// locomotion 
 	locomotion_type = origChar->locomotion_type;
@@ -349,7 +349,7 @@ void SbmCharacter::createStandardControllers()
 	
 	// Added by Adil
 	// generic hand controller
-	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
+	auto sbSkel = getSkeleton();
 
 	this->generic_hand_ct = new MeCtGenericHand(sbSkel,this);
 	std::string gHandName = getName() + "_genericHandController";
@@ -367,7 +367,7 @@ void SbmCharacter::createStandardControllers()
 	this->motiongraph_ct->setName(motionGraphName);
 	this->motiongraph_ct->ref();
 
-	//SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
+	//auto sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
 	SmartBody::SBJoint* effector = sbSkel->getJointByMappedName("r_middle1");
 	if (!effector) 
 		effector =sbSkel->getJointByMappedName("r_index1");
@@ -389,7 +389,7 @@ void SbmCharacter::createStandardControllers()
 	breathing_p->setName(getName() + "_breathingController");
 	breathing_p->ref();
 	// add two channels for blendshape-based breathing
-	//SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
+	//auto sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
 	SmartBody::SBJoint* rootJoint = dynamic_cast<SmartBody::SBJoint*>(sbSkel->root());
 
 	if (rootJoint)
@@ -2283,7 +2283,7 @@ void SbmCharacter::setFaceDefinition(SmartBody::SBFaceDefinition* faceDefinition
 	// why add _copy suffix? 
 	_faceDefinition->setName(faceDefinition->getName());
 
-	SkSkeleton* skeleton = getSkeleton();
+	auto skeleton = getSkeleton();
 	if (!skeleton)
 		return;
 
@@ -2300,7 +2300,7 @@ void SbmCharacter::updateFaceDefinition()
 	
 	getSkeleton()->make_active_channels();
 
-	SkSkeleton* skeleton = getSkeleton();
+	auto skeleton = getSkeleton();
 	SkChannelArray& skelChannelArray = skeleton->channels();
 
 	// add the action units (AUs)
@@ -2382,7 +2382,7 @@ void SbmCharacter::removeAllFaceChannels()
 	if (viseme_channel_start_pos == 0 && viseme_channel_end_pos == 0)
 		return;
 
-	SkSkeleton* skeleton = getSkeleton();
+	auto skeleton = getSkeleton();
 	SkChannelArray& channels = skeleton->channels();
 	for (int i = viseme_channel_end_pos; i >= viseme_channel_start_pos; i++)
 	{
@@ -2403,8 +2403,7 @@ void SbmCharacter::removeAllFaceChannels()
 
 void SbmCharacter::removeAllBlendShapeChannels()
 {
-	SkSkeleton* skeleton = getSkeleton();
-	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*> (skeleton);
+	auto sbSkel = getSkeleton();
 	for (int i = 0; i < sbSkel->getNumJoints(); ++i)
 	{
 		SkJoint* joint = sbSkel->getJoint(i);
@@ -2430,7 +2429,7 @@ void SbmCharacter::removeAllBlendShapeChannels()
 void SbmCharacter::addVisemeChannel(std::string visemeName, SkMotion* motion)
 {
 	// add a corresponding channel for this viseme
-	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
+	auto sbSkel = getSkeleton();
 	if (!sbSkel)
 	{
 		SmartBody::util::log("No skeleton for character %s. Viseme %s cannot be added.", this->getName().c_str(), visemeName.c_str());
@@ -2482,7 +2481,7 @@ void SbmCharacter::addVisemeChannel(std::string visemeName, std::string motionNa
 void SbmCharacter::addBlendShapeChannels(std::vector<std::string>& shapeNames)
 {
 	// add a corresponding channel for this action unit
-	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
+	auto sbSkel = getSkeleton();
 	if (!sbSkel)
 	{
 		SmartBody::util::log("No skeleton for character %s. Blend shapes %d cannot be added.", this->getName().c_str(), shapeNames.size());
@@ -2503,11 +2502,11 @@ void SbmCharacter::addBlendShapeChannels(std::vector<std::string>& shapeNames)
 		this->setFaceDefinition(defaultFaceDef);
 	}
 
-	for (unsigned int b = 0; b < shapeNames.size(); b++)
+	for (auto & shapeName : shapeNames)
 	{
 		SmartBody::SBJoint* shapeJoint = new SmartBody::SBJoint();
 		shapeJoint->setJointType(SkJoint::TypeBlendShape);
-		shapeJoint->setName(shapeNames[b]);
+		shapeJoint->setName(shapeName);
 		shapeJoint->setUsePosition(0, true);
 		shapeJoint->pos()->limits(SkJointPos::X, -10, 10);  // Setting upper bound to 2 allows some exaggeration
 		rootJoint->addChild(shapeJoint);
@@ -2522,7 +2521,7 @@ void SbmCharacter::addBlendShapeChannels(std::vector<std::string>& shapeNames)
 void SbmCharacter::addBlendShapeChannel(std::string bShapeName)
 {
 	// add a corresponding channel for this action unit
-	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
+	auto sbSkel = getSkeleton();
 	if (!sbSkel)
 	{
 		SmartBody::util::log("No skeleton for character %s. Blend shape %s cannot be added.", this->getName().c_str(), bShapeName.c_str());
@@ -2588,27 +2587,27 @@ void SbmCharacter::addActionUnitChannel(int auNum, ActionUnit* au)
 	}
 
 	// add a corresponding channel for this action unit
-	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
+	auto sbSkel = getSkeleton();
 	if (!sbSkel)
 	{
 		SmartBody::util::log("No skeleton for character %s. Action unit %d cannot be added.", this->getName().c_str(), auNum);
 		return;
 	}
-	SmartBody::SBJoint* rootJoint = dynamic_cast<SmartBody::SBJoint*>(sbSkel->root());
+	auto* rootJoint = dynamic_cast<SmartBody::SBJoint*>(sbSkel->root());
 	if (!rootJoint)
 	{
 		SmartBody::util::log("No root joint for character %s. Action unit %d cannot be added.", this->getName().c_str(), auNum);
 		return;
 	}
-	for (size_t a = 0; a < allUnits.size(); a++)
+	for (auto & allUnit : allUnits)
 	{
 		// if this joint already exists, don't add it
-		SmartBody::SBJoint* existingJoint = this->getSkeleton()->getJointByName(allUnits[a]);
+		SmartBody::SBJoint* existingJoint = this->getSkeleton()->getJointByName(allUnit);
 		if (existingJoint)
 			continue;
 		SmartBody::SBJoint* auJoint = new SmartBody::SBJoint();
 		auJoint->setJointType(SkJoint::TypeViseme);
-		auJoint->setName(allUnits[a]);
+		auJoint->setName(allUnit);
 		auJoint->setUsePosition(0, true);
 		auJoint->pos()->limits(SkJointPos::X, 0, 200);  // Setting upper bound to 2 allows some exageration
 		rootJoint->addChild(auJoint);

@@ -263,7 +263,7 @@ class DeformableMeshInstance
 protected:
 	DeformableMesh* _mesh;
 	//std::vector<SrSnModel*>	dynamicMesh; 
-	SkSkeleton*				_skeleton;
+	boost::intrusive_ptr<SkSkeleton>				_skeleton;
 	SmartBody::SBCharacter*	_character;		// pointer to current character
 	SmartBody::SBPawn*      _pawn;
 	bool				  _updateMesh;
@@ -301,7 +301,7 @@ public:
 	SBAPI int    getVisibility();
 	SBAPI void    setToStaticMesh(bool isStatic);
 	SBAPI bool    isStaticMesh();
-	SBAPI SmartBody::SBSkeleton* getSkeleton();	
+	SBAPI boost::intrusive_ptr<SmartBody::SBSkeleton> getSkeleton();
 	SBAPI virtual void update();
 	SBAPI virtual void updateFast();
 

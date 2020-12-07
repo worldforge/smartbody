@@ -1422,7 +1422,7 @@ void BaseWindow::FaceCameraCB(Fl_Widget* widget, void* data)
 	if (!camera)
 		return;
 
-	SkSkeleton* skeleton = character->getSkeleton();
+	auto skeleton = character->getSkeleton();
 	float height = skeleton->getCurrentHeight();
 	SkJoint* joint = skeleton->search_joint("eyeball_left");
 	SkJoint* joint2 = skeleton->search_joint("eyeball_right");

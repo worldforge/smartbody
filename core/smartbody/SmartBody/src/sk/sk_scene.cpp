@@ -54,10 +54,7 @@ SkScene::SkScene ()
    _showJoints = true;
  }
 
-SkScene::~SkScene ()
-{	
-   //if ( _skeleton ) _skeleton->unref();
-}
+SkScene::~SkScene () = default;
 
 static SrSnGroup* make_joint_group ( const SkJoint* j, SkSkeleton* s, SrArray<SrSnGroup*>& _jgroup )
  {
@@ -93,7 +90,7 @@ static SrSnGroup* make_joint_group ( const SkJoint* j, SkSkeleton* s, SrArray<Sr
 enum GroupPos { AxisPos=0, MatrixPos=1, SpherePos=2, GeoPos=3 };
 enum GeoGroupPos { VisgeoPos=0, ColgeoPos=1, FirstCylPos=2 };
 
-void SkScene::init ( SkSkeleton* s, float scale )
+void SkScene::init ( boost::intrusive_ptr<SkSkeleton> s, float scale )
  {
    remove_all();
    _jgroup.size ( 0 );
@@ -102,7 +99,6 @@ void SkScene::init ( SkSkeleton* s, float scale )
       
    if ( !s ) return;
    _skeleton = s;
-   _skeleton->ref();
 
    _needsInit = true;
    scaleFactor = scale;
@@ -128,7 +124,7 @@ void SkScene::initInternal()
    if (!root)
 	   return;
 //   const char* root_name = root->name().get_string();  // expose to debugger
-   SrSnGroup* g = make_joint_group ( root, _skeleton, _jgroup );
+   SrSnGroup* g = make_joint_group ( root, _skeleton.get(), _jgroup );
    if (!g)
    {
 	   SmartBody::util::log("Skeleton %s cannot be added to the scene.", _skeleton->getName().c_str());

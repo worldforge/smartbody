@@ -22,11 +22,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "controllers/me_ct_param_animation_utilities.h"
 #include <sr/sr_euler.h>
 #include <controllers/me_ct_ublas.hpp>
-#include <boost/numeric/ublas/matrix_proxy.hpp>
-#include <boost/numeric/ublas/vector_proxy.hpp>
 #include <sb/SBEvent.h>
 #include "SBUtilities.h"
-#include <sb/SBScene.h>
 
 #ifdef USE_TETGEN
 #include <tetgen/tetgen.h>
@@ -1324,9 +1321,8 @@ MotionParameters::MotionParameters(SkMotion* m, SkSkeleton* skel, std::string j)
 {
 	motion = m;
 	skeleton = new SkSkeleton(skel);
-	skeleton->ref();
-	motion->connect(skeleton);
-	if (j == "")
+	motion->connect(skeleton.get());
+	if (j.empty())
 	{
 		joint = skeleton->search_joint(motion->channels().name(0).c_str());
 	}
@@ -1339,9 +1335,6 @@ MotionParameters::MotionParameters(SkMotion* m, SkSkeleton* skel, std::string j)
 MotionParameters::~MotionParameters()
 {
 	motion->disconnect();
-	if (skeleton)
-		delete skeleton;
-		//skeleton->unref();
 }
 
 

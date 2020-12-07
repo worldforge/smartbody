@@ -31,7 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_NO_BONEBUS
 #include "bonebus.h"
 #endif
-
+#include "sr/sr_shared_ptr.hpp"
 #include <map>
 
 
@@ -67,7 +67,7 @@ protected:
 	std::string collisionObjName;
 
 public:  // TODO - properly encapsulate / privatize the following
-	SkSkeleton*	_skeleton;  // MAY BE nullptr!!!
+	boost::intrusive_ptr<SkSkeleton>	_skeleton;  // MAY BE nullptr!!!
 //	SkScene*		scene_p;	 // Skeleton Scene and Rigid Mesh
 //	DeformableMeshInstance* dMeshInstance_p;
 //	DeformableMeshInstance* dStaticMeshInstance_p;
@@ -96,8 +96,8 @@ public:
 
 	SBAPI virtual void copy(SbmPawn* orignalPawn);
 
-	SBAPI SkSkeleton* getSkeleton() const;
-	SBAPI void setSkeleton(SkSkeleton* sk);	
+	SBAPI const boost::intrusive_ptr<SkSkeleton>& getSkeleton() const;
+	SBAPI void setSkeleton(boost::intrusive_ptr<SkSkeleton> sk);
 	SBAPI virtual int init( SkSkeleton* skeleton_p );
 
 	SBAPI const std::string& getGeomObjectName();
@@ -111,8 +111,8 @@ public:
 	SBAPI bool is_initialized();
 
 	SBAPI void setHeight( float height )	{ _height = height; }
-	SBAPI float getHeight( void ) 		{ return _height; }
-	SBAPI SrBox getBoundingBox( void ); 		
+	SBAPI float getHeight( ) const 		{ return _height; }
+	SBAPI SrBox getBoundingBox( );
 
 	SBAPI virtual int prune_controller_tree();  // removes unused or overwritten controllers
 	
@@ -122,8 +122,8 @@ public:
 	SBAPI const SkJoint* get_world_offset_joint() const
 	{	return get_joint( WORLD_OFFSET_JOINT_NAME ); }
 
-	SBAPI virtual SBTransform& getGlobalTransform();
-	SBAPI virtual void setGlobalTransform(SBTransform& newGlobalTransform);
+	SBAPI SBTransform& getGlobalTransform() override;
+	SBAPI void setGlobalTransform(SBTransform& newGlobalTransform) override;
 
 	SBAPI SrMat get_world_offset();
 	SBAPI void get_world_offset( float& x, float& y, float& z,
@@ -136,7 +136,7 @@ public:
 	SBAPI virtual std::string getClassType();
 	SBAPI virtual void setClassType(std::string classType);
 
-	SBAPI virtual void notify(SBSubject* subject);
+	SBAPI void notify(SBSubject* subject) override;
 
 protected:
 	/*!

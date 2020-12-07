@@ -359,10 +359,9 @@ void MeCtIKTreeScenario::setTreeNodeQuat( const std::vector<SrQuat>& inQuatList,
 
 void MeCtIKTreeScenario::setTreeNodeQuat( SkSkeleton* skel,NodeQuatType type )
 {
-	for (unsigned int i=0;i<ikTreeNodes.size();i++)
+	for (auto node : ikTreeNodes)
 	{
-		MeCtIKTreeNode* node = ikTreeNodes[i];
-		SkJoint* joint = skel->search_joint(node->getNodeName().c_str());
+			SkJoint* joint = skel->search_joint(node->getNodeName().c_str());
 		if (joint)
 		{
 			node->setQuat(joint->quat()->rawValue(),type);
@@ -379,17 +378,16 @@ void MeCtIKTreeScenario::getTreeNodeQuat( std::vector<SrQuat>& inQuatList, NodeQ
 
 void MeCtIKTreeScenario::copyTreeNodeQuat( NodeQuatType typeFrom, NodeQuatType typeTo )
 {
-	for (unsigned int i=0;i<ikTreeNodes.size();i++)
+	for (auto node : ikTreeNodes)
 	{
-		MeCtIKTreeNode* node = ikTreeNodes[i];
-		node->setQuat(node->getQuat(typeFrom),typeTo);
+			node->setQuat(node->getQuat(typeFrom),typeTo);
 	}
 }
 
 SrMat MeCtIKTreeScenario::getLocalMat( const SkJoint* joint, const SrQuat& q, const SrVec& pos )
 {
 	SrMat lMat;
-	SkJoint* j = const_cast<SkJoint*>(joint);
+	auto* j = const_cast<SkJoint*>(joint);
 	SkJointQuat* qu = j->quat();
 	lMat = (qu->orientation()*qu->prerot()*q).get_mat(lMat);
 	lMat[12] = joint->offset().x + pos.x;
@@ -419,7 +417,7 @@ float MeCtIKTreeScenario::getIKChainLength( const char* chainRoot, const char* c
 
 
 
-MeCtJacobianIK::MeCtJacobianIK(void)
+MeCtJacobianIK::MeCtJacobianIK()
 {
 	dampJ = 150.0;
 	maxOffset = 10.0f;
@@ -428,7 +426,7 @@ MeCtJacobianIK::MeCtJacobianIK(void)
 	ikUseReference = true;
 }
 
-MeCtJacobianIK::~MeCtJacobianIK(void)
+MeCtJacobianIK::~MeCtJacobianIK()
 {
 }
 

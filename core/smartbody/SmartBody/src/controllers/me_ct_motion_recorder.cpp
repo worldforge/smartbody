@@ -45,8 +45,8 @@ void MeCtMotionRecorder::startRecording( double frameRate )
 {
 	// make sure that all the channels are available for recording
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	//SmartBody::SBSkeleton* skel = scene->getSkeleton(_pawn->getSkeleton()->getName());
-	SmartBody::SBSkeleton* skel = _pawn->getSkeleton();
+	//auto skel = scene->getSkeleton(_pawn->getSkeleton()->getName());
+	auto skel = _pawn->getSkeleton();
 	if (!skel) 
 		return;
 
@@ -220,7 +220,7 @@ bool MeCtMotionRecorder::controller_evaluate(double t, MeFrameData& frame)
 	if (recordFrame)
 	{
 		// swap joint rotation + joint translation	
-		SmartBody::SBSkeleton* skel = character->getSkeleton();
+		auto skel = character->getSkeleton();
 		skel->update_global_matrices();
 		
 		SmartBody::SBJoint* rootJoint = skel->getJoint(0);

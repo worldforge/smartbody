@@ -315,7 +315,7 @@ void SBReach::createReachEngineMap()
 	if (!_character)
 		return;
 
-	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(_character->getSkeleton());
+	auto sbSkel = _character->getSkeleton();
 	SmartBody::SBJoint* effector = sbSkel->getJointByMappedName("r_middle1");
 	if (!effector) 
 		effector = sbSkel->getJointByMappedName("r_index1");

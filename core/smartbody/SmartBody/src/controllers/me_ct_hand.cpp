@@ -6,6 +6,7 @@
 #include <time.h>
 #include <boost/foreach.hpp>
 #include <sb/sbm_character.hpp>
+#include <utility>
 #include <sb/SBReach.h>
 
 #include "controllers/MeCtReachEngine.h"
@@ -76,11 +77,11 @@ void FingerChain::testCollision( SBGeomObject* colObj )
 
 std::string MeCtHand::CONTROLLER_TYPE = "Hand";
 
-MeCtHand::MeCtHand( SmartBody::SBSkeleton* sk, SmartBody::SBJoint* wrist)
+MeCtHand::MeCtHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SmartBody::SBJoint* wrist)
 {		
-	skeletonRef  = sk;	
+	skeletonRef  = std::move(sk);
 	// work on the copy of skeleton to avoid problems
-	skeletonCopy = new SmartBody::SBSkeleton(sk); 	
+	skeletonCopy = new SmartBody::SBSkeleton(sk.get());
 	if (wrist)
 	{
 		wristJoint = wrist;//skeletonCopy->search_joint(wrist->name().get_string());
@@ -95,11 +96,7 @@ MeCtHand::MeCtHand( SmartBody::SBSkeleton* sk, SmartBody::SBJoint* wrist)
 	needToAttachPawn = false;
 }
 
-MeCtHand::~MeCtHand( void )
-{
-	if (skeletonCopy)
-		delete skeletonCopy;
-}
+MeCtHand::~MeCtHand( ) = default;
 
 SbmPawn* MeCtHand::getAttachedPawn()
 {
@@ -216,10 +213,9 @@ void MeCtHand::setGrabState( GrabState state )
 {
 	if (currentGrabState != state)
 	{
-		for (size_t i=0;i<fingerChains.size();i++)
+		for (auto & fig : fingerChains)
 		{
-			FingerChain& fig = fingerChains[i];
-			fig.isLock = false;		
+				fig.isLock = false;
 			fig.unlockChain();
 		}
 	}
@@ -287,13 +283,13 @@ void MeCtHand::init(std::string grabType, const MotionDataSet& reachPose, const 
 
 	bool useRetarget = true;
 	if (releaseHand)
-		releaseFrame.setMotionPose((float)releaseHand->time_stroke_emphasis(),skeletonCopy,affectedJoints,releaseHand,useRetarget);
+		releaseFrame.setMotionPose((float)releaseHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,releaseHand,useRetarget);
 	if (grabHand)
-		grabFrame.setMotionPose((float)grabHand->time_stroke_emphasis(),skeletonCopy,affectedJoints,grabHand,useRetarget);
+		grabFrame.setMotionPose((float)grabHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,grabHand,useRetarget);
 	if (reachHand)
-		reachFrame.setMotionPose((float)reachHand->time_stroke_emphasis(),skeletonCopy,affectedJoints,reachHand,useRetarget);
+		reachFrame.setMotionPose((float)reachHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,reachHand,useRetarget);
 	if (pointHand)
-		pointFrame.setMotionPose((float)pointHand->time_stroke_emphasis(),skeletonCopy,affectedJoints,pointHand,useRetarget);
+		pointFrame.setMotionPose((float)pointHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,pointHand,useRetarget);
 //	if (releaseHand && grabHand && reachHand)
 //	{
 		//printf("set example hand pose\n");		

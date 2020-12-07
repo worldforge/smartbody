@@ -13,17 +13,13 @@ MeCtPhysicsController::MeCtPhysicsController(SbmCharacter* character) : SmartBod
 {
 	_character = character;
 	_skeletonCopy = new SmartBody::SBSkeleton();
-	_skeletonCopy->copy(_character->getSkeleton());
+	_skeletonCopy->copy(_character->getSkeleton().get());
 	_valid = true;
 	_prevTime = 0.0;
 	_duration = 0.0;
 }
 
-MeCtPhysicsController::~MeCtPhysicsController()
-{
-	if (_skeletonCopy)
-		delete _skeletonCopy;	
-}
+MeCtPhysicsController::~MeCtPhysicsController() = default;
 
 
 void MeCtPhysicsController::getJointChannelValues( const std::string& jointName, MeFrameData& frame, SrQuat& outQuat, SrVec& outPos )

@@ -982,7 +982,7 @@ void SkeletonViewer::setTestMotion( SmartBody::SBMotion* motion )
 {	
 	testMotion = motion;
 	if (testMotion)
-		testMotion->connect(skeleton);
+		testMotion->connect(skeleton.get());
 }
 
 void SkeletonViewer::setPlayMotion( bool play )
@@ -1182,7 +1182,7 @@ std::string SkeletonViewer::getFocusJointName()
 void SkeletonViewer::setSkeleton( std::string skelName )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSkeleton* sk = scene->getSkeleton(skelName);
+	auto sk = scene->getSkeleton(skelName);
 	if (sk)
 	{
 		skeleton = sk;
@@ -1389,7 +1389,7 @@ void SkeletonViewer::drawJointMapLabels( std::string jointMapName )
 	glEnable(GL_DEPTH_TEST);
 }
 
-SmartBody::SBSkeleton* SkeletonViewer::getSkeleton()
+boost::intrusive_ptr<SmartBody::SBSkeleton> SkeletonViewer::getSkeleton()
 {
 	return skeleton;
 }
@@ -1480,12 +1480,11 @@ JointMapViewer::JointMapViewer(int x, int y, int w, int h, char* name) : Fl_Doub
 	leftGroup->end();
 
 	std::string commonSkName = "common.sk";	
-	SmartBody::SBSkeleton* commonSk = scene->getSkeleton(commonSkName);
+	auto commonSk = scene->getSkeleton(commonSkName);
 	if (!commonSk)
 	{
 		commonSk = scene->addSkeletonDefinition(commonSkName);
 		commonSk->loadFromString(commenSkString);
-		commonSk->ref();
 	}
 
 #if 0
@@ -1562,7 +1561,7 @@ JointMapViewer::JointMapViewer(int x, int y, int w, int h, char* name) : Fl_Doub
 void JointMapViewer::updateJointLists()
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSkeleton* skel = scene->getSkeleton(_skelName);
+	auto skel = scene->getSkeleton(_skelName);
 	int tempY = scrollY;
 	
 	std::vector<std::string> skelJointNames;
@@ -1575,18 +1574,16 @@ void JointMapViewer::updateJointLists()
 		}
 		//skelJointNames = skel->getJointNames();
 	}
-	for (unsigned int i=0;i<_jointChoiceList.size();i++)
+	for (auto input : _jointChoiceList)
 	{
-		JointMapInputChoice* input = _jointChoiceList[i];
-		delete input;
+			delete input;
 	}
 	_jointChoiceList.clear();
 	_scrollGroup->clear();
 	_scrollGroup->begin();
-	for (unsigned int i=0;i<skelJointNames.size();i++)
+	for (auto name : skelJointNames)
 	{
-		std::string name = skelJointNames[i];
-		//SmartBody::util::log("joint name = %s",name.c_str());
+			//SmartBody::util::log("joint name = %s",name.c_str());
 		//Fl_Check_Button* check = new Fl_Check_Button(20, curY, 100, 20, _strdup(name.c_str()));
 		//Fl_Group* jointMapGroup = new Fl_Group(20, curY , 200, 20, _strdup(name.c_str()));
 		//Fl_Input* input = new Fl_Input(100 , scrollY, 150, 20, _strdup(name.c_str()));
@@ -1699,7 +1696,7 @@ void JointMapViewer::updateJointName( Fl_Input_Choice* jointChoice )
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::string charName = _charName;
 	SmartBody::SBCharacter* curChar = scene->getCharacter(charName);
-	SmartBody::SBSkeleton* charSk = curChar->getSkeleton();		
+	auto charSk = curChar->getSkeleton();
 	int valueIndex = jointChoice->menubutton()->value();	
 	std::string choiceStr = "";
 	if (valueIndex >= 0)
@@ -1736,7 +1733,7 @@ void JointMapViewer::updateCharacter()
 	SmartBody::SBCharacter* curChar = scene->getCharacter(charName);
 	if (!curChar) return;
 
-	SmartBody::SBSkeleton* charSk = curChar->getSkeleton();
+	auto charSk = curChar->getSkeleton();
 	skeletonJointNames = charSk->getJointNames();
 
 	int numChildren = _scrollGroup->children();
@@ -1758,13 +1755,13 @@ void JointMapViewer::autoGuessJointMap()
 	std::string jointMapName = _skelName + "-autoMap";
 	SmartBody::SBJointMapManager* jointMapManager = scene->getJointMapManager();
 	SmartBody::SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
-	SmartBody::SBSkeleton* skel = scene->getSkeleton(_skelName);
+	auto skel = scene->getSkeleton(_skelName);
 	if (!skel) // no skeleton exists
 		return;
 	if (!jointMap && skel)
 	{
 		jointMap = jointMapManager->createJointMap(jointMapName);
-		jointMap->guessMapping(scene->getSkeleton(_skelName), false);		
+		jointMap->guessMapping(skel.get(), false);
 	}
 	_jointMapName = jointMapName;
 	updateJointMapList();
@@ -1827,9 +1824,9 @@ void JointMapViewer::applyJointMap()
 				jointMap->setMapping(sourceName, targetName);
 		}
 	}	
-	SmartBody::SBSkeleton* sceneSk = scene->getSkeleton(curChar->getSkeleton()->getName());
-	jointMap->applySkeleton(sceneSk);
-	jointMap->applySkeleton(curChar->getSkeleton());
+	auto sceneSk = scene->getSkeleton(curChar->getSkeleton()->getName());
+	jointMap->applySkeleton(sceneSk.get());
+	jointMap->applySkeleton(curChar->getSkeleton().get());
 	
 	// in addition to update the skeleton, we also need to update the character controllers so all joint names are mapped correctly.
 	//curChar->ct_tree_p->child_channels_updated(nullptr);
@@ -2026,8 +2023,8 @@ void JointMapViewer::showJointLabels( int showLabel )
 void JointMapViewer::testPlayMotion()
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSkeleton* targetSk = targetSkeletonViewer->getSkeleton();
-	SmartBody::SBSkeleton* commonSk = standardSkeletonViewer->getSkeleton();
+	auto targetSk = targetSkeletonViewer->getSkeleton();
+	auto commonSk = standardSkeletonViewer->getSkeleton();
 	if (!targetSk || !commonSk) return;
 
 	if (!testCommonSkMotion) return;
@@ -2079,9 +2076,9 @@ void JointMapViewer::testPlayMotion()
 		relativeJoints.emplace_back("spine4");
 		relativeJoints.emplace_back("spine5");
 
-		jointMap.applySkeleton(targetSk);	
-		SmartBody::SBMotion* retargetMotion = dynamic_cast<SmartBody::SBMotion*>(testCommonSkMotion->buildRetargetMotionV2(commonSk,targetSk,endJoints,relativeJoints,offsetJoints));
-		jointMap.applySkeletonInverse(targetSk);
+		jointMap.applySkeleton(targetSk.get());
+		SmartBody::SBMotion* retargetMotion = dynamic_cast<SmartBody::SBMotion*>(testCommonSkMotion->buildRetargetMotionV2(commonSk.get(),targetSk.get(),endJoints,relativeJoints,offsetJoints));
+		jointMap.applySkeletonInverse(targetSk.get());
 		jointMap.applyMotionInverse(retargetMotion);
 		if (testTargetMotion)
 		{

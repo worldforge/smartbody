@@ -192,7 +192,7 @@ int main()
 
 
 			// Update joints
-			SmartBody::SBSkeleton* sbSkel = character->getSkeleton();
+			auto sbSkel = character->getSkeleton();
 
 			int found = 0;
 

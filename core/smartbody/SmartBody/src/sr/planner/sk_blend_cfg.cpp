@@ -83,7 +83,7 @@ void SkBlendCfg::apply ()
  {
 	 _cman->interpMotion->weight = weight;
 	 //printf("ref time = %f\n",refTime);
-	 _cman->interpMotion->getMotionFrame(refTime,_cman->motionParameter->skeletonRef,_cman->motionParameter->affectedJoints,blendPose);	   
+	 _cman->interpMotion->getMotionFrame(refTime,_cman->motionParameter->skeletonRef.get(),_cman->motionParameter->affectedJoints,blendPose);
  }
 
 void SkBlendCfg::copy ( const SkBlendCfg& c2 )

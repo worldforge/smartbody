@@ -42,8 +42,8 @@ class SBRetarget
 		SBAPI SBRetarget(std::string srcName, std::string tgtName);		
 		SBAPI ~SBRetarget();	
 		SBAPI bool initRetarget(std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints);
-		SBAPI SrQuat applyRetargetJointRotation(std::string jointName, SrQuat& inQuat);
-		SBAPI SrQuat applyRetargetJointRotationInverse(std::string jointName, SrQuat& inQuat);
+		SBAPI SrQuat applyRetargetJointRotation(const std::string& jointName, SrQuat& inQuat);
+		SBAPI SrQuat applyRetargetJointRotationInverse(const std::string& jointName, SrQuat& inQuat);
 		SBAPI float  applyRetargetJointTranslation(std::string jointName, float inPos);		
 		SBAPI SrVec  applyRetargetJointTranslationVec(std::string jointName, SrVec inVec);		
 
@@ -63,7 +63,7 @@ class SBRetarget
 		std::map<std::string, SrQuat> jointRotOffsetMap;
 		std::vector<std::string> retargetEndJoints;
 		std::vector<std::string> retargetRelativeJoints;		
-		float heightRatio;
+		float heightRatio{};
 		std::map<StringPair, float> jointLengthRatioMap;
 };
 

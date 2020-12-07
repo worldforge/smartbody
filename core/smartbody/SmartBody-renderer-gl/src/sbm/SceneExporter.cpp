@@ -561,7 +561,7 @@ SBAPI void exportScenePackage(SBRenderScene& renderScene, const std::string& out
 	}
 
 	for (auto& skelName : skelNames) {
-		SmartBody::SBSkeleton* skel = renderScene.mScene.getSkeleton(skelName);
+		auto skel = renderScene.mScene.getSkeleton(skelName);
 		if (!skel) {
 			SmartBody::util::log("Skeleton %s cannot be found.", skelName.c_str());
 			continue;
@@ -770,7 +770,7 @@ else
 	// save skeletons
 	for (unsigned int i=0;i<skelNames.size();i++)
 	{
-		SmartBody::SBSkeleton* skel = getSkeleton(skelNames[i]);
+		auto skel = getSkeleton(skelNames[i]);
 		boost::filesystem::path skelFile(skel->getFileName());
 		boost::filesystem::path skelPath = skelFile.parent_path();
 		if (skelPath.empty()) // don't care about empty path
@@ -976,7 +976,7 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 	}
 
 	for (auto& skelName : skelNames) {
-		SmartBody::SBSkeleton* skel = renderScene.mScene.getSkeleton(skelName);
+		auto skel = renderScene.mScene.getSkeleton(skelName);
 		boost::filesystem::path skelFile(skel->getFileName());
 		boost::filesystem::path skelPath = skelFile.parent_path();
 		if (skelPath.empty()) // don't care about empty path
@@ -1035,7 +1035,7 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 		std::map<std::string, std::string> charSkelMap;
 
 		for (const auto& skelName : skeletonNames) {
-			SBSkeleton* skel = renderScene.mScene.getSkeleton(skelName);
+			auto skel = renderScene.mScene.getSkeleton(skelName);
 			if (skel) {
 				std::string skelStr = skel->saveToString();
 				ostream << "tempSkel = scene.addSkeletonDefinition(\"" << skelName << "\")\n";
@@ -1054,7 +1054,7 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 			if (!sbChar)
 				continue;
 			std::string skelName = sbChar->getSkeleton()->getName();
-			SBSkeleton* skel = renderScene.mScene.getSkeleton(skelName);
+			auto skel = renderScene.mScene.getSkeleton(skelName);
 			if (skel && charSkelMap.find(skelName) == charSkelMap.end()) {
 				std::string skelStr = skel->saveToString();
 				ostream << "tempSkel = scene.addSkeletonDefinition(\"" << skelName << "\")\n";
@@ -1160,9 +1160,8 @@ void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 		}
 	}
 
-	std::vector<SBSkeleton*> skeletonList;
 	for (auto& skName : skelNames) {
-		SBSkeleton* sbSk = renderScene.mScene.getSkeleton(skName);
+		auto sbSk = renderScene.mScene.getSkeleton(skName);
 		// rescale the skeleton to right size if necessary
 		ostream << "sbSk = scene.getSkeleton(\"" << skName << "\")\n";
 		//ostream << "print 'numSkeleton = ' + str(scene.getNumSkeletons())\n";
@@ -1515,7 +1514,7 @@ void saveJointMaps(SBRenderScene& renderScene, std::ostream& ostream, bool remot
 		}
 
 		for (auto& mappedSkeleton : mappedSkeletons) {
-			SmartBody::SBSkeleton* skel = scene->getSkeleton(mappedSkeleton);
+			auto skel = scene->getSkeleton(mappedSkeleton);
 			if (skel && skel->getJointMapName() == jointMapName)
 				ostream << "jointMap.applySkeleton(scene.getSkeleton(\"" << mappedSkeleton << "\"))\n";
 		}

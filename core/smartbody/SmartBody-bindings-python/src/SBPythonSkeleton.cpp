@@ -16,7 +16,7 @@
 #include <boost/python/args.hpp>
 
 #include "SBPythonInternal.h"
-
+#include "register_intrusive_ptr_from_python.hpp"
 
 typedef std::map<std::string,SrQuat> QuatMap;
 typedef std::map<std::string,SrVec> VecMap;
@@ -38,7 +38,7 @@ namespace SmartBody
 void pythonFuncsSkeleton()
 {
 
-	boost::python::class_<SBSkeleton, boost::python::bases<SBObject> >("SBSkeleton")
+	boost::python::class_<SBSkeleton, boost::intrusive_ptr<SBSkeleton>, boost::python::bases<SBObject> >("SBSkeleton")
 	//	.def(boost::python::init<>())
 		.def(boost::python::init<std::string>())
 		.def("load", &SBSkeleton::load, "Loads the skeleton definition from the given skeleton name.")
@@ -60,7 +60,8 @@ void pythonFuncsSkeleton()
 		.def("createStaticJoint", &SBSkeleton::createStaticJoint, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Adds a joint to the skeleton. First parameter is the joint, second is the joints parent (null for root).")
 		.def("createChannel", &SBSkeleton::createChannel, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Adds a channel to the skeleton. First parameter is the joint, second is the channels parent (null for root).")		
 		.def("update", &SBSkeleton::update, "Creates channels from the joints. Used after all the joints have been created.")
-		; 
+		;
+	boostPatch::register_intrusive_ptr_from_python_and_casts( (SBSkeleton *)nullptr, boostPatch::class_<SBSkeleton>::metadata::bases() );
 
 	boost::python::class_<SBJoint, boost::python::bases<SBObject> >("SBJoint")
 		.def(boost::python::init<>())

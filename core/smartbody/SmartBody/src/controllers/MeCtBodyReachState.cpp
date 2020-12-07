@@ -712,7 +712,7 @@ SRT ReachStateData::getPoseState( BodyMotionFrame& frame )
 
 void ReachStateData::getInterpFrame( float refTime, BodyMotionFrame& outFrame )
 {
-	interpMotion->getMotionFrame(refTime,motionParameter->skeletonRef,motionParameter->affectedJoints,outFrame);	
+	interpMotion->getMotionFrame(refTime,motionParameter->skeletonRef.get(),motionParameter->affectedJoints,outFrame);
 }
 
 bool ReachStateData::useInterpolation()

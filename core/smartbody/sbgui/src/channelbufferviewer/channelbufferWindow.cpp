@@ -734,7 +734,7 @@ void ChannelBufferWindow::addMonitoredChannel(Fl_Widget* widget, void* data)
 		motion = SmartBody::SBScene::getScene()->getMotion(moName);
 		if (motion && actor)
 		{
-			motion->connect(actor->getSkeleton());
+			motion->connect(actor->getSkeleton().get());
 		}
 	}
 

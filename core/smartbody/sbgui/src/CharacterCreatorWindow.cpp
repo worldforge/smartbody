@@ -62,7 +62,7 @@ void CharacterCreatorWindow::CreateCB(Fl_Widget* w, void* data)
 		fl_alert("Character named '%s' could not be created.", creator->inputName->value());
 		return;
 	}
-	SmartBody::SBSkeleton* skeleton = SmartBody::SBScene::getScene()->createSkeleton(skel);
+	auto skeleton = SmartBody::SBScene::getScene()->createSkeleton(skel);
 	if (!skeleton)
 	{
 		fl_alert("Character named '%s' could not be created. Problem creating skeleton '%s'.", creator->inputName->value(), skel.c_str());

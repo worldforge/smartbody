@@ -1436,8 +1436,8 @@ void BmlRequest::gestureRequestProcess()
 			SkMotion* prevMotion = prev_motion_ct->motion();
 			SBMotion* prevSBMotion = dynamic_cast<SBMotion*> (prevMotion);
 
-			SmartBody::SBSkeleton* tempSkel = SmartBody::SBScene::getScene()->createSkeleton(actor->getSkeleton()->getName());
-			prevSBMotion->connect(tempSkel);
+			auto tempSkel = SmartBody::SBScene::getScene()->createSkeleton(actor->getSkeleton()->getName());
+			prevSBMotion->connect(tempSkel.get());
 			SrVec prevLWristPos = prevSBMotion->getJointPosition(lWrist, (float)prevMotion->time_stroke_end());
 			SrVec prevRWristPos = prevSBMotion->getJointPosition(rWrist, (float)prevMotion->time_stroke_end());
 
@@ -1457,14 +1457,14 @@ void BmlRequest::gestureRequestProcess()
 				currGestureList.emplace_back(sbMotion->getName());
 				closestMotion = sbMotion;
 			}
-			for (size_t l = 0; l < currGestureList.size(); ++l)
+			for (auto & l : currGestureList)
 			{
-				SBMotion *motionInList = SmartBody::SBScene::getScene()->getMotion(currGestureList[l]);
+				SBMotion *motionInList = SmartBody::SBScene::getScene()->getMotion(l);
 				if (!motionInList)
 					continue;
 				if (useGestureLog)
-					SmartBody::util::log("Motion in list: %s", currGestureList[l].c_str());
-				motionInList->connect(tempSkel);
+					SmartBody::util::log("Motion in list: %s", l.c_str());
+				motionInList->connect(tempSkel.get());
 						if (actor->getBoolAttribute("gestureRequest.matchingHandness"))
 				{
 					float lMotionSpeed = motionInList->getJointSpeed(lWrist, (float)motionInList->time_start(), (float)motionInList->time_stop());
@@ -1620,7 +1620,6 @@ void BmlRequest::gestureRequestProcess()
 				}
 			}
 			prevSBMotion->disconnect();
-			delete tempSkel;
 		}
 		else
 		{
@@ -1811,10 +1810,10 @@ void BML::BmlRequest::speechRequestProcess()
 				behList.emplace_back(gestureRequest->group_id);
 				types.emplace_back("gesture");
 				times.emplace_back(readyTime);
-				SmartBody::SBSkeleton* connectedSkeleton = dynamic_cast<SmartBody::SBSkeleton*>(sbMotion->connected_skeleton());
-				SmartBody::SBSkeleton* skeleton = new SmartBody::SBSkeleton(actor->getSkeleton());
+				auto connectedSkeleton =  dynamic_cast<SmartBody::SBSkeleton*>(sbMotion->connected_skeleton());
+				SmartBody::SBSkeleton skeleton(actor->getSkeleton().get());
 				sbMotion->disconnect();
-				sbMotion->connect(skeleton);
+				sbMotion->connect(&skeleton);
 				float lWristSpeed = sbMotion->getJointSpeed(l_wrist, (float)sbMotion->getTimeStart(), (float)sbMotion->getTimeStop());
 				float rWristSpeed = sbMotion->getJointSpeed(r_wrist, (float)sbMotion->getTimeStart(), (float)sbMotion->getTimeStop());
 				if (lWristSpeed > rWristSpeed)
@@ -1834,7 +1833,6 @@ void BML::BmlRequest::speechRequestProcess()
 					info.emplace_back(ss.str());
 				}
 				sbMotion->disconnect();
-				delete skeleton;
 				sbMotion->connect(connectedSkeleton);
 			}
 		}

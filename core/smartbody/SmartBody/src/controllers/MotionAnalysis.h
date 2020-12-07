@@ -8,6 +8,7 @@
 #include "me_ct_param_animation_utilities.h"
 #include "me_ct_motion_example.hpp"
 #include "me_ct_ccd_IK.hpp"
+#include "sr/sr_shared_ptr.hpp"
 
 struct LegInfo
 {
@@ -98,11 +99,11 @@ protected:
 	std::vector<LegInfo*>  legInfos;
 	std::vector<LegCycleState> legStates;
 	std::vector<LocomotionAnalyzer*> locoAnalyzers;
-	SmartBody::SBSkeleton* skelCopy;	
+	boost::intrusive_ptr<SmartBody::SBSkeleton> skelCopy;
 	float skelBaseHeight;	
 public:
-	MotionAnalysis(void);
-	~MotionAnalysis(void);			
+	MotionAnalysis();
+	~MotionAnalysis();
 	void init(std::string skeletonName, std::string baseJoint, SmartBody::SBAnimationBlend* locomotionBlend, const std::vector<std::string>& motions, std::string motionPrefix);
 	void initLegInfos();
 	void applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCharacter* sbChar, std::vector<double>& weights, PATimeManager* timeManager, SrMat worldOffsetMat, SrVec velocity, float angSpeed, BodyMotionFrame& inputFrame, BodyMotionFrame& outFrame);

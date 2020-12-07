@@ -304,7 +304,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetStore::loadAsset(const std::string&
 //				addAssetHistory("MOTION " + motion->getName());
 //				continue;
 //			}
-//			SmartBody::SBSkeleton* skeleton = dynamic_cast<SmartBody::SBSkeleton*>(asset);
+//			auto skeleton = dynamic_cast<SmartBody::SBSkeleton*>(asset);
 //			if (skeleton) {
 //				SBSkeleton* existingSkeleton = this->getSkeleton(skeleton->getName());
 //				if (existingSkeleton) {

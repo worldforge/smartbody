@@ -166,7 +166,7 @@ protected:
 
 	// TODO: handle more than one entity/skeleton
 	std::string   _skeletonName;
-    SkSkeleton*    _skeleton;
+	boost::intrusive_ptr<SkSkeleton>    _skeleton;
 	State          _state;   // Need to be lockable, even for single threading
 
 	//  We keep two copies of channels arround to allow comparisons
@@ -273,7 +273,7 @@ public:
      *  Sets channel set to skeletons joints.
      *  Currently only supports one entity/skeleton.
      */
-	void add_skeleton( const std::string& entityName, SkSkeleton* skeleton ) {		
+	void add_skeleton( const std::string& entityName, boost::intrusive_ptr<SkSkeleton> skeleton ) {
 		SR_ASSERT( _state!=REMAPPING );  // simple lock
 
 		if( skeleton==nullptr ) {
@@ -286,7 +286,6 @@ public:
 		}		
 		_skeletonName = entityName;		
 		_skeleton = skeleton;		
-		_skeleton->ref();
 
 		_state = INVALID;
 		
@@ -299,7 +298,6 @@ public:
 		SR_ASSERT( _state!=REMAPPING );  // simple lock
 		if( _skeletonName==entityName ) {
 			_skeletonName = "";
-			//_skeleton->unref();
 			_skeleton = nullptr;
 		}
 	}
@@ -353,8 +351,8 @@ public:
 	 */
 	void remove_controller( MeController* ct )
 	{	
-		std::vector<controller_ptr>::iterator iterPos = _controllers.end();
-		for (std::vector<controller_ptr>::iterator  iter = _controllers.begin();
+		auto iterPos = _controllers.end();
+		for (auto  iter = _controllers.begin();
 			 iter != _controllers.end();
 			 iter++)
 		{
@@ -372,15 +370,15 @@ public:
 
 	MeController* findControllerByHandle(const std::string& handle)
 	{
-		for (size_t x = 0; x < _controllers.size(); x++)
+		for (auto & _controller : _controllers)
 		{
-			if (_controllers[x]->handle() == handle)
+			if (_controller->handle() == handle)
 			{
-				return _controllers[x];
+				return _controller;
 			}
 			else
 			{
-				MeCtContainer* container = dynamic_cast<MeCtContainer*>(_controllers[x]);
+				MeCtContainer* container = dynamic_cast<MeCtContainer*>(_controller);
 				if (container)
 				{
 					MeController* controller = container->findControllerByHandle(handle);
@@ -428,10 +426,10 @@ public:
 		//for_each( _controllers.begin(), 
 		//          _controllers.end(),
 		//          Evaluate_Func( time, _frame_data ) );
-		for (unsigned int i=0;i<_controllers.size();i++)
+		for (auto & _controller : _controllers)
 		{
-			profiler->mark_time("controllers", 1, _controllers[i]->getName().c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
-			_controllers[i]->evaluate(time,_frame_data);
+			profiler->mark_time("controllers", 1, _controller->getName().c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+			_controller->evaluate(time,_frame_data);
 			profiler->mark("controllers");
 		}
 
@@ -497,7 +495,7 @@ public:
 			for( int i=BEGIN; i<END; ++i ) {
 				SkChannel& channel = channels[i];
 				if( channel.joint ) {
-					if( channel.joint->skeleton() == _skeleton ) {
+					if( channel.joint->skeleton() == _skeleton.get() ) {
 						// Line by line temp variables for the debugger
 						int buffer_index = _frame_data.toBufferIndex( i );
 						float* fp = &( buffer.get( buffer_index ) );  // pointer hack copied from Marcelo's SkChannelArray::set_values
@@ -555,7 +553,7 @@ public:
 
 	void set_logged_joints( set<string>& joint_names ) {
 		_logged_joints = joint_names;
-		set<string>::iterator set_end = _logged_joints.end();
+		auto set_end = _logged_joints.end();
 
 		// Update channel indices
 		_logged_channel_indices.clear();
@@ -586,7 +584,7 @@ private:
 
 		// TODO: Handle multiple skeletons
 		if( _skeleton ) {
-			cur.get_active_channels( _skeleton, true );  // Get connected channels
+			cur.get_active_channels( _skeleton.get(), true );  // Get connected channels
 		} else {
 			cur.init();
 		}

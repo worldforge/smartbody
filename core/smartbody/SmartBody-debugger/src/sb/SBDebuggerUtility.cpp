@@ -78,7 +78,7 @@ void SBDebuggerUtility::queryResources()
 */
 void SBDebuggerUtility::initCharacter(const std::string& name, const std::string& skelName)
 {
-	if (name == "")
+	if (name.empty())
 	{
 		SmartBody::util::log("Character has no name - will not be created.");
 		return;
@@ -89,13 +89,13 @@ void SBDebuggerUtility::initCharacter(const std::string& name, const std::string
 		SmartBody::util::log("Problem creating character %s, will not be created in remote session...", name.c_str());
 		return;
 	}
-	SmartBody::SBSkeleton* sbSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
+	auto sbSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
 	if (!sbSkeleton)
 	{
 		SmartBody::util::log("Problem creating skeleton %s, character %s will not be created in remote session...", name.c_str(), skelName.c_str());
 		return;
 	}
-	SmartBody::SBSkeleton* copySbSkeleton = new SmartBody::SBSkeleton(sbSkeleton);
+	boost::intrusive_ptr<SmartBody::SBSkeleton> copySbSkeleton(new SmartBody::SBSkeleton(sbSkeleton.get()));
 	if (!copySbSkeleton)
 	{
 		SmartBody::util::log("Problem creating copy of skeleton %s, character %s will not be created in remote session...", name.c_str(), skelName.c_str());
@@ -137,7 +137,7 @@ void SBDebuggerUtility::runPythonCommand(const std::string& info)
 void SBDebuggerUtility::initSkeleton(const std::string& skFileName, const std::string& info)
 {
 	SrInput input(info.c_str());
-	auto sbSkel = std::make_unique<SmartBody::SBSkeleton>();
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSkel(new SmartBody::SBSkeleton());
 	sbSkel->loadSk(input);
 	sbSkel->skfilename(skFileName.c_str());
 	SmartBody::SBScene::getScene()->getAssetManager()->addSkeleton(std::move(sbSkel));

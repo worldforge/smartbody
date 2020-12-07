@@ -29,6 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <sb/SBMotion.h>
 #include <sb/SBObject.h>
+#include "sr/sr_shared_ptr.hpp"
 
 namespace SmartBody {
 	class SBMotionEvent;
@@ -173,7 +174,7 @@ class MotionParameters
 		int minFrameId;
 		int maxFrameId;
 		SkMotion* motion;
-		SkSkeleton* skeleton;
+		boost::intrusive_ptr<SkSkeleton> skeleton;
 		SkJoint* joint;
 };
 

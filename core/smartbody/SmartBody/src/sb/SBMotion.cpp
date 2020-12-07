@@ -33,15 +33,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_ccd_IK.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <sbm/sbm_constants.h>
 #ifdef WIN_BUILD
 #pragma warning(push)
 #pragma warning(disable:4244)
 #endif
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
+
 #ifdef WIN_BUILD
 #pragma warning(pop)
 #endif
@@ -74,7 +72,7 @@ void FootStepRecord::updateJointAveragePosition( SBSkeleton* skel, SBMotion* mot
 {
 	int steps = 0;
 	posVec.resize(jointNames.size());
-	for (unsigned int i=0;i<posVec.size();i++) posVec[i] = SrVec();
+	for (auto & i : posVec) i = SrVec();
 
 	float frameRate = (float)motion->getFrameRate();
 	motion->connect(skel);
@@ -93,29 +91,17 @@ void FootStepRecord::updateJointAveragePosition( SBSkeleton* skel, SBMotion* mot
 		}		
 		steps++;
 	}
-	for (unsigned int i=0;i<posVec.size();i++)
-		posVec[i] /= (float)steps;
+	for (auto & i : posVec)
+		i /= (float)steps;
 	motion->disconnect();			
 }
 
 
-JointTrajectory::JointTrajectory()
-{
+JointTrajectory::JointTrajectory() = default;
 
-}
+JointTrajectory::~JointTrajectory() = default;
 
-JointTrajectory::~JointTrajectory()
-{
-
-}
-
-JointTrajectory& JointTrajectory::operator=( const JointTrajectory& rt )
-{
-	effectorName = rt.effectorName;
-	refJointName = rt.refJointName ;
-	jointTrajectory = rt.jointTrajectory ;
-	return *this;
-}
+JointTrajectory& JointTrajectory::operator=( const JointTrajectory& rt ) = default;
 
 SBMotion::SBMotion() : SkMotion()
 {
@@ -187,31 +173,27 @@ SBMotion::~SBMotion()
 	std::map<std::string, JointTrajectory*>::iterator jointTrajectoryIter;
 	for (jointTrajectoryIter = trajMap.begin(); jointTrajectoryIter != trajMap.end(); ++jointTrajectoryIter)
 	{
-		if (jointTrajectoryIter->second)
+
 			delete jointTrajectoryIter->second;
 	}
 	trajMap.clear();
 
-	if (_offsetMotion)
+
 		delete _offsetMotion;
 	_offsetMotion = nullptr;
 	_offsetParent = nullptr;
 
-	for (std::map<std::string, srLinearCurve* >::iterator iter = _channelFrameValues.begin();
-		 iter != _channelFrameValues.end();
-		 iter++)
+	for (auto & _channelFrameValue : _channelFrameValues)
 	{
-		delete (*iter).second;
+		delete _channelFrameValue.second;
 	}
 
-	for (std::map<std::string, rotationCurve* >::iterator iter = _quatFrameValues.begin();
-		 iter != _quatFrameValues.end();
-		 iter++)
+	for (auto & _quatFrameValue : _quatFrameValues)
 	{
-		delete (*iter).second->x;
-		delete (*iter).second->y;
-		delete (*iter).second->z;
-		delete (*iter).second;
+		delete _quatFrameValue.second->x;
+		delete _quatFrameValue.second->y;
+		delete _quatFrameValue.second->z;
+		delete _quatFrameValue.second;
 	}
 
 }
@@ -531,11 +513,11 @@ void SBMotion::checkSkeleton(std::string skel)
 		return;
 	}
 
-	SmartBody::SBSkeleton* skSkel =  SmartBody::SBScene::getScene()->createSkeleton(skel);
+	auto skSkel =  SmartBody::SBScene::getScene()->createSkeleton(skel);
 	//load_skeleton(skel.c_str(), mcu.me_paths, SmartBody::SBScene::getScene()->getAssetManager()->getGlobalSkeletonScale());
 	if (skSkel)
 	{
-		motion->connect(skSkel);	// connect and check for the joints
+		motion->connect(skSkel.get());	// connect and check for the joints
 		SkChannelArray& mChanArray = motion->channels();
 		int mChanSize = mChanArray.size();
 		SkChannelArray& skelChanArray = skSkel->channels();
@@ -801,11 +783,9 @@ void SBMotion::alignToSide(int numFrames, int direction)
 
 void SBMotion::addSimilarPose(const std::string& motionName)
 {
-	for (std::vector<std::string>::iterator iter = _similarPoses.begin();
-		 iter != _similarPoses.end();
-		 iter++)
+	for (auto & _similarPose : _similarPoses)
 	{
-		if ((*iter) == motionName)
+		if (_similarPose == motionName)
 		{
 			SmartBody::util::log("Pose named '%s' already similar to motion %s.", motionName.c_str(), this->getName().c_str());
 			return;
@@ -817,7 +797,7 @@ void SBMotion::addSimilarPose(const std::string& motionName)
 
 void SBMotion::removeSimilarPose(const std::string& motionName)
 {
-	for (std::vector<std::string>::iterator iter = _similarPoses.begin();
+	for (auto iter = _similarPoses.begin();
 		 iter != _similarPoses.end();
 		 iter++)
 	{
@@ -833,11 +813,9 @@ void SBMotion::removeSimilarPose(const std::string& motionName)
 std::vector<std::string> SBMotion::getSimilarPoses() const
 {
 	std::vector<std::string> poses;
-	for (std::vector<std::string>::const_iterator iter = _similarPoses.begin();
-		 iter != _similarPoses.end();
-		 iter++)
+	for (const auto & _similarPose : _similarPoses)
 	{
-		poses.emplace_back(*iter);
+		poses.emplace_back(_similarPose);
 	}
 	return poses;
 }
@@ -948,10 +926,10 @@ SBMotion* SBMotion::duplicateCycle(int num, std::string newName)
 void SBMotion::removeMotionChannels(std::vector<std::string> channelNames)
 {
 	_channels.startChannelNameChange();
-	for (unsigned int i = 0; i<channelNames.size(); i++)
+	for (auto & channelName : channelNames)
 	{
-		std::string newChanName = "deletedChan" + channelNames[i];
-		_channels.changeChannelName(channelNames[i], newChanName);
+		std::string newChanName = "deletedChan" + channelName;
+		_channels.changeChannelName(channelName, newChanName);
 	}
 	_channels.rebuild_hash_table();
 }
@@ -1066,7 +1044,7 @@ SBMotion* SBMotion::removeChannels(std::string motionName, bool isTranslation, s
 
 void SBMotion::pertainMotionChannelsByEndJoints( std::string skelName, std::vector<std::string>& endJoints )
 {
-	SBSkeleton* srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
+	auto srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
 	if (!srcSkeleton)
 	{
 		SmartBody::util::log("No skeleton named %s found. Can not match joint names and descendents", skelName.c_str());
@@ -1108,7 +1086,7 @@ void SBMotion::pertainMotionChannelsByEndJoints( std::string skelName, std::vect
 
 void SBMotion::removeMotionChannelsByEndJoints(std::string skelName, std::vector<std::string>& endJoints)
 {
-	SBSkeleton* srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
+	auto srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
 	if (!srcSkeleton)
 	{
 		SmartBody::util::log("No skeleton named %s found. Can not match joint names and descendents", skelName.c_str());
@@ -1134,13 +1112,13 @@ void SBMotion::removeMotionChannelsByEndJoints(std::string skelName, std::vector
 SBMotion* SBMotion::retarget( std::string name, std::string srcSkeletonName, std::string dstSkeletonName, std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints, std::map<std::string, SrVec>& offsetJointMap)
 {
 	 
-	SBSkeleton* srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(srcSkeletonName);
+	auto srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(srcSkeletonName);
 	if (!srcSkeleton)
 	{
 		SmartBody::util::log("No retarget source skeleton named %s found.", srcSkeletonName.c_str());
 		return nullptr;
 	}
-	SBSkeleton* dstSkeleton = SmartBody::SBScene::getScene()->getSkeleton(dstSkeletonName);
+	auto dstSkeleton = SmartBody::SBScene::getScene()->getSkeleton(dstSkeletonName);
 	if (!dstSkeleton)
 	{
 		SmartBody::util::log("No retarget destination skeleton named %s found.", dstSkeletonName.c_str());
@@ -1155,17 +1133,17 @@ SBMotion* SBMotion::retarget( std::string name, std::string srcSkeletonName, std
 	}
 	
 	//SkMotion* motion = buildRetargetMotion(srcSkeleton,dstSkeleton, endJoints, relativeJoints, offsetJointMap);
-	SkMotion* motion = buildRetargetMotionV2(srcSkeleton,dstSkeleton, endJoints, relativeJoints, offsetJointMap);	
+	SkMotion* motion = buildRetargetMotionV2(srcSkeleton.get(),dstSkeleton.get(), endJoints, relativeJoints, offsetJointMap);
 	
 	
-	SBMotion* sbmotion = dynamic_cast<SBMotion*>(motion);
+	auto* sbmotion = dynamic_cast<SBMotion*>(motion);
 	if (sbmotion)
 	{
-		std::string motionName = "";
-		if (name == "")
+		std::string motionName;
+		if (name.empty())
 		{
 			motionName = sbmotion->getName();
-			if (motionName == EMPTY_STRING)
+			if (motionName.empty())
 				motionName = getName() + "_retarget";
 		}
 		else
@@ -1184,24 +1162,24 @@ SBMotion* SBMotion::retarget( std::string name, std::string srcSkeletonName, std
 SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* targetSk, SBMotion* targetMotion, std::vector<std::string>& endJoints, std::vector<std::string>& endJointRoots )
 {
 	SkChannelArray& mchan_arr = this->channels();
-	SmartBody::SBSkeleton* interSk = new SmartBody::SBSkeleton(dynamic_cast<SBSkeleton*>(targetSk)); // copy for an intermediate skeleton
-	SmartBody::SBSkeleton* tempSrcSk = new SmartBody::SBSkeleton(dynamic_cast<SBSkeleton*>(sourceSk));
+	SBSkeleton interSk(targetSk); // copy for an intermediate skeleton
+	SBSkeleton tempSrcSk(sourceSk);
 
-	tempSrcSk->invalidate_global_matrices();
-	tempSrcSk->update_global_matrices();
-	interSk->invalidate_global_matrices();
-	interSk->update_global_matrices();	
+	tempSrcSk.invalidate_global_matrices();
+	tempSrcSk.update_global_matrices();
+	interSk.invalidate_global_matrices();
+	interSk.update_global_matrices();
 
-	SmartBody::SBJoint* rootJoint = dynamic_cast<SBJoint*>(interSk->root());
-	if (interSk->getJointByMappedName("base"))
-		rootJoint = interSk->getJointByMappedName("base");
+	SmartBody::SBJoint* rootJoint = dynamic_cast<SBJoint*>(interSk.root());
+	if (interSk.getJointByMappedName("base"))
+		rootJoint = interSk.getJointByMappedName("base");
 	SmartBody::SBMotion* constraintMotion = dynamic_cast<SBMotion*>(targetMotion->copyMotion()); // copy the motion first	
 	MeCtIKTreeScenario ikScenario;
 	std::vector<std::string> stopJoints;
 	ikScenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);	
 	MeCtJacobianIK ikJacobian;
 	float sceneScale = (float)1.f/SBScene::getScene()->getScale();	
-	float heightRatio = (interSk->getBaseHeight("base")/tempSrcSk->getBaseHeight("base"));//*0.99f;
+	float heightRatio = (interSk.getBaseHeight("base")/tempSrcSk.getBaseHeight("base"));//*0.99f;
 
 	ikJacobian.maxOffset = 0.05f*sceneScale;
 	ikJacobian.dampJ = 1.5f*sceneScale;
@@ -1216,14 +1194,14 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 		if (endJointRoots.size() > i)
 			jrootName = endJointRoots[i];
 
-		SBJoint* srcJoint = tempSrcSk->getJointByName(jname);
-		SBJoint* tgtJoint = interSk->getJointByName(jname);
+		SBJoint* srcJoint = tempSrcSk.getJointByName(jname);
+		SBJoint* tgtJoint = interSk.getJointByName(jname);
 		if (srcJoint && tgtJoint) // a valid effector
 		{
 			EffectorConstantConstraint* constraint = new EffectorConstantConstraint();
 			constraint->efffectorName = jname;
 			//SBJoint* pjoint = dynamic_cast<SBJoint*>(tgtJoint->getParent()->getParent()->getParent());			
-			if (interSk->getJointByName(jrootName))
+			if (interSk.getJointByName(jrootName))
 			{
 				constraint->rootName = jrootName;
 			}
@@ -1266,8 +1244,8 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 		prevOffsetPos = curScalePos;
 	}
 
-	constraintMotion->connect(interSk);
-	this->connect(tempSrcSk);
+	constraintMotion->connect(&interSk);
+	this->connect(&tempSrcSk);
 	bool prevConstraint = false;
 
 	constraintMotion->apply_frame(0);
@@ -1276,15 +1254,15 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 	this->connected_skeleton()->update_global_matrices();
 	std::map<std::string, SrVec> prevPosMap;
 	ConstraintMap::iterator mi;
-	SBJoint* srcRoot = tempSrcSk->getJointByName(rootJoint->jointName());
+	SBJoint* srcRoot = tempSrcSk.getJointByName(rootJoint->jointName());
 	SBJoint* tgtRoot = rootJoint;
 	for ( mi  = consMap.begin();
 		  mi != consMap.end();
 		  mi++)
 	{
-		EffectorConstantConstraint* con = dynamic_cast<EffectorConstantConstraint*>(mi->second);
-		SBJoint* srcJoint = tempSrcSk->getJointByName(con->efffectorName);
-		SBJoint* tgtJoint = interSk->getJointByName(con->efffectorName);
+		auto* con = dynamic_cast<EffectorConstantConstraint*>(mi->second);
+		SBJoint* srcJoint = tempSrcSk.getJointByName(con->efffectorName);
+		SBJoint* tgtJoint = interSk.getJointByName(con->efffectorName);
 		if (tgtJoint)
 		{
 			SrVec offset = srcJoint->getMatrixGlobal().get_translation() - srcRoot->getMatrixGlobal().get_translation();
@@ -1307,11 +1285,11 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 		float* cur_p = constraintMotion->posture(iframe);		
 		if (!prevConstraint)
 		{
-			ikScenario.setTreeNodeQuat(interSk,QUAT_INIT);
+			ikScenario.setTreeNodeQuat(&interSk,QUAT_INIT);
 			prevConstraint = true;
 		}		
 		ikScenario.copyTreeNodeQuat(QUAT_INIT,QUAT_CUR);
-		ikScenario.setTreeNodeQuat(interSk,QUAT_REF);
+		ikScenario.setTreeNodeQuat(&interSk,QUAT_REF);
 		// update root transformation
 		if (rootJoint->pos())
 		{
@@ -1328,7 +1306,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 			  mi++)
 		{
 			EffectorConstantConstraint* con = dynamic_cast<EffectorConstantConstraint*>(mi->second);
-			SBJoint* srcJoint = tempSrcSk->getJointByName(con->efffectorName);
+			SBJoint* srcJoint = tempSrcSk.getJointByName(con->efffectorName);
 			if (srcJoint)
 			{
 				//con->targetPos = srcJoint->getMatrixGlobal().get_translation();
@@ -1346,10 +1324,9 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 			ikJacobian.update(&ikScenario);
 			ikScenario.copyTreeNodeQuat(QUAT_CUR,QUAT_INIT);	
 		}
-		for (unsigned int k=0;k<ikScenario.ikTreeNodes.size();k++)
+		for (auto ikNode : ikScenario.ikTreeNodes)
 		{
-			MeCtIKTreeNode* ikNode = ikScenario.ikTreeNodes[k];
-			SBJoint* ikJoint = interSk->getJointByName(ikNode->getNodeName());
+				SBJoint* ikJoint = interSk.getJointByName(ikNode->getNodeName());
 			int chanID = mchan_arr.search(ikNode->getNodeName(),SkChannel::Quat);
 			SrQuat& nq = ikNode->getQuat(QUAT_CUR);
 			SrQuat kq; 
@@ -1369,17 +1346,15 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 	}
 	constraintMotion->disconnect();
 	this->disconnect();
-	delete interSk;
-	delete tempSrcSk;
 	return constraintMotion;
 }
 
 
 SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkeletonName, std::string rootName, std::vector<FootStepRecord>& footStepRecords )
 {
-	SBSkeleton* origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
+	auto origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
 	if (!origSkel) return nullptr;
-	SBSkeleton* skel = new SBSkeleton(origSkel);
+	boost::intrusive_ptr<SBSkeleton> skel(new SBSkeleton(origSkel.get()));
 	if (!skel) return nullptr;
 	SBJoint* rootJoint = skel->getJointByName(rootName);
 	if (!rootJoint) return nullptr;
@@ -1401,10 +1376,9 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 
 	SkChannelArray& mchan_arr = cleanMotion->channels();
 	ConstraintMap noRotConstraint;
-	for (unsigned int i=0;i<footStepRecords.size();i++)
+	for (auto & rec : footStepRecords)
 	{
-		FootStepRecord& rec = footStepRecords[i];
-		if (rec.jointNames.size() == 1)
+			if (rec.jointNames.size() == 1)
 		{
 			SBJoint* joint = skel->getJointByName(rec.jointNames[0]);
 			if (joint && joint->child(0))
@@ -1415,11 +1389,11 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 
 	}
 
-	cleanMotion->connect(skel);
+	cleanMotion->connect(skel.get());
 	for (unsigned int i=0;i<footStepRecords.size();i++)
 	{
 		FootStepRecord& rec = footStepRecords[i];
-		rec.updateJointAveragePosition(skel, this);
+		rec.updateJointAveragePosition(skel.get(), this);
 		ConstraintMap& cons = constrainMapList[i];		
 		// setup constraint
 		for (unsigned int k=0;k<rec.jointNames.size();k++)
@@ -1463,11 +1437,11 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 		float* cur_p = cleanMotion->posture(iframe);		
 		if (!prevConstraint)
 		{
-			ikScenario.setTreeNodeQuat(skel,QUAT_INIT);
+			ikScenario.setTreeNodeQuat(skel.get(),QUAT_INIT);
 			//prevConstraint = true;
 		}		
 		ikScenario.copyTreeNodeQuat(QUAT_INIT,QUAT_CUR);
-		ikScenario.setTreeNodeQuat(skel,QUAT_REF);
+		ikScenario.setTreeNodeQuat(skel.get(),QUAT_REF);
 		if (rootJoint->pos())
 		{
 			SkJointPos* jpos = rootJoint->pos();
@@ -1503,10 +1477,9 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 		
 
 			
-		for (unsigned int k=0;k<ikScenario.ikTreeNodes.size();k++)
+		for (auto ikNode : ikScenario.ikTreeNodes)
 		{
-			MeCtIKTreeNode* ikNode = ikScenario.ikTreeNodes[k];
-			SBJoint* ikJoint = skel->getJointByName(ikNode->getNodeName());
+				SBJoint* ikJoint = skel->getJointByName(ikNode->getNodeName());
 			int chanID = mchan_arr.search(ikNode->getNodeName(),SkChannel::Quat);
 			SrQuat& nq = ikNode->getQuat(QUAT_CUR);
 			SrQuat kq; 
@@ -1527,20 +1500,19 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 	}
 	cleanMotion->disconnect();
 
-	delete skel; // delete the copy
-	return cleanMotion;	
+	return cleanMotion;
 }
 
 SBMotion* SBMotion::mirror2(std::string name, std::string skeletonName, std::vector<std::string> from, std::vector<std::string> to)
 {
 
-	SBSkeleton* skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+	auto skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
 	if (!skeleton)
 	{
 		SmartBody::util::log("Skeleton %s not found. Mirror motion %s not built.", skeletonName.c_str(), name.c_str());
 		return nullptr;
 	}
-	SkMotion* motion = buildMirrorMotion(skeleton, from, to);
+	SkMotion* motion = buildMirrorMotion(skeleton.get(), from, to);
 	auto* sbmotion = dynamic_cast<SBMotion*>(motion);
 	if (sbmotion)
 	{
@@ -1575,7 +1547,7 @@ SBMotion* SBMotion::mirror2(std::string name, std::string skeletonName, std::vec
 SBMotion* SBMotion::mirror(std::string name, std::string skeletonName)
 {
 	 
-	SBSkeleton* skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+	auto skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
 	if (!skeleton)
 	{
 		SmartBody::util::log("Skeleton %s not found. Mirror motion %s not built.",skeletonName.c_str(),name.c_str());
@@ -1585,7 +1557,7 @@ SBMotion* SBMotion::mirror(std::string name, std::string skeletonName)
 	from.emplace_back("l_");
 	std::vector<std::string> to;
 	to.emplace_back("r_");
-	SkMotion* motion = buildMirrorMotion(skeleton, from, to);
+	SkMotion* motion = buildMirrorMotion(skeleton.get(), from, to);
 	SBMotion* sbmotion = dynamic_cast<SBMotion*>(motion);
 	if (sbmotion)
 	{
@@ -1617,7 +1589,7 @@ SBMotion* SBMotion::mirror(std::string name, std::string skeletonName)
 SBMotion* SBMotion::mirrorChildren( std::string name, std::string skeletonName, std::string parentJointName )
 {
 	 
-	SBSkeleton* skeleton = SmartBody ::SBScene::getScene()->getSkeleton(skeletonName);
+	auto skeleton = SmartBody ::SBScene::getScene()->getSkeleton(skeletonName);
 	if (!skeleton)
 	{
 		SmartBody::util::log("Skeleton %s not found. Mirror motion %s not built.",skeletonName.c_str(),name.c_str());
@@ -1626,9 +1598,9 @@ SBMotion* SBMotion::mirrorChildren( std::string name, std::string skeletonName, 
 	std::map<std::string,bool> jointNameMap;
 	SBJoint* pjoint = skeleton->getJointByName(parentJointName);
 	std::vector<SBJoint*> childJoints = pjoint->getDescendants();
-	for (unsigned int i=0;i<childJoints.size();i++)
+	for (auto & childJoint : childJoints)
 	{
-		jointNameMap[childJoints[i]->getMappedJointName()] = true;
+		jointNameMap[childJoint->getMappedJointName()] = true;
 	}
 	// add the parent joint as well
 	jointNameMap[pjoint->getMappedJointName()] = true;
@@ -1638,7 +1610,7 @@ SBMotion* SBMotion::mirrorChildren( std::string name, std::string skeletonName, 
 	std::vector<std::string> to;
 	to.emplace_back("r_");
 
-	SkMotion* motion = buildMirrorMotionJoints(skeleton,jointNameMap, from, to);
+	SkMotion* motion = buildMirrorMotionJoints(skeleton.get(),jointNameMap, from, to);
 	SBMotion* sbmotion = dynamic_cast<SBMotion*>(motion);
 	if (sbmotion)
 	{
@@ -2774,14 +2746,14 @@ void SBMotion::calculateMeans(std::vector<double>&inputPoints, std::vector<doubl
 
 SBMotion* SBMotion::constrain( std::string name, std::string srcSkeletonName, std::string tgtSkeletonName, std::string tgtMotionName, std::vector<std::string>& endJoints, std::vector<std::string>& endJointRoots )
 {
-	SBSkeleton* origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
+	auto origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
 	if (!origSkel) return nullptr;
 	SBMotion* tgtMotion = SBScene::getScene()->getMotion(tgtMotionName);
 	if (!tgtMotion) return nullptr;
-	SBSkeleton* tgtSkel  = SBScene::getScene()->getSkeleton(tgtSkeletonName);
+	auto tgtSkel  = SBScene::getScene()->getSkeleton(tgtSkeletonName);
 	if (!tgtSkel) return nullptr;
 
-	SBMotion* constraintMotion = buildConstraintMotion(origSkel, tgtSkel, tgtMotion, endJoints, endJointRoots);
+	SBMotion* constraintMotion = buildConstraintMotion(origSkel.get(), tgtSkel.get(), tgtMotion, endJoints, endJointRoots);
 
 	if (constraintMotion)
 	{
@@ -2812,21 +2784,20 @@ SBMotion* SBMotion::footSkateCleanUp( std::string name, std::vector<std::string>
 {
 	SmartBody::util::log("foot skate cleanup for motion %s.", this->getName().c_str());
 
-	SBSkeleton* origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
+	auto origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
 	if (!origSkel) return nullptr;
 	SBMotion* origMotion = SBScene::getScene()->getMotion(srcMotionName);
 	if (!origMotion) return nullptr;
 
 	SmartBody::util::log("foot skate cleanup for motion %s.", this->getName().c_str());
 
-	SBSkeleton skelCopy(origSkel);
+	SBSkeleton skelCopy(origSkel.get());
 	std::vector<FootStepRecord> footStepRecords;
-	bool hasFootPlant = origMotion->autoFootPlantDetection(origSkel, footJoints, floorHeight, heightThreshold, speedThreshold,footStepRecords);
+	bool hasFootPlant = origMotion->autoFootPlantDetection(origSkel.get(), footJoints, floorHeight, heightThreshold, speedThreshold,footStepRecords);
 
-	for (unsigned int i=0;i<footStepRecords.size();i++)
+	for (auto & record : footStepRecords)
 	{
-		FootStepRecord& record = footStepRecords[i];
-		SmartBody::util::log("Footstep joint = %s, start frame = %f, end frame = %f",record.jointNames[0].c_str(), record.startTime, record.endTime);
+			SmartBody::util::log("Footstep joint = %s, start frame = %f, end frame = %f",record.jointNames[0].c_str(), record.startTime, record.endTime);
 	}
 
 	SBMotion* cleanUpMotion = autoFootSkateCleanUp(name,tgtSkeletonName, tgtRootName, footStepRecords);
@@ -3169,29 +3140,29 @@ SBAPI const std::string& SBMotion::getMotionSkeletonName()
 
 SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, const std::string& refJointName /*= "base" */ )
 {
-	SBSkeleton* motionSkel = SBScene::getScene()->getSkeleton(getMotionSkeletonName());
+	auto motionSkel = SBScene::getScene()->getSkeleton(getMotionSkeletonName());
 	if (!motionSkel)
 	{
 		SmartBody::util::log("Motion skeleton doesn't exist. Cannot compute effector trajectory");
 		return;
 	}
-	SBSkeleton* skelCopy = new SmartBody::SBSkeleton(motionSkel);
-	if (!skelCopy->getJointByName(effectorName) || !skelCopy->getJointByName(refJointName))
+	SBSkeleton skelCopy(motionSkel.get());
+	if (!skelCopy.getJointByName(effectorName) || !skelCopy.getJointByName(refJointName))
 	{
 		SmartBody::util::log("Effector joint '%s' or reference joint '%s' does not exist.", effectorName.c_str(), refJointName.c_str());
 	}
 	JointTrajectory* traj = new JointTrajectory();
 	traj->effectorName = effectorName;
 	traj->refJointName = refJointName;
-	connect(skelCopy);
-	SmartBody::SBJoint* effector = skelCopy->getJointByName(effectorName); // find the global position of end effector
-	SmartBody::SBJoint* refJoint = skelCopy->getJointByName(refJointName); // compute offset relative to ref joint
-	SmartBody::SBJoint* baseJoint = skelCopy->getJointByName("base"); // use base rotation as local frame
+	connect(&skelCopy);
+	SmartBody::SBJoint* effector = skelCopy.getJointByName(effectorName); // find the global position of end effector
+	SmartBody::SBJoint* refJoint = skelCopy.getJointByName(refJointName); // compute offset relative to ref joint
+	SmartBody::SBJoint* baseJoint = skelCopy.getJointByName("base"); // use base rotation as local frame
 	for (int i=0;i<getNumFrames();i++)
 	{
 		float keyTime = keytime(i);
 		apply(keyTime);		
-		skelCopy->update_global_matrices();
+		skelCopy.update_global_matrices();
 		SrVec effPos = effector->gmat().get_translation();
 		SrVec refPos = refJoint->gmat().get_translation();
 		SrMat baseRot = baseJoint->gmat().get_rotation();		
@@ -3200,7 +3171,6 @@ SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, cons
 	}
 	disconnect();	
 	trajMap[effectorName] = traj;
-	delete skelCopy; 
 }
 
 SBAPI JointTrajectory* SBMotion::getJointTrajectory( const std::string& effectorName )
@@ -3652,7 +3622,7 @@ SBAPI bool SBMotion::downsample( int factor )
 
 SBAPI void SBMotion::unrollPrerotation( const std::string& skelName )
 {
-	SBSkeleton* skel = SBScene::getScene()->getSkeleton(skelName);
+	auto skel = SBScene::getScene()->getSkeleton(skelName);
 	for (size_t i=0;i<_frames.size();i++)
 	{
 		float* fbuffer = _frames[i].posture;
@@ -3807,7 +3777,7 @@ void printHierarchy(FILE* file, SmartBody::SBJoint* joint, int depth, std::vecto
 
 SBAPI void SBMotion::saveToBVH( const std::string& fileName, const std::string& skelName )
 {
-	SmartBody::SBSkeleton* skel = SmartBody::SBScene::getScene()->getSkeleton(skelName);
+	auto skel = SmartBody::SBScene::getScene()->getSkeleton(skelName);
 	if (!skel) 
 	{
 		SmartBody::util::log("Error : skeleton '%s' does not exist.", skelName.c_str());
@@ -4085,14 +4055,14 @@ void SBMotion::calculateGestureSpeed()
 		SmartBody::util::log("Gesture %s has motion skeleton, cannot calculate gesture speed...", this->getName().c_str());
 		return;
 	}
-	SmartBody::SBSkeleton* skeleton = SmartBody::SBScene::getScene()->createSkeleton(skeletonName);
+	auto skeleton = SmartBody::SBScene::getScene()->createSkeleton(skeletonName);
 	if (skeleton == nullptr)
 	{
 		SmartBody::util::log("Gesture %s has motion skeleton %s but does not exist, cannot calculate gesture speed...", this->getName().c_str(), skeletonName.c_str());
 		return;
 	}
 
-	this->connect(skeleton);
+	this->connect(skeleton.get());
 	SBJoint* lWrist = skeleton->getJointByMappedName("l_wrist");
 	SBJoint* rWrist = skeleton->getJointByMappedName("r_wrist");
 	if (!lWrist || !rWrist)

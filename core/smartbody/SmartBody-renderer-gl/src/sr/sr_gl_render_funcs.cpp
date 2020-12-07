@@ -307,7 +307,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 
 			if (shape->isStaticMesh())
 			{
-				SmartBody::SBSkeleton* skel = shape->getSkeleton();
+				auto skel = shape->getSkeleton();
 				SmartBody::SBPawn* pawn		= skel->getPawn();
 
 				const std::string& parentJoint = pawn->getStringAttribute("blendShape.parentJoint");
@@ -350,7 +350,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 			//SmartBody::util::log("No GPU BlendShapes");
 			if (shape->isStaticMesh())
 			{
-				SmartBody::SBSkeleton* skel = shape->getSkeleton();
+				auto skel = shape->getSkeleton();
 				SmartBody::SBPawn* pawn		= skel->getPawn();
 
 				glMatrixMode(GL_MODELVIEW);
@@ -398,7 +398,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 			#endif
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//glAlphaFunc ( GL_GREATER, 0.0f ) ;
-			SmartBody::SBSkeleton* skel = shape->getSkeleton();
+			auto skel = shape->getSkeleton();
 			SmartBody::SBPawn* pawn = skel->getPawn();
 			double alphaThreshold = pawn->getDoubleAttribute("alphaThreshold");
 			glAlphaFunc(GL_GREATER, (float)alphaThreshold);
@@ -494,7 +494,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 				if (shape->getCharacter())
 					texturesType = shape->getCharacter()->getStringAttribute("texturesType");	
 
-				SmartBody::SBSkeleton* skel = shape->getSkeleton();
+				auto skel = shape->getSkeleton();
 				SmartBody::SBPawn* pawn		= skel->getPawn();
 				bool useTexBlend = pawn->getBoolAttribute("blendTexturesWithLighting");
 				//SmartBody::util::log("textureType = %s", texturesType.c_str());

@@ -657,11 +657,11 @@ void SBPhysicsCharacter::initPhysicsCharacter(const std::string& charName, std::
 		return;
 	characterName = character->getName();
 	cleanUpJoints();
-	SBSkeleton* skel = character->getSkeleton();
+	auto skel = character->getSkeleton();
 
-	for (unsigned int i=0;i<jointNameList.size();i++) // only process the joints that are in the name lists
+	for (auto & i : jointNameList) // only process the joints that are in the name lists
 	{
-		SBJoint* joint = skel->getJointByName(jointNameList[i]);
+		SBJoint* joint = skel->getJointByName(i);
 		if (!joint)
 			continue;
 		SBPhysicsJoint* phyJoint = new SBPhysicsJoint(joint);
@@ -675,13 +675,13 @@ void SBPhysicsCharacter::initPhysicsCharacter(const std::string& charName, std::
 			//jointGeometryMap[jointNameList[i]] = jointGeom;
 		}
 		jointObj->initJoint(phyJoint);
-		jointObjMap[jointNameList[i]] = jointObj;
-		jointMap[jointNameList[i]] = phyJoint;
+		jointObjMap[i] = jointObj;
+		jointMap[i] = phyJoint;
 		
 	}
 
 	// connect each adjacent joints
-	std::map<std::string, SbmJointObj*>::iterator mi = jointObjMap.begin();
+	auto mi = jointObjMap.begin();
 	for ( mi  = jointObjMap.begin();
 		  mi != jointObjMap.end();
 		  mi++)
@@ -703,7 +703,7 @@ void SBPhysicsCharacter::initPhysicsCharacter(const std::string& charName, std::
 		}		
 	}
 
-	std::map<std::string, SBPhysicsJoint*>::iterator ji = jointMap.begin();
+	auto ji = jointMap.begin();
 	for ( ji  = jointMap.begin();
 		  ji != jointMap.end();
 		  ji++)

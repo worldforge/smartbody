@@ -1073,7 +1073,7 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 {
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
 	MeCtIKTreeScenario ikTree;
-	SmartBody::SBSkeleton* skel = assetManager->getSkeleton(skelName);
+	auto skel = assetManager->getSkeleton(skelName);
 	if (!skel)
 		return;
 
@@ -1082,9 +1082,9 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 	std::vector<std::string> stopJointNames = endJointNames;
 	ikTree.buildIKTreeFromJointRoot(skel->getJointByName("base"),stopJointNames);
 	std::vector<std::string> affectedJointNames;
-	for (unsigned int i=0;i<ikTree.ikTreeNodes.size();i++)
+	for (auto & ikTreeNode : ikTree.ikTreeNodes)
 	{
-		affectedJointNames.emplace_back(ikTree.ikTreeNodes[i]->joint->getMappedJointName());
+		affectedJointNames.emplace_back(ikTreeNode->joint->getMappedJointName());
 	}
 
 	std::vector<std::vector<int> > fromToList; // store all splited frames by transition
@@ -1104,10 +1104,9 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 			computeMotionTransitionFast(motionNames[i],motionNames[j], skelName, affectedJointNames, threshold, outTransition);
 			std::vector<int>& motion1FromToList = fromToList[i];
 			std::vector<int>& motion2FromToList = fromToList[j];
-			for (unsigned int k=0;k<outTransition.size();k++)
+			for (auto & elem : outTransition)
 			{
-				std::pair<int,int>& elem = outTransition[k];
-				// cluster nearby transition point to avoid very short animation clips
+					// cluster nearby transition point to avoid very short animation clips
 // 				int moElem1 = findClosestElement(motion1FromToList, elem.first);
 // 				if (moElem1 != -1 && abs(elem.first - moElem1) < minFrameRejectDist)
 // 				{
@@ -1146,13 +1145,12 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 		std::sort(frameList.begin(),frameList.end());
 		int prevFrame = 0;				
 		bool firstNode = true;
-		for (unsigned j=0;j<frameList.size();j++)
+		for (int curFrame : frameList)
 		{
-			int curFrame = frameList[j];
-			//SmartBody::util::log("curFrame = %d", curFrame);
+				//SmartBody::util::log("curFrame = %d", curFrame);
 			if (curFrame == prevFrame)
 				continue;
-			MotionGraphNode node;
+			MotionGraphNode node{};
 			node.nodeIdx = motionNodeList.size();
 			node.moIndex = i;
 			node.startFrame = prevFrame;
@@ -1174,10 +1172,9 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 	typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::directedS> BoostMotionGraph;
 	BoostMotionGraph tempMotionGraph(motionNodeList.size());
 	// add all forward playback edges
-	for (unsigned int i=0;i<forwardEdgeList.size();i++)
+	for (auto & edge : forwardEdgeList)
 	{
-		IntPair& edge = forwardEdgeList[i];
-		boost::add_edge(edge.first, edge.second, tempMotionGraph);
+			boost::add_edge(edge.first, edge.second, tempMotionGraph);
 	}
 	std::map<IntPair, std::vector<IntPair> >::iterator mi;
 	for ( mi  = transitionMap.begin();
@@ -1188,10 +1185,9 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 		int fromMotion = mapKey.first;
 		int toMotion = mapKey.second;
 		std::vector<IntPair> transitionPoints = mi->second;
-		for (unsigned int i=0;i<transitionPoints.size();i++)
+		for (auto tPoint : transitionPoints)
 		{
-			IntPair tPoint = transitionPoints[i];
-			std::map<IntPair,int>::iterator fromIter, toIter;
+				std::map<IntPair,int>::iterator fromIter, toIter;
 			fromIter = endFrameNodeMap.find(IntPair(fromMotion, tPoint.first));
 			toIter   = startFrameNodeMap.find(IntPair(toMotion, tPoint.second));
 			if (fromIter == endFrameNodeMap.end() || toIter == startFrameNodeMap.end())
@@ -1247,10 +1243,9 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 	}	
 	SmartBody::util::log("Total valid frames in motion graph = %d, avgFrames per node = %f, avgTime per node = %f", totalValidFrames, (float)totalValidFrames/validNodeIdxMap.size(), avgTime/validNodeIdxMap.size());
 	// add all valid motion edges
-	for (unsigned int i=0;i<forwardEdgeList.size();i++)
+	for (auto & edge : forwardEdgeList)
 	{
-		IntPair& edge = forwardEdgeList[i];
-		if (!validNodeList[edge.first] || !validNodeList[edge.second])
+			if (!validNodeList[edge.first] || !validNodeList[edge.second])
 			continue;
 		int mapFromIdx, mapToIdx;
 		mapFromIdx = validNodeIdxMap[edge.first];
@@ -1276,10 +1271,9 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 		int fromMotion = mapKey.first;
 		int toMotion = mapKey.second;
 		std::vector<IntPair> transitionPoints = mi->second;
-		for (unsigned int i=0;i<transitionPoints.size();i++)
+		for (auto tPoint : transitionPoints)
 		{
-			IntPair tPoint = transitionPoints[i];
-			std::map<IntPair,int>::iterator fromIter, toIter;
+				std::map<IntPair,int>::iterator fromIter, toIter;
 			fromIter = endFrameNodeMap.find(IntPair(fromMotion, tPoint.first));
 			toIter   = startFrameNodeMap.find(IntPair(toMotion, tPoint.second));
 			
@@ -1330,16 +1324,16 @@ void SBMotionGraph::computeMotionTransitionFast( const std::string& moName1, con
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
 	SmartBody::SBMotion* motion1 = assetManager->getMotion(moName1);
 	SmartBody::SBMotion* motion2 = assetManager->getMotion(moName2);
-	SmartBody::SBSkeleton* moSkel = assetManager->getSkeleton(skelName);
+	auto moSkel = assetManager->getSkeleton(skelName);
 	if (!motion1 || !motion2 || !moSkel) return;
-	SmartBody::SBSkeleton* skelCopy1 = new SBSkeleton(moSkel);
-	SmartBody::SBSkeleton* skelCopy2 = nullptr;
+	boost::intrusive_ptr<SBSkeleton> skelCopy1(new SBSkeleton(moSkel.get()));
+	boost::intrusive_ptr<SBSkeleton> skelCopy2 = nullptr;
 	if (motion1 == motion2)
 		skelCopy2 = skelCopy1;
 	else
-		skelCopy2 = new SBSkeleton(moSkel);
-	motion1->connect(skelCopy1);
-	motion2->connect(skelCopy2);
+		skelCopy2.reset(new SBSkeleton(moSkel.get()));
+	motion1->connect(skelCopy1.get());
+	motion2->connect(skelCopy2.get());
 	int mo1Frames = motion1->getNumFrames();
 	int mo2Frames = motion2->getNumFrames();
 	//mo1Frames = 1000;
@@ -1362,11 +1356,11 @@ void SBMotionGraph::computeMotionTransitionFast( const std::string& moName1, con
 		skelCopy1->update_global_matrices();
 		skelCopy1->getJointPositions(affectedJointNames, pointCloud1, 0);
 		float x1 = 0.f, z1 = 0.f, f1 = 0.f;
-		for (unsigned int p=0;p<pointCloud1.size();p++)
+		for (auto & p : pointCloud1)
 		{
-			x1 += pointCloud1[p].x;
-			z1 += pointCloud1[p].z;
-			f1 += pointCloud1[p].norm2();
+			x1 += p.x;
+			z1 += p.z;
+			f1 += p.norm2();
 		}	
 		m.avgX1[i] = x1*invNumPoints;
 		m.avgZ1[i] = z1*invNumPoints;
@@ -1379,11 +1373,11 @@ void SBMotionGraph::computeMotionTransitionFast( const std::string& moName1, con
 		skelCopy2->update_global_matrices();
 		skelCopy2->getJointPositions(affectedJointNames, pointCloud2, 0);
 		float x2 = 0.f, z2 = 0.f, f2 = 0.f;
-		for (unsigned int p=0;p<pointCloud2.size();p++)
+		for (auto & p : pointCloud2)
 		{
-			x2 += pointCloud2[p].x;
-			z2 += pointCloud2[p].z;
-			f2 += pointCloud2[p].norm2();
+			x2 += p.x;
+			z2 += p.z;
+			f2 += p.norm2();
 		}	
 		m.avgX2[i] = x2*invNumPoints;
 		m.avgZ2[i] = z2*invNumPoints;
@@ -1440,6 +1434,8 @@ void SBMotionGraph::computeMotionTransitionFast( const std::string& moName1, con
 
 	std::string outImgName = moName1 + "_to_" + moName2 + ".bmp";
 	writeOutTransitionMap(outImgName, transitionMat, outTransition);
+	motion1->disconnect();
+	motion2->disconnect();
 }
 
 
@@ -1505,10 +1501,10 @@ void SBMotionGraph::computeMotionTransition( const std::string& moName1, const s
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
 	SmartBody::SBMotion* motion1 = assetManager->getMotion(moName1);
 	SmartBody::SBMotion* motion2 = assetManager->getMotion(moName2);
-	SmartBody::SBSkeleton* moSkel = assetManager->getSkeleton(skelName);
+	auto moSkel = assetManager->getSkeleton(skelName);
 	if (!motion1 || !motion2 || !moSkel) return;
-	SmartBody::SBSkeleton* skelCopy1 = new SBSkeleton(moSkel);
-	SmartBody::SBSkeleton* skelCopy2 = nullptr;
+	auto skelCopy1 = new SBSkeleton(moSkel);
+	auto skelCopy2 = nullptr;
 	if (motion1 == motion2)
 		skelCopy2 = skelCopy1;
 	else

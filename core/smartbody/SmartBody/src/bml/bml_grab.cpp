@@ -86,7 +86,7 @@ BehaviorRequestPtr BML::parse_bml_grab( DOMElement* elem, const std::string& uni
 	const XMLCh* attrWrist = nullptr;
 	attrWrist = elem->getAttribute(BMLDefs::ATTR_WRIST);
 	SmartBody::SBJoint* wristJoint = nullptr;
-	SmartBody::SBSkeleton* sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(request->actor->getSkeleton());
+	auto sbSkel = request->actor->getSkeleton();
 	if( attrWrist && XMLString::stringLen( attrWrist ) ) 
 	{
 		wristJoint =sbSkel->getJointByName(asciiString(attrWrist).c_str());

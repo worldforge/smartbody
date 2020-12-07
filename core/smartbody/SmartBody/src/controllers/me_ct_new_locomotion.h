@@ -124,7 +124,7 @@ class MeCtNewLocomotion : public SmartBody::SBController
 		float desiredHeading, motionTime;
 		double ikDamp;
 		SmartBody::SBMotion *dataCycle, *smoothCycle;
-		SmartBody::SBSkeleton* sk;
+		boost::intrusive_ptr<SmartBody::SBSkeleton> sk;
 		std::string lend, rend, hipjoint;
 		vector<string> attributes_names;
 		SrBuffer<float> tempBuffer;

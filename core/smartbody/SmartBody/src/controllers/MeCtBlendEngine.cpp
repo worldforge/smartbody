@@ -17,11 +17,10 @@
 /* Blend Engine                                                         */
 /************************************************************************/
 
-MeCtBlendEngine::MeCtBlendEngine(SmartBody::SBSkeleton* sk, std::string rootName)
+MeCtBlendEngine::MeCtBlendEngine(boost::intrusive_ptr<SmartBody::SBSkeleton> sk, std::string rootName)
 {
 	//character = sbmChar;
-	skeletonCopy = new SmartBody::SBSkeleton(sk); 
-	skeletonCopy->ref();
+	skeletonCopy = new SmartBody::SBSkeleton(sk.get());
 	skeletonRef  = sk;
 	rootJointName = rootName;
 	dataInterpolator = nullptr;
@@ -42,10 +41,9 @@ void MeCtBlendEngine::init(const std::string& paramFuncType)
 	const IKTreeNodeList& nodeList = ikScenario.ikTreeNodes;
 	idleMotionFrame.jointQuat.resize(nodeList.size());
 	inputMotionFrame.jointQuat.resize(nodeList.size());
-	for (unsigned int i=0;i<nodeList.size();i++)
+	for (auto node : nodeList)
 	{
-		MeCtIKTreeNode* node = nodeList[i];
-		SmartBody::SBJoint* joint = skeletonCopy->getJointByName(node->getNodeName());		
+			SmartBody::SBJoint* joint = skeletonCopy->getJointByName(node->getNodeName());
 		affectedJoints.emplace_back(joint);
 	}
 
@@ -53,17 +51,17 @@ void MeCtBlendEngine::init(const std::string& paramFuncType)
 	{
 		SmartBody::SBJoint* copyEffector = skeletonCopy->getJointByMappedName("r_wrist");
 		SmartBody::SBJoint* copyRoot = skeletonCopy->getJointByName("base");
-		motionParameter = new ReachMotionParameter(skeletonCopy,affectedJoints,copyEffector,copyRoot);
+		motionParameter = new ReachMotionParameter(skeletonCopy.get(),affectedJoints,copyEffector,copyRoot);
 	}
 	else if (paramFuncType == "jump")
 	{		
-		motionParameter = new JumpParameter(skeletonCopy,affectedJoints,"base");		
+		motionParameter = new JumpParameter(skeletonCopy.get(),affectedJoints,"base");
 	}
 	else if (paramFuncType == "kick")
 	{
 		SmartBody::SBJoint* copyEffector = skeletonCopy->getJointByMappedName("r_ankle");
 		SmartBody::SBJoint* copyRoot = skeletonCopy->getJointByMappedName("base");
-		motionParameter = new ReachMotionParameter(skeletonCopy,affectedJoints,copyEffector,copyRoot);
+		motionParameter = new ReachMotionParameter(skeletonCopy.get(),affectedJoints,copyEffector,copyRoot);
 	}
 	else if (paramFuncType == "punch")
 	{
@@ -71,28 +69,23 @@ void MeCtBlendEngine::init(const std::string& paramFuncType)
 	}
 	else if (paramFuncType == "locomotion")
 	{
-		motionParameter = new LocomotionParameter(skeletonCopy, affectedJoints, "base");
+		motionParameter = new LocomotionParameter(skeletonCopy.get(), affectedJoints, "base");
 	}
 	else if (paramFuncType == "catch")
 	{
 		SmartBody::SBJoint* copyEffector = skeletonCopy->getJointByMappedName("r_wrist");
 		SmartBody::SBJoint* copyRoot = skeletonCopy->getJointByName("base");
-		motionParameter = new ReachMotionParameter(skeletonCopy,affectedJoints,copyEffector,copyRoot);
+		motionParameter = new ReachMotionParameter(skeletonCopy.get(),affectedJoints,copyEffector,copyRoot);
 	}
 	else
 	{
-		motionParameter = new LocomotionParameter(skeletonCopy, affectedJoints, "base");
+		motionParameter = new LocomotionParameter(skeletonCopy.get(), affectedJoints, "base");
 	}
 
 	motionExamples.initMotionExampleSet(motionParameter);	
 }
 
-MeCtBlendEngine::~MeCtBlendEngine( void )
-{	
-	//skeletonCopy->unref();
-	if (skeletonCopy)
-		delete skeletonCopy;
-}
+MeCtBlendEngine::~MeCtBlendEngine( ) = default;
 
 
 void MeCtBlendEngine::getMotionParameter( const std::string& motion, dVector& outPara )
@@ -124,9 +117,9 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 	}	
 
 	SmartBody::SBJoint* rootJoint = affectedJoints[0];
-	for (unsigned int i=0; i < inMotionSet.size(); i++)
+	for (auto i : inMotionSet)
 	{		
-		SmartBody::SBMotion* motion = dynamic_cast<SmartBody::SBMotion*>(inMotionSet[i]);
+		SmartBody::SBMotion* motion = dynamic_cast<SmartBody::SBMotion*>(i);
 		if (!motion)
 			continue;
 		if (std::find(motionData.begin(), motionData.end(), motion) != motionData.end())
@@ -140,7 +133,7 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 		ex->timeWarp = new SimpleTimeWarp(refMotion->duration(),motion->duration());
 		ex->motionParameterFunc = motionParameter;
 		ex->motionProfile = new MotionProfile(motion);
-		ex->updateRootOffset(skeletonCopy,rootJoint);
+		ex->updateRootOffset(skeletonCopy.get(),rootJoint);
 #if 0
 		ex->motionProfile->buildVelocityProfile(0.f,motion->duration()*0.999f,0.005f);
 		ex->motionProfile->buildInterpolationProfile(0.f,(float)motion->time_stroke_emphasis(),0.005f);
@@ -168,7 +161,7 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 		return;
 	}
 
-	if (dataInterpolator)
+
 		delete dataInterpolator;
 
 	dataInterpolator = createInterpolator(interpolatorType);
@@ -178,10 +171,9 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 
 	if (resampleData)
 	{
-		for (unsigned int i=0;i<resampleData->size();i++)
+		for (auto ex : *resampleData)
 		{
-			InterpolationExample* ex = (*resampleData)[i];
-			SrVec reachPos;
+				SrVec reachPos;
 			for (int k=0;k<3;k++)
 				reachPos[k] = (float)ex->parameter[k];
 			resamplePts.emplace_back(reachPos);
@@ -256,7 +248,7 @@ void MeCtBlendEngine::updateBlend(float t, float dt, BodyMotionFrame& inputFrame
 
 	VecOfInterpWeight weight;
 	dataInterpolator->predictInterpWeights(targetParameter,weight);	
-	interpMotion->getMotionFrame(curRefTime,motionParameter->skeletonRef,motionParameter->affectedJoints,outputMotionFrame);		
+	interpMotion->getMotionFrame(curRefTime,motionParameter->skeletonRef.get(),motionParameter->affectedJoints,outputMotionFrame);
 	du = (float)interpMotion->getRefDeltaTime(curRefTime,dt);
 	curRefTime += du;
 }
@@ -270,10 +262,10 @@ void MeCtBlendEngine::setBlendParameter( dVector& para, std::vector<double>& out
 	outWeight.resize(motionData.size());
 	//for (unsigned int i=0;i<weight.size();i++)
 	//	SmartBody::util::log("weight %d = %f",weight[i].first, weight[i].second);
-	for (unsigned int i=0;i<outWeight.size();i++)
-		outWeight[i] = 0.0;
-	for (unsigned int i=0;i<weight.size();i++)
-		outWeight[weight[i].first] = weight[i].second;
+	for (double & i : outWeight)
+		i = 0.0;
+	for (auto & i : weight)
+		outWeight[i.first] = i.second;
 
 }
 

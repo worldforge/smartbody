@@ -330,7 +330,7 @@ std::string tokenize( std::string& str,
 double parseMotionParameters(std::string m, std::string parameter, double min, double max)
 {
 	std::string skeletonName = tokenize(parameter, "|");
-	SmartBody::SBSkeleton* sk = nullptr;
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sk;
 	if (!parameter.empty())
 	{
 
@@ -356,7 +356,7 @@ double parseMotionParameters(std::string m, std::string parameter, double min, d
 	if (parameter == "avgrooty")
 		type = 7;
 	if (!sk) return -9999;
-	MotionParameters mParam(SmartBody::SBScene::getScene()->getAssetManager()->getMotion(m), sk, "base");
+	MotionParameters mParam(SmartBody::SBScene::getScene()->getAssetManager()->getMotion(m), sk.get(), "base");
 	mParam.setFrameId(min, max);
 	return mParam.getParameter(type);
 }
@@ -2156,7 +2156,7 @@ int mcu_check_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	}
 	if (character)
 	{
-		int numValidChannels = motion->connect(character->getSkeleton());	// connect and check for the joints
+		int numValidChannels = motion->connect(character->getSkeleton().get());	// connect and check for the joints
 		SkChannelArray& mChanArray = motion->channels();
 		int mChanSize = mChanArray.size();
 		SkChannelArray& skelChanArray = character->getSkeleton()->channels();
@@ -2869,7 +2869,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 				emitterName == "kinect2")
 			{
 				SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-				SmartBody::SBSkeleton* kinectSk = assetManager->getSkeleton("kinect.sk");				
+				auto kinectSk = assetManager->getSkeleton("kinect.sk");
 				int numRemainTokens = args.calc_num_tokens();
 				if (numRemainTokens < 25*7)
 				{

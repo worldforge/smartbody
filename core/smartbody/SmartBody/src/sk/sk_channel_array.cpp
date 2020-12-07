@@ -162,7 +162,7 @@ bool SkChannelArray::insert ( int pos, std::string name, SkChannel::Type t )
 
 SkSkeleton* SkChannelArray::skeleton () const
 {
-	if (_channelList.size() == 0)
+	if (_channelList.empty())
 	{
 		return nullptr;
 	}
@@ -189,7 +189,7 @@ void SkChannelArray::add_active_channels ( SkSkeleton* sk, bool connect )
 
 	for (i = 0; i < jsize; i++)
 	{
-		joint = sk->joints()[i];
+		auto joint = sk->joints()[i];
 
 		// position channels:
 		if (!joint->pos()->frozen(0))
@@ -382,22 +382,19 @@ void SkChannelArray::rebuild_hash_table()
 	_floats = 0;
 
 	int index = 0;
-	for (std::vector<Channel>::iterator iter = _channelList.begin();
-		iter != _channelList.end();
-		iter++)
+	for (auto & channel : _channelList)
 	{
-		Channel& channel = (*iter);
-		const std::string& mappedChannelName = getMappedChannelName(channel);
+			const std::string& mappedChannelName = getMappedChannelName(channel);
 		std::string& channelName = channel.name;
-		std::map<std::string, std::map<SkChannel::Type, int> >::iterator origMapIter = _channelMap.find(channelName);
-		std::map<std::string, std::map<SkChannel::Type, int> >::iterator mapIter = _channelMapedNameMap.find(mappedChannelName);
+		auto origMapIter = _channelMap.find(channelName);
+		auto mapIter = _channelMapedNameMap.find(mappedChannelName);
 		// this is the only time we update the mapped name cache in each channel
 		channel.mappedName = mappedChannelName;
 
 		if (mapIter != _channelMapedNameMap.end())
 		{
 			std::map<SkChannel::Type, int>& typeMap = (*mapIter).second;
-			std::map<SkChannel::Type, int>::iterator typeIter = typeMap.find(channel.type);
+			auto typeIter = typeMap.find(channel.type);
 
 			typeMap.insert(std::pair<SkChannel::Type, int>(channel.type, index));
 		}
@@ -411,7 +408,7 @@ void SkChannelArray::rebuild_hash_table()
 		if (origMapIter != _channelMap.end())
 		{
 			std::map<SkChannel::Type, int>& typeMap = (*origMapIter).second;
-			std::map<SkChannel::Type, int>::iterator typeIter = typeMap.find(channel.type);
+			auto typeIter = typeMap.find(channel.type);
 
 			typeMap.insert(std::pair<SkChannel::Type, int>(channel.type, index));
 		}

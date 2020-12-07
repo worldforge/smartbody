@@ -1855,7 +1855,7 @@ void FltkViewer::draw()
 //	{
 //		glBegin(GL_LINES);
 //		SmartBody::SBCharacter* cur =  SmartBody::SBScene::getScene()->getCharacter(*iter);
-//		SmartBody::SBSkeleton* skeleton = cur->getSkeleton();
+//		auto skeleton = cur->getSkeleton();
 //		int numJoints = skeleton->getNumJoints();
 //		for (int j = 0; j < numJoints; j++)
 //		{
@@ -2133,7 +2133,7 @@ void FltkViewer::processDragAndDrop( std::string dndMsg, float x, float y )
 	{
 		//dest.y = 102;		
 		std::string skelName = toks[1].c_str();
-		SmartBody::SBSkeleton* skel = scene.getSkeleton(skelName);
+		auto skel = scene.getSkeleton(skelName);
 		if (skel)
 		{
 			SmartBody::SBCharacter* character = nullptr;
@@ -2144,7 +2144,7 @@ void FltkViewer::processDragAndDrop( std::string dndMsg, float x, float y )
 				character = scene.createCharacter(strstr.str(), "");
 				characterCount++;
 			}
-			SmartBody::SBSkeleton* skeleton = scene.createSkeleton(toks[1]);
+			auto skeleton = scene.createSkeleton(toks[1]);
 			if (!skeleton)
 			{
 				SmartBody::util::log("Could not find skeleton named %s, character will not be created.", toks[1].c_str());
@@ -2346,7 +2346,7 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 		std::string skelName = filebasename+fileextension;
 		std::string meshName = filebasename+fileextension;
 		// check the filename extension
-		SmartBody::SBSkeleton* dndSkel = assetManager->getSkeleton(skelName);
+		auto dndSkel = assetManager->getSkeleton(skelName);
 		DeformableMesh* dndMesh = renderAssetManager.getDeformableMesh(meshName);
 
 		if (!dndMesh && !dndSkel) // the file doesn't contain skeleton or mesh. Just return after loading the assets.
@@ -2378,10 +2378,10 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 		if (!jointMap)
 		{
 			jointMap = jointMapManager->createJointMap(jointMapName);
-			jointMap->guessMapping(assetManager->getSkeleton(skelName), false);
+			jointMap->guessMapping(assetManager->getSkeleton(skelName).get(), false);
 		}
 
-		SmartBody::SBSkeleton* skel = assetManager->createSkeleton(skelName);
+		auto skel = assetManager->createSkeleton(skelName);
 
 		std::stringstream strstr;
 		strstr << "defaultChar";
@@ -3847,11 +3847,9 @@ void FltkViewer::drawCharacterBoundingVolumes()
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
+	for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = scene->getCharacter((*iter));
+		SmartBody::SBCharacter* character = scene->getCharacter(characterName);
 		if(singleChrCapsuleMode)
 		{
 			if (character && character->getGeomObject())
@@ -3864,7 +3862,7 @@ void FltkViewer::drawCharacterBoundingVolumes()
 		{
 			if(character)
 			{
-				SkSkeleton* sk = character->getSkeleton();
+				auto sk = character->getSkeleton();
 				float chrHeight = character->getHeight();
 				const std::vector<SkJoint*>& origJnts = sk->joints();
 				sk->update_global_matrices();
@@ -3897,11 +3895,9 @@ void FltkViewer::drawCharacterPhysicsObjs()
 	SmartBody::SBPhysicsSim* phyEngine = SmartBody::SBPhysicsSim::getPhysicsEngine();
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
+	for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = scene->getCharacter((*iter));
+		SmartBody::SBCharacter* character = scene->getCharacter(characterName);
 		SmartBody::SBPhysicsCharacter* phyChar = phyEngine->getPhysicsCharacter(character->getName());//character->getPhysicsCharacter();				
 		if (!phyChar) 
 		{			

@@ -84,7 +84,7 @@ void pythonFuncsCharacter()
 
 	boost::python::class_<SBPawn, boost::python::bases<SBObject> >("SBPawn")
 		.def("getName", &SBPawn::getName, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the name of the pawn..")
-		.def("getSkeleton", &SBPawn::getSkeleton, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the skeleton object of the pawn.")
+		.def("getSkeleton", &SBPawn::getSkeleton, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the skeleton object of the pawn.")
 		.def("setSkeleton", &SBPawn::setSkeleton, "Attaches the skeleton to the character.")
 		.def("setName", &SBPawn::setName, "Sets or changes the name of the character.")
 		.def("getPosition", &SBPawn::getPosition, "Returns the current position of the character's world offset.")

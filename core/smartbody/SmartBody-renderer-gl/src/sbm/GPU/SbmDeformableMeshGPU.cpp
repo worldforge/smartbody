@@ -669,7 +669,7 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	SmartBody::SBSkeleton* skel = meshInstance->getSkeleton();
+	auto skel = meshInstance->getSkeleton();
 	SmartBody::SBPawn* pawn = skel->getPawn();
 	double alphaThreshold = pawn->getDoubleAttribute("alphaThreshold");
 

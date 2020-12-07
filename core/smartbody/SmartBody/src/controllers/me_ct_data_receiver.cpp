@@ -1,13 +1,14 @@
 #include "controllers/me_ct_data_receiver.h"
 #include <sr/sr_euler.h>
 
+#include <utility>
+
 
 std::string MeCtDataReceiver::CONTROLLER_TYPE = "DataReceiver";
 
-MeCtDataReceiver::MeCtDataReceiver(SkSkeleton* skel) : SmartBody::SBController()
+MeCtDataReceiver::MeCtDataReceiver(boost::intrusive_ptr<SkSkeleton> skel) : SmartBody::SBController()
 {
-	_skeleton = skel;
-	//skel->ref();
+	_skeleton = std::move(skel);
 
 	_valid = true;
 	_prevTime = 0.0;
@@ -16,8 +17,6 @@ MeCtDataReceiver::MeCtDataReceiver(SkSkeleton* skel) : SmartBody::SBController()
 
 MeCtDataReceiver::~MeCtDataReceiver()
 {
-	//_skeleton->unref();
-	delete _skeleton;
 	_posMap.clear();
 	_startingPos.clear();
 	_quatMap.clear();
@@ -25,7 +24,7 @@ MeCtDataReceiver::~MeCtDataReceiver()
 
 void MeCtDataReceiver::setGlobalPosition(const std::string& jName, SrVec& pos)
 {
-	std::map<std::string, SrVec>::iterator iter = _posMap.find(jName);
+	auto iter = _posMap.find(jName);
 	if (iter == _posMap.end())
 	{
 		_posMap.insert(std::make_pair(jName, pos));

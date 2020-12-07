@@ -161,7 +161,7 @@ void KinectProcessor::inferJointOffsets( std::vector<SrVec>& gPos, std::vector<S
 
 void KinectProcessor::initKinectSkeleton(std::vector<SrVec>& gPos, std::vector<SrQuat>& gRot)
 {
-	auto kinectSk = std::make_unique<SmartBody::SBSkeleton>();
+	boost::intrusive_ptr<SmartBody::SBSkeleton> kinectSk(new SmartBody::SBSkeleton());
 	kinectSk->setName("kinect.sk");
 	kinectSk->setFileName("kinect.sk");
 	// only use the first 20 joints to build the skeleton
@@ -299,7 +299,7 @@ void KinectProcessor::processRetargetPosition( std::string targetSkelName, SrVec
 {
 	std::string kinectSkName = "kinect.sk";
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	SmartBody::SBSkeleton* kinectSk = assetManager->getSkeleton(kinectSkName);
+	auto kinectSk = assetManager->getSkeleton(kinectSkName);
 	if (!kinectSk)
 	{
 		SmartBody::util::log("No Kinect skeleton found when processing translations.");
@@ -346,7 +346,7 @@ void KinectProcessor::processRetargetRotation(std::string targetSkelName, std::v
 {	
 	std::string kinectSkName = "kinect.sk";
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	SmartBody::SBSkeleton* kinectSk = assetManager->getSkeleton(kinectSkName);
+	auto kinectSk = assetManager->getSkeleton(kinectSkName);
 	if (!kinectSk)
 	{
 		SmartBody::util::log("No Kinect skeleton found when processing rotations.");

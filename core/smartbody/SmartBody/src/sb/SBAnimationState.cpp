@@ -500,7 +500,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 		SmartBody::util::log("createMotionVectorFlow(): motion does not have enough frames, aborting...");
 		return;
 	}
-	SkSkeleton* sk = mo->connected_skeleton();
+	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
 	if(sk==0)
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -513,7 +513,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 		if(sk)
 		{
 			SmartBody::util::log("%s connected to %s for plotting.", motionName.c_str(), chrName.c_str());
-			mo->connect(sk);
+			mo->connect(sk.get());
 		}
 		else
 		{
@@ -541,7 +541,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 		mo->apply(intv * i); // resample motion time uniformly
 		sk->invalidate_global_matrices();
 		sk->update_global_matrices();
-		getJointsGPosFromSkel(sk, *pnts_arr.top(), jnts);
+		getJointsGPosFromSkel(sk.get(), *pnts_arr.top(), jnts);
 	}
 
 	// SmartBody::util::log("createMotionVectorFlow(): max vector norm = %f \n", getVectorMaxNorm(pnts_arr));
@@ -628,11 +628,11 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 	}
 }
 
-void SBAnimationBlend::clearMotionVectorFlow(void)
+void SBAnimationBlend::clearMotionVectorFlow()
 {
 	// clear vector flow lines
-	for(unsigned int i=0; i<vecflowLinesArray.size(); i++)
-		vecflowLinesArray[i]->unref();
+	for(auto & i : vecflowLinesArray)
+		i->unref();
 	vecflowLinesArray.resize(0);
 }
 
@@ -646,7 +646,7 @@ void SBAnimationBlend::plotMotion(const std::string& motionName, const std::stri
 		SmartBody::util::log("plotMotion(): motion does not have enough frames, aborting...");
 		return;
 	}
-	SkSkeleton* sk = mo->connected_skeleton();
+	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
 	if(sk==0)
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -659,7 +659,7 @@ void SBAnimationBlend::plotMotion(const std::string& motionName, const std::stri
 		if(sk)
 		{
 			SmartBody::util::log("%s connected to %s for plotting.", motionName.c_str(), chrName.c_str());
-			mo->connect(sk);
+			mo->connect(sk.get());
 		}
 		else
 		{
@@ -724,7 +724,7 @@ void SBAnimationBlend::plotMotionFrameTime(const std::string& motionName, const 
 		SmartBody::util::log("plotMotionFrame(): motion does not have enough frames, aborting...");
 		return;
 	}
-	SkSkeleton* sk = mo->connected_skeleton();
+	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
 	if(sk==0)
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -737,7 +737,7 @@ void SBAnimationBlend::plotMotionFrameTime(const std::string& motionName, const 
 		if(sk)
 		{
 			SmartBody::util::log("%s connected to %s for plotting.", motionName.c_str(), chrName.c_str());
-			mo->connect(sk);
+			mo->connect(sk.get());
 		}
 		else
 		{
@@ -789,7 +789,7 @@ void SBAnimationBlend::plotMotionJointTrajectory(const std::string& motionName, 
 		SmartBody::util::log("plotMotionJointTrajectory(): motion does not have enough frames, aborting...");
 		return;
 	}
-	SkSkeleton* sk = mo->connected_skeleton();
+	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
 	if(sk==0)
 	{
 		
@@ -803,7 +803,7 @@ void SBAnimationBlend::plotMotionJointTrajectory(const std::string& motionName, 
 		if(sk)
 		{
 			SmartBody::util::log("%s connected to %s for plotting.", motionName.c_str(), chrName.c_str());
-			mo->connect(sk);
+			mo->connect(sk.get());
 		}
 		else
 		{
@@ -1457,7 +1457,7 @@ void SBAnimationBlend::buildMotionAnalysis( const std::string& skeletonName, con
 void SBAnimationBlend::setBlendSkeleton( std::string skelName )
 {
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	SmartBody::SBSkeleton* skel = assetManager->getSkeleton(skelName);
+	auto skel = assetManager->getSkeleton(skelName);
 	if (skel)
 	{
 		blendSkelName = skelName;

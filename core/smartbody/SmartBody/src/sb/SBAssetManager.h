@@ -6,6 +6,7 @@
 #include <map>
 #include <sb/SBAssetHandler.h>
 #include "SBAssetStore.h"
+#include "sr/sr_shared_ptr.hpp"
 
 class srPathList;
 class SbmTexture;
@@ -38,11 +39,11 @@ class SBAssetManager : public SBObject, public SBAssetsProcessor
 //		SBAPI void loadAssetsFromPath(const std::string& assetPath);
 //		SBAPI std::string findAsset(const std::string& type, const std::string& assetName);
 
-		SBAPI SBSkeleton* createSkeleton(const std::string&char_name);
-		SBAPI SBSkeleton* getSkeleton(const std::string& name);
-		SBAPI SBSkeleton* addSkeletonDefinition(const std::string& skelName);
+		SBAPI boost::intrusive_ptr<SBSkeleton> createSkeleton(const std::string&char_name);
+		SBAPI boost::intrusive_ptr<SBSkeleton> getSkeleton(const std::string& name);
+		SBAPI boost::intrusive_ptr<SBSkeleton> addSkeletonDefinition(const std::string& skelName);
 		SBAPI void removeSkeletonDefinition(const std::string& skelName);
-		SBAPI void addSkeleton(std::unique_ptr<SmartBody::SBSkeleton> skeleton);
+		SBAPI void addSkeleton(boost::intrusive_ptr<SBSkeleton> skeleton);
 		SBAPI int getNumSkeletons();
 		SBAPI std::vector<std::string> getSkeletonNames();
 	
@@ -97,7 +98,7 @@ protected:
 
 		SBAssetStore& _store;
 
-		std::map<std::string, std::unique_ptr<SBSkeleton>> _skeletons;
+		std::map<std::string, boost::intrusive_ptr<SBSkeleton>> _skeletons;
 		std::map<std::string, std::unique_ptr<SBMotion>> _motions;
 //
 //		srPathList*	seq_paths;

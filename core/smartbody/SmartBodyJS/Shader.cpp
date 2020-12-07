@@ -636,7 +636,7 @@ extern "C"
 		//if it is a static mesh, we attach it to the pawn so that pawn's transformation could be applied to the mesh
 		if (shape->isStaticMesh())
 		{
-			SmartBody::SBSkeleton* skel = shape->getSkeleton();
+			auto skel = shape->getSkeleton();
 			SmartBody::SBPawn* pawn		= skel->getPawn();
 			SrMat mvMat = meshData->gMV, mvpMat = meshData->gMVP;
 			const std::string& parentJoint = pawn->getStringAttribute("blendShape.parentJoint");
@@ -1078,7 +1078,7 @@ extern "C"
 			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter((*charIter));
 
 			int numJoints;
-			SmartBody::SBSkeleton* sk = character->getSkeleton();
+			auto sk = character->getSkeleton();
 			sk->update_global_matrices();
 			std::map<int,int> indexMap;
 			numJoints = sk->joints().size();

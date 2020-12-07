@@ -91,7 +91,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 		bool ok = ParserOgre::parseSkinMesh(meshModelVec, mesh->skinWeights, convertedPath, skeletonName, 1.0, true, true);		
 		if (ok)
 		{
-			SmartBody::SBSkeleton* existingSkeleton = nullptr;
+			boost::intrusive_ptr<SmartBody::SBSkeleton> existingSkeleton = nullptr;
 			if (!skeletonName.empty())
 			{
 				// find the skeleton

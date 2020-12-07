@@ -549,7 +549,7 @@ void FLTKListener::notify(SmartBody::SBSubject* subject)
 //			double val = pawn->getDoubleAttribute("displayJointScale");
 //			if (pawn->scene_p)
 //			{
-//				SmartBody::SBSkeleton* skeleton = pawn->getSkeleton();
+//				auto skeleton = pawn->getSkeleton();
 //				if (skeleton)
 //				{
 //					int numJoints = skeleton->getNumJoints();

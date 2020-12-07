@@ -47,7 +47,7 @@ SBMotionBlendBase::SBMotionBlendBase(const std::string& name, const std::string&
 	_dimension = "3D";
 	interpType = "KNN";
 
-	SBSkeleton* sbSkel = SBScene::getScene()->getSkeleton(skelName);
+	auto sbSkel = SBScene::getScene()->getSkeleton(skelName);
 	if (sbSkel)
 	{
 		skeletonName = skelName;
@@ -59,9 +59,7 @@ SBMotionBlendBase::SBMotionBlendBase(const std::string& name, const std::string&
 	}
 }
 
-SBMotionBlendBase::~SBMotionBlendBase()
-{
-}
+SBMotionBlendBase::~SBMotionBlendBase() = default;
 
 void SBMotionBlendBase::addMotion( const std::string& motion, std::vector<double>& parameter )
 {
@@ -162,22 +160,20 @@ void SBMotionBlendBase::buildBlendBase( const std::string& motionParameter, cons
 	interpType = interpolatorType;	
 	blendEngine->updateMotionExamples(motions, interpolatorType);	
 	// update all motion parameters
-	for (unsigned int i=0;i<motions.size();i++)
+	for (auto motion : motions)
 	{
 		dVector motionParam;
-		SkMotion* motion = motions[i];		
-		std::vector<double> param = getMotionParameter(motion->getName());		
+			std::vector<double> param = getMotionParameter(motion->getName());
 		setMotionParameter(motion->getName(), param);
 	}
 	// automatically generate tetrahedron
 	if (copySimplex && blendEngine->simplexList)
 	{
 		VecOfSimplex& simplexList = *blendEngine->simplexList;
-		for (unsigned int i=0;i<simplexList.size();i++)
+		for (auto & simp : simplexList)
 		{
 			std::vector<std::string> motionNameList;
-			Simplex& simp = simplexList[i];
-			if (simp.numDim != 3) continue; // only handle tetrahedrons
+				if (simp.numDim != 3) continue; // only handle tetrahedrons
 
 			int nvert = simp.vertexIndices.size();
 			motionNameList.resize(nvert);
@@ -187,7 +183,7 @@ void SBMotionBlendBase::buildBlendBase( const std::string& motionParameter, cons
 			addTetrahedron(motionNameList[0],motionNameList[1],motionNameList[2],motionNameList[3]);
 		}		
 	}
-	SBSkeleton* sbSkel = SBScene::getScene()->getSkeleton(skeletonName);
+	auto sbSkel = SBScene::getScene()->getSkeleton(skeletonName);
 	SrVec center = SrVec(0,0,0);
 	if (sbSkel)
 	{

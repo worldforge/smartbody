@@ -29,7 +29,7 @@ from body motion.
 */
 #include <stdio.h>
 #include <sb/SBMotion.h>
-
+#include "sr/sr_shared_ptr.hpp"
 namespace SmartBody{
 
 class MotionDatabase;
@@ -46,7 +46,7 @@ public:
 	};
 
 	// constructor and destructor
-	SBHandSynthesis(SmartBody::SBSkeleton* skeleton, SkChannelArray& channels);
+	SBHandSynthesis(boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton, SkChannelArray& channels);
 	~SBHandSynthesis();
 
 	// function chooses data for different states
@@ -140,7 +140,7 @@ private:
 	SmartBody::SBMotion* _bodyMotion;
 
 	// the skeleton to use
-	SmartBody::SBSkeleton *_sk, *_skCopy;
+	boost::intrusive_ptr<SmartBody::SBSkeleton> _sk, _skCopy;
 
 	// variable for base joint
 	SmartBody::SBJoint* _baseJoint;

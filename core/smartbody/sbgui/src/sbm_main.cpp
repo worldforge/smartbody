@@ -310,8 +310,7 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 				SmartBody::util::log("Need to specify a joint to track.");
 				return( CMD_FAILURE );
 			}
-			SkSkeleton* skeleton = nullptr;
-			skeleton = pawn->getSkeleton();
+			auto skeleton = pawn->getSkeleton();
 
 			SkJoint* joint = pawn->getSkeleton()->search_joint(jointName);
 			if (!joint)

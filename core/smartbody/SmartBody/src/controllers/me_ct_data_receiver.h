@@ -4,7 +4,7 @@
 #include <sb/SBController.h>
 #include <sk/sk_skeleton.h>
 #include <map>
-
+#include "sr/sr_shared_ptr.hpp"
 class MeCtDataReceiver : public SmartBody::SBController
 {
 	public:
@@ -15,7 +15,7 @@ class MeCtDataReceiver : public SmartBody::SBController
 		double			_dt;
 		float 			_duration;
 		SkChannelArray	_channels;
-		SkSkeleton* 	_skeleton;
+		boost::intrusive_ptr<SkSkeleton> 	_skeleton;
 		bool			_valid;
 		std::map<std::string, SrVec>	_posMap;				// global position
 		std::map<std::string, SrVec>	_startingPos;			// starting position
@@ -23,8 +23,8 @@ class MeCtDataReceiver : public SmartBody::SBController
 		std::map<std::string, SrVec>	_localPosMap;			// local position
 
 	public:
-		MeCtDataReceiver(SkSkeleton* skel);
-		~MeCtDataReceiver();
+		explicit MeCtDataReceiver(boost::intrusive_ptr<SkSkeleton> skel);
+		~MeCtDataReceiver() override;
 
 		bool getValid()						{return _valid;}
 		void setValid(bool v)				{_valid = v;}

@@ -3366,7 +3366,7 @@ bool ParserOpenCOLLADA::exportSkinMesh( SmartBody::SBRenderAssetManager& renderA
 	fprintf(fp,"<library_controllers>\n");
 
 	// make sure that any missing joints are added with zero weights
-	SmartBody::SBSkeleton* sbSk = assetManager->getSkeleton(skeletonName);
+	auto sbSk = assetManager->getSkeleton(skeletonName);
 	
 	// get a list of joints involved with the binding information, remove from joint set, leaving unused joints
 	for (auto skinWeight : defMesh->skinWeights)
@@ -3551,7 +3551,7 @@ bool ParserOpenCOLLADA::exportSkinMesh( SmartBody::SBRenderAssetManager& renderA
 bool ParserOpenCOLLADA::exportVisualScene( SmartBody::SBRenderAssetManager& renderAssetManager, FILE* fp, std::string skeletonName, std::string defMeshName, double scale )
 {
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	SmartBody::SBSkeleton* sbSk = assetManager->getSkeleton(skeletonName);
+	auto sbSk = assetManager->getSkeleton(skeletonName);
 	DeformableMesh* defMesh = renderAssetManager.getDeformableMesh(defMeshName);
 	//if (!sbSk) return false;
 	fprintf(fp,"<library_visual_scenes>\n");

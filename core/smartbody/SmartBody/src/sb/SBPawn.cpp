@@ -131,14 +131,14 @@ void SBPawn::setName(const std::string& name)
 	SmartBody::SBScene::getScene()->updatePawnNames();
 }
 
-SBSkeleton* SBPawn::getSkeleton()
+boost::intrusive_ptr<SmartBody::SBSkeleton> SBPawn::getSkeleton() const
 {
-	SkSkeleton* skskel = SbmPawn::getSkeleton();
-	SBSkeleton* sbskel = dynamic_cast<SBSkeleton*>(skskel);
-	return sbskel;
+	auto& skskel = SbmPawn::getSkeleton();
+	auto ptr = dynamic_cast<SBSkeleton*>(skskel.get());
+	return {ptr};
 }
 
-void SBPawn::setSkeleton(SBSkeleton* skel)
+void SBPawn::setSkeleton(boost::intrusive_ptr<SmartBody::SBSkeleton> skel)
 {
 	if (!skel)
 	{
@@ -156,7 +156,7 @@ void SBPawn::setSkeleton(SBSkeleton* skel)
 
 	SrVec position;
 	SrVec hpr;	
-	SBSkeleton* sk = this->getSkeleton();
+	auto sk = this->getSkeleton();
 	if (sk)
 	{		
 		position = this->getPosition();

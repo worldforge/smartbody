@@ -817,7 +817,7 @@ SBAPI SBCharacter* SBScene::copyCharacter( const std::string& origCharName, cons
 			return nullptr;
 		}
 		// successfully create a new character
-		SmartBody::SBSkeleton* sk = new SmartBody::SBSkeleton(origChar->getSkeleton());
+		boost::intrusive_ptr<SmartBody::SBSkeleton> sk(new SmartBody::SBSkeleton(origChar->getSkeleton().get()));
 		copyChar->setSkeleton(sk);
 		copyChar->createStandardControllers();
 		copyChar->copy(origChar);
@@ -857,7 +857,7 @@ SBAPI SBPawn* SBScene::copyPawn( const std::string& origPawnName, const std::str
 			return nullptr;
 		}
 		// successfully create a new character
-		SmartBody::SBSkeleton* sk = new SmartBody::SBSkeleton(origPawn->getSkeleton());
+		boost::intrusive_ptr<SmartBody::SBSkeleton> sk(new SmartBody::SBSkeleton(origPawn->getSkeleton().get()));
 		copyPawn->setSkeleton(sk);		
 		copyPawn->copy(origPawn);		
 		return copyPawn;
@@ -951,8 +951,8 @@ SBPawn* SBScene::createPawn(const std::string& pawnName)
 	}
 	else
 	{
-		SBPawn* pawn = new SBPawn(pawnName.c_str());
-		SBSkeleton* skeleton = new SBSkeleton();
+		auto* pawn = new SBPawn(pawnName.c_str());
+		boost::intrusive_ptr<SBSkeleton> skeleton(new SBSkeleton());
 		pawn->setSkeleton(skeleton);
 		//SkJoint* joint = skeleton->add_joint(SkJoint::TypeQuat);
 		//joint->setName("world_offset");
@@ -1726,7 +1726,7 @@ void SBScene::loadAssetsFromPath(const std::string& assetPath)
 	_assetStore->loadAssetsFromPath(assetPath);
 }
 
-SBSkeleton* SBScene::addSkeletonDefinition(const std::string& skelName )
+boost::intrusive_ptr<SBSkeleton> SBScene::addSkeletonDefinition(const std::string& skelName )
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.addSkeletonDefinition() instead.");
@@ -1799,14 +1799,14 @@ std::vector<std::string> SBScene::getMotionNames()
 	return getAssetManager()->getMotionNames();
 }
 
-SBSkeleton* SBScene::createSkeleton(const std::string& skeletonDefinition)
+boost::intrusive_ptr<SBSkeleton> SBScene::createSkeleton(const std::string& skeletonDefinition)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.createSkeleton() instead.");
 	return getAssetManager()->createSkeleton(skeletonDefinition);
 }
 
-SBSkeleton* SBScene::getSkeleton(const std::string& name)
+boost::intrusive_ptr<SBSkeleton> SBScene::getSkeleton(const std::string& name)
 {
 	if (SHOW_DEPRECATION_MESSAGES)
 		SmartBody::util::log("DEPRECATED: Use AssetManager.getSkeleton() instead.");
@@ -1990,7 +1990,7 @@ std::string SBScene::getStringFromObject(SmartBody::SBObject* object)
 		return strstr.str();
 	}
 
-	SmartBody::SBSkeleton* skeleton = dynamic_cast<SmartBody::SBSkeleton*>(object);
+	auto skeleton = dynamic_cast<SmartBody::SBSkeleton*>(object);
 	if (skeleton)
 	{
 		strstr << "skeleton/" << skeleton->getName();
@@ -2123,9 +2123,10 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 			}
 			if (part == "skeleton")
 			{
-				SBSkeleton* skeleton = character->getSkeleton();
+				auto skeleton = character->getSkeleton();
 				if (skeleton->getName() == rest)
-					return skeleton;
+					//TODO: possibility of referencing deleted memory
+					return skeleton.get();
 				else
 					return nullptr;
 			}
@@ -2155,8 +2156,9 @@ SmartBody::SBObject* SBScene::getObjectFromString(const std::string& value)
 	}
 	else if (prefix == "skeleton")
 	{
-		SmartBody::SBSkeleton* skeleton = this->getAssetManager()->getSkeleton(suffix);
-		return skeleton;
+		auto skeleton = this->getAssetManager()->getSkeleton(suffix);
+		//TODO: using deleted mem is possible here
+		return skeleton.get();
 	}
 	else if (prefix == "service")
 	{

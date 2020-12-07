@@ -813,7 +813,7 @@ std::string ZeroPadNumber(int num)
 
 	if (shape->isStaticMesh())
 	{
-		SmartBody::SBSkeleton* skel = shape->getSkeleton();
+		auto skel = shape->getSkeleton();
 		SmartBody::SBPawn* pawn		= skel->getPawn();
 
 		const std::string& parentJoint = pawn->getStringAttribute("blendShape.parentJoint");
@@ -1030,7 +1030,7 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 
 	//if (meshInstance->isStaticMesh())
 	{
-		SmartBody::SBSkeleton* skel = meshInstance->getSkeleton();
+		auto skel = meshInstance->getSkeleton();
 		SmartBody::SBPawn* pawn		= skel->getPawn();
 		SmartBody::SBAttribute* maskAttribute;
 		// Checks showMasks attribute: If masks for the blendshape are present, user can enable or disable the visualization for debugging purposes
@@ -1275,7 +1275,7 @@ void SbmBlendTextures::RenderGeometryWithMasks(GLuint * FBODst, std::vector<floa
 
 	//if (meshInstance->isStaticMesh())
 	{
-		SmartBody::SBSkeleton* skel = meshInstance->getSkeleton();
+		auto skel = meshInstance->getSkeleton();
 		SmartBody::SBPawn* pawn		= skel->getPawn();
 		SmartBody::SBAttribute* maskAttribute;
 		// Checks showMasks attribute: If masks for the blendshape are present, user can enable or disable the visualization for debugging purposes
@@ -1444,7 +1444,7 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 
 	if (meshInstance->isStaticMesh())
 	{
-		SmartBody::SBSkeleton* skel = meshInstance->getSkeleton();
+		auto skel = meshInstance->getSkeleton();
 		SmartBody::SBPawn* pawn		= skel->getPawn();
 		const std::string& parentJoint = pawn->getStringAttribute("blendShape.parentJoint");
 		if (parentJoint != "")
@@ -1920,7 +1920,7 @@ void SbmBlendTextures::BlendGeometryWithMasksFeedback( GLuint * FBODst, std::vec
 
 	//if (meshInstance->isStaticMesh())
 	{
-		SmartBody::SBSkeleton* skel = meshInstance->getSkeleton();
+		auto skel = meshInstance->getSkeleton();
 		SmartBody::SBPawn* pawn		= skel->getPawn();
 		SmartBody::SBAttribute* maskAttribute;
 		// Checks showMasks attribute: If masks for the blendshape are present, user can enable or disable the visualization for debugging purposes
@@ -2198,7 +2198,7 @@ void SbmBlendTextures::BlendTextureWithMasks(GLuint FBODst, GLuint FBOTex,std::v
 
 	//if (meshInstance->isStaticMesh())
 	{
-		SmartBody::SBSkeleton* skel = meshInstance->getSkeleton();
+		auto skel = meshInstance->getSkeleton();
 		SmartBody::SBPawn* pawn		= skel->getPawn();
 		SmartBody::SBAttribute* maskAttribute;
 		// Checks showMasks attribute: If masks for the blendshape are present, user can enable or disable the visualization for debugging purposes

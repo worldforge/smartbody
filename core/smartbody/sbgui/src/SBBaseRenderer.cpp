@@ -574,7 +574,7 @@ void SBBaseRenderer::renderMesh(DeformableMeshInstance* meshInstance, SbmShaderP
 // 			glEnable(GL_CULL_FACE);
 // 		}
 
-		SmartBody::SBSkeleton* skel = meshInstance->getSkeleton();
+		auto skel = meshInstance->getSkeleton();
 		SmartBody::SBPawn* pawn = skel->getPawn();
 
 		auto tex = texManager.findTexture(subMesh->texName.c_str());

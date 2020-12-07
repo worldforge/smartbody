@@ -703,7 +703,7 @@ void SBDrawCharacters()
         float jointPos[600];
         unsigned short boneIdx[400];
         int numJoints;
-        SmartBody::SBSkeleton* sk = character->getSkeleton();
+        auto sk = character->getSkeleton();
         sk->update_global_matrices();
         std::map<int,int> indexMap;
         numJoints = sk->joints().size();

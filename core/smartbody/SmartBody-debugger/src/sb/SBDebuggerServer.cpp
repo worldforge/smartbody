@@ -426,7 +426,7 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 						 std::vector<string> skeletonNames = m_scene->getSkeletonNames();
 						for (size_t i = 0; i < skeletonNames.size(); ++i)
 						{
-							SmartBody::SBSkeleton* skeleton = m_scene->getSkeleton(skeletonNames[i]);
+							auto skeleton = m_scene->getSkeleton(skeletonNames[i]);
 							if (!skeleton)
 							{
 								SmartBody::util::log("Cannot find skeleton %s.", skeletonNames[i].c_str());

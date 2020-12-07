@@ -341,7 +341,7 @@ Ogre::Entity* OgreSmartBodyListener::createOgreCharacter(SmartBody::SBCharacter*
 	if (meshName == "")
 		meshName = sbChar->getName();
 
-	SmartBody::SBSkeleton* charSkel = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+	auto charSkel = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
 	addSBSkeleton(charSkel);
 
 	addOgreMesh(meshName, meshInstance);

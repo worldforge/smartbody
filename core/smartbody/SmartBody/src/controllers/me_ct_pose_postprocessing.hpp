@@ -37,9 +37,9 @@ class MeCtPosePostProcessing : public MeCtConstraint
 private:
 	static std::string CONTROLLER_TYPE;
 public:	
-	MeCtPosePostProcessing(SmartBody::SBSkeleton* skeleton);
-	~MeCtPosePostProcessing(void);
-	virtual bool controller_evaluate( double t, MeFrameData& frame );	
+	explicit MeCtPosePostProcessing(boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton);
+	~MeCtPosePostProcessing() override;
+	bool controller_evaluate( double t, MeFrameData& frame ) override;
 protected:
 	void updatePoseConstraint();
 	MeCtCCDIK ikCCD;

@@ -61,11 +61,12 @@ private :
 				name = "";
 				fmap = 0;
 			}
-			void operator=(const Channel& c)
+			Channel& operator=(const Channel& c)
 			{
 				name = c.name;
 				fmap = c.fmap;
 				SkChannel::operator=(c);
+				return *this;
 			}					
 		int fmap;		
 		std::string name; 
@@ -89,7 +90,7 @@ public :
 	SkChannelArray ();
 
 	/*! Destructor is public but be sure to check if unref() has to be used */
-	virtual ~SkChannelArray ();
+	~SkChannelArray () override;
 
 	void setJointMapName(const std::string& jmapName);
 	std::string getJointMapName() const ;

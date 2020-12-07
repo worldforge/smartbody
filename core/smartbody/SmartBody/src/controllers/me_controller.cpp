@@ -566,7 +566,7 @@ void MeController::saveMotionRecord( const std::string &recordname )
 		fileOutput = new SrOutput( filename.c_str(), "w" );
 		_record_output = new SrOutput(stringOutput);
 
-		SkSkeleton* skeleton_p = _pawn->getSkeleton();
+		auto skeleton_p = _pawn->getSkeleton();
 
 		if( skeleton_p == nullptr )	{
 			SmartBody::util::log("MeController::record_write NOTICE: SkSkeleton not available");
@@ -660,8 +660,7 @@ void MeController::cont_record( double time, MeFrameData& frame )	{
 
 	if( _record_mode == RECORD_BVH_MOTION )	{
 
-		SkSkeleton* skeleton_p = nullptr;
-		skeleton_p = _pawn->getSkeleton();
+		auto skeleton_p = _pawn->getSkeleton();
 		/*
 		if( _context->channels().size() > 0 )	{
 			skeleton_p = _context->channels().skeleton();

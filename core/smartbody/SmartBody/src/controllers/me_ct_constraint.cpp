@@ -143,17 +143,14 @@ void FadingControl::updateDt( float curTime )
 }
 
 
-MeCtConstraint::MeCtConstraint( SmartBody::SBSkeleton* skeleton )  : FadingControl()
+MeCtConstraint::MeCtConstraint( boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton )  : FadingControl()
 {
 	_skeleton = skeleton;
 	prev_time = -1.0;	
 	_duration = -1.0f;
 }
 
-MeCtConstraint::~MeCtConstraint(void)
-{
-	
-}
+MeCtConstraint::~MeCtConstraint() = default;
 
 void MeCtConstraint::updateChannelBuffer(MeFrameData& frame, std::vector<SrQuat>& quatList, bool bRead)
 {

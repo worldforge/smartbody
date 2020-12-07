@@ -407,8 +407,8 @@ void ResourceWindow::updateGUI()
 	std::vector<std::string> skeletons = scene->getSkeletonNames();
 	for (auto & skeleton : skeletons)
 	{
-		SmartBody::SBSkeleton * skel = scene->getSkeleton(skeleton);
-		updateSkeleton(getTreeFromName("skeleton"), skel);
+		auto skel = scene->getSkeleton(skeleton);
+		updateSkeleton(getTreeFromName("skeleton"), skel.get());
 	}
 
 	// update joint maps
@@ -870,7 +870,7 @@ void ResourceWindow::updateCharacter( Fl_Tree_Item* tree, SmartBody::SBCharacter
 	resourceTree->sortorder(FL_TREE_SORT_NONE);		
 	Fl_Tree_Item* skeletonFolder = resourceTree->add(item,"skeleton");	
 	skeletonFolder->user_data((void*) _reverseSpecialNames["skeleton"]); 
-	SmartBody::SBSkeleton* sbSk = sbcharacter->getSkeleton();
+	auto sbSk = sbcharacter->getSkeleton();
 	if (sbSk)
 	{
 		Fl_Tree_Item* charSkItem = resourceTree->add(skeletonFolder, sbSk->getName().c_str());

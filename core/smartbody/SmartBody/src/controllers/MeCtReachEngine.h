@@ -24,7 +24,7 @@ protected:
 	bool          ikInit;
 	int           reachType;
 	SbmCharacter* character;
-	SmartBody::SBSkeleton*   skeletonCopy, *skeletonRef;
+	boost::intrusive_ptr<SmartBody::SBSkeleton>   skeletonCopy, skeletonRef;
 	MotionDataSet         motionData;
 	SmartBody::SBMotion*             refMotion;   // reference motion for time warping
 	MotionExampleSet      motionExamples;
@@ -69,9 +69,9 @@ public:
 	MeCtIKTreeScenario    ikScenario, ikCCDScenario;
 
 public:
-	MeCtReachEngine(SbmCharacter* sbmChar, SmartBody::SBSkeleton* sk);
-	virtual ~MeCtReachEngine(void);
-	bool isValid() { return valid; }
+	MeCtReachEngine(SbmCharacter* sbmChar, boost::intrusive_ptr<SmartBody::SBSkeleton> sk);
+	virtual ~MeCtReachEngine();
+	bool isValid() const { return valid; }
 	std::string     getReachTypeTag();
 	int             getReachTypeID();
 	ReachStateInterface* getCurrentState() { return curReachState; }

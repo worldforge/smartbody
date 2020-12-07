@@ -3,15 +3,15 @@
 #include "controllers/me_ct_motion_example.hpp"
 #include <sb/SBSkeleton.h>
 #include <sb/SBJoint.h>
-
+#include "sr/sr_shared_ptr.hpp"
 class MotionParameter
 {
 public:
-	SmartBody::SBSkeleton* skeletonRef;
+	boost::intrusive_ptr<SmartBody::SBSkeleton> skeletonRef;
 	std::vector<SmartBody::SBJoint*> affectedJoints;
 public:
-	MotionParameter(SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints);
-	virtual ~MotionParameter(void);
+	MotionParameter(boost::intrusive_ptr<SmartBody::SBSkeleton> skel, std::vector<SmartBody::SBJoint*>& joints);
+	virtual ~MotionParameter();
 
 	virtual void getPoseParameter(const BodyMotionFrame& frame, dVector& outPara) = 0;
 	virtual void getMotionFrameParameter(BodyMotionInterface* motion, float refTime, dVector& outPara) = 0;
@@ -26,7 +26,7 @@ protected:
 	SmartBody::SBJoint* reachJoint;
 	SmartBody::SBJoint* rootJoint;
 public:
-	ReachMotionParameter(SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints, SmartBody::SBJoint* rjoint, SmartBody::SBJoint* rootJoint);
+	ReachMotionParameter(boost::intrusive_ptr<SmartBody::SBSkeleton> skel, std::vector<SmartBody::SBJoint*>& joints, SmartBody::SBJoint* rjoint, SmartBody::SBJoint* rootJoint);
 	virtual ~ReachMotionParameter();
 
 	virtual void getPoseParameter(const BodyMotionFrame& frame, dVector& outPara);
@@ -39,7 +39,7 @@ class LocomotionParameter : public MotionParameter
 protected:
 	std::string baseJointName;	
 public:
-	LocomotionParameter(SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints, const std::string& baseName);
+	LocomotionParameter(boost::intrusive_ptr<SmartBody::SBSkeleton> skel, std::vector<SmartBody::SBJoint*>& joints, const std::string& baseName);
 	~LocomotionParameter();
 
 	virtual void getPoseParameter(const BodyMotionFrame& frame, dVector& outPara);
@@ -58,7 +58,7 @@ class JumpParameter : public MotionParameter
 protected:
 	std::string baseJointName;	
 public:
-	JumpParameter(SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints, const std::string& baseName);
+	JumpParameter(boost::intrusive_ptr<SmartBody::SBSkeleton> skel, std::vector<SmartBody::SBJoint*>& joints, const std::string& baseName);
 	~JumpParameter();
 
 	virtual void getPoseParameter(const BodyMotionFrame& frame, dVector& outPara);

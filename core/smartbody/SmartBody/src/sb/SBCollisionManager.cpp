@@ -121,7 +121,7 @@ void SBCollisionManager::start()
 			else // create collision capsules based on skel bones
 			{
 				SmartBody::util::log(character->getName().c_str());
-				SkSkeleton* sk = character->getSkeleton();
+				auto sk = character->getSkeleton();
 				const std::vector<SkJoint*>& origJnts = sk->joints();
 				sk->update_global_matrices();
 				std::vector<SkJoint*> jnt_excld_list;

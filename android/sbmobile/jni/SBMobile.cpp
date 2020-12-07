@@ -124,7 +124,7 @@ std::string SBMobile::testCharacterIntersection(float x, float y, std::string ch
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	SmartBody::SBCharacter* sbChar = scene->getCharacter(charName);
 	if (!sbChar) return "none";
-	SmartBody::SBSkeleton* skel = sbChar->getSkeleton();
+	auto skel = sbChar->getSkeleton();
 	SrVec rayPt = convertScreenSpaceTo3D(x,y,SrVec(0,0,0), SrVec(0,0,1));
 	SrBox bbox = skel->getBoundingBox();	
 	// check projection only in 2D

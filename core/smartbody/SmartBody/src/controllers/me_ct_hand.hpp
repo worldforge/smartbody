@@ -39,8 +39,8 @@ public:
 	enum FingerID { F_THUMB = 0, F_INDEX, F_MIDDLE, F_RING, F_PINKY, F_NUM_FINGERS };
 	enum GrabState { GRAB_START, GRAB_REACH, GRAB_FINISH, GRAB_RETURN, GRAB_POINT };
 protected:
-	SmartBody::SBSkeleton*     skeletonRef;
-	SmartBody::SBSkeleton*     skeletonCopy;
+	boost::intrusive_ptr<SmartBody::SBSkeleton>     skeletonRef;
+	boost::intrusive_ptr<SmartBody::SBSkeleton>     skeletonCopy;
 	SmartBody::SBJoint*        wristJoint;
 	float 			_duration;
 	SkChannelArray	_channels;	
@@ -70,8 +70,8 @@ public:
 	float                 jointSpeed;
 
 public:
-	MeCtHand(SmartBody::SBSkeleton* sk, SmartBody::SBJoint* wrist);
-	~MeCtHand(void);	
+	MeCtHand(boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SmartBody::SBJoint* wrist);
+	~MeCtHand();
 
 	void init(std::string grabType, const MotionDataSet& reachPose, const MotionDataSet& grabPose, const MotionDataSet& releasePose, const MotionDataSet& pointPose);
 

@@ -170,7 +170,7 @@ void PAAutoFootStepsEditor::confirmEditting(Fl_Widget* widget, void* data)
 // 		}
 
 
-		isConvergent = motion->autoFootStepDetection(outMeans, stepsPerJoint, maxNumSteps, curCharacter->getSkeleton(), selectedJoints,
+		isConvergent = motion->autoFootStepDetection(outMeans, stepsPerJoint, maxNumSteps, curCharacter->getSkeleton().get(), selectedJoints,
 			                          floorHeight, heightThresh, speedThresh, speedWindow, footStepEditor->isPrintDebugInfo);
 
 #else 

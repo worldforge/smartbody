@@ -48,6 +48,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 #include <fstream>
 #include <ostream>
+#include <utility>
 
 
 using namespace boost;
@@ -64,7 +65,7 @@ typedef graph_traits < graph_t >::edge_descriptor edge_descriptor;
 typedef std::pair<int, int> Edge;
 
 // default constructor
-SBHandSynthesis::SBHandSynthesis(SmartBody::SBSkeleton* skeleton, SkChannelArray& channels)
+SBHandSynthesis::SBHandSynthesis(boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton, SkChannelArray& channels)
 {
 	// log here
 //	LOG ( " \n \n \n SBHandSynthesis started \n \n \n " );
@@ -74,9 +75,9 @@ SBHandSynthesis::SBHandSynthesis(SmartBody::SBSkeleton* skeleton, SkChannelArray
 	_rightDb = new MotionDatabase();
 	_selectDb = _rightDb;
 	_bodyMotion = nullptr;
-	_sk = skeleton;
+	_sk = std::move(skeleton);
 	_skCopy = new SmartBody::SBSkeleton();
-	_skCopy->copy(_sk);
+	_skCopy->copy(_sk.get());
 	_maxLevels = 3;
 	_k = 3;
 	_channels = channels;
@@ -256,7 +257,7 @@ void SBHandSynthesis::generateDatabaseSegments()
 		SmartBody::SBMotion* curHandDbMotion = _handDbMotion[i];
 
 		// connect motion to skeleton
-		curBodyDbMotion->connect(_sk);
+		curBodyDbMotion->connect(_sk.get());
 
 		// get the framerate and the wrist joint name
 		float frameRate = (float)curBodyDbMotion->getFrameRate();
@@ -449,7 +450,7 @@ void SBHandSynthesis::generateMotionSegments()
 	
 
 	// connect to skeleton here
-	_bodyMotion->connect(_sk);
+	_bodyMotion->connect(_sk.get());
 
 	// get the joint from joint name
 	SmartBody::SBJoint* wristJoint = _sk->getJointByName(_selectDb->getJointName());
@@ -553,7 +554,7 @@ void SBHandSynthesis::findSimilarSegments()
 		SmartBody::SBMotion* segment = _selectDb->getMotionSegments()[i];
 
 		// connect to a skeleton
-		segment->connect(_sk);
+		segment->connect(_sk.get());
 
 		// compare with fragments in database 
 		for (size_t j=0;j<_selectDb->getBodyDbSegments().size();j++)
@@ -635,22 +636,22 @@ float SBHandSynthesis::compareSegments(std::string wristJointName, SmartBody::SB
 		SmartBody::SBJoint* joint = _sk->getJointByName(wristJointName);
 
 		// get wrist positions
-		segmentInput->connect(_sk);
+		segmentInput->connect(_sk.get());
 		SrVec positionInput = segmentInput->getJointPositionFromBase(joint, _baseJoint, t);
 		segmentInput->disconnect();
 
 		// get wrist position for db
-		segmentDb->connect(_sk);
+		segmentDb->connect(_sk.get());
 		SrVec positionDb 	= segmentDb->getJointPositionFromBase(joint, _baseJoint, t);
 		segmentDb->disconnect();
 
 		// get wrist rotations
-		segmentInput->connect(_sk);
+		segmentInput->connect(_sk.get());
 		SrQuat rotationInput = segmentInput->getJointRotation(joint, t);
 		segmentInput->disconnect();
 
 		// get the joint rotations
-		segmentDb->connect(_sk);
+		segmentDb->connect(_sk.get());
 		SrQuat rotationDb 	 = segmentDb->getJointRotation(joint, t);
 		segmentDb->disconnect();
 
@@ -1040,7 +1041,7 @@ void SBHandSynthesis::buildGraph()
 		std::cout << "Shortest path from START to END:" << std::endl;
 	
 	float totalDistance = 0; int currLevel = 1;
-	for(PathType::reverse_iterator pathIterator = path.rbegin(); pathIterator != path.rend(); ++pathIterator)
+	for(auto pathIterator = path.rbegin(); pathIterator != path.rend(); ++pathIterator)
 	{
 		if (_printDebug)
 			std::cout << nameMap[boost::source(*pathIterator, g)] << " -> " << nameMap[boost::target(*pathIterator, g)]
@@ -1096,17 +1097,15 @@ float SBHandSynthesis::calcTransitionCost(SmartBody::SBMotion* segmentA, SmartBo
 	std::vector<SmartBody::SBJoint*> descendants = wristJoint->getDescendants();
 
 	// go through all the descendants
-	for (size_t i = 0; i < descendants.size(); i++ )
+	for (auto curJoint : descendants)
 	{
-		SmartBody::SBJoint* curJoint = descendants[i];
-
-		// get rotation for A at the last frame and B at the first frame
-		segmentA->connect(_sk);
+			// get rotation for A at the last frame and B at the first frame
+		segmentA->connect(_sk.get());
 		SrQuat rotA = segmentA->getJointRotation(curJoint,segmentA->duration());
 		segmentA->disconnect();
 
 		// get rotation of B
-		segmentB->connect(_sk);
+		segmentB->connect(_sk.get());
 		SrQuat rotB = segmentB->getJointRotation(curJoint,0);
 		segmentB->disconnect();
 
@@ -1114,12 +1113,12 @@ float SBHandSynthesis::calcTransitionCost(SmartBody::SBMotion* segmentA, SmartBo
 		diff.normalize();
 
 		// get the angular velocities (this is speed. need to get velocities)
-		segmentA->connect(_sk);
+		segmentA->connect(_sk.get());
 		SrVec velA = segmentA->getJointAngularVelocity(curJoint,segmentA->duration()-1,segmentA->duration());
 		segmentA->disconnect();
 
 		// get angular velocity
-		segmentB->connect(_sk);
+		segmentB->connect(_sk.get());
 		SrVec velB = segmentB->getJointAngularVelocity(curJoint,0,1);
 		segmentB->disconnect();
 

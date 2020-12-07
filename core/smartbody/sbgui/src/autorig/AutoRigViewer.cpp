@@ -214,10 +214,11 @@ void AutoRigViewer::applyAutoRig( int riggingType /*= 0*/ )
 	if (!jointMap)
 	{
 		jointMap = jointMapManager->createJointMap(skelName);
-		jointMap->guessMapping(scene->getSkeleton(skelName), false);
+		auto skeleton = scene->getSkeleton(skelName);
+		jointMap->guessMapping(skeleton.get(), false);
 	}
 
-	SmartBody::SBSkeleton* skel = scene->createSkeleton(skelName);
+	auto skel = scene->createSkeleton(skelName);
 
 	SmartBody::SBCharacter* character = scene->createCharacter(charName, "");
 	character->setSkeleton(skel);

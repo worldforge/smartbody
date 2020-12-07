@@ -91,13 +91,13 @@ public:
 	};
 
 public:	
-	MeCtConstraint(SmartBody::SBSkeleton* skeleton);
-	~MeCtConstraint(void);
+	MeCtConstraint(boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton);
+	~MeCtConstraint();
 
 protected:	
 	MeCtJacobianIK       ik;
 	MeCtIKTreeScenario   ik_scenario;
-	SmartBody::SBSkeleton*     _skeleton;
+	boost::intrusive_ptr<SmartBody::SBSkeleton>     _skeleton;
 	SmartBody::SBCharacter*    _sbChar;
 	float 			_duration;
 	SkChannelArray	_channels;	

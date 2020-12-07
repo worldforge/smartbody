@@ -92,7 +92,7 @@ MeCtGenericHand::MeCtGenericHand() : SmartBody::SBController()
 	addDefaultAttributeBool("hand.useRandom", false, "Hand");
 }
 
-MeCtGenericHand::MeCtGenericHand( SmartBody::SBSkeleton* skeleton, SbmCharacter* c) : SmartBody::SBController()
+MeCtGenericHand::MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton, SbmCharacter* c) : SmartBody::SBController()
 {	
 	_valid = false;
 	_lastTime = 0.0;
@@ -118,7 +118,7 @@ MeCtGenericHand::MeCtGenericHand( SmartBody::SBSkeleton* skeleton, SbmCharacter*
 
 	_skeletonRef = skeleton;
 	// work on the copy of skeleton to avoid problems
-	_sk = new SmartBody::SBSkeleton(skeleton); 	
+	_sk = new SmartBody::SBSkeleton(skeleton.get());
 	
 	// set the character
 	_character = c;
@@ -141,11 +141,7 @@ MeCtGenericHand::MeCtGenericHand( SmartBody::SBSkeleton* skeleton, SbmCharacter*
 	_endJoints.emplace_back(_handSynthesis->getLeftDb()->getJointName());
 }
 
-MeCtGenericHand::~MeCtGenericHand()
-{
-	if (_sk)
-		delete _sk;
-}
+MeCtGenericHand::~MeCtGenericHand() = default;
 
 // probably should change initialization to something more relevant
 void MeCtGenericHand::init(SmartBody::SBMotion* m , int num_levels = -1)
@@ -234,21 +230,20 @@ bool MeCtGenericHand::controller_evaluate( double t, MeFrameData& frame )
 void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame, std::vector<std::string>& endJoints, SmartBody::SBMotion* motion)
 {
 	SrBuffer<float>& buffer=frame.buffer();
-	motion->connect(_sk);
+	motion->connect(_sk.get());
 	motion->apply(_motionTime);
 
-	for (unsigned int i=0 ; i<endJoints.size() ; i++)
+	for (auto & endJoint : endJoints)
 	{
-		SmartBody::SBJoint* eJoint = _sk->getJointByName(endJoints[i]);
+		SmartBody::SBJoint* eJoint = _sk->getJointByName(endJoint);
 		if (eJoint)
 		{
 			std::vector<SmartBody::SBJoint*> descendents = eJoint->getDescendants();
 			//descendents.emplace_back(eJoint);
 
-			for (unsigned int j=0;j<descendents.size();j++)
+			for (auto joint : descendents)
 			{
-				SmartBody::SBJoint* joint = descendents[j];
-				int chanId = _context->channels().search(joint->getMappedJointName(), SkChannel::Quat);
+					int chanId = _context->channels().search(joint->getMappedJointName(), SkChannel::Quat);
 				if (chanId < 0)
 					continue;
 				int index = _context->toBufferIndex(chanId);
@@ -281,14 +276,14 @@ void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame)
 		retarget = scene->getRetargetManager()->getRetarget(_bodyMotion->getMotionSkeletonName(),_character->getSkeleton()->getName());	
 		
 	}
-	_bodyMotion->connect(_sk);
+	_bodyMotion->connect(_sk.get());
 	_bodyMotion->apply(_motionTime,SkMotion::Linear,0,retarget);
 
 	// get all the descendants
 	std::vector<SmartBody::SBJoint*> removeJoints;
-	for (int i = 0 ; i < _endJoints.size() ; i++ )
+	for (auto & _endJoint : _endJoints)
 	{
-		SmartBody::SBJoint* joint = _sk->getJointByName(_endJoints[i]);
+		SmartBody::SBJoint* joint = _sk->getJointByName(_endJoint);
 		std::vector<SmartBody::SBJoint*> descendants = joint->getDescendants();
 		removeJoints.insert(removeJoints.end(), descendants.begin(), descendants.end());
 	}
@@ -301,9 +296,9 @@ void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame)
 		
 		// check if joint is in the ones to be removed
 		bool shouldRemove = false;
-		for ( int i =0 ; i < removeJoints.size() ; i++ )
+		for (auto & removeJoint : removeJoints)
 		{
-			if ( joint == removeJoints[i])
+			if ( joint == removeJoint)
 			{
 				shouldRemove = true;
 				break;
@@ -323,11 +318,9 @@ void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame)
 	int numJoints = _sk->getJointNames().size();
 
 	// placing in those descendants
-	for(int i=0; i< keepJoints.size(); i++)
+	for(auto joint : keepJoints)
 	{
-			SmartBody::SBJoint* joint = keepJoints[i];
-
-			int chanId = _context->channels().search(joint->getMappedJointName(), SkChannel::Quat);
+				int chanId = _context->channels().search(joint->getMappedJointName(), SkChannel::Quat);
 			if (chanId < 0)
 				continue;
 			int index = _context->toBufferIndex(chanId);

@@ -57,10 +57,7 @@ SBSkeleton::SBSkeleton(SBSkeleton* copySkel) : SkSkeleton(copySkel)
 	//jointMap = copySkel->getJointMapName();
 }
 
-SBSkeleton::~SBSkeleton()
-{
-
-}
+SBSkeleton::~SBSkeleton() = default;
 
 SBAPI SBJoint* SBSkeleton::createChannel(const std::string& name)
 {
@@ -237,10 +234,10 @@ const std::string& SBSkeleton::getFileName()
 
 bool SBSkeleton::load(const std::string& skeletonFile)
 {
-	SBSkeleton* skeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonFile.c_str());
+	auto skeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonFile.c_str());
 	if (skeleton)
 	{
-		copy(skeleton);
+		copy(skeleton.get());
 		update();
 		return true;
 	}

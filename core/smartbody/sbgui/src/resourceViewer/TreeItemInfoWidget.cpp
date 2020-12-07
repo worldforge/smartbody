@@ -76,7 +76,7 @@ void JointInfoObject::notify( SBSubject* subject )
 		return;	
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSkeleton* templateSkel = scene->getSkeleton(itemSkeleton->getName());
+	auto templateSkel = scene->getSkeleton(itemSkeleton->getName());
 
 	SmartBody::SBJoint* templateSelectJoint = templateSkel->getJointByName(jointName);
 	SmartBody::SBJoint* selectJoint = itemSkeleton->getJointByName(jointName);
@@ -109,7 +109,7 @@ void JointInfoObject::notify( SBSubject* subject )
 	}
 }
 
-void JointInfoObject::setSkeleton( SmartBody::SBSkeleton* skel )
+void JointInfoObject::setSkeleton( boost::intrusive_ptr<SmartBody::SBSkeleton> skel )
 {
 	itemSkeleton = skel;
 	jointName = "";
@@ -152,7 +152,7 @@ void SkeletonItemInfoWidget::updateWidget()
 	}
 	else
 	{
-		SmartBody::SBSkeleton * skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+		auto skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
 		if (!skeleton)
 			return; // skeleton is lost, no update
 
@@ -160,7 +160,7 @@ void SkeletonItemInfoWidget::updateWidget()
 		itemSkeleton = skeleton;
 	}
 	jointInfoObject->setSkeleton(itemSkeleton);
-	updateSkeletonTree(skeletonTree->root(), itemSkeleton);
+	updateSkeletonTree(skeletonTree->root(), itemSkeleton.get());
 }
 
 void SkeletonItemInfoWidget::updateJointAttributes(std::string jointName)

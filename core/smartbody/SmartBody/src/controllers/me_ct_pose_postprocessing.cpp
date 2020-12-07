@@ -1,6 +1,7 @@
 #include "controllers/me_ct_pose_postprocessing.hpp"
 #include <assert.h>
 #include <boost/foreach.hpp>
+#include <utility>
 #include <sr/sr_timer.h>
 #include "gwiz_math.h"
 using namespace gwiz;
@@ -8,38 +9,35 @@ using namespace gwiz;
 std::string MeCtPosePostProcessing::CONTROLLER_TYPE = "PostProcessing";
 
 
-MeCtPosePostProcessing::MeCtPosePostProcessing( SmartBody::SBSkeleton* skeleton ) : MeCtConstraint(skeleton)
+MeCtPosePostProcessing::MeCtPosePostProcessing(boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton ) : MeCtConstraint(std::move(skeleton))
 {
 	firstIKSolve = true;			
 }
 
-MeCtPosePostProcessing::~MeCtPosePostProcessing(void)
-{
-	
-}
+MeCtPosePostProcessing::~MeCtPosePostProcessing() = default;
 
 
 void MeCtPosePostProcessing::updatePoseConstraint()
 {
 	std::vector<std::string> consNames = _sbChar->getJointConstraintNames();
-	for (unsigned int i=0;i<consNames.size();i++)
+	for (auto & consName : consNames)
 	{
-		SmartBody::TrajectoryRecord* trajRecord = _sbChar->getJointTrajectoryConstraint(consNames[i]);
+		SmartBody::TrajectoryRecord* trajRecord = _sbChar->getJointTrajectoryConstraint(consName);
 		EffectorConstantConstraint* cons = nullptr;
-		if (posConstraint.find(consNames[i]) == posConstraint.end())
+		if (posConstraint.find(consName) == posConstraint.end())
 		{
 			cons = new EffectorConstantConstraint();
-			posConstraint[consNames[i]] = cons;						
-			cons->efffectorName = consNames[i];			
+			posConstraint[consName] = cons;
+			cons->efffectorName = consName;
 			cons->rootName = trajRecord->refJointName;
-			if (consNames[i][0] == 'l')
+			if (consName[0] == 'l')
 				cons->rootName = "l_hip";
-			else if (consNames[i][0] == 'r')
+			else if (consName[0] == 'r')
 				cons->rootName = "r_hip";
 		}	
 		else
 		{
-			cons = dynamic_cast<EffectorConstantConstraint*>(posConstraint[consNames[i]]);
+			cons = dynamic_cast<EffectorConstantConstraint*>(posConstraint[consName]);
 		}		
 		cons->targetPos = trajRecord->jointTrajGlobalPos;
  		if (!trajRecord->isEnable)

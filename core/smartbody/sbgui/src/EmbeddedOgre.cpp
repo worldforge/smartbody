@@ -933,7 +933,7 @@ Ogre::Entity* EmbeddedOgre::createOgreCharacter( SmartBody::SBCharacter* sbChar 
 	DeformableMeshInstance* meshInstance = sbChar->dMeshInstance_p;
 	if (meshName == "") meshName = sbChar->getName();
 
-	SmartBody::SBSkeleton* charSkel = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+	auto charSkel = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
 	addSBSkeleton(charSkel);
 	addDeformableMesh(meshName, meshInstance);
 	Ogre::SkeletonPtr ogreSkel = Ogre::SkeletonManager::getSingleton().getByName(skeletonName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);

@@ -28,6 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <sstream>
 #include <sbm/general_param_setting.h>
+#include "sr/sr_shared_ptr.hpp"
 
 
 #include <memory>
@@ -212,8 +213,8 @@ class SBScene : public SBObject
 
 
 		// deprecated
-		SBAPI SBSkeleton* createSkeleton(const std::string&char_name);
-		SBAPI SBSkeleton* getSkeleton(const std::string& name);		
+		SBAPI boost::intrusive_ptr<SBSkeleton> createSkeleton(const std::string&char_name);
+		SBAPI boost::intrusive_ptr<SBSkeleton> getSkeleton(const std::string& name);
 		SBAPI void addAssetPath(const std::string& type, const std::string& path);
 		SBAPI std::vector<std::string> getAssetPaths(const std::string& type);
 		SBAPI std::vector<std::string> getLocalAssetPaths(const std::string& type);
@@ -225,7 +226,7 @@ class SBScene : public SBObject
 //		SBAPI void loadMotions();
 //		SBAPI void addMotions(const std::string& path, bool recursive);
 		SBAPI SBMotion* addMotionDefinition(const std::string& motionName, double duration, int numFrames );
-		SBAPI SBSkeleton* addSkeletonDefinition(const std::string& skelName);
+		SBAPI boost::intrusive_ptr<SBSkeleton> addSkeletonDefinition(const std::string& skelName);
 		SBAPI void removeSkeletonDefinition(const std::string& skelName);
 		SBAPI SBMotion* createMotion(const std::string& motionName);
 		SBAPI SBMotion* getMotion(const std::string& name);

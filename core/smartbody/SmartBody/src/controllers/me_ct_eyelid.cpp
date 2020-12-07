@@ -223,7 +223,7 @@ void MeCtEyeLidRegulator::test( void )	{
 
 //////////////////////////////////////////////////////////////////////////////////
 
-MeCtEyeLidRegulator::MeCtEyeLidRegulator( void )	{
+MeCtEyeLidRegulator::MeCtEyeLidRegulator( )	{
 	set_use_blink_viseme(false);
 	upper_lid_smooth = 0.9f;
 	lower_lid_smooth = 0.9f;
@@ -271,7 +271,7 @@ void MeCtEyeLidRegulator::init(SmartBody::SBPawn* pawn,  bool tracking_pitch)	{
 	SmartBody::SBCharacter* c = dynamic_cast<SmartBody::SBCharacter*> (pawn);
 	if (c)
 	{
-		SmartBody::SBSkeleton* skel = c->getSkeleton();
+		auto skel = c->getSkeleton();
 		if (skel)
 		{
 			SmartBody::SBJoint* lEyeJoint = skel->getJointByMappedName("eyeball_left");

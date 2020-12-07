@@ -108,14 +108,7 @@ void SbmPawn::initData()
 #ifndef SB_NO_BONEBUS
 	bonebusCharacter = nullptr;
 #endif
-	if (_skeleton)
-	{
-		delete _skeleton;
-		//_skeleton->unref();
-	}
 	_skeleton = new SmartBody::SBSkeleton();
-	_skeleton->ref();
-	if (ct_tree_p)
 		delete ct_tree_p;
 	ct_tree_p = MeControllerTreeRoot::create();
 	ct_tree_p->ref();
@@ -152,12 +145,12 @@ void SbmPawn::initData()
 	wo_cache.r = 0;
 }
 
-SkSkeleton* SbmPawn::getSkeleton() const
+const boost::intrusive_ptr<SkSkeleton>& SbmPawn::getSkeleton() const
 {
 	return _skeleton;
 }
 
-void SbmPawn::setSkeleton(SkSkeleton* sk)
+void SbmPawn::setSkeleton(boost::intrusive_ptr<SkSkeleton> sk)
 {
 	if (!sk)
 	{
@@ -169,12 +162,9 @@ void SbmPawn::setSkeleton(SkSkeleton* sk)
 	if (_skeleton)
 	{		
 		ct_tree_p->remove_skeleton( _skeleton->getName() );
-		//_skeleton->unref();
-		delete _skeleton;
 	}
 	_skeleton = sk;
-	_skeleton->ref();	
-	ct_tree_p->add_skeleton( _skeleton->getName(), _skeleton );	
+	ct_tree_p->add_skeleton( _skeleton->getName(), _skeleton );
 
 	//scene_p->init(_skeleton);
 	//int err = mcu.add_scene(scene_p);	
@@ -185,21 +175,18 @@ void SbmPawn::setSkeleton(SkSkeleton* sk)
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-	for (size_t i = 0; i < listeners.size(); i++)
+	for (auto & listener : listeners)
 	{
-		listeners[i]->OnCharacterUpdate( getName() );
+		listener->OnCharacterUpdate( getName() );
 	}
 }
 
 int SbmPawn::init( SkSkeleton* new_skeleton_p ) {
 	if( _skeleton ) {
 		ct_tree_p->remove_skeleton( _skeleton->getName() );
-		//_skeleton->unref();
-		delete _skeleton;
 	}
 	_skeleton = new_skeleton_p;
 	if( _skeleton ) {
-		_skeleton->ref();
 		if( init_skeleton()!=CMD_SUCCESS ) {
 			return CMD_FAILURE; 
 		}
@@ -207,9 +194,9 @@ int SbmPawn::init( SkSkeleton* new_skeleton_p ) {
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 		
 		std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-		for (size_t i = 0; i < listeners.size(); i++)
+		for (auto & listener : listeners)
 		{
-			listeners[i]->OnCharacterUpdate( getName() );
+			listener->OnCharacterUpdate( getName() );
 		}
 
 	}
@@ -267,9 +254,9 @@ int SbmPawn::setup() {
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-	for (size_t i = 0; i < listeners.size(); i++)
+	for (auto & listener : listeners)
 	{
-		listeners[i]->OnCharacterUpdate( getName() );
+		listener->OnCharacterUpdate( getName() );
 	}
 
 	return( CMD_SUCCESS ); 
@@ -421,12 +408,6 @@ SbmPawn::~SbmPawn()
 //		delete dMeshInstance_p;
 //	}
 
-	if( _skeleton )
-	{
-		//SmartBody::util::log("skeleton ref count = %d",_skeleton->getref());
-		//_skeleton->unref();
-		delete _skeleton;
-	}
 
 	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
 	colManager->removeCollisionObject(collisionObjName);
@@ -435,7 +416,6 @@ SbmPawn::~SbmPawn()
 	//printf("ct_tree ref count = %d",ct_tree_p->getref());
 	//ct_tree_p->unref();	 
 	// just delete ct_tree_p
-	if (ct_tree_p)
 		delete ct_tree_p;
 }
 

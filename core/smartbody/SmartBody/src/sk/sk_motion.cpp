@@ -993,7 +993,7 @@ void SkMotion::equalize_frames ( SrArray<SkMotion*> motions )
 
 //============================ End of File ===========================
 
-const bool ascendingTime(SmartBody::SBMotionEvent* a, SmartBody::SBMotionEvent* b)
+bool ascendingTime(SmartBody::SBMotionEvent* a, SmartBody::SBMotionEvent* b)
 {
 	return (a->getTime() < b->getTime());
 }
@@ -1026,8 +1026,8 @@ void extractQuatXZY(SrQuat& inQuat, SrQuat& outXZQuat, SrQuat& outYQuat)
 SkMotion* SkMotion::buildSmoothMotionCycle( float timeInterval, bool smoothBase )
 {
 	SkChannelArray& mchan_arr = this->channels();
-	SmartBody::SBMotion* originalMotion = dynamic_cast<SmartBody::SBMotion*>(this);
-	SmartBody::SBMotion *smooth_p = new SmartBody::SBMotion();
+	auto* originalMotion = dynamic_cast<SmartBody::SBMotion*>(this);
+	auto *smooth_p = new SmartBody::SBMotion();
 	smooth_p->setMotionSkeletonName(originalMotion->getMotionSkeletonName());	
 	srSynchPoints sp(synch_points);
 	smooth_p->synch_points = sp;
@@ -1240,29 +1240,29 @@ void SkMotion::convertBoneOrientation( std::string &pjointName, SkSkeleton* inte
 SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* targetSk, std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints, std::map<std::string, SrVec>& offsetJoints )
 {
 	SkChannelArray& mchan_arr = this->channels();
-	SkSkeleton* interSk = new SkSkeleton(targetSk); // copy for an intermediate skeleton
-	SkSkeleton* tempSrcSk = new SkSkeleton(sourceSk);
+	SkSkeleton interSk(targetSk); // copy for an intermediate skeleton
+	SkSkeleton tempSrcSk(sourceSk);
 
 	std::vector<std::string> stopJoints;	
 	stopJoints.emplace_back("skullbase");
 	//stopJoints.emplace_back("l_wrist");
 	//stopJoints.emplace_back("r_wrist");
 	// update the global matrices
-	tempSrcSk->clearJointValues();
-	interSk->clearJointValues();
-	tempSrcSk->invalidate_global_matrices();
-	tempSrcSk->update_global_matrices();
-	interSk->invalidate_global_matrices();
-	interSk->update_global_matrices();
+	tempSrcSk.clearJointValues();
+	interSk.clearJointValues();
+	tempSrcSk.invalidate_global_matrices();
+	tempSrcSk.update_global_matrices();
+	interSk.invalidate_global_matrices();
+	interSk.update_global_matrices();
 
 #if 0 // don't apply root pre-rotation ( still experimental )
-	SrVec srcFaceDir = tempSrcSk->getFacingDirection();
-	SrVec tgtFaceDir = interSk->getFacingDirection();
+	SrVec srcFaceDir = tempSrcSk.getFacingDirection();
+	SrVec tgtFaceDir = interSk.getFacingDirection();
 	SrQuat offsetRot = SrQuat(srcFaceDir,tgtFaceDir);
 	sr_out << "srcFaceDir = " << srcFaceDir;
 	sr_out << "tgtFaceDir = " << tgtFaceDir;
 	sr_out << "offset rot = " << offsetRot << srnl;
-	tempSrcSk->root()->quat()->prerot(offsetRot);
+	tempSrcSk.root()->quat()->prerot(offsetRot);
 #endif
 	
 	SkMotion *retarget_p = new SmartBody::SBMotion();	
@@ -1279,7 +1279,7 @@ SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* tar
 	std::map<std::string, SrQuat> jointRotationMap;
 	std::queue<std::string> jointQueues;
 	std::string rootName = "base";
-	//jointQueues.push(interSk->root()->name());	
+	//jointQueues.push(interSk.root()->name());
 	jointQueues.push(rootName);
 	while (!jointQueues.empty())
 	{
@@ -1288,12 +1288,12 @@ SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* tar
 		if (std::find(stopJoints.begin(),stopJoints.end(),pjointName) != stopJoints.end())
 			continue;
 
-		SkJoint* srcJoint = tempSrcSk->search_joint(pjointName.c_str());
-		SkJoint* targetJoint = interSk->search_joint(pjointName.c_str());
+		SkJoint* srcJoint = tempSrcSk.search_joint(pjointName.c_str());
+		SkJoint* targetJoint = interSk.search_joint(pjointName.c_str());
 		bool isRelativeJoint = false;
 		
 		// just copy over joint quat if that is a root or relative joint
-		//if (pjointName == interSk->root()->name() || std::find(relativeJoints.begin(),relativeJoints.end(), pjointName) != relativeJoints.end())
+		//if (pjointName == interSk.root()->name() || std::find(relativeJoints.begin(),relativeJoints.end(), pjointName) != relativeJoints.end())
 		if (pjointName == rootName || std::find(relativeJoints.begin(),relativeJoints.end(), pjointName) != relativeJoints.end())
 			isRelativeJoint = true;
 		if ( isRelativeJoint && srcJoint && targetJoint) 
@@ -1307,10 +1307,10 @@ SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* tar
 		else
 		{
 			//SmartBody::util::log("pjoint name = %s",pjointName.c_str());
-			convertBoneOrientation(pjointName, interSk, tempSrcSk, endJoints);
-			interSk->invalidate_global_matrices();
-			interSk->update_global_matrices();
-			SkJoint* pjoint = interSk->search_joint(pjointName.c_str());	
+			convertBoneOrientation(pjointName, &interSk, &tempSrcSk, endJoints);
+			interSk.invalidate_global_matrices();
+			interSk.update_global_matrices();
+			SkJoint* pjoint = interSk.search_joint(pjointName.c_str());
 			if (!pjoint)
 				continue;
 			//SrQuat newPreRot = pjoint->quat()->prerot()*pjoint->quat()->rawValue();
@@ -1324,7 +1324,7 @@ SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* tar
 			}
 		}				
 	}
-	float heightRatio = (interSk->getBaseHeight("base")/tempSrcSk->getBaseHeight("base"));//*0.99f;
+	float heightRatio = (interSk.getBaseHeight("base")/tempSrcSk.getBaseHeight("base"));//*0.99f;
 	//SmartBody::util::log("height ratio = %f", heightRatio);
 	for (int i = 0; i < num_f; i++)
 	{
@@ -1346,8 +1346,8 @@ SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* tar
 				//SrVec qa = q_orig.axisAngle();
 				//SrVec qa_rot = qa*srcToTargetRot;	
 				//SrQuat final_q = jointRot;//*SrQuat(qa_rot);	
-				SkJoint* srcJoint = tempSrcSk->search_joint(jointName.c_str());
-				SkJoint* targetJoint = interSk->search_joint(jointName.c_str());			
+				SkJoint* srcJoint = tempSrcSk.search_joint(jointName.c_str());
+				SkJoint* targetJoint = interSk.search_joint(jointName.c_str());
 				if (srcJoint && targetJoint)
 				{					
 					SrQuat gsrc = SrQuat(srcJoint->gmat());
@@ -1379,8 +1379,6 @@ SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* tar
 			}
 		}		
 	}	
-	delete tempSrcSk;
-	delete interSk;
 	return retarget_p;
 }
 

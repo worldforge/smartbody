@@ -103,11 +103,11 @@ void SBAssetManager::setGlobalSkeletonScale(double val)
 
 
 
-SBSkeleton* SBAssetManager::createSkeleton(const std::string& skeletonDefinition)
+boost::intrusive_ptr<SBSkeleton> SBAssetManager::createSkeleton(const std::string& skeletonDefinition)
 {
 	if (skeletonDefinition.empty())
 	{
-		auto skeleton = std::make_unique<SBSkeleton>();
+		boost::intrusive_ptr<SBSkeleton> skeleton(new SBSkeleton());
 		std::stringstream strstr;
 		strstr << "skeleton" << uniqueSkeletonId;
 		uniqueSkeletonId++;
@@ -118,21 +118,19 @@ SBSkeleton* SBAssetManager::createSkeleton(const std::string& skeletonDefinition
 
 	}
 
-	SBSkeleton* templateSkeleton = this->getSkeleton(skeletonDefinition);
+	auto templateSkeleton = this->getSkeleton(skeletonDefinition);
 	if (templateSkeleton)
 	{
-		//FIXME: this will leak memory
-		return new SBSkeleton(templateSkeleton);
+		return {new SBSkeleton(templateSkeleton.get())};
 	}
 	else
 	{
-		//FIXME: this will leak memory
-		return new SBSkeleton(skeletonDefinition);
+		return {new SBSkeleton(skeletonDefinition)};
 	}
 }
 
 
-SBSkeleton* SBAssetManager::getSkeleton(const std::string& name)
+boost::intrusive_ptr<SBSkeleton> SBAssetManager::getSkeleton(const std::string& name)
 {
 
 	auto iter = _skeletons.find(name);
@@ -162,14 +160,14 @@ void SBAssetManager::processAssets(std::vector<std::unique_ptr<SBAsset>>& assets
 			}
 			auto* skeleton = dynamic_cast<SmartBody::SBSkeleton*>(asset.get());
 			if (skeleton) {
-				SBSkeleton* existingSkeleton = this->getSkeleton(skeleton->getName());
+				auto existingSkeleton = this->getSkeleton(skeleton->getName());
 				if (existingSkeleton) {
-					std::string name = this->getAssetNameVariation(existingSkeleton);
+					std::string name = this->getAssetNameVariation(existingSkeleton.get());
 					SmartBody::util::log("Skeleton named %s already exist, changing name to %s", skeleton->getName().c_str(), name.c_str());
 					skeleton->setName(name);
 				}
 				asset.release();
-				this->addSkeleton(std::unique_ptr<SBSkeleton>(skeleton));
+				this->addSkeleton({skeleton});
 				skeleton->ref();
 				addAssetHistory("SKELETON " + skeleton->getName());
 				continue;
@@ -178,15 +176,15 @@ void SBAssetManager::processAssets(std::vector<std::unique_ptr<SBAsset>>& assets
 	}
 }
 
-SBSkeleton* SBAssetManager::addSkeletonDefinition(const std::string& skelName )
+boost::intrusive_ptr<SBSkeleton> SBAssetManager::addSkeletonDefinition(const std::string& skelName )
 {
-	SBSkeleton* existingSkeleton = this->getSkeleton(skelName);
+	auto existingSkeleton = this->getSkeleton(skelName);
 	if (existingSkeleton)
 	{
 		SmartBody::util::log("Skeleton named %s already exists, new skeleton will not be created.", skelName.c_str());
 		return nullptr;
 	}
-	auto sbSkel = std::make_unique<SBSkeleton>();
+	boost::intrusive_ptr<SBSkeleton> sbSkel(new SBSkeleton());
 	sbSkel->setName(skelName);
 	sbSkel->skfilename(skelName.c_str());
 	auto result = _skeletons.emplace(sbSkel->getName(), std::move(sbSkel));
@@ -225,7 +223,7 @@ void SBAssetManager::removeSkeletonDefinition(const std::string& skelName )
 	_skeletons.erase(iter);
 }
 
-SBAPI void SBAssetManager::addSkeleton(std::unique_ptr<SmartBody::SBSkeleton> skeleton)
+SBAPI void SBAssetManager::addSkeleton(boost::intrusive_ptr<SBSkeleton> skeleton)
 {
 	_skeletons[skeleton->getName()] = std::move(skeleton);
 }

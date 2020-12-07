@@ -228,7 +228,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 	bool isValidModel = PolyVoxMeshToPinoMesh(*voxelMesh,m);
 	SrModelToMesh(model,origMesh, false);
 	if (!isValidModel) return false; // no auto-rigging if the model is not valid
-	SmartBody::SBSkeleton* sbSk = sbChar->getSkeleton();
+	auto sbSk = sbChar->getSkeleton();
 
 	SrMat worldOffsetMat = sbChar->get_world_offset();
 	sbChar->setWorldOffset(SrMat::id);
@@ -247,7 +247,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 		buildBoneGlowSkinWeights(model, *sbSk, *voxelWindow, skinWeightMap);
 		WeightMapToSkinWeight(skinWeightMap,*sw);
 
-		SmartBody::SBSkeleton* sbOrigSk = sbSk;
+		auto sbOrigSk = sbSk;
 		for (unsigned int k=0;k<sw->infJointName.size();k++)
 		{
 			// manually add all joint names
@@ -344,7 +344,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 		SmartBody::util::log("after normalize weights");
 
 
-		SmartBody::SBSkeleton* sbOrigSk = sbSk;
+		auto sbOrigSk = sbSk;
 		for (unsigned int k=0;k<sw->infJointName.size();k++)
 		{
 			// manually add all joint names
@@ -423,14 +423,14 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 	//PinocchioOutput out = autorig(sk,m);	
 	//PinocchioOutput out = autorigVoxelTransfer(sk,m,origMesh, false); // don't compute the skin weights
 	SmartBody::util::log("embedding = %d",out.embedding.size());
-	if (out.embedding.size() == 0)
+	if (out.embedding.empty())
 		return false;
 
 
 
 	for(auto & i : out.embedding)
 		i = (i - m.toAdd) / m.scale;
-	auto sbSk = std::make_unique<SmartBody::SBSkeleton>();
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton());
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
 	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
@@ -488,7 +488,6 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
 	auto& renderAssetManager = Session::current->renderAssetManager;
-	sbSk->ref();
 	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());
 	deformMesh->skeletonName = outSkName;
@@ -582,7 +581,7 @@ bool SBAutoRigManager::buildAutoRiggingVoxels( SrModel& inModel, std::string out
 
 	for(auto & i : out.embedding)
 		i = (i - m.toAdd) / m.scale;
-	auto sbSk = std::make_unique<SmartBody::SBSkeleton>();
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton());
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
 	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
@@ -592,7 +591,6 @@ bool SBAutoRigManager::buildAutoRiggingVoxels( SrModel& inModel, std::string out
 
 
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
-	sbSk->ref();
 	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());
 	deformMesh->skeletonName = outSkName;
@@ -631,7 +629,7 @@ bool SBAutoRigManager::buildAutoRigging( SrModel& inModel, std::string outSkName
 
 	for(auto & i : out.embedding)
 		i = (i - m.toAdd) / m.scale;
-	auto sbSk = std::make_unique<SmartBody::SBSkeleton>();
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton());
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
 	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
@@ -643,7 +641,6 @@ bool SBAutoRigManager::buildAutoRigging( SrModel& inModel, std::string outSkName
 
 	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
 
-	sbSk->ref();
 	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());
 	deformMesh->skeletonName = outSkName;
@@ -1670,7 +1667,7 @@ bool AutoRigToDeformableMesh( PinocchioOutput& out, SrModel& m, SmartBody::SBSke
 	SmartBody::util::log("after normalize weights");
 
 
-	SmartBody::SBSkeleton* sbOrigSk = &sbSk;
+	auto sbOrigSk = &sbSk;
 	for (int k=0;k<sbOrigSk->getNumJoints();k++)
 	{
 		// manually add all joint names

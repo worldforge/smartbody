@@ -36,7 +36,7 @@ class MeCtGenericHand : public SmartBody::SBController
 	public:
 		// constructor, destructor and init functions
 		MeCtGenericHand( );
-		MeCtGenericHand( SmartBody::SBSkeleton* sk, SbmCharacter* c);
+		MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SbmCharacter* c);
 		~MeCtGenericHand();
 		void init(SmartBody::SBMotion* motion , int num_levels);
 
@@ -77,10 +77,10 @@ class MeCtGenericHand : public SmartBody::SBController
 		int							_maxLevels;
 		
 		SkChannelArray 				_channels;
-		
-		SmartBody::SBSkeleton*     	_skeletonRef;
 
-		SmartBody::SBSkeleton*     	_sk;
+		boost::intrusive_ptr<SmartBody::SBSkeleton>    	_skeletonRef;
+
+		boost::intrusive_ptr<SmartBody::SBSkeleton>     	_sk;
 		SbmCharacter*				_character;
 
 		std::string 				_wristJtRtName;

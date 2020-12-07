@@ -205,7 +205,7 @@ void SBBoneBusManager::afterUpdate(double time)
 			if ( character->getSkeleton() && 
 				 character->bonebusCharacter)
 			{
-				NetworkSendSkeleton( character->bonebusCharacter, character->getSkeleton(), &scene->getGeneralParameters() );
+				NetworkSendSkeleton( character->bonebusCharacter, character->getSkeleton().get(), &scene->getGeneralParameters() );
 
 				const SkJoint * joint = character->get_world_offset_joint();
 
@@ -337,10 +337,9 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 
 	character->StartSendBonePositions();
 
-	for ( size_t i = 0; i < joints.size(); i++ )
+	for (auto j : joints)
 	{
-		SkJoint * j = joints[ i ];
-		if (j->getJointType() != SkJoint::TypeJoint)
+			if (j->getJointType() != SkJoint::TypeJoint)
 			continue;
 
 		float posx = j->pos()->value( 0 );

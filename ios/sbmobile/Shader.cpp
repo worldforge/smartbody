@@ -1876,7 +1876,7 @@ extern "C"
 		{
 			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter((*charIter));
 			
-			SmartBody::SBSkeleton* sk = character->getSkeleton();
+			auto sk = character->getSkeleton();
 			sk->update_global_matrices();
 			std::map<int,int> indexMap;
 			size_t numJoints = sk->joints().size();

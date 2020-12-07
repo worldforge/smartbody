@@ -16,7 +16,7 @@ class MeCtPhysicsController : public SmartBody::SBController
 		float 			_duration;
 		SkChannelArray	_channels;
 		SbmCharacter* 	_character;
-		SmartBody::SBSkeleton*     _skeletonCopy;
+		boost::intrusive_ptr<SmartBody::SBSkeleton>     _skeletonCopy;
 		bool			_valid;	
 	public:
 		MeCtPhysicsController(SbmCharacter* character);

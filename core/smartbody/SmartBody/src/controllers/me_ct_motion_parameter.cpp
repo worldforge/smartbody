@@ -19,19 +19,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include <sr/sr_euler.h>
+
+#include <utility>
 #include "controllers/me_ct_motion_parameter.h"
 #include "SBUtilities.h"
 
-MotionParameter::MotionParameter(SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints)
+MotionParameter::MotionParameter(boost::intrusive_ptr<SmartBody::SBSkeleton> skel, std::vector<SmartBody::SBJoint*>& joints)
 {
-	skeletonRef = skel;
+	skeletonRef = std::move(skel);
 	affectedJoints = joints;
 }
 
-MotionParameter::~MotionParameter(void)
-{
-
-}
+MotionParameter::~MotionParameter() = default;
 
 SkJoint* MotionParameter::getMotionFrameJoint( const BodyMotionFrame& frame, const char* jointName )
 {
@@ -54,16 +53,13 @@ SkJoint* MotionParameter::getMotionFrameJoint( const BodyMotionFrame& frame, con
 	return outJoint;
 }
 
-ReachMotionParameter::ReachMotionParameter( SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints, SmartBody::SBJoint* rjoint, SmartBody::SBJoint* root ) : MotionParameter(skel,joints)
+ReachMotionParameter::ReachMotionParameter( boost::intrusive_ptr<SmartBody::SBSkeleton> skel, std::vector<SmartBody::SBJoint*>& joints, SmartBody::SBJoint* rjoint, SmartBody::SBJoint* root ) : MotionParameter(std::move(skel),joints)
 {
 	reachJoint = rjoint;	
 	rootJoint = root;
 }
 
-ReachMotionParameter::~ReachMotionParameter()
-{
-
-}
+ReachMotionParameter::~ReachMotionParameter() = default;
 
 void ReachMotionParameter::getPoseParameter( const BodyMotionFrame& frame, dVector& outPara )
 {
@@ -90,22 +86,20 @@ void ReachMotionParameter::getMotionParameter(BodyMotionInterface* motion, dVect
 void ReachMotionParameter::getMotionFrameParameter( BodyMotionInterface* motion, float refTime, dVector& outPara )
 {
 	BodyMotionFrame tempFrame;
-	motion->getMotionFrame((float)refTime,skeletonRef,affectedJoints,tempFrame);
+	motion->getMotionFrame((float)refTime,skeletonRef.get(),affectedJoints,tempFrame);
 // 	int noffset = 30;
 // 	for (int i=noffset;i<5+noffset;i++)
 // 		sr_out << "motion frame quat " << i+noffset << " : " << tempFrame.jointQuat[i+noffset] << srnl;
 	getPoseParameter(tempFrame,outPara);	
 }
 
-LocomotionParameter::LocomotionParameter( SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints, const std::string& baseName ): MotionParameter(skel,joints)
+LocomotionParameter::LocomotionParameter( boost::intrusive_ptr<SmartBody::SBSkeleton> skel, std::vector<SmartBody::SBJoint*>& joints, const std::string& baseName ): MotionParameter(std::move(skel),joints)
 {
 	baseJointName = baseName;
 }
 
 LocomotionParameter::~LocomotionParameter()
-{
-
-}
+= default;
 
 void LocomotionParameter::getMotionParameter( BodyMotionInterface* motion, dVector& outPara )
 {
@@ -264,15 +258,12 @@ float LocomotionParameter::getMotionAngularSpeed( BodyMotionInterface* motion, c
 /************************************************************************/
 /* Jump Parameter                                                       */
 /************************************************************************/
-JumpParameter::JumpParameter( SmartBody::SBSkeleton* skel, std::vector<SmartBody::SBJoint*>& joints, const std::string& baseName ): MotionParameter(skel,joints)
+JumpParameter::JumpParameter( boost::intrusive_ptr<SmartBody::SBSkeleton> skel, std::vector<SmartBody::SBJoint*>& joints, const std::string& baseName ): MotionParameter(std::move(skel),joints)
 {
 	baseJointName = baseName;
 }
 
-JumpParameter::~JumpParameter()
-{
-
-}
+JumpParameter::~JumpParameter() = default;
 
 void JumpParameter::getPoseParameter( const BodyMotionFrame& frame, dVector& outPara )
 {

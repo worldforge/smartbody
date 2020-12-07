@@ -36,9 +36,9 @@ class SBSkeleton : public SkSkeleton
 {
 public:
 	SBAPI SBSkeleton();
-	SBAPI SBSkeleton(const std::string& skelFile);
-	SBAPI SBSkeleton(SBSkeleton* copySkel);
-	SBAPI ~SBSkeleton();
+	SBAPI explicit SBSkeleton(const std::string& skelFile);
+	SBAPI explicit SBSkeleton(SBSkeleton* copySkel);
+	SBAPI ~SBSkeleton() override;
 
 	SBAPI SBJoint* createJoint(const std::string& name, SBJoint* parent);
 	SBAPI SBJoint* createStaticJoint(const std::string& name, SBJoint* parent);
@@ -72,11 +72,11 @@ public:
 	SBAPI float getScale();
 	SBAPI void update();
 
-	SBAPI void notify(SBSubject* subject);
+	SBAPI void notify(SBSubject* subject) override;
 
 	/* the following are designed to re-orient joints local axes. added by David Huang Jun 2012 */
 	// Orient skeleton joints local axes to match world coordinate axes (Y-up Z-front)
-	SBAPI void orientJointsLocalAxesToWorld(void);
+	SBAPI void orientJointsLocalAxesToWorld();
 	/* Create a new standard T-pose skel from source (TposeSk) with no pre-rotations
 	// put TposeSk (source skel) into T-pose before running this! */
 	SBAPI void _createSkelWithoutPreRot(SBSkeleton* TposeSk, SBSkeleton* newSk, const char* new_name=0);

@@ -224,7 +224,7 @@ void TransparencyRenders::drawCharacters(bool shadowPass)
 	{
 		glBegin(GL_LINES);     
 		SmartBody::SBCharacter* cur =  scene->getCharacter(*iter);
-		SmartBody::SBSkeleton* skeleton = cur->getSkeleton();
+		auto skeleton = cur->getSkeleton();
 		int numJoints = skeleton->getNumJoints();
 		for (int j = 0; j < numJoints; j++)
 		{

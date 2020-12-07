@@ -25,65 +25,60 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sk/sk_motion.h>
 #include <sb/SBMotion.h>
 #include <queue>
+#include <utility>
 
 #define ELITE_HACK 1
 
 namespace SmartBody {
 
 
-SBAPI SBRetarget::SBRetarget()
-{
-	
-}
+SBAPI SBRetarget::SBRetarget() = default;
 
 SBAPI SBRetarget::SBRetarget(std::string srcName, std::string tgtName)
 {
-	srcSkName = srcName;
-	tgtSkName = tgtName;
+	srcSkName = std::move(srcName);
+	tgtSkName = std::move(tgtName);
 }
 
-SBAPI SBRetarget::~SBRetarget()
-{
-
-}
+SBAPI SBRetarget::~SBRetarget() = default;
 
 bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSkeleton* targetSk = scene->getSkeleton(tgtSkName);
-	SmartBody::SBSkeleton* sourceSk = scene->getSkeleton(srcSkName);	
+	auto targetSk = scene->getSkeleton(tgtSkName);
+	auto sourceSk = scene->getSkeleton(srcSkName);	
 	if (!targetSk || !sourceSk) return false;
 	
-	SmartBody::SBSkeleton* interSk = new SmartBody::SBSkeleton(targetSk); // copy for an intermediate skeleton
-	SmartBody::SBSkeleton* tempSrcSk = new SmartBody::SBSkeleton(sourceSk);
+	SmartBody::SBSkeleton interSk(targetSk.get()); // copy for an intermediate skeleton
+	SmartBody::SBSkeleton tempSrcSk(sourceSk.get());
 	std::vector<std::string> stopJoints;	
 	stopJoints.emplace_back("skullbase");
 
 	retargetEndJoints = endJoints;
 	retargetRelativeJoints = relativeJoints;
 	
-	tempSrcSk->clearJointValues();
-	interSk->clearJointValues();
-	tempSrcSk->invalidate_global_matrices();
-	tempSrcSk->update_global_matrices();
-	interSk->invalidate_global_matrices();
-	interSk->update_global_matrices();
+	tempSrcSk.clearJointValues();
+	interSk.clearJointValues();
+	tempSrcSk.invalidate_global_matrices();
+	tempSrcSk.update_global_matrices();
+	interSk.invalidate_global_matrices();
+	interSk.update_global_matrices();
 
 #if 0 // don't apply root pre-rotation ( still experimental )
-	SrVec srcFaceDir = tempSrcSk->getFacingDirection();
-	SrVec tgtFaceDir = interSk->getFacingDirection();
+	SrVec srcFaceDir = tempSrcSk.getFacingDirection();
+	SrVec tgtFaceDir = interSk.getFacingDirection();
 	SrQuat offsetRot = SrQuat(srcFaceDir,tgtFaceDir);
 	sr_out << "srcFaceDir = " << srcFaceDir;
 	sr_out << "tgtFaceDir = " << tgtFaceDir;
 	sr_out << "offset rot = " << offsetRot << srnl;
-	tempSrcSk->root()->quat()->prerot(offsetRot);
+	tempSrcSk.root()->quat()->prerot(offsetRot);
 #endif
 	
 	std::map<std::string, SrQuat> jointRotationMap;
 	std::queue<std::string> jointQueues;
 	std::map<std::string, bool> processJoints;
 	std::string rootName = "base";
-	//jointQueues.push(interSk->root()->name());	
+	//jointQueues.push(interSk.root()->name());	
 	jointQueues.push(rootName);
 	while (!jointQueues.empty())
 	{
@@ -92,8 +87,8 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 		if (std::find(stopJoints.begin(),stopJoints.end(),pjointName) != stopJoints.end())
 			continue;
 
-		SkJoint* srcJoint = tempSrcSk->search_joint(pjointName.c_str());
-		SkJoint* targetJoint = interSk->search_joint(pjointName.c_str());
+		SkJoint* srcJoint = tempSrcSk.search_joint(pjointName.c_str());
+		SkJoint* targetJoint = interSk.search_joint(pjointName.c_str());
 		bool isRelativeJoint = false;
 		bool isEndJoint = false;
 		
@@ -119,11 +114,11 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 		}
 		else
 		{
-			SkMotion::convertBoneOrientation(pjointName, interSk, tempSrcSk, endJoints);
+			SkMotion::convertBoneOrientation(pjointName, &interSk, &tempSrcSk, endJoints);
 			processJoints[pjointName] = true;
-			interSk->invalidate_global_matrices();
-			interSk->update_global_matrices();
-			SkJoint* pjoint = interSk->search_joint(pjointName.c_str());	
+			interSk.invalidate_global_matrices();
+			interSk.update_global_matrices();
+			SkJoint* pjoint = interSk.search_joint(pjointName.c_str());	
 			if (!pjoint)
 				continue;			
 			for (int i=0; i< pjoint->num_children(); i++)
@@ -134,15 +129,14 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 			}
 		}				
 	}
-	heightRatio = (interSk->getBaseHeight("base")/tempSrcSk->getBaseHeight("base"));//*0.99f;
+	heightRatio = (interSk.getBaseHeight("base")/tempSrcSk.getBaseHeight("base"));//*0.99f;
 	//SmartBody::util::log("height ratio = %f", heightRatio);
 
-	std::vector<std::string> srcJointNames = tempSrcSk->getJointMappedNames();
-	for (unsigned int i=0;i<srcJointNames.size();i++)
+	std::vector<std::string> srcJointNames = tempSrcSk.getJointMappedNames();
+	for (const auto& jname : srcJointNames)
 	{
-		std::string jname = srcJointNames[i];
-		SmartBody::SBJoint* srcJoint = tempSrcSk->getJointByName(jname);
-		SmartBody::SBJoint* tgtJoint = interSk->getJointByName(jname);		
+			SmartBody::SBJoint* srcJoint = tempSrcSk.getJointByName(jname);
+		SmartBody::SBJoint* tgtJoint = interSk.getJointByName(jname);		
 		bool isEndJoint = false;
 		if (std::find(endJoints.begin(),endJoints.end(), jname) != endJoints.end())
 			isEndJoint = true;
@@ -181,14 +175,6 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 		}
 	}
 
-	// clear intermediate skeletons
-	if (interSk)
-		delete interSk;
-	interSk = nullptr;
-	if (tempSrcSk)
-		delete tempSrcSk;
-	tempSrcSk = nullptr;
-
 	return true;
 
 #if 0 // not doing motion retargeting here
@@ -212,8 +198,8 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 				//SrVec qa = q_orig.axisAngle();
 				//SrVec qa_rot = qa*srcToTargetRot;	
 				//SrQuat final_q = jointRot;//*SrQuat(qa_rot);	
-				SkJoint* srcJoint = tempSrcSk->search_joint(jointName.c_str());
-				SkJoint* targetJoint = interSk->search_joint(jointName.c_str());			
+				SkJoint* srcJoint = tempSrcSk.search_joint(jointName.c_str());
+				SkJoint* targetJoint = interSk.search_joint(jointName.c_str());			
 				if (srcJoint && targetJoint)
 				{					
 					SrQuat gsrc = SrQuat(srcJoint->gmat());
@@ -248,7 +234,7 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 #endif
 }
 
-SrQuat SBRetarget::applyRetargetJointRotation( std::string jointName, SrQuat& inQuat )
+SrQuat SBRetarget::applyRetargetJointRotation( const std::string& jointName, SrQuat& inQuat )
 {
 	SrQuat outQuat = inQuat; // identity rotation 	
 	if (jointPrePostRotMap.find(jointName) != jointPrePostRotMap.end())
@@ -282,7 +268,7 @@ SrQuat SBRetarget::applyRetargetJointRotation( std::string jointName, SrQuat& in
 }
 
 
-SrQuat SBRetarget::applyRetargetJointRotationInverse( std::string jointName, SrQuat& inQuat )
+SrQuat SBRetarget::applyRetargetJointRotationInverse( const std::string& jointName, SrQuat& inQuat )
 {
 	SrQuat outQuat; // identity rotation 
 	if (jointPrePostRotMap.find(jointName) != jointPrePostRotMap.end())
@@ -344,8 +330,8 @@ SBAPI void SBRetarget::addJointRotOffset( std::string jointName, SrQuat& inQuat 
 
 void SBRetarget::computeJointLengthRatio( std::string jointName, std::string refJointName )
 {
-	SmartBody::SBSkeleton* srcSkel = SmartBody::SBScene::getScene()->getSkeleton(srcSkName);
-	SmartBody::SBSkeleton* tgtSkel = SmartBody::SBScene::getScene()->getSkeleton(tgtSkName);
+	auto srcSkel = SmartBody::SBScene::getScene()->getSkeleton(srcSkName);
+	auto tgtSkel = SmartBody::SBScene::getScene()->getSkeleton(tgtSkName);
 	if (!srcSkel || !tgtSkel)
 		return; 
 	SmartBody::SBJoint* srcJoint = srcSkel->getJointByName(jointName);

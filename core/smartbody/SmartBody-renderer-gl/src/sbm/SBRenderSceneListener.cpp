@@ -495,7 +495,7 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 		} else if (name == "displayJointScale") {
 			double val = pawn->getDoubleAttribute("displayJointScale");
 			if (renderable.scene_p) {
-				SmartBody::SBSkeleton* skeleton = pawn->getSkeleton();
+				auto skeleton = pawn->getSkeleton();
 				if (skeleton) {
 					int numJoints = skeleton->getNumJoints();
 					for (int j = 0; j < numJoints; j++) {

@@ -38,8 +38,8 @@ class SBPawn : public SbmPawn
 
 		SBAPI void setName(const std::string& name);
 
-		SBAPI virtual SBSkeleton* getSkeleton();
-		SBAPI virtual void setSkeleton(SBSkeleton* skel);
+		SBAPI virtual boost::intrusive_ptr<SmartBody::SBSkeleton> getSkeleton() const;
+		SBAPI virtual void setSkeleton(boost::intrusive_ptr<SmartBody::SBSkeleton> skel);
 
 		SBAPI SrVec getPosition();
 		SBAPI SrQuat getOrientation();

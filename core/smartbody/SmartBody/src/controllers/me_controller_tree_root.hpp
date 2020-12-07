@@ -97,7 +97,7 @@ public:
      *  Sets channel set to skeletons joints.
      *  Currently only supports one entity/skeleton.
      */
-	virtual void add_skeleton( const std::string& entityName, SkSkeleton* skeleton ) = 0;
+	virtual void add_skeleton( const std::string& entityName, boost::intrusive_ptr<SkSkeleton> skeleton ) = 0;
 
     /**
      *  Removes named entity from the system.

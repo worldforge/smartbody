@@ -155,7 +155,7 @@ void FaceShiftViewer::CharacterCB(Fl_Widget* widget, void* data)
 void FaceShiftViewer::updateGUI()
 {
 	/*
-		SmartBody::SBSkeleton* skeleton = character->getSkeleton();
+		auto skeleton = character->getSkeleton();
 		SmartBody::SBFaceDefinition* faceDefinition = character->getFaceDefinition();
 
 		for (size_t s = 0; s < _sliders.size(); s++)

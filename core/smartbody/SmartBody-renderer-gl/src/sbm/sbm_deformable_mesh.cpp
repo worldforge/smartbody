@@ -2875,7 +2875,7 @@ void DeformableMeshInstance::blendShapes()
 			if (_character->hasAttribute(ss.str()))
 			{
 				const std::string& mappedCName	= _character->getStringAttribute(ss.str());
-				SmartBody::SBSkeleton* sbSkel	= _character->getSkeleton();
+				auto sbSkel	= _character->getSkeleton();
 				if (sbSkel && !mappedCName.empty())
 				{
 					//SmartBody::util::log("blendShape, mappedCName = %s", mappedCName.c_str());
@@ -3392,10 +3392,9 @@ void DeformableMeshInstance::setMeshScale( SrVec scale )
 	_meshScale = scale;
 }
 
-SmartBody::SBSkeleton* DeformableMeshInstance::getSkeleton()
+boost::intrusive_ptr<SmartBody::SBSkeleton> DeformableMeshInstance::getSkeleton()
 {
-	SmartBody::SBSkeleton* skel = dynamic_cast<SmartBody::SBSkeleton*>(_skeleton);
-	return skel;
+	return {dynamic_cast<SmartBody::SBSkeleton*>(_skeleton.get())};
 }
 
 void DeformableMeshInstance::setToStaticMesh( bool isStatic )

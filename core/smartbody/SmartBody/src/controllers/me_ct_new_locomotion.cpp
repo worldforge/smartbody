@@ -130,7 +130,7 @@ void MeCtNewLocomotion::setup()
 	std::string skeletonName = character->getStringAttribute("walkSkeleton");
 	dataCycle->setMotionSkeletonName(skeletonName);
 
-	sk = new SmartBody::SBSkeleton(character->getSkeleton());
+	sk = new SmartBody::SBSkeleton(character->getSkeleton().get());
 
 	if (!sk)
 		return;
@@ -158,7 +158,7 @@ void MeCtNewLocomotion::setup()
 		}
 		smoothCycle = dataCycle->smoothCycle("", 0.5f);
 		smoothCycle->setMotionSkeletonName(skeletonName);
-		smoothCycle->connect(sk);
+		smoothCycle->connect(sk.get());
 		motionSpeed = smoothCycle->getJointSpeed(sk->getJointByName(hipjoint), (float)smoothCycle->getTimeStart() , (float)smoothCycle->getTimeStop());
 		smoothCycle->disconnect();
 	}
@@ -222,7 +222,7 @@ bool MeCtNewLocomotion::controller_evaluate(double t, MeFrameData& frame)
 
 float MeCtNewLocomotion::legDistance(bool Leftleg)
 {
-	SmartBody::SBSkeleton *sk2 = character->getSkeleton();
+	auto sk2 = character->getSkeleton();
 	sk2->update_global_matrices();
 	std::string jointName;
 	jointName = (Leftleg)? "l_hip" : "r_hip";
@@ -435,7 +435,7 @@ void MeCtNewLocomotion::updateChannelBuffer(SrBuffer<float>& buffer, float t)
 {
 	SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();
 	SmartBody::SBRetarget* retarget =retargetManager->getRetarget(smoothCycle->getMotionSkeletonName(),character->getSkeleton()->getName());
-	smoothCycle->connect(sk);
+	smoothCycle->connect(sk.get());
 	smoothCycle->apply(t);//,SkMotion::Linear, 0, retarget);
 	for(int i = 0; i < sk->getNumJoints(); i++)
 	{
@@ -561,7 +561,7 @@ void MeCtNewLocomotion::updateConstraints(float t)
 	else if(((t > rplant[2] && t < rplant[3] )|| (t > rplant[0] && t < rplant[1]))
           && RightFading.fadeMode == Fading::FADING_MODE_OFF)
 	{	
-		SmartBody::SBSkeleton *sk2 = character->getSkeleton();
+		auto sk2 = character->getSkeleton();
 		sk2->update_global_matrices();
 		SmartBody::SBJoint* rootJoint = sk2->getJointByName(hipjoint);
 		ik_scenario.ikGlobalMat = rootJoint->parent()->gmat();		
@@ -583,7 +583,7 @@ void MeCtNewLocomotion::updateConstraints(float t)
 	}
 	else if(t > lplant[0] && t < lplant[1] && LeftFading.fadeMode == Fading::FADING_MODE_OFF)
 	{		
-		SmartBody::SBSkeleton *sk2 = character->getSkeleton();
+		auto sk2 = character->getSkeleton();
 		sk2->update_global_matrices();
 		SmartBody::SBJoint* rootJoint = sk2->getJointByName(hipjoint);
 		ik_scenario.ikGlobalMat = rootJoint->parent()->gmat();		

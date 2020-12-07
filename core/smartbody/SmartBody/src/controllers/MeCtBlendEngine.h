@@ -10,6 +10,8 @@
 #include <sb/SBSkeleton.h>
 #include <sb/SBJoint.h>
 
+#include "sr/sr_shared_ptr.hpp"
+
 class SbmCharacter;
 
 class MeCtBlendEngine
@@ -19,7 +21,7 @@ protected:
 	bool          ikInit;
 	int           reachType;
 	//SbmCharacter* character;
-	SmartBody::SBSkeleton*   skeletonCopy, *skeletonRef;
+	boost::intrusive_ptr<SmartBody::SBSkeleton>   skeletonCopy, skeletonRef;
 	std::string   rootJointName;
 	std::vector<SkMotion*> motionData;
 	SmartBody::SBMotion*             refMotion;   // reference motion for time warping
@@ -41,10 +43,10 @@ public:
 	vector<SrVec>         examplePts,resamplePts;
 	VecOfSimplex*         simplexList;
 public:
-	MeCtBlendEngine(SmartBody::SBSkeleton* sk, std::string rootJointName);
-	virtual ~MeCtBlendEngine(void);	
+	MeCtBlendEngine(boost::intrusive_ptr<SmartBody::SBSkeleton> sk, std::string rootJointName);
+	virtual ~MeCtBlendEngine();
 	void init(const std::string& paramFuncType);
-	bool isValid() { return valid; }	
+	bool isValid() const { return valid; }
 	//SbmCharacter*   getCharacter() { return character; }		
 	MotionParameter* getMotionParameter() { return motionParameter; }	
 	BodyMotionFrame& outputMotion() { return outputMotionFrame; }	

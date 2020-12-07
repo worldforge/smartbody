@@ -269,10 +269,10 @@ SrVec ResampleMotion::getMotionBaseTranslation( float time, const std::string& b
 {
 	SrVec basePos = SrVec(0.f,0.f,0.f);
 	VecOfBodyMotionPtr& motions = *motionDataRef;
-	for (unsigned int i=0;i<weight.size();i++)
+	for (auto & i : weight)
 	{
-		int idx = weight[i].first;
-		float w = weight[i].second;
+		int idx = i.first;
+		float w = i.second;
 		BodyMotionInterface* motion = motions[idx];
 		basePos += motion->getMotionBaseTranslation(time, baseName)*w;
 	}
@@ -532,26 +532,24 @@ bool MotionExampleSet::addMotionExample(MotionExample* ex )
 
 double MotionExampleSet::blendMotion( float time, const VecOfInterpWeight& blendWeight, BodyMotionFrame& outMotionFrame )
 {
-	return MotionExampleSet::blendMotionFunc(time,skeletonRef,affectedJoints,motionData,blendWeight,outMotionFrame);
+	return MotionExampleSet::blendMotionFunc(time,skeletonRef.get(),affectedJoints,motionData,blendWeight,outMotionFrame);
 }
 
 MotionExampleSet::~MotionExampleSet()
 {
-	for (unsigned int i=0;i<motionExamples.size();i++)
+	for (auto ex : motionExamples)
 	{
 		// feng : need to figure out why we can not delete the base pointer "BodyMotionInterface".
-		MotionExample* ex = motionExamples[i];
-		delete ex;
+			delete ex;
 	}
 	motionExamples.clear();
 }
 
 MotionExample* MotionExampleSet::getMotionExample( const std::string& motionName )
 {
-	for (unsigned int i=0;i<motionExamples.size();i++)
+	for (auto ex : motionExamples)
 	{
-		MotionExample* ex = motionExamples[i];
-		if (ex->motion->getName() == motionName)
+			if (ex->motion->getName() == motionName)
 			return ex;
 	}
 	return nullptr;

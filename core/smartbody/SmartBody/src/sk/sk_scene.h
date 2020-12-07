@@ -29,6 +29,7 @@
 # include <sr/sr_array.h>
 # include <sr/sr_sn_group.h>
 # include <sr/sr_sn_shape.h>
+#include "sr/sr_shared_ptr.hpp"
 
 class SrModel;
 class SkJoint;
@@ -40,7 +41,7 @@ class SBAPI SkScene : public SrSnGroup
     SrArray<SrSnGroup*> _jgroup;
     float _cradius, _sfactor, _axislen;
 	float scaleFactor;
-    SkSkeleton* _skeleton;
+	boost::intrusive_ptr<SkSkeleton> _skeleton;
 	bool _needsInit;
 	bool _showJoints;
 	bool _showBones;
@@ -59,7 +60,7 @@ class SBAPI SkScene : public SrSnGroup
         set_visibility() can be used to visualize other objects.
         Null can be passed to clear the scene.
         The skeleton ref()/unref() methods are respected. */
-    void init ( SkSkeleton* s, float scale = 1.f );
+    void init ( boost::intrusive_ptr<SkSkeleton> s, float scale = 1.f );
 
 	SrSnSphere* createSphere( float scaleFactor );
     /*! Update the transformations of the scene graph according

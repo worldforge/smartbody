@@ -1359,7 +1359,7 @@ void ParserCOLLADAFast::parseLibraryAnimations( rapidxml::xml_node<>* node,
 				SkJoint* joint = skeleton.search_joint(colChannel.targetJointName.c_str());
 				if (!joint)
 				{
-					SmartBody::SBSkeleton* sbskel = dynamic_cast<SmartBody::SBSkeleton*>(&skeleton);
+					auto sbskel = dynamic_cast<SmartBody::SBSkeleton*>(&skeleton);
 					SmartBody::SBJoint* j = sbskel->createJoint(colChannel.targetJointName, nullptr);
 					joint = j;
 					

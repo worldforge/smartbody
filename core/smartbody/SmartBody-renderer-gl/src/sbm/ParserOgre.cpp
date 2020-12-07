@@ -1576,7 +1576,7 @@ bool ParserOgre::exportOgreXMLMesh( DeformableMesh* defMesh, std::string meshNam
 	std::string meshFileName = outPathName + "/" + meshName + ".mesh.xml";
 	std::string materialFileName = outPathName + "/" + meshName + ".material";
 	std::vector<std::string> textureFileNames;
-	SmartBody::SBSkeleton* skel = SmartBody::SBScene::getScene()->getSkeleton(defMesh->skeletonName);
+	auto skel = SmartBody::SBScene::getScene()->getSkeleton(defMesh->skeletonName);
 	if (!skel)
 		return false;
 

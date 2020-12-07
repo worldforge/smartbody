@@ -353,7 +353,7 @@ void RetargetStepWindow::SaveCharacterCB( Fl_Widget* widget, void* data )
 		return;
 	}
 
-	SmartBody::SBSkeleton* skel = selectChar->getSkeleton();
+	auto skel = selectChar->getSkeleton();
 	std::string skelName = skel->getName();
 
 	std::string defMeshName = selectChar->getStringAttribute("deformableMesh");
