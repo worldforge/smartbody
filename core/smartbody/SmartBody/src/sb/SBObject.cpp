@@ -59,7 +59,7 @@ void SBObject::setName(const std::string& name)
 }
 
 
-const std::string& SBObject::getName()
+const std::string& SBObject::getName() const
 {
 	return m_name;
 }

@@ -45,7 +45,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBAnimationState.h"
 #include <sb/SBAnimationTransition.h>
 #include <sb/SBAnimationStateManager.h>
-#include <sb/SBReach.h>
 #include <sb/SBReachManager.h>
 #include <sb/SBSteerAgent.h>
 #include <sb/SBSteerManager.h>
@@ -69,18 +68,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBHandConfigurationManager.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBParser.h>
-#include <sb/SBRetarget.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBMotionGraph.h>
 #include "SBUtilities.h"
 #include <sbm/sbm_audio.h>
 #include <utility>
-#include <boost/version.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
 #include <sb/nvbg.h>
 #include <sb/SBJointMap.h>
 #include <sb/SBSceneListener.h>
@@ -101,24 +94,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <bml/bml_processor.hpp>
 #include <sr/sr_sn_group.h>
 
-
-#include <sbm/KinectProcessor.h>
-#include <sr/sr_sn_group.h>
-#include <fstream>
 #include <sstream>
 #include <algorithm>
-
-
-
-
-
-// for minizip compression
-
-#if !defined(__FLASHPLAYER__) && !defined(EMSCRIPTEN)
-#include <zlib.h>
-#include <zip.h>
-#endif
-
 
 #ifndef WIN32
 #define _stricmp strcasecmp
@@ -817,7 +794,7 @@ SBAPI SBCharacter* SBScene::copyCharacter( const std::string& origCharName, cons
 			return nullptr;
 		}
 		// successfully create a new character
-		boost::intrusive_ptr<SmartBody::SBSkeleton> sk(new SmartBody::SBSkeleton(origChar->getSkeleton().get()));
+		boost::intrusive_ptr<SmartBody::SBSkeleton> sk(new SmartBody::SBSkeleton(*origChar->getSkeleton()));
 		copyChar->setSkeleton(sk);
 		copyChar->createStandardControllers();
 		copyChar->copy(origChar);
@@ -857,7 +834,7 @@ SBAPI SBPawn* SBScene::copyPawn( const std::string& origPawnName, const std::str
 			return nullptr;
 		}
 		// successfully create a new character
-		boost::intrusive_ptr<SmartBody::SBSkeleton> sk(new SmartBody::SBSkeleton(origPawn->getSkeleton().get()));
+		boost::intrusive_ptr<SmartBody::SBSkeleton> sk(new SmartBody::SBSkeleton(*origPawn->getSkeleton()));
 		copyPawn->setSkeleton(sk);		
 		copyPawn->copy(origPawn);		
 		return copyPawn;

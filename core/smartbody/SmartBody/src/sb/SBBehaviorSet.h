@@ -13,7 +13,7 @@ class SBBehaviorSet
 		SBAPI ~SBBehaviorSet();
 
 		SBAPI void setName(const std::string& name);
-		SBAPI const std::string& getName();
+		SBAPI const std::string& getName() const;
 		SBAPI void setScript(const std::string& name);
 		SBAPI const std::string& getScript();
 	

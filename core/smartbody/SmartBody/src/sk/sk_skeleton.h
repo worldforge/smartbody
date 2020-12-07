@@ -34,6 +34,7 @@
 # include <sk/sk_channel_array.h>
 # include <sk/sk_posture.h>
 #include <sb/SBAsset.h>
+#include "sr/sr_shared_ptr.hpp"
 
 class SrStringArray;
 class SrVarTable;
@@ -62,7 +63,7 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
     friend class SkColdet;
 
     // posture management:
-    SkChannelArray* _channels;
+	boost::intrusive_ptr<SkChannelArray> _channels;
     SrArray<SkPosture*> _postures;
 	// physical properties
 	SrVec _com;
@@ -72,10 +73,12 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
     /*! Constructor */
     SBAPI SkSkeleton ();
 
-	SBAPI SkSkeleton(SkSkeleton* origSkel);
+	SBAPI SkSkeleton(const SkSkeleton& rhs);
 
     /*! Destructor is public but pay attention to the use of ref()/unref() */
-    SBAPI virtual ~SkSkeleton ();
+    SBAPI ~SkSkeleton () override;
+
+	SBAPI SkSkeleton& operator=(const SkSkeleton& rhs);
 
 	/*! Sets the filename used to load the skeleton, if any */
     SBAPI void skfilename ( const char* s ) { _skfilename = s; }
@@ -112,7 +115,9 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
     SBAPI std::vector<SkJoint*>& coldet_free_pairs () { return _coldet_free_pairs; }
 
     /*! Returns the channel array of all the active channels */
-    SBAPI SkChannelArray& channels () { return *_channels; }
+	SBAPI SkChannelArray& channels () { return *_channels; }
+
+	SBAPI const SkChannelArray& channels () const { return *_channels; }
 
     /*! Returns the array of pre-defined postures loaded from the .sk file */
     SBAPI SrArray<SkPosture*>& postures () { return _postures; }
@@ -173,8 +178,6 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
 
     /*! Save joints definitions that can be merged into a skeleton */
     SBAPI bool export_joints ( SrOutput& out );
-
-	SBAPI void copy(SkSkeleton* origSkel);
 
 	/*! Computes the center of mass of the skeleton */
 	SBAPI void compute_com () {}; 

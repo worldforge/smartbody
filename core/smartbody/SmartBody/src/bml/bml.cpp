@@ -1811,7 +1811,7 @@ void BML::BmlRequest::speechRequestProcess()
 				types.emplace_back("gesture");
 				times.emplace_back(readyTime);
 				auto connectedSkeleton =  dynamic_cast<SmartBody::SBSkeleton*>(sbMotion->connected_skeleton());
-				SmartBody::SBSkeleton skeleton(actor->getSkeleton().get());
+				SmartBody::SBSkeleton skeleton(*actor->getSkeleton());
 				sbMotion->disconnect();
 				sbMotion->connect(&skeleton);
 				float lWristSpeed = sbMotion->getJointSpeed(l_wrist, (float)sbMotion->getTimeStart(), (float)sbMotion->getTimeStop());

@@ -29,7 +29,7 @@ std::string MeCtReachEngine::ReachTypeTag[REACH_TYPE_SIZE] = { "Right", "Left", 
 MeCtReachEngine::MeCtReachEngine( SbmCharacter* sbmChar, boost::intrusive_ptr<SmartBody::SBSkeleton> sk)
 {
 	character = sbmChar;
-	skeletonCopy = new SmartBody::SBSkeleton(sk.get());
+	skeletonCopy = new SmartBody::SBSkeleton(*sk);
 	skeletonRef  = sk;
 	dataInterpolator = nullptr;
 	refMotion = nullptr;

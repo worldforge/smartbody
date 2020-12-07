@@ -1326,12 +1326,12 @@ void SBMotionGraph::computeMotionTransitionFast( const std::string& moName1, con
 	SmartBody::SBMotion* motion2 = assetManager->getMotion(moName2);
 	auto moSkel = assetManager->getSkeleton(skelName);
 	if (!motion1 || !motion2 || !moSkel) return;
-	boost::intrusive_ptr<SBSkeleton> skelCopy1(new SBSkeleton(moSkel.get()));
+	boost::intrusive_ptr<SBSkeleton> skelCopy1(new SBSkeleton(*moSkel));
 	boost::intrusive_ptr<SBSkeleton> skelCopy2 = nullptr;
 	if (motion1 == motion2)
 		skelCopy2 = skelCopy1;
 	else
-		skelCopy2.reset(new SBSkeleton(moSkel.get()));
+		skelCopy2.reset(new SBSkeleton(*moSkel));
 	motion1->connect(skelCopy1.get());
 	motion2->connect(skelCopy2.get());
 	int mo1Frames = motion1->getNumFrames();

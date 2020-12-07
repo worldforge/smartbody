@@ -35,7 +35,7 @@ void SBBehaviorSet::setName(const std::string& name)
 	_name = name;
 }
 
-const std::string& SBBehaviorSet::getName()
+const std::string& SBBehaviorSet::getName() const
 {
 	return _name;
 }

@@ -95,7 +95,7 @@ void SBDebuggerUtility::initCharacter(const std::string& name, const std::string
 		SmartBody::util::log("Problem creating skeleton %s, character %s will not be created in remote session...", name.c_str(), skelName.c_str());
 		return;
 	}
-	boost::intrusive_ptr<SmartBody::SBSkeleton> copySbSkeleton(new SmartBody::SBSkeleton(sbSkeleton.get()));
+	boost::intrusive_ptr<SmartBody::SBSkeleton> copySbSkeleton(new SmartBody::SBSkeleton(*sbSkeleton));
 	if (!copySbSkeleton)
 	{
 		SmartBody::util::log("Problem creating copy of skeleton %s, character %s will not be created in remote session...", name.c_str(), skelName.c_str());

@@ -50,14 +50,24 @@ SBSkeleton::SBSkeleton(const std::string& skelFile) : SkSkeleton()
 	linkedPawnName = "";
 }
 
-SBSkeleton::SBSkeleton(SBSkeleton* copySkel) : SkSkeleton(copySkel)
+SBSkeleton::SBSkeleton(const SBSkeleton& rhs) : SkSkeleton(rhs)
 {
-	_scale = copySkel->getScale();	
+	_scale = rhs.getScale();
+	_origRootChanged = false;
 	linkedPawnName = "";
 	//jointMap = copySkel->getJointMapName();
 }
 
 SBSkeleton::~SBSkeleton() = default;
+
+SBSkeleton& SBSkeleton::operator=(const SBSkeleton& rhs){
+	SkSkeleton::operator=(rhs);
+	_scale = rhs._scale;
+	_origRootChanged = rhs._origRootChanged;
+	linkedPawnName = rhs.linkedPawnName;
+	return *this;
+}
+
 
 SBAPI SBJoint* SBSkeleton::createChannel(const std::string& name)
 {
@@ -237,7 +247,7 @@ bool SBSkeleton::load(const std::string& skeletonFile)
 	auto skeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonFile.c_str());
 	if (skeleton)
 	{
-		copy(skeleton.get());
+		*this = *skeleton;
 		update();
 		return true;
 	}
@@ -519,7 +529,7 @@ void SBSkeleton::_createSkelWithoutPreRot(SBSkeleton* TposeSk, SBSkeleton* newSk
 {
 	TposeSk->invalidate_global_matrices();
 	TposeSk->update_global_matrices();
-	newSk->copy(TposeSk); // first copy
+	*newSk = *TposeSk; // first copy
 	if(new_name) //  || strlen(new_name)<1)
 	{
 		newSk->setName(std::string(new_name));

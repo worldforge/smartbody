@@ -47,7 +47,7 @@ void SBJoint::setName(const std::string& str)
 	name(str);
 }
 
-const std::string& SBJoint::getName()
+const std::string& SBJoint::getName() const
 {	
 	//m_name = jointName();
 	//return m_name;

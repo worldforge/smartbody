@@ -308,7 +308,7 @@ int SBCharacter::setup()
 	return SbmCharacter::setup();
 }
 
-const std::string& SBCharacter::getName()
+const std::string& SBCharacter::getName() const
 {
 	return SbmCharacter::getName();
 }

@@ -1162,8 +1162,8 @@ SBMotion* SBMotion::retarget( std::string name, std::string srcSkeletonName, std
 SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* targetSk, SBMotion* targetMotion, std::vector<std::string>& endJoints, std::vector<std::string>& endJointRoots )
 {
 	SkChannelArray& mchan_arr = this->channels();
-	SBSkeleton interSk(targetSk); // copy for an intermediate skeleton
-	SBSkeleton tempSrcSk(sourceSk);
+	SBSkeleton interSk(*targetSk); // copy for an intermediate skeleton
+	SBSkeleton tempSrcSk(*sourceSk);
 
 	tempSrcSk.invalidate_global_matrices();
 	tempSrcSk.update_global_matrices();
@@ -1354,7 +1354,7 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 {
 	auto origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
 	if (!origSkel) return nullptr;
-	boost::intrusive_ptr<SBSkeleton> skel(new SBSkeleton(origSkel.get()));
+	boost::intrusive_ptr<SBSkeleton> skel(new SBSkeleton(*origSkel));
 	if (!skel) return nullptr;
 	SBJoint* rootJoint = skel->getJointByName(rootName);
 	if (!rootJoint) return nullptr;
@@ -2791,7 +2791,7 @@ SBMotion* SBMotion::footSkateCleanUp( std::string name, std::vector<std::string>
 
 	SmartBody::util::log("foot skate cleanup for motion %s.", this->getName().c_str());
 
-	SBSkeleton skelCopy(origSkel.get());
+	SBSkeleton skelCopy(*origSkel);
 	std::vector<FootStepRecord> footStepRecords;
 	bool hasFootPlant = origMotion->autoFootPlantDetection(origSkel.get(), footJoints, floorHeight, heightThreshold, speedThreshold,footStepRecords);
 
@@ -3146,7 +3146,7 @@ SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, cons
 		SmartBody::util::log("Motion skeleton doesn't exist. Cannot compute effector trajectory");
 		return;
 	}
-	SBSkeleton skelCopy(motionSkel.get());
+	SBSkeleton skelCopy(*motionSkel);
 	if (!skelCopy.getJointByName(effectorName) || !skelCopy.getJointByName(refJointName))
 	{
 		SmartBody::util::log("Effector joint '%s' or reference joint '%s' does not exist.", effectorName.c_str(), refJointName.c_str());

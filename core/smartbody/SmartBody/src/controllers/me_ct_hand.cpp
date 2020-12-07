@@ -81,7 +81,7 @@ MeCtHand::MeCtHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SmartBody::S
 {		
 	skeletonRef  = sk;
 	// work on the copy of skeleton to avoid problems
-	skeletonCopy = new SmartBody::SBSkeleton(sk.get());
+	skeletonCopy = new SmartBody::SBSkeleton(*sk);
 	if (wrist)
 	{
 		wristJoint = wrist;//skeletonCopy->search_joint(wrist->name().get_string());

@@ -12,8 +12,7 @@ std::string MeCtPhysicsController::CONTROLLER_TYPE = "PhysicsController";
 MeCtPhysicsController::MeCtPhysicsController(SbmCharacter* character) : SmartBody::SBController()
 {
 	_character = character;
-	_skeletonCopy = new SmartBody::SBSkeleton();
-	_skeletonCopy->copy(_character->getSkeleton().get());
+	_skeletonCopy = new SmartBody::SBSkeleton(*_character->getSkeleton());
 	_valid = true;
 	_prevTime = 0.0;
 	_duration = 0.0;

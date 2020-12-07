@@ -1320,7 +1320,7 @@ double PABlend::getMotionKey( const std::string& motionName, int iKey )
 MotionParameters::MotionParameters(SkMotion* m, SkSkeleton* skel, std::string j)
 {
 	motion = m;
-	skeleton = new SkSkeleton(skel);
+	skeleton = new SkSkeleton(*skel);
 	motion->connect(skeleton.get());
 	if (j.empty())
 	{

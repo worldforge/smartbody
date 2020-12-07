@@ -1240,8 +1240,8 @@ void SkMotion::convertBoneOrientation( std::string &pjointName, SkSkeleton* inte
 SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* targetSk, std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints, std::map<std::string, SrVec>& offsetJoints )
 {
 	SkChannelArray& mchan_arr = this->channels();
-	SkSkeleton interSk(targetSk); // copy for an intermediate skeleton
-	SkSkeleton tempSrcSk(sourceSk);
+	SkSkeleton interSk(*targetSk); // copy for an intermediate skeleton
+	SkSkeleton tempSrcSk(*sourceSk);
 
 	std::vector<std::string> stopJoints;	
 	stopJoints.emplace_back("skullbase");

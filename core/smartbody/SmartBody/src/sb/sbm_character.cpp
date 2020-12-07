@@ -279,7 +279,7 @@ void SbmCharacter::copy( SbmCharacter* origChar )
 	// no matching skeleton ?
 	if (getSkeleton()->getName() != origChar->getSkeleton()->getName())
 	{
-		getSkeleton()->copy(origChar->getSkeleton().get());
+		*getSkeleton() = *origChar->getSkeleton();
 	}	
 	// locomotion 
 	locomotion_type = origChar->locomotion_type;

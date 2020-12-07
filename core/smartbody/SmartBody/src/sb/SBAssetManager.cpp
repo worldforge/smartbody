@@ -121,7 +121,7 @@ boost::intrusive_ptr<SBSkeleton> SBAssetManager::createSkeleton(const std::strin
 	auto templateSkeleton = this->getSkeleton(skeletonDefinition);
 	if (templateSkeleton)
 	{
-		return {new SBSkeleton(templateSkeleton.get())};
+		return {new SBSkeleton(*templateSkeleton)};
 	}
 	else
 	{

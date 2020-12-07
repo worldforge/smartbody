@@ -37,8 +37,11 @@ class SBSkeleton : public SkSkeleton
 public:
 	SBAPI SBSkeleton();
 	SBAPI explicit SBSkeleton(const std::string& skelFile);
-	SBAPI explicit SBSkeleton(SBSkeleton* copySkel);
+	SBAPI explicit SBSkeleton(const SBSkeleton& rhs);
 	SBAPI ~SBSkeleton() override;
+
+	SBAPI SBSkeleton& operator=(const SBSkeleton& rhs);
+
 
 	SBAPI SBJoint* createJoint(const std::string& name, SBJoint* parent);
 	SBAPI SBJoint* createStaticJoint(const std::string& name, SBJoint* parent);

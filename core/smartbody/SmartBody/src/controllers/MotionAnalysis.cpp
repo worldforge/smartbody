@@ -288,7 +288,7 @@ void MotionAnalysis::init(std::string skeletonName, std::string baseJoint, Smart
 {		
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	auto sbSkel = scene->getSkeleton(skeletonName);
-	skelCopy = new SmartBody::SBSkeleton(sbSkel.get());
+	skelCopy = new SmartBody::SBSkeleton(*sbSkel);
 	initLegInfos();
 	int numMotions = motions.size();	
 	for (int i=0;i<numMotions;i++)

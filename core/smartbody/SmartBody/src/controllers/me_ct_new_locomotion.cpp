@@ -130,7 +130,7 @@ void MeCtNewLocomotion::setup()
 	std::string skeletonName = character->getStringAttribute("walkSkeleton");
 	dataCycle->setMotionSkeletonName(skeletonName);
 
-	sk = new SmartBody::SBSkeleton(character->getSkeleton().get());
+	sk = new SmartBody::SBSkeleton(*character->getSkeleton());
 
 	if (!sk)
 		return;

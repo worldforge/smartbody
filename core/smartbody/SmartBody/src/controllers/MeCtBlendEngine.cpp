@@ -20,7 +20,7 @@
 MeCtBlendEngine::MeCtBlendEngine(boost::intrusive_ptr<SmartBody::SBSkeleton> sk, std::string rootName)
 {
 	//character = sbmChar;
-	skeletonCopy = new SmartBody::SBSkeleton(sk.get());
+	skeletonCopy = new SmartBody::SBSkeleton(*sk);
 	skeletonRef  = sk;
 	rootJointName = rootName;
 	dataInterpolator = nullptr;

@@ -43,7 +43,7 @@ SBAttributeGroup::~SBAttributeGroup()
 {
 }
 
-const std::string& SBAttributeGroup::getName()
+const std::string& SBAttributeGroup::getName() const
 {
 	return m_name;
 }
@@ -318,7 +318,7 @@ void SBAttribute::setName(const std::string& name)
 	m_name = name;
 }
 
-const std::string& SBAttribute::getName()
+const std::string& SBAttribute::getName() const
 {
 	return m_name;
 }

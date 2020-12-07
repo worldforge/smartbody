@@ -32,30 +32,28 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 //============================ SkSkeleton ============================
 
-SkSkeleton::SkSkeleton () : SmartBody::SBAsset()
-{
+SkSkeleton::SkSkeleton() : SmartBody::SBAsset(),
+						   _root(nullptr),
+						   _coldetid(-1),
+						   _gmat_uptodate(true),
+						   _channels(new SkChannelArray) {
 	setName("noname");
-	_root = 0;
-	_coldetid = -1;       // index used in collision detection
-	_gmat_uptodate = true;
-	_channels = new SkChannelArray;
-	_channels->ref();
 	_com.set(0, 0, 0);
 }
 
-SkSkeleton::SkSkeleton (SkSkeleton* origSkel)  : SmartBody::SBAsset()
+SkSkeleton::SkSkeleton(const SkSkeleton& rhs)  : SmartBody::SBAsset()
 {
-	setJointMapName(origSkel->getJointMapName());
-	setName(origSkel->getName());
-	_skfilename = origSkel->skfilename();
-	if (!origSkel->root())
+	jointMap = rhs.jointMap;
+	setName(rhs.getName());
+	_skfilename = rhs._skfilename;
+	if (!rhs._root)
 	{
 		return;
 	}
-	_root = new SmartBody::SBJoint(this, 0, origSkel->root()->rot_type(), origSkel->root()->index());
-	copy_joint(_root, origSkel->root());
+	_root = new SmartBody::SBJoint(this, nullptr, rhs.root()->rot_type(), rhs.root()->index());
+	copy_joint(_root, rhs._root);
 	_joints.emplace_back(_root);
-	SkJoint* origParent = origSkel->root();
+	SkJoint* origParent = rhs._root;
 	SkJoint* thisParent = _root;
 	create_joints(origParent, thisParent);
 	// reset the joint indices since the original skeleton might not match if 
@@ -65,13 +63,12 @@ SkSkeleton::SkSkeleton (SkSkeleton* origSkel)  : SmartBody::SBAsset()
 		_joints[j]->set_index(j);
 	}
 
-	_gmat_uptodate = origSkel->global_matrices_uptodate();
+	_gmat_uptodate = rhs._gmat_uptodate;
 	_channels = new SkChannelArray;
-	_channels->ref();
-	SkChannelArray& origChannels = origSkel->channels();	
+	auto& origChannels = rhs.channels();
 	for (int c = 0; c < origChannels.size(); c++)
 	{
-		SkChannel& origChannel = origChannels.get(c);
+		auto& origChannel = origChannels.get(c);
 		SkJoint* origJoint = origChannels.joint(c);
 		if (origJoint)
 		{
@@ -79,9 +76,9 @@ SkSkeleton::SkSkeleton (SkSkeleton* origSkel)  : SmartBody::SBAsset()
 			_channels->add(joint, origChannel.type, true);
 		}
 	}
-	_channels->setJointMapName(origSkel->getJointMapName());
+	_channels->setJointMapName(rhs.getJointMapName());
 	_channels->count_floats();
-	_com = origSkel->com();
+	_com = rhs._com;
 
 	compress ();
 	make_active_channels();
@@ -92,36 +89,36 @@ SkSkeleton::~SkSkeleton ()
 {
 	//SmartBody::util::log("delete skeleton %s",getName().c_str());
 	init ();
-	//SmartBody::util::log("channel ref count = %d",_channels->getref());
-	_channels->unref();
 }
 
-void SkSkeleton::copy(SkSkeleton* origSkel)
+SkSkeleton& SkSkeleton::operator=(const SkSkeleton& rhs)
 {
-	if (!origSkel->root())
+	if (&rhs == this) {
+		return *this;
+	}
+	if (!rhs.root())
 	{
 		SmartBody::util::log("Original skeleton has no root joint, cannot be copied.");
-		return;
+		return *this;
 	}
-	setName(origSkel->getName());
-	_skfilename = origSkel->skfilename();
-	setName(origSkel->getName());
+	setName(rhs.getName());
+	_skfilename = rhs.skfilename();
+	setName(rhs.getName());
 	
-	//	_root = new SkJoint(this, 0, origSkel->root()->rot_type(), origSkel->root()->index());
-	_root = new SmartBody::SBJoint(this, 0, origSkel->root()->rot_type(), origSkel->root()->index());
-	copy_joint(_root, origSkel->root());
+	//	_root = new SkJoint(this, 0, rhs.root()->rot_type(), rhs.root()->index());
+	_root = new SmartBody::SBJoint(this, nullptr, rhs.root()->rot_type(), rhs.root()->index());
+	copy_joint(_root, rhs.root());
 	_joints.emplace_back(_root);
-	SkJoint* origParent = origSkel->root();
+	SkJoint* origParent = rhs.root();
 	SkJoint* thisParent = _root;
 	create_joints(origParent, thisParent);
 
-	_gmat_uptodate = origSkel->global_matrices_uptodate();
+	_gmat_uptodate = rhs.global_matrices_uptodate();
 	_channels = new SkChannelArray;
-	_channels->ref();
-	SkChannelArray& origChannels = origSkel->channels();
+	auto& origChannels = rhs.channels();
 	for (int c = 0; c < origChannels.size(); c++)
 	{
-		SkChannel& origChannel = origChannels.get(c);
+		auto& origChannel = origChannels.get(c);
 		SkJoint* origJoint = origChannels.joint(c);
 		if (!origJoint)
 			continue;
@@ -129,10 +126,11 @@ void SkSkeleton::copy(SkSkeleton* origSkel)
 		_channels->add(joint, origChannel.type, true);
 	}
 	_channels->count_floats();
-	_com = origSkel->com();	
-	setJointMapName(origSkel->getJointMapName());
+	_com = rhs.com();	
+	setJointMapName(rhs.getJointMapName());
 	compress ();
 	updateJointMap();
+	return *this;
 }
 
 void SkSkeleton::init ()
@@ -512,7 +510,7 @@ void SkSkeleton::updateJointMap()
 
 			//SmartBody::util::log("Has JointMap, origName = %s, mappedName = %s", jname.c_str(), mappedName.c_str());
 
-			if (mappedName != "")
+			if (!mappedName.empty())
 				jname = mappedName;
 			//SmartBody::util::log("After mapped name, jname = %s", jname.c_str());
 		}

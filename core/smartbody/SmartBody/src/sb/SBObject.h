@@ -54,7 +54,7 @@ class SBObject : public SBObserver, public SBSubject
 		SBAPI virtual void stop();
 
 		SBAPI virtual void setName(const std::string& name);
-		SBAPI virtual const std::string& getName();
+		SBAPI virtual const std::string& getName() const;
 		SBAPI bool hasAttribute(const std::string& attrName);
 		SBAPI SBAttribute* getAttribute(const std::string& attrName);
 		SBAPI std::map<std::string, SBAttribute*>& getAttributeList();

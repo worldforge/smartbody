@@ -76,8 +76,7 @@ SBHandSynthesis::SBHandSynthesis(boost::intrusive_ptr<SmartBody::SBSkeleton> ske
 	_selectDb = _rightDb;
 	_bodyMotion = nullptr;
 	_sk = std::move(skeleton);
-	_skCopy = new SmartBody::SBSkeleton();
-	_skCopy->copy(_sk.get());
+	_skCopy = new SmartBody::SBSkeleton(*_sk);
 	_maxLevels = 3;
 	_k = 3;
 	_channels = channels;

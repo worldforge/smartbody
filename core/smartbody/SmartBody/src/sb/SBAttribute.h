@@ -42,7 +42,7 @@ class SBAttribute : public SBSubject
 		SBAPI SBAttribute();
 		SBAPI virtual ~SBAttribute();
 		SBAPI void setName(const std::string& name);
-		SBAPI const std::string& getName();
+		SBAPI const std::string& getName() const;
 		SBAPI virtual std::string write();	
 		SBAPI virtual void read();
 		SBAPI SBAttributeInfo* getAttributeInfo();
@@ -69,7 +69,7 @@ class SBAttributeGroup
 		SBAPI SBAttributeGroup(const std::string& name);
 		SBAPI ~SBAttributeGroup();
 
-		SBAPI const std::string& getName();
+		SBAPI const std::string& getName() const;
 		SBAPI void setPriority(int val);
 		SBAPI int getPriority();
 

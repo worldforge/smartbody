@@ -49,8 +49,8 @@ bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<
 	auto sourceSk = scene->getSkeleton(srcSkName);	
 	if (!targetSk || !sourceSk) return false;
 	
-	SmartBody::SBSkeleton interSk(targetSk.get()); // copy for an intermediate skeleton
-	SmartBody::SBSkeleton tempSrcSk(sourceSk.get());
+	SmartBody::SBSkeleton interSk(*targetSk); // copy for an intermediate skeleton
+	SmartBody::SBSkeleton tempSrcSk(*sourceSk);
 	std::vector<std::string> stopJoints;	
 	stopJoints.emplace_back("skullbase");
 

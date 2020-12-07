@@ -118,7 +118,7 @@ MeCtGenericHand::MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk
 
 	_skeletonRef = skeleton;
 	// work on the copy of skeleton to avoid problems
-	_sk = new SmartBody::SBSkeleton(skeleton.get());
+	_sk = new SmartBody::SBSkeleton(*skeleton);
 	
 	// set the character
 	_character = c;
