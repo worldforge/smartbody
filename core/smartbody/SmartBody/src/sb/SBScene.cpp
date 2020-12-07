@@ -876,7 +876,7 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 	{
 		SBCharacter* character = new SBCharacter(charName, metaInfo);
 		
-		std::map<std::string, SbmPawn*>::iterator iter = _pawnMap.find(character->getName());
+		auto iter = _pawnMap.find(character->getName());
 		if (iter != _pawnMap.end())
 		{
 			SmartBody::util::log( "Register character: pawn_map.insert(..) '%s' FAILED\n", character->getName().c_str() );
@@ -887,7 +887,7 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 		_pawnMap.insert(std::pair<std::string, SbmPawn*>(character->getName(), character));
 		_pawnNames.emplace_back(character->getName());
 	
-		std::map<std::string, SbmCharacter*>::iterator citer = _characterMap.find(character->getName());
+		auto citer = _characterMap.find(character->getName());
 		if (citer != _characterMap.end())
 		{
 			SmartBody::util::log( "Register character: character_map.insert(..) '%s' FAILED\n", character->getName().c_str() );
@@ -917,18 +917,16 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 #endif
 
 		std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
-		for (size_t i = 0; i < listeners.size(); i++)
+		for (auto & listener : listeners)
 		{
-			listeners[i]->OnCharacterCreate( character->getName().c_str(), character->getClassType() );
+			listener->OnCharacterCreate( character->getName().c_str(), character->getClassType() );
 		}
 
 		// notify the services		
 		std::map<std::string, SmartBody::SBService*>& services = getServiceManager()->getServices();
-		for (std::map<std::string, SmartBody::SBService*>::iterator iter = services.begin();
-			iter != services.end();
-			iter++)
+		for (auto & iter : services)
 		{
-			SBService* service = (*iter).second;
+			SBService* service = iter.second;
 			service->onCharacterCreate(character);
 		}		
 		return character;
@@ -1024,7 +1022,7 @@ void SBScene::removeCharacter(const std::string& charName)
 		{
 			_pawnMap.erase(iter);
 		}
-		for (std::vector<std::string>::iterator iter = _pawnNames.begin();
+		for (auto iter = _pawnNames.begin();
 			 iter != _pawnNames.end();
 			 iter++)
 		{
@@ -1035,12 +1033,12 @@ void SBScene::removeCharacter(const std::string& charName)
 			}
 		}
 
-		std::map<std::string, SbmCharacter*>::iterator citer = _characterMap.find(name);
+		auto citer = _characterMap.find(name);
 		if (citer != _characterMap.end())
 		{
 			_characterMap.erase(citer);
 		}
-		for (std::vector<std::string>::iterator iter = _characterNames.begin();
+		for (auto iter = _characterNames.begin();
 			 iter != _characterNames.end();
 			 iter++)
 		{

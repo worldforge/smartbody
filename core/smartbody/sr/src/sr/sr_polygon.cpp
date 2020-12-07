@@ -173,8 +173,8 @@ float SrPolygon::perimeter () const
    if ( size()<2 ) return 0;
    int i;
    float len=0;
-   for ( i=1; i<size(); i++ ) len += dist ( const_get(i-1), const_get(i) );
-   if ( !_open ) len += dist ( const_get(size()-1), const_get(0) );
+   for ( i=1; i<size(); i++ ) len += dist ( get(i-1), get(i) );
+   if ( !_open ) len += dist ( get(size()-1), get(0) );
    return len;
  }
 
@@ -185,10 +185,10 @@ SrPnt2 SrPolygon::interpolate_along_edges ( float t ) const
 
    SrVec2 v;
    if ( size()==0 ) return v;
-   if ( size()==1 || t<0 ) return const_get(0);
+   if ( size()==1 || t<0 ) return get(0);
    ilast = _open? size()-1:0;
 
-   v = const_get(0);
+   v = get(0);
    if ( t<=0 ) return v;
 
    for ( i1=0; i1<size(); i1++ )
@@ -198,19 +198,19 @@ SrPnt2 SrPolygon::interpolate_along_edges ( float t ) const
        }
       else i2 = i1+1;
       len1 = len2;
-      len2 += dist ( const_get(i1), const_get(i2) );
+      len2 += dist ( get(i1), get(i2) );
       if ( t<len2 ) break;
     }
    
    if ( _open )
-    { if ( i1==ilast ) return const_get(ilast); }
+    { if ( i1==ilast ) return get(ilast); }
    else
-    { if ( i2==0 ) return const_get(0); }
+    { if ( i2==0 ) return get(0); }
 
    len2 -= len1;
    t -= len1;
    t /= len2;
-   v = lerp ( const_get(i1), const_get(i2), t );
+   v = lerp ( get(i1), get(i2), t );
    return v;
  }
 
@@ -497,8 +497,8 @@ int SrPolygon::pick_edge ( const SrVec2& p, float epsilon, float& dist2 ) const
    for ( i=0; i<s; i++ )
     { i2 = (i+1)%s;
       if ( i2==0 && open() ) break;
-      //sr_out<<const_get(i)<<srspc<<const_get((i+1)%size())<<srspc<<p<<srnl;
-      if ( in_segment(const_get(i),const_get(i2),p,epsilon,d) )
+      //sr_out<<get(i)<<srspc<<get((i+1)%size())<<srspc<<p<<srnl;
+      if ( in_segment(get(i),get(i2),p,epsilon,d) )
        { if ( dist2<0 || d<dist2 )
           { iresult = i;
             dist2 = d;

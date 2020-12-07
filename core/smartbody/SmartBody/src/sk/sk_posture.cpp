@@ -294,7 +294,7 @@ void SkPosture::output ( SrOutput& out, bool channels, bool values ) const
     { const float* fp = &SkPosture::values[0];
       int chsize = _channels->size();
       for ( i=0; i<chsize; i++ )
-       { fp += _channels->const_get(i).save(out,fp);
+       { fp += _channels->get(i).save(out,fp);
          if ( i<chsize-1 ) out<<srspc;
        }
     }

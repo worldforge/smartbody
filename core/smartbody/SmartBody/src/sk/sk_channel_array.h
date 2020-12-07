@@ -128,7 +128,7 @@ public :
 	/*! Access operator */
 	SkChannel& operator[] ( int i ) { return _channelList[i]; }
 	SkChannel& get ( int i ) { return _channelList[i]; }
-	const SkChannel& const_get ( int i ) const { return _channelList[i]; }
+	const SkChannel& get ( int i ) const { return _channelList[i]; }
 
 	/*! Returns the last channel added */
 	SkChannel& top () { return _channelList[_channelList.size() -1]; }

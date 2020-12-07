@@ -508,8 +508,8 @@ void SBSkeleton::orientJointsLocalAxesToWorld(void)
 	}
 	
 	// now we can remove local rotations
-	for(size_t i=0; i<jnts.size(); i++)
-		jnts[i]->init_rot();
+	for(auto jnt : jnts)
+		jnt->init_rot();
 	update_global_matrices();
 }
 
@@ -561,16 +561,16 @@ SBSkeleton* SBSkeleton::createSkelWithoutPreRot(const char* new_name)
 
 void SBSkeleton::rescale( float scaleRatio )
 {
-	for (unsigned int i=0;i<joints().size();i++)
+	for (auto i : joints())
 	{
-		SBJoint* joint = dynamic_cast<SBJoint*>(joints()[i]);
+		SBJoint* joint = dynamic_cast<SBJoint*>(i);
 		if (joint)
 			joint->setOffset(joint->getOffset()*(float)scaleRatio / _scale);
 	}
 	_scale = scaleRatio;
 }
 
-float SBSkeleton::getScale()
+float SBSkeleton::getScale() const
 {
 	return _scale;
 }

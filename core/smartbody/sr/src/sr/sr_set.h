@@ -55,10 +55,10 @@ class SrSetBasic
     /*! Returns the element pointer stored at position i.
         It will return null for previously deleted positions; and
         it is the user responsability to ensure that i is not out of range. */
-    void* get ( int i ) const { return _data[i]; }
+    void* get ( int i ) { return _data[i]; }
 
     /*! Const version of get() */
-    const void* const_get ( int i ) const { return _data[i]; }
+    const void* get ( int i ) const { return _data[i]; }
  };
  
 /*! \class SrSetBase sr_set.h
@@ -114,8 +114,8 @@ class SrSet : public SrSetBase
     int insert ( X* x ) { return SrSetBasic::insert( (void*)x ); }
     int insert () { return SrSetBase::insert(); }
     X* extract ( int i ) { return (X*)SrSetBase::extract(i); }
-    X* get ( int i ) const { return (X*)SrSetBase::get(i); }
-    const X* const_get ( int i ) const { return (const X*)SrSetBase::const_get(i); }
+    X* get ( int i ) { return (X*)SrSetBase::get(i); }
+    const X* get ( int i ) const { return (const X*)SrSetBase::get(i); }
     X* operator[] ( int i ) const { return (X*)SrSetBase::get(i); }
     void operator = ( const SrSet& s )
      { SrSetBase::copy ( s ); }
@@ -161,7 +161,7 @@ class SrSetIteratorBase
     bool inrange () { return _curid>=_minid && _curid<=_maxid? true:false; }
 
     /*! Returns the current element */
-    void* get () { return _set.get(_curid); }
+    const void* get () { return _set.get(_curid); }
 
     /*! Returns true if the current position is pointing to the last element. */
     bool inlast () const { return _curid==_maxid? true:false; }

@@ -79,10 +79,10 @@ class SBAPI SrPolygons : public SrSharedClass
     SrPolygon& get ( int i ) { return *_data[i]; }
 
     /*! Returns a const reference to polygon index i, which must be a valid index */
-    const SrPolygon& const_get ( int i ) const { return *_data[i]; }
+    const SrPolygon& get ( int i ) const { return *_data[i]; }
 
     /*! Returns a const reference to the vertex j of polygon i. Indices must be valid. */
-    const SrVec2& const_get ( int i, int j ) const { return _data[i]->const_get(j); }
+    const SrVec2& get ( int i, int j ) const { return _data[i]->get(j); }
 
     /*! Returns a reference to the vertex j of polygon i. Indices must be valid. */
     SrVec2& get ( int i, int j ) { return _data[i]->get(j); }

@@ -69,7 +69,7 @@ public:
 	void setPawnName(const std::string& pawnName);
 
 	SBAPI void rescale(float scaleRatio);
-	SBAPI float getScale();
+	SBAPI float getScale() const;
 	SBAPI void update();
 
 	SBAPI void notify(SBSubject* subject) override;

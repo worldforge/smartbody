@@ -117,7 +117,7 @@ class SrCfgPathBase
     srcfg* get ( int i ) { return _buffer[i]; }
     
     /*! Const version of get() */
-    const srcfg* const_get ( int i ) const { return _buffer.const_get(i); }
+    const srcfg* get ( int i ) const { return _buffer.get(i); }
     
     /*! Outputs the path nodes for inspection */
     friend SrOutput& operator<< ( SrOutput& o, const SrCfgPathBase& p );
@@ -137,7 +137,7 @@ class SrCfgPath : public SrCfgPathBase
     C* operator[] ( int i ) { return get(i); }
     C* top () { return (C*)SrCfgPathBase::top(); }
     C* get ( int i ) { return (C*)SrCfgPathBase::get(i); }
-    const C* const_get ( int i ) const { return (const C*)SrCfgPathBase::const_get(i); }
+    const C* get ( int i ) const { return (const C*)SrCfgPathBase::get(i); }
     void operator= ( const SrCfgPath<C>& p ) { SrCfgPathBase::init(); SrCfgPathBase::insert_path(0,p); }
  };
 

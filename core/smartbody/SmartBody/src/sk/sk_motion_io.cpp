@@ -554,7 +554,7 @@ bool SkMotion::save ( SrOutput& out )
 		}
 		else
 			out << chanName.c_str();
-		out << srspc << _channels.const_get(i).type_name() << srnl;
+		out << srspc << _channels.get(i).type_name() << srnl;
 	}
 
 	// frames

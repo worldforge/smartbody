@@ -218,11 +218,11 @@ class SBAPI SrArray : protected SrArrayBase
 
     /*! Gets a const reference to the element of index i. Indices start from 0 and must 
         be smaller than size(). No checkings are done to ensure that i is valid. */
-    const X& const_get ( int i ) const { return ((X*)_data)[i]; }
+    const X& get ( int i ) const { return ((X*)_data)[i]; }
 
     /*! Gets a reference to the element of index i. Indices start from 0 and must 
         be smaller than size(). No checkings are done to ensure that i is valid. */
-    X& get ( int i ) const { return ((X*)_data)[i]; }
+    X& get ( int i )  { return ((X*)_data)[i]; }
 
     /*! Sets an element. Operator = is used here. Indices start from 0 and must 
         be smaller than size(). No checkings are done to ensure that i is valid. */

@@ -96,7 +96,7 @@ class SrBuffer
     /*! Get a const reference to the element of index i. Indices start from 0
         and must be smaller than size(). No checkings are done to ensure that 
         i is in a valid range. */
-    SBAPI const X& const_get ( int i ) const { return ((X*)_data)[i]; }
+    SBAPI const X& get ( int i ) const { return ((X*)_data)[i]; }
 
     /*! Get a reference to the element of index i. Indices start from 0
         and must be smaller than size(). No checkings are done to ensure that 
@@ -168,8 +168,8 @@ class SrBuffer
     SBAPI friend SrOutput& operator<< ( SrOutput& o, const SrBuffer<X>& b )
      { o << '[';
        int i;
-       for ( i=0; i<b.size()-1; i++ ) o << b.const_get(i) << srspc;
-       if ( i<b.size() ) o << b.const_get(i);
+       for ( i=0; i<b.size()-1; i++ ) o << b.get(i) << srspc;
+       if ( i<b.size() ) o << b.get(i);
        return o << ']';
      }
 

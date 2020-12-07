@@ -79,7 +79,7 @@ std::string MeCtHand::CONTROLLER_TYPE = "Hand";
 
 MeCtHand::MeCtHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SmartBody::SBJoint* wrist)
 {		
-	skeletonRef  = std::move(sk);
+	skeletonRef  = sk;
 	// work on the copy of skeleton to avoid problems
 	skeletonCopy = new SmartBody::SBSkeleton(sk.get());
 	if (wrist)

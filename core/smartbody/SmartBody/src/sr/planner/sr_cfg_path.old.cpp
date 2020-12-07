@@ -190,7 +190,7 @@ void SrCfgPathBase::interp ( float t, srcfg* c )
    int i;
 
    for ( i=_interp_start+1; i<_buffer.size(); i++ )
-    { dt = _cman->dist ( _buffer.const_get(i-1), _buffer.const_get(i) );
+    { dt = _cman->dist ( _buffer.get(i-1), _buffer.get(i) );
       if ( d+dt>=t ) break;
       d += dt;
     }
@@ -203,7 +203,7 @@ void SrCfgPathBase::interp ( float t, srcfg* c )
    _interp_start = i-1;
    _interp_startdist = d;
 
-   _cman->interp ( _buffer.const_get(i-1), _buffer.const_get(i), t, c );
+   _cman->interp ( _buffer.get(i-1), _buffer.get(i), t, c );
  }
 
 void SrCfgPathBase::temporal_interp ( float t, srcfg* c )
@@ -216,11 +216,11 @@ void SrCfgPathBase::temporal_interp ( float t, srcfg* c )
 
    float dt; // delta time
    float nt; // next time
-   float ct = _cman->time ( _buffer.const_get(_interp_start) ); // current time
+   float ct = _cman->time ( _buffer.get(_interp_start) ); // current time
    int i;
 
    for ( i=_interp_start+1; i<_buffer.size(); i++ )
-    { nt = _cman->time ( _buffer.const_get(i) );
+    { nt = _cman->time ( _buffer.get(i) );
       dt = nt-ct;
       if ( nt>=t ) break;
       ct = nt;
@@ -234,7 +234,7 @@ void SrCfgPathBase::temporal_interp ( float t, srcfg* c )
    _interp_start = i-1;
    _interp_startdist = ct;
 
-   _cman->interp ( _buffer.const_get(i-1), _buffer.const_get(i), t, c );
+   _cman->interp ( _buffer.get(i-1), _buffer.get(i), t, c );
  }
 
 void SrCfgPathBase::smooth_random ( float prec, float& len )
@@ -344,26 +344,26 @@ float SrCfgPathBase::_diff ( int i, float prec )
    cfg2 = _buffer[_size+1];
 */
 
-   float d1 = _cman->dist(_buffer.const_get(i-1),_buffer.const_get(i));
-   float d2 = _cman->dist(_buffer.const_get(i),_buffer.const_get(i+1));
-   float d  = _cman->dist(_buffer.const_get(i-1),_buffer.const_get(i+1));
+   float d1 = _cman->dist(_buffer.get(i-1),_buffer.get(i));
+   float d2 = _cman->dist(_buffer.get(i),_buffer.get(i+1));
+   float d  = _cman->dist(_buffer.get(i-1),_buffer.get(i+1));
 
    float diff = (d1+d2)-d;
    diff /= d;
    /*
    prec*=5.0f;
 
-   d = _cman->dist ( _buffer.const_get(i-1), _buffer.const_get(i) );
+   d = _cman->dist ( _buffer.get(i-1), _buffer.get(i) );
    t = prec/d;
    if ( t>1 ) t=1;
-   _cman->interp ( _buffer.const_get(i-1), _buffer.const_get(i), t, cfg1 );
+   _cman->interp ( _buffer.get(i-1), _buffer.get(i), t, cfg1 );
 
-   d = _cman->dist ( _buffer.const_get(i), _buffer.const_get(i+1) );
+   d = _cman->dist ( _buffer.get(i), _buffer.get(i+1) );
    t = prec/d;
    if ( t>1 ) t=1;
-   _cman->interp ( _buffer.const_get(i), _buffer.const_get(i+1), t, cfg2 );
+   _cman->interp ( _buffer.get(i), _buffer.get(i+1), t, cfg2 );
 
-   float diff = (_cman->dist(cfg1,_buffer.const_get(i))+_cman->dist(_buffer.const_get(i),cfg2))
+   float diff = (_cman->dist(cfg1,_buffer.get(i))+_cman->dist(_buffer.get(i),cfg2))
                -_cman->dist(cfg1,cfg2);*/
    return diff;
  }
@@ -387,7 +387,7 @@ return false;
    float angmax=0;
    float t=0, tmax=0;
    for ( i=1; i<=lasti; i++ )
-    { t += _cman->dist ( _buffer.const_get(i-1), _buffer.const_get(i) );
+    { t += _cman->dist ( _buffer.get(i-1), _buffer.get(i) );
       d = _diff ( i, _sprec );
       if ( d>angmax )
        { angmax=d; imax=i; tmax=t; }

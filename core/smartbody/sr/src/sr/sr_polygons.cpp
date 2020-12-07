@@ -40,7 +40,7 @@ SrPolygons::SrPolygons ( const SrPolygons& polys )
    int i;
    _data.size ( polys.size() );
    for ( i=0; i<_data.size(); i++ )
-    _data[i] = new SrPolygon ( polys.const_get(i) );
+    _data[i] = new SrPolygon ( polys.get(i) );
  }
 
 SrPolygons::~SrPolygons ()
@@ -117,9 +117,9 @@ bool SrPolygons::pick_vertex ( const SrVec2& p, float epsilon, int& pid, int& vi
    distmin = 0;
 
    for ( i=0; i<size(); i++ )
-    { s = const_get(i).size();
+    { s = get(i).size();
       for ( j=0; j<s; j++ )
-       { dist = ::dist2 ( const_get(i,j), p );
+       { dist = ::dist2 ( get(i,j), p );
          if ( dist<distmin || pid<0 ) { distmin=dist; pid=i; vid=j; }
        }
     }
@@ -134,7 +134,7 @@ int SrPolygons::pick_polygon ( const SrVec2& p ) const
  { 
    int i;
    for ( i=0; i<size(); i++ )
-    if ( const_get(i).contains(p) ) return i;
+    if ( get(i).contains(p) ) return i;
    return -1;
  }
 
@@ -146,7 +146,7 @@ bool SrPolygons::pick_edge ( const SrVec2& p, float epsilon, int& pid, int& vid 
    pid = vid = -1; 
 
    for ( i=0; i<size(); i++ )
-    { id = const_get(i).pick_edge ( p, epsilon, dist2 );
+    { id = get(i).pick_edge ( p, epsilon, dist2 );
       if ( id>=0 )
        { if ( vid<0 || dist2<mindist2 )
           { vid = id;
@@ -163,7 +163,7 @@ int SrPolygons::intersects ( const SrVec2& p1, const SrVec2& p2 ) const
  {
    int i;
    for ( i=0; i<size(); i++ )
-    if ( const_get(i).intersects(p1,p2) ) return i;
+    if ( get(i).intersects(p1,p2) ) return i;
 
    return -1;
  }
@@ -172,7 +172,7 @@ int SrPolygons::intersects ( const SrPolygon& p ) const
  {
    int i;
    for ( i=0; i<size(); i++ )
-    if ( const_get(i).intersects(p) ) return i;
+    if ( get(i).intersects(p) ) return i;
 
    return -1;
  }
@@ -183,9 +183,9 @@ void SrPolygons::get_bounding_box ( SrBox& b ) const
    SrVec p;
    b.set_empty ();
    for ( i=0; i<size(); i++ )
-    { s = const_get(i).size();
+    { s = get(i).size();
       for ( j=0; j<s; j++ )
-       { const SrVec2& p2 = const_get(i,j);
+       { const SrVec2& p2 = get(i,j);
          p.set ( p2.x, p2.y, 0 );      
          b.extend ( p );
        }
@@ -196,7 +196,7 @@ void SrPolygons::operator = ( const SrPolygons& p )
  {
    size ( p.size() );
    int i;
-   for ( i=0; i<p.size(); i++ ) get(i)=p.const_get(i);
+   for ( i=0; i<p.size(); i++ ) get(i)=p.get(i);
  }
 
 SrOutput& operator<< ( SrOutput& o, const SrPolygons& p )
@@ -205,7 +205,7 @@ SrOutput& operator<< ( SrOutput& o, const SrPolygons& p )
    m = p.size()-1;
    o << '[';
    for ( i=0; i<=m; i++ )
-    { o << p.const_get(i);
+    { o << p.get(i);
       if ( i<m ) o<<"\n ";
     }
    return o << "]\n";

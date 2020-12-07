@@ -140,7 +140,7 @@ void SkSkeleton::init ()
 	resetSearchJoint();
 	_coldet_free_pairs.clear();
 	_channels->init();
-	while ( _postures.size()>0 ) 
+	while ( !_postures.empty() )
 	{
 		SkPosture* posture = _postures.pop();
 		delete posture;
@@ -153,14 +153,14 @@ void SkSkeleton::init ()
 		_joints.pop_back();
 	}
 */
-	for (unsigned int i=0;i<_joints.size();i++)
+	for (auto & _joint : _joints)
 	{
-		delete _joints[i];
-		_joints[i] = nullptr;
+		delete _joint;
+		_joint = nullptr;
 	}
 	_joints.clear();
 	_jointMap.clear();
-	_root = 0;
+	_root = nullptr;
 	_gmat_uptodate = false;
 }
 
@@ -192,7 +192,7 @@ SkJoint* SkSkeleton::add_joint ( SkJoint::RotType rtype, int parentid )
 {
 	_jointMap.clear();
 
-	SkJoint* parent=0;
+	SkJoint* parent=nullptr;
 	if ( parentid < 0 ) {
 #if 0   // is there a reason whey we want to attach unparent joint to the last joint ? it doesn't make sense and will most likely break the structure of skeleton.
 		if( _joints.size()>0 )
@@ -240,12 +240,12 @@ SkJoint* SkSkeleton::insert_new_root_joint ( SkJoint::RotType rtype )
 SkJoint* SkSkeleton::linear_search_joint ( const char* n ) const
 {
 	std::string name(n);
-	for (size_t i=0; i<_joints.size(); i++ )
+	for (auto _joint : _joints)
 	{ 
-		if (_joints[i]->jointName() == name )
-			return _joints[i];
+		if (_joint->jointName() == name )
+			return _joint;
 	}
-	return 0;
+	return nullptr;
 }
 
 void SkSkeleton::resetSearchJoint()
@@ -266,8 +266,8 @@ SkJoint* SkSkeleton::search_joint ( const char* n )
 		updateJointMap();
 	}
 
-	if (_extJointMap.size() == 0 &&
-		_joints.size() > 0)
+	if (_extJointMap.empty() &&
+		!_joints.empty())
 	{
 		int jointSize = _joints.size();
 		for (int i = 0; i < jointSize; i++)
@@ -276,8 +276,8 @@ SkJoint* SkSkeleton::search_joint ( const char* n )
 		}
 	}
 
-	if (_extIDJointMap.size() == 0 &&
-		_joints.size() > 0)
+	if (_extIDJointMap.empty() &&
+		!_joints.empty())
 	{
 		int jointSize = _joints.size();
 		for (int i = 0; i < jointSize; i++)
@@ -286,8 +286,8 @@ SkJoint* SkSkeleton::search_joint ( const char* n )
 		}
 	}
 
-	if (_extSIDJointMap.size() == 0 &&
-		_joints.size() > 0)
+	if (_extSIDJointMap.empty() &&
+		!_joints.empty())
 	{
 		int jointSize = _joints.size();
 		for (int i = 0; i < jointSize; i++)
@@ -296,7 +296,7 @@ SkJoint* SkSkeleton::search_joint ( const char* n )
 		}
 	}
 
-	std::map<std::string, SkJoint*>::iterator iter = _jointMap.find(n);
+	auto iter = _jointMap.find(n);
 	if (iter != _jointMap.end())
 	{
 		return (*iter).second;
@@ -346,9 +346,9 @@ void SkSkeleton::compress ()
 void SkSkeleton::updateGlobalMatricesZero()
 {
 	this->update_global_matrices();
-	for (unsigned int i=0;i<_joints.size();i++)
+	for (auto & _joint : _joints)
 	{
-		_joints[i]->updateGmatZero(_joints[i]->gmat());
+		_joint->updateGmatZero(_joint->gmat());
 	}
 }
 
@@ -356,12 +356,12 @@ void SkSkeleton::set_geo_local ()
 {
 	SkJoint* j;
 
-	for (size_t i=0; i<_joints.size(); i++ ) _joints[i]->init_values();
+	for (auto & _joint : _joints) _joint->init_values();
 	update_global_matrices ();
 
 	SrMat mat;
-	for (size_t i=0; i<_joints.size(); i++ )
-	{ j = _joints[i];
+	for (auto & _joint : _joints)
+	{ j = _joint;
 	mat = j->gmat();
 	mat.invert();
 	if ( j->_visgeo ) j->_visgeo->apply_transformation(mat);
@@ -393,12 +393,12 @@ SrBox SkSkeleton::getBoundingBox()
 	SrBox initialBoundingBox;
 	update_global_matrices();
 	std::vector<SkJoint*>& joints = get_joint_array();	
-	for (size_t j = 0; j < joints.size(); j++)
+	for (auto & joint : joints)
 	{
-		if (joints[j]->getJointType() != SkJoint::TypeJoint)
+		if (joint->getJointType() != SkJoint::TypeJoint)
 			continue;
-		joints[j]->update_gmat();
-		const SrMat& gmat = joints[j]->gmat();
+		joint->update_gmat();
+		const SrMat& gmat = joint->gmat();
 		SrVec point(gmat.get(3, 0), gmat.get(3, 1), gmat.get(3, 2));
 		initialBoundingBox.extend(point);
 	}
@@ -485,10 +485,9 @@ SrVec SkSkeleton::boneGlobalDirection(const std::string& srcName, const std::str
 
 void SkSkeleton::clearJointValues()
 {
-	for (unsigned int i=0;i<_joints.size();i++)
+	for (auto joint : _joints)
 	{
-		SkJoint* joint = _joints[i];
-		joint->quat()->value(SrQuat()); // reset rotation
+			joint->quat()->value(SrQuat()); // reset rotation
 		for (int k=0;k<3;k++)
 			joint->pos()->value(k,0.f);
 	}
@@ -518,7 +517,7 @@ void SkSkeleton::updateJointMap()
 			//SmartBody::util::log("After mapped name, jname = %s", jname.c_str());
 		}
 		//SmartBody::util::log("Before search jname = %s", jname.c_str());
-		std::map<std::string, SkJoint*>::iterator iter = _jointMap.find(jname);
+		auto iter = _jointMap.find(jname);
 		//SmartBody::util::log("After search jname = %s", jname.c_str());
 		//if (iter != _jointMap.end())
 		//	SmartBody::util::log("Found duplicate joint name %s", jname.c_str());
@@ -562,7 +561,7 @@ void SkSkeleton::setJointMapName( const std::string& jointMapName )
 	jointMap = jointMapName;
 }
 
-std::string SkSkeleton::getJointMapName()
+const std::string& SkSkeleton::getJointMapName() const
 {
 	return jointMap;
 }

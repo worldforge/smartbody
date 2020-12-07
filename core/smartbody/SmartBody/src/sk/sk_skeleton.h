@@ -81,12 +81,12 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
     SBAPI void skfilename ( const char* s ) { _skfilename = s; }
 
     /*! Access to the .sk skeleton definiton, if any*/
-	SBAPI const std::string& skfilename () { return _skfilename; }
+	SBAPI const std::string& skfilename () const { return _skfilename; }
 
     /*! Deletes all data and set the skeleton to be an empty hierarchy */
     SBAPI void init ();
 	
-	SBAPI std::vector<SkJoint*>& get_joint_array( void ) { return( _joints ); }
+	SBAPI std::vector<SkJoint*>& get_joint_array( ) { return( _joints ); }
 
     /*! Adds a joint to the hierarchy. If parentid<0 (the default) the last
         joint in the joint list is used as parent (the joint becomes root
@@ -145,7 +145,7 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
 	SBAPI void updateGlobalMatricesZero();
 
     /*! Returns true if all global matrices are up to date */
-    SBAPI bool global_matrices_uptodate () { return _gmat_uptodate; }
+    SBAPI bool global_matrices_uptodate () const { return _gmat_uptodate; }
 
     /*! Set the internal flag that controls global matrices update to false.
         This method is automatically called each time a joint value is changed */
@@ -180,8 +180,10 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
 	SBAPI void compute_com () {}; 
 
 	/*! retrieves the center of mass of the skeleton */
-	SBAPI SrVec& com () { return _com; };	
-	
+	SBAPI SrVec& com () { return _com; };
+	SBAPI const SrVec& com () const { return _com; };
+
+
 	SBAPI float getBaseHeight(const std::string& baseName);
 	SBAPI float getCurrentHeight();	
 	SBAPI SrBox getBoundingBox();
@@ -197,7 +199,7 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
 	SBAPI void resetSearchJoint();
 
 	SBAPI void setJointMapName(const std::string& jointMapName);
-	SBAPI std::string getJointMapName();
+	SBAPI const std::string& getJointMapName() const;
 
    protected :
     int _loadjdata ( SrInput& in, SkJoint* j, SrStringArray& paths );

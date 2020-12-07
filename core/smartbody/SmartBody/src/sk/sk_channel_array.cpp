@@ -499,7 +499,7 @@ mfloat = 0;
 for ( c2=0; c2<ca.size(); c2++ )
 { if ( name(c1)==ca.name(c2) && type(c1)==ca.type(c2) ) // a match
 { cmap=mfloat; break; }
-mfloat += ca.const_get(c2).size();
+mfloat += ca.get(c2).size();
 }
 
 csize = _channels[c1].size();
@@ -588,7 +588,7 @@ SrOutput& operator<< ( SrOutput& o, const SkChannelArray& ca )
 	for ( i=0; i<ca.size(); i++ )
 	{ 
 		o << ca.name(i).c_str() << srspc
-			<< ca.const_get(i).type_name() << srnl;
+			<< ca.get(i).type_name() << srnl;
 	}
 	return o;
 }

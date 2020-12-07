@@ -154,7 +154,7 @@ public:
 	bool isBuildMipMap() const { return data.buildMipMap; }
 	void setBuildMipMap(bool val) { data.buildMipMap = val; }
 
-	SBAPI const std::string& getName() override { return data.textureName; }
+	SBAPI const std::string& getName() const override { return data.textureName; }
 	SBAPI const std::string& getFileName() const { return data.textureFileName; }
 	SBAPI GLuint getID() const { return data.texID; }
 	SBAPI bool loadImage(const char* fileName);	
