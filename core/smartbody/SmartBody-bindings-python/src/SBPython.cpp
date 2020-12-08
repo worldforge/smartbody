@@ -53,7 +53,6 @@
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>
 #include <cstdlib>
-#include <sbm/GenericViewer.h>
 #include <controllers/me_ct_motion.h>
 #include <controllers/me_ct_new_locomotion.h>
 

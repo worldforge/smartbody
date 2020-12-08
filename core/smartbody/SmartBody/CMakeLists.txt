@@ -217,7 +217,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/bml/BMLStateObject.cpp
         src/bml/BMLNoiseObject.cpp
 
-        src/sbm/GenericViewer.cpp
         src/sbm/Heightfield.cpp
         src/sbm/lin_win.cpp
         src/sbm/action_unit.cpp

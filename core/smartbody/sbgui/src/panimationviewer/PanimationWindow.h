@@ -37,7 +37,7 @@
 #include <FL/Fl_Multiline_Output.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/fl_ask.H>
-#include <sbm/GenericViewer.h>
+#include "GenericViewer.h"
 #include <controllers/me_ct_param_animation_utilities.h>
 #include <sb/PABlend.h>
 #include <map>

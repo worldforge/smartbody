@@ -5,7 +5,7 @@
 //#define USE_GLEW 1
 #include <FL/Fl_Gl_Window.H>
 #include <sr/sr_viewer.h>
-#include <sbm/GenericViewer.h>
+#include "GenericViewer.h"
 #include "fltk_viewer.h"
 
 class EmbeddedOgre;

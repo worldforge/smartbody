@@ -52,7 +52,6 @@
 #include <sb/sbm_pawn.hpp>
 #include <sb/SBRigNode.h>
 
-#include <sbm/GenericViewer.h>
 
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>

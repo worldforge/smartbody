@@ -12,7 +12,7 @@
 #include "BehaviorBlock.h"
 #include <bml/bml_speech.hpp>
 #include <bml/bml_event.hpp>
-#include <sbm/GenericViewer.h>
+#include "GenericViewer.h"
 
 class BehaviorWindow : public Fl_Double_Window, public GenericViewer
 {

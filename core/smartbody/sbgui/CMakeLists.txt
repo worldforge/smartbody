@@ -101,6 +101,7 @@ endif ()
 
 set(SBM_FLTK_SRC
 
+        src/GenericViewer.cpp
         src/sbm_main.cpp
         src/ppm.cpp
         src/pic.cpp

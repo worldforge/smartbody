@@ -17,7 +17,7 @@
 #include <sb/SBAnimationState.h>
 #include <sb/SBBehaviorSet.h>
 #include <sb/SBAnimationTransition.h>
-#include <sbm/GenericViewer.h>
+#include "GenericViewer.h"
 #include <sbm/sbm_deformable_mesh.h>
 #include <sbm/GPU/SbmTexture.h>
 #include <sb/SBEvent.h>

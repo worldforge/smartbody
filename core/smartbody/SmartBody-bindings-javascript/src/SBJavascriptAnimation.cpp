@@ -44,7 +44,6 @@
 #include <sb/SBRetargetManager.h>
 #include <sb/SBEvent.h>
 #include <sb/SBSceneListener.h>
-#include <sbm/GenericViewer.h>
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>
 

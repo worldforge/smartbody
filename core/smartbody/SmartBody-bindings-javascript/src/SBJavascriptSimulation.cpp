@@ -9,7 +9,6 @@
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>
 #include <stdlib.h>
-#include <sbm/GenericViewer.h>
 #include <controllers/me_ct_motion.h>
 
 #include <boost/filesystem/operations.hpp>

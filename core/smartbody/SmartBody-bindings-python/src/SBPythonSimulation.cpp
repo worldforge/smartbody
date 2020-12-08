@@ -9,7 +9,6 @@
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>
 #include <stdlib.h>
-#include <sbm/GenericViewer.h>
 #include <controllers/me_ct_motion.h>
 
 #include <boost/filesystem/operations.hpp>
@@ -34,7 +33,6 @@ namespace boost
 	template<> const volatile SmartBody::SBSimulationManager* get_pointer(const volatile SmartBody::SBSimulationManager* p) { return p; }
 	template<> const volatile SmartBody::SBProfiler* get_pointer(const volatile SmartBody::SBProfiler* p) { return p; }
 	template<> const volatile SrViewer* get_pointer(const volatile SrViewer* p) { return p; }
-	template<> const volatile GenericViewer* get_pointer(const volatile GenericViewer* p) { return p; }
 }
 #endif
 
@@ -77,11 +75,6 @@ void pythonFuncsSimulation()
 	boost::python::class_<SrViewer>("Viewer")
 		.def("show", &SrViewer::show_viewer, "Shows the viewer.")
 		.def("hide", &SrViewer::hide_viewer, "Hides the viewer.")
-		;
-
-	boost::python::class_<GenericViewer>("GenericViewer")
-		.def("show", &GenericViewer::show_viewer, "Shows the viewer.")
-		.def("hide", &GenericViewer::hide_viewer, "Hides the viewer.")
 		;
 
 }

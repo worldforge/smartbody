@@ -872,8 +872,13 @@ BOOST_PYTHON_MODULE(GUIInterface)
 		.def("addInterfaceListener", &SBInterfaceManager::addInterfaceListener, "Adds an interface listener.")
 		.def("removeInterfaceListener", &SBInterfaceManager::removeInterfaceListener, "Removes an interface listener.")
 		.def("convertScreenSpaceTo3D", &SBInterfaceManager::convertScreenSpaceTo3D, "Converts screen space to 3D space given a point on a plane and a normal to that plane.")
-		.def("getSelectedObject", &SBInterfaceManager::getSelectedObject, "Returns the name of the currently selection object.")
-;
+		.def("getSelectedObject", &SBInterfaceManager::getSelectedObject, "Returns the name of the currently selection object.");
+
+	boost::python::class_<GenericViewer>("GenericViewer")
+			.def("show", &GenericViewer::show_viewer, "Shows the viewer.")
+			.def("hide", &GenericViewer::hide_viewer, "Hides the viewer.")
+			;
+
 }
 
 

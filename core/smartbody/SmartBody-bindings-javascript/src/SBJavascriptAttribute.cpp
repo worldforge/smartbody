@@ -49,7 +49,6 @@
 #include <sb/SBBehavior.h>
 #include <sb/SBMotion.h>
 #include <sb/SBParseNode.h>
-#include <sbm/GenericViewer.h>
 
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>

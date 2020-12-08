@@ -31,7 +31,7 @@
 
 #include <sk/sk_channel.h>
 #include <sk/sk_motion.h>
-#include <sbm/GenericViewer.h>
+#include "GenericViewer.h"
 #include "GlChartView.hpp"
 #include <SBWindowListener.h>
 

@@ -65,7 +65,7 @@ that is distributed: */
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include <sbm/GenericViewer.h>
+#include "GenericViewer.h"
 #include "SBUtilities.h"
 
 

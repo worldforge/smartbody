@@ -7,7 +7,7 @@
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Scroll.H>
 #include <FL/Fl_Value_Slider.H>
-#include <sbm/GenericViewer.h>
+#include "GenericViewer.h"
 #include <SBWindowListener.h>
 
 class PoseCreator : public GenericViewer, public Fl_Double_Window, public SBWindowListener
