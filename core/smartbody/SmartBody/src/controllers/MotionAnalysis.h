@@ -75,7 +75,7 @@ class LocomotionAnalyzer
 protected:
 	//SmartBody::SBAnimationBlend* locomotionBlend;	
 	std::string motionName;
-	float startTime, endTime;
+	float startTime{}, endTime{};
 	std::map<int,LegCycleVec> legCycleMap;
 public:
 	std::vector<LegInfo*> legInfos;	

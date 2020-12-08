@@ -723,7 +723,7 @@ bool MeCtParamAnimation::hasPABlend(const std::string& name)
 		return true;
 	if (getNextStateName() == name)
 		return true;
-	std::list<ScheduleUnit>::iterator iter = waitingList.begin();
+	auto iter = waitingList.begin();
 	for (; iter!= waitingList.end(); iter++)
 	{
 		if (iter->data)

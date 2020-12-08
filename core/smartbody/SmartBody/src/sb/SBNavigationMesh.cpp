@@ -23,11 +23,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <Recast.h>
 #include <DetourNavMeshBuilder.h>
 #include <DetourNavMeshQuery.h>
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 #include <sb/SBAttribute.h>
-#include <sb/SBAssetManager.h>
-#include <sb/SBScene.h>
 #include "SBUtilities.h"
 
 const int MaxPolys = 255;
@@ -45,17 +43,15 @@ SBAPI SBNavigationMesh::SBNavigationMesh()
 
 }
 
-SBAPI SBNavigationMesh::~SBNavigationMesh()
-{
-}
+SBAPI SBNavigationMesh::~SBNavigationMesh() = default;
 
 
 void SBNavigationMesh::cleanUp()
 {
-	if (rawMesh)
-		delete rawMesh;
-	if (naviMesh)
-		delete naviMesh;
+
+	delete rawMesh;
+
+	delete naviMesh;
 	if (m_navMesh)
 		dtFreeNavMesh(m_navMesh);
 	if (m_navQuery)

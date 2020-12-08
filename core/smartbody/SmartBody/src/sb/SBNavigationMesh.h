@@ -47,7 +47,7 @@ class SBNavigationMesh : public SBObject
 		SBAPI SrVec queryMeshPointByRayCast(SrVec& p1, SrVec& p2);
 		SBAPI std::vector<SrVec> findPath(SrVec& spos, SrVec& epos);
 
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 	protected:
 		void cleanUp();
 	protected:

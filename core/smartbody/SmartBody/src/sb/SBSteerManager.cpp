@@ -125,11 +125,9 @@ void SBSteerManager::update(double time)
 				_maxUpdateFrequency = .016;
 			double timeDiff = SmartBody::SBScene::getScene()->getSimulationManager()->getTime() - getEngineDriver()->getLastUpdateTime();
 			const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
-			for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-				iter != characterNames.end();
-				iter++)
+			for (const auto & characterName : characterNames)
 			{
-				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(*iter);
+				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 				SmartBody::SBSteerAgent* steerAgent = getSteerAgent(character->getName());
 				if (steerAgent)
 					steerAgent->evaluate(timeDiff);
@@ -191,13 +189,11 @@ void SBSteerManager::start()
 	bool setBoundaries = SmartBody::SBScene::getScene()->getSteerManager()->getBoolAttribute("addBoundaryWalls");
 	if (setBoundaries)
 	{
-		for (std::vector<SteerLib::BoxObstacle*>::iterator iter = _boundaryObstacles.begin();
-			 iter != _boundaryObstacles.end();
-			 iter++)
+		for (auto & _boundaryObstacle : _boundaryObstacles)
 		{
-			getEngineDriver()->_engine->removeObstacle((*iter));
-			getEngineDriver()->_engine->getSpatialDatabase()->removeObject((*iter), (*iter)->getBounds());
-			delete (*iter);
+			getEngineDriver()->_engine->removeObstacle(_boundaryObstacle);
+			getEngineDriver()->_engine->getSpatialDatabase()->removeObject(_boundaryObstacle, _boundaryObstacle->getBounds());
+			delete _boundaryObstacle;
 		}
 		SteerLib::BoxObstacle* top = new SteerLib::BoxObstacle((float) -gridSizeX / 2.0f, (float) gridSizeX / 2.0f, 0.0f,  1.0f, (float) -gridSizeZ / 2.0f, (float) -gridSizeZ / 2.0f + 1.0f);
 		_boundaryObstacles.emplace_back(top);

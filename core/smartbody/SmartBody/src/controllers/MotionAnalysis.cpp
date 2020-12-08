@@ -21,7 +21,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "MotionAnalysis.h"
 #include <sb/SBScene.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBNavigationMesh.h>
 #include <sbm/Heightfield.h>
 /************************************************************************/
 /* Locomotion Leg Cycle                                                 */
@@ -103,14 +102,9 @@ float LocomotionLegCycle::getTransitionWeight( float motionTime, int& phase )
 /************************************************************************/
 /* Locomotion Analyzer                                                  */
 /************************************************************************/
-LocomotionAnalyzer::LocomotionAnalyzer()
-{
+LocomotionAnalyzer::LocomotionAnalyzer() = default;
 
-}
-
-LocomotionAnalyzer::~LocomotionAnalyzer()
-{
-}
+LocomotionAnalyzer::~LocomotionAnalyzer() = default;
 
 
 LocomotionLegCycle* LocomotionAnalyzer::getLegCycleByIndex( int iLeg, int cycleIdx )
@@ -157,10 +151,10 @@ void LocomotionAnalyzer::initLegCycles( const std::string& name, SmartBody::SBAn
 	for ( mi  = keyTagMap.begin(); mi != keyTagMap.end(); mi++)
 	{
 		KeyTag& keyTag = mi->second;
-		if (keyTag.size() == 0) continue;
+		if (keyTag.empty()) continue;
 		legCycleMap[mi->first] = LegCycleVec();
 		LegCycleVec& legCycleVec = legCycleMap[mi->first];
-		KeyTag::iterator ki = keyTag.begin();
+		auto ki = keyTag.begin();
 		int nCycles = ki->second.size();
 		for (int i=0;i<nCycles;i++)
 		{
@@ -428,7 +422,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 	float transitionWeight = 0.0;
 	int maxWeightIndex = -1;
 	double maxBlendWeight = -1;	
-	for (unsigned int i=0;i<weights.size();i++)
+	for (size_t i=0;i<weights.size();i++)
 	{
 		if (weights[i] > maxBlendWeight)
 		{
@@ -560,8 +554,8 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
  // use height field
 	
 	heightField = SmartBody::SBScene::getScene()->getHeightfield();	
-	SmartBody::SBNavigationMesh* navMesh = SmartBody::SBScene::getScene()->getNavigationMesh();	
-	if (heightField && !navMesh)
+//	SmartBody::SBNavigationMesh* navMesh = SmartBody::SBScene::getScene()->getNavigationMesh();
+	if (heightField)
 	{
 		float tnormal[3];
 		float terrainHeight = 0.0f;
@@ -571,9 +565,9 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		if (heightField && sbChar->getBoolAttribute("terrainWalk"))
 		{
 			//terrainHeight = SmartBody::SBScene::getScene()->queryTerrain(x, z, tnormal);
-			for (unsigned int k=0;k<legStates.size();k++)
+			for (auto & legState : legStates)
 			{
-				LegCycleState& legState = legStates[k];
+
 #define NAIVE_IKFIX 1
 #if NAIVE_IKFIX
 				for (unsigned int m=0;m<legState.curSupportPos.size();m++)
@@ -609,38 +603,37 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 			ikScenario.ikGlobalMat.set(13, ikScenario.ikGlobalMat.get(13) + heightOffset + footOffset);
 		}
 	}
-	else if (navMesh && !heightField)
-	{
-		// use navigation mesh
-		//float tnormal[3];
-		float terrainHeight = 0.0f;
-		float footOffset = 0.05f;
-		float minHeight = 1e30f;
-		float maxHeight = -1e30f;
-		SrVec searchSize = SrVec(sbChar->getHeight()*0.3f, sbChar->getHeight(), sbChar->getHeight()*0.3f);	
-		if (navMesh && sbChar->getBoolAttribute("terrainWalk"))
-		{
-			//terrainHeight = SmartBody::SBScene::getScene()->queryTerrain(x, z, tnormal);
-			for (unsigned int k=0;k<legStates.size();k++)
-			{
-				LegCycleState& legState = legStates[k];
-				for (unsigned int m=0;m<legState.curSupportPos.size();m++)
-				{
-					SrVec supPos = legState.globalSupportPos[m];
-					//float height = SmartBody::SBScene::getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
-					float height = navMesh->queryFloorHeight(supPos,searchSize);
-					float supHeightOffset = (height + tgtBaseHeight) - gmatBase.get_translation().y; 
-					legState.globalSupportPos[m].y += supHeightOffset + footOffset;
-					if (minHeight > height)
-						minHeight = height;
-					if (maxHeight < height)
-						maxHeight = height;
-				}
-			}
-			float heightOffset = (minHeight + tgtBaseHeight) - gmatBase.get_translation().y; 
-			ikScenario.ikGlobalMat.set(13, ikScenario.ikGlobalMat.get(13) + heightOffset + footOffset);
-		}
-	}	
+//	else if (navMesh && !heightField)
+//	{
+//		// use navigation mesh
+//		//float tnormal[3];
+//		float terrainHeight = 0.0f;
+//		float footOffset = 0.05f;
+//		float minHeight = 1e30f;
+//		float maxHeight = -1e30f;
+//		SrVec searchSize = SrVec(sbChar->getHeight()*0.3f, sbChar->getHeight(), sbChar->getHeight()*0.3f);
+//		if (navMesh && sbChar->getBoolAttribute("terrainWalk"))
+//		{
+//			//terrainHeight = SmartBody::SBScene::getScene()->queryTerrain(x, z, tnormal);
+//			for (auto & legState : legStates)
+//			{
+//					for (unsigned int m=0;m<legState.curSupportPos.size();m++)
+//				{
+//					SrVec supPos = legState.globalSupportPos[m];
+//					//float height = SmartBody::SBScene::getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
+//					float height = navMesh->queryFloorHeight(supPos,searchSize);
+//					float supHeightOffset = (height + tgtBaseHeight) - gmatBase.get_translation().y;
+//					legState.globalSupportPos[m].y += supHeightOffset + footOffset;
+//					if (minHeight > height)
+//						minHeight = height;
+//					if (maxHeight < height)
+//						maxHeight = height;
+//				}
+//			}
+//			float heightOffset = (minHeight + tgtBaseHeight) - gmatBase.get_translation().y;
+//			ikScenario.ikGlobalMat.set(13, ikScenario.ikGlobalMat.get(13) + heightOffset + footOffset);
+//		}
+//	}
 	// set ik constraint
 	for (unsigned int i=0;i<legInfos.size();i++)
 	{
