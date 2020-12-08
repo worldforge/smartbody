@@ -2582,31 +2582,32 @@ int FltkViewer::handle ( int event )
 				SrVec p2;
 				renderScene.getActiveCamera()->get_ray(e.mouse.x, e.mouse.y, p1, p2);
 				bool intersectGround = true;
-				SrVec dest, src;				
-				if (scene.getNavigationMesh())				
-				{
-					std::vector<SrVec> pathList;
-					dest = scene.getNavigationMesh()->queryMeshPointByRayCast(p1,p2);
-					if (dest.x != 0.f || dest.y != 0.f || dest.z != 0.f)
-					{
-						intersectGround = false;
-						src = ppraiAgent->getCharacter()->getPosition();
-						pathList = scene.getNavigationMesh()->findPath(src,dest);
-						std::stringstream command;
-						command << "steer move " << character->getName() << " normal ";
-						for (auto & pt : pathList)
-						{
-								std::string xstr, ystr, zstr;
-							xstr = boost::lexical_cast<std::string>(pt.x);
-							ystr = boost::lexical_cast<std::string>(pt.y);
-							zstr = boost::lexical_cast<std::string>(pt.z);
-							command <<  xstr << " " << ystr << " " << zstr << " ";	
-							
-						}
-						//command <<  xstr << " 0 " << zstr << " ";
-						SmartBody::SBScene::getScene()->command((char*)command.str().c_str());
-					}							
-				}
+				SrVec dest, src;
+				//TODO: handle navmeshes somewhere, just not in the Scene
+//				if (scene.getNavigationMesh())
+//				{
+//					std::vector<SrVec> pathList;
+//					dest = scene.getNavigationMesh()->queryMeshPointByRayCast(p1,p2);
+//					if (dest.x != 0.f || dest.y != 0.f || dest.z != 0.f)
+//					{
+//						intersectGround = false;
+//						src = ppraiAgent->getCharacter()->getPosition();
+//						pathList = scene.getNavigationMesh()->findPath(src,dest);
+//						std::stringstream command;
+//						command << "steer move " << character->getName() << " normal ";
+//						for (auto & pt : pathList)
+//						{
+//								std::string xstr, ystr, zstr;
+//							xstr = boost::lexical_cast<std::string>(pt.x);
+//							ystr = boost::lexical_cast<std::string>(pt.y);
+//							zstr = boost::lexical_cast<std::string>(pt.z);
+//							command <<  xstr << " " << ystr << " " << zstr << " ";
+//
+//						}
+//						//command <<  xstr << " 0 " << zstr << " ";
+//						SmartBody::SBScene::getScene()->command((char*)command.str().c_str());
+//					}
+//				}
 
 				if (intersectGround)
 				{
@@ -5743,7 +5744,8 @@ void FltkViewer::drawNavigationMesh()
 {
 	if (_data->navigationMeshMode == ModeNoNavigationMesh) return;
 
-	SmartBody::SBNavigationMesh* navigationMesh = SmartBody::SBScene::getScene()->getNavigationMesh();
+	//TODO: handle navmeshes somewhere, just not in the scene.
+	SmartBody::SBNavigationMesh* navigationMesh = nullptr;
 	if (!navigationMesh) return;
 
 	SrModel* drawMesh = nullptr;

@@ -202,6 +202,8 @@ target_link_libraries(sbgui
         SmartBody-renderer-gl-bindings-python
         SmartBody-physics-ode
         SmartBody-control
+        SmartBody-navmesh
+        SmartBody-navmesh-bindings-python
         jpge
         pinocchio
         ${MORE_LIBS}
@@ -214,9 +216,11 @@ target_include_directories(sbgui PUBLIC
         $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-navmesh,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-renderer-gl-bindings-python,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-navmesh-bindings-python,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-physics-ode,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-control,INCLUDE_DIRECTORIES>
         )

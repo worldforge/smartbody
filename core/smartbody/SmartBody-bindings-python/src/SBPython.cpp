@@ -44,14 +44,11 @@
 #include <sb/SBBehaviorSetManager.h>
 #include <sb/SBRetarget.h>
 #include <sb/SBRetargetManager.h>
-#include <sb/SBNavigationMesh.h>
-#include <sb/SBNavigationMeshManager.h>
 #include <sb/SBHandConfigurationManager.h>
 #include <sb/SBHandConfiguration.h>
 #include <sb/SBDebuggerServer.h>
 #include <sb/SBEvent.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBNavigationMesh.h>
 #include "SBUtilities.h"
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>
@@ -520,13 +517,6 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("getRetarget", &SBRetargetManager::getRetarget, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Get the retarget instance for the source/target skeleton pair.")
 		.def("getRetargetNames", &SBRetargetManager::getRetargetNames, "Get the names of all retarget instances.")
 
-		;
-
-
-	boost::python::class_<SBNavigationMeshManager>("SBNavigationMeshManager")
-		.def("createNavigationMesh", &SBNavigationMeshManager::createNavigationMesh, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Create a navigation mesh")
-		.def("getNavigationMesh", &SBNavigationMeshManager::getNavigationMesh, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Get the navigation mesh based on its name.")
-		.def("getNavigationMeshNames", &SBNavigationMeshManager::getNavigationMeshNames, "Get the names of all navigation meshes.")
 		;
 
 

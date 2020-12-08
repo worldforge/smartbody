@@ -1,6 +1,6 @@
 
 #include "SBRendererGLPython.h"
-#include <boost/python.hpp>
+#include "sb/SBTypes.h"
 
 #include "sb/SBRenderAssetManager.h"
 #include "sbm/SBRenderScene.h"
@@ -11,6 +11,8 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include <boost/python/args.hpp>
+#include <string>
+#include <boost/python.hpp>
 
 SBAPI void initPythonRenderer() {
 	boost::python::class_<SmartBody::SBRenderScene , boost::noncopyable>("SBRenderScene", boost::python::no_init)

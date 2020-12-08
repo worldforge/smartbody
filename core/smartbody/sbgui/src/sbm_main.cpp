@@ -73,7 +73,8 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <sbm/sr_cmd_line.h>
-#include <SBPythonClass.h>
+#include "SBPythonClass.h"
+#include "SBNavmeshPython.h"
 #include "gwiz_cmdl.h"
 
 #ifdef WIN32
@@ -93,7 +94,6 @@
 #endif
 
 #include "pic.h"
-//#include <FL/Fl_glut.h>
 #include "sr/sr_model.h"
 
 #include "SBRendererGLPython.h"
@@ -1154,6 +1154,7 @@ int main( int argc, char **argv )	{
 	initGUIInterfacePythonModule();
 	pythonExtraModuleDeclarations.emplace_back([](){
 		initPythonRenderer();
+		initPythonNavmesh();
 	});
 
 	initPython();

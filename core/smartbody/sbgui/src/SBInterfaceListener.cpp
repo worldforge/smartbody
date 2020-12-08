@@ -1,18 +1,13 @@
 #include "SBInterfaceListener.h"
-#include <sb/SBNavigationMesh.h>
 #include <sb/SBScene.h>
 #include "SBSelectionManager.h"
 #include "Session.h"
 #include <sr/sr_plane.h>
 #include <sr/sr_camera.h>
 
-SBInterfaceListener::SBInterfaceListener()
-{
-}
+SBInterfaceListener::SBInterfaceListener() = default;
 
-SBInterfaceListener::~SBInterfaceListener()
-{
-}
+SBInterfaceListener::~SBInterfaceListener() = default;
 
 void SBInterfaceListener::onStart()
 {

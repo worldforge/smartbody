@@ -45,9 +45,7 @@
 #include <sb/SBRetargetManager.h>
 #include <sb/SBEvent.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBNavigationMesh.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBNavigationMeshManager.h>
 #include <sb/SBHandConfigurationManager.h>
 #include <sb/SBDebuggerServer.h>
 #include <sb/SBMotionGraph.h>
@@ -87,12 +85,7 @@ namespace SmartBody
 
 void pythonFuncsScene()
 {
-		boost::python::class_<SBNavigationMesh>("SBNavigationMesh")		
-		//.def("buildNavigationMesh", &SBNavigationMesh::buildNavigationMesh, "Build the navigation mesh based on input mesh name")
-		.def("findPath", &SBNavigationMesh::findPath, boost::python::return_value_policy<boost::python::return_by_value>(), "Find a path from start position to end position.")
-		.def("queryMeshPointByRayCast", &SBNavigationMesh::queryMeshPointByRayCast, boost::python::return_value_policy<boost::python::return_by_value>(), "Query the position on navigation mesh by ray casting.")
-		.def("queryFloorHeight", &SBNavigationMesh::queryFloorHeight, boost::python::return_value_policy<boost::python::return_by_value>(), "Query the height of floor on navigation mesh given a position and search radius.")
-		;
+
 
 		boost::python::class_<SBScene, boost::python::bases<SBObject>, boost::noncopyable >("SBScene", boost::python::no_init)
 		.def("update", &SBScene::update, "Updates the simulation at the given time.")
@@ -148,8 +141,8 @@ void pythonFuncsScene()
 //		.def("exportCharacter", &SBScene::exportCharacter, "Saves the character's skeleton, skinned mesh and all other assets into a given folder in Collada format. ")
 //		#endif
 		//.def("rescalePartialMeshSkeleton", &SBScene::rescalePartialMeshSkeleton, "Rescale part of the mesh and skeleton based on selected root joints. ")
-		.def("setNavigationMesh", &SBScene::setNavigationMesh, "Set the navigation mesh used for steering in the scene.\n Input : Navigation mesh name")
-		.def("getNavigationMesh", &SBScene::getNavigationMesh, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Get the navigation mesh in the scene")
+//		.def("setNavigationMesh", &SBScene::setNavigationMesh, "Set the navigation mesh used for steering in the scene.\n Input : Navigation mesh name")
+//		.def("getNavigationMesh", &SBScene::getNavigationMesh, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Get the navigation mesh in the scene")
 		.def("startFileLogging", &SBScene::startFileLogging, "Starts logging SmartBody messages to a given log file.")
 		.def("stopFileLogging", &SBScene::stopFileLogging, "Stops logging SmartBody messages to the given log file.")
 
@@ -189,7 +182,7 @@ void pythonFuncsScene()
 		.def("getAssetManager", &SBScene::getAssetManager, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the asset manager.")
 		.def("getAssetStore", &SBScene::getAssetStore, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Accesses the asset store")
 		.def("getVHMsgManager", &SBScene::getVHMsgManager, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the VH message manager.")
-		.def("getNavigationMeshManager", &SBScene::getNavigationMeshManager, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the navigation mesh manager.")
+		//.def("getNavigationMeshManager", &SBScene::getNavigationMeshManager, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the navigation mesh manager.")
 		.def("getMotionGraphManager", &SBScene::getMotionGraphManager, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the motion graph manager.")
 		.def("getHandConfigurationManager", &SBScene::getHandConfigurationManager, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the hand configuration manager.")
 		.def("getRealtimeManager", &SBScene::getRealtimeManager, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the real time data manager.")

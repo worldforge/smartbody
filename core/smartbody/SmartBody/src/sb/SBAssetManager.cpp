@@ -23,7 +23,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBNavigationMesh.h>
 #include "SBUtilities.h"
 #include <sbm/lin_win.h>
 #include <sbm/sr_path_list.h>

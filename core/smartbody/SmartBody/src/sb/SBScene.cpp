@@ -64,7 +64,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAssetManager.h>
 #include <sb/SBSpeechManager.h>
 #include <sb/SBCommandManager.h>
-#include <sb/SBNavigationMeshManager.h>
 #include <sb/SBHandConfigurationManager.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBParser.h>
@@ -77,7 +76,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/nvbg.h>
 #include <sb/SBJointMap.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBNavigationMesh.h>
 #include <sbm/Heightfield.h>
 #include <sbm/action_unit.hpp>
 #include <sbm/xercesc_utils.hpp>
@@ -162,7 +160,6 @@ _coreServices(std::move(coreServices))
 	_speechManager = new SBSpeechManager();
 	_vhmsgManager = new SBVHMsgManager();
 	_commandManager = new SBCommandManager();
-	_naviMeshManager = new SBNavigationMeshManager();
 	_motionGraphManager = new SBMotionGraphManager();
 	_handConfigManager = new SBHandConfigurationManager();
 
@@ -396,7 +393,6 @@ SBScene::~SBScene()
 	delete _assetManager;
 	delete _speechManager;
 	delete _commandManager;
-	delete _naviMeshManager;
 	delete _kinectProcessor;
 	delete _handConfigManager;
 
@@ -1373,12 +1369,6 @@ SBCommandManager* SBScene::getCommandManager()
 	return _commandManager;
 }
 
-SBNavigationMeshManager* SBScene::getNavigationMeshManager()
-{
-	return _naviMeshManager;
-}
-
-
 SBVHMsgManager* SBScene::getVHMsgManager()
 {
 	return _vhmsgManager;
@@ -1914,19 +1904,6 @@ KinectProcessor* SBScene::getKinectProcessor()
 std::map<std::string, GeneralParam*>& SBScene::getGeneralParameters()
 {
 	return _generalParams;
-}
-
-SBAPI void SBScene::setNavigationMesh( const std::string& naviMeshName )
-{
-	SBNavigationMeshManager* naviManager = getNavigationMeshManager();
-	SBNavigationMesh* naviMesh = naviManager->getNavigationMesh(naviMeshName);
-	if (naviMesh)
-		_navigationMesh = naviMesh;
-}
-
-SBAPI SBNavigationMesh* SBScene::getNavigationMesh()
-{
-	return _navigationMesh;
 }
 
 void SBScene::startFileLogging(const std::string& filename)

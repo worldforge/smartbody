@@ -362,14 +362,12 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/PABlend.cpp
         src/sb/SBRetarget.cpp
         src/sb/SBRetargetManager.cpp
-        src/sb/SBNavigationMesh.cpp
         src/sb/SBAsset.cpp
         src/sb/SBAssetManager.cpp
         src/sb/SBAssetStore.cpp
         src/sb/SBSpeechManager.cpp
         src/sb/SBVHMsgManager.cpp
         src/sb/SBCommandManager.cpp
-        src/sb/SBNavigationMeshManager.cpp
 
         src/sb/SBAssetHandler.cpp
         src/sb/SBAssetHandlerSk.cpp

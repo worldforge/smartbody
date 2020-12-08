@@ -1,10 +1,9 @@
 #ifndef SBRENDERERGLPYTHON
 #define SBRENDERERGLPYTHON
 
-#include <sb/SBTypes.h>
-#include <string>
+#include "SBABI.h"
 
-void initPythonRenderer();
+SBAPI void initPythonRenderer();
 
 
 #endif

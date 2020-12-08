@@ -45,9 +45,9 @@
 #include <sb/SBRetargetManager.h>
 #include <sb/SBEvent.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBNavigationMesh.h>
+//#include <sb/SBNavigationMesh.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBNavigationMeshManager.h>
+//#include <sb/SBNavigationMeshManager.h>
 #include <sb/SBHandConfigurationManager.h>
 #include <sb/SBMotionGraph.h>
 #include <sr/sr_box.h>

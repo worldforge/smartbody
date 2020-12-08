@@ -68,7 +68,6 @@ class SBBehaviorSetManager;
 class SBRetargetManager;
 class SBAssetManager;
 class SBSpeechManager;
-class SBNavigationMeshManager;
 class SBParser;
 class SBSubject;
 class SBController;
@@ -189,7 +188,6 @@ class SBScene : public SBObject
 		SBAPI SBSpeechManager* getSpeechManager();
 		SBAPI SBVHMsgManager* getVHMsgManager();
 		SBAPI SBCommandManager* getCommandManager();
-		SBAPI SBNavigationMeshManager* getNavigationMeshManager();
 		SBAPI SBMotionGraphManager* getMotionGraphManager();
 		SBAPI SBHandConfigurationManager* getHandConfigurationManager();
 
@@ -244,12 +242,7 @@ class SBScene : public SBObject
 
 		//bool  blendScalePos(SrVec &v, SrVec &rootPos, int rootIdx, int headIdx, float blendThreshold, float scaleRatio);
 
-#if 0 // should be creating navigation mesh directly in AssetManager
-		SBAPI bool createNavigationMesh(const std::string& meshfilename);
-#endif
-		SBAPI void setNavigationMesh(const std::string& naviMeshName);
-		SBAPI SBNavigationMesh* getNavigationMesh();
-		
+
 		SBAPI Heightfield* createHeightfield();
 		SBAPI void removeHeightfield();
 		SBAPI Heightfield* getHeightfield();
@@ -302,7 +295,6 @@ class SBScene : public SBObject
 		SBSpeechManager* _speechManager;
 		SBVHMsgManager* _vhmsgManager;
 		SBCommandManager* _commandManager;
-		SBNavigationMeshManager* _naviMeshManager;
 		SBMotionGraphManager* _motionGraphManager;
 		SBHandConfigurationManager* _handConfigManager;
 
