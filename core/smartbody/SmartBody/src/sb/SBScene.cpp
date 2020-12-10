@@ -146,7 +146,7 @@ _coreServices(std::move(coreServices))
 	_bml = new SBBmlProcessor();
 	_blendManager = new SBAnimationBlendManager();
 	_reachManager = new SBReachManager();
-	_steerManager = new SBSteerManager();
+	_steerManager = new SBSteerManager(*this);
 	_realtimeManager = new SBRealtimeManager();
 	_serviceManager = new SBServiceManager();
 	_gestureMapManager = new SBGestureMapManager();

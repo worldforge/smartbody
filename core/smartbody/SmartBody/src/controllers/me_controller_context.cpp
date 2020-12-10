@@ -28,9 +28,7 @@
 #include <sb/SBScene.h>
 
 
-MeControllerContext::MeControllerContext()
-:	_name( "" )
-{}
+MeControllerContext::MeControllerContext() = default;
 
 void MeControllerContext::name( const std::string& name ) {
 	_name = name;

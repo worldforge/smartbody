@@ -59,17 +59,17 @@ public:
     // Public Methods
 	static MeControllerTreeRoot* create();
 
-	const std::string& context_type() const
+	const std::string& context_type() const override
 	{	return CONTEXT_TYPE; }
 
     /** Implements MeControllerContext::channels() */
-    virtual SkChannelArray& channels() = 0;
+    SkChannelArray& channels() override = 0;
 
     /** Implements MeControllerContext:: toBufferIndex(..) */
-    virtual int toBufferIndex( int chanIndex ) = 0;
+    int toBufferIndex( int chanIndex ) override = 0;
 
     /** Implements MeControllerContext::childChannelsUpdated(..) */
-	virtual void child_channels_updated( MeController* child ) = 0;
+	void child_channels_updated( MeController* child ) override = 0;
 
     ///** Implements MeEvaluationContext::buffer() */
     //SrBuffer<float>& buffer() = 0;
@@ -112,7 +112,7 @@ public:
 	/**
 	 *  Public variant of MeControllerContext::remove_controller(..).
 	 */
-	virtual void remove_controller( MeController* ct ) = 0;
+	void remove_controller( MeController* ct ) override = 0;
 
 	/**
 	 *  Locates a controller by its handle.

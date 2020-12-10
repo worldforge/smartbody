@@ -23,6 +23,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sb/SBService.h>
+#include <boost/noncopyable.hpp>
+#include <memory>
 
 class SteerSuiteEngineDriver;
 namespace SteerLib
@@ -33,36 +35,38 @@ namespace SteerLib
 namespace SmartBody {
 
 class SBSteerAgent;
+class SBScene;
 
-class SBSteerManager : public SmartBody::SBService
+class SBSteerManager : public SmartBody::SBService, public boost::noncopyable
 {
 	public:
-		SBAPI SBSteerManager();
+		SBAPI explicit SBSteerManager(SBScene& scene);
 		SBAPI ~SBSteerManager();
 		
-		SBAPI virtual void setEnable(bool enable);
-		SBAPI virtual void start();
-		SBAPI virtual void beforeUpdate(double time);
-		SBAPI virtual void update(double time);
-		SBAPI virtual void afterUpdate(double time);
-		SBAPI virtual void stop();
+		SBAPI void setEnable(bool enable) override;
+		SBAPI void start() override;
+		SBAPI void beforeUpdate(double time) override;
+		SBAPI void update(double time) override;
+		SBAPI void afterUpdate(double time) override;
+		SBAPI void stop() override;
 
-		SBAPI virtual void onCharacterDelete(SBCharacter* character);
+		SBAPI void onCharacterDelete(SBCharacter* character) override;
 
 		SBAPI SteerSuiteEngineDriver* getEngineDriver();
 
-		SBAPI SBSteerAgent* createSteerAgent(std::string name);
-		SBAPI void removeSteerAgent(std::string name);
+		SBAPI SBSteerAgent* createSteerAgent(const std::string& name);
+		SBAPI void removeSteerAgent(const std::string& name);
 		SBAPI int getNumSteerAgents();
-		SBAPI SBSteerAgent* getSteerAgent(std::string name);
+		SBAPI SBSteerAgent* getSteerAgent(const std::string& name);
 		SBAPI std::vector<std::string> getSteerAgentNames();
-		SBAPI std::map<std::string, SBSteerAgent*>& getSteerAgents();
+		SBAPI std::map<std::string, std::unique_ptr<SBSteerAgent>>& getSteerAgents();
 
 	protected:
-		std::map<std::string, SBSteerAgent*> _steerAgents;
-		std::vector<SteerLib::BoxObstacle*> _boundaryObstacles;
+		SBScene& _scene;
+		std::map<std::string, std::unique_ptr<SBSteerAgent>> _steerAgents;
+		std::vector<std::unique_ptr<SteerLib::BoxObstacle>> _boundaryObstacles;
 
-		SteerSuiteEngineDriver* _driver;
+		std::unique_ptr<SteerSuiteEngineDriver> _driver;
 		double _maxUpdateFrequency;
 
 

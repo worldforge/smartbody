@@ -401,7 +401,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 	pythonFuncsAnimation();
 
 
-	boost::python::class_<SBSteerManager, boost::python::bases<SBService> >("SBSteerManager")
+	boost::python::class_<SBSteerManager, boost::python::bases<SBService>, boost::noncopyable >("SBSteerManager", boost::python::no_init)
 		.def("createSteerAgent", &SBSteerManager::createSteerAgent, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Create a steer agent.")
 		.def("removeSteerAgent", &SBSteerManager::removeSteerAgent, "Remove a steer agent.")
 		.def("getNumSteerAgents", &SBSteerManager::getNumSteerAgents, "Return number of steer agents.")

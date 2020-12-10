@@ -114,7 +114,7 @@ protected :
 	double		_record_dt;
 	double      _record_duration;
 	typedef std::string FRAME;
-	std::list<FRAME>	*_frames;	// buffer to store the frame data
+	std::list<FRAME>	_frames;	// buffer to store the frame data
 	int			_record_max_frames; // maximum capacity of the buffer
 
 	// debugging: recording controller's MeFrameData, inspecting the changes each controller make on the buffer data 
@@ -134,7 +134,7 @@ protected :
 
 public :
     /*! Destructor is public but pay attention to the use of ref()/unref() */
-    virtual ~MeController ();
+    ~MeController () override;
 
 	srSynchPoints synch_points;
 
@@ -202,7 +202,7 @@ public :
     /**
      *  Sets the evaluation context, or unset if context is nullptr.
      */
-    MeControllerContext* const context()
+    MeControllerContext* context()
 	{	return _context; }
 
     /*! returns the specified emphasis time, the default value is <0,
@@ -279,14 +279,14 @@ public :
 	void record_write( const char *full_prefix );			//write the buffer to files
 
 	void saveMotionRecord( const std::string &recordname );
-	void record_clear(void);								//clear the buffer
-	void record_stop(void);									//stop the recording
+	void record_clear();								//clear the buffer
+	void record_stop();									//stop the recording
 
 	/*! Evaluates the controller changes */
 	SBAPI void record_buffer_changes(bool val);				    // store the values of all channels changed by this controller
 	/*SrBuffer<float>& get_buffer_changes();					// gets the channel data changed by this controller*/
 	SBAPI std::vector<float>& get_buffer_changes();
-	bool is_record_buffer_changes() { return _buffer_changes_toggle; }
+	bool is_record_buffer_changes() const { return _buffer_changes_toggle; }
 
 	bool isEnabled() const;
 	void setEnable(bool val);
@@ -300,11 +300,11 @@ public :
 	bool print_bvh_hierarchy( SkJoint* joint_p, int depth );
 	// NOTE: depth only used to hack STUPID-POLYTRANS ROOT bug
 	bool print_bvh_motion( SkJoint* joint_p, int depth, FRAME& frame_data );
-	void load_bvh_joint_hmap( void );
+	void load_bvh_joint_hmap( );
 
 //	bool init_record( void );
 	void cont_record( double time, MeFrameData& frame );
-	void stop_record( void );
+	void stop_record( );
 
 	void cal_buffer_changes( MeFrameData& frame ); // stores the channel values changed by this controller
 
@@ -367,7 +367,7 @@ public :
         the string corresponds with the derived class name without the 'SrCn' prefix */
 	virtual const std::string& controller_type () const = 0;
 
-    SBAPI virtual void notify(SmartBody::SBSubject* subject);
+    SBAPI void notify(SmartBody::SBSubject* subject) override;
 
 	friend class MeControllerContext;
 };
