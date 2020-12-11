@@ -37,6 +37,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBUtilities.h"
 //#include "imdebug/imdebug.h"
 #include <sr/sr_gl.h>
+#include <cstring>
 
 /************************************************************************/
 /* Sbm Texture Manager                                                  */

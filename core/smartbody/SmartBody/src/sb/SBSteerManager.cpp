@@ -120,6 +120,10 @@ void SBSteerManager::update(double time)
 					steerAgent->evaluate(timeDiff);
 			}
 
+			for (auto& entry: _pawnObstacles) {
+				updatePawnObstacle(entry.second);
+			}
+
 			if (timeDiff >= _maxUpdateFrequency)
 			{ // limit steering to 60 fps
 				getEngineDriver()->setLastUpdateTime(_scene.getSimulationManager()->getTime());
@@ -264,15 +268,15 @@ void SBSteerManager::start()
 	{
 		// adding obstacles to the steering space
 		const std::vector<std::string>& pawns = _scene.getPawnNames();
-		for (const auto & pawnIter : pawns)
+		for (const auto & pawnName : pawns)
 		{
-			SBPawn* pawn = _scene.getPawn(pawnIter);
+			SBPawn* pawn = _scene.getPawn(pawnName);
 			auto* character = dynamic_cast<SBCharacter*>(pawn);
 			if (character) continue; // do not set obstacle for the character, it will mess up the steering
 // 			if ((*iter).second->getGeomObject())
 // 				(*iter).second->initSteeringSpaceObject();
 			if (pawn && pawn->getGeomObject() && pawn->getGeomObject()->geomType() != "null")
-				pawn->initSteeringSpaceObject();
+				createObstacleForPawn(pawnName);
 		}
 
 	}
@@ -318,19 +322,98 @@ void SBSteerManager::stop()
 				
 		}
 
-		const std::vector<std::string>& pawns = _scene.getPawnNames();
-		for (const auto & pawnIter : pawns)
-		{
-			SBPawn* pawn = _scene.getPawn(pawnIter);
-			if (pawn->steeringSpaceObj_p)
-			{
-				delete pawn->steeringSpaceObj_p;
-				pawn->steeringSpaceObj_p = nullptr;
-			}
-		}
-
+		//No need to remove from engine as that's reset anyway.
+		_pawnObstacles.clear();
 		_boundaryObstacles.clear();
 	}
+}
+
+void SBSteerManager::updatePawnObstacle(PawnObstacle& pawnObstacle) {
+	float steerScale = 1.0f / _scene.getScale();
+	auto pawn = pawnObstacle.pawn;
+	// get the size of the steering object
+	float x, y, z, h, p, r;
+	pawn.get_world_offset(x, y, z, h, p, r);
+	gwiz::quat_t q = gwiz::euler_t(p,h,r);
+	SrQuat pawnQ = SrQuat((float)q.w(), (float)q.x(), (float)q.y(), (float)q.z());
+	SrVec size = this->getVec3Attribute("collisionShapeScale");
+	size = size*pawnQ;
+	pawnObstacle.steeringSpaceObjSize.x = fabs(size.x);
+	pawnObstacle.steeringSpaceObjSize.y = fabs(size.y);
+	pawnObstacle.steeringSpaceObjSize.z = fabs(size.z);
+
+	float xmin = (x - pawnObstacle.steeringSpaceObjSize.x) / steerScale;
+	float xmax = (x + pawnObstacle.steeringSpaceObjSize.x) / steerScale;
+	float ymin = (y - pawnObstacle.steeringSpaceObjSize.y) / steerScale;
+	float ymax = (y + pawnObstacle.steeringSpaceObjSize.y) / steerScale;
+	float zmin = (z - pawnObstacle.steeringSpaceObjSize.z) / steerScale;
+	float zmax = (z + pawnObstacle.steeringSpaceObjSize.z) / steerScale;
+
+	const Util::AxisAlignedBox& box = pawnObstacle.obstacle->getBounds();
+	if (fabs(box.xmax - xmax) > .0001 ||
+		fabs(box.xmin - xmin) > .0001 ||
+		fabs(box.ymax - ymax) > .0001 ||
+		fabs(box.ymin - ymin) > .0001 ||
+		fabs(box.zmax - zmax) > .0001 ||
+		fabs(box.zmin - zmin) > .0001)
+	{
+		getEngineDriver()->_engine->getSpatialDatabase()->removeObject(pawnObstacle.obstacle.get(), pawnObstacle.obstacle->getBounds());
+		auto mutableBox = const_cast<Util::AxisAlignedBox&>(box);
+		mutableBox.xmax = xmax;
+		mutableBox.xmin = xmin;
+		mutableBox.ymax = ymax;
+		mutableBox.ymin = ymin;
+		mutableBox.zmax = zmax;
+		mutableBox.zmin = zmin;
+		getEngineDriver()->_engine->getSpatialDatabase()->addObject(pawnObstacle.obstacle.get(), pawnObstacle.obstacle->getBounds());
+	}
+}
+
+void SBSteerManager::applyPawnObstacle(PawnObstacle& pawnObstacle) {
+	getEngineDriver()->_engine->getSpatialDatabase()->removeObject(pawnObstacle.obstacle.get(), pawnObstacle.obstacle->getBounds());
+	getEngineDriver()->_engine->getSpatialDatabase()->addObject(pawnObstacle.obstacle.get(), pawnObstacle.obstacle->getBounds());
+
+}
+
+
+
+PawnObstacle* SBSteerManager::createObstacleForPawn(const std::string& name) {
+	if (_pawnObstacles.find(name) != _pawnObstacles.end()) {
+		return nullptr;
+	}
+
+	auto pawn = _scene.getPawn(name);
+	if (pawn) {
+		float steerScale = 1.0f / _scene.getScale();
+		// get the size of the steering object
+		float x, y, z, h, p, r;
+		pawn->get_world_offset(x, y, z, h, p, r);
+		gwiz::quat_t q = gwiz::euler_t(p,h,r);
+		SrQuat pawnQ = SrQuat((float)q.w(), (float)q.x(), (float)q.y(), (float)q.z());
+		SrVec size = this->getVec3Attribute("collisionShapeScale");
+		size = size*pawnQ;
+		SrVec			steeringSpaceObjSize;
+		steeringSpaceObjSize.x = fabs(size.x);
+		steeringSpaceObjSize.y = fabs(size.y);
+		steeringSpaceObjSize.z = fabs(size.z);
+
+		float xmin = (x - steeringSpaceObjSize.x) / steerScale;
+		float xmax = (x + steeringSpaceObjSize.x) / steerScale;
+		float ymin = (y - steeringSpaceObjSize.y) / steerScale;
+		float ymax = (y + steeringSpaceObjSize.y) / steerScale;
+		float zmin = (z - steeringSpaceObjSize.z) / steerScale;
+		float zmax = (z + steeringSpaceObjSize.z) / steerScale;
+
+		auto obstacle = std::make_unique<SteerLib::BoxObstacle>(xmin, xmax, ymin, ymax, zmin, zmax);
+		getEngineDriver()->_engine->addObstacle(obstacle.get());
+		getEngineDriver()->_engine->getSpatialDatabase()->addObject(obstacle.get(), obstacle->getBounds());
+
+		auto result = _pawnObstacles.emplace(name, PawnObstacle{*pawn, std::move(obstacle), steeringSpaceObjSize});
+		if (result.second) {
+			return &result.first->second;
+		}
+	}
+	return nullptr;
 }
 
 SBSteerAgent* SBSteerManager::createSteerAgent(const std::string& name)
@@ -394,6 +477,18 @@ std::map<std::string, std::unique_ptr<SBSteerAgent>>& SBSteerManager::getSteerAg
 {
 	return _steerAgents;
 }
+
+void SBSteerManager::onPawnDelete(SBPawn* pawn)  {
+	auto I = _pawnObstacles.find(pawn->getName());
+	if (I != _pawnObstacles.end()) {
+		// first delete pawn from underlying grid...
+		getEngineDriver()->_engine->getSpatialDatabase()->removeObject(I->second.obstacle.get(), I->second.obstacle->getBounds());
+		// ..., then delete obstacle itself, so that the neighborhood map can be recomputed with the remaining obstacles
+		getEngineDriver()->_engine->removeObstacle(I->second.obstacle.get());
+		_pawnObstacles.erase(I);
+	}
+}
+
 
 void SBSteerManager::onCharacterDelete(SBCharacter* character)
 {

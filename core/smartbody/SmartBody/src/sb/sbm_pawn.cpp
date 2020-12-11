@@ -27,25 +27,17 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBSceneListener.h>
 #include <sb/SBBoneBusManager.h>
-#include <sb/SBSteerManager.h>
 #include <sb/SBPhysicsManager.h>
 #include <sb/SBCollisionManager.h>
-#include <sb/SBSceneListener.h>
 #include "SBUtilities.h"
 #include <controllers/me_controller_tree_root.hpp>
 #include <controllers/me_ct_channel_writer.hpp>
-#include <controllers/me_ct_curve_writer.hpp>
 #include "sbm/sbm_constants.h"
-#include <sbm/SteerSuiteEngineDriver.h>
-#include <sbm/sr_arg_buff.h>
 #include <sb/SBPawn.h>
 
 
-#include <string.h>
 #include <iostream>
 
-#include "sr/sr_model.h"
-#include "sr/sr_euler.h"
 #include <sb/SBSkeleton.h>
 #include <sr/sr_sn_matrix.h>
 
@@ -121,10 +113,6 @@ void SbmPawn::initData()
 	ct_tree_p->ref();
 	//colObj_p = nullptr;
 	//phyObj_p = nullptr;
-	steeringSpaceObj_p = nullptr;
-	steeringSpaceObjSize.x = 1.0f;
-	steeringSpaceObjSize.y = 1.0f;
-	steeringSpaceObjSize.z = 1.0f;
 	// world_offset_writer_p, applies external inputs to the skeleton,
 	//   and therefore needs to evaluate before other controllers
 	world_offset_writer_p->ref();
@@ -387,21 +375,6 @@ SbmPawn::~SbmPawn()
 
 	ct_tree_p->clear();  // Because controllers within reference back to tree root context
 
-	if (steeringSpaceObj_p)
-	{
-		if (SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->isInitialized())
-		{
-			if (SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->_engine)
-			{
-				// first delete pawn from underlying grid...
-				SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->_engine->getSpatialDatabase()->removeObject(steeringSpaceObj_p, steeringSpaceObj_p->getBounds());
-				// ..., then delete obstacle itself, so that the neighborhood map can be recomputed with the remaining obstacles
-				SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->_engine->removeObstacle(steeringSpaceObj_p);
-			}
-		}
-		delete steeringSpaceObj_p;
-	}
-
 	
 //	if (dMeshInstance_p)
 //	{
@@ -605,75 +578,6 @@ void SbmPawn::updateToColObject()
 	}
 }
 
-void SbmPawn::updateToSteeringSpaceObject()
-{
-	
-	if (!SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->isInitialized())	return;
-	if (!SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->_engine)	return;
-	if (steeringSpaceObj_p)
-		initSteeringSpaceObject();
-}
-
-void SbmPawn::initSteeringSpaceObject()
-{
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	
-	if (!scene->getSteerManager()->getEngineDriver()->isInitialized())	return;
-	if (!scene->getSteerManager()->getEngineDriver()->_engine)	return;
-
-	float steerScale = 1.0f / scene->getScale();
-
-	// get the size of the steering object
-	float x, y, z, h, p, r;
-	this->get_world_offset(x, y, z, h, p, r);	
-	gwiz::quat_t q = gwiz::euler_t(p,h,r);	
-	SrQuat pawnQ = SrQuat((float)q.w(), (float)q.x(), (float)q.y(), (float)q.z());
-	SrVec size = this->getVec3Attribute("collisionShapeScale");
-	size = size*pawnQ;
-	steeringSpaceObjSize.x = fabs(size.x);
-	steeringSpaceObjSize.y = fabs(size.y);
-	steeringSpaceObjSize.z = fabs(size.z);	
-	
-	float xmin = (x - steeringSpaceObjSize.x) / steerScale;
-	float xmax = (x + steeringSpaceObjSize.x) / steerScale;
-	float ymin = (y - steeringSpaceObjSize.y) / steerScale;
-	float ymax = (y + steeringSpaceObjSize.y) / steerScale;
-	float zmin = (z - steeringSpaceObjSize.z) / steerScale;
-	float zmax = (z + steeringSpaceObjSize.z) / steerScale;
-	
-	
-
-	//SmartBody::util::log("steeringSpaceObjSize = %f %f %f, scale = %f", steeringSpaceObjSize.x, steeringSpaceObjSize.y, steeringSpaceObjSize.z, steerScale);
-
-	if (steeringSpaceObj_p)
-	{
-		const Util::AxisAlignedBox& box = steeringSpaceObj_p->getBounds();
-		if (fabs(box.xmax - xmax) > .0001 ||
-			fabs(box.xmin - xmin) > .0001 ||
-			fabs(box.ymax - ymax) > .0001 ||
-			fabs(box.ymin - ymin) > .0001 ||
-			fabs(box.zmax - zmax) > .0001 ||
-			fabs(box.zmin - zmin) > .0001)
-		{
-			SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->_engine->getSpatialDatabase()->removeObject(steeringSpaceObj_p, steeringSpaceObj_p->getBounds());
-			Util::AxisAlignedBox& mutableBox = const_cast<Util::AxisAlignedBox&>(box);
-			mutableBox.xmax = xmax;
-			mutableBox.xmin = xmin;
-			mutableBox.ymax = ymax;
-			mutableBox.ymin = ymin;
-			mutableBox.zmax = zmax;
-			mutableBox.zmin = zmin;
-			SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->_engine->getSpatialDatabase()->addObject(steeringSpaceObj_p, steeringSpaceObj_p->getBounds());
-		}
-	}
-	else
-	{
-		steeringSpaceObj_p = new SteerLib::BoxObstacle(xmin, xmax, ymin, ymax, zmin, zmax);
-		SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->_engine->addObstacle(steeringSpaceObj_p);
-		SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->_engine->getSpatialDatabase()->addObject(steeringSpaceObj_p, steeringSpaceObj_p->getBounds());	
-	}
-}
-
 // void SbmPawn::setPhysicsSim( bool enable )
 // {
 // 	if (!phyObj_p)
@@ -723,6 +627,5 @@ SBAPI void SbmPawn::copy( SbmPawn* orignalPawn )
 {
 	globalTransform = orignalPawn->globalTransform;
 	_classType = orignalPawn->_classType;
-	steeringSpaceObjSize = orignalPawn->steeringSpaceObjSize;
 }
 

@@ -598,15 +598,6 @@ void SBScene::update()
 		pawn->ct_tree_p->evaluate( getSimulationManager()->getTime() );
 		pawn->ct_tree_p->applyBufferToAllSkeletons();
 
-// 		if (pawn->hasPhysicsSim() && SBPhysicsSim::getPhysicsEngine()->getBoolAttribute("enable"))
-// 		{
-// 			//pawn->updateFromColObject();
-// 		}
-// 		else
-		{			
-			//pawn->updateToColObject();
-			pawn->updateToSteeringSpaceObject();
-		}
 		//SmartBody::util::log("After pawn update");
 		SbmCharacter* char_p = getCharacter(pawn->getName().c_str() );
 
@@ -617,7 +608,7 @@ void SBScene::update()
 			SmartBody::MiniBrain* brain = char_p->getMiniBrain();
 			if (brain)
 			{
-				SmartBody::SBCharacter* sbchar = dynamic_cast<SmartBody::SBCharacter*>(char_p);
+				auto* sbchar = dynamic_cast<SmartBody::SBCharacter*>(char_p);
 				brain->update(sbchar, getSimulationManager()->getTime(), getSimulationManager()->getTimeDt());
 			}
 

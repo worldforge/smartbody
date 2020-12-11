@@ -27,7 +27,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBColObject.h>
 #include <sb/SBPhysicsSim.h>
 #include <sb/SBObject.h>
-#include <SteerLib.h>
 #ifndef SB_NO_BONEBUS
 #include "bonebus.h"
 #endif
@@ -72,8 +71,6 @@ public:  // TODO - properly encapsulate / privatize the following
 //	DeformableMeshInstance* dMeshInstance_p;
 //	DeformableMeshInstance* dStaticMeshInstance_p;
 	SrSnGroup* blendMeshGroup;
-	SteerLib::ObstacleInterface* steeringSpaceObj_p;
-	SrVec			steeringSpaceObjSize;
 	std::string _classType;
 	
 	
@@ -91,7 +88,7 @@ public:  // TODO - properly encapsulate / privatize the following
 public:	
 	//  Public Methods
 	SBAPI SbmPawn();
-	SBAPI SbmPawn( const char* name );
+	SBAPI explicit SbmPawn( const char* name );
 	SBAPI virtual ~SbmPawn();
 
 	SBAPI virtual void copy(SbmPawn* orignalPawn);
@@ -105,8 +102,6 @@ public:
 	//void setGeomObject(SBGeomObject* obj);
 
  	SBAPI void updateToColObject();
-	SBAPI void updateToSteeringSpaceObject();
-	SBAPI void initSteeringSpaceObject();
 
 	SBAPI bool is_initialized();
 

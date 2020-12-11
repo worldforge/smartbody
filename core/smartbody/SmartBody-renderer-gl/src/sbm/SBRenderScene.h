@@ -27,6 +27,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 
 class SkJoint;
 class SrCamera;

@@ -40,6 +40,12 @@ class SBServiceManager : public SBObject
 		SBAPI std::vector<std::string> getServiceNames();
 
 		SBAPI SBService* getService(const std::string& name);
+
+		template<typename T>
+		SBAPI T* getServiceByType(const std::string& name) {
+			auto service = getService(name);
+			return dynamic_cast<T*>(service);
+		}
 		SBAPI void addService(SBService* service);
 		SBAPI void removeService(const std::string& name);
 

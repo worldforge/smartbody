@@ -25,6 +25,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBService.h>
 #include <boost/noncopyable.hpp>
 #include <memory>
+#include "sbm_pawn.hpp"
+#include "SBSceneListener.h"
 
 class SteerSuiteEngineDriver;
 namespace SteerLib
@@ -36,6 +38,12 @@ namespace SmartBody {
 
 class SBSteerAgent;
 class SBScene;
+
+struct PawnObstacle {
+	SbmPawn& pawn;
+	std::unique_ptr<SteerLib::BoxObstacle> obstacle;
+	SrVec steeringSpaceObjSize;
+};
 
 class SBSteerManager : public SmartBody::SBService, public boost::noncopyable
 {
@@ -50,6 +58,7 @@ class SBSteerManager : public SmartBody::SBService, public boost::noncopyable
 		SBAPI void afterUpdate(double time) override;
 		SBAPI void stop() override;
 
+		SBAPI void onPawnDelete(SBPawn* pawn) override;
 		SBAPI void onCharacterDelete(SBCharacter* character) override;
 
 		SBAPI SteerSuiteEngineDriver* getEngineDriver();
@@ -60,14 +69,27 @@ class SBSteerManager : public SmartBody::SBService, public boost::noncopyable
 		SBAPI SBSteerAgent* getSteerAgent(const std::string& name);
 		SBAPI std::vector<std::string> getSteerAgentNames();
 		SBAPI std::map<std::string, std::unique_ptr<SBSteerAgent>>& getSteerAgents();
+		SBAPI std::map<std::string, PawnObstacle>& getObstacles() {
+			return _pawnObstacles;
+		}
+		SBAPI const std::map<std::string, PawnObstacle>& getObstacles() const {
+			return _pawnObstacles;
+		}
+
+		PawnObstacle* createObstacleForPawn(const std::string& name);
+
+		void applyPawnObstacle(PawnObstacle& pawnObstacle);
 
 	protected:
 		SBScene& _scene;
 		std::map<std::string, std::unique_ptr<SBSteerAgent>> _steerAgents;
 		std::vector<std::unique_ptr<SteerLib::BoxObstacle>> _boundaryObstacles;
+		std::map<std::string, PawnObstacle> _pawnObstacles;
 
 		std::unique_ptr<SteerSuiteEngineDriver> _driver;
 		double _maxUpdateFrequency;
+
+		void updatePawnObstacle(PawnObstacle& pawnObstacle);
 
 
 };

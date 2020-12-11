@@ -31,7 +31,7 @@ class SbmCharacter;
 
 int pawn_set_cmd_funcx( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
 int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
-int pawn_parse_pawn_command( SbmPawn* pawn, std::string cmd, srArgBuffer& args);
+int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer& args);
 
 int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
 int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);

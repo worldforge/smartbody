@@ -51,7 +51,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_example_body_reach.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/version.hpp>
-
+#include "sb/SBServiceManager.h"
+#include "sb/SBSteerManager.h"
 
 int set_attribute( SbmPawn* pawn, std::string& attribute, srArgBuffer& args)
 {
@@ -295,10 +296,10 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 
 		bool has_geom = false;
 		std::string geom_str = "box";
-		std::string file_str = "";
-		std::string size_str = "";
+		std::string file_str;
+		std::string size_str;
 		std::string color_str = "red";
-		std::string type_str = "";
+		std::string type_str;
 		SrVec size = SrVec(1.f,1.f,1.f);
 		bool setRec = false;
 		SrVec rec;
@@ -337,7 +338,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 			}
 		}		
 
-		pawn_p = scene->createPawn(pawn_name.c_str() );
+		pawn_p = scene->createPawn(pawn_name );
 		pawn_p->setClassType("pawn");
 		SkSkeleton* skeleton = new SmartBody::SBSkeleton();
 		skeleton->ref();
@@ -374,14 +375,18 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		{
 			if (geom_str == "box")
 			{
-				pawn_p->steeringSpaceObjSize = rec;
-				if (!setRec)
-				{
-					float size = (float)atof(size_str.c_str());
-					pawn_p->steeringSpaceObjSize = SrVec(size, size, size);
+				if (type_str == "steering") {
+					auto steerService = SmartBody::SBScene::getScene()->getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
+					if (steerService) {
+						auto obstacleEntry = steerService->createObstacleForPawn(pawn_name);
+						if (!setRec) {
+							auto obstacleSize = (float) std::stod(size_str);
+							obstacleEntry->steeringSpaceObjSize = SrVec(obstacleSize, obstacleSize, obstacleSize);
+							steerService->applyPawnObstacle(*obstacleEntry);
+						}
+
+					}
 				}
-				if (type_str == "steering")
-					pawn_p->initSteeringSpaceObject();
 			}
 		}
 		// 		else // default null geom object
@@ -409,9 +414,9 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		sbpawn->wo_cache_update();
 
 		std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-		for (size_t i = 0; i < listeners.size(); i++)
+		for (auto & listener : listeners)
 		{
-			listeners[i]->OnCharacterCreate( pawn_name, pawn_p->getClassType() );
+			listener->OnCharacterCreate( pawn_name, pawn_p->getClassType() );
 		}
 		
 		return CMD_SUCCESS;
@@ -423,12 +428,10 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	{
 		std::vector<std::string> pawns;
 		
-		for (std::vector<std::string>::iterator citer = pawns.begin();
-			citer != pawns.end();
-			citer++)
+		for (auto & pawn : pawns)
 		{
 			srArgBuffer copy_args( args.peek_string() );
-			pawn_p =  SmartBody::SBScene::getScene()->getPawn( *citer );
+			pawn_p =  SmartBody::SBScene::getScene()->getPawn( pawn );
 			int err = pawn_parse_pawn_command( pawn_p, pawn_cmd, copy_args);
 			if( err != CMD_SUCCESS )
 				return( err );
@@ -719,7 +722,7 @@ int set_world_offset_cmd( SbmPawn* pawn, srArgBuffer& args )
 	return CMD_SUCCESS;
 }
 
-int pawn_parse_pawn_command( SbmPawn* pawn, std::string cmd, srArgBuffer& args)
+int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer& args)
 {
 	
 
@@ -772,11 +775,17 @@ int pawn_parse_pawn_command( SbmPawn* pawn, std::string cmd, srArgBuffer& args)
 				has_geom = true;
 			} else if( option=="rec" ) {
 				setRec = true;
-				size[0] = pawn->steeringSpaceObjSize.x = args.read_float();
-				size[1] = pawn->steeringSpaceObjSize.y = args.read_float();
-				size[2] = pawn->steeringSpaceObjSize.z = args.read_float();
+				auto steerService = SmartBody::SBScene::getScene()->getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
+				if (steerService) {
+					auto I = steerService->getObstacles().find(pawn->getName());
+					if (I != steerService->getObstacles().end()) {
+						size[0] = I->second.steeringSpaceObjSize.x = args.read_float();
+						size[1] = I->second.steeringSpaceObjSize.y = args.read_float();
+						size[2] = I->second.steeringSpaceObjSize.z = args.read_float();
 
-				has_geom = true;
+						has_geom = true;
+					}
+				}
 			} else {
 				std::stringstream strstr;
 				strstr << "WARNING: Unrecognized pawn setshape option \"" << option << "\"." << endl;
@@ -789,11 +798,17 @@ int pawn_parse_pawn_command( SbmPawn* pawn, std::string cmd, srArgBuffer& args)
 			//initGeomObj(geom_str.c_str(),size,color_str.c_str(),file_str.c_str());
 			SmartBody::SBPhysicsManager* phyManager = SmartBody::SBScene::getScene()->getPhysicsManager();
 			phyManager->createPhysicsPawn(pawn->getName(),geom_str,size);
-			// init steering space
-			if (!setRec)
-				pawn->steeringSpaceObjSize = size;//SrVec(size, size, size);
-			if (type_str == "steering")
-				pawn->initSteeringSpaceObject();
+			auto steerService = SmartBody::SBScene::getScene()->getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
+			if (steerService) {
+				auto I = steerService->getObstacles().find(pawn->getName());
+				if (I != steerService->getObstacles().end()) {
+					// init steering space
+					if (!setRec)
+						I->second.steeringSpaceObjSize = size;//SrVec(size, size, size);
+					if (type_str == "steering")
+						steerService->applyPawnObstacle(I->second);
+				}
+			}
 			return CMD_SUCCESS;
 		}
 		else
@@ -814,7 +829,7 @@ int pawn_parse_pawn_command( SbmPawn* pawn, std::string cmd, srArgBuffer& args)
 		else
 			return CMD_FAILURE;
 
-		SmartBody::SBPawn* sbpawn = dynamic_cast<SmartBody::SBPawn*>(pawn);
+		auto* sbpawn = dynamic_cast<SmartBody::SBPawn*>(pawn);
 		SmartBody::SBPhysicsObj* phyObj = sbpawn->getPhysicsObject();
 		if (phyObj) phyObj->enablePhysicsSim(turnOn);
 
@@ -832,7 +847,7 @@ int pawn_parse_pawn_command( SbmPawn* pawn, std::string cmd, srArgBuffer& args)
 		else
 			return CMD_FAILURE;
 
-		SmartBody::SBPawn* sbpawn = dynamic_cast<SmartBody::SBPawn*>(pawn);
+		auto* sbpawn = dynamic_cast<SmartBody::SBPawn*>(pawn);
 		SmartBody::SBPhysicsObj* phyObj = sbpawn->getPhysicsObject();
 		if (phyObj) phyObj->enableCollisionSim(turnOn);
 
@@ -849,7 +864,7 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 {
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBCharacter* sbChar = dynamic_cast<SmartBody::SBCharacter*>(character);
+	auto* sbChar = dynamic_cast<SmartBody::SBCharacter*>(character);
 	
 	 if ( cmd == "remove" ) {
 				SmartBody::SBScene::getScene()->removeCharacter(character->getName());
@@ -913,24 +928,22 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 							if (cmd == "requests")
 							{
 								BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-								for (std::map<std::string, BML::BmlRequestPtr >::iterator iter = bp->getBMLRequestMap().begin();
-									iter != bp->getBMLRequestMap().end();
-									iter++)
+								for (auto & iter : bp->getBMLRequestMap())
 								{
 									if (all_characters)
 									{
-										SmartBody::util::log("%s", (*iter).second->requestId.c_str());
+										SmartBody::util::log("%s", iter.second->requestId.c_str());
 									}
 									else
 									{			
 										// make sure the requests is for this character
-										std::string requestWithName = (*iter).second->requestId;
+										std::string requestWithName = iter.second->requestId;
 										std::string charName = character->getName();
 										charName.append("|");
 										int index = requestWithName.find(charName);
 										if (index == 0)
 										{
-											SmartBody::util::log("%s", (*iter).second->requestId.c_str());
+											SmartBody::util::log("%s", iter.second->requestId.c_str());
 										}
 									}
 								}
@@ -940,11 +953,9 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 							{
 								int numRequestsInterrupted = 0;
 								BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-								for (std::map<std::string, BML::BmlRequestPtr >::iterator iter = bp->getBMLRequestMap().begin();
-									iter != bp->getBMLRequestMap().end();
-									iter++)
+								for (auto & iter : bp->getBMLRequestMap())
 								{
-									std::string requestWithName = (*iter).second->requestId;
+									std::string requestWithName = iter.second->requestId;
 									if (all_characters)
 									{
 										int pipeLocation = requestWithName.find("|");
@@ -1006,10 +1017,9 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 								}
 								std::vector<MeCtScheduler2::TrackPtr> tracksToRemove;
 								MeCtScheduler2::VecOfTrack tracks = scheduler->tracks();
-								for (size_t t = 0; t < tracks.size(); t++)
+								for (auto track : tracks)
 								{
-									MeCtScheduler2::TrackPtr track = tracks[t];
-									MeController* controller = track->animation_ct();
+										MeController* controller = track->animation_ct();
 									MeCtChannelWriter* channelWriter = dynamic_cast<MeCtChannelWriter*>(controller);
 									if (channelWriter)
 									{

@@ -26,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBUtilities.h"
 #include <cstdlib>
 #include <ctime> 
-#include <math.h>
+#include <cstring>
 
 #ifndef WIN32
 #define _stricmp strcasecmp

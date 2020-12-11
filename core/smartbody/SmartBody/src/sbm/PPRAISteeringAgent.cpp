@@ -99,9 +99,7 @@ PPRAISteeringAgent::PPRAISteeringAgent(SmartBody::SBCharacter* c) : SmartBody::S
 	_numSteeringGoal = 0;
 }
 
-PPRAISteeringAgent::~PPRAISteeringAgent()
-{
-}
+PPRAISteeringAgent::~PPRAISteeringAgent() = default;
 
 void PPRAISteeringAgent::addSteeringAttributes()
 {
