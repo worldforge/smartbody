@@ -8,7 +8,6 @@
 #include <FL/Fl_Float_Input.H>
 #include <FL/Fl_Output.H>
 #include "fltk_viewer.h"
-#include "FLTKOgreViewer.h"
 #include <sr/sr_viewer.h>
 #include "CommandWindow.h"
 #include "bmlviewer/BehaviorWindow.h"
@@ -130,13 +129,6 @@ class BaseWindow : public SrViewer, public Fl_Double_Window
 		std::vector<Fl_Menu_Item> loadCameraList;
 		std::vector<Fl_Menu_Item> deleteCameraList;
 		std::vector<Fl_Menu_Item> deleteObjectList;
-
-#ifndef NO_OGRE_VIEWER_CMD
-		FLTKOgreWindow* ogreViewer;
-#endif
-
-		//std::vector<SrCamera*> cameraList;
-		//std::map<std::string,SrCamera*> cameraMap;
 
 		void updateCameraList();
 		void updateObjectList(std::string deleteObjectName = "");

@@ -30,7 +30,6 @@
 #include "SBUtilities.h"
 #include "SBRenderer.h" 
 #include"resourceViewer/AttributeEditor.h"
-#include "FLTKOgreViewer.h"
 
 #include "sbm/SceneExporter.h"
 
@@ -313,50 +312,10 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 		viewerWidth = w - 2 * leftBorderSize;
 	int viewerHeight = h - curY - 10;
 	std::string renderer = "custom";
-	
-#ifndef  NO_OGRE_VIEWER_CMD
-	renderer = mSession->scene.getSystemParameter("renderer");
-	if (renderer == "ogre" || renderer == "OGRE")
-	{
-		if (!useEditor)
-		{
-			ogreViewer = new FLTKOgreWindow(0, 0, w, h);	
-		}
-		else
-		{
-			ogreViewer = new FLTKOgreWindow(outlinerWidth + leftBorderSize, curY, viewerWidth, viewerHeight, nullptr);	
-		}
-		curViewer = ogreViewer;
-		customViewer = nullptr;
-	}
-	else
-	{
-		if (renderer != "custom" && renderer != "CUSTOM")
-		{
-			SmartBody::util::log("Renderer '%s' not recognized. Use 'custom' instead.", renderer.c_str());
-		}
-		if (!useEditor)
-		{
-			customViewer = new FltkViewer(0,0, w, h);
-		}
-		else
-		{
-			customViewer = new FltkViewer(outlinerWidth + leftBorderSize, curY, viewerWidth, viewerHeight, nullptr);
-		}
-		curViewer = customViewer;
-		ogreViewer = nullptr;
-	}
-#else
-	if (renderer != "custom" && renderer != "CUSTOM")
-	{
-		SmartBody::util::log("Renderer '%s' not recognized. Use 'custom' instead.", renderer.c_str());
-	}
+
 	customViewer = new FltkViewer(outlinerWidth + leftBorderSize, curY, viewerWidth, viewerHeight, nullptr);
 	curViewer = customViewer;
-	//ogreViewer = nullptr;
-#endif
 
-	//ogreViewer = nullptr;
 	curViewer->box(FL_UP_BOX);
 	curViewer->baseWin = this;
 
@@ -567,16 +526,12 @@ std::string BaseWindow::chooseDirectory(const std::string& label, const std::str
 
 SbmCharacter* BaseWindow::getSelectedCharacter()
 {
-#if !NO_OGRE_VIEWER_CMD
 	 SbmPawn* selectedPawn = curViewer->getObjectManipulationHandle().get_selected_pawn();
 	 if (!selectedPawn)
 		 return nullptr;
 
 	 SbmCharacter* character = dynamic_cast<SbmCharacter*> (selectedPawn);
 	 return character;
-#else
-	return nullptr;
-#endif
 }
 
 void BaseWindow::show_viewer()
@@ -1317,7 +1272,6 @@ void BaseWindow::RotateSelectedCB(Fl_Widget* widget, void* data)
 {
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	
-#if !NO_OGRE_VIEWER_CMD
 	SbmPawn* pawn = rootWindow->curViewer->getObjectManipulationHandle().get_selected_pawn();
 	if (!pawn)
 	{
@@ -1326,48 +1280,41 @@ void BaseWindow::RotateSelectedCB(Fl_Widget* widget, void* data)
 			return;
 	}
 
-	SrCamera* camera = mSession->scene.getActiveCamera();
+	SrCamera* camera = rootWindow->mSession->renderScene.getActiveCamera();
 	if (!camera)
 		return;
 	float x,y,z,h,p,r;
 	pawn->get_world_offset(x, y, z, h, p, r);
 	camera->setCenter(x, y, z);
-	float scale = 1.f/mSession->scene.getScale();
+	float scale = 1.f/rootWindow->mSession->scene.getScale();
 	float znear = 0.01f*scale;
 	float zfar = 1000.0f*scale;
 	camera->setNearPlane(znear);
 	camera->setFarPlane(zfar);
-#endif
 }
 
 void BaseWindow::SetDefaultCamera(Fl_Widget* widget, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->getData()->cameraMode = FltkViewer::Default;
-   mSession->scene.SetCameraLocked(false);
-#endif
+	rootWindow->mSession->renderScene.SetCameraLocked(false);
 }
 
 void BaseWindow::SetFreeLookCamera(Fl_Widget* widget, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->getData()->cameraMode = FltkViewer::FreeLook;
-   mSession->scene.SetCameraLocked(false);
-#endif
+	rootWindow->mSession->renderScene.SetCameraLocked(false);
 }
 
 void BaseWindow::SetFollowRendererCamera(Fl_Widget* widget, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
-   if (mSession->scene.isRemoteMode())
-   {
-      auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	if (rootWindow->mSession->scene.isRemoteMode())
+    {
 	  rootWindow->curViewer->getData()->cameraMode = FltkViewer::FollowRenderer;
-      mSession->scene.SetCameraLocked(true);
+	   rootWindow->mSession->renderScene.SetCameraLocked(true);
    }
-#endif
 }
 
 // Callback function for Camera->Character Camera Sight to set camera viewpoint as the character viewpoint
@@ -1531,7 +1478,6 @@ void BaseWindow::runScript(const std::string& filename)
 	std::string selectedCharacterName;
 	if (character)
 		selectedCharacterName = character->getName();
-#if !NO_OGRE_VIEWER_CMD
 	SbmPawn* pawn = curViewer->getObjectManipulationHandle().get_selected_pawn();
 	std::string selectedTargetName = "";
 	if (pawn)
@@ -1577,7 +1523,6 @@ void BaseWindow::runScript(const std::string& filename)
 		mSession->scene.command((char*)lineStr.c_str());
 	}
 	file.close();
-#endif	
 }
 
 void BaseWindow::reloadScripts(std::string scriptsDir)
@@ -1818,45 +1763,37 @@ void BaseWindow::ModeEyebeamsCB(Fl_Widget* w, void* data)
 
 void BaseWindow::ModeGazeLimitCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 
 	if (rootWindow->curViewer->getData()->gazeLimitMode)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdNoGazeLimit, nullptr);
 	else
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdGazeLimit, nullptr);
-#endif
 }
 
 void BaseWindow::ModeEyelidCalibrationCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->eyeLidMode == FltkViewer::ModeNoEyeLids)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdEyeLids, nullptr);
 	else
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdNoEyeLids, nullptr);
-#endif
 }
 
 void BaseWindow::ShowSelectedCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowSelection, nullptr);
-#endif
 }
 
 void BaseWindow::ShadowsCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->shadowmode == FltkViewer::ModeNoShadows)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdShadows, nullptr);
 	else
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdNoShadows, nullptr);
-#endif
 }
 
 
@@ -1890,10 +1827,8 @@ void BaseWindow::FloorCB( Fl_Widget* w, void* data )
 
 void BaseWindow::FloorColorCB( Fl_Widget* w, void* data )
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdFloorColor, nullptr);	
-#endif
 
 }
 
@@ -1906,94 +1841,74 @@ void BaseWindow::BackgroundColorCB( Fl_Widget* w, void* data )
 
 void BaseWindow::TerrainShadedCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->terrainMode != FltkViewer::ModeTerrain)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdTerrain, nullptr);
-#endif
 }
 
 void BaseWindow::TerrainWireframeCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->terrainMode != FltkViewer::ModeTerrainWireframe)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdTerrainWireframe, nullptr);
-#endif
 }
 void BaseWindow::TerrainNoneCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->terrainMode != FltkViewer::ModeNoTerrain)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdNoTerrain, nullptr);
-#endif
 }
 
 void BaseWindow::NavigationMeshNaviMeshCB( Fl_Widget* w, void* data )
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->navigationMeshMode != FltkViewer::ModeNavigationMesh)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdNavigationMesh, nullptr);
-#endif
 }
 
 void BaseWindow::NavigationMeshRawMeshCB( Fl_Widget* w, void* data )
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->navigationMeshMode != FltkViewer::ModeRawMesh)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdRawMesh, nullptr);
-#endif
 
 }
 
 void BaseWindow::NavigationMeshNoneCB( Fl_Widget* w, void* data )
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->navigationMeshMode != FltkViewer::ModeNoNavigationMesh)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdNoNavigationMesh, nullptr);
-#endif
 }
 
 void BaseWindow::ShowPawns(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->pawnmode != FltkViewer::ModePawnShowAsSpheres)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdPawnShowAsSpheres, nullptr);
 	else
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdNoPawns, nullptr);
-#endif
 }
 
 void BaseWindow::ModeDynamicsCOMCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->dynamicsMode != FltkViewer::ModeShowCOM)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowCOM, nullptr);
-#endif
 }
 
 void BaseWindow::ModeDynamicsSupportPolygonCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->dynamicsMode != FltkViewer::ModeShowCOMSupportPolygon)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowCOMSupportPolygon, nullptr);
-#endif
 }
 
 void BaseWindow::ModeDynamicsMassesCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->dynamicsMode != FltkViewer::ModeShowMasses)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowMasses, nullptr);
-#endif
 }
 
 
@@ -2053,42 +1968,43 @@ void BaseWindow::CreatePawnCB(Fl_Widget* w, void* data)
 
 void BaseWindow::CreatePawnFromModelCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mSession->scene;
 	std::string pawnName = rootWindow->curViewer->create_pawn();
-	SmartBody::SBPawn* pawn = mSession->scene.getPawn(pawnName);
+	SmartBody::SBPawn* pawn = rootWindow->mSession->scene.getPawn(pawnName);
 	if (!pawn)
 		return;
 
 	const std::string& currentSelection = SBSelectionManager::getSelectionManager()->getCurrentSelection();
 	SmartBody::util::log(currentSelection.c_str());
 	// get the first model
-	std::vector<std::string> meshes = mSession->scene.getAssetManager()->getDeformableMeshNames();
-	if (meshes.size() > 0)
+	std::vector<std::string> meshes = rootWindow->mSession->renderAssetManager.getDeformableMeshNames();
+	if (!meshes.empty())
 	{
-		pawn->setStringAttribute("mesh", meshes[0]);	
+		pawn->setStringAttribute("mesh", meshes.front());
 		pawn->setDoubleAttribute("rotY",180.0);
 		pawn->setDoubleAttribute("rotZ",-90.0);
-		pawn->dStaticMeshInstance_p->setVisibility(2);
+		auto renderable = rootWindow->mSession->renderScene.getRenderable(pawn->getName());
+		if (renderable) {
+			auto mesh = renderable->getActiveMesh();
+			if (mesh) {
+				mesh->setVisibility(2);
+			}
+		}
 	}
 	
-#endif
 }
 
 void BaseWindow::CreateLightCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 
-	SmartBody::SBScene* scene = mScene;
+	SmartBody::SBScene& scene = rootWindow->mSession->scene;
 	int highestLightNum = 0;
 	const std::vector<std::string>& pawnNames = scene.getPawnNames();
-	for (std::vector<std::string>::const_iterator iter =  pawnNames.begin();
-		 iter != pawnNames.end();
-		 iter++)
+	for (const auto & pawnName : pawnNames)
 	{
-		const std::string& pawnName = (*iter);
-		if (pawnName.find("light") == 0)
+			if (pawnName.find("light") == 0)
 		{
 			std::string lightNumStr = pawnName.substr(5, pawnName.size());
 			int lightNum = atoi(lightNumStr.c_str());
@@ -2115,7 +2031,6 @@ void BaseWindow::CreateLightCB(Fl_Widget* w, void* data)
 	strstr << "light.createIntAttribute(\"lightShadowMapSize\", 1024, True, \"LightParameters\", 310, False, False, False, \"Size of the shadow map\")\n";
 	strstr << "light.setBoolAttribute(\"visible\", False)\n";	
 	scene.run(strstr.str());
-#endif
 }
 
 void BaseWindow::CreateCameraCB(Fl_Widget* w, void* data)
@@ -2249,110 +2164,85 @@ void BaseWindow::TrackCharacterCB(Fl_Widget* w, void* data)
 
 void BaseWindow::KinematicFootstepsCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowKinematicFootprints, nullptr);
-#endif
 }
 
 void BaseWindow::TrajectoryCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowTrajectory, nullptr);	
-#endif
 }
 
 void BaseWindow::GestureCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowGesture, nullptr);	
-#endif
 }
 
 void BaseWindow::JointLabelCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowJoints, nullptr);	
-#endif
 }
 
 void BaseWindow::SteeringCharactersCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdSteerCharactersGoalsOnly, nullptr);
-#endif
 }
 
 void BaseWindow::SteeringAllCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdSteerAll, nullptr);
-#endif
 }
 
 void BaseWindow::SteeringNoneCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdNoSteer, nullptr);	
-#endif
 }
 
 void BaseWindow::ShowCollisionCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdCollisionShow, nullptr);	
-#endif
 }
 
 void BaseWindow::HideCollisionCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdCollisionHide, nullptr);
-#endif
 }
 
 void BaseWindow::LocomotionFootstepsCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowLocomotionFootprints, nullptr);
-#endif
 }
 
 void BaseWindow::VelocityCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	rootWindow->curViewer->menu_cmd(FltkViewer::CmdShowVelocity, nullptr);
-#endif
 }
 
 void BaseWindow::GridCB(Fl_Widget* w, void* data)
 {
-#if !NO_OGRE_VIEWER_CMD
-	SmartBody::SBScene* scene = mScene;
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	SmartBody::SBScene& scene = rootWindow->mSession->scene;
 	bool value = scene.getBoolAttribute("GUI.ShowGrid");
 	scene.setBoolAttribute("GUI.ShowGrid", !value);
-#endif
 }
 
 void BaseWindow::ShowPoseExamples( Fl_Widget* w, void* data )
 {
-#if !NO_OGRE_VIEWER_CMD
 	auto* rootWindow = static_cast<BaseWindow*>(data);
 	if (rootWindow->curViewer->getData()->reachRenderMode != FltkViewer::ModeShowExamples)
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdReachShowExamples, nullptr);
 	else
 		rootWindow->curViewer->menu_cmd(FltkViewer::CmdReachNoExamples, nullptr);
-#endif
 }
 
 void BaseWindow::CreatePythonAPICB(Fl_Widget* widget, void* data)
@@ -2695,21 +2585,19 @@ void BaseWindow::updateCameraList()
 
 void BaseWindow::ShowCamerasCB( Fl_Widget* w, void* data )
 {
-#if !NO_OGRE_VIEWER_CMD
-	SmartBody::SBScene* scene = mScene;
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mSession->scene;
 	bool value = scene.getBoolAttribute("GUI.ShowCameras");
 	scene.setBoolAttribute("GUI.ShowCameras", !value);
-#endif
 
 }
 
 void BaseWindow::ShowLightsCB( Fl_Widget* w, void* data )
 {
-#if !NO_OGRE_VIEWER_CMD
-	SmartBody::SBScene* scene = mScene;
+	auto* rootWindow = static_cast<BaseWindow*>(data);
+	auto& scene = rootWindow->mSession->scene;
 	bool value = scene.getBoolAttribute("GUI.ShowLights");
 	scene.setBoolAttribute("GUI.ShowLights", !value);
-#endif
 }
 
 void BaseWindow::ShowSelectedCharacterCB( Fl_Widget* w, void* data )
