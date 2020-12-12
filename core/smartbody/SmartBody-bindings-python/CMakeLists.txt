@@ -20,10 +20,12 @@ target_include_directories(SmartBody-bindings-python PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-debugger,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
         )
 
 
 target_link_libraries(SmartBody-bindings-python
         SmartBody
         SmartBody-debugger
+        SmartBody-vhmsg
         )

@@ -67,7 +67,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBHandConfigurationManager.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBParser.h>
-#include <sb/SBVHMsgManager.h>
 #include <sb/SBMotionGraph.h>
 #include "SBUtilities.h"
 #include <sbm/sbm_audio.h>

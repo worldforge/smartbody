@@ -34,7 +34,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAssetManager.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
-#include <sb/SBVHMsgManager.h>
 #include <sb/SBBmlProcessor.h>
 #include <sb/SBAttribute.h>
 #include "SBUtilities.h"

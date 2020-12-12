@@ -30,18 +30,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "vhcl_socket.h"
 
 
-#ifdef __ANDROID__
-#define LINK_VHMSG_CLIENT		(1)
-#elif defined(__native_client__)
-#else
-#define LINK_VHMSG_CLIENT		(1)
-#endif
 
-#if LINK_VHMSG_CLIENT
-#ifndef SB_NO_VHMSG
+#define LINK_VHMSG_CLIENT		(1)
+
 #include "vhmsg-tt.h"
-#endif
-#endif
+
 
 class VHMsgLogger : public SmartBody::util::Listener
 {
@@ -50,13 +43,11 @@ class VHMsgLogger : public SmartBody::util::Listener
 		{
 		}
         
-		virtual ~VHMsgLogger()
-		{
-		}
+		~VHMsgLogger() override = default;
 
-        virtual void OnMessage( const std::string & message )
+        void OnMessage( const std::string & message ) override
 		{
-			SmartBody::SBScene::getScene()->sendVHMsg2("sbmlog", message.c_str());
+			SmartBody::SBScene::getScene()->sendVHMsg2("sbmlog", message);
 		}
 };
 
@@ -88,10 +79,8 @@ SBVHMsgManager::~SBVHMsgManager()
 		send("vrProcEnd sbm");
 	}
 
-#ifndef SB_NO_VHMSG
 	if (vhmsg::ttu_is_open())
 		vhmsg::ttu_close();
-#endif
 
 	if (_logListener)
 	{

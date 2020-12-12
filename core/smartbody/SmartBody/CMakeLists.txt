@@ -77,31 +77,12 @@ else ()
     endif ()
 endif ()
 
-if (${SB_NO_VHMSG})
-    set(VHMSG_LIB
-            )
-else ()
-    set(VHMSG_LIB
-            vhmsg
-            ${ACTIVEMQLIB}
-            )
-endif ()
-
 if (${SB_NO_BONEBUS})
     set(BONEBUS_LIB
             )
 else ()
     set(BONEBUS_LIB
             bonebus
-            )
-endif ()
-
-if (${SB_NO_ODE_PHYSICS})
-    set(ODE_LIB
-            )
-else ()
-    set(ODE_LIB
-            ${ODELIB}
             )
 endif ()
 
@@ -365,7 +346,7 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBAssetManager.cpp
         src/sb/SBAssetStore.cpp
         src/sb/SBSpeechManager.cpp
-        src/sb/SBVHMsgManager.cpp
+       # src/sb/SBVHMsgManager.cpp
         src/sb/SBCommandManager.cpp
 
         src/sb/SBAssetHandler.cpp
@@ -409,7 +390,6 @@ target_include_directories(SmartBody PUBLIC
 
 target_link_libraries(SmartBody
         ${BONEBUS_LIB}
-        ${VHMSG_LIB}
         sr
         vhcl
         steerlib

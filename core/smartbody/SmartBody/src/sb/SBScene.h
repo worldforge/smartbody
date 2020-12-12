@@ -81,15 +81,15 @@ class SBScene : public SBObject
 {
 	public:
 
-	struct CoreServices {
-		std::unique_ptr<SBPhysicsManager> physicsManager;
-		std::unique_ptr<SBCollisionManager> collisionManager;
-	};
+		struct CoreServices {
+			std::unique_ptr<SBPhysicsManager> physicsManager;
+			std::unique_ptr<SBCollisionManager> collisionManager;
+		};
 
-	struct VHMsgProvider {
-		virtual int send2(const char *op, const char* message) = 0;
-		virtual int send(const char* message) = 0;
-	};
+		struct VHMsgProvider {
+			virtual int send2(const char *op, const char* message) = 0;
+			virtual int send(const char* message) = 0;
+		};
 
 		struct Provider {
 			std::function<SmartBody::SBObject*(const std::string&)> objectProvider;

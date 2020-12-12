@@ -23,11 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBABI.h"
 
-#ifdef __ANDROID__
 #define LINK_VHMSG_CLIENT		(1)
-#else
-#define LINK_VHMSG_CLIENT		(1)
-#endif
 
 #ifdef __APPLE__
 #include "TargetConditionals.h"

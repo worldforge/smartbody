@@ -35,7 +35,7 @@ namespace vhcl {
 
 namespace SmartBody {
 
-class SBVHMsgManager : public SBService, SBScene::VHMsgProvider
+class SBVHMsgManager : public SBService, public SBScene::VHMsgProvider
 {
 	public:
 		SBAPI SBVHMsgManager();

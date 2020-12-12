@@ -52,7 +52,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBBehavior.h>
 #include <sb/SBMotion.h>
 #include <sb/SBGestureMapManager.h>
-#include <sb/SBVHMsgManager.h>
 #include <sb/SBGestureMap.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBSteerManager.h>

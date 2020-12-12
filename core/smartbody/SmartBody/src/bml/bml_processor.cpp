@@ -61,12 +61,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/version.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
 #include <sb/SBAnimationState.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/nvbg.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBVHMsgManager.h>
 #include <sb/SBScene.h>
 #include <sb/SBMotion.h>
 #include <sb/SBAssetManager.h>

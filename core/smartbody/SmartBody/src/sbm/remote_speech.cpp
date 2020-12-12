@@ -35,7 +35,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "time.h"
 #include <sb/SBSpeechManager.h>
 #include <sb/SBSimulationManager.h>
-#include "sb/SBVHMsgManager.h"
 #include <sb/SBCommandManager.h>
 #include <sb/SBScene.h>
 #include "SBUtilities.h"

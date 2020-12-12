@@ -65,6 +65,7 @@ Session::Session()
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerHdr>());
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerSBMeshBinary>());
 
+	scene.setVHMsgProvider(&vhmMsgManager);
 
 	scene.getServiceManager()->addService(&vhmMsgManager);
 

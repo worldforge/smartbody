@@ -10,10 +10,12 @@ target_include_directories(SmartBody-control PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-navmesh,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
         )
 
 
 target_link_libraries(SmartBody-control
         SmartBody-navmesh
+        SmartBody-vhmsg
         SmartBody
         )

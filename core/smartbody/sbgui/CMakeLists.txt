@@ -205,6 +205,7 @@ target_link_libraries(sbgui
         SmartBody-control
         SmartBody-navmesh
         SmartBody-navmesh-bindings-python
+        SmartBody-vhmsg
         jpge
         pinocchio
         ${MORE_LIBS}
@@ -224,6 +225,7 @@ target_include_directories(sbgui PUBLIC
         $<TARGET_PROPERTY:SmartBody-navmesh-bindings-python,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-physics-ode,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-control,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
         )
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
