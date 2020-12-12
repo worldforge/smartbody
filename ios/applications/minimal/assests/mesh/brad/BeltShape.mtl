@@ -1,7 +1,0 @@
-newmtl _brad1:brad:lambert72SG
-illum 4
-Kd 0.70 0.70 0.70
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd Brad_Pants.png
-Ni 1.00
