@@ -71,7 +71,6 @@ class SBSpeechManager;
 class SBParser;
 class SBSubject;
 class SBController;
-class SBVHMsgManager;
 class SBCommandManager;
 class SBNavigationMesh;
 class SBMotionGraphManager;
@@ -85,6 +84,11 @@ class SBScene : public SBObject
 	struct CoreServices {
 		std::unique_ptr<SBPhysicsManager> physicsManager;
 		std::unique_ptr<SBCollisionManager> collisionManager;
+	};
+
+	struct VHMsgProvider {
+		virtual int send2(const char *op, const char* message) = 0;
+		virtual int send(const char* message) = 0;
 	};
 
 		struct Provider {
@@ -186,7 +190,6 @@ class SBScene : public SBObject
 		SBAPI SBRetargetManager* getRetargetManager();
 		SBAPI SBAssetManager* getAssetManager();
 		SBAPI SBSpeechManager* getSpeechManager();
-		SBAPI SBVHMsgManager* getVHMsgManager();
 		SBAPI SBCommandManager* getCommandManager();
 		SBAPI SBMotionGraphManager* getMotionGraphManager();
 		SBAPI SBHandConfigurationManager* getHandConfigurationManager();
@@ -268,6 +271,7 @@ class SBScene : public SBObject
 
 	void setCommandRunner(std::function<bool(const std::string&)> commandRunner);
 	void setScriptRunner(std::function<bool(const std::string&)> commandRunner);
+	void setVHMsgProvider(VHMsgProvider* vhMsgProvider);
 
 	protected:
 
@@ -293,7 +297,6 @@ class SBScene : public SBObject
 		SBEventManager* _eventManager;
 		SBAssetManager* _assetManager;
 		SBSpeechManager* _speechManager;
-		SBVHMsgManager* _vhmsgManager;
 		SBCommandManager* _commandManager;
 		SBMotionGraphManager* _motionGraphManager;
 		SBHandConfigurationManager* _handConfigManager;
@@ -347,6 +350,8 @@ class SBScene : public SBObject
 		 * HACK: executes scripts. This should be moved out of the core Scene instance, but we'll keep it for now to avoid updating all scripts.
 		 */
 		std::function<bool(const std::string&)> _scriptRunner;
+
+		VHMsgProvider* _vhMsgProvider;
 };
 
 

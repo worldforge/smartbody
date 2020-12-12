@@ -129,10 +129,11 @@ class ForwardLogListener : public SmartBody::util::Listener
 };
 
 
-SBScene::SBScene(CoreServices coreServices) : SBObject(),
-_assetStore(std::make_unique<SBAssetStore>(*this)),
-_coreServices(std::move(coreServices))
-{
+SBScene::SBScene(CoreServices coreServices) :
+		SBObject(),
+		_assetStore(std::make_unique<SBAssetStore>(*this)),
+		_coreServices(std::move(coreServices)),
+		_vhMsgProvider(nullptr) {
 	_scene = this;
 	_processId = "";
 	_lastScriptDirectory = "";
@@ -158,7 +159,6 @@ _coreServices(std::move(coreServices))
 	_eventManager = new SBEventManager();
 	_assetManager = new SBAssetManager(*_assetStore);
 	_speechManager = new SBSpeechManager();
-	_vhmsgManager = new SBVHMsgManager();
 	_commandManager = new SBCommandManager();
 	_motionGraphManager = new SBMotionGraphManager();
 	_handConfigManager = new SBHandConfigurationManager();
@@ -171,7 +171,6 @@ _coreServices(std::move(coreServices))
 	_serviceManager->addService(_coreServices.physicsManager.get());
 	_serviceManager->addService(_boneBusManager);
 	_serviceManager->addService(_coreServices.collisionManager.get());
-	_serviceManager->addService(_vhmsgManager);
 	_serviceManager->addService(_realtimeManager);
 	_serviceManager->addService(_phonemeManager);
 	_serviceManager->addService(_profiler);
@@ -352,7 +351,7 @@ SBScene::~SBScene()
 
 	for (auto & faceDefinition : faceDefinitions)
 	{
-		std::string faceName = faceDefinition;
+		const std::string& faceName = faceDefinition;
 		removeFaceDefinition(faceName);
 	}
 
@@ -441,11 +440,7 @@ SBScene::~SBScene()
 	AUDIO_Init();
 #endif
 
-	if (_vhmsgManager->isEnable() && _vhmsgManager->isConnected())
-		_vhmsgManager->send( "vrProcEnd sbm" );
 
-//	delete _vhmsgManager;
-//	_vhmsgManager = nullptr;
 
 //#if !defined(SB_IPHONE)
 //	SbmTextureManager::destroy_singleton();
@@ -599,7 +594,7 @@ void SBScene::update()
 		pawn->ct_tree_p->applyBufferToAllSkeletons();
 
 		//SmartBody::util::log("After pawn update");
-		SbmCharacter* char_p = getCharacter(pawn->getName().c_str() );
+		SbmCharacter* char_p = getCharacter(pawn->getName() );
 
 		if( char_p )
 		{
@@ -900,7 +895,7 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 SBPawn* SBScene::createPawn(const std::string& pawnName)
 {
 	SBPawn* pawn = getPawn(pawnName);
-	SBCharacter* character = dynamic_cast<SBCharacter*>(pawn);
+	auto* character = dynamic_cast<SBCharacter*>(pawn);
 	if (character)
 	{
 		SmartBody::util::log("Pawn '%s' is a character.", pawnName.c_str());
@@ -1216,13 +1211,16 @@ void SBScene::removePendingCommands()
 
 void SBScene::sendVHMsg(const std::string& message)
 {
-	getVHMsgManager()->send(message.c_str());
+	if (_vhMsgProvider) {
+		_vhMsgProvider->send(message.c_str());
+	}
 }
 
 void SBScene::sendVHMsg2(const std::string& message, const std::string& message2)
 {
-
-	getVHMsgManager()->send2(message.c_str(), message2.c_str());
+	if (_vhMsgProvider) {
+		_vhMsgProvider->send2(message.c_str(), message2.c_str());
+	}
 }
 
 void SBScene::setCommandRunner(std::function<bool(const std::string&)> commandRunner) {
@@ -1231,6 +1229,9 @@ void SBScene::setCommandRunner(std::function<bool(const std::string&)> commandRu
 
 void SBScene::setScriptRunner(std::function<bool(const std::string&)> scriptRunner) {
 	_scriptRunner = std::move(scriptRunner);
+}
+void SBScene::setVHMsgProvider(VHMsgProvider* vhMsgProvider) {
+	vhMsgProvider = vhMsgProvider;
 }
 
 
@@ -1360,10 +1361,6 @@ SBCommandManager* SBScene::getCommandManager()
 	return _commandManager;
 }
 
-SBVHMsgManager* SBScene::getVHMsgManager()
-{
-	return _vhmsgManager;
-}
 
 SBParser* SBScene::getParser()
 {

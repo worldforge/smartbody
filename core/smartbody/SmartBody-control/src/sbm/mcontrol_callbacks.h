@@ -25,6 +25,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/sr_arg_buff.h>
 #include <sb/SBCommandManager.h>
 
+namespace SmartBody {
+	class SBVHMsgManager;
+}
 
 int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 int mcu_sequence_chain_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
@@ -56,12 +59,12 @@ int mcu_uscriptexec_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr
 
 int mcu_commapi_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
-int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-SBAPI int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager );
+SBAPI int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager );
 int mcu_vrQuery_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
 
 //perception
-int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager );
 
 // listening feedback
 int mcu_vrBCFeedback_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
@@ -72,8 +75,8 @@ int mcu_vrSpeech_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 // examine the motion for specific skeleton
 int mcu_check_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
-int mcu_vhmsg_connect_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int mcu_vhmsg_connect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager );
+int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager );
 
 int mcu_python_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  );
 int mcu_pythonscript_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  );
@@ -89,7 +92,7 @@ int stopheapprofile_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr
 
 int mcu_joint_datareceiver_func(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
 int mcu_vrExpress_func(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
-int vhmsglog_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int vhmsglog_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager );
 
 int xmlcachedir_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 int xmlcache_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
@@ -100,7 +103,7 @@ int mcuFestivalRemoteSpeechCmd_func( srArgBuffer& args, SmartBody::SBCommandMana
 int mcu_echo_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  );
 int sb_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr  );
 int sbm_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr  );
-int sbm_vhmsg_send_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  );
+int sbm_vhmsg_send_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager  );
 int mcu_triggerevent_func(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
 int deprecatedMessage( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  );
 

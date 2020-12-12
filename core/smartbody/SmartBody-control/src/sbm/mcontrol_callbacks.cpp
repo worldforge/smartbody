@@ -1850,7 +1850,7 @@ int mcu_commapi_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
       Kills the sbm process
 */
 
-int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
 {
     char * command = args.read_token();
 	
@@ -1862,7 +1862,7 @@ int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBCommandManager* cm
 		SmartBody::SBScene::getScene()->getSimulationManager()->stop();
 		std::stringstream strstr;
 		strstr << "vrProcEnd " << command;
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send( strstr.str().c_str() );
+		vhmsgManager.send( strstr.str().c_str() );
 	    return CMD_SUCCESS;
     }
 	return CMD_SUCCESS;
@@ -1873,11 +1873,11 @@ int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBCommandManager* cm
      In response to this message, send out vrComponent to indicate that this component is running
 */
 
-int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
 {
 	
 	
-    SmartBody::SBScene::getScene()->getVHMsgManager()->send( "vrComponent sbm" );
+    vhmsgManager.send( "vrComponent sbm" );
  
     // EDF - For our reply, we're going to send one vrComponent 
     //       message for each agent loaded
@@ -1887,7 +1887,7 @@ int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
         string message = "sbm ";
 		message += character->getName();
-        SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "vrComponent", message.c_str() );
+        vhmsgManager.send2( "vrComponent", message.c_str() );
     }
 	return CMD_SUCCESS;
 }
@@ -1897,7 +1897,7 @@ int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
  * vrPerception kinect/gavam ...
  * vrPerception pml-nvbg <pml>
  */
-int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
 {
 	char * command = args.read_token();
 		
@@ -1970,7 +1970,7 @@ int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMg
 				//sending temp mesg just to make sure it works 
 				//SmartBody::SBScene::getScene()->getVHMsgManager()->send("test", messg);
 				//send the receiver message to orient the skullbase of brad as per the user's head orientation as detected by Gavam
-				SmartBody::SBScene::getScene()->getVHMsgManager()->send2("sbm", messg);
+				vhmsgManager.send2("sbm", messg);
 				//after sending the message, send a test message as confirmation
 				//SmartBody::SBScene::getScene()->getVHMsgManager()->send("testconfirmed", messg);
 			}
@@ -3137,9 +3137,8 @@ int mcu_vrExpress_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	return CMD_SUCCESS;
 }
 
-int mcu_vhmsg_connect_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_vhmsg_connect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
 {
-	SmartBody::SBVHMsgManager* vhmsgManager = SmartBody::SBScene::getScene()->getVHMsgManager();
 	char* vhmsgServerVar = getenv( "VHMSG_SERVER" );
 	char* vhmsgPortVar = getenv("VHMSG_PORT");
 	char* vhmsgScopeVar =  getenv("VHMSG_SCOPE");
@@ -3170,10 +3169,10 @@ int mcu_vhmsg_connect_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdM
 	}
 
 	// disconnect first in case we are already connected
-	vhmsgManager->setServer(vhmsgServer);
-	vhmsgManager->setPort(vhmsgPort);
-	vhmsgManager->setScope(vhmsgScope);
-	bool success = vhmsgManager->connect();
+	vhmsgManager.setServer(vhmsgServer);
+	vhmsgManager.setPort(vhmsgPort);
+	vhmsgManager.setScope(vhmsgScope);
+	bool success = vhmsgManager.connect();
 
 	if (success)
 	{
@@ -3182,18 +3181,17 @@ int mcu_vhmsg_connect_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdM
 	else
 	{
 		SmartBody::util::log("Could not connect to %s:%s", vhmsgServer.c_str(), vhmsgPort.c_str());
-		vhmsgManager->setEnable(false);
+		vhmsgManager.setEnable(false);
 		return CMD_FAILURE;
 	}
 
 }
 
-int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
 {
 #ifndef SB_NO_VHMSG
-	SmartBody::SBVHMsgManager* vhmsgManager = SmartBody::SBScene::getScene()->getVHMsgManager();
-	
-	if (!vhmsgManager->isEnable())
+
+	if (!vhmsgManager.isEnable())
 	{
 		SmartBody::util::log("VHMSG is not connected.");
 		return CMD_FAILURE;
@@ -3206,7 +3204,7 @@ int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBCommandManager* c
 	}
 	else
 	{
-		vhmsgManager->setEnable(false);
+		vhmsgManager.setEnable(false);
 		SmartBody::util::log("VHMSG has been disconnected.");
 		return CMD_SUCCESS;
 	}
@@ -3249,13 +3247,12 @@ int mcuFestivalRemoteSpeechCmd_func( srArgBuffer& args, SmartBody::SBCommandMana
 }
 
 
-int vhmsglog_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int vhmsglog_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
 {
-	SmartBody::SBVHMsgManager* vhmsgManager = SmartBody::SBScene::getScene()->getVHMsgManager();
-	
+
 	if (args.calc_num_tokens() == 0)
 	{
-		if (vhmsgManager->isEnableLogging())
+		if (vhmsgManager.isEnableLogging())
 		{
 			SmartBody::util::log("VHMSG logging is on");
 		}
@@ -3269,28 +3266,28 @@ int vhmsglog_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	std::string token = args.read_token();
 	if (token == "on")
 	{
-		if (vhmsgManager->isEnableLogging())
+		if (vhmsgManager.isEnableLogging())
 		{
 			SmartBody::util::log("VHMSG logging is already on");
 			return CMD_SUCCESS;
 		}
 		else
 		{
-			vhmsgManager->setEnableLogging(true);
+			vhmsgManager.setEnableLogging(true);
 			SmartBody::util::log("VHMSG logging is now on");
 			return CMD_SUCCESS;
 		}
 	}
 	else if (token == "off")
 	{
-		if (!vhmsgManager->isEnableLogging())
+		if (!vhmsgManager.isEnableLogging())
 		{
 			SmartBody::util::log("VHMSG logging is already off");
 			return CMD_SUCCESS;
 		}
 		else
 		{
-			vhmsgManager->setEnableLogging(false);
+			vhmsgManager.setEnableLogging(false);
 			SmartBody::util::log("VHMSG logging is now off");
 			return CMD_SUCCESS;
 		}
@@ -3381,11 +3378,11 @@ int sbm_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr )
    return CMD_SUCCESS;
 }
 
-int sbm_vhmsg_send_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )
+int sbm_vhmsg_send_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager  )
 {
 	char* cmdName = args.read_token();
 	char* cmdArgs = args.read_remainder_raw();
-	return SmartBody::SBScene::getScene()->getVHMsgManager()->send2( cmdName, cmdArgs );
+	return vhmsgManager.send2( cmdName, cmdArgs );
 }
 
 int mcu_triggerevent_func(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)

@@ -1515,8 +1515,7 @@ local_speech::local_speech( float timeOutInSeconds )
 :	remote_speech(timeOutInSeconds) // default is 10 seconds
 {}
 
-local_speech::~local_speech()
-{}
+local_speech::~local_speech() = default;
 
 void local_speech::sendSpeechCommand(const char* cmd)
 {
@@ -1524,6 +1523,6 @@ void local_speech::sendSpeechCommand(const char* cmd)
 	//SmartBody::util::log("local_speech::sendSpeechCommand");
 	char* cmdConst = const_cast<char*>(cmd);
 	//SmartBody::SBScene::getScene()->getCommandManager()->execute_later( cmdConst ); //sends the remote speech command using singleton* MCU_p
-	SBScene::getScene()->getVHMsgManager()->send2( "RemoteSpeechCmd", cmdConst );
+	SBScene::getScene()->sendVHMsg2( "RemoteSpeechCmd", cmdConst );
 }
 

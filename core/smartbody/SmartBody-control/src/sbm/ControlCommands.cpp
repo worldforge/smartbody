@@ -18,6 +18,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
+#include <sb/SBVHMsgManager.h>
 #include "ControlCommands.h"
 
 #include "mcontrol_callbacks.h"
@@ -25,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-void registerControlCommands(SmartBody::SBCommandManager& commandManager) {
+void registerControlCommands(SmartBody::SBCommandManager& commandManager, SmartBody::SBVHMsgManager* sbvhMsgManager) {
 	commandManager.insert("sb", sb_main_func);
 	commandManager.insert("sbm", sbm_main_func);
 
@@ -33,7 +34,6 @@ void registerControlCommands(SmartBody::SBCommandManager& commandManager) {
 
 	commandManager.insert("seq", mcu_sequence_func);
 	commandManager.insert("seq-chain", mcu_sequence_chain_func);
-	commandManager.insert("send", sbm_vhmsg_send_func);
 
 	commandManager.insert("terrain", mcu_terrain_func);
 	commandManager.insert("time", mcu_time_func);
@@ -57,9 +57,17 @@ void registerControlCommands(SmartBody::SBCommandManager& commandManager) {
 	commandManager.insert("p", mcu_python_func);
 	commandManager.insert("steer", mcu_steer_func);
 	commandManager.insert("syncpoint", syncpoint_func);
-	commandManager.insert("vhmsgconnect", mcu_vhmsg_connect_func);
-	commandManager.insert("vhmsgdisconnect", mcu_vhmsg_disconnect_func);
-	commandManager.insert("vhmsglog", vhmsglog_func);
+	if (sbvhMsgManager) {
+		commandManager.insert("send",  [=](srArgBuffer& args){return sbm_vhmsg_send_func(args, *sbvhMsgManager);});
+		commandManager.insert("vhmsgconnect", [=](srArgBuffer& args){return mcu_vhmsg_connect_func(args, *sbvhMsgManager);});
+		commandManager.insert("vhmsgdisconnect", [=](srArgBuffer& args){return mcu_vhmsg_disconnect_func(args, *sbvhMsgManager);});
+		commandManager.insert("vhmsglog", [=](srArgBuffer& args){return vhmsglog_func(args, *sbvhMsgManager);});
+
+		commandManager.insert("vrKillComponent", [=](srArgBuffer& args){return mcu_vrKillComponent_func(args, *sbvhMsgManager);});
+		commandManager.insert("vrAllCall", [=](srArgBuffer& args){return mcu_vrAllCall_func(args, *sbvhMsgManager);});
+		commandManager.insert("vrPerception", [=](srArgBuffer& args){return mcu_vrPerception_func(args, *sbvhMsgManager);});
+
+	}
 	commandManager.insert("net", mcu_net_func);
 
 	commandManager.insert("PlaySound", mcu_play_sound_func);
@@ -69,9 +77,7 @@ void registerControlCommands(SmartBody::SBCommandManager& commandManager) {
 
 	commandManager.insert("CommAPI", mcu_commapi_func);
 
-	commandManager.insert("vrKillComponent", mcu_vrKillComponent_func);
-	commandManager.insert("vrAllCall", mcu_vrAllCall_func);
-	commandManager.insert("vrPerception", mcu_vrPerception_func);
+
 	commandManager.insert("vrBCFeedback", mcu_vrBCFeedback_func);
 	commandManager.insert("vrSpeech", mcu_vrSpeech_func);
 	commandManager.insert("triggerevent", deprecatedMessage);

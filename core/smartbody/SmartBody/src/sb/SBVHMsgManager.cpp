@@ -56,7 +56,7 @@ class VHMsgLogger : public SmartBody::util::Listener
 
         virtual void OnMessage( const std::string & message )
 		{
-			SmartBody::SBScene::getScene()->getVHMsgManager()->send2("sbmlog", message.c_str());
+			SmartBody::SBScene::getScene()->sendVHMsg2("sbmlog", message.c_str());
 		}
 };
 
@@ -146,7 +146,7 @@ bool SBVHMsgManager::connect()
 
 	if (vhmsg::ttu_open(_server.c_str(), _scope.c_str(), _port.c_str()) == vhmsg::TTU_SUCCESS)
 	{
-		vhmsg::ttu_set_client_callback( &SBVHMsgManager::vhmsgCallback );
+		vhmsg::ttu_set_client_callback( &SBVHMsgManager::vhmsgCallback, this );
 		int err = vhmsg::TTU_SUCCESS;
 		err = vhmsg::ttu_register( "sb" );
 		err = vhmsg::ttu_register( "sbm" );
@@ -334,7 +334,8 @@ const std::string& SBVHMsgManager::getScope()
 
 void SBVHMsgManager::vhmsgCallback( const char *op, const char *args, void * user_data )
 {
-	if (SmartBody::SBScene::getScene()->getVHMsgManager()->getBoolAttribute("showMessages"))
+	auto vhmsgManager = static_cast<SBVHMsgManager*>(user_data);
+	if (vhmsgManager->getBoolAttribute("showMessages"))
 		SmartBody::util::log("[%s] %s", op, args);
 	//FIXME: expose the callback so that the debugger can listen to it
 //	if (SmartBody::SBScene::getScene()->isRemoteMode())

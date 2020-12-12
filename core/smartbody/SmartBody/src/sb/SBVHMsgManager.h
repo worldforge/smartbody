@@ -23,6 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sb/SBService.h>
+#include "sb/SBScene.h"
 #include "SBUtilities.h"
 #include <string>
 
@@ -34,7 +35,7 @@ namespace vhcl {
 
 namespace SmartBody {
 
-class SBVHMsgManager : public SBService
+class SBVHMsgManager : public SBService, SBScene::VHMsgProvider
 {
 	public:
 		SBAPI SBVHMsgManager();
@@ -51,8 +52,8 @@ class SBVHMsgManager : public SBService
 
 		SBAPI int sendOpMessage(const std::string& op, const std::string& message);
 		SBAPI int sendMessage(const std::string& message);
-		SBAPI int send2(const char *op, const char* message);
-		SBAPI int send(const char* message);
+		SBAPI int send2(const char *op, const char* message) override;
+		SBAPI int send(const char* message) override;
 
 		SBAPI int poll();
 

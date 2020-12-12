@@ -118,7 +118,7 @@ namespace BML {
 		// Old vrSpeakFailed form (sans recipient)
 		std::ostringstream buff;
 		buff << agent_id << " RECIPIENT " << message_id << " " << error_msg;
-		scene->getVHMsgManager()->send2( "vrSpeakFailed", buff.str().c_str() );
+		scene->sendVHMsg2( "vrSpeakFailed", buff.str().c_str() );
 
 		// New vrAgentBML form...
 		std::ostringstream buff2;
@@ -128,7 +128,7 @@ namespace BML {
 		buff2 << agent_id << " " << message_id << " end error " << error_msg;
 #endif
 		
-		scene->getVHMsgManager()->send2( "vrAgentBML", buff2.str().c_str() );
+		scene->sendVHMsg2( "vrAgentBML", buff2.str().c_str() );
 	}
 }
 

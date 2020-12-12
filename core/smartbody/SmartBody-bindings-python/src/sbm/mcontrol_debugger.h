@@ -23,10 +23,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBTypes.h>
 #include <sbm/sr_arg_buff.h>
 #include "sb/SBCommandManager.h"
-
-int mcu_sbmdebugger_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-
 namespace SmartBody {
-void installDebuggerCommand(SBCommandManager& commandManager);
+class SBVHMsgManager;
+void installDebuggerCommand(SBCommandManager& commandManager, SmartBody::SBVHMsgManager& vhMsgManager);
 }
+
+int mcu_sbmdebugger_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhMsgManager  );
+
 #endif //SMARTBODY_MCONTROL_DEBUGGER_H

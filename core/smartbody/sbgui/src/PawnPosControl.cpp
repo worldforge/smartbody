@@ -14,6 +14,7 @@
 #include <sb/SBVHMsgManager.h>
 #include "SBUtilities.h"
 #include "gwiz_math.h"
+#include "Session.h"
 
 PawnControl::PawnControl()
 {
@@ -79,15 +80,15 @@ void PawnControl::set_pawn_pos(SbmPawn* pawn, SrVec& pos)
 	{
 		std::stringstream strstr;
 		strstr << "sb scene.getCharacter(\"" << pawn->getName() << "\").setDoubleAttribute(\"posX\", " << pos.x<< ")";
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr.str().c_str());
+		Session::current->vhmMsgManager.send(strstr.str().c_str());
 
 		std::stringstream strstr2;
 		strstr << "sb scene.getCharacter(\"" << pawn->getName() << "\").setDoubleAttribute(\"posY\", " << pos.y << ")";
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr2.str().c_str());
+		Session::current->vhmMsgManager.send(strstr2.str().c_str());
 
 		std::stringstream strstr3;
 		strstr3 << "sb scene.getCharacter(\"" << pawn->getName() << "\").setDoubleAttribute(\"posZ\", " << pos.z << ")";
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr3.str().c_str());
+		Session::current->vhmMsgManager.send(strstr3.str().c_str());
 		return;
 	}
 	
@@ -119,15 +120,15 @@ void PawnControl::set_pawn_rot( SbmPawn* pawn, SrQuat& quat )
 	{
 		std::stringstream strstr;
 		strstr << "sb scene.getCharacter(\"" << pawn->getName() << "\").setDoubleAttribute(\"rotX\", " << e.h() << ")";
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr.str().c_str());
+		Session::current->vhmMsgManager.send(strstr.str().c_str());
 
 		std::stringstream strstr2;
 		strstr << "sb scene.getCharacter(\"" << pawn->getName() << "\").setDoubleAttribute(\"rotY\", " << e.p() << ")";
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr2.str().c_str());
+		Session::current->vhmMsgManager.send(strstr2.str().c_str());
 
 		std::stringstream strstr3;
 		strstr3 << "sb scene.getCharacter(\"" << pawn->getName() << "\").setDoubleAttribute(\"rotZ\", " << e.r() << ")";
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr3.str().c_str());
+		Session::current->vhmMsgManager.send(strstr3.str().c_str());
 		return;
 	}
 

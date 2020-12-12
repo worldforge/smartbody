@@ -94,7 +94,7 @@ void MonitorConnectWindow::loadProcesses()
 	SmartBody::SBDebuggerServer& s = Session::current->debuggerServer;
 	mDebuggerClient.QuerySbmProcessIds();
 	vhcl::Sleep(2);
-	sbScene->getVHMsgManager()->poll();
+	Session::current->vhmMsgManager.poll();
 	_browserSBProcesses->clear();
 	std::vector<std::string> ids = mDebuggerClient.GetSbmProcessIds();
 	for (auto & id : ids)

@@ -1023,14 +1023,13 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 
 	// get the default attributes from the default controllers
 	const std::vector<SmartBody::SBController*>& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
-	for (size_t x = 0; x < defaultControllers.size(); x++)
+	for (auto controller : defaultControllers)
 	{
-		MeController* controller = defaultControllers[x];
-		const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
+			const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
 		std::string groupName = controller->getName();		
-		for (size_t a = 0; a < defaultAttributes.size(); a++)
+		for (const auto & defaultAttribute : defaultAttributes)
 		{
-			SmartBody::SBAttribute* attribute = defaultAttributes[a].first;
+			SmartBody::SBAttribute* attribute = defaultAttribute.first;
 			SmartBody::SBAttribute* attributeCopy = attribute->copy();
 			this->addAttribute(attributeCopy);
 			// if the controller isn't a scheduler, then add the controller as an observer
@@ -1126,9 +1125,9 @@ int SbmCharacter::init_skeleton() {
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-	for (size_t i = 0; i < listeners.size(); i++)
+	for (auto & listener : listeners)
 	{
-		listeners[i]->OnCharacterUpdate( getName() );
+		listener->OnCharacterUpdate( getName() );
 	}
 
   if (viseme_history_arr) {

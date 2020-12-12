@@ -34,6 +34,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBAssetHandlerHDR.h"
 #include "sb/SBAssetHandlerSBMeshBinary.h"
 
+#include "sb/SBServiceManager.h"
+
 #include "sb/SBPhysicsManager.h"
 #include "sb/SBCollisionManager.h"
 
@@ -64,10 +66,18 @@ Session::Session()
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerSBMeshBinary>());
 
 
-	SmartBody::installDebuggerCommand(*scene.getCommandManager());
+	scene.getServiceManager()->addService(&vhmMsgManager);
+
+	SmartBody::installDebuggerCommand(*scene.getCommandManager(), vhmMsgManager);
 	SmartBody::PythonInterface::renderScene = &renderScene;
 
-	registerControlCommands(*scene.getCommandManager());
+	registerControlCommands(*scene.getCommandManager(), &vhmMsgManager);
 
+}
 
+Session::~Session() {
+	if (vhmMsgManager.isEnable() && vhmMsgManager.isConnected())
+		vhmMsgManager.send( "vrProcEnd sbm" );
+
+	scene.getServiceManager()->removeService(vhmMsgManager.getName());
 }

@@ -199,7 +199,7 @@ void remote_speech::sendSpeechCommand(const char* cmd)
 {
 	//SmartBody::util::log("remote_speech::sendSpeechCommand");
 	
-	SmartBody::SBScene::getScene()->getVHMsgManager()->send2( "RemoteSpeechCmd", cmd ); //sends the remote speech command using singleton* MCU_p
+	SmartBody::SBScene::getScene()->sendVHMsg2( "RemoteSpeechCmd", cmd ); //sends the remote speech command using singleton* MCU_p
 }
 void remote_speech::sendSpeechTimeout(std::ostringstream& outStream)
 {

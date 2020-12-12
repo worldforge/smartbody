@@ -39,6 +39,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttributeManager.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBCharacter.h>
+#include <Session.h>
 #include "SBUtilities.h"
 #include "TextEditor.h"
 #include "../flu/Flu_Collapsable_Group.h"
@@ -829,13 +830,13 @@ void AttributeWindow::ActionCB(Fl_Widget *w, void *data)
 				if (character)
 				{
 					std::string sendStr = "sb scene.getCharacter(\"" + character->getName() + "\").setActionAttribute(\"" + attr->getName() + "\")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(sendStr.c_str());
+					Session::current->vhmMsgManager.send(sendStr.c_str());
 				}
 				SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(object);
 				if (pawn && !character)
 				{
 					std::string sendStr = "sb scene.getPawn(\"" + pawn->getName() + "\").setActionAttribute(\"" + attr->getName() + "\")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(sendStr.c_str());
+					Session::current->vhmMsgManager.send(sendStr.c_str());
 				}
 				aattr->setValue();
 			}
@@ -881,14 +882,14 @@ void AttributeWindow::BoolCB(Fl_Widget *w, void *data)
 				{
 					std::string str = check->value()? "True" : "False";
 					std::string sendStr = "sb scene.getCharacter(\"" + character->getName() + "\").setBoolAttribute(\"" + attr->getName() + "\", " + str + ")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(sendStr.c_str());
+					Session::current->vhmMsgManager.send(sendStr.c_str());
 				}
 				SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(object);
 				if (pawn && !character)
 				{
 					std::string str = check->value()? "True" : "False";
 					std::string sendStr = "sb scene.getPawn(\"" + pawn->getName() + "\").setBoolAttribute(\"" + attr->getName() + "\", " + str + ")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(sendStr.c_str());
+					Session::current->vhmMsgManager.send(sendStr.c_str());
 				}
 				battr->setValue(check->value()? true : false);
 			}
@@ -956,7 +957,7 @@ void AttributeWindow::IntCB(Fl_Widget *w, void *data)
 					std::stringstream strstr;
 					strstr << val;
 					std::string sendStr = "sb scene.getCharacter(\"" + character->getName() + "\").setIntAttribute(\"" + attr->getName() + "\", " + strstr.str() + ")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(sendStr.c_str());
+					Session::current->vhmMsgManager.send(sendStr.c_str());
 				}
 				SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(object);
 				if (pawn && !character)
@@ -964,7 +965,7 @@ void AttributeWindow::IntCB(Fl_Widget *w, void *data)
 					std::stringstream strstr;
 					strstr << val;
 					std::string sendStr = "sb scene.getPawn(\"" + pawn->getName() + "\").setIntAttribute(\"" + attr->getName() + "\", " + strstr.str() + ")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(sendStr.c_str());
+					Session::current->vhmMsgManager.send(sendStr.c_str());
 				}
 				iattr->setValue(val);
 			}
@@ -1030,7 +1031,7 @@ void AttributeWindow::DoubleCB(Fl_Widget *w, void *data)
 					std::stringstream strstr;
 					strstr << val;
 					std::string sendStr = "sb scene.getCharacter(\"" + character->getName() + "\").setDoubleAttribute(\"" + attr->getName() + "\", " + strstr.str() + ")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(sendStr.c_str());
+					Session::current->vhmMsgManager.send(sendStr.c_str());
 				}
 				SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(object);
 				if (pawn && !character)
@@ -1038,7 +1039,7 @@ void AttributeWindow::DoubleCB(Fl_Widget *w, void *data)
 					std::stringstream strstr;
 					strstr << val;
 					std::string sendStr = "sb scene.getPawn(\"" + pawn->getName() + "\").setDoubleAttribute(\"" + attr->getName() + "\", " + strstr.str() + ")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(sendStr.c_str());
+					Session::current->vhmMsgManager.send(sendStr.c_str());
 				}
 				dattr->setValue(val);
 			}
@@ -1100,14 +1101,14 @@ void AttributeWindow::StringCB(Fl_Widget *w, void *data)
 				{
 					std::stringstream strstr;
 					strstr << "sb scene.getCharacter(\"" << character->getName() << "\").setStringAttribute(\"" << attr->getName() << "\", \"" << finalValue << "\")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr.str().c_str());
+					Session::current->vhmMsgManager.send(strstr.str().c_str());
 				}
 				SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(object);
 				if (pawn && !character)
 				{
 					std::stringstream strstr;
 					strstr << "sb scene.getPawn(\"" << pawn->getName() << "\").setStringAttribute(\"" << attr->getName() << "\", \"" << finalValue << "\")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr.str().c_str());
+					Session::current->vhmMsgManager.send(strstr.str().c_str());
 				}
 				strattr->setValue(finalValue);
 			}
@@ -1165,14 +1166,14 @@ void AttributeWindow::Vec3CB(Fl_Widget *w, void *data)
 				{
 					std::stringstream strstr;
 					strstr << "sb scene.getCharacter(\"" << character->getName() << "\").setVec3Attribute(\"" << attr->getName() << "\", " <<  val.x <<  ", " << val.y << ", " << val.z << ")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr.str().c_str());
+					Session::current->vhmMsgManager.send(strstr.str().c_str());
 				}
 				SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(object);
 				if (pawn && !character)
 				{
 					std::stringstream strstr;
 					strstr << "sb scene.getPawn(\"" << pawn->getName() << "\").setVec3Attribute(\"" << attr->getName() << "\", " <<  val.x <<  ", " << val.y << ", " << val.z << ")";
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send(strstr.str().c_str());
+					Session::current->vhmMsgManager.send(strstr.str().c_str());
 				}
 				vec3attr->setValue(val);
 			}

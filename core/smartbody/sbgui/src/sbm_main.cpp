@@ -10,28 +10,17 @@
 #include "vhmsg-tt.h"
 #endif
 #include <sbm/lin_win.h>
-#include <csignal>
 #include <iostream>
-#include <cstdio>
 #include <string>
 #include <vector>
-#include <fstream>
-#include <sstream>
 #include "fltk_viewer.h"
 #include "RootWindow.h"
-#include <bmlviewer/BehaviorWindow.h>
-#include <panimationviewer/PanimationWindow.h>
 #include <channelbufferviewer/channelbufferWindow.hpp>
-#include <resourceViewer/ResourceWindow.h>
 #include <faceviewer/FaceViewer.h>
-#include <sbm/lin_win.h>
-#include <sb/SBBmlProcessor.h>
-#include "sbm/GPU/SbmShader.h"
 #include <sb/SBBoneBusManager.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
 
 #include <pythonbind/SBPythonAutoRig.h>
 
@@ -47,13 +36,11 @@
 #include <sbm/sbm_audio.h>
 #include <sbm/sbm_speech_audiofile.hpp>
 #include <sbm/text_speech.h> // [BMLR]
-#include <sbm/locomotion_cmds.hpp>
 #include <sbm/time_regulator.h>
 #include "CommandWindow.h"
 #include "SBPython.h"
 #include <sb/SBSteerManager.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBVHMsgManager.h>
 #include <sb/SBSpeechManager.h>
 #include <sb/SBAssetManager.h>
 #include "SBUtilities.h"
@@ -72,7 +59,6 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#include <sbm/sr_cmd_line.h>
 #include "SBPythonClass.h"
 #include "SBNavmeshPython.h"
 #include "gwiz_cmdl.h"
@@ -504,23 +490,25 @@ void cleanup( )	{
 	{
 
 
-		
-		if (SmartBody::SBScene::getScene()->getSimulationManager()->isStopped())
-		{
-			SmartBody::util::log( "SmartBody NOTE: unexpected exit " );
+		if (Session::current) {
+			if (Session::current->scene.getSimulationManager()->isStopped())
+			{
+				SmartBody::util::log( "SmartBody NOTE: unexpected exit " );
+			}
+
+			if (Session::current->scene.getBoolAttribute("internalAudio"))
+			{
+				AUDIO_Close();
+			}
+			Session::current->vhmMsgManager.send("vrProcEnd sbm");
 		}
 
-		if (SmartBody::SBScene::getScene()->getBoolAttribute("internalAudio"))
-		{
-			AUDIO_Close();
-		}
 
-		SmartBody::SBScene::getScene()->getVHMsgManager()->send("vrProcEnd sbm");
 		/*
 #if LINK_VHMSG_CLIENT
-		if (SmartBody::SBScene::getScene()->getVHMsgManager()->isEnable())
+		if (Session::current->vhmMsgManager.isEnable())
 		{
-			SmartBody::SBScene::getScene()->getVHMsgManager()->disconnect();
+			Session::current->vhmMsgManager.disconnect();
 		}
 #endif
 		*/
@@ -550,9 +538,11 @@ void cleanup( )	{
 void signal_handler(int sig) {
 //	std::cout << "SmartBody shutting down after catching signal " << sig << std::endl;
 
-	
 
-	SmartBody::SBScene::getScene()->getVHMsgManager()->send("vrProcEnd sbm" );
+
+	if (Session::current) {
+		Session::current->vhmMsgManager.send("vrProcEnd sbm" );
+	}
 	// get the current directory
 #ifdef WIN32
 	char buffer[MAX_PATH];
@@ -1221,16 +1211,16 @@ int main( int argc, char **argv )	{
 		vhmsgPortStr = vhmsg_port;
 
 
-	SmartBody::SBVHMsgManager* vhmsgManager = SmartBody::SBScene::getScene()->getVHMsgManager();
+	auto& vhmsgManager = Session::current->vhmMsgManager;
 	if( !vhmsg_disabled)
 	{
 		if (!vhmsgServerStr.empty())
-			vhmsgManager->setServer(vhmsgServerStr);
+			vhmsgManager.setServer(vhmsgServerStr);
 		if (!vhmsgPortStr.empty())
-			vhmsgManager->setPort(vhmsgPortStr);
+			vhmsgManager.setPort(vhmsgPortStr);
 		
-		vhmsgManager->setEnable(true);
-		if (!vhmsgManager->isEnable())
+		vhmsgManager.setEnable(true);
+		if (!vhmsgManager.isEnable())
 		{
 			SmartBody::util::log("Could not connect to server %s, VHMSG service not enabled.", vhmsg_server);
 		}
@@ -1248,7 +1238,7 @@ int main( int argc, char **argv )	{
 			SmartBody::util::log("Could not connect to %s:%s", vhserver.c_str(), vhport.c_str());
 #endif
 		}
-		vhmsgManager->setEnable(false);
+		vhmsgManager.setEnable(false);
 	}
 #endif
 
@@ -1379,7 +1369,7 @@ int main( int argc, char **argv )	{
 
 	// Notify world SBM is ready to receive messages
 	srArgBuffer argBuff("");
-	mcu_vrAllCall_func( argBuff, SmartBody::SBScene::getScene()->getCommandManager() );
+	mcu_vrAllCall_func( argBuff, Session::current->vhmMsgManager );
 
 	scene.getSimulationManager()->start();
 
@@ -1419,9 +1409,9 @@ int main( int argc, char **argv )	{
 		auto& theScene = Session::current->scene;
 
 #if LINK_VHMSG_CLIENT
-		if (SmartBody::SBScene::getScene()->getVHMsgManager()->isEnable())
+		if (Session::current->vhmMsgManager.isEnable())
 		{
-			err = SmartBody::SBScene::getScene()->getVHMsgManager()->poll();
+			err = Session::current->vhmMsgManager.poll();
 			if( err == CMD_FAILURE )	{
 				fprintf( stderr, "ttu_poll ERROR\n" );
 			}

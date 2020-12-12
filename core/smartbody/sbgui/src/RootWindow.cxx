@@ -729,7 +729,7 @@ void BaseWindow::ResetScene()
 		mSession->scene.setMediaPath(SMARTBODY_DATADIR "/smartbody/data");
 	}
 
-	mSession->scene.getVHMsgManager()->setEnable(true);
+	mSession->vhmMsgManager.setEnable(true);
 	updateObjectList();
 
 	this->curViewer->registerUIControls();

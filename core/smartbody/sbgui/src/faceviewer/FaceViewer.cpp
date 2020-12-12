@@ -8,6 +8,7 @@
 #include <sbm/lin_win.h>
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBFaceDefinition.h>
+#include <Session.h>
 #include "SBUtilities.h"
 
 FaceViewer::FaceViewer(int x, int y, int w, int h, char* name) : GenericViewer(x, y, w, h), Fl_Double_Window(x, y, w, h, name), SBWindowListener()
@@ -351,7 +352,7 @@ void FaceViewer::ResetCB(Fl_Widget* widget, void* data)
 				}
 				else
 				{
-					SmartBody::SBScene::getScene()->getVHMsgManager()->send2("sbm", message.c_str());
+					Session::current->vhmMsgManager.send2("sbm", message.c_str());
 				}
 			}
 

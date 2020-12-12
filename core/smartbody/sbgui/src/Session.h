@@ -21,6 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SMARTBODY_SESSION_H
 #define SMARTBODY_SESSION_H
 
+#include <sb/SBVHMsgManager.h>
 #include "sb/SBScene.h"
 #include "sbm/SBRenderScene.h"
 #include "sb/SBRenderAssetManager.h"
@@ -31,10 +32,13 @@ struct Session {
 
 	Session();
 
+	~Session();
+
 	SmartBody::SBScene scene;
 	SmartBody::SBRenderAssetManager renderAssetManager;
 	SmartBody::SBRenderScene renderScene;
 	SmartBody::SBDebuggerServer debuggerServer;
+	SmartBody::SBVHMsgManager vhmMsgManager;
 };
 
 
