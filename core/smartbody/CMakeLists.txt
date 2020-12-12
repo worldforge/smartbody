@@ -8,8 +8,10 @@ if (${GOOGLE_PROFILER})
 endif ()
 
 include_directories(
-        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/steerlib/include
-        ${PROJECT_SOURCE_DIR}/external/steersuite-1.3/pprAI/include
+        $<TARGET_PROPERTY:bonebus,INCLUDE_DIRECTORIES>
+        ${PROJECT_SOURCE_DIR}/external/rapidxml
+        $<TARGET_PROPERTY:steerlib,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:pprAI,INCLUDE_DIRECTORIES>
 )
 
 add_subdirectory(util)

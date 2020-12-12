@@ -79,7 +79,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sr/sr_model.h"
 #include "sb/sbm_pawn.hpp"
 #include "sb/SBEvent.h"
-#include <sbm/rapidxml_utils.hpp>
+#include "rapidxml_utils.hpp"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>

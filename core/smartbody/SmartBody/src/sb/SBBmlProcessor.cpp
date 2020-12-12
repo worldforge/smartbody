@@ -26,7 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBCharacter.h"
 #include "SBUtilities.h"
 #include <bml/bml_processor.hpp>
-#include <sbm/rapidxml_utils.hpp>
+#include "rapidxml_utils.hpp"
 #include <bml/BMLObject.h>
 #include <bml/BMLAnimationObject.h>
 #include <bml/BMLBodyObject.h>

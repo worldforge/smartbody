@@ -3,7 +3,7 @@
 
 #include "sb/SBObject.h"
 #include <string>
-#include <sbm/rapidxml_utils.hpp>
+#include "rapidxml_utils.hpp"
 #include <sb/SBBmlProcessor.h>
 
 class BMLObject : public SmartBody::SBObject
@@ -12,7 +12,7 @@ class BMLObject : public SmartBody::SBObject
 		SBAPI BMLObject();
 		SBAPI ~BMLObject();
 
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 
 		SBAPI virtual void parse(rapidxml::xml_node<>* node);
 		SBAPI virtual BMLObject* copy();
@@ -22,8 +22,8 @@ class BMLObject : public SmartBody::SBObject
 		SBAPI std::vector<SmartBody::SBSyncPoint*> getSyncPointObjects();
 		SBAPI std::vector<SmartBody::SBTrigger*> getTriggers();
 
-		SBAPI void start();
-		SBAPI void stop();
+		SBAPI void start() override;
+		SBAPI void stop() override;
 
 	protected:
 		std::string _bml;

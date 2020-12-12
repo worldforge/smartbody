@@ -32,8 +32,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <cctype>
 #include <cstring>
 #include <sbm/sbm_speech.hpp>
-#include <sbm/rapidxml_utils.hpp>
-#include <sbm/rapidxml.hpp>
+#include "rapidxml_utils.hpp"
+#include "rapidxml.hpp"
 #include <bml/bml_speech.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>

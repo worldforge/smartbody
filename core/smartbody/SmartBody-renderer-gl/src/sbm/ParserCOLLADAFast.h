@@ -22,8 +22,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define _PARSER_COLLADAFAST_H_
 
 #include <fstream>
-#include <sbm/rapidxml_utils.hpp>
-#include <sbm/rapidxml.hpp>
+#include "rapidxml_utils.hpp"
+#include "rapidxml.hpp"
 #include "sk/sk_skeleton.h"
 #include "sk/sk_motion.h"
 #include <sr/sr_material.h>

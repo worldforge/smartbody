@@ -29,9 +29,7 @@ endif (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 #We don't provide Python though Conan (currently), since the user must have Python in their system to
 # run Conan anyway. However, we might look into perhaps doing it anyways (as we then could pin the Python version)
 find_package(PythonLibs 3.3 REQUIRED)
-link_directories(${PYTHON_LIBRARY_DIRS})
-include_directories(${PYTHON_INCLUDE_DIRS})
-link_libraries(${PYTHON_LIBRARIES})
+
 
 #Gperftools should only be used when developing locally, so we don't provide this through Conan.
 find_package(Gperftools 2.5)
@@ -88,17 +86,6 @@ set(BUILD_FESTIVAL FALSE)
 # uses the Open Dynamics Engine (ODE) physics library
 #set( SB_NO_ODE_PHYSICS TRUE)
 
-
-if (${SB_NO_VHMSG})
-    add_definitions(-DSB_NO_VHMSG)
-    set(VHMSG_INCLUDE
-            )
-else ()
-    set(VHMSG_INCLUDE
-            lib/vhmsg/vhmsg-c/include
-            )
-endif ()
-
 if (${SB_NO_BONEBUS})
     add_definitions(-DSB_NO_BONEBUS)
     set(BONEBUS_INCLUDE
@@ -108,22 +95,6 @@ else ()
             lib/bonebus/include
             )
 endif ()
-
-if (${SB_NO_PYTHON})
-    add_definitions(-DSB_NO_PYTHON)
-endif ()
-
-if (${SB_NO_ODE_PHYSICS})
-    add_definitions(-DSB_NO_ODE_PHYSICS)
-endif ()
-
-include_directories(
-        ${VHMSG_INCLUDE}
-        ${BONEBUS_INCLUDE}
-        lib/vhcl/include
-        include
-)
-
 
 add_subdirectory(external)
 add_subdirectory(lib)

@@ -10,6 +10,7 @@ target_include_directories(SmartBody-debugger PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:vhmsg,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
         )
 
@@ -17,5 +18,6 @@ target_include_directories(SmartBody-debugger PUBLIC
 target_link_libraries(SmartBody-debugger
         SmartBody
         SmartBody-renderer-gl
+        vhmsg
         sr
         )
