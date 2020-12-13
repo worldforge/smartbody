@@ -1,5 +1,3 @@
-add_definitions("-DdDOUBLE")
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_definitions("-Dfopen64=fopen")
     add_definitions("-Dfseeko64=fseeko")
