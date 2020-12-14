@@ -21,6 +21,7 @@ target_include_directories(SmartBody-bindings-python PUBLIC
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-debugger,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-bonebus,INCLUDE_DIRECTORIES>
         ${PYTHON_INCLUDE_DIRS}
         )
 
@@ -29,6 +30,7 @@ target_link_libraries(SmartBody-bindings-python
         SmartBody
         SmartBody-debugger
         SmartBody-vhmsg
+        SmartBody-bonebus
         ${PYTHON_LIBRARIES}
         )
 

@@ -12,10 +12,12 @@ target_include_directories(SmartBody-control PUBLIC
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-navmesh,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-bonebus,INCLUDE_DIRECTORIES>
         )
 
 
 target_link_libraries(SmartBody-control
+        SmartBody-bonebus
         SmartBody-navmesh
         SmartBody-vhmsg
         SmartBody

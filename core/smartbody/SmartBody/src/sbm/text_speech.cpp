@@ -33,7 +33,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/xercesc_utils.hpp"
 #include "text_speech.h"
 #include <sb/SBScene.h>
-#include <sb/SBBoneBusManager.h>
 #include <sb/SBSpeechManager.h>
 #include <sb/SBSimulationManager.h>
 #include "SBUtilities.h"

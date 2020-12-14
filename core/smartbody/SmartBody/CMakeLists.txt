@@ -27,14 +27,6 @@ else ()
             )
 endif ()
 
-if (${SB_NO_BONEBUS})
-    set(BONEBUS_LIB
-            )
-else ()
-    set(BONEBUS_LIB
-            bonebus
-            )
-endif ()
 
 
 add_custom_command(
@@ -273,7 +265,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBMotion.cpp
         src/sb/SBFaceDefinition.cpp
         src/sb/SBPhysicsManager.cpp
-        src/sb/SBBoneBusManager.cpp
         src/sb/SBCollisionManager.cpp
         src/sb/SBParser.cpp
         src/sb/SBParseNode.cpp
@@ -339,7 +330,6 @@ target_include_directories(SmartBody PUBLIC
 #endif ()
 
 target_link_libraries(SmartBody
-        ${BONEBUS_LIB}
         sr
         vhcl
         steerlib

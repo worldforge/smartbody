@@ -8,6 +8,7 @@ target_include_directories(SmartBody-vhmsg PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:vhmsg,INCLUDE_DIRECTORIES>
         )
 
 

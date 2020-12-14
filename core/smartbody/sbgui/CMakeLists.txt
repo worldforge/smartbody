@@ -16,27 +16,6 @@ if (${BUILD_OGRE})
             #${RTSHADERLIB}
             )
 
-    if (${SB_NO_VHMSG})
-        set(VHMSG_LIB
-                )
-    else ()
-        set(VHMSG_LIB
-                vhmsg
-                ${ACTIVEMQLIB}
-                activemq-cpp
-                )
-    endif ()
-
-    if (${SB_NO_BONEBUS})
-        set(BONEBUS_LIB
-                )
-    else ()
-        set(BONEBUS_LIB
-                bonebus
-                )
-    endif ()
-
-
     set(OGRE_SRCS
             src/EmbeddedOgre.cpp
             src/ExampleFrameListener.cpp
@@ -78,26 +57,6 @@ else ()
     set(MORE_LIBS)
 
 endif ()
-
-
-# osx c++ version >= clang 4.2.0
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-        if (NOT (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.2.0))
-            add_definitions(-Wno-deprecated-writable-strings)
-            add_definitions(-Wno-format-security)
-        endif ()
-    endif ()
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
-        if (NOT (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.7.3))
-            add_definitions(-Wno-format)
-            add_definitions(-Wno-format-security)
-            add_definitions(-Wno-write-strings)
-        endif ()
-    endif ()
-endif ()
-
 
 set(SBM_FLTK_SRC
 
@@ -206,6 +165,7 @@ target_link_libraries(sbgui
         SmartBody-navmesh
         SmartBody-navmesh-bindings-python
         SmartBody-vhmsg
+        SmartBody-bonebus
         jpge
         pinocchio
         ${MORE_LIBS}
@@ -226,6 +186,7 @@ target_include_directories(sbgui PUBLIC
         $<TARGET_PROPERTY:SmartBody-physics-ode,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-control,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-bonebus,INCLUDE_DIRECTORIES>
         )
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")

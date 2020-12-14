@@ -6,9 +6,6 @@
 
 #include "GL/glew.h"
 
-#ifndef SB_NO_VHMSG
-#include "vhmsg-tt.h"
-#endif
 #include <sbm/lin_win.h>
 #include <iostream>
 #include <string>
@@ -17,7 +14,6 @@
 #include "RootWindow.h"
 #include <channelbufferviewer/channelbufferWindow.hpp>
 #include <faceviewer/FaceViewer.h>
-#include <sb/SBBoneBusManager.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -44,16 +40,10 @@
 #include <sb/SBSpeechManager.h>
 #include <sb/SBAssetManager.h>
 #include "SBUtilities.h"
-#ifdef SB_NO_BONEBUS
-#include <sb/SBBoneBusManager.h>
-#endif
 #include "FLTKListener.h"
 #include "sb/SBDebuggerServer.h"
-#include <sb/SBDebuggerClient.h>
 #include <sbm/PPRAISteeringAgent.h>
-#ifndef SB_NO_VHMSG
-#include <vhmsg.h>
-#endif
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef WIN32_LEAN_AND_MEAN
