@@ -280,10 +280,10 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 				SmartBody::util::log("Need to specify an object and a joint to track.");
 				return( CMD_FAILURE );
 			}
-			SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
+			SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 			if (!pawn)
 			{
-				pawn = SmartBody::SBScene::getScene()->getCharacter(name);
+				pawn = Session::current->scene.getCharacter(name);
 				if (!pawn)
 				{
 					SmartBody::util::log("Object %s was not found, cannot track.", name);
@@ -323,27 +323,27 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 			}
 		}
 		else if (strcmp( cam_cmd, "reset" ) == 0 ) {
-			float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+			float scale = 1.f/Session::current->scene.getScale();
 			SrVec camEye = SrVec(0,1.66f,1.85f)*scale;
 			SrVec camCenter = SrVec(0,0.92f,0)*scale;	
 			float znear = 0.01f*scale;
 			float zfar = 100.0f*scale;
 			char camCommand[256];
 			sprintf(camCommand,"camera eye %f %f %f",camEye[0],camEye[1],camEye[2]);				
-			SmartBody::SBScene::getScene()->getCommandManager()->execute((char*)camCommand);
+			Session::current->scene.getCommandManager()->execute((char*)camCommand);
 			sprintf(camCommand,"camera center %f %f %f",camCenter[0],camCenter[1],camCenter[2]);
-			SmartBody::SBScene::getScene()->getCommandManager()->execute((char*)camCommand);			
+			Session::current->scene.getCommandManager()->execute((char*)camCommand);
 			camera->setNearPlane(znear);
 			camera->setFarPlane(zfar);
 
 		}
 		else if (strcmp( cam_cmd, "frame" ) == 0 ) {
 			SrBox sceneBox;
-			const std::vector<std::string>& pawnNames = SmartBody::SBScene::getScene()->getPawnNames();
+			const std::vector<std::string>& pawnNames = Session::current->scene.getPawnNames();
 
 			for (const auto & pawnName : pawnNames)
 			{
-				SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+				SmartBody::SBPawn* pawn = Session::current->scene.getPawn(pawnName);
 				bool visible = pawn->getBoolAttribute("visible");
 					if (!visible)
 						continue;
@@ -351,7 +351,7 @@ int mcu_camera_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 				sceneBox.extend(box);
 			}
 			camera->view_all(sceneBox, camera->getFov());	
-			float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+			float scale = 1.f/Session::current->scene.getScale();
 			float znear = 0.01f*scale;
 			float zfar = 100.0f*scale;
 			camera->setNearPlane(znear);
@@ -460,7 +460,7 @@ int mcu_quit_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )	{
 		for (const auto & characterName : characterNames)
 		{
 			SmartBody::SBCharacter* character = scene->getCharacter(characterName);
-			SmartBody::SBSteerAgent* steerAgent = SmartBody::SBScene::getScene()->getSteerManager()->getSteerAgent(character->getName());
+			SmartBody::SBSteerAgent* steerAgent = Session::current->scene.getSteerManager()->getSteerAgent(character->getName());
 			if (steerAgent)
 			{
 				auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
@@ -475,7 +475,7 @@ int mcu_quit_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )	{
 
 void mcu_register_callbacks( ) {
 	
-	SmartBody::SBCommandManager* cmdMgr = SmartBody::SBScene::getScene()->getCommandManager();
+	SmartBody::SBCommandManager* cmdMgr = Session::current->scene.getCommandManager();
 	
 	// additional commands associated with this viewer
 	cmdMgr->insert( "q",			mcu_quit_func );
@@ -513,7 +513,7 @@ void cleanup( )	{
 #endif
 		*/
 
-		/*BaseWindow* rootWindow = dynamic_cast<BaseWindow*>(SmartBody::SBScene::getScene()->getViewer());
+		/*BaseWindow* rootWindow = dynamic_cast<BaseWindow*>(Session::current->scene.getViewer());
 		if (rootWindow)
 		{
 		   printf("Delete SBGUI Window\n");
@@ -1011,7 +1011,7 @@ int main( int argc, char **argv )	{
 		}
 		else if( s == "-audio" )  // argument equals -audio
 		{
-			 SmartBody::SBScene::getScene()->setBoolAttribute("internalAudio", true);
+			 scene.setBoolAttribute("internalAudio", true);
 		}
 		else if( s == "-lockdt" )  // argument equals -lockdt
 		{
@@ -1038,18 +1038,18 @@ int main( int argc, char **argv )	{
 		{
 			string skScale = s;
 			skScale.erase( 0, 9 );
-			SmartBody::SBScene::getScene()->getAssetManager()->setGlobalSkeletonScale(atof(skScale.c_str()));
+			scene.getAssetManager()->setGlobalSkeletonScale(atof(skScale.c_str()));
 		}
 		else if ( s == "-skmscale=" )
 		{
 			string skmScale = s;
 			skmScale.erase( 0, 10 );
-			SmartBody::SBScene::getScene()->getAssetManager()->setGlobalSkeletonScale(atof(skmScale.c_str()));
+			scene.getAssetManager()->setGlobalSkeletonScale(atof(skmScale.c_str()));
 		}
 		else if (mediapathstr == "-mediapath")
 		{
 			mediaPath = s.substr(11);
-			SmartBody::SBScene::getScene()->setMediaPath(mediaPath);
+			scene.setMediaPath(mediaPath);
 		}
         else if ( s == "-noninteractive")
         {
@@ -1196,8 +1196,8 @@ int main( int argc, char **argv )	{
 	Session::current->renderScene.createCamera("cameraDefault");
 
 
-	SmartBody::SBScene::getScene()->getSpeechManager()->festivalRelay()->initSpeechRelay(festivalLibDir,festivalCacheDir);
-	SmartBody::SBScene::getScene()->getSpeechManager()->cereprocRelay()->initSpeechRelay(cereprocLibDir,festivalCacheDir);
+	scene.getSpeechManager()->festivalRelay()->initSpeechRelay(festivalLibDir,festivalCacheDir);
+	scene.getSpeechManager()->cereprocRelay()->initSpeechRelay(cereprocLibDir,festivalCacheDir);
 
 #if LINK_VHMSG_CLIENT
 	char * vhmsg_server = getenv( "VHMSG_SERVER" );
@@ -1246,20 +1246,20 @@ int main( int argc, char **argv )	{
 	
 	if( !net_host.empty() )
 	{
-		SmartBody::SBScene::getScene()->getBoneBusManager()->setHost(net_host);
-		SmartBody::SBScene::getScene()->getBoneBusManager()->setEnable(true);
+		Session::current->bonebusManager.setHost(net_host);
+		Session::current->bonebusManager.setEnable(true);
 	}
 
 	if( !proc_id.empty() )
 	{
-		SmartBody::SBScene::getScene()->setProcessId( proc_id );
+		scene.setProcessId( proc_id );
 
 		// Using a process id is a sign that we're running in a multiple SBM environment.
 		// So.. ignore BML requests with unknown agents by default
-		SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->set_warn_unknown_agents( false );
+		scene.getBmlProcessor()->getBMLProcessor()->set_warn_unknown_agents( false );
 	}
 
-	if (SmartBody::SBScene::getScene()->getBoolAttribute("internalAudio"))
+	if (scene.getBoolAttribute("internalAudio"))
 	{
 		if ( !AUDIO_Init() )
 		{
@@ -1305,7 +1305,7 @@ int main( int argc, char **argv )	{
 	{
 		std::stringstream strstr;
 		strstr << "path me " << it->c_str();
-		SmartBody::SBScene::getScene()->command( (char *) strstr.str().c_str() );
+		scene.command( (char *) strstr.str().c_str() );
 	}
 
 	for( it = seq_paths.begin();
@@ -1314,7 +1314,7 @@ int main( int argc, char **argv )	{
 	{
 		std::stringstream strstr;
 		strstr << "path seq " << (it->c_str());
-		SmartBody::SBScene::getScene()->command( (char *) strstr.str().c_str() );
+		scene.command( (char *) strstr.str().c_str() );
 	}
 
 	for( it = audio_paths.begin();
@@ -1323,7 +1323,7 @@ int main( int argc, char **argv )	{
 	{
 		std::stringstream strstr;
 		strstr <<  "path audio " << it->c_str();
-		SmartBody::SBScene::getScene()->command( (char *) strstr.str().c_str() );
+		scene.command( (char *) strstr.str().c_str() );
 	}
 
 
@@ -1333,14 +1333,14 @@ int main( int argc, char **argv )	{
 	{
 		std::stringstream strstr;
 		strstr << "scene.addAssetPath('script', '" << it->c_str() << "')";
-		SmartBody::SBScene::getScene()->run( (char *) strstr.str().c_str() );
+		scene.run( (char *) strstr.str().c_str() );
 	}
 
 	// run the specified scripts
 	if( init_seqs.empty() && init_pys.empty())
 	{
 		SmartBody::util::log( "No Python scripts specified. Loading default configuration.\n" );
-		SmartBody::SBScene::getScene()->run("getViewer().show()\ngetCamera().reset()");
+		scene.run("getViewer().show()\ngetCamera().reset()");
 	}
 
 	for( it = init_seqs.begin();
@@ -1348,7 +1348,7 @@ int main( int argc, char **argv )	{
 		 ++it )
 	{
 		string seq_command = "seq " + (*it) + " begin";
-		SmartBody::SBScene::getScene()->command((char *)seq_command.c_str());
+		scene.command((char *)seq_command.c_str());
 	}
 
 
@@ -1359,7 +1359,7 @@ int main( int argc, char **argv )	{
 		std::string cmd = *it;
 		std::stringstream strstr;
 		strstr << "scene.run(\"" << cmd.c_str() << "\")";
-		SmartBody::SBScene::getScene()->run(strstr.str());
+		scene.run(strstr.str());
 		SmartBody::util::log("Run Script = %s", strstr.str().c_str());
 	}
 	SmartBody::util::log("After running init python script");
@@ -1385,12 +1385,12 @@ int main( int argc, char **argv )	{
 	std::string pythonPrompt = "# ";
 	std::string commandPrompt = "> ";
 
-	//SmartBody::SBScene::getScene()->getCommandManager()->execute("viewer open");
+	//scene.getCommandManager()->execute("viewer open");
 
 	SrTimer timer;
 	timer.start();
 	double lastUICheckTime = -1.0;
-	while((SmartBody::SBScene::getScene()->getSimulationManager()->isRunning()))	{
+	while((Session::current->scene.getSimulationManager()->isRunning()))	{
 
 
 //		mcu.update_profiler( SBM_get_real_time() );
@@ -1435,7 +1435,7 @@ int main( int argc, char **argv )	{
 
 				if( strlen( cmd ) )	{
 
-					bool result = SmartBody::SBScene::getScene()->run(cmd);
+					bool result = Session::current->scene.run(cmd);
 
 					if (!result)
 					{

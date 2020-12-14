@@ -39,23 +39,15 @@ SBBoneBusManager::SBBoneBusManager()
 	createStringAttribute("host", "", true, "", 10, false, false, false, "Host where the BoneBus data will be sent. If not set, will use 'localhost'");
 }
 
-SBBoneBusManager::~SBBoneBusManager()
-{
-}
+SBBoneBusManager::~SBBoneBusManager() = default;
 
-#ifndef SB_NO_BONEBUS
 bonebus::BoneBusClient& SBBoneBusManager::getBoneBus()
 {
 	return _boneBus;
 }
-#endif
 
 void SBBoneBusManager::setEnable(bool val)
 {
-#ifdef SB_NO_BONEBUS
-	SmartBody::util::log("Bonebus has been disabled and is not available.");
-	return;
-#else
 	SBService::setEnable(val);
 
 	if (val)
@@ -96,19 +88,14 @@ void SBBoneBusManager::setEnable(bool val)
 	SmartBody::BoolAttribute* enableAttribute = dynamic_cast<SmartBody::BoolAttribute*>(getAttribute("enable"));
 	if (enableAttribute)
 		enableAttribute->setValueFast(val);
-#endif
 }
 
 void SBBoneBusManager::setHost(const std::string& host)
 {
-#ifdef SB_NO_BONEBUS
-	SmartBody::util::log("Bonebus has been disabled and can not set the bonebus host.");
-#else
 	_host = host;
 	SmartBody::StringAttribute* hostAttribute = dynamic_cast<SmartBody::StringAttribute*>(getAttribute("host"));
 	if (hostAttribute)
 		hostAttribute->setValueFast(host);
-#endif
 }
 
 const std::string& SBBoneBusManager::getHost()
@@ -122,16 +109,12 @@ void SBBoneBusManager::start()
 
 void SBBoneBusManager::beforeUpdate(double time)
 {
-#ifdef SB_NO_BONEBUS
-
-#else
 	// process commands received over BoneBus protocol
 	std::vector<std::string> commands = _boneBus.GetCommand();
-	for ( size_t i = 0; i < commands.size(); i++ )
+	for (auto & command : commands)
 	{
-		SmartBody::SBScene::getScene()->command( (char *)commands[i].c_str() );
+		SmartBody::SBScene::getScene()->command( (char *)command.c_str() );
 	}
-#endif
 }
 
 void SBBoneBusManager::update(double time)
@@ -140,126 +123,87 @@ void SBBoneBusManager::update(double time)
 
 void SBBoneBusManager::afterUpdate(double time)
 {
-#ifndef SB_NO_BONEBUS
-	bool isClosingBoneBus = false;
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	const std::vector<std::string>& pawns = scene->getPawnNames();
-	for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-		pawnIter != pawns.end();
-		pawnIter++)
-	{
-		SBPawn* pawn = scene->getPawn((*pawnIter));
-		SBCharacter* character = scene->getCharacter(pawn->getName().c_str() );
-		if (!character)
-		{
+	bool isClosingBoneBus = false;
+	for (auto& entry: _entries) {
 
-			if (pawn->bonebusCharacter && pawn->bonebusCharacter->GetNumErrors() > 3)
-			{
-				// connection is bad, remove the bonebus character 
-				SmartBody::util::log("BoneBus cannot connect to server. Removing pawn %s", pawn->getName().c_str());
-				this->getBoneBus().DeleteCharacter(pawn->bonebusCharacter);
-				character->bonebusCharacter = nullptr;
-				isClosingBoneBus = true;
-				if (getBoneBus().GetNumCharacters() == 0)
+		auto character = entry.second.character;
+		auto bonebusCharacter = entry.second.bonebusCharacter.get();
+
+
+		SkChannelArray& channels = character->getSkeleton()->channels();
+		MeFrameData& frameData = character->ct_tree_p->getLastFrame();
+
+		int i = 0;
+		for (int c = character->viseme_channel_start_pos; c < character->viseme_channel_end_pos; c++, i++) {
+			SkChannel& chan = channels[c];
+			int buffIndex = character->ct_tree_p->toBufferIndex(c);
+
+			if (buffIndex > -1) {
+				float value = frameData.buffer()[buffIndex];
+				if (true) //value != character->viseme_history_arr[ i ] )
 				{
-					getBoneBus().CloseConnection();
+
+					bonebusCharacter->SetViseme(channels.name(c).c_str(), value, 0);
+
+					character->viseme_history_arr[i] = value;
 				}
 			}
 		}
-		else
-		{
-			if( character->bonebusCharacter )
-			{
-				SkChannelArray& channels = character->getSkeleton()->channels();
-				MeFrameData& frameData = character->ct_tree_p->getLastFrame();
 
-				int i = 0;
-				for( int c = character->viseme_channel_start_pos; c < character->viseme_channel_end_pos; c++, i++ )
-				{
-					SkChannel& chan = channels[c];
-					int buffIndex = character->ct_tree_p->toBufferIndex(c);
 
-					if( buffIndex > -1 )	
-					{
-						float value = frameData.buffer()[ buffIndex ];
-						if( true ) //value != character->viseme_history_arr[ i ] )
-						{
-							if( character->bonebusCharacter )
-							{
-								character->bonebusCharacter->SetViseme( channels.name(c).c_str(), value, 0 );
-							}
-							character->viseme_history_arr[ i ] = value;
-						}
-					}
-				}
+		if (bonebusCharacter->GetNumErrors() > 3) {
+			// connection is bad, remove the bonebus character
+			isClosingBoneBus = true;
+			SmartBody::util::log("BoneBus cannot connect to server after visemes sent. Removing all characters.");
+		}
+
+		if (character->getSkeleton()) {
+			NetworkSendSkeleton(bonebusCharacter, character->getSkeleton().get(), &scene->getGeneralParameters());
+
+			const SkJoint* joint = character->get_world_offset_joint();
+
+			const SkJointPos* pos = joint->const_pos();
+			float x = pos->value(SkJointPos::X);
+			float y = pos->value(SkJointPos::Y);
+			float z = pos->value(SkJointPos::Z);
+
+			SkJoint::RotType rot_type = joint->rot_type();
+			if (rot_type != SkJoint::TypeQuat) {
+				//strstr << "ERROR: Unsupported world_offset rotation type: " << rot_type << " (Expected TypeQuat, "<<SkJoint::TypeQuat<<")"<<endl;
 			}
-			
-			if (character->bonebusCharacter && 
-				character->bonebusCharacter->GetNumErrors() > 3)
-			{
+
+			// const_cast because the SrQuat does validation (no const version of value())
+			const SrQuat& q = ((SkJoint*) joint)->quat()->value();
+
+			bonebusCharacter->SetPosition(x, y, z, scene->getSimulationManager()->getTime());
+			bonebusCharacter->SetRotation((float) q.w, (float) q.x, (float) q.y, (float) q.z, scene->getSimulationManager()->getTime());
+
+			if (bonebusCharacter->GetNumErrors() > 3) {
 				// connection is bad, remove the bonebus character
 				isClosingBoneBus = true;
-				SmartBody::util::log("BoneBus cannot connect to server after visemes sent. Removing all characters.");
+				SmartBody::util::log("BoneBus cannot connect to server. Removing all characters");
 			}
-
-			if ( character->getSkeleton() && 
-				 character->bonebusCharacter)
-			{
-				NetworkSendSkeleton( character->bonebusCharacter, character->getSkeleton().get(), &scene->getGeneralParameters() );
-
-				const SkJoint * joint = character->get_world_offset_joint();
-
-				const SkJointPos * pos = joint->const_pos();
-				float x = pos->value( SkJointPos::X );
-				float y = pos->value( SkJointPos::Y );
-				float z = pos->value( SkJointPos::Z );
-
-				SkJoint::RotType rot_type = joint->rot_type();
-				if ( rot_type != SkJoint::TypeQuat ) {
-					//strstr << "ERROR: Unsupported world_offset rotation type: " << rot_type << " (Expected TypeQuat, "<<SkJoint::TypeQuat<<")"<<endl;
-				}
-
-				// const_cast because the SrQuat does validation (no const version of value())
-				const SrQuat & q = ((SkJoint *)joint)->quat()->value();
-
-				character->bonebusCharacter->SetPosition( x, y, z, scene->getSimulationManager()->getTime() );
-				character->bonebusCharacter->SetRotation( (float)q.w, (float)q.x, (float)q.y, (float)q.z, scene->getSimulationManager()->getTime() );
-
-				if (character->bonebusCharacter->GetNumErrors() > 3)
-				{
-					// connection is bad, remove the bonebus character 
-					isClosingBoneBus = true;
-					SmartBody::util::log("BoneBus cannot connect to server. Removing all characters");
-				}
-			}
-			else if (!isClosingBoneBus && !character->bonebusCharacter && getBoneBus().IsOpen())
-			{
-				// bonebus was connected after character creation, create it now
-				character->bonebusCharacter = getBoneBus().CreateCharacter( character->getName().c_str(), character->getClassType().c_str(), true );
-			}
-
-
 		}
+//		else if (!isClosingBoneBus && !character->bonebusCharacter && getBoneBus().IsOpen())
+//		{
+//			// bonebus was connected after character creation, create it now
+//			character->bonebusCharacter = getBoneBus().CreateCharacter( character->getName().c_str(), character->getClassType().c_str(), true );
+//		}
+
 	}
+
 
 	if (isClosingBoneBus)
 	{
-		const std::vector<std::string>& pawnNames = scene->getPawnNames();
-		for (std::vector<std::string>::const_iterator iter = pawnNames.begin();
-			iter != pawnNames.end();
-			iter++)
-		{
-			SBPawn* pawn = scene->getPawn(*iter);
-			if (pawn->bonebusCharacter)
-			{
-				getBoneBus().DeleteCharacter(pawn->bonebusCharacter);
-				pawn->bonebusCharacter = nullptr;
-			}
+		for (auto& entry: _entries) {
+			auto bonebusCharacter = entry.second.bonebusCharacter.get();
+			getBoneBus().DeleteCharacter(bonebusCharacter);
 		}
+		_entries.clear();
 
 		getBoneBus().CloseConnection();
 	}
-#endif
 
 }
 
@@ -269,14 +213,10 @@ void SBBoneBusManager::stop()
 
 void SBBoneBusManager::notify(SBSubject* subject)
 {
-#ifdef SB_NO_BONEBUS
-	return;
-
-#else
 
 	SBService::notify(subject);
 
-	SmartBody::SBAttribute* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
 	if (!attribute)
 	{
 		return;
@@ -294,11 +234,9 @@ void SBBoneBusManager::notify(SBSubject* subject)
 		setHost(getStringAttribute("host"));
 		return;
 	}
-#endif
 
 }
 
-#ifndef SB_NO_BONEBUS
 void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * character, SmartBody::SBSkeleton* skeleton, GeneralParamMap * param_map )
 {
 
@@ -360,7 +298,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 
 	character->EndSendBonePositions();
 
-	if (otherJoints.size() > 0)
+	if (!otherJoints.empty())
 	{
 		character->StartSendGeneralParameters();
 		for (size_t i = 0; i < otherJoints.size(); i++)
@@ -419,7 +357,37 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 */
 	
 }
-#endif
+
+void SBBoneBusManager::onCharacterCreate(SBCharacter* character) {
+	if (_enabled) {
+		std::string classType = character->getClassType().empty() ? "<unknown>" : character->getClassType(); // make sure that the class type has some data. Empty string will cause problems with parsing.
+
+		std::unique_ptr<bonebus::BoneBusCharacter> bonebusCharacter(getBoneBus().CreateCharacter( getName().c_str(), classType.c_str(), true ));
+		if (bonebusCharacter) {
+
+			if (character->param_map) {
+				int index = 0;
+				auto pos = character->param_map->begin();
+				for ( ; pos != character->param_map->end(); pos++ )
+				{
+					bonebusCharacter->SetParams( pos->first.c_str(), index );
+				}
+
+			}
+
+			_entries.emplace(character->getName(), BoneBusEntry{std::move(bonebusCharacter)});
+		}
+	}
+}
+
+void SBBoneBusManager::onCharacterDelete(SBCharacter* character) {
+	auto I = _entries.find(character->getName());
+	if (I != _entries.end()) {
+		getBoneBus().DeleteCharacter(I->second.bonebusCharacter.get());
+		_entries.erase(I);
+	}
+}
+
 
 
 }

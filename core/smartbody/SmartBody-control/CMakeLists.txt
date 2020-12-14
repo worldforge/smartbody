@@ -4,6 +4,7 @@ add_library(
         src/sbm/ControlCommands.cpp
         src/sbm/MiscCommands.cpp
         src/sbm/mcontrol_callbacks.cpp
+        src/sbm/text_speech_commands.cpp
 )
 
 target_include_directories(SmartBody-control PUBLIC

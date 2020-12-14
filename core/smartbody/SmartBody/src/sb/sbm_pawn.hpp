@@ -27,9 +27,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBColObject.h>
 #include <sb/SBPhysicsSim.h>
 #include <sb/SBObject.h>
-#ifndef SB_NO_BONEBUS
-#include "bonebus.h"
-#endif
 #include "sr/sr_shared_ptr.hpp"
 #include <map>
 
@@ -67,22 +64,11 @@ protected:
 
 public:  // TODO - properly encapsulate / privatize the following
 	boost::intrusive_ptr<SkSkeleton>	_skeleton;  // MAY BE nullptr!!!
-//	SkScene*		scene_p;	 // Skeleton Scene and Rigid Mesh
-//	DeformableMeshInstance* dMeshInstance_p;
-//	DeformableMeshInstance* dStaticMeshInstance_p;
 	SrSnGroup* blendMeshGroup;
 	std::string _classType;
 	
-	
-	//		float scale = 0.5f;
-//		SteerLib::BoxObstacle* box = new SteerLib::BoxObstacle(x / 100.0f - scale, x / 100.0f + scale, y / 100.0f - scale, y / 100.0f + scale, z / 100.0f - scale, z / 100.0f + scale);
-//		mcuCBHandle::singleton().steerEngine->_engine->addObstacle(box);
-
 	// Temporarily, until there is a unified multi-skeleton controller tree
 	MeControllerTreeRoot	*ct_tree_p;
-#ifndef SB_NO_BONEBUS
-	bonebus::BoneBusCharacter * bonebusCharacter;
-#endif
 	SBTransform                globalTransform;
 
 public:	

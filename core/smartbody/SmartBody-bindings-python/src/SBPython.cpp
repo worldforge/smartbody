@@ -448,7 +448,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("stop", &SBPhysicsManager::stop, "Stop the physics simulation.(not implemented yet)")
 		;
 
-	boost::python::class_<SBBoneBusManager, boost::python::bases<SBService> >("SBBoneBusManager")
+	boost::python::class_<SBBoneBusManager, boost::python::bases<SBService>, boost::noncopyable >("SBBoneBusManager", boost::python::no_init)
 		;
 
 	boost::python::class_<SBSteerAgent>("SBSteerAgent")
@@ -460,7 +460,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		;
 
 
-	boost::python::class_<SBPhonemeManager, boost::python::bases<SBService> >("SBPhonemeManager")
+	boost::python::class_<SBPhonemeManager, boost::python::bases<SBService>, boost::noncopyable >("SBPhonemeManager", boost::python::no_init)
 		.def("createDiphone", &SBPhonemeManager::createDiphone, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Create a diphone.")
 		.def("getDiphones", &SBPhonemeManager::getDiphones, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Get diphones given diphone set name.")
 		.def("getDiphone", &SBPhonemeManager::getDiphone, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Get diphone given from phoneme, to phoneme and diphone set name.")

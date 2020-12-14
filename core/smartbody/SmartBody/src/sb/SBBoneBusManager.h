@@ -23,10 +23,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sb/SBService.h>
-#ifndef SB_NO_BONEBUS
 #include "bonebus.h"
-#endif
 #include <sbm/general_param_setting.h>
+#include <memory>
 
 namespace SmartBody {
 
@@ -35,29 +34,36 @@ namespace SmartBody {
 class SBBoneBusManager : public SmartBody::SBService
 {
 	public:
+
+	struct BoneBusEntry {
+		std::unique_ptr<bonebus::BoneBusCharacter> bonebusCharacter;
+		SBCharacter* character;
+	};
+
 		SBAPI SBBoneBusManager();
 		SBAPI ~SBBoneBusManager();
 
-		SBAPI virtual void setEnable(bool val);
+		SBAPI void setEnable(bool val) override;
 		SBAPI void setHost(const std::string& host);
 		SBAPI const std::string& getHost();
 
-		SBAPI virtual void start();
-		SBAPI virtual void beforeUpdate(double time);
-		SBAPI virtual void update(double time);
-		SBAPI virtual void afterUpdate(double time);
-		SBAPI virtual void stop();
-#ifndef SB_NO_BONEBUS
+		SBAPI void start() override;
+		SBAPI void beforeUpdate(double time) override;
+		SBAPI void update(double time) override;
+		SBAPI void afterUpdate(double time) override;
+		SBAPI void stop() override;
 		SBAPI bonebus::BoneBusClient& getBoneBus();
 		SBAPI void NetworkSendSkeleton( bonebus::BoneBusCharacter * character, SmartBody::SBSkeleton* skeleton, GeneralParamMap * param_map );
-#endif
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
+
+		void onCharacterCreate(SBCharacter *character) override;
+		void onCharacterDelete(SBCharacter *character) override;
 
 	private:
-#ifndef SB_NO_BONEBUS
 		bonebus::BoneBusClient _boneBus;
-#endif
 		std::string _host;
+
+		std::map<std::string, BoneBusEntry> _entries;
 
 };
 

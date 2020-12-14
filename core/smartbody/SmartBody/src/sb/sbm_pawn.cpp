@@ -26,7 +26,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <sb/SBSceneListener.h>
-#include <sb/SBBoneBusManager.h>
 #include <sb/SBPhysicsManager.h>
 #include <sb/SBCollisionManager.h>
 #include "SBUtilities.h"
@@ -97,11 +96,8 @@ wo_cache_timestamp( -std::numeric_limits<float>::max() )
 
 void SbmPawn::initData()
 {
-#ifndef SB_NO_BONEBUS
-	bonebusCharacter = nullptr;
-#endif
 	_skeleton = new SmartBody::SBSkeleton();
-		delete ct_tree_p;
+	delete ct_tree_p;
 	ct_tree_p = MeControllerTreeRoot::create();
 	ct_tree_p->ref();
 	world_offset_writer_p = new MeCtChannelWriter();

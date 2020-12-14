@@ -68,11 +68,12 @@ Session::Session()
 	scene.setVHMsgProvider(&vhmMsgManager);
 
 	scene.getServiceManager()->addService(&vhmMsgManager);
+	scene.getServiceManager()->addService(&bonebusManager);
 
 	SmartBody::installDebuggerCommand(*scene.getCommandManager(), vhmMsgManager);
 	SmartBody::PythonInterface::renderScene = &renderScene;
 
-	registerControlCommands(*scene.getCommandManager(), &vhmMsgManager);
+	registerControlCommands(*scene.getCommandManager(), &vhmMsgManager, &bonebusManager);
 
 }
 
@@ -80,5 +81,6 @@ Session::~Session() {
 	if (vhmMsgManager.isEnable() && vhmMsgManager.isConnected())
 		vhmMsgManager.send( "vrProcEnd sbm" );
 
+	scene.getServiceManager()->removeService(bonebusManager.getName());
 	scene.getServiceManager()->removeService(vhmMsgManager.getName());
 }

@@ -484,18 +484,7 @@ char* remote_speech::getSpeechStopCommand( RequestId requestId, SbmCharacter* ch
 	string characterName;
 	if ( character )
 	{
-#ifndef SB_NO_BONEBUS
-		if (character->bonebusCharacter )
-		{
-			characterName = character->bonebusCharacter->m_name;
-		}
-		else
-		{
-			characterName = character->getName();
-		}
-#else
 		characterName = character->getName();
-#endif
 	}
 
 	string cmd = SmartBody::util::format( "send StopSound \"%s\" %s", soundFile.c_str(), characterName.c_str() );

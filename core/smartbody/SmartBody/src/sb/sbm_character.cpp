@@ -51,7 +51,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include <sb/SBJoint.h>
-#include <sb/SBBoneBusManager.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBSteerManager.h>
 #include <sb/SBSimulationManager.h>
@@ -737,9 +736,6 @@ void SbmCharacter::initData()
 	motionplayer_ct = nullptr;
 	_soft_eyes_enabled = ENABLE_EYELID_CORRECTIVE_CT;
 	_height = 1.0f;
-#ifndef SB_NO_BONEBUS
-	bonebusCharacter = nullptr;
-#endif
 
 	param_map = new std::map<std::string, GeneralParam*>();
 
@@ -992,31 +988,11 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
-#ifndef SB_NO_BONEBUS
-	if (scene->getBoneBusManager()->isEnable())
-		bonebusCharacter = scene->getBoneBusManager()->getBoneBus().CreateCharacter( getName().c_str(), classType, true );
-#endif
-
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-	for (size_t i = 0; i < listeners.size(); i++)
+	for (auto & listener : listeners)
 	{
-		listeners[i]->OnCharacterCreate( getName(), classType );
+		listener->OnCharacterCreate( getName(), classType );
 	}
-
-	// This needs to be tested
-#ifndef SB_NO_BONEBUS
-	if( bonebusCharacter )
-	{
-		int index = 0;
-		GeneralParamMap::const_iterator pos = param_map->begin();
-		for ( ; pos != param_map->end(); pos++ )
-		{
-
-			bonebusCharacter->SetParams( pos->first.c_str(), index );
-		}
-	}
-#endif
-
 
 	//buildJointPhyObjs();
 

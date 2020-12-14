@@ -57,7 +57,6 @@ class text_speech: public SmartBody::SpeechInterface {
 		std::vector<std::string> getEmotionNames(SmartBody::RequestId requestId, SbmCharacter* character = nullptr);
 
 		void startSchedule( SmartBody::RequestId requestId );
-		static int text_speech_func( srArgBuffer& args, SmartBody::SBCommandManager* manager);
 	private:
 		std::vector<SmartBody::VisemeData *>* extractVisemes(DOMNode* node, std::vector<SmartBody::VisemeData*>* visemes, const SbmCharacter* character);
 		std::string forPlaysound;

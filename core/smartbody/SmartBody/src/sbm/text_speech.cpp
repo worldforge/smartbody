@@ -50,8 +50,7 @@ text_speech::text_speech()
 :	msgNumber( 0 )
 {}
 
-text_speech::~text_speech()
-{}
+text_speech::~text_speech() = default;
 
 /**
  *  Requests audio for a speech char[] text by agentName.
@@ -297,21 +296,6 @@ void text_speech::startSchedule( SmartBody::RequestId requestId ) {
 	}
 }
 
-int text_speech::text_speech_func( srArgBuffer& args, SmartBody::SBCommandManager* manager )
-{
-	if (args.calc_num_tokens() == 1) {
-		int id = args.read_int();
-		SmartBody::SBScene::getScene()->getSpeechManager()->speech_text()->startSchedule(id);
-	} else {
-#ifndef SB_NO_BONEBUS
-		int msgNumber = args.read_int();
-		char* agentName = args.read_token();
-		char* text = args.read_remainder_raw();
-		SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().SendSpeakText(msgNumber, agentName, text);
-#endif
-	}
-	return CMD_SUCCESS;
-}
 
 char* text_speech::getSpeechAudioFilename( RequestId requestId ){
 	return nullptr;

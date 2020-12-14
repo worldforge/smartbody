@@ -6,10 +6,6 @@ endif ()
 
 
 set(SB_EXPORTS 1)
-set(SMARTBODY_DLL_EXPORTS 1)
-set(SMARTBODY_C_DLL_EXPORTS 1)
-set(_COMPILING_STEERLIB 1)
-
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     find_library(COREAUDIO_LIBRARY CoreAudio)
@@ -18,61 +14,17 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif ()
 
 
-if (${BUILD_FESTIVAL})
-    find_library(FESTIVAL Festival ../../../lib/festival/festival/src/lib)
-    find_library(ESTBASE estbase ../../../lib/festival/speech_tools/lib)
-    find_library(ESTSTRING eststring ../../..//lib/festival/speech_tools/lib)
-    find_library(ESTOOLS estools ../../../lib/festival/speech_tools/lib)
-endif ()
-
-
-# osx c++ version >= clang 4.2.0
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-        if (NOT (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.2.0))
-            add_definitions(-Wno-dangling-else)
-            add_definitions(-Wno-deprecated-writable-strings)
-            add_definitions(-Wno-format)
-            add_definitions(-Wno-implicit-function-declaration)
-            add_definitions(-Wno-logical-op-parentheses)
-            add_definitions(-Wno-parentheses-equality)
-            add_definitions(-Wno-switch)
-            add_definitions(-Wno-tautological-compare)
-            add_definitions(-Wno-unused-value)
-        endif ()
-    endif ()
-endif ()
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    if (${BUILD_FESTIVAL})
-        set(FESTIVAL_LIBS
-                ${FESTIVAL}
-                ${ESTBASE}
-                ${ESTSTRING}
-                ${ESTOOLS}
-                )
-
-
-    else ()
-        set(FESTIVAL_LIBS
-                )
-    endif ()
     set(MORE_LIBS
             ${COREAUDIO_LIBRARY}
             ${AUDIOUNIT_LIBRARY}
             ${CORESERVICES_LIBRARY}
             )
 else ()
-    if (DEFINED ${FLASCC_ROOT})
-        set(MORE_LIBS
-                rt
-                )
 
-    else ()
-        set(MORE_LIBS
-                rt
-                )
-    endif ()
+    set(MORE_LIBS
+            rt
+            )
 endif ()
 
 if (${SB_NO_BONEBUS})
@@ -344,7 +296,7 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBAssetManager.cpp
         src/sb/SBAssetStore.cpp
         src/sb/SBSpeechManager.cpp
-       # src/sb/SBVHMsgManager.cpp
+        # src/sb/SBVHMsgManager.cpp
         src/sb/SBCommandManager.cpp
 
         src/sb/SBAssetHandler.cpp

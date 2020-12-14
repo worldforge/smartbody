@@ -149,21 +149,21 @@ protected:
 public:
 	//  Methods
 	SbmCharacter();
-	SbmCharacter( const char * char_name );
+	explicit SbmCharacter( const char * char_name );
 	SbmCharacter( const char* character_name, std::string type);
-	virtual ~SbmCharacter();
+	~SbmCharacter() override;
 	
 	int init( SkSkeleton* skeleton_p,
 			  SmartBody::SBFaceDefinition* faceDefinition,
 			  std::map< std::string, GeneralParam * >* param_map,
 			  const char* classType);
 
-	virtual int setup();
+	int setup() override;
 
 	virtual void createStandardControllers();
 	virtual void createMinimalControllers();
 	//* Overrides SbmPawn::prune_controller_tree()
-	virtual int prune_controller_tree();
+	int prune_controller_tree() override;
 
 	void addFootStep(int iLeg, SrVec& footPos, bool Update = false);
 	SBAPI std::vector<SrVec>& getFootSteps(int ileg);
@@ -301,34 +301,34 @@ public:
 		
 	// viseme curve related functions
 	void set_viseme_curve_mode( bool mode )		{ use_viseme_curve = mode; }
-	bool get_viseme_curve_mode( void ) const	{ return( use_viseme_curve ); }
+	bool get_viseme_curve_mode( ) const	{ return( use_viseme_curve ); }
 	void set_viseme_time_delay( float timeDelay ) { viseme_time_offset = timeDelay; }
-	float get_viseme_time_delay( void ) const	{ return( viseme_time_offset ); }
+	float get_viseme_time_delay( ) const	{ return( viseme_time_offset ); }
 	void set_viseme_sound_delay( float timeDelay ) { viseme_sound_offset = timeDelay; }
-	float get_viseme_sound_delay( void ) const	{ return( viseme_sound_offset ); }
+	float get_viseme_sound_delay( ) const	{ return( viseme_sound_offset ); }
 	void set_viseme_magnitude( float magnitude ) { viseme_magnitude = magnitude; }
-	float get_viseme_magnitude( void ) const		{ return( viseme_magnitude ); }
+	float get_viseme_magnitude( ) const		{ return( viseme_magnitude ); }
 
 	void setSoftEyes( bool val );
-	bool isSoftEyes( void ) const { return _soft_eyes_enabled; }
-	bool isVisemePlateau( void ) const { return _visemePlateau; }
+	bool isSoftEyes( ) const { return _soft_eyes_enabled; }
+	bool isVisemePlateau( ) const { return _visemePlateau; }
 	void setVisemePlateau( bool val ) { _visemePlateau = val; }
-	bool isDiphone( void ) const { return _diphone; }
+	bool isDiphone( ) const { return _diphone; }
 	void setDiphone( bool val ) { _diphone = val; }
-	float getDiphoneScale( void ) const { return _diphoneScale; }
+	float getDiphoneScale( ) const { return _diphoneScale; }
 	void setDiphoneScale( float val ) { _diphoneScale = val; }
-	bool isDiphoneSplineCurve( void ) const { return _diphoneSplineCurve; }
+	bool isDiphoneSplineCurve( ) const { return _diphoneSplineCurve; }
 	void setDiphoneSplineCurve( bool val ) { _diphoneSplineCurve = val; }
-	float getDiphoneSmoothWindow( void ) const { return _diphoneSmoothWindow; }
+	float getDiphoneSmoothWindow( ) const { return _diphoneSmoothWindow; }
 	void setDiphoneSmoothWindow( float val ) { _diphoneSmoothWindow = val; }
-	float getDiphoneSpeedLimit( void ) const { return _diphoneSpeedLimit; }
+	float getDiphoneSpeedLimit( ) const { return _diphoneSpeedLimit; }
 	void setDiphoneSpeedLimit( float val ) {_diphoneSpeedLimit = val; }
 
 	SBAPI SrVec getFacingDirection() ;
 
 	void setMinVisemeTime(float minTime);
 	float getMinVisemeTime() const;
-	void notify(SBSubject* subject);
+	void notify(SBSubject* subject) override;
 
 	virtual SmartBody::SBFaceDefinition* getFaceDefinition();
 	virtual void setFaceDefinition(SmartBody::SBFaceDefinition* face);
@@ -363,14 +363,14 @@ protected:
 	 *
 	 *   SbmPawn inserts world_offset joint above the existing root.
 	 */
-	virtual int init_skeleton();
+	int init_skeleton() override;
 
 	/*!
 	 *  Adds a single float channel, bounded by lower and upper limits.
 	 */
 
 	// NOTE: called for shader params, bound ( 0, 2 )
-	SkJoint* add_bounded_float_channel( const std::string & name, float lower, float upper, const int wo_index );
+	SkJoint* add_bounded_float_channel( const std::string & name, float lower, float upper, int wo_index );
 
 
 	/*!
@@ -379,7 +379,7 @@ protected:
 	 */
 
 	// NOTE: called for A-units and visemes; bound ( 0, 1 )
-	void add_face_channel( const std::string& name, const int wo_index );
+	void add_face_channel( const std::string& name, int wo_index );
 
 	
 	void writeSkeletonHierarchyRecurse(SkJoint* joint, std::ofstream& ostream, double scale, int indentLevel);

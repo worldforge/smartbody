@@ -59,7 +59,6 @@ class SBSteerManager;
 class SBRealtimeManager;
 class SBServiceManager;
 class SBPhysicsManager;
-class SBBoneBusManager;
 class SBGestureMapManager;
 class SBJointMapManager;
 class SBCollisionManager;
@@ -181,7 +180,6 @@ class SBScene : public SBObject
 		SBAPI SBRealtimeManager* getRealtimeManager();
 		SBAPI SBServiceManager* getServiceManager();
 		SBAPI SBPhysicsManager* getPhysicsManager();
-		SBAPI SBBoneBusManager* getBoneBusManager();
 		SBAPI SBGestureMapManager* getGestureMapManager();
 		SBAPI SBJointMapManager* getJointMapManager();
 		SBAPI SBCollisionManager* getCollisionManager();
@@ -289,7 +287,6 @@ class SBScene : public SBObject
 		SBSteerManager* _steerManager;
 		SBRealtimeManager* _realtimeManager;
 		SBServiceManager* _serviceManager;
-		SBBoneBusManager* _boneBusManager;
 		SBGestureMapManager* _gestureMapManager;
 		SBJointMapManager* _jointMapManager;
 		SBPhonemeManager* _phonemeManager;

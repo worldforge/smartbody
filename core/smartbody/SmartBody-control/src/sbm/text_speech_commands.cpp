@@ -1,5 +1,6 @@
 /*************************************************************
 Copyright (C) 2020 Erik Ogenvik <erik@ogenvik.org>
+Copyright (C) 2017 University of Southern California
 
 This file is part of Smartbody.
 
@@ -18,30 +19,25 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#ifndef SMARTBODY_SESSION_H
-#define SMARTBODY_SESSION_H
+#include "text_speech_commands.h"
 
-#include <sb/SBVHMsgManager.h>
 #include "sb/SBScene.h"
-#include "sbm/SBRenderScene.h"
-#include "sb/SBRenderAssetManager.h"
-#include "sb/SBDebuggerServer.h"
+#include "sb/SBCommandManager.h"
 #include "sb/SBBoneBusManager.h"
+#include "sb/SBSpeechManager.h"
+#include "sbm/text_speech.h"
 
-struct Session {
-	static Session* current;
-
-	Session();
-
-	~Session();
-
-	SmartBody::SBScene scene;
-	SmartBody::SBRenderAssetManager renderAssetManager;
-	SmartBody::SBRenderScene renderScene;
-	SmartBody::SBDebuggerServer debuggerServer;
-	SmartBody::SBVHMsgManager vhmMsgManager;
-	SmartBody::SBBoneBusManager bonebusManager;
-};
-
-
-#endif //SMARTBODY_SESSION_H
+int text_speech_commands::text_speech_func(srArgBuffer& args, SmartBody::SBBoneBusManager* boneBusManager) {
+	if (args.calc_num_tokens() == 1) {
+		int id = args.read_int();
+		SmartBody::SBScene::getScene()->getSpeechManager()->speech_text()->startSchedule(id);
+	} else {
+		if (boneBusManager) {
+			int msgNumber = args.read_int();
+			char* agentName = args.read_token();
+			char* text = args.read_remainder_raw();
+			boneBusManager->getBoneBus().SendSpeakText(msgNumber, agentName, text);
+		}
+	}
+	return CMD_SUCCESS;
+}

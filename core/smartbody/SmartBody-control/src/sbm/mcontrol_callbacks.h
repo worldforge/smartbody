@@ -27,6 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 	class SBVHMsgManager;
+	class SBBoneBusManager;
 }
 
 int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
@@ -48,16 +49,16 @@ int mcu_character_breathing(const char* char_name, srArgBuffer& args, SmartBody:
 
 int mcu_controller_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 
-int mcu_net_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-int mcu_net_reset( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-int mcu_net_check( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int mcu_net_func( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager );
+int mcu_net_reset( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager );
+int mcu_net_check( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager );
 
-int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
-int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebusManager );
+int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebusManager );
 
-int mcu_uscriptexec_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int mcu_uscriptexec_func( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager );
 
-int mcu_commapi_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int mcu_commapi_func( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager );
 
 int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager );
 SBAPI int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager );

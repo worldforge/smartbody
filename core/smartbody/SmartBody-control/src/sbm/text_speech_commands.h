@@ -1,5 +1,6 @@
 /*************************************************************
 Copyright (C) 2020 Erik Ogenvik <erik@ogenvik.org>
+Copyright (C) 2017 University of Southern California
 
 This file is part of Smartbody.
 
@@ -18,30 +19,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#ifndef SMARTBODY_SESSION_H
-#define SMARTBODY_SESSION_H
+#ifndef SMARTBODY_TEXT_SPEECH_COMMANDS_H
+#define SMARTBODY_TEXT_SPEECH_COMMANDS_H
 
-#include <sb/SBVHMsgManager.h>
-#include "sb/SBScene.h"
-#include "sbm/SBRenderScene.h"
-#include "sb/SBRenderAssetManager.h"
-#include "sb/SBDebuggerServer.h"
-#include "sb/SBBoneBusManager.h"
+#include "sbm/sr_arg_buff.h"
 
-struct Session {
-	static Session* current;
+namespace SmartBody {
+class SBBoneBusManager;
+}
 
-	Session();
-
-	~Session();
-
-	SmartBody::SBScene scene;
-	SmartBody::SBRenderAssetManager renderAssetManager;
-	SmartBody::SBRenderScene renderScene;
-	SmartBody::SBDebuggerServer debuggerServer;
-	SmartBody::SBVHMsgManager vhmMsgManager;
-	SmartBody::SBBoneBusManager bonebusManager;
+struct text_speech_commands {
+	static int text_speech_func(srArgBuffer& args, SmartBody::SBBoneBusManager* boneBusManager);
 };
 
 
-#endif //SMARTBODY_SESSION_H
+#endif //SMARTBODY_TEXT_SPEECH_COMMANDS_H

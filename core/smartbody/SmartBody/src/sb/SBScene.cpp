@@ -53,7 +53,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBService.h>
 #include <sb/SBPhysicsManager.h>
 
-#include <sb/SBBoneBusManager.h>
 #include <sb/SBGestureMap.h>
 #include <sb/SBGestureMapManager.h>
 #include <sb/SBJointMapManager.h>
@@ -151,7 +150,6 @@ SBScene::SBScene(CoreServices coreServices) :
 	_serviceManager = new SBServiceManager();
 	_gestureMapManager = new SBGestureMapManager();
 	_jointMapManager = new SBJointMapManager();
-	_boneBusManager = new SBBoneBusManager();
 	_phonemeManager = new SBPhonemeManager();
 	_behaviorSetManager = new SBBehaviorSetManager();
 	_retargetManager = new SBRetargetManager();
@@ -168,7 +166,6 @@ SBScene::SBScene(CoreServices coreServices) :
 	// add the services
 	_serviceManager->addService(_steerManager);
 	_serviceManager->addService(_coreServices.physicsManager.get());
-	_serviceManager->addService(_boneBusManager);
 	_serviceManager->addService(_coreServices.collisionManager.get());
 	_serviceManager->addService(_realtimeManager);
 	_serviceManager->addService(_phonemeManager);
@@ -383,7 +380,6 @@ SBScene::~SBScene()
 	delete _serviceManager;
 	delete _gestureMapManager;
 	delete _jointMapManager;
-	delete _boneBusManager;
 	delete _phonemeManager;
 	delete _behaviorSetManager;
 	delete _retargetManager;
@@ -403,7 +399,6 @@ SBScene::~SBScene()
 	_serviceManager = nullptr;
 	_gestureMapManager= nullptr;
 	_jointMapManager = nullptr;
-	_boneBusManager = nullptr;
 	_phonemeManager = nullptr;
 	_behaviorSetManager = nullptr;
 	_retargetManager = nullptr;
@@ -864,16 +859,6 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 //		joint->setName("world_offset");		
 //		joint->update_gmat();
 
-#ifndef SB_NO_BONEBUS
-		if (getBoneBusManager()->isEnable())
-		{
-			std::string classType = character->getClassType();
-			if (classType == "")
-				classType = "<unknown>"; // make sure that the class type has some data. Empty string will cause problems with parsing.
-			getBoneBusManager()->getBoneBus().CreateCharacter( character->getName().c_str(), classType.c_str(), true );
-		}
-#endif
-
 		std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
 		for (auto & listener : listeners)
 		{
@@ -966,14 +951,6 @@ void SBScene::removeCharacter(const std::string& charName)
 		{
 			listener->OnCharacterDelete( name);
 		}
-
-#ifndef SB_NO_BONEBUS
-		if ( character->bonebusCharacter )
-		{
-			this->getBoneBusManager()->getBoneBus().DeleteCharacter(  character->bonebusCharacter );
-			character->bonebusCharacter = nullptr;
-		}
-#endif
 
 		auto iter = _pawnMap.find(name);
 		if (iter != _pawnMap.end())
@@ -1333,11 +1310,6 @@ SBSpeechManager* SBScene::getSpeechManager()
 SBPhysicsManager* SBScene::getPhysicsManager()
 {
 	return _coreServices.physicsManager.get();
-}
-
-SBBoneBusManager* SBScene::getBoneBusManager()
-{
-	return _boneBusManager;
 }
 
 SBGestureMapManager* SBScene::getGestureMapManager()

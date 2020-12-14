@@ -23,7 +23,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 class SBCommandManager;
-void registerControlCommands(SBCommandManager& commandManager, SmartBody::SBVHMsgManager* sbvhMsgManager);
+class SBVHMsgManager;
+class SBBoneBusManager;
+void registerControlCommands(SmartBody::SBCommandManager& commandManager,
+							 SmartBody::SBVHMsgManager* sbvhMsgManager,
+							 SmartBody::SBBoneBusManager* boneBusManager);
 }
 
 

@@ -285,7 +285,6 @@ void SBCommandManager::registerCallbacks()
 	
 
 
-	insert( "text_speech", text_speech::text_speech_func ); // [BMLR]
 
 	/*
 	// deprecated callbacks

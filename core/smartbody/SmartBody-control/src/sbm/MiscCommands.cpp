@@ -404,9 +404,9 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		}
 		// [BMLR] Send notification to the renderer that a pawn was created.
 		// NOTE: This is sent both for characters AND pawns
-#ifndef SB_NO_BONEBUS
-		SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().SendCreatePawn( pawn_name.c_str(), loc[ 0 ], loc[ 1 ], loc[ 2 ] );
-#endif
+//#ifndef SB_NO_BONEBUS
+//		SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().SendCreatePawn( pawn_name.c_str(), loc[ 0 ], loc[ 1 ], loc[ 2 ] );
+//#endif
 		float x,y,z,h,p,r;
 		sbpawn->get_world_offset(x,y,z,h,p,r);
 		//printf("h = %f, p = %f, r = %f\n",h,p,r);	

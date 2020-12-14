@@ -18,15 +18,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#include <sb/SBVHMsgManager.h>
 #include "ControlCommands.h"
 
 #include "mcontrol_callbacks.h"
 #include "MiscCommands.h"
+#include "text_speech_commands.h"
+#include <sb/SBVHMsgManager.h>
 
 namespace SmartBody {
 
-void registerControlCommands(SmartBody::SBCommandManager& commandManager, SmartBody::SBVHMsgManager* sbvhMsgManager) {
+void registerControlCommands(SmartBody::SBCommandManager& commandManager,
+							 SmartBody::SBVHMsgManager* sbvhMsgManager,
+							 SmartBody::SBBoneBusManager* boneBusManager) {
 	commandManager.insert("sb", sb_main_func);
 	commandManager.insert("sbm", sbm_main_func);
 
@@ -47,8 +50,6 @@ void registerControlCommands(SmartBody::SBCommandManager& commandManager, SmartB
 	commandManager.insert("vrExpress", mcu_vrExpress_func);
 
 	commandManager.insert("receiver", mcu_joint_datareceiver_func);
-	commandManager.insert("net_reset", mcu_net_reset);
-	commandManager.insert("net_check", mcu_net_check);
 	commandManager.insert("RemoteSpeechCmd", mcuFestivalRemoteSpeechCmd_func);
 
 	commandManager.insert("check", mcu_check_func);        // check matching between .skm and .sk
@@ -58,24 +59,29 @@ void registerControlCommands(SmartBody::SBCommandManager& commandManager, SmartB
 	commandManager.insert("steer", mcu_steer_func);
 	commandManager.insert("syncpoint", syncpoint_func);
 	if (sbvhMsgManager) {
-		commandManager.insert("send",  [=](srArgBuffer& args){return sbm_vhmsg_send_func(args, *sbvhMsgManager);});
-		commandManager.insert("vhmsgconnect", [=](srArgBuffer& args){return mcu_vhmsg_connect_func(args, *sbvhMsgManager);});
-		commandManager.insert("vhmsgdisconnect", [=](srArgBuffer& args){return mcu_vhmsg_disconnect_func(args, *sbvhMsgManager);});
-		commandManager.insert("vhmsglog", [=](srArgBuffer& args){return vhmsglog_func(args, *sbvhMsgManager);});
+		commandManager.insert("send", [=](srArgBuffer& args) { return sbm_vhmsg_send_func(args, *sbvhMsgManager); });
+		commandManager.insert("vhmsgconnect", [=](srArgBuffer& args) { return mcu_vhmsg_connect_func(args, *sbvhMsgManager); });
+		commandManager.insert("vhmsgdisconnect", [=](srArgBuffer& args) { return mcu_vhmsg_disconnect_func(args, *sbvhMsgManager); });
+		commandManager.insert("vhmsglog", [=](srArgBuffer& args) { return vhmsglog_func(args, *sbvhMsgManager); });
 
-		commandManager.insert("vrKillComponent", [=](srArgBuffer& args){return mcu_vrKillComponent_func(args, *sbvhMsgManager);});
-		commandManager.insert("vrAllCall", [=](srArgBuffer& args){return mcu_vrAllCall_func(args, *sbvhMsgManager);});
-		commandManager.insert("vrPerception", [=](srArgBuffer& args){return mcu_vrPerception_func(args, *sbvhMsgManager);});
+		commandManager.insert("vrKillComponent", [=](srArgBuffer& args) { return mcu_vrKillComponent_func(args, *sbvhMsgManager); });
+		commandManager.insert("vrAllCall", [=](srArgBuffer& args) { return mcu_vrAllCall_func(args, *sbvhMsgManager); });
+		commandManager.insert("vrPerception", [=](srArgBuffer& args) { return mcu_vrPerception_func(args, *sbvhMsgManager); });
 
 	}
-	commandManager.insert("net", mcu_net_func);
+	if (boneBusManager) {
+		commandManager.insert("net", [=](srArgBuffer& args) { return mcu_net_func(args, *boneBusManager); });
+		commandManager.insert("net_reset", [=](srArgBuffer& args) { return mcu_net_reset(args, *boneBusManager); });
+		commandManager.insert("net_check", [=](srArgBuffer& args) { return mcu_net_check(args, *boneBusManager); });
+		commandManager.insert("uscriptexec", [=](srArgBuffer& args) { return mcu_uscriptexec_func(args, *boneBusManager); });
+		commandManager.insert("CommAPI", [=](srArgBuffer& args) { return mcu_commapi_func(args, *boneBusManager); });
+	}
 
-	commandManager.insert("PlaySound", mcu_play_sound_func);
-	commandManager.insert("StopSound", mcu_stop_sound_func);
+	commandManager.insert("PlaySound", [=](srArgBuffer& args) { return mcu_play_sound_func(args, boneBusManager); });
+	commandManager.insert("StopSound", [=](srArgBuffer& args) { return mcu_stop_sound_func(args, boneBusManager); });
 
-	commandManager.insert("uscriptexec", mcu_uscriptexec_func);
 
-	commandManager.insert("CommAPI", mcu_commapi_func);
+
 
 
 	commandManager.insert("vrBCFeedback", mcu_vrBCFeedback_func);
@@ -89,5 +95,8 @@ void registerControlCommands(SmartBody::SBCommandManager& commandManager, SmartB
 	commandManager.insert_set_cmd("pawn", pawn_set_cmd_funcx);
 	commandManager.insert_set_cmd("character", character_set_cmd_func);
 	commandManager.insert_set_cmd("char", character_set_cmd_func);
+
+	commandManager.insert("text_speech", [=](srArgBuffer& args) { return text_speech_commands::text_speech_func(args, boneBusManager); });
+
 }
 }

@@ -1454,30 +1454,24 @@ int mcu_gaze_limit_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
 */
 
 
-int mcu_net_reset( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
+int mcu_net_reset( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager ) {
 	bool ret = CMD_SUCCESS;
-#ifndef SB_NO_BONEBUS
-	SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().CloseConnection();
-	SmartBody::SBScene::getScene()->getBoneBusManager()->setEnable(true);
-	SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().UpdateAllCharacters();
-#endif	
+	bonebusManager.getBoneBus().CloseConnection();
+	bonebusManager.setEnable(true);
+	bonebusManager.getBoneBus().UpdateAllCharacters();
 	return (CMD_SUCCESS);
 }
 
-int mcu_net_check( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
+int mcu_net_check( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager ) {
 
-#ifndef SB_NO_BONEBUS
-	if (!SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().IsOpen())
+	if (!bonebusManager.getBoneBus().IsOpen())
 	{
-		return mcu_net_reset(args, cmdMgr);
+		return mcu_net_reset(args, bonebusManager);
 	}
 	else
 	{
 		return CMD_SUCCESS;
 	}
-#else
-	return CMD_SUCCESS;
-#endif
 }
 /*
 
@@ -1486,10 +1480,9 @@ int mcu_net_check( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 
 */
 
-int mcu_net_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
+int mcu_net_func( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager ) {
 
-#ifndef SB_NO_BONEBUS
-	 
+
     char * command = args.read_token();
 
     if ( _stricmp( command, "boneupdates" ) == 0 )
@@ -1498,7 +1491,7 @@ int mcu_net_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
         // global setting that affects all characters and bones
 
         int enable = args.read_int();
-		SmartBody::SBScene::getScene()->getBoneBusManager()->setEnable(enable ? true : false);
+        bonebusManager.setEnable(enable != 0);
         return CMD_SUCCESS;
     }
     else if ( _stricmp( command, "worldoffsetupdates" ) == 0 )
@@ -1507,11 +1500,10 @@ int mcu_net_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
         // global setting that affects all characters
 
         int enable = args.read_int();
-		SmartBody::SBScene::getScene()->getBoneBusManager()->setEnable(enable ? true : false);
+		bonebusManager.setEnable(enable != 0);
         return CMD_SUCCESS;
     }
 
-#endif
     return CMD_NOT_FOUND;
   
 }
@@ -1524,7 +1516,7 @@ int mcu_net_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
                                           // character_id can be used to position the sound where a character is in the world
 */
 
-int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebusManager )
 {
     char * remainder = args.read_remainder_raw();
     string sArgs = remainder;
@@ -1641,15 +1633,15 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
         }
         else
         {
-#ifndef SB_NO_BONEBUS
-        SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().SendPlaySound( soundFile.c_str(), characterName.c_str() );
-#endif
+			if (bonebusManager) {
+				bonebusManager->getBoneBus().SendPlaySound(soundFile.c_str(), characterName.c_str());
+			}
         }
 
 
 #endif
 		strstr << " start " << soundDuration;
-		SmartBody::SBEvent* sbevent = SmartBody::SBScene::getScene()->getEventManager()->createEvent("sound", strstr.str().c_str(), characterObjectName);
+		SmartBody::SBEvent* sbevent = SmartBody::SBScene::getScene()->getEventManager()->createEvent("sound", strstr.str(), characterObjectName);
 		SmartBody::SBScene::getScene()->getEventManager()->handleEvent(sbevent);
 		delete sbevent;
         return CMD_SUCCESS;
@@ -1666,7 +1658,7 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
 
 */
 
-int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebusManager )
 {
     char * remainder = args.read_remainder_raw();
     string sArgs = remainder;
@@ -1683,14 +1675,14 @@ int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
         {
         if ( soundFile[ 0 ] == '\"' )
         {
-            size_t first = sArgs.find_first_of( "\"" );
+            size_t first = sArgs.find_first_of( '\"' );
             if ( first == string::npos )
             {
                 SmartBody::util::log( "Error parsing StopSound message ''", sArgs.c_str() );
                 return CMD_FAILURE;
             }
 
-            size_t second = sArgs.find_first_of( "\"", first + 1 );
+            size_t second = sArgs.find_first_of( '\"', first + 1 );
             if ( second == string::npos )
             {
                 SmartBody::util::log( "Error parsing StopSound message ''", sArgs.c_str() );
@@ -1751,9 +1743,9 @@ int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
       }
       else
       {
-#ifndef SB_NO_BONEBUS
-        SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().SendStopSound( soundFile.c_str() );
-#endif
+      	if (bonebusManager) {
+			bonebusManager->getBoneBus().SendStopSound( soundFile.c_str() );
+		}
       }
 #endif
       return CMD_SUCCESS;
@@ -1769,7 +1761,7 @@ int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
                                   - and wish to keep using it, but don't want to have to run dimr (because of license issues).
 */
 
-int mcu_uscriptexec_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_uscriptexec_func( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager)
 {
     int num = args.calc_num_tokens();
 
@@ -1787,9 +1779,7 @@ int mcu_uscriptexec_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr
         }
 
         //SendWinsockExecScript( command.c_str() );
-#ifndef SB_NO_BONEBUS
-        SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().ExecScript( command.c_str() );
-#endif
+        bonebusManager.getBoneBus().ExecScript( command.c_str() );
 
         return CMD_SUCCESS;
     }
@@ -1809,9 +1799,8 @@ int mcu_uscriptexec_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr
       x,y,z = Orientation in degrees.  (default coord system would match x,y,z to r,h,p
 */
 
-int mcu_commapi_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_commapi_func( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager )
 {
-#ifndef SB_NO_BONEBUS
     char * command = args.read_token();
 
     if ( _stricmp( command, "setcameraposition" ) == 0 )
@@ -1820,7 +1809,7 @@ int mcu_commapi_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
         float y = args.read_float();
         float z = args.read_float();
 
-        SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().SetCameraPosition( x, y, z );
+		bonebusManager.getBoneBus().SetCameraPosition( x, y, z );
 
         return CMD_SUCCESS;
     }
@@ -1832,12 +1821,11 @@ int mcu_commapi_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
         gwiz::quat_t q = gwiz::euler_t( x, y, z );
 
-        SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().SetCameraRotation( (float)q.w(), (float)q.x(), (float)q.y(), (float)q.z() );
+		bonebusManager.getBoneBus().SetCameraRotation( (float)q.w(), (float)q.x(), (float)q.y(), (float)q.z() );
 
         return CMD_SUCCESS;
     }
 
-#endif
 
     return CMD_NOT_FOUND;
 }
