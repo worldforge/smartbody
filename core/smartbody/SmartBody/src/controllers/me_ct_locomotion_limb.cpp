@@ -25,7 +25,6 @@
 #include "sbm/sbm_character.hpp"
 #include "gwiz_math.h"
 #include "limits.h"
-#include <vhcl_log.h>
 #include "sbm/Event.h"
 
 

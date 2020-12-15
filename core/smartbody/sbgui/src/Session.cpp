@@ -44,6 +44,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/ODEPhysicsSim.h"
 #include "sbm/ControlCommands.h"
 
+#include "sbm/sbm_audio.h"
+
 Session* Session::current = nullptr;
 
 Session::Session()
@@ -83,4 +85,8 @@ Session::~Session() {
 
 	scene.getServiceManager()->removeService(bonebusManager.getName());
 	scene.getServiceManager()->removeService(vhmMsgManager.getName());
+
+	//Cycle audio engine.
+	AUDIO_Close();
+	//AUDIO_Init();
 }

@@ -22,7 +22,6 @@
  */
 
 #include "controllers/me_ct_quick_draw.h"
-#include <vhcl_log.h>
 
 using namespace gwiz;
 

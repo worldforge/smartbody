@@ -68,7 +68,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBParser.h>
 #include <sb/SBMotionGraph.h>
 #include "SBUtilities.h"
-#include <sbm/sbm_audio.h>
 #include <utility>
 #include <boost/lexical_cast.hpp>
 #include <sb/nvbg.h>
@@ -429,11 +428,6 @@ SBScene::~SBScene()
 
 //	_viewer = nullptr;
 
-#ifndef SB_NO_VHCL_AUDIO
-	AUDIO_Close();
-	AUDIO_Init();
-#endif
-
 
 
 //#if !defined(SB_IPHONE)
@@ -704,23 +698,6 @@ void SBScene::notify( SBSubject* subject )
 {
 	BoolAttribute* boolAttr = dynamic_cast<BoolAttribute*>(subject);
 
-#ifndef SB_NO_VHCL_AUDIO
-	if (boolAttr && boolAttr->getName() == "internalAudio")
-	{
-		bool val = boolAttr->getValue();
-		if (!val)
-		{
-			SmartBody::util::log("Turning off audio...");
-			AUDIO_Close();
-		}
-		else
-		{
-			SmartBody::util::log("Turning on audio...");
-			AUDIO_Init();
-		}
-		return;
-	}
-#endif
 
   if (boolAttr && boolAttr->getName() == "enableConsoleLogging")
 	{

@@ -12,7 +12,8 @@ target_include_directories(SmartBody-physics-ode PUBLIC
         )
 
 
-target_link_libraries(SmartBody-physics-ode
+target_link_libraries(SmartBody-physics-ode PUBLIC
+        ode
         SmartBody
         sr
         )

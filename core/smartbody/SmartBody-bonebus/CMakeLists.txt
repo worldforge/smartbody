@@ -11,7 +11,7 @@ target_include_directories(SmartBody-bonebus PUBLIC
         $<TARGET_PROPERTY:bonebus,INCLUDE_DIRECTORIES>
         )
 
-target_link_libraries(SmartBody-bonebus
+target_link_libraries(SmartBody-bonebus PUBLIC
         SmartBody
         sr
         bonebus

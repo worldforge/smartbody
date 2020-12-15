@@ -15,7 +15,7 @@ target_include_directories(SmartBody-debugger PUBLIC
         )
 
 
-target_link_libraries(SmartBody-debugger
+target_link_libraries(SmartBody-debugger PUBLIC
         SmartBody
         SmartBody-renderer-gl
         vhmsg

@@ -22,7 +22,6 @@
  */
 
 #include "controllers/me_ct_lilt_try.h"
-#include <vhcl_log.h>
 
 //#include <iostream>
 using namespace std;

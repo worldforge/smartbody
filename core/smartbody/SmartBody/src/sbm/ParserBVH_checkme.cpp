@@ -39,7 +39,6 @@ that is distributed: */
 		Paco Abad (fjabad@dsic.upv.es)
 **********************************************************/
 
-#include "vhcl_log.h"
 #include "ParserBVH.h"
 #include <iostream>
 #include <stack>

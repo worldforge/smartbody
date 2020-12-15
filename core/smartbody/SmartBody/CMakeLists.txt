@@ -195,7 +195,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sbm/ParserASFAMC.cpp
         src/sbm/ParserFBX.cpp
         src/sbm/remote_speech.cpp
-        src/sbm/sbm_audio.cpp
         src/controllers/MeCtBodyReachState.cpp
         src/controllers/MeCtReachEngine.cpp
         src/controllers/me_ct_saccade.cpp
@@ -318,7 +317,6 @@ add_library(
 
 target_include_directories(SmartBody PUBLIC
         src
-        $<TARGET_PROPERTY:vhcl,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:math,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
@@ -331,14 +329,10 @@ target_include_directories(SmartBody PUBLIC
 
 target_link_libraries(SmartBody
         sr
-        vhcl
         steerlib
         pprAI
-        SOIL
-        rply
         parser
         perlin
-        rply
         math
         util
         ${MORE_LIBS}

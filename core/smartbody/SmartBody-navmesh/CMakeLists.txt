@@ -12,7 +12,7 @@ target_include_directories(SmartBody-navmesh PUBLIC
         )
 
 
-target_link_libraries(SmartBody-navmesh
+target_link_libraries(SmartBody-navmesh PUBLIC
         SmartBody
         sr
         )

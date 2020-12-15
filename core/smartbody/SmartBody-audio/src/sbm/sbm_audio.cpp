@@ -21,24 +21,46 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 // sbm_audio.cpp
 
 #include "sbm_audio.h"
-
-#ifndef SB_NO_VHCL_AUDIO
+#include "SBUtilities.h"
+#include "sb/SBScene.h"
+#include "sb/SBAttribute.h"
 
 #include "vhcl.h"
 #include "vhcl_audio.h"
 #include <sstream>
 #include <cstdlib>
-#include "SBUtilities.h"
 
 #define USEAUDIODURATION 1
 
-static vhcl::Audio * g_audio = nullptr;
+static vhcl::Audio* g_audio = nullptr;
 
-bool AUDIO_Init()
-{
+void SmartBody::attachAudioToScene(SBScene& scene) {
+	struct AudioObserver : public SBObserver {
+		void notify(SBSubject* subject) override {
+			auto* boolAttr = dynamic_cast<BoolAttribute*>(subject);
+
+			if (boolAttr && boolAttr->getName() == "internalAudio") {
+				bool val = boolAttr->getValue();
+				if (!val) {
+					SmartBody::util::log("Turning off audio...");
+					AUDIO_Close();
+				} else {
+					SmartBody::util::log("Turning on audio...");
+					AUDIO_Init();
+				}
+				return;
+			}
+		}
+
+	};
+
+	scene.registerObserver(new AudioObserver());
+}
+
+
+bool AUDIO_Init() {
 	SmartBody::util::log("Initializing AUDIO...");
-	if (g_audio)
-	{
+	if (g_audio) {
 		SmartBody::util::log("Could not initialize AUDIO...");
 		return false;
 	}
@@ -50,42 +72,35 @@ bool AUDIO_Init()
 	return ret;
 }
 
-float AUDIO_Play( const char * audio_file )
-{
+float AUDIO_Play(const char* audio_file) {
 	float duration = 0.0f;
-	vhcl::Sound * sound = g_audio->CreateSoundLibSndFile( audio_file, audio_file );
-	if ( sound )
-	{
+	vhcl::Sound* sound = g_audio->CreateSoundLibSndFile(audio_file, audio_file);
+	if (sound) {
 		sound->Play();
 #ifdef USEAUDIODURATION
 		// determine the length of the audio file
 		float numSamples = (float) sound->getSampleSize();
 		float sampleRate = (float) sound->getSampleRate();
-		
-		if (sampleRate != 0.0)
-		{
+
+		if (sampleRate != 0.0) {
 			duration = numSamples / sampleRate;
 		}
 #endif
 		return duration;
-	}
-	else
-	{
+	} else {
 		SmartBody::util::log("no sound available from %s", audio_file);
 		return 0.0f;
 	}
 
 }
 
-void AUDIO_Stop( const char * audio_file )
-{
+void AUDIO_Stop(const char* audio_file) {
 	if (g_audio)
 		g_audio->DestroySound(audio_file);
 }
 
 
-void AUDIO_Close()
-{
+void AUDIO_Close() {
 	if (!g_audio)
 		return;
 	g_audio->Close();
@@ -93,27 +108,4 @@ void AUDIO_Close()
 	g_audio = nullptr;
 }
 
-#else
-
-bool AUDIO_Init()
-{
-  return true;
-}
-
-
-float AUDIO_Play( const char * audio_file )
-{
-	return 0.0f;
-}
-
-void AUDIO_Stop( const char * audio_file )
-{
-}
-
-
-void AUDIO_Close()
-{
-}
-
-#endif
 

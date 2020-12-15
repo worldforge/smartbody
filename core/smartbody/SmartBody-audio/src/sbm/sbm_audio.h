@@ -24,6 +24,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 
+namespace SmartBody {
+	class SBScene;
+	void attachAudioToScene(SBScene& scene);
+}
+
 SBAPI bool AUDIO_Init();
 float AUDIO_Play( const char * audio_file );
 void AUDIO_Stop( const char * audio_file );

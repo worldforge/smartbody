@@ -55,7 +55,7 @@ target_include_directories(sr PUBLIC
         $<TARGET_PROPERTY:math,INCLUDE_DIRECTORIES>
         )
 
-target_link_libraries(sr
+target_link_libraries(sr PUBLIC
         util)
 
 #if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")

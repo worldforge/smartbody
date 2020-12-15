@@ -39,11 +39,14 @@ target_include_directories(SmartBody-renderer-gl PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:rply,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SOIL,INCLUDE_DIRECTORIES>
         )
 
 
-target_link_libraries(SmartBody-renderer-gl
+target_link_libraries(SmartBody-renderer-gl PUBLIC
         SmartBody
         sr
+        rply
+        SOIL
         )

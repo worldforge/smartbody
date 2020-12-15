@@ -12,7 +12,7 @@ target_include_directories(SmartBody-renderer-gl-bindings-python PUBLIC
         )
 
 
-target_link_libraries(SmartBody-renderer-gl-bindings-python
+target_link_libraries(SmartBody-renderer-gl-bindings-python PUBLIC
         SmartBody-renderer-gl
         SmartBody
         sr

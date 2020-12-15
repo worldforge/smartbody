@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBPhysicsSim.h>
 #include "SBUtilities.h"
-#include <vhcl.h>
+#include <chrono>
 
 #include <utility>
 
@@ -101,14 +101,12 @@ void SBPhysicsManager::update(double time) {
 			float simLimit = (float) physicsEngine->getDoubleAttribute("MaxSimTime");
 			double timeDiff = time - physicsTime;
 			double timeElapse = 0.0;
-			vhcl::Timer timer;
-			vhcl::StopWatch watch(timer);
+
 			while (physicsTime < time && timeElapse < simLimit) {
-				watch.Start();
+				auto start = std::chrono::steady_clock::now();
 				physicsEngine->updateSimulation(dt);
 				physicsTime += dt;
-				watch.Stop();
-				timeElapse += watch.GetTime();
+				timeElapse += std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now() - start).count();
 			}
 			physicsTime = time;
 		} else {

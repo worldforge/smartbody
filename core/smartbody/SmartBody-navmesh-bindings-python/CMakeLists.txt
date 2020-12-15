@@ -12,7 +12,7 @@ target_include_directories(SmartBody-navmesh-bindings-python PUBLIC
         )
 
 
-target_link_libraries(SmartBody-navmesh-bindings-python
+target_link_libraries(SmartBody-navmesh-bindings-python PUBLIC
         SmartBody-navmesh
         SmartBody
         sr
