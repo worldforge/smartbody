@@ -31,7 +31,7 @@ class PABlendEditor;
 class ParamAnimEditorWidget : public nle::EditorWidget
 {
 	public:
-		ParamAnimEditorWidget(Fl_Group* e, int x, int y, int w, int h, char* name);
+		ParamAnimEditorWidget(Fl_Group* e, int x, int y, int w, int h, const char* name);
 
 		virtual void changeBlockSelectionEvent(nle::Block* block);
 		virtual void changeTrackSelectionEvent(nle::Track* track);

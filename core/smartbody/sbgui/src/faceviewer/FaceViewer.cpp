@@ -11,7 +11,7 @@
 #include <Session.h>
 #include "SBUtilities.h"
 
-FaceViewer::FaceViewer(int x, int y, int w, int h, char* name) : GenericViewer(x, y, w, h), Fl_Double_Window(x, y, w, h, name), SBWindowListener()
+FaceViewer::FaceViewer(int x, int y, int w, int h, const char* name) : GenericViewer(x, y, w, h), Fl_Double_Window(x, y, w, h, name), SBWindowListener()
 {
 	begin();
 

@@ -21,7 +21,7 @@ namespace nle
 class EditorWidget : public NonLinearEditorModelListener, public Fl_Widget
 {
 	public:
-		EditorWidget(int x, int y, int w, int h, char* name);
+		EditorWidget(int x, int y, int w, int h, const char* name);
 		~EditorWidget();
 
 		virtual void setModel(nle::NonLinearEditorModel* model);

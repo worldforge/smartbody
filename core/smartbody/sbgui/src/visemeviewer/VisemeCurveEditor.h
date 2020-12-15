@@ -11,7 +11,7 @@ class VisemeViewerWindow;
 class VisemeCurveEditor : public Fl_Widget
 {
 	public:
-		VisemeCurveEditor(int x, int y, int w, int h, char* name);
+		VisemeCurveEditor(int x, int y, int w, int h, const char* name);
 		~VisemeCurveEditor();
 
 		void draw();

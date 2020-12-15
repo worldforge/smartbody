@@ -86,7 +86,7 @@ void PanimationWindowListener::OnSimulationUpdate()
 	_window->update_viewer();
 }
 
-PanimationWindow::PanimationWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(w, h, name), GenericViewer(x, y, w, h)
+PanimationWindow::PanimationWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(w, h, name), GenericViewer(x, y, w, h)
 {
 	this->begin();
 		int tabGroupX = 10;

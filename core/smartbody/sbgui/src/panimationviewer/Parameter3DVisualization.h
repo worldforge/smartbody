@@ -13,7 +13,7 @@ class ParameterGroup;
 class VisualizationBase : public Fl_Gl_Window
 {
 public:
-	VisualizationBase(int x, int y, int w, int h, char* name);
+	VisualizationBase(int x, int y, int w, int h, const char* name);
 	~VisualizationBase();
 
 	virtual void draw();
@@ -43,7 +43,7 @@ protected:
 class Parameter3DVisualization : public VisualizationBase
 {
 	public:
-		Parameter3DVisualization(int x, int y, int w, int h, char* name, PABlendData* s, ParameterGroup* window);
+		Parameter3DVisualization(int x, int y, int w, int h, const char* name, PABlendData* s, ParameterGroup* window);
 		~Parameter3DVisualization();
 
 		virtual void draw();			

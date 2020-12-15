@@ -29,7 +29,7 @@
 #endif
 
 
-VisemeViewerWindow::VisemeViewerWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h), SBWindowListener()
+VisemeViewerWindow::VisemeViewerWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h), SBWindowListener()
 {
 	_phonemesSelected[0] = false;
 	_phonemesSelected[1] = false;

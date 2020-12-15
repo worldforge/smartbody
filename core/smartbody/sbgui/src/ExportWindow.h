@@ -13,7 +13,7 @@
 class ExportWindow : public Fl_Double_Window
 {
 	public:
-		ExportWindow(int x, int y, int w, int h, char* name);
+		ExportWindow(int x, int y, int w, int h, const char* name);
 		~ExportWindow();
 
 		static void ExportCB(Fl_Widget* widget, void* data);

@@ -14,7 +14,7 @@
 class FaceViewer : public GenericViewer, public Fl_Double_Window, public SBWindowListener
 {
 	public:
-		FaceViewer(int x, int y, int w, int h, char* name);
+		FaceViewer(int x, int y, int w, int h, const char* name);
 		~FaceViewer();
 
 		virtual void show();

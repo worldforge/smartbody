@@ -12,7 +12,7 @@
 
 const std::string defaultAssetDir = "../../../../data/";
 
-RetargetCreatorWindow::RetargetCreatorWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h)
+RetargetCreatorWindow::RetargetCreatorWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h)
 {		
 	this->label("Retarget Creator");
 	this->begin();

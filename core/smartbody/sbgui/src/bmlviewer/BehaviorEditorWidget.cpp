@@ -5,7 +5,7 @@
 #include "BehaviorBlock.h"
 
 
-BehaviorEditorWidget::BehaviorEditorWidget(int x, int y, int w, int h, char* name) : EditorWidget(x, y, w, h, name)
+BehaviorEditorWidget::BehaviorEditorWidget(int x, int y, int w, int h, const char* name) : EditorWidget(x, y, w, h, name)
 {
 	blockSelectionChanged = false;
 	trackSelectionChanged = false;

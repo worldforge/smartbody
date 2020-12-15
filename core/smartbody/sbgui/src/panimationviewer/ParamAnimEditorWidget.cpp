@@ -29,7 +29,7 @@
 #include "ParamAnimStateEditor.h"
 #include "ParamAnimTransitionEditor.h"
 
-ParamAnimEditorWidget::ParamAnimEditorWidget(Fl_Group* g, int x, int y, int w, int h, char* name) : EditorWidget(x, y, w, h, name)
+ParamAnimEditorWidget::ParamAnimEditorWidget(Fl_Group* g, int x, int y, int w, int h, const char* name) : EditorWidget(x, y, w, h, name)
 {
 	blockSelectionChanged = false;
 	trackSelectionChanged = false;

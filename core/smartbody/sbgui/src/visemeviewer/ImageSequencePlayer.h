@@ -13,7 +13,7 @@ class SbmTexture;
 class ImageSequencePlayer : public Fl_Gl_Window
 {
 public:
-	ImageSequencePlayer(int x, int y, int w, int h, char* name);
+	ImageSequencePlayer(int x, int y, int w, int h, const char* name);
 	~ImageSequencePlayer();
 
 	virtual void draw();
@@ -31,7 +31,7 @@ public:
 class ImageSequenceViewer : public Fl_Double_Window, SBWindowListener
 {
 public:
-	ImageSequenceViewer(int x, int y, int w, int h, char* name);
+	ImageSequenceViewer(int x, int y, int w, int h, const char* name);
 	~ImageSequenceViewer();
 
 	void show();

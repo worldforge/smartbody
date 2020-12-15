@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBUtilities.h"
 #include "Session.h"
 
-GlChartView::GlChartView(int x, int y, int w, int h, char* name)
+GlChartView::GlChartView(int x, int y, int w, int h, const char* name)
 : Fl_Gl_Window( x, y, w, h, name ),
 SrViewer(x, y, w, h, name),
   camera(Session::current->renderScene)

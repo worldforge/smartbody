@@ -24,7 +24,7 @@ namespace SmartBody
 class MotionEditorWindow : public Fl_Double_Window, public SBWindowListener
 {
 public:
-	MotionEditorWindow(int x, int y, int w, int h, char* label);
+	MotionEditorWindow(int x, int y, int w, int h, const char* label);
 	~MotionEditorWindow();
 	
 	virtual void show();

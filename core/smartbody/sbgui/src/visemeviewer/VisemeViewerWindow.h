@@ -30,7 +30,7 @@ class ImageSequenceViewer;
 
 class VisemeViewerWindow : public Fl_Double_Window, SBWindowListener {
 public:
-	VisemeViewerWindow(int x, int y, int w, int h, char* name);
+	VisemeViewerWindow(int x, int y, int w, int h, const char* name);
 	~VisemeViewerWindow();
 
 	void refreshData();

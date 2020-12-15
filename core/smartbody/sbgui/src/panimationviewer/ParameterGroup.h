@@ -15,7 +15,7 @@ namespace SmartBody { class SBCharacter; }
 class ParameterGroup : public Fl_Group
 {
 	public:
-		ParameterGroup(int x, int y, int w, int h, char* name, PABlendData* s, PanimationWindow* window, bool ex = false);
+		ParameterGroup(int x, int y, int w, int h, const char* name, PABlendData* s, PanimationWindow* window, bool ex = false);
 		~ParameterGroup();
 
 		virtual void resize(int x, int y, int w, int h);

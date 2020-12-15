@@ -13,7 +13,7 @@
 class PoseCreator : public GenericViewer, public Fl_Double_Window, public SBWindowListener
 {
 	public:
-		PoseCreator(int x, int y, int w, int h, char* name);
+		PoseCreator(int x, int y, int w, int h, const char* name);
 		~PoseCreator();
 
 		virtual void show();

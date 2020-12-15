@@ -10,7 +10,7 @@
 class RetargetViewer : public Fl_Double_Window
 {
 	public:
-		RetargetViewer(int x, int y, int w, int h, char* name);
+		RetargetViewer(int x, int y, int w, int h, const char* name);
 
 		//void updateSkeletonList();
 		//void updateCharacterList();

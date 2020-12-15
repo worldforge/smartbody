@@ -1,7 +1,7 @@
 #include "SBMWindow.h"
 #include <fltk/PackedGroup.h>
 
-SBMWindow::SBMWindow(int x, int y, int w, int h, char* name) : Window(x, y, w, h)
+SBMWindow::SBMWindow(int x, int y, int w, int h, const char* name) : Window(x, y, w, h)
 {
 	this->begin();
 	fltk::PackedGroup* group = new fltk::PackedGroup(0, 0, w, h);

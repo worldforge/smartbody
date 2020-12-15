@@ -8,7 +8,7 @@
 class SBMWindow : public fltk::Window
 {
 	public:
-		SBMWindow(int x, int y, int w, int h, char* name);
+		SBMWindow(int x, int y, int w, int h, const char* name);
 		~SBMWindow();
 
 		CommandWindow* getCommandWindow();

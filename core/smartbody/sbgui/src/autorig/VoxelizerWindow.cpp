@@ -10,7 +10,7 @@
 #define _strdup strdup
 #endif
 
-VoxelizerWindow::VoxelizerWindow( int x, int y, int w, int h, char* name ) : Fl_Gl_Window(x,y,w,h,name)
+VoxelizerWindow::VoxelizerWindow( int x, int y, int w, int h, const char* name ) : Fl_Gl_Window(x,y,w,h,name)
 {
 	startBuildVoxels = false;
 	finishBuildVoxels = false;

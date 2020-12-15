@@ -38,7 +38,7 @@
 #include "FLTKListener.h"
 #include "Session.h"
 
-ResourceWindow::ResourceWindow(int x, int y, int w, int h, char* name) : Fl_Group(x, y, w, h, name), SBWindowListener(), SelectionListener()
+ResourceWindow::ResourceWindow(int x, int y, int w, int h, const char* name) : Fl_Group(x, y, w, h, name), SBWindowListener(), SelectionListener()
 {
 	itemInfoWidget = nullptr;
 	lastClickedItemPath = " ";

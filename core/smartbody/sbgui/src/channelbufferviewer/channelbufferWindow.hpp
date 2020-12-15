@@ -52,7 +52,7 @@ public:
 class ChannelBufferWindow : public GenericViewer, public Fl_Double_Window, public SBWindowListener
 {
 public:
-	ChannelBufferWindow(int x, int y, int w, int h, char* name);
+	ChannelBufferWindow(int x, int y, int w, int h, const char* name);
 	~ChannelBufferWindow();
 
 	virtual void label_viewer(std::string name);

@@ -657,7 +657,7 @@ char commenSkString[] = "# SK Skeleton Definition - M. Kallmann 2004\n"
 	"end\n"
 	"";
 
-MouseViewer::MouseViewer( int x, int y, int w, int h, char* name ) :
+MouseViewer::MouseViewer( int x, int y, int w, int h, const char* name ) :
 	Fl_Gl_Window(x,y,w,h,name),
 	cam(Session::current->renderScene)
 {
@@ -959,7 +959,7 @@ SrVec MouseViewer::rotate_point(SrVec point, SrVec origin, SrVec direction, floa
 /* Skeleton Viewer                                                      */
 /************************************************************************/
 
-SkeletonViewer::SkeletonViewer( int x, int y, int w, int h, char* name ) : MouseViewer(x,y,w,h,name)
+SkeletonViewer::SkeletonViewer( int x, int y, int w, int h, const char* name ) : MouseViewer(x,y,w,h,name)
 {
 	skeletonScene = nullptr;
 	skeleton = nullptr;
@@ -1404,7 +1404,7 @@ const std::string rightHandJointNames[20] = {"r_thumb1","r_thumb2", "r_thumb3", 
 const std::string leftLegJointNames[5] = { "l_hip", "l_knee", "l_ankle", "l_forefoot", "l_toe" };
 const std::string rightLegJointNames[5] = { "r_hip", "r_knee", "r_ankle", "r_forefoot", "r_toe" };
 
-JointMapViewer::JointMapViewer(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h, name)
+JointMapViewer::JointMapViewer(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h, name)
 {
 	rootWindow = nullptr;
 	
@@ -2153,7 +2153,7 @@ void JointMapViewer::updateJointMapList()
 }
 
 
-JointMapInputChoice::JointMapInputChoice( int x, int y, int w, int h, char* name ) : Fl_Input_Choice(x,y,w,h,name)
+JointMapInputChoice::JointMapInputChoice( int x, int y, int w, int h, const char* name ) : Fl_Input_Choice(x,y,w,h,name)
 {
 	skelViewer = nullptr;
 }

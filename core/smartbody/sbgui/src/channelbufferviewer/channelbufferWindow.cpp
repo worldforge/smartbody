@@ -34,7 +34,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <bml/bml.hpp>
 #include <controllers/me_controller_tree_root.hpp>
 
-ChannelBufferWindow::ChannelBufferWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(w, h, name), GenericViewer(x, y, w, h), SBWindowListener()
+ChannelBufferWindow::ChannelBufferWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(w, h, name), GenericViewer(x, y, w, h), SBWindowListener()
 {
 	set_default_values();
 	char value[10];

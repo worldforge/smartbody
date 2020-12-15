@@ -28,7 +28,7 @@
 
 
 
-BehaviorWindow::BehaviorWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(w, h, name), GenericViewer(x, y, w, h)
+BehaviorWindow::BehaviorWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(w, h, name), GenericViewer(x, y, w, h)
 {
 	this->begin();
 

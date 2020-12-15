@@ -9,7 +9,7 @@
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBFaceDefinition.h>
 
-PoseCreator::PoseCreator(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h), GenericViewer(x, y, w, h), SBWindowListener()
+PoseCreator::PoseCreator(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h), GenericViewer(x, y, w, h), SBWindowListener()
 {
 	_selectedCharacter = "";
 	this->label("Pose Creator");

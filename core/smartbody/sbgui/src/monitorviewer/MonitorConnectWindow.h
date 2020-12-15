@@ -12,7 +12,7 @@
 class MonitorConnectWindow : public Fl_Double_Window
 {
 public:
-	MonitorConnectWindow(int x, int y, int w, int h, char* label, bool quickConnect, SmartBody::SBDebuggerClient& debuggerClient);
+	MonitorConnectWindow(int x, int y, int w, int h, const char* label, bool quickConnect, SmartBody::SBDebuggerClient& debuggerClient);
 	~MonitorConnectWindow() override;
 
 	void loadProcesses();

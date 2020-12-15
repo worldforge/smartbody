@@ -314,7 +314,7 @@ Fl_Menu_Item MenuTable[] =
    { 0 }
  };
 
-int printOglError2(char *file, int line)
+int printOglError2(const char *file, int line)
 {
 	/*
 	GLenum glErr;
@@ -411,7 +411,7 @@ void FltkViewer::update_submenus()
 		gaze_menu.flags |= FL_SUBMENU_POINTER;
 		std::vector<Fl_Menu_Item>& menu_list = gaze_submenus[i];
 		menu_list = std::vector<Fl_Menu_Item>();
-		int iCmd = FltkViewer::CmdGazeOnTargetType1+i;
+		size_t iCmd = FltkViewer::CmdGazeOnTargetType1+i;
 		Fl_Menu_Item select_pawn = { "selected pawn",   0, MCB,((void*)iCmd)  };
 		menu_list.emplace_back(select_pawn);
 		get_pawn_submenus(select_pawn.user_data(),menu_list);

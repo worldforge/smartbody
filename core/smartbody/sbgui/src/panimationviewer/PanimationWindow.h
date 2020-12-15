@@ -93,7 +93,7 @@ class PanimationWindowListener : public SmartBody::SBSceneListener
 class PanimationWindow : public Fl_Double_Window, public GenericViewer
 {
 	public:
-		PanimationWindow(int x, int y, int w, int h, char* name);
+		PanimationWindow(int x, int y, int w, int h, const char* name);
 		~PanimationWindow();
 
 		virtual void label_viewer(std::string name);

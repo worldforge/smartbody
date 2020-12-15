@@ -19,7 +19,7 @@
 class RetargetStepWindow : public Fl_Double_Window , public SBWindowListener  
 {
 public:
-	RetargetStepWindow(int x, int y, int w, int h, char* name);
+	RetargetStepWindow(int x, int y, int w, int h, const char* name);
 	~RetargetStepWindow();
 	
 	virtual void OnCharacterCreate( const std::string & name, const std::string & objectClass );

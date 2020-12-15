@@ -31,7 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "Session.h"
 #include "SBUtilities.h"
 
-MonitorConnectWindow::MonitorConnectWindow(int x, int y, int w, int h, char* label, bool quickConnect, SmartBody::SBDebuggerClient& debuggerClient)
+MonitorConnectWindow::MonitorConnectWindow(int x, int y, int w, int h, const char* label, bool quickConnect, SmartBody::SBDebuggerClient& debuggerClient)
 : Fl_Double_Window(x, y, w, h, label),
 mDebuggerClient(debuggerClient)
 {

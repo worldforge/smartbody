@@ -15,7 +15,7 @@
 #include <sbm/GPU/SbmTexture.h>
 #include <sb/SBEvent.h>
 
-AttributeEditor::AttributeEditor(int x, int y, int w, int h, char* name) : Fl_Group(x, y, w, h, name), SmartBody::SBObserver(), SBWindowListener(), SelectionListener()
+AttributeEditor::AttributeEditor(int x, int y, int w, int h, const char* name) : Fl_Group(x, y, w, h, name), SmartBody::SBObserver(), SBWindowListener(), SelectionListener()
 {
 	_currentSelection = "";
 	_currentWidget = nullptr;

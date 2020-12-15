@@ -10,7 +10,7 @@
 #include <boost/filesystem/convenience.hpp>
 #include "RootWindow.h"
 
-MotionEditorWindow::MotionEditorWindow(int x, int y, int w, int h, char* label) : Fl_Double_Window(x, y, w, h, label)
+MotionEditorWindow::MotionEditorWindow(int x, int y, int w, int h, const char* label) : Fl_Double_Window(x, y, w, h, label)
 {
 	this->label("Motion Editor");
 	this->begin();

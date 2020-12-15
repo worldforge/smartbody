@@ -32,7 +32,7 @@ void clearVoxels(PolyVox::SimpleVolume<voxType>* vol, voxType clearValue)
 class VoxelizerWindow : public Fl_Gl_Window
 {
 public:
-	VoxelizerWindow(int x, int y, int w, int h, char* name);
+	VoxelizerWindow(int x, int y, int w, int h, const char* name);
 	~VoxelizerWindow();
 
 	void initVoxelizer(SrModel* inMesh, int voxelRes);

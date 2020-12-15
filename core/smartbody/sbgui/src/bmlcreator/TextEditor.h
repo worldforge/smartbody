@@ -9,7 +9,7 @@
 class TextEditorWindow : public Fl_Double_Window
 {
 public:
-	TextEditorWindow(int x, int y, int w, int h, char* name);
+	TextEditorWindow(int x, int y, int w, int h, const char* name);
 	~TextEditorWindow();
 
 	Fl_Text_Buffer *textBuffer;

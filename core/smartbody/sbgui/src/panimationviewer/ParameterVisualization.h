@@ -12,7 +12,7 @@ class ParameterGroup;
 class ParameterVisualization : public Fl_Group
 {
 	public:
-		ParameterVisualization(bool isInteractive, int x, int y, int w, int h, char* name, PABlendData* s, ParameterGroup* window);
+		ParameterVisualization(bool isInteractive, int x, int y, int w, int h, const char* name, PABlendData* s, ParameterGroup* window);
 		~ParameterVisualization();
 
 		virtual void draw();

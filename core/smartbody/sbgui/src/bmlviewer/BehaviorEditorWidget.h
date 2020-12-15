@@ -6,7 +6,7 @@
 class BehaviorEditorWidget : public nle::EditorWidget
 {
 	public:
-		BehaviorEditorWidget(int x, int y, int w, int h, char* name);
+		BehaviorEditorWidget(int x, int y, int w, int h, const char* name);
 
 		virtual void changeBlockSelectionEvent(nle::Block* block);
 		virtual void changeTrackSelectionEvent(nle::Track* track);

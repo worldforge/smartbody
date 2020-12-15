@@ -6,7 +6,7 @@
 
 
 
-CharacterCreatorWindow::CharacterCreatorWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h, name)
+CharacterCreatorWindow::CharacterCreatorWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h, name)
 {
 	numCharacter = 0;
 	begin();
@@ -75,7 +75,7 @@ void CharacterCreatorWindow::CreateCB(Fl_Widget* w, void* data)
 	creator->hide();
 }
 
-ResolutionWindow::ResolutionWindow( int x, int y, int w, int h, char* name ): Fl_Double_Window(x, y, w, h, name)
+ResolutionWindow::ResolutionWindow( int x, int y, int w, int h, const char* name ): Fl_Double_Window(x, y, w, h, name)
 {
 	baseWin = nullptr;
 	begin();	

@@ -6,7 +6,7 @@
 #include "PanimationWindow.h"
 
 
-ParameterVisualization::ParameterVisualization(bool isInteractive, int x, int y, int w, int h, char* name, PABlendData* s, ParameterGroup* group) : Fl_Group(x, y, w, h, name), blendData(s), paramGroup(group)
+ParameterVisualization::ParameterVisualization(bool isInteractive, int x, int y, int w, int h, const char* name, PABlendData* s, ParameterGroup* group) : Fl_Group(x, y, w, h, name), blendData(s), paramGroup(group)
 {
 	paramX = -9999;
 	paramY = -9999;

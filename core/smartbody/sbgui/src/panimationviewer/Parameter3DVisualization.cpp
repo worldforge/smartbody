@@ -10,7 +10,7 @@
 # define DOLLYING(e)	(e.alt && e.button3)
 # define TRANSLATING(e)	(e.alt && e.button2)
 
-VisualizationBase::VisualizationBase(int x, int y, int w, int h, char* name) :
+VisualizationBase::VisualizationBase(int x, int y, int w, int h, const char* name) :
 	Fl_Gl_Window(x, y, w, h, ""),
 	cam(Session::current->renderScene)
 {	
@@ -366,7 +366,7 @@ void VisualizationBase::drawGrid()
 
 
 
-Parameter3DVisualization::Parameter3DVisualization(int x, int y, int w, int h, char* name, PABlendData* s, ParameterGroup* window) : VisualizationBase(x, y, w, h, name), paramGroup(window)
+Parameter3DVisualization::Parameter3DVisualization(int x, int y, int w, int h, const char* name, PABlendData* s, ParameterGroup* window) : VisualizationBase(x, y, w, h, name), paramGroup(window)
 {	
 	this->begin();
 	this->end();

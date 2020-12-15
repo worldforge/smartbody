@@ -17,7 +17,7 @@
 class BehaviorWindow : public Fl_Double_Window, public GenericViewer
 {
 	public:
-		BehaviorWindow(int x, int y, int w, int h, char* name);
+		BehaviorWindow(int x, int y, int w, int h, const char* name);
 		~BehaviorWindow();
 
 		static void OnRequest(BML::BmlRequest* request, void* data);

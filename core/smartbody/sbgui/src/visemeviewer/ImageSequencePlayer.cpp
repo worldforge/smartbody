@@ -11,7 +11,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 
-ImageSequenceViewer::ImageSequenceViewer(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h, name), SBWindowListener()
+ImageSequenceViewer::ImageSequenceViewer(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h, name), SBWindowListener()
 {
 	this->label(name);
 	this->begin();
@@ -155,7 +155,7 @@ void ImageSequenceViewer::playbackSequence(float startTime, float length, float 
 }
 
 
-ImageSequencePlayer::ImageSequencePlayer(int x, int y, int w, int h, char* name) : Fl_Gl_Window(x, y, w, h, name)
+ImageSequencePlayer::ImageSequencePlayer(int x, int y, int w, int h, const char* name) : Fl_Gl_Window(x, y, w, h, name)
 {
 	_activeTexture = new SbmTexture("active");
 }

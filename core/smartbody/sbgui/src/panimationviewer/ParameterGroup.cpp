@@ -8,7 +8,7 @@
 #include "Parameter3DVisualization.h"
 #include "PanimationWindow.h"
 
-ParameterGroup::ParameterGroup(int x, int y, int w, int h, char* name, PABlendData* s, PanimationWindow* window, bool ex) : Fl_Group(x, y, w, h, name), blendData(s), paWindow(window), exec(ex)
+ParameterGroup::ParameterGroup(int x, int y, int w, int h, const char* name, PABlendData* s, PanimationWindow* window, bool ex) : Fl_Group(x, y, w, h, name), blendData(s), paWindow(window), exec(ex)
 {
 	//printf("Create parameter group, x = %d, y = %d\n",x,y);
 	this->label(blendData->state->stateName.c_str());

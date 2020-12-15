@@ -13,7 +13,7 @@
 class FaceShiftViewer : public GenericViewer, public Fl_Double_Window, public SBWindowListener
 {
 	public:
-		FaceShiftViewer(int x, int y, int w, int h, char* name);
+		FaceShiftViewer(int x, int y, int w, int h, const char* name);
 		~FaceShiftViewer();
 
 		virtual void show();

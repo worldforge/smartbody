@@ -39,7 +39,7 @@ class ResourceWindow : public Fl_Group, public SmartBody::SBObserver, public SBW
 		
 //		std::vector<std::string> _itemNameList;
 
-		ResourceWindow(int x, int y, int w, int h, char* name);
+		ResourceWindow(int x, int y, int w, int h, const char* name);
 		~ResourceWindow();
 		
 		virtual void label_viewer(std::string name);

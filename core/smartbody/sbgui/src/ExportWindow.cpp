@@ -10,7 +10,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/version.hpp>
 
-ExportWindow::ExportWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h, name)
+ExportWindow::ExportWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h, name)
 {
 	std::vector<std::string> aspects;
 	aspects.emplace_back("scene");

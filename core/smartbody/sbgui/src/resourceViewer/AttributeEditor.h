@@ -9,7 +9,7 @@
 class AttributeEditor : public Fl_Group, public SmartBody::SBObserver, public SBWindowListener, public SelectionListener
 {
 	public:
-		AttributeEditor(int x, int y, int w, int h, char* name);
+		AttributeEditor(int x, int y, int w, int h, const char* name);
 		~AttributeEditor();
 		
 		virtual void draw();

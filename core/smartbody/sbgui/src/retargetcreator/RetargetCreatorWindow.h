@@ -22,7 +22,7 @@
 class RetargetCreatorWindow : public Fl_Double_Window
 {
 public:
-	RetargetCreatorWindow(int x, int y, int w, int h, char* name);
+	RetargetCreatorWindow(int x, int y, int w, int h, const char* name);
 	~RetargetCreatorWindow();	
 	void show();
 	void hide();

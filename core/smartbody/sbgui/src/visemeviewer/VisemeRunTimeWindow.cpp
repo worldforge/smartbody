@@ -45,7 +45,7 @@ int RunTimeCurveData::getCurveDataId(const std::string& id, int group)
 	return -1;
 }
 
-VisemeRunTimeWindow::VisemeRunTimeWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h)
+VisemeRunTimeWindow::VisemeRunTimeWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h)
 {
 	_data = new RunTimeCurveData();
 

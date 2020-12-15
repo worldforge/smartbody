@@ -9,7 +9,7 @@
 #include <sb/SBVHMsgManager.h>
 #include <sb/SBFaceDefinition.h>
 
-FaceShiftViewer::FaceShiftViewer(int x, int y, int w, int h, char* name) : GenericViewer(x, y, w, h), Fl_Double_Window(x, y, w, h, name), SBWindowListener()
+FaceShiftViewer::FaceShiftViewer(int x, int y, int w, int h, const char* name) : GenericViewer(x, y, w, h), Fl_Double_Window(x, y, w, h, name), SBWindowListener()
 {
 	begin();
 

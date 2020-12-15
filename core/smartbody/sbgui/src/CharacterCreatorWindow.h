@@ -13,7 +13,7 @@ class BaseWindow;
 class CharacterCreatorWindow : public Fl_Double_Window
 {
 	public:
-		CharacterCreatorWindow(int x, int y, int w, int h, char* name);
+		CharacterCreatorWindow(int x, int y, int w, int h, const char* name);
 		~CharacterCreatorWindow();
 
 		void setSkeletons(std::vector<std::string>& skeletonNames);
@@ -28,7 +28,7 @@ class CharacterCreatorWindow : public Fl_Double_Window
 class ResolutionWindow : public Fl_Double_Window
 {
 public:
-	ResolutionWindow(int x, int y, int w, int h, char* name);
+	ResolutionWindow(int x, int y, int w, int h, const char* name);
 	~ResolutionWindow();
 	
 	static void SetCB(Fl_Widget* w, void* data);

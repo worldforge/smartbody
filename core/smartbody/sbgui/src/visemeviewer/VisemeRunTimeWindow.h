@@ -39,7 +39,7 @@ public:
 class VisemeRunTimeWindow : public Fl_Double_Window
 {
 public:
-	VisemeRunTimeWindow(int x, int y, int w, int h, char* name);
+	VisemeRunTimeWindow(int x, int y, int w, int h, const char* name);
 	~VisemeRunTimeWindow();
 
 	void show();

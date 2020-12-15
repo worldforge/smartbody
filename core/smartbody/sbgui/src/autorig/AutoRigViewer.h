@@ -23,7 +23,7 @@ class RetargetStepWindow;
 class ModelViewer : public MouseViewer
 {
 public:
-	ModelViewer(int x, int y, int w, int h, char* name);
+	ModelViewer(int x, int y, int w, int h, const char* name);
 	~ModelViewer() override;
 	void setModel(SrModel& model);
 	void focusOnModel();
@@ -37,7 +37,7 @@ protected:
 class SkinViewer : public MouseViewer
 {
 public:
-	SkinViewer(int x, int y, int w, int h, char* name);
+	SkinViewer(int x, int y, int w, int h, const char* name);
 	~SkinViewer() override;
 	void setSkeleton(SmartBody::SBSkeleton* sk);
 	void setDeformableMesh(DeformableMesh* mesh);
@@ -54,7 +54,7 @@ protected:
 class AutoRigViewer : public Fl_Double_Window, AutoRigCallBack
 {
 	public:
-		AutoRigViewer(int x, int y, int w, int h, char* name);
+		AutoRigViewer(int x, int y, int w, int h, const char* name);
 		
 		~AutoRigViewer() override;
 		

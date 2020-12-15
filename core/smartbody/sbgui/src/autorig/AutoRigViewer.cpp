@@ -35,7 +35,7 @@
 #endif
 
 
-AutoRigViewer::AutoRigViewer(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h, name)
+AutoRigViewer::AutoRigViewer(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h, name)
 {	
 	begin();	
 	int curY = 10;
@@ -313,7 +313,7 @@ void ModelViewer::updateFancyLights()
 	lights.emplace_back(light2);
 }
 
-ModelViewer::ModelViewer( int x, int y, int w, int h, char* name ) : MouseViewer(x,y,w,h,name)
+ModelViewer::ModelViewer( int x, int y, int w, int h, const char* name ) : MouseViewer(x,y,w,h,name)
 {
 	_model = nullptr;
 	updateFancyLights();
@@ -377,7 +377,7 @@ void ModelViewer::focusOnModel()
 /************************************************************************/
 /* Skin Viewer                                                          */
 /************************************************************************/
-SkinViewer::SkinViewer(int x, int y, int w, int h, char* name) : MouseViewer(x,y,w,h,name)
+SkinViewer::SkinViewer(int x, int y, int w, int h, const char* name) : MouseViewer(x,y,w,h,name)
 {
 	skeleton = nullptr;
 	skeletonScene = nullptr;

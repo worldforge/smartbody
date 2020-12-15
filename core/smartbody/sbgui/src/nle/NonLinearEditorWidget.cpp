@@ -6,7 +6,7 @@
 namespace nle
 {
 
-EditorWidget::EditorWidget(int x, int y, int w, int h, char* name) :
+EditorWidget::EditorWidget(int x, int y, int w, int h, const char* name) :
 									Fl_Widget(x, y, w, h, name)
 {
 	model = nullptr;

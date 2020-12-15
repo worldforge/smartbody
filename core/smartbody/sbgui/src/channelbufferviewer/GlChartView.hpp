@@ -63,7 +63,7 @@ public:
 	bool show_w; // if show w value when shown as quaternion
 
 public:
-	GlChartView(int x, int y, int w, int h, char* name);
+	GlChartView(int x, int y, int w, int h, const char* name);
 	~GlChartView();
 
 public:

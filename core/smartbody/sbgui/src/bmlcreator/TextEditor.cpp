@@ -1,6 +1,6 @@
 #include "TextEditor.h"
 
-TextEditorWindow::TextEditorWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(x, y, w, h, name)
+TextEditorWindow::TextEditorWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h, name)
 {
 	this->begin();
 	int yDis = 25;

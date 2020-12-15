@@ -19,7 +19,7 @@
 class MouseViewer : public Fl_Gl_Window
 {
 public:
-	MouseViewer(int x, int y, int w, int h, char* name);
+	MouseViewer(int x, int y, int w, int h, const char* name);
 	~MouseViewer();
 
 public:
@@ -40,7 +40,7 @@ protected:
 class SkeletonViewer : public MouseViewer
 {
 public:
-	SkeletonViewer(int x, int y, int w, int h, char* name);
+	SkeletonViewer(int x, int y, int w, int h, const char* name);
 	~SkeletonViewer();
 
 public:
@@ -84,7 +84,7 @@ class JointMapInputChoice : public Fl_Input_Choice
 protected:
 	SkeletonViewer* skelViewer;
 public:
-	JointMapInputChoice(int x, int y, int w, int h, char* name);
+	JointMapInputChoice(int x, int y, int w, int h, const char* name);
 	~JointMapInputChoice();
 public:
 	virtual int handle ( int event );
@@ -95,7 +95,7 @@ public:
 class JointMapViewer : public Fl_Double_Window
 {
 	public:
-		JointMapViewer(int x, int y, int w, int h, char* name);
+		JointMapViewer(int x, int y, int w, int h, const char* name);
 
 		void updateJointMapList();
 		//void updateCharacterList();

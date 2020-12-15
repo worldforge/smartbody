@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <sr/sr_vec.h>
 
-VisemeCurveEditor::VisemeCurveEditor(int x, int y, int w, int h, char* name) : Fl_Widget(x, y, w, h)
+VisemeCurveEditor::VisemeCurveEditor(int x, int y, int w, int h, const char* name) : Fl_Widget(x, y, w, h)
 {
 	_pointIsSelected = false;
 	_lineIsSelected = false;

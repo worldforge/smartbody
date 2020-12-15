@@ -10,7 +10,7 @@
 using namespace glfont;
 #endif
 
-VisemeRTCurveViewer::VisemeRTCurveViewer(int x, int y, int w, int h, char* name, RunTimeCurveData* data) : Fl_Gl_Window(x, y, w, h)
+VisemeRTCurveViewer::VisemeRTCurveViewer(int x, int y, int w, int h, const char* name, RunTimeCurveData* data) : Fl_Gl_Window(x, y, w, h)
 {
 	colorTable[0] = SrVec(1.0f, 0.0f, 0.0f);
 	colorTable[1] = SrVec(0.0f, 1.0f, 0.0f);

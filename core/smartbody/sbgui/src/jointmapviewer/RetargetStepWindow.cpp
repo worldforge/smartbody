@@ -24,7 +24,7 @@
 #include <boost/filesystem.hpp>
 
 #include <FL/fl_ask.H>
-RetargetStepWindow::RetargetStepWindow(int x, int y, int w, int h, char* name) : Fl_Double_Window(w, h, name)
+RetargetStepWindow::RetargetStepWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(w, h, name)
 {	
 	int yDis = 10;
 	int yOffset = 20;

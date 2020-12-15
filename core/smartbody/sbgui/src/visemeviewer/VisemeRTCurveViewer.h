@@ -13,7 +13,7 @@ class RunTimeCurveData;
 class VisemeRTCurveViewer : public Fl_Gl_Window
 {
 public:
-	VisemeRTCurveViewer(int x, int y, int w, int h, char* name, RunTimeCurveData* data);
+	VisemeRTCurveViewer(int x, int y, int w, int h, const char* name, RunTimeCurveData* data);
 	~VisemeRTCurveViewer();
 
 	virtual void draw();
