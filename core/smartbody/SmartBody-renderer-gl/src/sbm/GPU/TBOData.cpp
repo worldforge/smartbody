@@ -1,17 +1,11 @@
-#include <sb/SBTypes.h>
 
-#if !defined(__FLASHPLAYER__) && !defined(EMSCRIPTEN) && !defined(__ANDROID__) && !defined(SB_IPHONE) 
 #include "GL/glew.h"
-#endif
 #include "TBOData.h"
 #include "SbmShader.h"
 #include <cstring>
 #include <cstdio>
 
 #define BUFFER_OFFSET(i) ((char *)nullptr + (i))
-//Zengrui: For Smartbody Javascript, we use another project for the rendering part
-//thus, ifdef out the implementation
-#if !defined(EMSCRIPTEN) && !defined(__ANDROID__) && !defined(SB_IPHONE) 
 TBOData::TBOData( char* name, ublas::vector<float>& Data )
 {
 	strcpy(m_Name,name);
@@ -133,4 +127,3 @@ void TBOData::ReadOutData( float* pOutData, int nSize )
 	memcpy(pOutData,pData,sizeof(float)*nSize);
 	glUnmapBuffer(GL_TEXTURE_BUFFER_EXT);
 }
-#endif

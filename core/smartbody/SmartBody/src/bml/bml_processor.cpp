@@ -553,10 +553,8 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 			}
 			else
 			{
-				#if !defined(__FLASHPLAYER__)
 				// Added by Yuyu 10-01-2013, if the behavior is nullptr, filter out
 				child->setAttribute(BMLDefs::ATTR_FILTERED, BMLDefs::ATTR_TRUE);
-				#endif
 			}
 		}
 

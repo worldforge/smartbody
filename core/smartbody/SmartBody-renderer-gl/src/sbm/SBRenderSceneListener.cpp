@@ -459,15 +459,11 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 						renderable.scene_p->set_visibility(0, 0, 0, 0);
 					if (renderable.meshInstance)
 						renderable.meshInstance->setVisibility(1);
-#if !defined(__ANDROID__) && !defined(__FLASHPLAYER__) && !defined(SB_IPHONE)
 					SbmDeformableMeshGPU::useGPUDeformableMesh = false;
-#endif
 				} else if (value == "GPUmesh") {
 					if (renderable.scene_p)
 						renderable.scene_p->set_visibility(0, 0, 0, 0);
-#if !defined(__ANDROID__) && !defined(__FLASHPLAYER__) && !defined(SB_IPHONE)
 					SbmDeformableMeshGPU::useGPUDeformableMesh = true;
-#endif
 					if (renderable.meshInstance)
 						renderable.meshInstance->setVisibility(1);
 

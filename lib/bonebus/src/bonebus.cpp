@@ -20,15 +20,12 @@
 
 #include "vhcl.h"
 
-//#if defined(WIN_BUILD)
-#if !defined(FLASH_BUILD)
-
 
 #include "bonebus.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #if defined(WIN_BUILD)
 #include <winsock.h>
 #else
@@ -2109,96 +2106,4 @@ bool BoneBusServer::Update()
 }
 
 
-#else  // WIN_BUILD
-
-#include "bonebus.h"
-
-#include <string>
-
-using std::string;
-using std::vector;
-using namespace bonebus;
-
-// TODO: linux
-
-BoneBusCharacter::BoneBusCharacter( const bool useFaceBones ) {}
-BoneBusCharacter::~BoneBusCharacter() {}
-void BoneBusCharacter::StartSendBoneRotations() {}
-void BoneBusCharacter::EndSendBoneRotations() {}
-void BoneBusCharacter::AddBoneRotation( const char * boneName, const float w, const float x, const float y, const float z, const double time ) {}
-void BoneBusCharacter::StartSendGeneralParameters() {}
-void BoneBusCharacter::AddGeneralParameters( const int paramNameId, const int size, const float x, const int id, const double time ) {}
-void BoneBusCharacter::EndSendGeneralParameters() {}
-void BoneBusCharacter::StartSendBonePositions() {}
-void BoneBusCharacter::EndSendBonePositions() {}
-void BoneBusCharacter::AddBonePosition( const char * boneName, const float x, const float y, const float z, const double time ) {}
-void BoneBusCharacter::SetParams( const char * paramName, const int paramNameId ) {}
-void BoneBusCharacter::SetViseme( const char * viseme, const float weight, const float blendTime ) {}
-void BoneBusCharacter::SetPosition( const float x, const float y, const float z, const double time ) {}
-void BoneBusCharacter::SetRotation( const float w, const float x, const float y, const float z, const double time ) {}
-int BoneBusCharacter::GetNumErrors() { return 0; }
-void BoneBusCharacter::IncrementTime () {}
-
-BoneBusClient::BoneBusClient() {}
-BoneBusClient::~BoneBusClient() {}
-bool BoneBusClient::OpenConnection( const char * server ) { return true; }
-bool BoneBusClient::CloseConnection() { return true; }
-bool BoneBusClient::IsOpen() { return true; }
-bool BoneBusClient::Update() { return true; }
-int BoneBusClient::GetNumCharacters() { return 0; }
-BoneBusCharacter * BoneBusClient::CreateCharacter( const char * charName, const char * objectClass, const bool useFaceBones ) { return NULL; }
-void BoneBusClient::UpdateAllCharacters() {};
-bool BoneBusClient::DeleteCharacter( BoneBusCharacter * character ) { return true; }
-BoneBusCharacter * BoneBusClient::FindCharacter( const int charID ) { return NULL; }
-BoneBusCharacter * BoneBusClient::FindCharacterByName( const char * name ) { return NULL; }
-void BoneBusClient::SetCameraPosition( const float x, const float y, const float z ) {}
-void BoneBusClient::SetCameraRotation( const float w, const float x, const float y, const float z ) {}
-void BoneBusClient::ExecScript( const char * command ) {}
-void BoneBusClient::SendPlaySound( const char * soundFile, const char * charName ) {}
-void BoneBusClient::SendStopSound( const char * soundFile ) {}
-vector<string> BoneBusClient::GetCommand()
-{
-   vector<string> results;
-   return results;
-}
-
-unsigned int BoneBusClient::HashDJB2( const char * str )
-{
-   unsigned int hash = 5381;
-   int c;
-
-   while ( c = *str++ )
-      hash = ( ( hash << 5 ) + hash ) + c;   // hash * 33 + c
-
-   return hash;
-}
-
-
-bool BoneBusClient::FindID( const CharacterNameMap & map, const int id )
-{
-   for ( CharacterNameMap::const_iterator it = map.begin(); it != map.end(); it++ )
-   {
-      if ( it->second == id )
-      {
-         return true;
-      }
-   }
-
-   return false;
-}
-
-
-void BoneBusClient::SendSpeakText( const int msgNumber, const char * agent, const char * text ) {}
-void BoneBusClient::SendCreatePawn( const char * name, const double locx, const double locy, const double locz ) {}
-
-
-BoneBusServer::BoneBusServer() {}
-BoneBusServer::~BoneBusServer() {}
-bool BoneBusServer::OpenConnection() { return true; }
-bool BoneBusServer::CloseConnection() { return true; }
-bool BoneBusServer::IsOpen() { return true; }
-bool BoneBusServer::Update() { return true; }
-
-
-#endif  // WIN_BUILD
 

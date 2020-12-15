@@ -34,8 +34,6 @@
        #include <OpenGL/gl.h>
 //       #include <Carbon/Carbon.h>
        #define APIENTRY
-#elif defined(__FLASHPLAYER__)
-	#include <GL/gl.h>
 #elif defined(EMSCRIPTEN)
 	#include <GLES2/gl2.h>
 	#include <GLES2/gl2ext.h>
@@ -2043,7 +2041,7 @@ int query_DXT_capability( void )
 				CFRelease( bundle );
 */
 				ext_addr = NULL;
-			#elif defined(__FLASHPLAYER__) || defined(__ANDROID__) || defined(SB_IPHONE) || defined (EMSCRIPTEN)
+			#elif defined(__ANDROID__) || defined(SB_IPHONE) || defined (EMSCRIPTEN)
 			#else
 				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
 						glXGetProcAddressARB

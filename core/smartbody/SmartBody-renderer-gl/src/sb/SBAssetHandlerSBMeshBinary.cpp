@@ -50,7 +50,7 @@ namespace SmartBody {
 		std::string fileName = boost::filesystem::basename(p);
 		std::string extension =  boost::filesystem::extension(p);
 
-#if !defined(__FLASHPLAYER__) && !defined(__native_client__) && !defined(EMSCRIPTEN)
+#if !defined(__native_client__) && !defined(EMSCRIPTEN)
 		SmartBody::util::log("Creating GPU Deformable Mesh");
 		auto mesh = std::make_unique<SbmDeformableMeshGPU>();
 #else

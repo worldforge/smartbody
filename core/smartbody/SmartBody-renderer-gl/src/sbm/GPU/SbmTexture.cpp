@@ -19,23 +19,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 #include <sb/SBTypes.h>
 
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
+#if !defined(EMSCRIPTEN)
 #include "GL/glew.h"
 #include "sbm/GPU/SbmDeformableMeshGPU.h"
 #endif
 #include "SbmTexture.h"
-#include "SbmShader.h"
-//#include "SOIL/SOIL.h"
 
 #define STB_DEFINE
 #include "stb.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include <sb/SBTypes.h>
 #include <sb/SBAttribute.h>
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
-//#include "imdebug/imdebug.h"
 #include <sr/sr_gl.h>
 #include <cstring>
 
@@ -477,16 +473,12 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 
     //SmartBody::util::log("After Texture parameters : GL_TEXTURE_WRAP_S");
 
-#if !defined (__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE)
     if (buildMipMap)
         glTexParameteri(iType, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
     else
         glTexParameteri(iType, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 #if !defined(EMSCRIPTEN)
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-#endif
-#else
-    glTexParameteri(iType, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 #endif
 
 	//glTexParameteri(iType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -525,7 +517,7 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 	if (!imgBuffer.empty())
 		buffer = imgBuffer.data();
     //glTexImage2D(iType,0,texture_format,width,height,0,texture_format,GL_UNSIGNED_BYTE,buffer);
-#if !defined (__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(__linux__) &!defined(EMSCRIPTEN)
+#if !defined(EMSCRIPTEN)
     //if (buildMipMap)
     //    gluBuild2DMipmaps(iType, channels, width, height, texture_format, dataType, buffer);
     //else
@@ -547,7 +539,7 @@ void SbmTextureData::buildTexture(bool buildMipMap, bool recreateTexture)
 		glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 
-#if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
+#if !defined(EMSCRIPTEN)
     GLclampf iPrority = 1.0;
     glPrioritizeTextures(1,&texID,&iPrority);
 #endif

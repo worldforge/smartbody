@@ -1,8 +1,5 @@
 
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#endif
-
 #include "SBFrameBufferObject.h"
 #include "SBUtilities.h"
 

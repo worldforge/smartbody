@@ -75,9 +75,6 @@ bool SBAnimationBlendManager::addTransitionEdgeToGraph( const std::string& sourc
 
 SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& name)
 {
-#if __FLASHPLAYER__
-	return nullptr;
-#endif
 
 	SBAnimationBlend0D* blend = new SBAnimationBlend0D(name);
 
@@ -94,9 +91,6 @@ SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& na
 
 SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& name)
 {
-#if __FLASHPLAYER__
-	return nullptr;
-#endif
 
 	SBAnimationBlend1D* blend = new SBAnimationBlend1D(name);
 	
@@ -113,9 +107,6 @@ SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& na
 
 SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& name)
 {
-#if __FLASHPLAYER__
-	return nullptr;
-#endif
 
 	SBAnimationBlend2D* blend = new SBAnimationBlend2D(name);
 	
@@ -133,9 +124,6 @@ SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& na
 
 SBAnimationBlend3D* SBAnimationBlendManager::createBlend3D(const std::string& name)
 {
-#if __FLASHPLAYER__
-	return nullptr;
-#endif
 
 	SBAnimationBlend3D* blend = new SBAnimationBlend3D(name);
 	

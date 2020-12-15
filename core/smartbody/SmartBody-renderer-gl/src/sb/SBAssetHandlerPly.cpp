@@ -53,7 +53,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerPly::getAssets(const std::st
 	bool loadSuccess = model.import_ply(convertedPath.c_str());
 	if (loadSuccess)
 	{
-#if !defined(__FLASHPLAYER__) && !defined(__native_client__) && !defined(EMSCRIPTEN)
+#if !defined(__native_client__) && !defined(EMSCRIPTEN)
 		auto mesh = std::make_unique<SbmDeformableMeshGPU>();
 #else
 		DeformableMesh* mesh = new DeformableMesh();

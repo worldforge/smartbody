@@ -13,7 +13,7 @@
 
 using namespace Util;
 
-#if !defined(_WIN32) && !defined(__FLASHPLAYER__)
+#if !defined(_WIN32)
 
 // initial values
 unsigned long long CounterFrequencyEstimator::_freq = 0;
@@ -42,7 +42,6 @@ void CounterFrequencyEstimator::_computeFrequencyEstimate()
 
 #endif
 
-#if !defined(__FLASHPLAYER__)
 float Util::getEstimatedCounterResolution()
 {
 	const unsigned int numTrials = 5000;
@@ -74,9 +73,3 @@ float Util::getEstimatedCounterResolution()
 
 	return rate;
 }
-#else
-float Util::getEstimatedCounterResolution()
-{
-	return 0.0f;
-}
-#endif

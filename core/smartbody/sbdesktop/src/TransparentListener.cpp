@@ -344,17 +344,13 @@ void TransparentListener::notify(SmartBody::SBSubject* subject)
 						pawn->scene_p->set_visibility(0,0,0,0);
 					if (pawn->dMeshInstance_p)
 						pawn->dMeshInstance_p->setVisibility(1);
- #if !defined(__ANDROID__) && !defined(__FLASHPLAYER__) && !defined(SB_IPHONE)						
 					SbmDeformableMeshGPU::useGPUDeformableMesh = false;
-#endif          
 				}
 				else if (value == "GPUmesh")
 				{
 					if (pawn->scene_p)
 						pawn->scene_p->set_visibility(0,0,0,0);
-#if !defined(__ANDROID__) && !defined(__FLASHPLAYER__) && !defined(SB_IPHONE)
 					SbmDeformableMeshGPU::useGPUDeformableMesh = true;
-#endif
 					if (pawn->dMeshInstance_p)
 						pawn->dMeshInstance_p->setVisibility(1);
 

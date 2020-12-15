@@ -475,7 +475,7 @@ void SBOpenVRListener::notify(SmartBody::SBSubject* subject)
 					if (pawn->dMeshInstance_p)
 						pawn->dMeshInstance_p->setVisibility(1);
 
-#if !defined(__ANDROID__) && !defined(__FLASHPLAYER__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
+#if !defined(__ANDROID__)  && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 					SbmDeformableMeshGPU::useGPUDeformableMesh = false;
 #endif          
 				}
@@ -483,7 +483,7 @@ void SBOpenVRListener::notify(SmartBody::SBSubject* subject)
 				{
 					if (pawn->scene_p)
 						pawn->scene_p->set_visibility(0, 0, 0, 0);
-#if !defined(__ANDROID__) && !defined(__FLASHPLAYER__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
+#if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 					SbmDeformableMeshGPU::useGPUDeformableMesh = true;
 #endif
 					if (pawn->dMeshInstance_p)

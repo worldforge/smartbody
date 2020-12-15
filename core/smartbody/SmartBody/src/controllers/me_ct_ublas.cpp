@@ -10,10 +10,8 @@
 #define __SB_LA_UBLAS 1
 #define __SB_LA_EIGEN 2
 
-#if defined(EMSCRIPTEN) || defined(__ANDROID__) || defined(SB_IPHONE)
+#if defined(EMSCRIPTEN)
 #define __SB_LA __SB_LA_EIGEN
-#elif defined(__FLASHPLAYER__)
-#define __SB_LA __SB_LA_NONE
 #else
 #define __SB_LA __SB_LA_UBLAS
 #endif
@@ -34,7 +32,7 @@ using namespace Eigen;
 #endif
 
 
-#include <time.h>
+#include <ctime>
 
 namespace lapack = boost::numeric::bindings::lapack;
 namespace blas   = boost::numeric::bindings::blas;
@@ -93,7 +91,7 @@ bool MeCtUBLAS::inverseMatrix( const dMatrix& mat, dMatrix& inv )
 	using namespace boost::numeric::ublas;
 	dMatrix A(mat);
 	inv = identity_matrix<double>(mat.size1());
-#if !defined(__ANDROID__) && !defined(SB_IPHONE) &&  !defined(__FLASHPLAYER__) && !defined(EMSCRIPTEN)
+#if !defined(EMSCRIPTEN)
 	lapack::gesv(A,inv);
 #elif __SB_LA == __SB_LA_EIGEN
 	MatrixXd m(mat.size1(), mat.size2()), mInv;

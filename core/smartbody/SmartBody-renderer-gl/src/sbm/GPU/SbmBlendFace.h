@@ -19,23 +19,22 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #pragma once
-#include <sb/SBTypes.h>
 
+#include "SbmBlendFace.h"
+#include <sb/SBTypes.h>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
+#if !defined(EMSCRIPTEN)
 #include "GL/glew.h"
 #include "TBOData.h"
-#include <sbm/sbm_deformable_mesh.h>
-#include "SbmShader.h"
 #include "VBOData.h"
-#elif defined(__ANDROID__) || defined(SB_IPHONE)
+#endif
+
 #include <sbm/sbm_deformable_mesh.h>
 #include "SbmShader.h"
-#endif
 
 class SbmDeformableMeshGPU;
 #if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)

@@ -4,16 +4,8 @@
 
 #include <sb/SBTypes.h>
 
-#if !defined(__FLASHPLAYER__) && !defined(EMSCRIPTEN) && !defined(__ANDROID__) && !defined(SB_IPHONE) 
 #include "GL/glew.h"
-#endif
-#if defined(__ANDROID__)
-#include <GLES3/gl3.h>
-#endif
 #include "VBOData.h"
-
-//Zengrui: ifdef out function definition for SmartBody Javascript
-#if !defined(EMSCRIPTEN)
 
 
 #if 0
@@ -238,5 +230,4 @@ void VBOData::Debug(const char* tag/* = "TBO"*/)
 	printf("\n");
 
 }
-#endif
 #endif

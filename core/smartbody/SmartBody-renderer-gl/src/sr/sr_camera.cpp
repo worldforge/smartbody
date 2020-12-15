@@ -32,31 +32,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSimulationManager.h>
 #include "SBUtilities.h"
 #include "sbm/SBRenderScene.h"
-#ifdef WIN32
-	//#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#include <wingdi.h>
-	#include <GL/glew.h>
-#elif defined(SB_IPHONE)
-    #include <OpenGLES/ES1/gl.h>
-    #include <OpenGLES/ES1/glext.h>
-#elif defined(__APPLE__) || defined(__APPLE_CC__)
-       #include <OpenGL/gl.h>
-//       #include <Carbon/Carbon.h>
-       #define APIENTRY
-#elif defined(__FLASHPLAYER__)
-	#include <GL/glew.h>
-#elif defined(__ANDROID__)
-	//#include <GLES/gl.h>
-	#include <GLES3/gl3.h>
-	//#include <wes_gl.h>
-#elif defined(EMSCRIPTEN)
-	#include<GLES2/gl2.h>
-	#include<GLES2/gl2ext.h>
-#else
-	#include <GL/glew.h>
-	#include <GL/glx.h>
-#endif
+#include <GL/glew.h>
 
 
 

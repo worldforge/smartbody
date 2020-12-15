@@ -1,7 +1,3 @@
-#if !defined(__FLASHPLAYER__)
-#include "GL/glew.h"
-#endif
-
 #ifdef WIN32
 #if _MSC_VER == 1500
 #define USE_CEGUI 0

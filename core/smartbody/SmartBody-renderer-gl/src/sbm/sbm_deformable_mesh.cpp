@@ -19,16 +19,15 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
+#include "sbm_deformable_mesh.h"
 #include <google/protobuf/io/coded_stream.h>
 #include <sb/SBTypes.h>
 
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
+#if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#include "sbm/GPU/SbmDeformableMeshGPU.h"
 #endif
 
 #include "sbm/GPU/SbmBlendFace.h"
-#include "sbm_deformable_mesh.h"
 
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>
@@ -40,7 +39,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 
 #include <boost/algorithm/string.hpp>
 #include <protocols/sbmesh.pb.h>
@@ -51,9 +49,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
-#include <boost/filesystem.hpp>
 #include <algorithm>
 #include <sbm/ParserCOLLADAFast.h>
 #include <sbm/ParserOpenCOLLADA.h>
@@ -71,28 +67,16 @@ static bool intFloatComp(const IntFloatPair& p1, const IntFloatPair& p2)
 	return (p1.second > p2.second);
 }
 
-SkinWeight::SkinWeight()
-{
-}
+SkinWeight::SkinWeight() = default;
 
-SkinWeight::~SkinWeight()
-{
-	for (unsigned int i = 0; i < infJoint.size(); i++)
-	{
-		SkJoint* j = infJoint[i];
-		if (j)
-			j = nullptr;
-	}
-	infJoint.clear();
-}
+SkinWeight::~SkinWeight() = default;
 
 void SkinWeight::normalizeWeights()
 {
 	int idx = 0;
-	for (unsigned int i=0;i<numInfJoints.size();i++)
+	for (int nJoint : numInfJoints)
 	{
-		int nJoint = numInfJoints[i];
-		float wTotal = 0.f;
+			float wTotal = 0.f;
 		for (int k=0;k<nJoint;k++)
 		{
 			int widx = weightIndex[idx+k];
@@ -2027,7 +2011,7 @@ bool DeformableMesh::readFromSmb(std::string inputFileName)
 	std::fstream input(inputFileName.c_str(), std::ios::in | std::ios::binary);
   google::protobuf::io::IstreamInputStream raw_input(&input);
   google::protobuf::io::CodedInputStream coded_input(&raw_input);
-	coded_input.SetTotalBytesLimit(256000000, 256000000);
+	coded_input.SetTotalBytesLimit(256000000);
 	
 	if (!staticMesh.ParseFromCodedStream(&coded_input))
 	{

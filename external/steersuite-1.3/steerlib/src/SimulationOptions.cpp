@@ -47,7 +47,7 @@
 #endif
 
 #ifndef BUILD_IPHONE
-#if !defined(__native_client__) && !defined(__FLASHPLAYER__)
+#if !defined(__native_client__)
 //#include "glfw/include/GL/glfw.h"
 
 
@@ -377,7 +377,7 @@ SimulationOptions::SimulationOptions()
 	//
 
 #ifndef BUILD_IPHONE
-#if !defined(__native_client__) && !defined(__FLASHPLAYER__)
+#if !defined(__native_client__)
 	// keyboard config
 	keyboardBindings.quit = DEFAULT_KEY_QUIT;
 	keyboardBindings.printCameraInfo = DEFAULT_KEY_PRINT_CAMERA_INFO;

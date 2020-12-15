@@ -129,9 +129,7 @@ socket_t SocketAccept(socket_t socket)
    socklen_t i = sizeof( sockaddr_in );
 #endif
 
-#if !defined(FLASH_BUILD)
    sockTCP = accept( (SOCKET)socket, (sockaddr *)&newToAddr, &i );
-#endif
 
    //printf( "New Connection!\n" );
    //string clientIP = inet_ntoa( newToAddr.sin_addr );
@@ -208,9 +206,7 @@ bool SocketConnect(socket_t socket, const std::string & server, int port)
 
    int ret;
 
-#if !defined(FLASH_BUILD)
    ret = connect((SOCKET)socket, (SOCKADDR*)&toAddrTCP, sizeof(toAddrTCP));
-#endif
 
    if (ret < 0)
    {

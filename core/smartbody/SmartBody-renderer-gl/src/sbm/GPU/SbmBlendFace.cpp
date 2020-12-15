@@ -20,9 +20,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
+#if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#include "jpge/jpge.h"
 #endif
 
 #if !defined(SB_IPHONE)
@@ -37,7 +36,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 #include "SbmBlendFace.h"
-#include "jpge/jpge.h"
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>
 #include <sb/SBPawn.h>

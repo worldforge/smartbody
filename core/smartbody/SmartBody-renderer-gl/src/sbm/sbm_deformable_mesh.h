@@ -48,8 +48,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <OpenGL/gl.h>
 //       #include <Carbon/Carbon.h>
        #define APIENTRY
-#elif defined(__FLASHPLAYER__)
-#include <GL/glew.h>
 #elif defined(EMSCRIPTEN)
 #include <GLES2/gl2.h>
 	#include <GLES2/gl2ext.h>

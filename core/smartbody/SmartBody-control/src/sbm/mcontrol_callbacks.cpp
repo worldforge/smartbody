@@ -101,10 +101,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <gperftools/heap-profiler.h>
 #endif
 
-#ifdef __FLASHPLAYER__
-#include "AS3/AS3.h"
-#endif
-
 #include "mcontrol_callbacks.h"
 
 
@@ -1605,7 +1601,6 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebus
 		// if internal audio is on, use the internal sound player
         if (SmartBody::SBScene::getScene()->getBoolAttribute("internalAudio"))
         {
-#if !defined(__FLASHPLAYER__)
           SmartBody::util::log("Play AudioFile = %s", soundFile.c_str() );
           soundDuration = AUDIO_Play( soundFile.c_str() );
 		  if (soundDuration != 0.0f)
@@ -1614,22 +1609,6 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebus
 			strstr2 << "sb scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent(\"sound\", \"" << strstr.str() << " stop\", \"" << characterObjectName << "\"))";
 			SmartBody::SBScene::getScene()->commandAt(soundDuration, strstr2.str());
 		  }
-
-#else
-          std::string souldFileBase = boost::filesystem::basename(soundFile);
-          std::string soundFileBaseMP3 = souldFileBase + ".mp3";
-          SmartBody::util::log("Sound file name: %s", soundFileBaseMP3.c_str());
-            inline_as3(
-              "import flash.media.Sound;\n\
-               import flash.net.URLRequest;\n\
-               var fileString : String = CModule.readString(%0, %1);\n\
-               var request:URLRequest = new URLRequest(fileString);\n\
-               var soundFactory:Sound = new Sound();\n\
-               soundFactory.load(request);\n\
-               soundFactory.play();\n"
-               : : "r"(soundFileBaseMP3.c_str()), "r"(strlen(soundFileBaseMP3.c_str()))
-              );
-#endif
         }
         else
         {

@@ -1,7 +1,4 @@
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#endif
-
 #include "SBBaseRenderer.h"
 #include "Session.h"
 #include <sb/SBScene.h>

@@ -95,8 +95,6 @@
    #endif
 #elif defined(__ANDROID__)
    #define ANDROID_BUILD 1
-#elif defined(__FLASHPLAYER__)
-   #define FLASH_BUILD 1
 #elif defined(linux) || defined(__linux)
    #define LINUX_BUILD 1
 #else
@@ -115,7 +113,7 @@
 #elif defined(NDEBUG)
    #define RELEASE_BUILD 1
 #else
-   #if defined(LINUX_BUILD) || defined(MAC_BUILD) || defined(IPHONE_BUILD) || defined(ANDROID_BUILD) || defined(EMSCRIPTEN_BUILD) || defined(FLASH_BUILD)
+   #if defined(LINUX_BUILD) || defined(MAC_BUILD) || defined(IPHONE_BUILD) || defined(ANDROID_BUILD) || defined(EMSCRIPTEN_BUILD)
       #define RELEASE_BUILD 1
    #else
       #define UNKNOWN_BUILD 1

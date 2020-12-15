@@ -23,15 +23,7 @@
 
 #include "SBABI.h"
 
-#ifdef __ANDROID__
-//#include <GLES/gl.h>
-#include <GLES3/gl3.h>
-//#include <wes_gl.h>
-#elif defined(SB_IPHONE)
-#include <OpenGLES/ES1/gl.h>
-#elif !defined(__FLASHPLAYER__) && !defined(ANDROID_BUILD) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#endif
 
 
 #include <sr/sr_vec.h>
@@ -50,10 +42,8 @@
 #include <sbm/GPU/SbmBlendFace.h>
 #include <sbm/sbm_deformable_mesh.h>
 
-#if !defined(ANDROID_BUILD) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 #include <sbm/GPU/SbmShader.h>
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
-#endif
 
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>
@@ -77,14 +67,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#if !defined(EMSCRIPTEN)
 //=============================== render_model ====================================
-
-
 
 void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 {
-#if !defined(ANDROID_BUILD) && !defined(SB_IPHONE)
 	bool USE_SHADER_MANAGER = true;
 
 	auto* model			= new SrModel();
@@ -263,17 +249,12 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 	delete blendFace;
 
 	delete mesh;
-#endif
 }
 
 // Renders static mesh WITHOUT Ogre3D
 void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool showSkinWeight  )
 {
-#if ANDROID_BUILD
-	bool USE_GPU_BLENDSHAPES = false;
-#else
 	bool USE_GPU_BLENDSHAPES = false; // set to false for no masks, true for masks
-#endif
 #if USE_GL_FIXED_PIPELINE
 	//SmartBody::util::log("Render Deformable Model");
 	DeformableMesh* mesh = shape->getDeformableMesh();
@@ -282,7 +263,6 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
         //SmartBody::util::log("SrGlRenderFuncs::renderDeformableMesh ERR: no deformable mesh found!");
         return; // no deformable mesh
     }
-#if !defined(__ANDROID__) && !defined(SB_IPHONE)
 	//SmartBody::util::log("Shape visibility = %d", shape->getVisibility());
 // 	if (SmartBody::SBScene::getScene()->getBoolAttribute("drawMeshWireframe"))
 // 	{
@@ -293,7 +273,6 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 // 	{
 // 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 // 	}
-#endif
 
 	bool useGPUBlendShapes = SmartBody::SBScene::getScene()->getBoolAttribute("useGPUBlendshapes");
 	if(useGPUBlendShapes)
@@ -666,12 +645,8 @@ void SrGlRenderFuncs::render_model ( SrSnShapeBase* shape )
       myGLEnable(GL_TEXTURE_2D);	 	
       glBindTexture(GL_TEXTURE_2D,tex->getID());	   	      
       //SmartBody::util::log("mtlName = %s, has texture = %s, texID = %d", mtlName.c_str(), texName.c_str(), tex->getID());
-#if !defined (__FLASHPLAYER__)
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-#else
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-#endif
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR); 
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	
       
       glTexCoordPointer(2, GL_FLOAT, 0, T[0].data());
@@ -779,12 +754,8 @@ void SrGlRenderFuncs::render_model ( SrSnShapeBase* shape )
 			   glBindTexture(GL_TEXTURE_2D,tex->getID());	   	   
 			   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_CLAMP);
 			   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_CLAMP);
-#if !defined (__FLASHPLAYER__)
 			   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
-#else
-			   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-#endif
-			   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR); 
+			   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 			   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	  
 			   //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);	
 			   //printf("Texture bound[%d], start drawing %s\n", tex->getID(), mtlName.c_str());
@@ -1346,17 +1317,5 @@ void SrGlRenderFuncs::render_polygons ( SrSnShapeBase* shape )
     ::render_polygon ( p[i], shape->render_mode(), resolution );
 #endif
  }
-#else
-static void renderBlendFace( DeformableMeshInstance* shape){};
-static void renderDeformableMesh( DeformableMeshInstance* shape, bool showSkinWeight = false ){};
-static void render_model ( SrSnShapeBase* shape ){};
-static void render_lines ( SrSnShapeBase* shape ){};
-static void render_points ( SrSnShapeBase* shape ){};
-static void render_box ( SrSnShapeBase* shape ){};
-static void render_sphere ( SrSnShapeBase* shape ){};
-static void render_cylinder ( SrSnShapeBase* shape ){};
-static void render_polygon ( SrSnShapeBase* shape ){};
-static void render_polygons ( SrSnShapeBase* shape ){};
 
-#endif
 //======================================= EOF ====================================

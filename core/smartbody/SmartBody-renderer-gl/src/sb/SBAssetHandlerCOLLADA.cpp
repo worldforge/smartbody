@@ -153,7 +153,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 			}
 
 			// parsing geometry
-#if  !defined(__FLASHPLAYER__) && !defined(__native_client__) && !defined(EMSCRIPTEN)
+#if !defined(__native_client__) && !defined(EMSCRIPTEN)
 			auto mesh = std::make_unique<SbmDeformableMeshGPU>();
 #else
 			auto mesh = std::make_unique<DeformableMesh>();

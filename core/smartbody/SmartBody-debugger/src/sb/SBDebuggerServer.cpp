@@ -85,10 +85,6 @@ void SBDebuggerServer::Init()
 {
 #ifndef SB_NO_VHMSG
 
-#if __FLASHPLAYER__
-	return;
-#endif
-
    bool ret = vhcl::SocketStartup();
    if (!ret)
    {
@@ -161,10 +157,6 @@ void SBDebuggerServer::Close()
 {
 #ifndef SB_NO_VHMSG
 
-#if __FLASHPLAYER__
-	return;
-#endif
-
    if ( m_sockTCP )
    {
       vhcl::SocketClose(m_sockTCP);
@@ -178,10 +170,6 @@ void SBDebuggerServer::Close()
 void SBDebuggerServer::Update()
 {
 #ifndef SB_NO_VHMSG
-
-#if __FLASHPLAYER__
-	return;
-#endif
 
    if (m_updateFrequencyS > 0)
    {

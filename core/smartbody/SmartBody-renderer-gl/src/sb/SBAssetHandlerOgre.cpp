@@ -80,7 +80,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 	else if (convertedPath.find(".mesh.xml") != std::string::npos)
 	{
 		// parse the mesh and skinweights in a separate pass (should be collapsed into only one pass...)
-#if !defined(__FLASHPLAYER__) && !defined(__native_client__) && !defined(EMSCRIPTEN)
+#if !defined(__native_client__) && !defined(EMSCRIPTEN)
 		auto mesh = std::make_unique<SbmDeformableMeshGPU>();
 #else
 		auto mesh = std::make_unique<DeformableMesh>();

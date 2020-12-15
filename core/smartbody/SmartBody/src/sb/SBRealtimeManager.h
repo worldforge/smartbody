@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <sb/SBSubject.h>
 
-#if defined(LINUX_BUILD) || defined(MAC_BUILD) || defined(IPHONE_BUILD) || defined(ANDROID_BUILD) || defined(FLASH_BUILD)
+#if defined(LINUX_BUILD) || defined(MAC_BUILD)
 #elif defined (WIN_BUILD)
 #define USE_PERCEPTIONNEURON 0
 #endif
@@ -51,10 +51,10 @@ class SBRealtimeManager : public SBService
 		SBAPI SBRealtimeManager();
 		SBAPI ~SBRealtimeManager();
 
-		SBAPI virtual void setEnable(bool val);
-		SBAPI virtual bool isEnable();
-		SBAPI virtual void start();
-		SBAPI virtual void stop();
+		SBAPI void setEnable(bool val) override;
+		SBAPI bool isEnable() override;
+		SBAPI void start() override;
+		SBAPI void stop() override;
 
 		// string-based data
 		SBAPI virtual void setChannelNames(const std::string& names);
@@ -64,11 +64,11 @@ class SBRealtimeManager : public SBService
 		SBAPI virtual void setChannelMetadata(const std::string& names);
 		SBAPI virtual void setDataFrame(const std::string& frameData);
 				
-		SBAPI void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 
 		SBAPI void initConnection();
 		SBAPI void stopConnection();
-		SBAPI virtual void update(double time);
+		SBAPI void update(double time) override;
 		SBAPI void setData(const std::string& channel, const std::string& data);
 		SBAPI std::string getData(const std::string& channel);
 		SBAPI double getDataDouble(const std::string& channel);

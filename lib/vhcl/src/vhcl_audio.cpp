@@ -21,7 +21,7 @@
 #include "vhcl.h"
 
 
-#if !defined(ANDROID_BUILD) && !defined(FLASH_BUILD)
+#if !defined(ANDROID_BUILD)
 //#if defined(WIN_BUILD)
 //#if 1
 

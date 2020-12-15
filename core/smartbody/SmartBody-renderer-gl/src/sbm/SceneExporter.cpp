@@ -152,7 +152,7 @@ boost::filesystem::path naive_uncomplete(boost::filesystem::path const& p, boost
 	return output;
 }
 
-#if !defined(__FLASHPLAYER__) && !defined(EMSCRIPTEN)
+#if !defined(EMSCRIPTEN)
 
 void writeFileToZip(zipFile& zf, const std::string& readFileName, const std::string& fileNameInZip) {
 	//SmartBody::util::log("writeFileToZip, srcFile = %s, fileInZip = %s",readFileName.c_str(),fileNameInZip.c_str());

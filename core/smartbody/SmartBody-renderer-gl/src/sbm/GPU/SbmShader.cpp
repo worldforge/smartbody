@@ -20,17 +20,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(EMSCRIPTEN) && !defined(SB_IPHONE)
+#if !defined(__ANDROID__) && !defined(EMSCRIPTEN) && !defined(SB_IPHONE)
 #include "GL/glew.h"
-#endif
-#if defined(__ANDROID__)
-#include <GLES3/gl3.h>
 #endif
 #include "SbmShader.h"
 #include "SBUtilities.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #ifdef WIN32
 #include <direct.h>
 #endif
@@ -51,8 +48,7 @@ SbmShaderManager& SbmShaderManager::singleton()
 }
 
 void SbmShaderManager::destroy_singleton() {
-	if( _singleton )
-		delete _singleton;
+	delete _singleton;
 	_singleton = nullptr;
 }
 
@@ -83,14 +79,12 @@ SbmShaderProgram::SbmShaderProgram()
 
 SbmShaderProgram::~SbmShaderProgram()
 {
-#if !defined(__FLASHPLAYER__)
 	if (programID > 0 )
 		glDeleteProgram(programID);
 	if (vsID > 0)
 		glDeleteShader(vsID);
 	if (fsID > 0)
 		glDeleteShader(fsID);
-#endif
 	isBuilt = false;
 }
 
@@ -129,7 +123,6 @@ void SbmShaderProgram::initShaderProgramStr( const char* shaderVS, const char* s
 
 void SbmShaderProgram::buildShader()
 {
-#if !defined(__FLASHPLAYER__)
 	// build the shader after there is an opengl context
 	vsID = -1;
 	fsID = -1;
@@ -180,7 +173,6 @@ void SbmShaderProgram::buildShader()
 	//printOglError("buildShader::linkProgram");
 	printProgramInfoLog(programID);
 	isBuilt = true;	
-#endif
 }
 
 
@@ -276,19 +268,7 @@ void SbmShaderProgram::printOglError(const char* tag)
 #if 1
 	while (glErr != GL_NO_ERROR)
 	{
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE)
 		SmartBody::util::log("glError %s: %s\n", tag,gluErrorString(glErr));
-#elif defined(__ANDROID__) || defined(SB_IPHONE)
-		std::string error;
-		switch (glErr) {
-		case GL_INVALID_OPERATION:      error = "INVALID_OPERATION";      break;
-		case GL_INVALID_ENUM:           error = "INVALID_ENUM";           break;
-		case GL_INVALID_VALUE:          error = "INVALID_VALUE";          break;
-		case GL_OUT_OF_MEMORY:          error = "OUT_OF_MEMORY";          break;
-		case GL_INVALID_FRAMEBUFFER_OPERATION:  error = "INVALID_FRAMEBUFFER_OPERATION";  break;
-		}
-		SmartBody::util::log("glError %s: %s\n", tag, error.c_str());
-#endif
 		retCode = 1;
 		glErr = glGetError();
 	}
@@ -345,7 +325,6 @@ bool SbmShaderManager::initGLExtension()
     if (shaderInit && shaderSupport == NO_GPU_SUPPORT)
         return false;
 
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(SB_IPHONE)
 	if (!viewer)
 		return false;
         static int counter = 0;
@@ -369,10 +348,7 @@ bool SbmShaderManager::initGLExtension()
 	return checkShaderInit(counter);
 
     //return false;
-#elif defined(__ANDROID__) || defined(SB_IPHONE)
-	shaderInit = true;
-	return true;
-#endif
+
 }
 
 bool SbmShaderManager::checkShaderInit(int &counter)

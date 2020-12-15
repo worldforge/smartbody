@@ -49,7 +49,6 @@
 #pragma warning(disable:4290)
 #endif
 
-#if !defined(FLASH_BUILD)
 #include <activemq/library/ActiveMQCPP.h>
 #include <activemq/core/ActiveMQConnectionFactory.h>
 #include <cms/Connection.h>
@@ -59,7 +58,6 @@
 #include <cms/MapMessage.h>
 #include <cms/ExceptionListener.h>
 #include <cms/MessageListener.h>
-#endif
 
 #if defined(WIN_BUILD)
 #pragma warning(pop)
@@ -68,10 +66,6 @@
 #include "pthread.h"
 
 #include "HttpUtility.h"
-
-// keeping stub code at the bottom of this file for platforms that
-// don't support vhmsg
-#if !defined(FLASH_BUILD)
 
 
 using std::string;
@@ -938,43 +932,3 @@ void ClientImpl::InternalListener::onMessage( const cms::Message * message ) thr
       }
    }
 }
-
-
-#else
-
-// TODO: stub code for platforms that don't support vhmsg
-
-namespace vhmsg
-{
-
-#include <string>
-
-static std::string temp;
-
-Client::Client() {}
-Client::~Client() {}
-bool Client::OpenConnection() { return true; }
-bool Client::OpenConnection( const char * server ) { return true; }
-bool Client::OpenConnection( const char * server, const char * port ) {	return true; }
-void Client::CloseConnection() {}
-bool Client::IsOpen() {	return false; }
-bool Client::Send( const char * op, const char * arg ) { return true; }
-bool Client::Send( const char * message ) { return true; }
-void Client::EnablePollingMethod() {}
-void Client::EnableImmediateMethod() {}
-void Client::SetBypassMode( const bool enabled ) {}
-void Client::SetListener( Listener * listener ) {}
-bool Client::Subscribe( const char * req ) { return true; }
-bool Client::Unsubscribe( const char * req ) { return true; }
-void Client::Poll() {}
-void Client::WaitAndPoll( const double waitTimeSeconds ) {}
-const std::string & Client::GetServer() const { return temp; }
-const std::string & Client::GetPort() const {	return temp; }
-const std::string & Client::GetScope() const { return temp; }
-void Client::SetScope( const char * scope ) {}
-void Client::SetServerFromEnv() {}
-void Client::SetScopeFromEnv() {}
-
-}
-
-#endif

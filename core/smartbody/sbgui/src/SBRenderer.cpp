@@ -19,10 +19,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-#if !defined(__FLASHPLAYER__) && !defined(__ANDROID__) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#endif
-
 #include "SBRenderer.h"
 #include "fltk_viewer.h"
 

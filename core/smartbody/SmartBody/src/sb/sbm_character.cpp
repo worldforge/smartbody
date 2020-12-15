@@ -1982,9 +1982,6 @@ void SbmCharacter::schedule_viseme_blend_ramp(
 
 void SbmCharacter::forward_visemes( double curTime )
 {
-#if __FLASHPLAYER__
-	return;
-#endif
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
