@@ -36,6 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <iostream>
+#include <utility>
 
 #include <sb/SBSkeleton.h>
 #include <sr/sr_sn_matrix.h>
@@ -54,11 +55,7 @@ const char* SbmPawn::WORLD_OFFSET_JOINT_NAME = "world_offset";
 SkChannelArray SbmPawn::WORLD_OFFSET_CHANNELS_P;
 
 
-SbmPawn::SbmPawn() : SBObject(),
-//dMeshInstance_p(nullptr),
-//dStaticMeshInstance_p(nullptr),
-_skeleton(nullptr),
-ct_tree_p(nullptr)
+SbmPawn::SbmPawn() : SBObject()
 {
 	_skeleton = nullptr;
 	SbmPawn::initData();
@@ -70,23 +67,14 @@ ct_tree_p(nullptr)
 
 // Constructor
 SbmPawn::SbmPawn( const char * name ) : SmartBody::SBObject(),
-//#if defined(__ANDROID__) || defined(SB_IPHONE) // don't use the GPU version in android
-//dMeshInstance_p(nullptr),
-//dStaticMeshInstance_p(nullptr),
-//#else
-//dMeshInstance_p(nullptr),
-//dStaticMeshInstance_p(nullptr),
-//#endif
 ct_tree_p( MeControllerTreeRoot::create() ),
 world_offset_writer_p( nullptr ),
 wo_cache_timestamp( -std::numeric_limits<float>::max() )
 {
 	SmartBody::SBObject::setName( name );
-	//_skeleton->ref();
 	ct_tree_p->setPawn(this);
 
 	_skeleton = new SmartBody::SBSkeleton();
-	_skeleton->ref();
 
 	SbmPawn::initData();
 
@@ -97,22 +85,17 @@ wo_cache_timestamp( -std::numeric_limits<float>::max() )
 void SbmPawn::initData()
 {
 	_skeleton = new SmartBody::SBSkeleton();
-	delete ct_tree_p;
 	ct_tree_p = MeControllerTreeRoot::create();
-	ct_tree_p->ref();
 	world_offset_writer_p = new MeCtChannelWriter();
 	std::string controllerName = this->getName();
 	controllerName += "_worldOffsetWriter";
-	world_offset_writer_p->setName( controllerName.c_str() );
+	world_offset_writer_p->setName( controllerName );
 	wo_cache_timestamp = -std::numeric_limits<float>::max(); 
-	//skeleton_p->ref();
-	ct_tree_p->ref();
 	//colObj_p = nullptr;
 	//phyObj_p = nullptr;
 	// world_offset_writer_p, applies external inputs to the skeleton,
 	//   and therefore needs to evaluate before other controllers
-	world_offset_writer_p->ref();
-	ct_tree_p->add_controller( world_offset_writer_p );
+	ct_tree_p->add_controller( world_offset_writer_p.get() );
 	
 	collisionObjName = this->getName();
 	collisionObjName += "_BV"; // bounding volume
@@ -147,7 +130,7 @@ void SbmPawn::setSkeleton(boost::intrusive_ptr<SkSkeleton> sk)
 	{		
 		ct_tree_p->remove_skeleton( _skeleton->getName() );
 	}
-	_skeleton = sk;
+	_skeleton = std::move(sk);
 	ct_tree_p->add_skeleton( _skeleton->getName(), _skeleton );
 
 	//scene_p->init(_skeleton);
@@ -155,7 +138,6 @@ void SbmPawn::setSkeleton(boost::intrusive_ptr<SkSkeleton> sk)
 		
 	float height = _skeleton->getCurrentHeight();	
 	setHeight(height);
-	//_skeleton->ref();
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
@@ -193,7 +175,7 @@ int SbmPawn::init( SkSkeleton* new_skeleton_p ) {
 	// Name the controllers
 	string ct_name( getName() );
 	ct_name += "'s world_offset writer";
-	world_offset_writer_p->setName( ct_name.c_str() );
+	world_offset_writer_p->setName( ct_name );
 
 	return CMD_SUCCESS;
 }
@@ -226,7 +208,7 @@ int SbmPawn::setup() {
 		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::ZPos );
 		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::Quat );
 	}
-	SmartBody::SBPawn* sbpawn = dynamic_cast<SmartBody::SBPawn*>(this);
+	auto* sbpawn = dynamic_cast<SmartBody::SBPawn*>(this);
 	world_offset_writer_p->init(sbpawn, WORLD_OFFSET_CHANNELS_P, true );
 
 	wo_cache.x = 0;
@@ -267,7 +249,7 @@ int SbmPawn::init_skeleton() {
 	_skeleton->compress();
 
 	init_world_offset_channels();
-	SmartBody::SBPawn* sbpawn = dynamic_cast<SmartBody::SBPawn*>(this);
+	auto* sbpawn = dynamic_cast<SmartBody::SBPawn*>(this);
 	world_offset_writer_p->init(sbpawn, WORLD_OFFSET_CHANNELS_P, true );
 
 	wo_cache.x = 0;
@@ -323,7 +305,7 @@ void SbmPawn::init_world_offset_channels()
 }
 
 
-bool SbmPawn::is_initialized() {
+bool SbmPawn::is_initialized() const {
 	return _skeleton != nullptr;
 }
 
@@ -334,12 +316,12 @@ int SbmPawn::prune_controller_tree()
 	return CMD_SUCCESS;
 }
 
-SrBox SbmPawn::getBoundingBox(void)
+SrBox SbmPawn::getBoundingBox()
 { 
 	SBGeomObject* geo = getGeomObject();
 	if (geo)
 	{
-		SBGeomNullObject* nullObject = dynamic_cast<SBGeomNullObject*>(geo);
+		auto* nullObject = dynamic_cast<SBGeomNullObject*>(geo);
 		if (nullObject)
 		{
 			if (_skeleton) 
@@ -363,29 +345,10 @@ SrBox SbmPawn::getBoundingBox(void)
 //  Destructor
 SbmPawn::~SbmPawn()
 {
-
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-
-	if ( world_offset_writer_p )
-		world_offset_writer_p->unref();
-
 	ct_tree_p->clear();  // Because controllers within reference back to tree root context
-
-	
-//	if (dMeshInstance_p)
-//	{
-//		delete dMeshInstance_p;
-//	}
-
 
 	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
 	colManager->removeCollisionObject(collisionObjName);
-// 	if (_collisionObject)
-// 		delete _collisionObject;
-	//printf("ct_tree ref count = %d",ct_tree_p->getref());
-	//ct_tree_p->unref();	 
-	// just delete ct_tree_p
-		delete ct_tree_p;
 }
 
 
@@ -409,7 +372,6 @@ void SbmPawn::get_world_offset( float& x, float& y, float& z,
 								   yaw = wo_cache.h;
 								   pitch = wo_cache.p;
 								   roll = wo_cache.r;
-								   return;
 }
 
 SrMat SbmPawn::get_world_offset()
@@ -563,7 +525,7 @@ SBGeomObject* SbmPawn::getGeomObject()
 
 void SbmPawn::updateToColObject()
 {
-	SmartBody::SBPawn* sbpawn = dynamic_cast<SmartBody::SBPawn*>(this);
+	auto* sbpawn = dynamic_cast<SmartBody::SBPawn*>(this);
 	SmartBody::SBPhysicsObj* phyObj = sbpawn->getPhysicsObject();
 	if (phyObj)
 	{
@@ -610,7 +572,7 @@ std::string SbmPawn::getClassType()
 
 void SbmPawn::setClassType(std::string classType)
 {
-	_classType = classType;
+	_classType = std::move(classType);
 }
 
 

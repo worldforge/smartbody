@@ -91,7 +91,7 @@ BehaviorRequestPtr BML::parse_bml_bodyreach( DOMElement* elem, const std::string
 		const SbmCharacter* character = request->actor;
 		if (character)
 		{
-			MeControllerTreeRoot* controllerTree = character->ct_tree_p;
+			auto& controllerTree = character->ct_tree_p;
 			MeController* controller = controllerTree->findControllerByHandle(handle);
 			bodyReachCt = dynamic_cast<MeCtExampleBodyReach*>(controller);
 		}

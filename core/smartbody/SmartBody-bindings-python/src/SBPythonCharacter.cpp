@@ -81,7 +81,7 @@ namespace SmartBody
 void pythonFuncsCharacter()
 {
 
-	boost::python::class_<SBPawn, boost::python::bases<SBObject> >("SBPawn")
+	boost::python::class_<SBPawn, boost::python::bases<SBObject>, boost::noncopyable >("SBPawn", boost::python::no_init)
 		.def("getName", &SBPawn::getName, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the name of the pawn..")
 		.def("getSkeleton", &SBPawn::getSkeleton, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the skeleton object of the pawn.")
 		.def("setSkeleton", &SBPawn::setSkeleton, "Attaches the skeleton to the character.")
@@ -100,7 +100,7 @@ void pythonFuncsCharacter()
 
 
 
-	boost::python::class_<SBCharacter, boost::python::bases<SBPawn, SBObject> >("SBCharacter")
+	boost::python::class_<SBCharacter, boost::python::bases<SBPawn, SBObject>, boost::noncopyable >("SBCharacter", boost::python::no_init)
 		//.def(boost::python::init<std::string, std::string>())
 		.def("addJointTrajectoryConstraint", &SBCharacter::addJointTrajectoryConstraint, "Add IK constraint to a specific end effector joint to be enforced in the post-processing.")
 		.def("isAutomaticPruning", &SBCharacter::isAutomaticPruning, "Returns true if the character's cotnroller are automatically pruned.")

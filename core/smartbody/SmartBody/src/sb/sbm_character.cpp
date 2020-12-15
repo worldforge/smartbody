@@ -312,19 +312,19 @@ void SbmCharacter::createStandardControllers()
 	locomotion_ct->ref();
 	*/
 	// example-based locomotion
-	this->param_animation_ct = new MeCtParamAnimation(this, world_offset_writer_p);
+	this->param_animation_ct = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName = getName() + "_paramAnimationController";
 	this->param_animation_ct->setName(paramAnimationName.c_str());
 	this->param_animation_ct->ref();
 	this->param_animation_ct->init(this);
 
-	this->param_animation_ct_layer1 = new MeCtParamAnimation(this, world_offset_writer_p);
+	this->param_animation_ct_layer1 = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName1 = getName() + "_paramAnimationController_Layer1";
 	this->param_animation_ct_layer1->setName(paramAnimationName1.c_str());
 	this->param_animation_ct_layer1->ref();
 	this->param_animation_ct_layer1->init(this);
 
-	this->param_animation_ct_layer2 = new MeCtParamAnimation(this, world_offset_writer_p);
+	this->param_animation_ct_layer2 = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName2 = getName() + "_paramAnimationController_Layer2";
 	this->param_animation_ct_layer2->setName(paramAnimationName2.c_str());
 	this->param_animation_ct_layer2->ref();
@@ -355,7 +355,7 @@ void SbmCharacter::createStandardControllers()
 	this->generic_hand_ct->setName(gHandName.c_str());
 	this->generic_hand_ct->ref();	
 	
-	this->head_param_anim_ct = new MeCtParamAnimation(this, world_offset_writer_p);
+	this->head_param_anim_ct = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string headParamAnimName = getName() + "_paramAnimHeadController";
 	this->head_param_anim_ct->setName(headParamAnimName.c_str());
 	this->head_param_anim_ct->ref();

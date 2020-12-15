@@ -333,9 +333,8 @@ std::string SBCharacter::getType()
 
 int SBCharacter::getNumControllers()
 {
-	MeControllerTreeRoot* controllerTree = ct_tree_p;
-	if (controllerTree)
-		return controllerTree->count_controllers();
+	if (ct_tree_p)
+		return ct_tree_p->count_controllers();
 	else
 		return 0;
 }

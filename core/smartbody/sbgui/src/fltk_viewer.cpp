@@ -3674,16 +3674,14 @@ void FltkViewer::drawEyeLids()
 	glDisable(GL_LIGHTING);
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
+	for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = scene->getCharacter((*iter));
-		MeControllerTreeRoot* controllerTree = character->ct_tree_p;
-		int numControllers = controllerTree->count_controllers();
+		SmartBody::SBCharacter* character = scene->getCharacter(characterName);
+		auto& controllerTree = character->ct_tree_p;
+		auto numControllers = controllerTree->count_controllers();
 	
 		MeCtEyeLid* eyelidCt = nullptr;
-		for (int c = 0; c < numControllers; c++)
+		for (size_t c = 0; c < numControllers; c++)
 		{
 			MeController* controller = controllerTree->controller(c);
 			eyelidCt = dynamic_cast<MeCtEyeLid*>(controller);

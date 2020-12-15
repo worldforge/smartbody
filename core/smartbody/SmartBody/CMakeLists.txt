@@ -28,7 +28,6 @@ else ()
 endif ()
 
 
-
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.pb.cc
         COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
@@ -322,6 +321,9 @@ target_include_directories(SmartBody PUBLIC
         $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:steerlib,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:pprAI,INCLUDE_DIRECTORIES>)
+
+target_include_directories(SmartBody PRIVATE
+        ${PROJECT_SOURCE_DIR}/external/rapidxml)
 
 #if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 #    conan_target_link_libraries(SmartBody)

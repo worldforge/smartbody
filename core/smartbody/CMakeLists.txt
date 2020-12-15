@@ -7,12 +7,6 @@ if (${GOOGLE_PROFILER})
     add_definitions(-DUSE_GOOGLE_PROFILER)
 endif ()
 
-include_directories(
-        ${PROJECT_SOURCE_DIR}/external/rapidxml
-        $<TARGET_PROPERTY:steerlib,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:pprAI,INCLUDE_DIRECTORIES>
-)
-
 add_subdirectory(util)
 add_subdirectory(math)
 add_subdirectory(sr)

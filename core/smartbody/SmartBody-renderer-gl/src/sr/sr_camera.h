@@ -151,14 +151,14 @@ class SrCamera : public SmartBody::SBPawn
     /*! Subtracts the vector v to the eye and center points. */
     SBAPI void operator-= ( const SrVec& v );
 
-    /*! Returns a camera that is the same as the given camera c, but with the
-        rotation q applied. See the operator *= for a description of how the
-        rotation is applied to the camera. */
-    SBAPI friend SrCamera operator* ( const SrCamera& c, const SrQuat& q );
-
-    /*! Returns a camera that is the same as the given camera c, but with the
-        the translation vector v added to the eye and center points. */
-    SBAPI friend SrCamera operator+ ( const SrCamera& c, const SrVec& v );
+//    /*! Returns a camera that is the same as the given camera c, but with the
+//        rotation q applied. See the operator *= for a description of how the
+//        rotation is applied to the camera. */
+//    SBAPI friend SrCamera operator* ( const SrCamera& c, const SrQuat& q );
+//
+//    /*! Returns a camera that is the same as the given camera c, but with the
+//        the translation vector v added to the eye and center points. */
+//    SBAPI friend SrCamera operator+ ( const SrCamera& c, const SrVec& v );
 
     /*! Output camera data values in format keyword1 value \n keyword2 value ...
         (keywords are: eye, center, up, etc*/

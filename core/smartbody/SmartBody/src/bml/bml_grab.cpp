@@ -64,7 +64,7 @@ BehaviorRequestPtr BML::parse_bml_grab( DOMElement* elem, const std::string& uni
 		const SbmCharacter* character = request->actor;
 		if (character)
 		{
-			MeControllerTreeRoot* controllerTree = character->ct_tree_p;
+			auto& controllerTree = character->ct_tree_p;
 			MeController* controller = controllerTree->findControllerByHandle(handle);
 
 			handCt = dynamic_cast<MeCtHand*>(controller);			

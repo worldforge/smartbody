@@ -404,19 +404,19 @@ void SrCamera::operator-= ( const SrVec& v )
 
 //=============================== friends ==========================================
 
-SrCamera operator* ( const SrCamera& c, const SrQuat& q )
- {
-   SrCamera cam(c);
-   cam *= q;
-   return cam;
- }
-
-SrCamera operator+ ( const SrCamera& c, const SrVec& v )
- {
-   SrCamera cam(c);
-   cam += v;
-   return cam;
- }
+//SrCamera operator* ( const SrCamera& c, const SrQuat& q )
+// {
+//   SrCamera cam(c);
+//   cam *= q;
+//   return cam;
+// }
+//
+//SrCamera operator+ ( const SrCamera& c, const SrVec& v )
+// {
+//   SrCamera cam(c);
+//   cam += v;
+//   return cam;
+// }
 
 SrOutput& operator<< ( SrOutput& out, const SrCamera& c )
  {

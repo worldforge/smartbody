@@ -310,7 +310,7 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 	if( !handle.empty() )	{
 		const SbmCharacter* character = request->actor;
 		if (character)	{
-			MeControllerTreeRoot* controllerTree = character->ct_tree_p;
+			auto& controllerTree = character->ct_tree_p;
 			MeController* controller = controllerTree->findControllerByHandle( handle );
 			gaze_ct = dynamic_cast<MeCtGaze*>( controller );
 		}

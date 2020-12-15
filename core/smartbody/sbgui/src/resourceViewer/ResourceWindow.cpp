@@ -879,7 +879,7 @@ void ResourceWindow::updateCharacter( Fl_Tree_Item* tree, SmartBody::SBCharacter
 	controllerFolder->user_data((void*) _reverseSpecialNames["controller"]); 
 	controllerFolder->close();
 	// add controllers
-	MeControllerTreeRoot* ctTree = character->ct_tree_p ;
+	auto& ctTree = character->ct_tree_p ;
 	if( ctTree )
 	{
 		int n = ctTree->count_controllers();
@@ -1119,7 +1119,7 @@ void ResourceWindow::OnSimulationStart()
 	this->redraw();
 }
 
-int ResourceWindow::addSpecialName(const std::string& name)
+size_t ResourceWindow::addSpecialName(const std::string& name)
 {
 	auto iter = _reverseSpecialNames.find(name);
 	if (iter != _reverseSpecialNames.end())
@@ -1127,7 +1127,7 @@ int ResourceWindow::addSpecialName(const std::string& name)
 		return (*iter).second;
 	}
 
-	int index = _specialNames.size() + 1;
+	size_t index = _specialNames.size() + 1;
 	_specialNames.insert(std::pair<int, std::string>(index, name));
 	_reverseSpecialNames.insert(std::pair<std::string, int >(name, index));
 
@@ -1139,7 +1139,7 @@ void ResourceWindow::removeSpecialName(const std::string& name)
 	auto iter = _reverseSpecialNames.find(name);
 	if (iter != _reverseSpecialNames.end())
 	{
-		int val = (*iter).second;
+		size_t val = (*iter).second;
 		_reverseSpecialNames.erase(iter);
 		auto iter2 = _specialNames.find(val);
 		_specialNames.erase(iter2);

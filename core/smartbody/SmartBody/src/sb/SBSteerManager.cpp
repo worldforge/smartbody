@@ -330,7 +330,7 @@ void SBSteerManager::stop()
 
 void SBSteerManager::updatePawnObstacle(PawnObstacle& pawnObstacle) {
 	float steerScale = 1.0f / _scene.getScale();
-	auto pawn = pawnObstacle.pawn;
+	auto& pawn = pawnObstacle.pawn;
 	// get the size of the steering object
 	float x, y, z, h, p, r;
 	pawn.get_world_offset(x, y, z, h, p, r);

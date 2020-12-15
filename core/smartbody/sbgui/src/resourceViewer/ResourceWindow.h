@@ -73,8 +73,8 @@ class ResourceWindow : public Fl_Group, public SmartBody::SBObserver, public SBW
 		Fl_Tree* resourceTree;
 		bool _dirty;
 		bool _firstTime;
-		
-		int addSpecialName(const std::string& name);
+
+	    size_t addSpecialName(const std::string& name);
 		void removeSpecialName(const std::string& name);
 
 		void hideTree();

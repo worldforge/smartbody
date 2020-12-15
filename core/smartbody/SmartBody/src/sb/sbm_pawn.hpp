@@ -29,6 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBObject.h>
 #include "sr/sr_shared_ptr.hpp"
 #include <map>
+#include <boost/noncopyable.hpp>
 
 
 // Declare classes used (avoid circular references)
@@ -40,7 +41,7 @@ class MeControllerTreeRoot;
 
 #define SBM_PAWN_USE_WORLD_OFFSET_WRITER	(1)
 
-class SbmPawn : public SmartBody::SBObject, public SBTransformObjInterface {
+class SbmPawn : public SmartBody::SBObject, public SBTransformObjInterface, public boost::noncopyable {
 public:
 	//  Public Constants
 	static const char* WORLD_OFFSET_JOINT_NAME;
@@ -57,7 +58,7 @@ protected:
 	} wo_cache;         // Caches values when setting world offset, because controller may not have been evaluated and skeleton value may not reflect the last call to set_world_offset (HACK-ish)
 	double wo_cache_timestamp;
 
-	MeCtChannelWriter*  world_offset_writer_p;
+	boost::intrusive_ptr<MeCtChannelWriter>  world_offset_writer_p;
 	float	_height;
 	//SBGeomObject* _collisionObject;
 	std::string collisionObjName;
@@ -68,7 +69,7 @@ public:  // TODO - properly encapsulate / privatize the following
 	std::string _classType;
 	
 	// Temporarily, until there is a unified multi-skeleton controller tree
-	MeControllerTreeRoot	*ct_tree_p;
+	boost::intrusive_ptr<MeControllerTreeRoot> ct_tree_p;
 	SBTransform                globalTransform;
 
 public:	
@@ -89,7 +90,7 @@ public:
 
  	SBAPI void updateToColObject();
 
-	SBAPI bool is_initialized();
+	SBAPI bool is_initialized() const;
 
 	SBAPI void setHeight( float height )	{ _height = height; }
 	SBAPI float getHeight( ) const 		{ return _height; }
@@ -124,7 +125,7 @@ protected:
 	 *  Initializes the static variable WORLD_OFFSET_CHANNELS_P.
 	 *  TODO: When is this deleted?
 	 */
-	void init_world_offset_channels();
+	static void init_world_offset_channels();
 
 	/*!
 	 *   Modify skeleton, if necessary.
@@ -144,7 +145,7 @@ protected:
 
 
 public:
-	MeCtChannelWriter* get_world_offset_writer_p()	{return world_offset_writer_p;}
+	MeCtChannelWriter* get_world_offset_writer_p()	{return world_offset_writer_p.get();}
 
 	void wo_cache_update();
 };

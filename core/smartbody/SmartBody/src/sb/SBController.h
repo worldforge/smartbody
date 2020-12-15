@@ -35,7 +35,7 @@ class SBController : public MeController
 	public:
 		SBAPI SBController();
 		SBAPI SBController(const SBController& controller);
-		SBAPI ~SBController();
+		SBAPI ~SBController() override;
 
 		SBAPI const std::string& getType();
 
@@ -78,10 +78,10 @@ class SBController : public MeController
 		SBAPI void setChannelQuatGlobal(const std::string& channelName, SrQuat quat);
 		SBAPI SrQuat convertChannelQuatGlobal(const std::string& channelName, SrQuat quat);
 		
-		SBAPI virtual bool controller_evaluate ( double t, MeFrameData& frame ) { return true;}
-		SBAPI virtual double controller_duration () { return 0.0; }
-		SBAPI virtual SkChannelArray& controller_channels () { return channelArray; }
-		SBAPI virtual const std::string& controller_type () const { return controllerType; }
+		SBAPI bool controller_evaluate ( double t, MeFrameData& frame ) override { return true;}
+		SBAPI double controller_duration () override { return 0.0; }
+		SBAPI SkChannelArray& controller_channels () override { return channelArray; }
+		SBAPI const std::string& controller_type () const override { return controllerType; }
 
 		SBAPI void addControllerModifier(SBControllerModifier* modifier);
  		SBAPI void removeControllerModifier(SBControllerModifier* modifier);

@@ -1244,12 +1244,10 @@ int mcu_controller_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
 		
 		int numControllersAffected = 0;
 		const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
-		for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-			iter != characterNames.end();
-			iter++)
+		for (const auto & characterName : characterNames)
 		{
-			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(*iter);
-			MeControllerTreeRoot* controllerTree = character->ct_tree_p;
+			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+			auto& controllerTree = character->ct_tree_p;
 			int numControllers = controllerTree->count_controllers();
 			
 			for (int c = 0; c < numControllers; c++)

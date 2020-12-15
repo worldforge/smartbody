@@ -3335,7 +3335,7 @@ void GazeRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene
 	if (!character) return;
 
 	// get existed controller
-	MeControllerTreeRoot* controllerTree = character->ct_tree_p;
+	auto& controllerTree = character->ct_tree_p;
 	MeController* controller = controllerTree->findControllerByHandle(anim_ct->handle());
 	MeCtGaze* gazeCt = dynamic_cast<MeCtGaze*>( controller );
 	
