@@ -16,7 +16,7 @@ alut/1.1.0@smartbody/stable
 openal/1.20.1
 libsndfile/1.0.30
 ODE/0.16.2@smartbody/stable
-activemq-cpp/3.9.0@smartbody/stable
+activemq-cpp/3.9.5@smartbody/stable
 boost/1.74.0
 zlib/1.2.11
 openssl/1.0.2u

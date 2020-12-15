@@ -6,7 +6,7 @@ import os
 
 class Conan(ConanFile):
     name = "activemq-cpp"
-    version = "3.9.0"
+    version = "3.9.5"
     license = "Apache"
     author = "Erik Ogenvik <erik@ogenvik.org>"
     url = "https://github.com/apache/activemq-cpp"
