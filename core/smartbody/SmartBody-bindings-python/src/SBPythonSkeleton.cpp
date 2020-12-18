@@ -38,7 +38,7 @@ namespace SmartBody
 void pythonFuncsSkeleton()
 {
 
-	boost::python::class_<SBSkeleton, boost::intrusive_ptr<SBSkeleton>, boost::python::bases<SBObject> >("SBSkeleton")
+	boost::python::class_<SBSkeleton, boost::intrusive_ptr<SBSkeleton>, boost::python::bases<SBObject>, boost::noncopyable>("SBSkeleton", boost::python::no_init)
 	//	.def(boost::python::init<>())
 		.def(boost::python::init<std::string>())
 		.def("load", &SBSkeleton::load, "Loads the skeleton definition from the given skeleton name.")
@@ -63,7 +63,7 @@ void pythonFuncsSkeleton()
 		;
 	boostPatch::register_intrusive_ptr_from_python_and_casts( (SBSkeleton *)nullptr, boostPatch::class_<SBSkeleton>::metadata::bases() );
 
-	boost::python::class_<SBJoint, boost::python::bases<SBObject> >("SBJoint")
+	boost::python::class_<SBJoint, boost::python::bases<SBObject>, boost::noncopyable >("SBJoint", boost::python::no_init)
 		.def(boost::python::init<>())
 		.def("setName", &SBJoint::setName, "Set the name of the joint.")
 		.def("getName", &SBJoint::getName, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the name of the joint.")

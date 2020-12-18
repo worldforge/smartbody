@@ -31,6 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <list>
 #include <map>
 #include <string>
+#include <memory>
 
 class SBTransform
 {
@@ -77,8 +78,8 @@ protected:
 	SBTransform localTransform;	
 	SBTransform combineTransform;	
 public:
-	SBGeomObject(void);	
-	virtual ~SBGeomObject(void);	
+	SBGeomObject();
+	virtual ~SBGeomObject();
 	void attachToObj(SBTransformObjInterface* phyObj);
 	SBTransformObjInterface* getAttachObj();
 
@@ -99,7 +100,7 @@ public:
 
 	virtual SrBox getBoundingBox() { return SrBox(); }
 
-	static SBGeomObject* createGeometry(const std::string& type, SrVec extends, SrVec from = SrVec(), SrVec to = SrVec() );
+	static std::unique_ptr<SBGeomObject> createGeometry(const std::string& type, SrVec extends, const SrVec& from = SrVec(), const SrVec& to = SrVec() );
 };
 
 // a default null object with no geometry

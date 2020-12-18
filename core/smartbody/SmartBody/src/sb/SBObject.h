@@ -28,6 +28,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBObserver.h"
 #include "SBSubject.h"
 #include <sr/sr_mat.h>
+#include <memory>
+#include <boost/noncopyable.hpp>
 
 namespace SmartBody {
 
@@ -41,7 +43,7 @@ class Vec3Attribute;
 class MatrixAttribute;
 class SBAttributeManager;
 
-class SBObject : public SBObserver, public SBSubject
+class SBObject : public SBObserver, public SBSubject, public boost::noncopyable
 {
 	public:
 		SBAPI SBObject();
@@ -57,10 +59,10 @@ class SBObject : public SBObserver, public SBSubject
 		SBAPI virtual const std::string& getName() const;
 		SBAPI bool hasAttribute(const std::string& attrName);
 		SBAPI SBAttribute* getAttribute(const std::string& attrName);
-		SBAPI std::map<std::string, SBAttribute*>& getAttributeList();
+		SBAPI std::map<std::string, std::unique_ptr<SBAttribute>>& getAttributeList();
 		SBAPI SBAttributeManager* getAttributeManager();
-		SBAPI void addAttribute(SBAttribute* attr);
-		SBAPI void addAttribute(SBAttribute* attr, const std::string& groupName);
+		SBAPI void addAttribute(std::unique_ptr<SBAttribute> attr);
+		SBAPI void addAttribute(std::unique_ptr<SBAttribute> attr, const std::string& groupName);
 		SBAPI bool removeAttribute(const std::string& name);
 		SBAPI void clearAttributes();
 		SBAPI int getNumAttributes();
@@ -72,18 +74,18 @@ class SBObject : public SBObserver, public SBSubject
 
 		SBAPI BoolAttribute* createBoolAttribute(const std::string& name, bool value, bool notifySelf, const std::string& groupName, int priority, 
 													  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description = "");
-		SBAPI IntAttribute* createIntAttribute(const std::string& name, int value, bool notifySelf, const std::string& groupName, int priority, 
+		SBAPI IntAttribute* createIntAttribute(const std::string& name, int value, bool notifySelf, const std::string& groupName, int priority,
 													  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description = "");
-		SBAPI DoubleAttribute* createDoubleAttribute(const std::string& name, double value, bool notifySelf, const std::string& groupName, int priority, 
+		SBAPI DoubleAttribute* createDoubleAttribute(const std::string& name, double value, bool notifySelf, const std::string& groupName, int priority,
 													  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description = "");
-		SBAPI Vec3Attribute* createVec3Attribute(const std::string& name, float val1, float val2, float val3, bool notifySelf, const std::string& groupName, int priority, 
+		SBAPI Vec3Attribute* createVec3Attribute(const std::string& name, float val1, float val2, float val3, bool notifySelf, const std::string& groupName, int priority,
 													  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description = "");
 
-		SBAPI StringAttribute* createStringAttribute(const std::string& name, const std::string& value, bool notifySelf, const std::string& groupName, int priority, 
+		SBAPI StringAttribute* createStringAttribute(const std::string& name, const std::string& value, bool notifySelf, const std::string& groupName, int priority,
 													  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description = "");
-		SBAPI MatrixAttribute* createMatrixAttribute(const std::string& name, SrMat& value, bool notifySelf, const std::string& groupName, int priority, 
+		SBAPI MatrixAttribute* createMatrixAttribute(const std::string& name, SrMat& value, bool notifySelf, const std::string& groupName, int priority,
 													  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description = "");
-		SBAPI ActionAttribute* createActionAttribute(const std::string& name, bool notifySelf, const std::string& groupName, int priority, 
+		SBAPI ActionAttribute* createActionAttribute(const std::string& name, bool notifySelf, const std::string& groupName, int priority,
 													  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description = "");
 
 		SBAPI void setAttributeGroupPriority(const std::string& name, int value);
@@ -121,8 +123,8 @@ class SBObject : public SBObserver, public SBSubject
 
 	protected:
 		std::string m_name;
-		SBAttributeManager* m_attributeManager;
-		std::map<std::string, SBAttribute*> m_attributeList;
+		std::unique_ptr<SBAttributeManager> m_attributeManager;
+		std::map<std::string, std::unique_ptr<SBAttribute>> m_attributeList;
 		std::string m_emptyString;
 		std::set<SBObject*> _dependencies;
 		std::set<SBObject*> _dependenciesReverse;

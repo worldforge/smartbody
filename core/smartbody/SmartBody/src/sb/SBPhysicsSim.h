@@ -59,8 +59,8 @@ public:
 
 class SBPhysicsObj : public SBPhysicsObjInterface, public SmartBody::SBObject// abstraction for rigid objects in the physics engine
 {
-protected:	
-	SBGeomObject* colObj;		
+protected:
+	std::unique_ptr<SBGeomObject> colObj;
 	float         objDensity;
 	SrVec         externalForce, externalTorque;
 	SrVec         linearVel, angularVel;	
@@ -74,10 +74,10 @@ public:
 	SBAPI virtual void updateSbmObj();
 	SBAPI virtual void updatePhySim();
 
-	SBAPI void setGeometry(SBGeomObject* obj);
-	SBAPI void changeGeometry(std::string& geomType, SrVec extends);
+	SBAPI void setGeometry(std::unique_ptr<SBGeomObject> obj);
+	SBAPI void changeGeometry(std::string& geomType, const SrVec& extends);
 
-	SBAPI SBGeomObject* getColObj() { return colObj; }
+	SBAPI SBGeomObject* getColObj() { return colObj.get(); }
 	SBAPI float         getMass();	
 	SBAPI void          setMass(float mass);
 	SBAPI float         getDensity() { return objDensity; }
@@ -197,7 +197,7 @@ public:
 	SBAPI void updatePDTorque();
 protected:
 	void cleanUpJoints();
-	SBGeomObject* createJointGeometry(SBJoint* joint, float radius = -1);
+	std::unique_ptr<SBGeomObject> createJointGeometry(SBJoint* joint, float radius = -1);
 	void updateJointAxis(SBPhysicsJoint* phyJoint);
 	SrVec computePDTorque(SrQuat& q, SrQuat& qD, SrVec& w, SrVec& vD, float Ks, float Kd);
 	SrVec computeSPDTorque(SrQuat& q, SrQuat& qD, SrVec& w, SrVec& vD, float Ks, float Kd, float dt, float mass);
@@ -242,7 +242,7 @@ public:
 
 	SBAPI void updateAllPhysicsJoints();
 	SBAPI virtual void updatePhysicsJoint(SBPhysicsJoint* phyJoint) = 0; // update joint parameters		
-	SBAPI virtual void updatePhyObjGeometry(SBPhysicsObj* obj, SBGeomObject* geom = nullptr) = 0;
+	SBAPI virtual void updatePhyObjGeometry(SBPhysicsObj* obj) = 0;
 
 	//virtual void applyTorque(SBJoint* joint, )
 

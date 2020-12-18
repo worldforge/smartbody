@@ -42,10 +42,8 @@ SteerSuiteEngineDriver::SteerSuiteEngineDriver() : SBObject()
 
 SteerSuiteEngineDriver::~SteerSuiteEngineDriver()
 {
-	if (_engine)
-		delete _engine;
-	if (_options)
-		delete _options;
+	delete _engine;
+	delete _options;
 }
 
 bool SteerSuiteEngineDriver::isInitialized()

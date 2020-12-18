@@ -1,5 +1,6 @@
 /*************************************************************
 Copyright (C) 2017 University of Southern California
+Copyright (C) 2020 Erik Ogenvik <erik@ogenvik.org>
 
 This file is part of Smartbody.
 
@@ -26,6 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBCharacter.h"
 #include "SBUtilities.h"
 #include <bml/bml_processor.hpp>
+#include <utility>
 #include "rapidxml_utils.hpp"
 #include <bml/BMLObject.h>
 #include <bml/BMLAnimationObject.h>
@@ -51,23 +53,21 @@ SBTrigger::SBTrigger()
 	_offset = 0;
 }
 
-SBTrigger::~SBTrigger()
-{
-}
+SBTrigger::~SBTrigger() = default;
 
 void SBTrigger::setOffset(double val)
 {
 	_offset = val;
 }
 
-double SBTrigger::getOffset()
+double SBTrigger::getOffset() const
 {
 	return _offset;
 }
 
 void SBTrigger::setStartTag(std::string tag)
 {
-	_startTag = tag;
+	_startTag = std::move(tag);
 }
 
 std::string SBTrigger::getStartTag()
@@ -77,7 +77,7 @@ std::string SBTrigger::getStartTag()
 
 void SBTrigger::setEndTag(std::string tag)
 {
-	_endTag = tag;
+	_endTag = std::move(tag);
 }
 
 std::string SBTrigger::getEndTag()
@@ -122,52 +122,26 @@ SBBmlProcessor::SBBmlProcessor()
 : _bmlProcessor(std::make_unique<BML::Processor>())
 {
 
-	BMLObject* obj = nullptr;
-	obj = new BMLAnimationObject();
-	_bmlHandlers[obj->getName()] = obj;
+	auto addBmlObject = [&](std::unique_ptr<BMLObject> bmlObject){
+		auto name = bmlObject->getName();
+		_bmlHandlers.emplace(std::move(name), std::move(bmlObject));
+	};
 
-	obj = new BMLBodyObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLConstraintObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLEventObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLFaceObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLGazeObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLGestureObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLHandObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLHeadObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLLocomotionObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLNoiseObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLReachObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLSaccadeObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLSpeechObject();
-	_bmlHandlers[obj->getName()] = obj;
-
-	obj = new BMLStateObject();
-	_bmlHandlers[obj->getName()] = obj;
-	
+	addBmlObject(std::make_unique<BMLAnimationObject>());
+	addBmlObject(std::make_unique<BMLBodyObject>());
+	addBmlObject(std::make_unique<BMLConstraintObject>());
+	addBmlObject(std::make_unique<BMLEventObject>());
+	addBmlObject(std::make_unique<BMLFaceObject>());
+	addBmlObject(std::make_unique<BMLGazeObject>());
+	addBmlObject(std::make_unique<BMLGestureObject>());
+	addBmlObject(std::make_unique<BMLHandObject>());
+	addBmlObject(std::make_unique<BMLHeadObject>());
+	addBmlObject(std::make_unique<BMLLocomotionObject>());
+	addBmlObject(std::make_unique<BMLNoiseObject>());
+	addBmlObject(std::make_unique<BMLReachObject>());
+	addBmlObject(std::make_unique<BMLSaccadeObject>());
+	addBmlObject(std::make_unique<BMLSpeechObject>());
+	addBmlObject(std::make_unique<BMLStateObject>());
 }
 
 SBBmlProcessor::~SBBmlProcessor() = default;
@@ -212,7 +186,7 @@ std::string SBBmlProcessor::build_vrX(std::ostringstream& buffer, const std::str
 	{
 		SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(SmartBody::SBScene::getScene()->getAttribute("bmlIndex"));
 
-		if (SmartBody::SBScene::getScene()->getProcessId() != "")
+		if (!SmartBody::SBScene::getScene()->getProcessId().empty())
 			msgId << "sbm_" << SmartBody::SBScene::getScene()->getProcessId() << "_test_bml_" << (intAttr->getValue());
 		else
 			msgId << "sbm_test_bml_" << intAttr->getValue();
@@ -232,7 +206,7 @@ std::string SBBmlProcessor::send_vrX( const char* cmd, const std::string& char_i
 {
 	//SmartBody::util::log("run send_vrX, cmd = %s", cmd);
 	std::ostringstream msg;
-	std::string msgId = "";
+	std::string msgId;
 	bool all_characters = ( char_id=="*" );
 	//SmartBody::util::log("send_vrX cmd =  %s, bml = %s", cmd, bml.c_str());
 	if( seq_id.length()==0 ) {
@@ -247,11 +221,9 @@ std::string SBBmlProcessor::send_vrX( const char* cmd, const std::string& char_i
 			if( all_characters )
 			{
 				const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
-				for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-					iter != characterNames.end();
-					iter++)
+				for (const auto & characterName : characterNames)
 				{
-					SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(*iter);
+					SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 					msgId = build_vrX( msg, cmd, character->getName().c_str(), recip_id, bml, false, candidateMsgId);
 					//SmartBody::util::log("vvmsg cmd =  %s, msg = %s", cmd, msg.str().c_str());
 					//SmartBody::SBScene::getScene()->getVHMsgManager()->send2( cmd, msg.str().c_str() );
@@ -287,11 +259,9 @@ std::string SBBmlProcessor::send_vrX( const char* cmd, const std::string& char_i
 		if( all_characters )
 		{
 			const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
-			for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-				iter != characterNames.end();
-				iter++)
+			for (const auto & characterName : characterNames)
 			{
-				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(*iter);
+				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 				msgId = build_vrX( msg, cmd, character->getName().c_str(), recip_id, bml, true );
 				if( seq->insert( 0, msg.str().c_str() )!=CMD_SUCCESS ) {
 					std::stringstream strstr;
@@ -481,13 +451,13 @@ std::vector<BMLObject*> SBBmlProcessor::parseBML(const std::string& bml)
 			while (behaviorNode)
 			{
 				char* behaviorName = behaviorNode->name();
-				std::map<std::string, BMLObject*>::iterator iter = _bmlHandlers.find(behaviorName);
+				auto iter = _bmlHandlers.find(behaviorName);
 				if (iter == _bmlHandlers.end())
 				{
 					SmartBody::util::log("BML parsing problem: cannot find handler for BML instruction: '%s'", behaviorName);
 					continue;
 				}
-				BMLObject* bmlHandlerObject = (*iter).second;
+				auto& bmlHandlerObject = (*iter).second;
 				// create an instance of this object that will handle the parsing
 				BMLObject* bmlInstance = bmlHandlerObject->copy();
 				// parse the XML
@@ -508,7 +478,7 @@ std::vector<BMLObject*> SBBmlProcessor::parseBML(const std::string& bml)
 
 void SBBmlProcessor::scheduleBML(std::vector<BMLObject*>& behaviors)
 {
-	for (std::vector<BMLObject*>::iterator iter = behaviors.begin();
+	for (auto iter = behaviors.begin();
 		 iter != behaviors.end();
 		 iter++)
 	{

@@ -315,9 +315,9 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 						// if there are no blendshapes, but there are blendShape.channelName attributes, 
 						// then add the morph targets
 						std::vector<SmartBody::StringAttribute*> shapeAttributes;
-						std::map<std::string, SmartBody::SBAttribute*>& attributes = pawn->getAttributeList();
+						auto& attributes = pawn->getAttributeList();
 						for (auto& entry : attributes) {
-							SmartBody::SBAttribute* attr = entry.second;
+							SmartBody::SBAttribute* attr = entry.second.get();
 							const std::string& attrName = attr->getName();
 							size_t pos = attrName.find("blendShape.channelName.");
 							if (pos != std::string::npos) {

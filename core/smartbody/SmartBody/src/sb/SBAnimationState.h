@@ -135,7 +135,7 @@ class SBAnimationBlend : public PABlend
 		void validateCorrespondencePoints();		
 
 	protected:
-		MotionAnalysis* motionAnalysis;
+		std::unique_ptr<MotionAnalysis> motionAnalysis;
 		std::string _dimension;
 		std::string blendSkelName;
 		bool _isFinalized;
@@ -148,13 +148,13 @@ class SBAnimationBlend : public PABlend
 		SrMat plotVectorFlowTransform;
 		std::vector<SrSnShape<SrLines>*> vecflowLinesArray;
 		// put a list of joint global positions into array
-		void getJointsGPosFromSkel(SkSkeleton* sk, SrArray<SrVec>& pnts_array, const std::vector<SkJoint*>& jnt_list);
+		void getJointsGPosFromSkel(SkSkeleton* sk, SrArray<SrVec>& pnts_array, const std::vector<std::unique_ptr<SkJoint>>& jnt_list);
 		// find maximum vector norm (vector are connected between jnt global positions in consecutive frame pairs)
 		float getVectorMaxNorm(SrArray<SrArray<SrVec>*>& pnts_arr);
 		std::vector<SrSnLines*> plotMotionLinesArray; // plotMotion()
 		std::vector<SkJoint*> plot_excld_list;
 		// create a list for joint exclusion when plotting motion and vector flow (hard coded to exclude fingers, eye, etc)
-		void createJointExclusionArray(const std::vector<SkJoint*>& orig_list);
+		void createJointExclusionArray(const std::vector<std::unique_ptr<SkJoint>>& orig_list);
 		bool isExcluded(SkJoint* j); // return true if joint is excluded
 
 };

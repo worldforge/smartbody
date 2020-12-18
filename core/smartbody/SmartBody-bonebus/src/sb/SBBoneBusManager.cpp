@@ -24,7 +24,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
-#include <sb/SBPawn.h>
 #include <sb/SBCharacter.h>
 #include "SBUtilities.h"
 #include <controllers/me_controller_tree_root.hpp>
@@ -59,7 +58,7 @@ void SBBoneBusManager::setEnable(bool val)
 		}
 
 		std::string host = this->getStringAttribute("host");
-		if (host == "")
+		if (host.empty())
 			host = "localhost";
 		bool success = _boneBus.OpenConnection(host.c_str());
 		if (!success)
@@ -246,7 +245,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 	}
 
 	// Send the bone rotation for each joint in the skeleton
-	const std::vector<SkJoint *> & joints  = skeleton->joints();
+	auto & joints  = skeleton->joints();
 
 	character->IncrementTime();
 	character->StartSendBoneRotations();
@@ -255,7 +254,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 
 	for ( size_t i = 0; i < joints.size(); i++ )
 	{
-		SkJoint * j = joints[ i ];
+		auto& j = joints[ i ];
 		if (j->getJointType() != SkJoint::TypeJoint)
 		{
 			if (j->getJointType() == SkJoint::TypeOther)
@@ -275,7 +274,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 
 	character->StartSendBonePositions();
 
-	for (auto j : joints)
+	for (auto& j : joints)
 	{
 			if (j->getJointType() != SkJoint::TypeJoint)
 			continue;
@@ -303,7 +302,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 		character->StartSendGeneralParameters();
 		for (size_t i = 0; i < otherJoints.size(); i++)
 		{
-			SkJoint* joint = joints[otherJoints[i]];
+			auto& joint = joints[otherJoints[i]];
 			character->AddGeneralParameters(i, 1, joint->pos()->value( 0 ), i, SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
 
 		}

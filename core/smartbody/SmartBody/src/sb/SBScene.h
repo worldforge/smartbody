@@ -76,6 +76,8 @@ class SBMotionGraphManager;
 class SBHandConfigurationManager;
 class SBAssetStore;
 
+class ForwardLogListener;
+
 class SBScene : public SBObject
 {
 	public:
@@ -194,7 +196,7 @@ class SBScene : public SBObject
 
 		SBAPI SBParser* getParser();
 
-		SBAPI bool isRemoteMode();
+		SBAPI bool isRemoteMode() const;
 		SBAPI void setRemoteMode(bool val);
 
 		SBAPI void addSceneListener(SBSceneListener* listener);
@@ -252,7 +254,7 @@ class SBScene : public SBObject
 		SBAPI KinectProcessor* getKinectProcessor();
 		SBAPI std::map<std::string, GeneralParam*>& getGeneralParameters();
 
-		SBAPI std::vector<SBController*>& getDefaultControllers();
+		SBAPI std::vector<boost::intrusive_ptr<SBController>>& getDefaultControllers();
 
 		/**
 		 * Registers a provider which allows lookup of object through the "prefix/suffix" notation.
@@ -279,30 +281,30 @@ class SBScene : public SBObject
 		std::unique_ptr<SBAssetStore> _assetStore;
 		CoreServices _coreServices;
 
-		SBSimulationManager* _sim;
-		SBProfiler* _profiler;
-		SBBmlProcessor* _bml;
-		SBAnimationBlendManager* _blendManager;
-		SBReachManager* _reachManager;
-		SBSteerManager* _steerManager;
-		SBRealtimeManager* _realtimeManager;
-		SBServiceManager* _serviceManager;
-		SBGestureMapManager* _gestureMapManager;
-		SBJointMapManager* _jointMapManager;
-		SBPhonemeManager* _phonemeManager;
-		SBRetargetManager* _retargetManager;
-		SBEventManager* _eventManager;
-		SBAssetManager* _assetManager;
-		SBSpeechManager* _speechManager;
-		SBCommandManager* _commandManager;
-		SBMotionGraphManager* _motionGraphManager;
-		SBHandConfigurationManager* _handConfigManager;
+		std::unique_ptr<SBSimulationManager> _sim;
+		std::unique_ptr<SBProfiler> _profiler;
+		std::unique_ptr<SBBmlProcessor> _bml;
+		std::unique_ptr<SBAnimationBlendManager> _blendManager;
+		std::unique_ptr<SBReachManager> _reachManager;
+		std::unique_ptr<SBSteerManager> _steerManager;
+		std::unique_ptr<SBRealtimeManager> _realtimeManager;
+		std::unique_ptr<SBServiceManager> _serviceManager;
+		std::unique_ptr<SBGestureMapManager> _gestureMapManager;
+		std::unique_ptr<SBJointMapManager> _jointMapManager;
+		std::unique_ptr<SBPhonemeManager> _phonemeManager;
+		std::unique_ptr<SBBehaviorSetManager> _behaviorSetManager;
+		std::unique_ptr<SBRetargetManager> _retargetManager;
+		std::unique_ptr<SBEventManager> _eventManager;
+		std::unique_ptr<SBAssetManager> _assetManager;
+		std::unique_ptr<SBSpeechManager> _speechManager;
+		std::unique_ptr<SBCommandManager> _commandManager;
+		std::unique_ptr<SBMotionGraphManager> _motionGraphManager;
+		std::unique_ptr<SBHandConfigurationManager> _handConfigManager;
 
-		SBParser* _parser;
+		std::unique_ptr<SBParser> _parser;
 
 		std::vector<SBSceneListener*> _sceneListeners;
 
-		SBBehaviorSetManager* _behaviorSetManager;
 
 		std::map<std::string, SBScript*> _scripts;
 		float _scale;
@@ -312,19 +314,22 @@ class SBScene : public SBObject
 		std::map<std::string, SmartBody::SBFaceDefinition*> _faceDefinitions;
 
 		std::string _mediaPath;
-		std::vector<SBController*> _defaultControllers;
+		std::vector<boost::intrusive_ptr<SBController>> _defaultControllers;
 		
 		std::string _processId;
 		static SBScene* _scene;
 		static std::map<std::string, std::string> _systemParameters;
 
-		SrSnGroup* _rootGroup;
+		boost::intrusive_ptr<SrSnGroup> _rootGroup;
 		std::map<std::string, SbmPawn*>	_pawnMap;
 		std::vector<std::string> _pawnNames;
 		std::map<std::string, SbmCharacter*> _characterMap;
 		std::vector<std::string> _characterNames;
 
-		SmartBody::util::Listener* _logListener;
+		std::unique_ptr<SmartBody::util::Listener> _logListener;
+		std::unique_ptr<SmartBody::ForwardLogListener> _forwardLogListener;
+		std::unique_ptr<SmartBody::util::StdoutListener> _stdLogListener;
+
 
 		KinectProcessor* _kinectProcessor;
 		Heightfield* _heightField;

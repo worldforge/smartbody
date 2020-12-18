@@ -43,7 +43,7 @@ class SBTrigger : public SBSubject
 		~SBTrigger();
 
 		void setOffset(double val);
-		double getOffset();
+		double getOffset() const;
 
 		void setStartTag(std::string tag);
 		std::string getStartTag();
@@ -118,7 +118,7 @@ class SBBmlProcessor : boost::noncopyable
 			const std::string& seq_id, bool echo, bool send, const std::string& bml, std::string candidateMsgId = "");
 
 		std::unique_ptr<BML::Processor> _bmlProcessor;
-		std::map<std::string, BMLObject*> _bmlHandlers;
+		std::map<std::string, std::unique_ptr<BMLObject>> _bmlHandlers;
 		std::map<std::string, SBBMLSchedule*> _bmlSchedules;
 };
 

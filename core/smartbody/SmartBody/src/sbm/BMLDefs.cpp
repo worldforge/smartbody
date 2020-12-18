@@ -196,8 +196,8 @@ XMLCh* BMLDefs::ATTR_PITCH_MAX = nullptr;
 XMLCh* BMLDefs::VALUE_TEXT_PLAIN = nullptr;
 XMLCh* BMLDefs::VALUE_SSML = nullptr;
 
-XMLCh*  BMLDefs::start_id = nullptr;
-XMLCh*  BMLDefs::end_id   = nullptr;
+XMLCh* BMLDefs::start_id = nullptr;
+XMLCh* BMLDefs::end_id   = nullptr;
 
 XMLCh* BMLDefs::ATTR_REACH_ARM = nullptr;
 XMLCh* BMLDefs::ATTR_USE_EXAMPLE = nullptr;
@@ -370,393 +370,399 @@ XMLCh* BMLDefs::OGRE_VERTEX_INDEX = nullptr;
 XMLCh* BMLDefs::OGRE_BONE_INDEX = nullptr;
 XMLCh* BMLDefs::OGRE_WEIGHT = nullptr;
 
+std::list<XMLPtr> BMLDefs::sAttributes;
+
 
 BMLDefs::BMLDefs()
 {
-	ATTR_ID = XMLString::transcode("id");
-	ATTR_TYPE = XMLString::transcode("type");
-	ATTR_NAME = XMLString::transcode("name");
-	ATTR_LEVEL = XMLString::transcode("level");
-	ATTR_HANDLE = XMLString::transcode("sbm:handle");
-	ATTR_LEXEME = XMLString::transcode("lexeme");
-	ATTR_FILTERED = XMLString::transcode("filtered");
 
-	ATTR_START = XMLString::transcode("start");
-	ATTR_READY = XMLString::transcode("ready");
-	ATTR_STROKE_START = XMLString::transcode("stroke_start");
-	ATTR_STROKE = XMLString::transcode("stroke");
-	ATTR_STROKE_END = XMLString::transcode("stroke_end");
-	ATTR_RELAX = XMLString::transcode("relax");
-	ATTR_END = XMLString::transcode("end");
-
-	ATTR_PRESTROKE_HOLD =  XMLString::transcode("prestroke_hold");
-	ATTR_PRESTROKE_HOLD_IDLEMOTION = XMLString::transcode("prestroke_hold_idlemotion");
-	ATTR_POSTSTROKE_HOLD =  XMLString::transcode("poststroke_hold");
-	ATTR_POSTSTROKE_HOLD_IDLEMOTION = XMLString::transcode("poststroke_hold_idlemotion");
-	ATTR_SCALE = XMLString::transcode("sbm:scale");
-	ATTR_FREQUENCY = XMLString::transcode("sbm:frequency");
-	ATTR_PRIORITY = XMLString::transcode("priority");
-	ATTR_GROUP = XMLString::transcode("group");
-	ATTR_EMOTION = XMLString::transcode("emotion");
-	ATTR_LAYER = XMLString::transcode("layer");
-
-	TM_START = XMLString::transcode("start");
-	TM_READY = XMLString::transcode("ready");
-	TM_STROKE_START = XMLString::transcode("stroke_start");
-	TM_STROKE = XMLString::transcode("stroke");
-	TM_STROKE_END = XMLString::transcode("stroke_end");
-	TM_RELAX = XMLString::transcode("relax");
-	TM_END = XMLString::transcode("end");
-
-	TAG_SBM_ANIMATION		= XMLString::transcode("sbm:animation");
-	ATTR_TWARP       		= XMLString::transcode("ME:twarp");
-	ATTR_PVALUE				= XMLString::transcode("sbm:value");
-
-	TAG_REF 				= XMLString::transcode("ref");
-	TAG_CURVE				= XMLString::transcode("curve");
-	TAG_NUM_KEYS			= XMLString::transcode("num_keys");
-	TAG_LIPS				= XMLString::transcode("lips");
-	TAG_ARTICULATION		= XMLString::transcode("articulation");
-	TAG_SYNC				= XMLString::transcode("sync");
-	TAG_TIME				= XMLString::transcode("time");
-
-	TAG_BODYREACH			= XMLString::transcode("sbm:reach");
-
-	TAG_CONSTRAINT			= XMLString::transcode("sbm:constraint");
-
-	//TAG_SBM_EVENT			= XMLString::transcode("sbm:event");
-	//ATTR_MESSAGE			= XMLString::transcode("message");
-
-	TAG_FACE				= XMLString::transcode("face");
+	auto add = [](const std::string& attr){
+		XMLPtr ptr(XMLString::transcode(attr.c_str()));
+		sAttributes.emplace_back(std::move(ptr));
+		return sAttributes.back().get();
+	};
 	
-	TAG_GAZE				= XMLString::transcode("gaze");
+	ATTR_ID = add("id");
+	ATTR_TYPE = add("type");
+	ATTR_NAME = add("name");
+	ATTR_LEVEL = add("level");
+	ATTR_HANDLE = add("sbm:handle");
+	ATTR_LEXEME = add("lexeme");
+	ATTR_FILTERED = add("filtered");
 
-	TAG_PARAM				= XMLString::transcode("param");
+	ATTR_START = add("start");
+	ATTR_READY = add("ready");
+	ATTR_STROKE_START = add("stroke_start");
+	ATTR_STROKE = add("stroke");
+	ATTR_STROKE_END = add("stroke_end");
+	ATTR_RELAX = add("relax");
+	ATTR_END = add("end");
 
-	TAG_INTERRUPT			= XMLString::transcode("sbm:interrupt");
+	ATTR_PRESTROKE_HOLD = add("prestroke_hold");
+	ATTR_PRESTROKE_HOLD_IDLEMOTION = add("prestroke_hold_idlemotion");
+	ATTR_POSTSTROKE_HOLD = add("poststroke_hold");
+	ATTR_POSTSTROKE_HOLD_IDLEMOTION = add("poststroke_hold_idlemotion");
+	ATTR_SCALE = add("sbm:scale");
+	ATTR_FREQUENCY = add("sbm:frequency");
+	ATTR_PRIORITY = add("priority");
+	ATTR_GROUP = add("group");
+	ATTR_EMOTION = add("emotion");
+	ATTR_LAYER = add("layer");
 
-	TAG_LOCOTMOTION			= XMLString::transcode("locomotion");
+	TM_START = add("start");
+	TM_READY = add("ready");
+	TM_STROKE_START = add("stroke_start");
+	TM_STROKE = add("stroke");
+	TM_STROKE_END = add("stroke_end");
+	TM_RELAX = add("relax");
+	TM_END = add("end");
 
-	TAG_QUICKDRAW			= XMLString::transcode("sbm:quickdraw");
+	TAG_SBM_ANIMATION		 = add("sbm:animation");
+	ATTR_TWARP       		 = add("ME:twarp");
+	ATTR_PVALUE				 = add("sbm:value");
 
-	TAG_SACCADE				= XMLString::transcode("saccade");
-	TAG_REACH				= XMLString::transcode("sbm:reach");
-	TAG_NOISE    			= XMLString::transcode("sbm:noise");
+	TAG_REF 				 = add("ref");
+	TAG_CURVE				 = add("curve");
+	TAG_NUM_KEYS			 = add("num_keys");
+	TAG_LIPS				 = add("lips");
+	TAG_ARTICULATION		 = add("articulation");
+	TAG_SYNC				 = add("sync");
+	TAG_TIME				 = add("time");
 
-	TAG_SPEECH				= XMLString::transcode("speech");     // Original tag, here for backward compatibility
-	TAG_SBM_SPEECH			= XMLString::transcode("sbm:speech");
-	ATTR_TARGET				= XMLString::transcode("target");
+	TAG_BODYREACH			 = add("sbm:reach");
 
-	TAG_SBM_EVENT			= XMLString::transcode("sbm:event");
-	ATTR_MESSAGE			= XMLString::transcode("message");
+	TAG_CONSTRAINT			 = add("sbm:constraint");
+
+	//TAG_SBM_EVENT			 = add("sbm:event");
+	//ATTR_MESSAGE			 = add("message");
+
+	TAG_FACE				 = add("face");
+	
+	TAG_GAZE				 = add("gaze");
+
+	TAG_PARAM				 = add("param");
+
+	TAG_INTERRUPT			 = add("sbm:interrupt");
+
+	TAG_LOCOTMOTION			 = add("locomotion");
+
+	TAG_QUICKDRAW			 = add("sbm:quickdraw");
+
+	TAG_SACCADE				 = add("saccade");
+	TAG_REACH				 = add("sbm:reach");
+	TAG_NOISE    			 = add("sbm:noise");
+
+	TAG_SPEECH				 = add("speech");     // Original tag, here for backward compatibility
+	TAG_SBM_SPEECH			 = add("sbm:speech");
+	ATTR_TARGET				 = add("target");
+
+	TAG_SBM_EVENT			 = add("sbm:event");
+	ATTR_MESSAGE			 = add("message");
 
 	// XMLStrings (utf-16 character arrays) for parsing vrSpeak's XML
-	TAG_ACT		= XMLString::transcode("act");
-	TAG_BML       = XMLString::transcode("bml");
-	TAG_BODY      = XMLString::transcode("body");
-	TAG_TORSO      = XMLString::transcode("torso");
-	TAG_REQUIRED  = XMLString::transcode("required");
-	TAG_GESTURE = XMLString::transcode("gesture");
-	TAG_HEAD      = XMLString::transcode("head");
-	TAG_TM        = XMLString::transcode("tm");
-	TAG_MARK      = XMLString::transcode("mark");
+	TAG_ACT		 = add("act");
+	TAG_BML       = add("bml");
+	TAG_BODY      = add("body");
+	TAG_TORSO      = add("torso");
+	TAG_REQUIRED  = add("required");
+	TAG_GESTURE = add("gesture");
+	TAG_HEAD      = add("head");
+	TAG_TM        = add("tm");
+	TAG_MARK      = add("mark");
 
 
-	TAG_SBM_COMMAND = XMLString::transcode("sbm:command");
+	TAG_SBM_COMMAND = add("sbm:command");
 
 	// Deprecated behavior tags
-	TAG_ANIMATION = XMLString::transcode("animation");
-	TAG_EVENT     = XMLString::transcode("event");
+	TAG_ANIMATION = add("animation");
+	TAG_EVENT     = add("event");
 
-	TAG_PANIMATION = XMLString::transcode("panimation");
-	//TAG_REACH = XMLString::transcode("sbm:reach_old");
+	TAG_PANIMATION = add("panimation");
+	//TAG_REACH = add("sbm:reach_old");
 
 	// XMLStrings (utf-16 character arrays) for parsing vrSpeak's XML
-	ATTR_SPEAKER      = XMLString::transcode("speaker");
-	ATTR_ADDRESSEE    = XMLString::transcode("addressee");
-	ATTR_CONTENTTYPE  = XMLString::transcode("contenttype");
-	ATTR_LANG         = XMLString::transcode("lang");
-	ATTR_TID          = XMLString::transcode("tid");
-	ATTR_POSTURE      = XMLString::transcode("posture");
-	ATTR_REPEATS      = XMLString::transcode("repeats");
-	ATTR_AMOUNT       = XMLString::transcode("amount");
-	ATTR_VELOCITY     = XMLString::transcode("velocity");
-	ATTR_ANGLE        = XMLString::transcode("angle");
-	ATTR_DIRECTION    = XMLString::transcode("direction");
-	//ATTR_ROLL         = XMLString::transcode("sbm:roll");
-	ATTR_SMOOTH       = XMLString::transcode("sbm:smooth");
+	ATTR_SPEAKER      = add("speaker");
+	ATTR_ADDRESSEE    = add("addressee");
+	ATTR_CONTENTTYPE  = add("contenttype");
+	ATTR_LANG         = add("lang");
+	ATTR_TID          = add("tid");
+	ATTR_POSTURE      = add("posture");
+	ATTR_REPEATS      = add("repeats");
+	ATTR_AMOUNT       = add("amount");
+	ATTR_VELOCITY     = add("velocity");
+	ATTR_ANGLE        = add("angle");
+	ATTR_DIRECTION    = add("direction");
+	//ATTR_ROLL         = add("sbm:roll");
+	ATTR_SMOOTH       = add("sbm:smooth");
 
 	////// XML Direction constants
 	// Angular (gaze) and orienting (head)
-	DIR_RIGHT        = XMLString::transcode("RIGHT");
-	DIR_LEFT         = XMLString::transcode("LEFT");
-	DIR_UP           = XMLString::transcode("UP");
-	DIR_DOWN         = XMLString::transcode("DOWN");
+	DIR_RIGHT        = add("RIGHT");
+	DIR_LEFT         = add("LEFT");
+	DIR_UP           = add("UP");
+	DIR_DOWN         = add("DOWN");
 	// Angular only
-	DIR_UPRIGHT      = XMLString::transcode("UPRIGHT");
-	DIR_UPLEFT       = XMLString::transcode("UPLEFT");
-	DIR_DOWNRIGHT    = XMLString::transcode("DOWNRIGHT");
-	DIR_DOWNLEFT     = XMLString::transcode("DOWNLEFT");
-	DIR_POLAR        = XMLString::transcode("POLAR");
+	DIR_UPRIGHT      = add("UPRIGHT");
+	DIR_UPLEFT       = add("UPLEFT");
+	DIR_DOWNRIGHT    = add("DOWNRIGHT");
+	DIR_DOWNLEFT     = add("DOWNLEFT");
+	DIR_POLAR        = add("POLAR");
 	// Orienting only
-	DIR_ROLLRIGHT    = XMLString::transcode("ROLLRIGHT");
-	DIR_ROLLLEFT     = XMLString::transcode("ROLLLEFT");
+	DIR_ROLLRIGHT    = add("ROLLRIGHT");
+	DIR_ROLLLEFT     = add("ROLLLEFT");
 
 
 	////// XML Tags
-	TAG_DESCRIPTION  = XMLString::transcode("description");
+	TAG_DESCRIPTION  = add("description");
 
 	////// BML Description Type
-	DTYPE_SBM   = XMLString::transcode("ICT.SBM");
+	DTYPE_SBM   = add("ICT.SBM");
 
 	////// XML ATTRIBUTES
-	ATTR_ROOTJOINT  = XMLString::transcode("sbm:root-joint");
-	ATTR_EFFECTOR  = XMLString::transcode("effector");
-	ATTR_CONSTRAINT_TYPE  = XMLString::transcode("sbm:constraint-type");
-	ATTR_EFFECTOR_ROOT  = XMLString::transcode("sbm:effector-root");
-	ATTR_FADE_OUT		 = XMLString::transcode("sbm:fade-out");
-	ATTR_FADE_IN		 = XMLString::transcode("sbm:fade-in");
+	ATTR_ROOTJOINT  = add("sbm:root-joint");
+	ATTR_EFFECTOR  = add("effector");
+	ATTR_CONSTRAINT_TYPE  = add("sbm:constraint-type");
+	ATTR_EFFECTOR_ROOT  = add("sbm:effector-root");
+	ATTR_FADE_OUT		 = add("sbm:fade-out");
+	ATTR_FADE_IN		 = add("sbm:fade-in");
 
-	ATTR_OFFSET_ROTX         = XMLString::transcode("rot-x");
-	ATTR_OFFSET_ROTY       = XMLString::transcode("rot-y");
-	ATTR_OFFSET_ROTZ          = XMLString::transcode("rot-z");
-	//ATTR_OFFSET_POS          = XMLString::transcode("offset-pos";
+	ATTR_OFFSET_ROTX         = add("rot-x");
+	ATTR_OFFSET_ROTY       = add("rot-y");
+	ATTR_OFFSET_ROTZ          = add("rot-z");
+	//ATTR_OFFSET_POS          = add("offset-pos";
 	
-	ATTR_RAMPUP 	= XMLString::transcode("sbm:rampup");
-	ATTR_RAMPDOWN	= XMLString::transcode("sbm:rampdown");
-	ATTR_DURATION	= XMLString::transcode("sbm:duration");
+	ATTR_RAMPUP 	 = add("sbm:rampup");
+	ATTR_RAMPDOWN	 = add("sbm:rampdown");
+	ATTR_DURATION	 = add("sbm:duration");
 
-	//ATTR_X      = XMLString::transcode("pos-x");
-	//ATTR_Y      = XMLString::transcode("pos-y");
-	//ATTR_Z      = XMLString::transcode("pos-z");
-
-	////// XML ATTRIBUTES
-	ATTR_TARGET_POS  = XMLString::transcode("sbm:target-pos");
-	ATTR_REACH_VELOCITY  = XMLString::transcode("sbm:reach-velocity");
-	ATTR_REACH_DURATION  = XMLString::transcode("sbm:reach-duration");
-	ATTR_REACH_FINISH  = XMLString::transcode("sbm:reach-finish");
-	ATTR_REACH_TYPE  = XMLString::transcode("sbm:reach-type");
-	//ATTR_APEX_DURATION  = XMLString::transcode("sbm:apex-duration";
-
-	ATTR_ROTATION      = XMLString::transcode("rotation");
-	ATTR_ENABLE      = XMLString::transcode("enable");
-	ATTR_SPEED      = XMLString::transcode("speed");
-
-	ATTR_X      = XMLString::transcode("x");
-	ATTR_Y      = XMLString::transcode("y");
-	ATTR_Z      = XMLString::transcode("z");
-
-	ATTR_POSX      = XMLString::transcode("pos-x");
-	ATTR_POSY      = XMLString::transcode("pos-y");
-	ATTR_POSZ      = XMLString::transcode("pos-z");
-
-	ATTR_ROTX      = XMLString::transcode("rot-x");
-	ATTR_ROTY      = XMLString::transcode("rot-y");
-	ATTR_ROTZ      = XMLString::transcode("rot-z");
-
-
-	TAG_VISEME  = XMLString::transcode("viseme");
-	TAG_SOUND  = XMLString::transcode("soundFile"); //this tag is used to rename the soundFile by Remote speech process
-	ATTR_AU      = XMLString::transcode("au");
-	ATTR_SIDE    = XMLString::transcode("side");	
+	//ATTR_X      = add("pos-x");
+	//ATTR_Y      = add("pos-y");
+	//ATTR_Z      = add("pos-z");
 
 	////// XML ATTRIBUTES
-	ATTR_SBM_ROLL      = XMLString::transcode("sbm:roll");
-	ATTR_JOINT_RANGE   = XMLString::transcode("sbm:joint-range");
-	ATTR_JOINT_SPEED   = XMLString::transcode("sbm:joint-speed");
-	ATTR_TIME_HINT	 = XMLString::transcode("sbm:time-hint");
-	ATTR_JOINT_SMOOTH  = XMLString::transcode("sbm:speed-smoothing");
-	ATTR_PITCH         = XMLString::transcode("pitch");
-	ATTR_HEADING       = XMLString::transcode("heading");
-	ATTR_ROLL          = XMLString::transcode("roll");
-	ATTR_BLEND         = XMLString::transcode("blend");
-	ATTR_INTERPOLATE_BIAS  = XMLString::transcode("interpolate-bias");
+	ATTR_TARGET_POS  = add("sbm:target-pos");
+	ATTR_REACH_VELOCITY  = add("sbm:reach-velocity");
+	ATTR_REACH_DURATION  = add("sbm:reach-duration");
+	ATTR_REACH_FINISH  = add("sbm:reach-finish");
+	ATTR_REACH_TYPE  = add("sbm:reach-type");
+	//ATTR_APEX_DURATION  = add("sbm:apex-duration";
 
-	ATTR_PRIORITY_JOINT  = XMLString::transcode("sbm:priority-joint");
-	ATTR_PITCH_MIN	 = XMLString::transcode("pitch-min");
-	ATTR_PITCH_MAX	 = XMLString::transcode("pitch-max");
+	ATTR_ROTATION      = add("rotation");
+	ATTR_ENABLE      = add("enable");
+	ATTR_SPEED      = add("speed");
 
-//	TAG_MARK       = XMLString::transcode("mark");
+	ATTR_X      = add("x");
+	ATTR_Y      = add("y");
+	ATTR_Z      = add("z");
 
-	VALUE_TEXT_PLAIN  = XMLString::transcode("text/plain");
-	VALUE_SSML        = XMLString::transcode("application/ssml+xml");
+	ATTR_POSX      = add("pos-x");
+	ATTR_POSY      = add("pos-y");
+	ATTR_POSZ      = add("pos-z");
 
-	start_id  = XMLString::transcode("bml:start");
-	end_id    = XMLString::transcode("bml:end");
-
-	////// XML ATTRIBUTES
-	ATTR_REACH_ARM  = XMLString::transcode("reach-arm");
-	ATTR_USE_EXAMPLE  = XMLString::transcode("use-example");
-	ATTR_BUILD_EXAMPLE  = XMLString::transcode("build-example");
-	ATTR_EXAMPLE_DIST  = XMLString::transcode("example-dist"); // minimal distances between pose examples
-	ATTR_RESAMPLE_SIZE  = XMLString::transcode("resample-size"); // minimal distances between pose examples
-	////// XML ATTRIBUTES
-	ATTR_ANIM          = XMLString::transcode("anim");
-	ATTR_TRACK_DUR     = XMLString::transcode("track-duration");
-	ATTR_GUNDRAW_DUR    = XMLString::transcode("gundraw-duration");
-	ATTR_HOLSTER_DUR    = XMLString::transcode("holster-duration");
-	ATTR_AIM_OFFSET     = XMLString::transcode("aim-offset");
+	ATTR_ROTX      = add("rot-x");
+	ATTR_ROTY      = add("rot-y");
+	ATTR_ROTZ      = add("rot-z");
 
 
-	ATTR_ANIM1  = XMLString::transcode("anim1");
-	ATTR_ANIM2  = XMLString::transcode("anim2");
-	ATTR_LOOP  = XMLString::transcode("loop");
-	ATTR_WRAPMODE = XMLString::transcode("sbm:wrap-mode");
-	ATTR_BLENDMODE = XMLString::transcode("sbm:blend-mode");
-	ATTR_SCHEDULEMODE = XMLString::transcode("sbm:schedule-mode");
-	ATTR_TRANSITION_LENGTH = XMLString::transcode("sbm:transition-length");
-	ATTR_DIRECTPLAY = XMLString::transcode("sbm:direct-play");
-	ATTR_OVERLAY = XMLString::transcode("overlay");
+	TAG_VISEME  = add("viseme");
+	TAG_SOUND  = add("soundFile"); //this tag is used to rename the soundFile by Remote speech process
+	ATTR_AU      = add("au");
+	ATTR_SIDE    = add("side");	
 
 	////// XML ATTRIBUTES
-	ATTR_VALUE   = XMLString::transcode("value");
+	ATTR_SBM_ROLL      = add("sbm:roll");
+	ATTR_JOINT_RANGE   = add("sbm:joint-range");
+	ATTR_JOINT_SPEED   = add("sbm:joint-speed");
+	ATTR_TIME_HINT	 = add("sbm:time-hint");
+	ATTR_JOINT_SMOOTH  = add("sbm:speed-smoothing");
+	ATTR_PITCH         = add("pitch");
+	ATTR_HEADING       = add("heading");
+	ATTR_ROLL          = add("roll");
+	ATTR_BLEND         = add("blend");
+	ATTR_INTERPOLATE_BIAS  = add("interpolate-bias");
 
-	ATTR_TRUE   = XMLString::transcode("true");
-	ATTR_FALSE   = XMLString::transcode("false");
-	ATTR_RESET   = XMLString::transcode("reset");
+	ATTR_PRIORITY_JOINT  = add("sbm:priority-joint");
+	ATTR_PITCH_MIN	 = add("pitch-min");
+	ATTR_PITCH_MAX	 = add("pitch-max");
 
-	ATTR_SHAKE  = XMLString::transcode("shake");
-	ATTR_TOSS   = XMLString::transcode("toss");
-	ATTR_ORIENT   = XMLString::transcode("orient");
-	ATTR_NOD   = XMLString::transcode("nod");
-	ATTR_WIGGLE   = XMLString::transcode("wiggle");
-	ATTR_WAGGLE   = XMLString::transcode("waggle");
-	ATTR_PARAMETERIZED = XMLString::transcode("parameterized");
+//	TAG_MARK       = add("mark");
 
-	ATTR_ARMLEFT   = XMLString::transcode("left");
-	ATTR_ARMRIGHT   = XMLString::transcode("right");
+	VALUE_TEXT_PLAIN  = add("text/plain");
+	VALUE_SSML        = add("application/ssml+xml");
 
-	ATTR_FACS   = XMLString::transcode("facs");
-	ATTR_RPS = XMLString::transcode("rps");
-	ATTR_GRPS = XMLString::transcode("grps");
-	ATTR_LRPS= XMLString::transcode("lrps");
+	start_id  = add("bml:start");
+	end_id    = add("bml:end");
 
-	ATTR_EYEBROWS = XMLString::transcode("eyebrows");
-	ATTR_EYELIDS = XMLString::transcode("eyelids");
-	ATTR_MOUTH = XMLString::transcode("mouth");
+	////// XML ATTRIBUTES
+	ATTR_REACH_ARM  = add("reach-arm");
+	ATTR_USE_EXAMPLE  = add("use-example");
+	ATTR_BUILD_EXAMPLE  = add("build-example");
+	ATTR_EXAMPLE_DIST  = add("example-dist"); // minimal distances between pose examples
+	ATTR_RESAMPLE_SIZE  = add("resample-size"); // minimal distances between pose examples
+	////// XML ATTRIBUTES
+	ATTR_ANIM          = add("anim");
+	ATTR_TRACK_DUR     = add("track-duration");
+	ATTR_GUNDRAW_DUR    = add("gundraw-duration");
+	ATTR_HOLSTER_DUR    = add("holster-duration");
+	ATTR_AIM_OFFSET     = add("aim-offset");
 
-	ATTR_ROOT = XMLString::transcode("sbm:root");
 
-	TAG_GRAB = XMLString::transcode("sbm:grab");
-	//ATTR_REACH_FINISH = XMLString::transcode("sbm:reach-finish");
-	ATTR_CONS_JOINT = XMLString::transcode("sbm:cons-joint");
-	ATTR_CONS_TARGET = XMLString::transcode("sbm:cons-target");
-	ATTR_APEX_DURATION = XMLString::transcode("sbm:apex-duration");
-	ATTR_WRIST = XMLString::transcode("sbm:wrist");
-	ATTR_GRAB_SPEED = XMLString::transcode("sbm:grab-speed");
-	ATTR_GRAB_FINISH = XMLString::transcode("sbm:grab-finish");
-	ATTR_GRAB_TYPE = XMLString::transcode("sbm:grab-type");
-	ATTR_OBSTACLE = XMLString::transcode("sbm:obstacle");
-	ATTR_GRAB_STATE = XMLString::transcode("sbm:grab-state");
-	ATTR_REACH_ACTION = XMLString::transcode("sbm:action");
-	ATTR_PROXIMITY = XMLString::transcode("proximity");
-	ATTR_MANNER = XMLString::transcode("manner");
-	ATTR_FACING= XMLString::transcode("facing");
-	ATTR_FOLLOW= XMLString::transcode("sbm:follow");
-	ATTR_NUM_STEPS = XMLString::transcode("sbm:numsteps");
-	ATTR_SPD = XMLString::transcode("spd");
-	ATTR_SOURCE_JOINT = XMLString::transcode("sbm:source-joint");
-	ATTR_ATTACH_PAWN = XMLString::transcode("sbm:attach-pawn");
-	ATTR_RELEASE_PAWN = XMLString::transcode("sbm:release-pawn");
-	ATTR_FOOT_IK = XMLString::transcode("sbm:foot-ik");
-	ATTR_USE_LOCOMOTION = XMLString::transcode("sbm:use-locomotion");
+	ATTR_ANIM1  = add("anim1");
+	ATTR_ANIM2  = add("anim2");
+	ATTR_LOOP  = add("loop");
+	ATTR_WRAPMODE = add("sbm:wrap-mode");
+	ATTR_BLENDMODE = add("sbm:blend-mode");
+	ATTR_SCHEDULEMODE = add("sbm:schedule-mode");
+	ATTR_TRANSITION_LENGTH = add("sbm:transition-length");
+	ATTR_DIRECTPLAY = add("sbm:direct-play");
+	ATTR_OVERLAY = add("overlay");
 
-	ATTR_MAGNITUDE = XMLString::transcode("magnitude");
-	ATTR_MODE = XMLString::transcode("mode");
-	ATTR_ANGLELIMIT = XMLString::transcode("angle-limit");
-	ATTR_FINISH = XMLString::transcode("finish");
+	////// XML ATTRIBUTES
+	ATTR_VALUE   = add("value");
 
-	ATTR_STEERACCEL = XMLString::transcode("sbm:accel");
-	ATTR_STEERANGLEACCEL = XMLString::transcode("sbm:angleaccel");
-	ATTR_STEERSCOOTACCEL = XMLString::transcode("sbm:scootaccel");
+	ATTR_TRUE   = add("true");
+	ATTR_FALSE   = add("false");
+	ATTR_RESET   = add("reset");
 
-	ATTR_NODAXIS = XMLString::transcode("sbm:axis");
-	ATTR_NODACCEL = XMLString::transcode("sbm:accel");
-	ATTR_NODPERIOD = XMLString::transcode("sbm:period");
-	ATTR_NODWARP = XMLString::transcode("sbm:warp");
-	ATTR_NODPITCH = XMLString::transcode("sbm:pitch");
-	ATTR_NODDECAY = XMLString::transcode("sbm:decay");
+	ATTR_SHAKE  = add("shake");
+	ATTR_TOSS   = add("toss");
+	ATTR_ORIENT   = add("orient");
+	ATTR_NOD   = add("nod");
+	ATTR_WIGGLE   = add("wiggle");
+	ATTR_WAGGLE   = add("waggle");
+	ATTR_PARAMETERIZED = add("parameterized");
 
-	TAG_STATES = XMLString::transcode("sbm:states");
-	TAG_BLEND = XMLString::transcode("blend");
-	ATTR_STARTINGNOW = XMLString::transcode("sbm:startnow");
-	ATTR_ADDITIVE = XMLString::transcode("sbm:additive");
-	ATTR_PARTIALJOINT = XMLString::transcode("sbm:partial-joint");
+	ATTR_ARMLEFT   = add("left");
+	ATTR_ARMRIGHT   = add("right");
 
-	ATTR_PERCENTAGE_BIN0 = XMLString::transcode("sbm:bin0");
-	ATTR_PERCENTAGE_BIN45 = XMLString::transcode("sbm:bin45");
-	ATTR_PERCENTAGE_BIN90 = XMLString::transcode("sbm:bin90");
-	ATTR_PERCENTAGE_BIN135 = XMLString::transcode("sbm:bin135");
-	ATTR_PERCENTAGE_BIN180 = XMLString::transcode("sbm:bin180");
-	ATTR_PERCENTAGE_BIN225 = XMLString::transcode("sbm:bin225");
-	ATTR_PERCENTAGE_BIN270 = XMLString::transcode("sbm:bin270");
-	ATTR_PERCENTAGE_BIN315 = XMLString::transcode("sbm:bin315");
-	ATTR_SACCADE_INTERVAL_MEAN = XMLString::transcode("sbm:mean");
-	ATTR_SACCADE_INTERVAL_VARIANT = XMLString::transcode("sbm:variant");
+	ATTR_FACS   = add("facs");
+	ATTR_RPS = add("rps");
+	ATTR_GRPS = add("grps");
+	ATTR_LRPS = add("lrps");
+
+	ATTR_EYEBROWS = add("eyebrows");
+	ATTR_EYELIDS = add("eyelids");
+	ATTR_MOUTH = add("mouth");
+
+	ATTR_ROOT = add("sbm:root");
+
+	TAG_GRAB = add("sbm:grab");
+	//ATTR_REACH_FINISH = add("sbm:reach-finish");
+	ATTR_CONS_JOINT = add("sbm:cons-joint");
+	ATTR_CONS_TARGET = add("sbm:cons-target");
+	ATTR_APEX_DURATION = add("sbm:apex-duration");
+	ATTR_WRIST = add("sbm:wrist");
+	ATTR_GRAB_SPEED = add("sbm:grab-speed");
+	ATTR_GRAB_FINISH = add("sbm:grab-finish");
+	ATTR_GRAB_TYPE = add("sbm:grab-type");
+	ATTR_OBSTACLE = add("sbm:obstacle");
+	ATTR_GRAB_STATE = add("sbm:grab-state");
+	ATTR_REACH_ACTION = add("sbm:action");
+	ATTR_PROXIMITY = add("proximity");
+	ATTR_MANNER = add("manner");
+	ATTR_FACING = add("facing");
+	ATTR_FOLLOW = add("sbm:follow");
+	ATTR_NUM_STEPS = add("sbm:numsteps");
+	ATTR_SPD = add("spd");
+	ATTR_SOURCE_JOINT = add("sbm:source-joint");
+	ATTR_ATTACH_PAWN = add("sbm:attach-pawn");
+	ATTR_RELEASE_PAWN = add("sbm:release-pawn");
+	ATTR_FOOT_IK = add("sbm:foot-ik");
+	ATTR_USE_LOCOMOTION = add("sbm:use-locomotion");
+
+	ATTR_MAGNITUDE = add("magnitude");
+	ATTR_MODE = add("mode");
+	ATTR_ANGLELIMIT = add("angle-limit");
+	ATTR_FINISH = add("finish");
+
+	ATTR_STEERACCEL = add("sbm:accel");
+	ATTR_STEERANGLEACCEL = add("sbm:angleaccel");
+	ATTR_STEERSCOOTACCEL = add("sbm:scootaccel");
+
+	ATTR_NODAXIS = add("sbm:axis");
+	ATTR_NODACCEL = add("sbm:accel");
+	ATTR_NODPERIOD = add("sbm:period");
+	ATTR_NODWARP = add("sbm:warp");
+	ATTR_NODPITCH = add("sbm:pitch");
+	ATTR_NODDECAY = add("sbm:decay");
+
+	TAG_STATES = add("sbm:states");
+	TAG_BLEND = add("blend");
+	ATTR_STARTINGNOW = add("sbm:startnow");
+	ATTR_ADDITIVE = add("sbm:additive");
+	ATTR_PARTIALJOINT = add("sbm:partial-joint");
+
+	ATTR_PERCENTAGE_BIN0 = add("sbm:bin0");
+	ATTR_PERCENTAGE_BIN45 = add("sbm:bin45");
+	ATTR_PERCENTAGE_BIN90 = add("sbm:bin90");
+	ATTR_PERCENTAGE_BIN135 = add("sbm:bin135");
+	ATTR_PERCENTAGE_BIN180 = add("sbm:bin180");
+	ATTR_PERCENTAGE_BIN225 = add("sbm:bin225");
+	ATTR_PERCENTAGE_BIN270 = add("sbm:bin270");
+	ATTR_PERCENTAGE_BIN315 = add("sbm:bin315");
+	ATTR_SACCADE_INTERVAL_MEAN = add("sbm:mean");
+	ATTR_SACCADE_INTERVAL_VARIANT = add("sbm:variant");
 
 	// OpenCollada
-	ATTR_SID = XMLString::transcode("sid");
-	ATTR_STRIDE = XMLString::transcode("stride");
-	ATTR_COUNT = XMLString::transcode("count");
-	ATTR_INPUTSTR = XMLString::transcode("input");
-	ATTR_SEMANTIC = XMLString::transcode("semantic");
-	ATTR_VCOUNT = XMLString::transcode("vcount");
-	ATTR_SOURCE = XMLString::transcode("source");
-	ATTR_URL = XMLString::transcode("url");
-	ATTR_OFFSET = XMLString::transcode("offset");
-	ATTR_TRIM = XMLString::transcode("trim");
-	ATTR_SYMBOL = XMLString::transcode("symbol");
-	ATTR_MATERIAL = XMLString::transcode("material");
-	ATTR_OPAQUE = XMLString::transcode("opaque");
-	ATTR_TEXTURE = XMLString::transcode("texture");
+	ATTR_SID = add("sid");
+	ATTR_STRIDE = add("stride");
+	ATTR_COUNT = add("count");
+	ATTR_INPUTSTR = add("input");
+	ATTR_SEMANTIC = add("semantic");
+	ATTR_VCOUNT = add("vcount");
+	ATTR_SOURCE = add("source");
+	ATTR_URL = add("url");
+	ATTR_OFFSET = add("offset");
+	ATTR_TRIM = add("trim");
+	ATTR_SYMBOL = add("symbol");
+	ATTR_MATERIAL = add("material");
+	ATTR_OPAQUE = add("opaque");
+	ATTR_TEXTURE = add("texture");
 
 	// locomotion
-	ATTR_BRAKING = XMLString::transcode("sbm:braking");
+	ATTR_BRAKING = add("sbm:braking");
 
-	ATTR_STYLE = XMLString::transcode("sbm:style");
+	ATTR_STYLE = add("sbm:style");
 
-	ATTR_STATENAME = XMLString::transcode("sbm:state-name");
+	ATTR_STATENAME = add("sbm:state-name");
 
-	ATTR_POLICY = XMLString::transcode("policy");
-	ATTR_PROCID = XMLString::transcode("procid");
+	ATTR_POLICY = add("policy");
+	ATTR_PROCID = add("procid");
 
-	OGRE_BONE = XMLString::transcode("bone");
-	OGRE_PARENT = XMLString::transcode("parent");
-	OGRE_ID = XMLString::transcode("id");
-	OGRE_VERTEX_COUNT = XMLString::transcode("vertexcount");
-	OGRE_NAME = XMLString::transcode("name");
-	OGRE_MATERIAL = XMLString::transcode("material");
-	OGRE_LENGTH = XMLString::transcode("length");
-	OGRE_X = XMLString::transcode("x");
-	OGRE_Y = XMLString::transcode("y");
-	OGRE_Z = XMLString::transcode("z");
-	OGRE_U = XMLString::transcode("u");
-	OGRE_V = XMLString::transcode("v");
-	OGRE_V1 = XMLString::transcode("v1");
-	OGRE_V2 = XMLString::transcode("v2");
-	OGRE_V3 = XMLString::transcode("v3");
-	OGRE_T1 = XMLString::transcode("t1");
-	OGRE_T2 = XMLString::transcode("t2");
-	OGRE_T3 = XMLString::transcode("t3");
-	OGRE_ANGLE = XMLString::transcode("angle");
-	OGRE_AXIS = XMLString::transcode("axis");
-	OGRE_ANIMATION = XMLString::transcode("animation");
-	OGRE_TRACKS = XMLString::transcode("tracks");
-	OGRE_TRACK = XMLString::transcode("track");
-	OGRE_KEYFRAMES = XMLString::transcode("keyframes");
-	OGRE_KEYFRAME = XMLString::transcode("keyframe");
-	OGRE_TRANSLATE = XMLString::transcode("translate");
-	OGRE_ROTATE = XMLString::transcode("rotate");
-	OGRE_TIME = XMLString::transcode("time");
-	OGRE_VERTEX_INDEX = XMLString::transcode("vertexindex");
-	OGRE_BONE_INDEX = XMLString::transcode("boneindex");
-	OGRE_WEIGHT = XMLString::transcode("weight");
-
-}
-
-BMLDefs::~BMLDefs()
-{
+	OGRE_BONE = add("bone");
+	OGRE_PARENT = add("parent");
+	OGRE_ID = add("id");
+	OGRE_VERTEX_COUNT = add("vertexcount");
+	OGRE_NAME = add("name");
+	OGRE_MATERIAL = add("material");
+	OGRE_LENGTH = add("length");
+	OGRE_X = add("x");
+	OGRE_Y = add("y");
+	OGRE_Z = add("z");
+	OGRE_U = add("u");
+	OGRE_V = add("v");
+	OGRE_V1 = add("v1");
+	OGRE_V2 = add("v2");
+	OGRE_V3 = add("v3");
+	OGRE_T1 = add("t1");
+	OGRE_T2 = add("t2");
+	OGRE_T3 = add("t3");
+	OGRE_ANGLE = add("angle");
+	OGRE_AXIS = add("axis");
+	OGRE_ANIMATION = add("animation");
+	OGRE_TRACKS = add("tracks");
+	OGRE_TRACK = add("track");
+	OGRE_KEYFRAMES = add("keyframes");
+	OGRE_KEYFRAME = add("keyframe");
+	OGRE_TRANSLATE = add("translate");
+	OGRE_ROTATE = add("rotate");
+	OGRE_TIME = add("time");
+	OGRE_VERTEX_INDEX = add("vertexindex");
+	OGRE_BONE_INDEX = add("boneindex");
+	OGRE_WEIGHT = add("weight");
 
 }
+
+BMLDefs::~BMLDefs() = default;
 
 }

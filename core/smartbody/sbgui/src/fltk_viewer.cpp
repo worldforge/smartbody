@@ -525,6 +525,10 @@ FltkViewer::FltkViewer ( int x, int y, int w, int h, const char *label )
 
 FltkViewer::~FltkViewer ()
  {
+	if (fltkListener) {
+		Session::current->scene.removeSceneListener(fltkListener);
+	}
+	delete fltkListener;
    delete _data->scenebox;
    delete _data->sceneaxis;
    delete _data;
@@ -3863,11 +3867,11 @@ void FltkViewer::drawCharacterBoundingVolumes()
 			{
 				auto sk = character->getSkeleton();
 				float chrHeight = character->getHeight();
-				const std::vector<SkJoint*>& origJnts = sk->joints();
+				auto& origJnts = sk->joints();
 				sk->update_global_matrices();
 				for(unsigned int i=1; i<origJnts.size(); i++) // skip world_offset
 				{
-					SkJoint* j = origJnts[i];
+					auto& j = origJnts[i];
 					for(int k=0; k<j->num_children(); k++)
 					{
 						SkJoint* j_ch = j->child(k);
@@ -4945,25 +4949,23 @@ void FltkViewer::drawDynamics()
 		return;
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
-	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-		iter != characterNames.end();
-		iter++)
+	for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = scene->getCharacter((*iter));
+		SmartBody::SBCharacter* character = scene->getCharacter(characterName);
 		character->getSkeleton()->update_global_matrices();
 
-		const std::vector<SkJoint*>& joints = character->getSkeleton()->joints();
+		auto& joints = character->getSkeleton()->joints();
 		
 		int numJoints = 0;
 		float totalMass = 0;
 		SrVec com(0, 0, 0);
-		for (size_t j = 0; j < joints.size(); j++)
+		for (auto& joint : joints)
 		{
-			float mass = joints[j]->mass();
+			float mass = joint->mass();
 			if (mass > 0)
 			{
 				totalMass += mass;
-				SrMat gmat = joints[j]->gmat();
+				SrMat gmat = joint->gmat();
 				SrVec loc(*gmat.pt(12), *gmat.pt(13), *gmat.pt(14)); 
 				com += mass * loc;
 				numJoints++;
@@ -5529,12 +5531,12 @@ void FltkViewer::drawCollisionInfo()
 	glColor3f(1.0f, 1.0, 0.0f);
 	glLineWidth(5.f);
 	glPushMatrix();
-	std::map<std::string, SBGeomObject*>& collisionObjects = scene->getCollisionManager()->getAllCollisionObjects();
+	auto& collisionObjects = scene->getCollisionManager()->getAllCollisionObjects();
 	for (auto & iter : collisionObjects)
 	{
-		SBGeomObject* collisionObject = iter.second;
+		auto& collisionObject = iter.second;
 		SrMat mat = collisionObject->getGlobalTransform().gmat();
-		drawColObject(collisionObject, mat, .5);
+		drawColObject(collisionObject.get(), mat, .5);
 	}
 	glPopMatrix();
 	glPopAttrib();

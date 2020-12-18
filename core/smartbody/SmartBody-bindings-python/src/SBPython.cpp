@@ -329,7 +329,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 	pythonFuncsAttribute();
 
 
-	boost::python::class_<SBObject>("SBObject")
+	boost::python::class_<SBObject, boost::noncopyable>("SBObject", boost::python::no_init)
 		.def("getName", &SBObject::getName, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the name of the object.")
 		.def("setName", &SBObject::setName, "Sets the name of the object.")
 		.def("getNumAttributes", &SBObject::getNumAttributes, "Returns the number of attributes associated with this object.")
@@ -365,12 +365,12 @@ BOOST_PYTHON_MODULE(SmartBody)
 		;
 
 
-	boost::python::class_<SBService, boost::python::bases<SBObject> >("SBService")
+	boost::python::class_<SBService, boost::python::bases<SBObject>, boost::noncopyable >("SBService", boost::python::no_init )
 		.def("setEnable", &SBService::setEnable, "Enables or disables the service.")
 		.def("isEnable", &SBService::isEnable, "Is the service enabled?")
 		;
 
-	boost::python::class_<SBServiceManager>("SBServiceManager")
+	boost::python::class_<SBServiceManager, boost::noncopyable>("SBServiceManager", boost::python::no_init)
 		.def("addService", &SBServiceManager::addService, "Adds a service to the service manager.")
 		.def("removeService", &SBServiceManager::removeService, "Removes a service to the service manager.")
 		.def("getServiceNames", &SBServiceManager::getServiceNames, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of services available.")
@@ -416,7 +416,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("stop", &SBCollisionManager::stop, "Stops the collision manager.")
 		;
 
-	boost::python::class_<SBRealtimeManager, boost::python::bases<SBService> >("SBRealtimeManager")
+	boost::python::class_<SBRealtimeManager, boost::python::bases<SBService>, boost::noncopyable >("SBRealtimeManager", boost::python::no_init)
 		.def("setChannelNames", &SBRealtimeManager::setChannelNames, "Sets the names of the channels that will be used.")
 		.def("getChannelNames", &SBRealtimeManager::getChannelNames, boost::python::return_value_policy<boost::python::return_by_value>(), "Sets the names of the channels that will be used.")
 		.def("setData", &SBRealtimeManager::setData, "Sets a stream of data that matches the channel names and types.")
@@ -538,7 +538,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 			;
 	*/
 
-	boost::python::class_<SBFaceDefinition>("SBFaceDefinition")
+	boost::python::class_<SBFaceDefinition, boost::noncopyable>("SBFaceDefinition", boost::python::no_init)
 		.def("getName", &SBFaceDefinition::getName, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns name of the face definition.")
 		.def("getNumVisemes", &SBFaceDefinition::getNumVisemes, "Returns the number of visemes.")
 		.def("getVisemeNames", &SBFaceDefinition::getVisemeNames, "Returns the names of the visemes.")
@@ -686,7 +686,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("getPosture", &SBGestureMap::GestureInfo::getPosture, boost::python::return_value_policy<boost::python::return_by_value>(), "")
 		;
 
-	boost::python::class_<SBGestureMap>("SBGestureMap")
+	boost::python::class_<SBGestureMap, boost::noncopyable>("SBGestureMap", boost::python::no_init)
 		.def("addGestureMapping", &SBGestureMap::addGestureMapping, "Add a gesture mapping. Input: name of the animation/state, type, posture, hand. Output: null")
 		.def("getGestureByInfo", &SBGestureMap::getGestureByInfo, "Return a gesture given the type and hand of the gesture. Input: type, hand, style. Output: corresponding gesture name")
 		.def("getGestureByIndex", &SBGestureMap::getGestureByIndex, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Return a gesture given the index inside the map.")
@@ -716,7 +716,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		.def("getMotionNames", &SBHandConfiguration::getMotionNames, "Returns a list of motion names from the hand configuration.")
 		;
 
-	boost::python::class_<SBJointMap>("SBJointMap")
+	boost::python::class_<SBJointMap, boost::noncopyable>("SBJointMap", boost::python::no_init)
 		.def("setMapping", &SBJointMap::setMapping, "Sets the mapping from one joint name to another.")
 		.def("removeMapping", &SBJointMap::removeMapping, "Removes a mapping from a given joint to whichever joint is mapped.")
 		.def("getMapTarget", &SBJointMap::getMapTarget, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the target joint for a given mapping.")
@@ -889,7 +889,7 @@ BOOST_PYTHON_MODULE(SmartBody)
 		;
 
 
-	boost::python::class_<SBVHMsgManager, boost::python::bases<SBService> >("SBVHMsgManager")
+	boost::python::class_<SBVHMsgManager, boost::python::bases<SBService>, boost::noncopyable >("SBVHMsgManager", boost::python::no_init)
 		.def("connect", &SBVHMsgManager::connect, "Connects to the VH Message (ActiveMQ) server")
 		.def("disconnect", &SBVHMsgManager::disconnect, "Disconnects from the VH Message (ActiveMQ) server")
 		.def("sendMessage", &SBVHMsgManager::sendMessage, "Sends a VH message.")

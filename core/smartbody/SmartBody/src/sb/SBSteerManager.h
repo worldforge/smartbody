@@ -45,7 +45,7 @@ struct PawnObstacle {
 	SrVec steeringSpaceObjSize;
 };
 
-class SBSteerManager : public SmartBody::SBService, public boost::noncopyable
+class SBSteerManager : public SmartBody::SBService
 {
 	public:
 		SBAPI explicit SBSteerManager(SBScene& scene);

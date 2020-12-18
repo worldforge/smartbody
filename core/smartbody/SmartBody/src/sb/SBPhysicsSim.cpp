@@ -262,17 +262,13 @@ SBPhysicsObj::SBPhysicsObj()
 	SBObject::createVec3Attribute("geomSize",1.f,1.f,1.f,true, "Geom", 20, false, false, false, "?");
 }
 
-SBPhysicsObj::~SBPhysicsObj()
-{
-	if (colObj)
-		delete colObj;
-}
+SBPhysicsObj::~SBPhysicsObj() = default;
 
 
-void SBPhysicsObj::setGeometry( SBGeomObject* obj)
+void SBPhysicsObj::setGeometry( std::unique_ptr<SBGeomObject> obj)
 {
 	initGeom = false;
-	colObj = obj;
+	colObj = std::move(obj);
 	colObj->attachToObj(this);
 	setStringAttribute("geomType",colObj->geomType());
 	SrVec geomSize = colObj->getGeomSize();
@@ -326,14 +322,13 @@ void SBPhysicsObj::notify( SBSubject* subject )
 	}
 }
 
-void SBPhysicsObj::changeGeometry( std::string& geomType, SrVec extends )
+void SBPhysicsObj::changeGeometry( std::string& geomType, const SrVec& extends )
 {
 	initGeom = false;
 	SBTransform localTran;	
 	if (colObj)
 	{
 		localTran = colObj->getLocalTransform();
-		delete colObj;
 	}
 	colObj = SBGeomObject::createGeometry(geomType,extends);
 	colObj->setLocalTransform(localTran);
@@ -670,8 +665,7 @@ void SBPhysicsCharacter::initPhysicsCharacter(const std::string& charName, std::
 			jointObj->setMass(joint->mass());
 		if (buildGeometry)
 		{
-			SBGeomObject* jointGeom = createJointGeometry(joint);
-			jointObj->setGeometry(jointGeom);
+			jointObj->setGeometry(createJointGeometry(joint));
 			//jointGeometryMap[jointNameList[i]] = jointGeom;
 		}
 		jointObj->initJoint(phyJoint);
@@ -733,9 +727,8 @@ void SBPhysicsCharacter::cleanUpJoints()
 	jointObjMap.clear();	
 }
 
-SBGeomObject* SBPhysicsCharacter::createJointGeometry( SBJoint* joint, float radius )
+std::unique_ptr<SBGeomObject> SBPhysicsCharacter::createJointGeometry( SBJoint* joint, float radius )
 {
-	SBGeomObject* newGeomObj = nullptr;
 	SmartBody::SBCharacter* curCharacter = SmartBody::SBScene::getScene()->getCharacter(characterName);
 	if (radius < 0.0)
 		radius = curCharacter->getHeight()*0.03f;
@@ -767,11 +760,7 @@ SBGeomObject* SBPhysicsCharacter::createJointGeometry( SBJoint* joint, float rad
 // 		}
 // 		newGeomObj = new SBGeomBox(bbox);	
 // 	}
-	if (0)
-	{
-
-	}
-	else if (joint->getNumChildren() > 1 ) // bounding box
+    if (joint->getNumChildren() > 1 ) // bounding box
 	{
 		SrBox bbox;		
 		bbox.extend(joint->getLocalCenter());			
@@ -781,7 +770,7 @@ SBGeomObject* SBPhysicsCharacter::createJointGeometry( SBJoint* joint, float rad
 		{
 			bbox.extend(joint->getChild(i)->offset());
 		}
-		newGeomObj = new SBGeomBox(bbox);		
+		return std::make_unique<SBGeomBox>(bbox);
 	}
 	else if (joint->getNumChildren() == 1)
 	{
@@ -792,9 +781,9 @@ SBGeomObject* SBPhysicsCharacter::createJointGeometry( SBJoint* joint, float rad
 		float boneLen = offset.len();	
 		float len = boneLen+extend*0.1f;
 		// generate new geometry
-		newGeomObj = new SBGeomCapsule(center-dir*len*0.5f, center+dir*len*0.5f,radius);		
+		return std::make_unique<SBGeomCapsule>(center-dir*len*0.5f, center+dir*len*0.5f,radius);
 	}
-	return newGeomObj;
+	return {};
 }
 
 void SBPhysicsCharacter::updateJointAxis( SBPhysicsJoint* phyJoint )

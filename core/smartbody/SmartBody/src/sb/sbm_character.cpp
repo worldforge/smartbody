@@ -548,22 +548,22 @@ void SbmCharacter::createStandardControllers()
 
 	// get the default attributes from the default controllers
 	
-	std::vector<SmartBody::SBController*>& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
-	for (size_t x = 0; x < defaultControllers.size(); x++)
+	auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
+	for (auto & defaultController : defaultControllers)
 	{
-		MeController* controller = defaultControllers[x];
+		auto controller = defaultController.get();
 		const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
 		std::string groupName = controller->getName();		
-		for (size_t a = 0; a < defaultAttributes.size(); a++)
+		for (const auto & defaultAttribute : defaultAttributes)
 		{
-			SmartBody::SBAttribute* attribute = defaultAttributes[a].first;
+			SmartBody::SBAttribute* attribute = defaultAttribute.first;
 			int groupPriority = attribute->getAttributeInfo()->getGroup()->getPriority();
 			SmartBody::SBAttribute* attributeCopy = attribute->copy();
-			this->addAttribute(attributeCopy, attribute->getAttributeInfo()->getGroup()->getName());
+			this->addAttribute(std::unique_ptr<SmartBody::SBAttribute>(attributeCopy), attribute->getAttributeInfo()->getGroup()->getName());
 			// make sure the group's priority is set properly
 			attributeCopy->getAttributeInfo()->getGroup()->setPriority(groupPriority);
 			// if the controller isn't a scheduler, then add the controller as an observer
-			MeCtScheduler2* scheduler = dynamic_cast<MeCtScheduler2*>(controller);
+			auto* scheduler = dynamic_cast<MeCtScheduler2*>(controller);
 			if (!scheduler)
 			{
 				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
@@ -586,8 +586,6 @@ void SbmCharacter::createStandardControllers()
 					attributeCopy->registerObserver(basic_locomotion_ct);
 				else if (dynamic_cast<MeCtNewLocomotion*>(controller))
 					attributeCopy->registerObserver(new_locomotion_ct);
-				else if (dynamic_cast<MeCtBreathing*>(controller))
-					attributeCopy->registerObserver(breathing_p);
 				else if (dynamic_cast<MeCtGenericHand*>(controller))
 					attributeCopy->registerObserver(generic_hand_ct);
 			}
@@ -595,9 +593,9 @@ void SbmCharacter::createStandardControllers()
 	}
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-	for (size_t i = 0; i < listeners.size(); i++)
+	for (auto & listener : listeners)
 	{
-		listeners[i]->OnCharacterUpdate( getName() );
+		listener->OnCharacterUpdate( getName() );
 	}
 }
 
@@ -665,17 +663,17 @@ void SbmCharacter::createMinimalControllers()
 	// get the default attributes from the default controllers
 	
 	auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
-	for (size_t x = 0; x < defaultControllers.size(); x++)
+	for (auto & defaultController : defaultControllers)
 	{
-		MeController* controller = defaultControllers[x];
+		auto controller = defaultController.get();
 		const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
 		std::string groupName = controller->getName();		
-		for (size_t a = 0; a < defaultAttributes.size(); a++)
+		for (const auto & defaultAttribute : defaultAttributes)
 		{
-			SmartBody::SBAttribute* attribute = defaultAttributes[a].first;
+			SmartBody::SBAttribute* attribute = defaultAttribute.first;
 			int groupPriority = attribute->getAttributeInfo()->getGroup()->getPriority();
 			SmartBody::SBAttribute* attributeCopy = attribute->copy();
-			this->addAttribute(attributeCopy, attribute->getAttributeInfo()->getGroup()->getName());
+			this->addAttribute(std::unique_ptr<SmartBody::SBAttribute>(attributeCopy), attribute->getAttributeInfo()->getGroup()->getName());
 			// make sure the group's priority is set properly
 			attributeCopy->getAttributeInfo()->getGroup()->setPriority(groupPriority);
 			// if the controller isn't a scheduler, then add the controller as an observer
@@ -697,9 +695,9 @@ void SbmCharacter::createMinimalControllers()
 	}
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-	for (size_t i = 0; i < listeners.size(); i++)
+	for (auto & listener : listeners)
 	{
-		listeners[i]->OnCharacterUpdate( getName() );
+		listener->OnCharacterUpdate( getName() );
 	}
 }
 
@@ -998,18 +996,19 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 
 
 	// get the default attributes from the default controllers
-	const std::vector<SmartBody::SBController*>& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
-	for (auto controller : defaultControllers)
+	const auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
+	for (const auto& entry : defaultControllers)
 	{
+		auto controller = entry.get();
 			const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
 		std::string groupName = controller->getName();		
 		for (const auto & defaultAttribute : defaultAttributes)
 		{
 			SmartBody::SBAttribute* attribute = defaultAttribute.first;
 			SmartBody::SBAttribute* attributeCopy = attribute->copy();
-			this->addAttribute(attributeCopy);
+			this->addAttribute(std::unique_ptr<SmartBody::SBAttribute>(attributeCopy));
 			// if the controller isn't a scheduler, then add the controller as an observer
-			MeCtScheduler2* scheduler = dynamic_cast<MeCtScheduler2*>(controller);
+			auto* scheduler = dynamic_cast<MeCtScheduler2*>(controller);
 			if (!scheduler)
 			{
 				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
@@ -1030,11 +1029,10 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 					attributeCopy->registerObserver(basic_locomotion_ct);
 				else if (dynamic_cast<MeCtNewLocomotion*>(controller))
 					attributeCopy->registerObserver(new_locomotion_ct);
-				else if (dynamic_cast<MeCtBreathing*>(controller))
-					attributeCopy->registerObserver(breathing_p);
 				else if (dynamic_cast<MeCtGenericHand*>(controller))
 					attributeCopy->registerObserver(generic_hand_ct);
 			}
+
 		}
 	}
 
@@ -2292,7 +2290,7 @@ void SbmCharacter::updateFaceDefinition()
 		this->addVisemeChannel(visemeName, motion);
 	}
 	// look for the start and end position of the viseme channels
-	std::vector<SkJoint*>& joints = skeleton->get_joint_array();
+	auto& joints = skeleton->get_joint_array();
 	viseme_channel_start_pos = -1;
 	viseme_channel_end_pos = -1;
 

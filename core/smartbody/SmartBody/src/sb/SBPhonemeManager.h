@@ -54,7 +54,7 @@ class SBPhonemeManager : public SBService
 		SBAPI std::vector<std::string> getCommonPhonemes();
 	
 		SBAPI SBDiphone* createDiphone(const std::string& fromPhoneme, const std::string& toPhoneme, const std::string& name);
-		SBAPI std::vector<SBDiphone*>& getDiphones(const std::string& name);
+		SBAPI std::vector<std::unique_ptr<SBDiphone>>& getDiphones(const std::string& name);
 		SBAPI SBDiphone* getDiphone(const std::string& fromPhoneme, const std::string& toPhoneme, const std::string& name);
 		SBAPI SBDiphone* getMappedDiphone(const std::string& fromPhoneme, const std::string& toPhoneme, const std::string& name);
 		SBAPI std::vector<std::string> getDiphoneMapNames();
@@ -82,7 +82,7 @@ class SBPhonemeManager : public SBService
 		
 
 		bool _fastMapDirty;
-		std::map<std::string, std::vector<SBDiphone*> > _diphoneMap;
+		std::map<std::string, std::vector<std::unique_ptr<SBDiphone>> > _diphoneMap;
 		std::map<std::string, SBDiphone* > _fastDiphoneMap;
 		std::map<std::string, std::string> _phonemeToCommonPhonemeMap;
 		std::map<std::string, std::map<std::string, std::vector<std::string> > > _wordToPhonemeMaps;

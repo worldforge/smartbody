@@ -61,7 +61,7 @@ int SBAttributeGroup::getPriority()
 
 void SBAttributeGroup::addAttribute(SBAttribute* attr)
 {
-	std::map<std::string, SBAttribute*>::iterator iter = m_attributeMap.find(attr->getName());
+	auto iter = m_attributeMap.find(attr->getName());
 	if (iter == m_attributeMap.end())
 	{
 		m_attributeMap.insert(std::pair<std::string, SBAttribute*>(attr->getName(), attr));	
@@ -74,7 +74,7 @@ void SBAttributeGroup::addAttribute(SBAttribute* attr)
 
 void  SBAttributeGroup::removeAttribute(SBAttribute* attr)
 {
-	std::map<std::string, SBAttribute*>::iterator iter = m_attributeMap.find(attr->getName());
+	auto iter = m_attributeMap.find(attr->getName());
 	if (iter == m_attributeMap.end())
 	{
 		SmartBody::util::log("Attribute info for %s does not exists in attribute group %s!", attr->getName().c_str(), this->getName().c_str());

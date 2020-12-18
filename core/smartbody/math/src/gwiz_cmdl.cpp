@@ -482,6 +482,7 @@ gwiz::cmdl::~cmdl( void )	{
 		GWIZ_linux_disable_kbd_poll();
 	}
 #endif
+	delete cmds;
 }
 
 void gwiz::cmdl::render_prompt( std::string prompt ) {

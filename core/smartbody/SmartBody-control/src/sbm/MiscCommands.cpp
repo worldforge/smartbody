@@ -68,7 +68,7 @@ int set_attribute( SbmPawn* pawn, std::string& attribute, srArgBuffer& args)
 		if (args.calc_num_tokens() == 0)
 		{
 			auto& skeleton = pawn->_skeleton;
-			std::vector<SkJoint*>& joints = skeleton->get_joint_array();
+			auto& joints = skeleton->get_joint_array();
 			for (auto & joint : joints)
 			{
 				SmartBody::util::log("%s : %f", joint->jointName().c_str(), joint->mass());

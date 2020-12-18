@@ -82,9 +82,9 @@ class ResourceWindow : public Fl_Group, public SmartBody::SBObserver, public SBW
 
 		std::map<Fl_Tree_Item*, std::string> _treeMap;
 		std::string emptyString;
-		std::map<int, std::string> _specialNames;
-		std::map<std::string, int> _reverseSpecialNames;
-		int _specialNameIndex;
+		std::map<size_t, std::string> _specialNames;
+		std::map<std::string, size_t> _reverseSpecialNames;
+		size_t _specialNameIndex;
 
 		TreeItemInfoWidget* itemInfoWidget;
 		std::string lastClickedItemPath;

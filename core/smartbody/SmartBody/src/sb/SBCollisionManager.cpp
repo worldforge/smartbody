@@ -122,11 +122,12 @@ void SBCollisionManager::start()
 			{
 				SmartBody::util::log(character->getName().c_str());
 				auto sk = character->getSkeleton();
-				const std::vector<SkJoint*>& origJnts = sk->joints();
+				auto& origJnts = sk->joints();
 				sk->update_global_matrices();
 				std::vector<SkJoint*> jnt_excld_list;
-				for(auto j : origJnts)
+				for(auto& joint : origJnts)
 				{
+					auto j = joint.get();
 						SrString jname(j->jointName().c_str());
 					if(jname.search("world_offset")>=0) { jnt_excld_list.emplace_back(j); continue; } // skip world_offset
 					if(jname.search("face")>=0) { jnt_excld_list.emplace_back(j); continue; }
@@ -147,9 +148,9 @@ void SBCollisionManager::start()
 				}
 				std::string chrName = character->getGeomObjectName();
 				float chrHeight = character->getHeight();
-				for(auto j : origJnts)
+				for(auto& j : origJnts)
 				{
-						if(isJointExcluded(j, jnt_excld_list)) continue;
+						if(isJointExcluded(j.get(), jnt_excld_list)) continue;
 					SrString jname(j->jointName().c_str());
 					for(int k=0; k<j->num_children(); k++)
 					{
@@ -163,7 +164,7 @@ void SBCollisionManager::start()
 						if(k>0) colObjName = colObjName + ":" + boost::lexical_cast<std::string>(k);
 						SBGeomObject* obj = createCollisionObject(colObjName,"capsule",SrVec(0, radius, 0),SrVec::null,offset);
 						SmartBody::util::log("SBColMan: col primitive added: %s, len: %f, radius: %f", colObjName.c_str(), offset_len, radius);
-						obj->attachToObj(dynamic_cast<SBTransformObjInterface*>(j));
+						obj->attachToObj(dynamic_cast<SBTransformObjInterface*>(j.get()));
 						addObjectToCollisionSpace(colObjName);
 					}
 				}
@@ -442,34 +443,36 @@ void SBCollisionManager::notify(SBSubject* subject)
 
 SBGeomObject* SBCollisionManager::createCollisionObject( const std::string& geomName, const std::string& geomType, SrVec size, SrVec from, SrVec to )
 {	
-	SBGeomObject* newObj = SBGeomObject::createGeometry(geomType,size,from,to);
+	auto newObj = SBGeomObject::createGeometry(geomType,size,from,to);
 	if (newObj)
 	{
 		removeCollisionObject(geomName); // remove existing one
-		geomObjectMap[geomName] = newObj;
 		newObj->color.set(1.0f, 1.0f, 0.0f);
-	}	
-	return newObj;
+		auto result = geomObjectMap.emplace(geomName, std::move(newObj));
+		if (result.second) {
+			return result.first->second.get();
+		}
+	}
+	return nullptr;
 }
 
 SBGeomObject* SBCollisionManager::getCollisionObject( const std::string& geomName )
 {
-	SBGeomObject* obj = nullptr;
-	if (geomObjectMap.find(geomName) != geomObjectMap.end())
-	{
-		obj = geomObjectMap[geomName];
+	auto I = geomObjectMap.find(geomName);
+	if (I != geomObjectMap.end()) {
+		return I->second.get();
 	}
-	return obj;
+	return nullptr;
 }
 
 bool SBCollisionManager::removeCollisionObject( const std::string& geomName )
 {
-	SBGeomObject* geomObj = getCollisionObject(geomName);
-	if (geomObj)
-	{		
-		removeObjectFromCollisionSpace(geomName);
-		geomObjectMap.erase(geomName);
-		delete geomObj;
+	auto I = geomObjectMap.find(geomName);
+	if (I != geomObjectMap.end()) {
+		if (_collisionSpace) {
+			_collisionSpace->removeCollisionObjects(geomName);
+		}
+		geomObjectMap.erase(I);
 		return true;
 	}
 	return false;
@@ -499,7 +502,7 @@ bool SBCollisionManager::removeObjectFromCollisionSpace( const std::string& geom
 	return false;
 }
 
-std::map<std::string, SBGeomObject*>& SBCollisionManager::getAllCollisionObjects()
+std::map<std::string, std::unique_ptr<SBGeomObject>>& SBCollisionManager::getAllCollisionObjects()
 {
 	return geomObjectMap;
 }

@@ -38,7 +38,9 @@
 #include "FLTKListener.h"
 #include "Session.h"
 
-ResourceWindow::ResourceWindow(int x, int y, int w, int h, const char* name) : Fl_Group(x, y, w, h, name), SBWindowListener(), SelectionListener()
+ResourceWindow::ResourceWindow(int x, int y, int w, int h, const char* name)
+: Fl_Group(x, y, w, h, name), SBWindowListener(), SelectionListener()
+,_firstTime(true)
 {
 	itemInfoWidget = nullptr;
 	lastClickedItemPath = " ";
@@ -92,7 +94,7 @@ ResourceWindow::ResourceWindow(int x, int y, int w, int h, const char* name) : F
 	this->resizable(resourceTree);
 	updateGUI();	
 	//resourceTree->close(resourceTree->root());	
-	for (std::map<Fl_Tree_Item*, std::string>::iterator iter = _treeMap.begin();
+	for (auto iter = _treeMap.begin();
 		 iter != _treeMap.end();
 		 iter++)
 	{
@@ -111,11 +113,9 @@ ResourceWindow::ResourceWindow(int x, int y, int w, int h, const char* name) : F
 	_specialNames[7] = "viseme";
 	_specialNames[8] = "default";
 
-	for (std::map<int, std::string>::iterator iter = _specialNames.begin();
-		 iter != _specialNames.end();
-		 iter++)
+	for (auto & _specialName : _specialNames)
 	{
-		_reverseSpecialNames.insert(std::pair<std::string, int>((*iter).second, (*iter).first));
+		_reverseSpecialNames.insert(std::pair<std::string, int>(_specialName.second, _specialName.first));
 	}
 
 	_dirty = true;
@@ -128,7 +128,7 @@ ResourceWindow::~ResourceWindow()
 
 std::string ResourceWindow::getNameFromTree(Fl_Tree_Item* item)
 {
-	std::map<Fl_Tree_Item*, std::string>::iterator iter = _treeMap.find(item);
+	auto iter = _treeMap.find(item);
 	if (iter != _treeMap.end())
 		return (*iter).second;
 	else
@@ -137,12 +137,10 @@ std::string ResourceWindow::getNameFromTree(Fl_Tree_Item* item)
 
 Fl_Tree_Item* ResourceWindow::getTreeFromName(const std::string& name)
 {
-	for (std::map<Fl_Tree_Item*, std::string>::iterator iter = _treeMap.begin();
-		 iter != _treeMap.end();
-		 iter++)
+	for (auto & iter : _treeMap)
 	{
-		if (name == (*iter).second)
-			return (*iter).first;
+		if (name == iter.second)
+			return iter.first;
 	}
 
 	return nullptr;

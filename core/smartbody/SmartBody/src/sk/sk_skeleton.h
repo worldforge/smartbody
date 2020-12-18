@@ -50,7 +50,7 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
     // basic data:
 	std::string _skfilename;
     SkJoint* _root;
-    std::vector<SkJoint*> _joints;
+    std::vector<std::unique_ptr<SkJoint>> _joints;
     std::map<std::string, SkJoint*> _jointMap;
 	std::map<std::string, SkJoint*> _extJointMap;
 	std::map<std::string, SkJoint*> _extIDJointMap;	
@@ -64,7 +64,7 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
 
     // posture management:
 	boost::intrusive_ptr<SkChannelArray> _channels;
-    SrArray<SkPosture*> _postures;
+    std::vector<std::unique_ptr<SkPosture>> _postures;
 	// physical properties
 	SrVec _com;
 	std::string jointMap;
@@ -89,7 +89,7 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
     /*! Deletes all data and set the skeleton to be an empty hierarchy */
     SBAPI void init ();
 	
-	SBAPI std::vector<SkJoint*>& get_joint_array( ) { return( _joints ); }
+	SBAPI std::vector<std::unique_ptr<SkJoint>>& get_joint_array( ) { return( _joints ); }
 
     /*! Adds a joint to the hierarchy. If parentid<0 (the default) the last
         joint in the joint list is used as parent (the joint becomes root
@@ -107,7 +107,7 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
 
     /*! Returns a flat list with all joints. Note that method
         SkJoint::index() returns the index of the joint in this list */
-    SBAPI const std::vector<SkJoint*>& joints () const { return _joints; }
+    SBAPI const std::vector<std::unique_ptr<SkJoint>>& joints () const { return _joints; }
 
     /*! Array with the pairs that should be deactivated for collision
         detection at connection time with SrColdet. The pairs can be
@@ -120,7 +120,7 @@ class SkSkeleton : public SmartBody::SBAsset, public SrSharedClass
 	SBAPI const SkChannelArray& channels () const { return *_channels; }
 
     /*! Returns the array of pre-defined postures loaded from the .sk file */
-    SBAPI SrArray<SkPosture*>& postures () { return _postures; }
+    SBAPI std::vector<std::unique_ptr<SkPosture>>& postures () { return _postures; }
 
     /*! Rebuilds the active channels according to the free channels in the joint hierarchy */
     SBAPI void make_active_channels () { _channels->get_active_channels(this); }

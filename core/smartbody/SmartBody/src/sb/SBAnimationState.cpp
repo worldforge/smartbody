@@ -39,23 +39,16 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBAnimationBlend::SBAnimationBlend() : PABlend()
+SBAnimationBlend::SBAnimationBlend() : PABlend(), _isFinalized(false)
 {
-	_isFinalized = false;
-	motionAnalysis = nullptr;
 }
 
-SBAnimationBlend::SBAnimationBlend(const std::string& name) : PABlend(name)
+SBAnimationBlend::SBAnimationBlend(const std::string& name)
+: PABlend(name), _isFinalized(false)
 {
-	_isFinalized = false;
-	motionAnalysis = nullptr;
 }
 
-SBAnimationBlend::~SBAnimationBlend()
-{
-	if (motionAnalysis)
-		delete motionAnalysis;
-}
+SBAnimationBlend::~SBAnimationBlend() = default;
 
 void SBAnimationBlend::setIncrementWorldOffsetY(bool flag)
 {
@@ -527,7 +520,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 	if(clearAll)
 		clearMotionVectorFlow(); // clear vector flow SrSnLines
 
-	const std::vector<SkJoint*>& jnts = sk->joints();
+	auto& jnts = sk->joints();
 	createJointExclusionArray(jnts); // making a list of excluded joints
 	const int jsize = jnts.size();
 	const int frames = mo->frames();
@@ -556,7 +549,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 		n_arr->size(jsize);
 		for(int k=0; k<jsize; k++)
 		{
-			SkJoint* j = jnts[k]; if(isExcluded(j)) continue;
+			SkJoint* j = jnts[k].get(); if(isExcluded(j)) continue;
 			SrVec curr_p = pnts_arr[i]->get(k);
 			SrVec next_p = pnts_arr[i+1]->get(k);
 			n_arr->set(k, dist(curr_p, next_p));
@@ -574,7 +567,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 		float th;
 		for(int k=0; k<jsize; k++)
 		{
-			SkJoint* j = jnts[k]; if(isExcluded(j)) continue;
+			SkJoint* j = jnts[k].get(); if(isExcluded(j)) continue;
 			th = 0.0f;
 			for(unsigned int j=i-slidWinHalfSize; j<=i+slidWinHalfSize; j++)
 			{
@@ -597,7 +590,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 		line.init();
 		for(int k=0; k<jsize; k++)
 		{
-			SkJoint* j = jnts[k]; if(isExcluded(j)) continue;
+			SkJoint* j = jnts[k].get(); if(isExcluded(j)) continue;
 			const SrVec& curr_p = pnts_arr[i]->get(k);
 			const SrVec& next_p = pnts_arr[i+1]->get(k);
 			const float& norm = norm_arr[i]->get(k);
@@ -685,7 +678,7 @@ void SBAnimationBlend::plotMotion(const std::string& motionName, const std::stri
 		hue += 0.1f;
 		if(hue>1.0f) hue = 0.0f;
 	}
-	const std::vector<SkJoint*>& jnts = sk->joints();
+	auto& jnts = sk->joints();
 	createJointExclusionArray(jnts); // making a list of excluded joints
 	float mo_dur = mo->duration();
 	for(unsigned int i=0; i<=interval; i++)
@@ -701,9 +694,9 @@ void SBAnimationBlend::plotMotion(const std::string& motionName, const std::stri
 		line.init();
 		if(useRandomColor) line.push_color(color_random);
 		else line.push_color(lerp(color_begin, color_end, (float)i/interval));
-		for(unsigned int k=0; k<jnts.size(); k++) // set k=1 to skip ref root
+		for(const auto & jnt : jnts) // set k=1 to skip ref root
 		{
-			SkJoint* j = jnts[k];
+			SkJoint* j = jnt.get();
 			if(isExcluded(j)) continue;
 			for(int m=0; m<j->num_children();m++)
 			{
@@ -718,14 +711,14 @@ void SBAnimationBlend::plotMotionFrameTime(const std::string& motionName, const 
 										   float time, bool useRandomColor)
 {
 	SkMotion* mo = SBAnimationBlend::getSkMotion(motionName);
-	if(mo==0) return;
+	if(mo==nullptr) return;
 	if(mo->frames()<3)
 	{
 		SmartBody::util::log("plotMotionFrame(): motion does not have enough frames, aborting...");
 		return;
 	}
 	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
-	if(sk==0)
+	if(sk==nullptr)
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 		SBCharacter* sbSk = scene->getCharacter(chrName);
@@ -746,7 +739,7 @@ void SBAnimationBlend::plotMotionFrameTime(const std::string& motionName, const 
 		}
 	}
 
-	const std::vector<SkJoint*>& jnts = sk->joints();
+	auto& jnts = sk->joints();
 	createJointExclusionArray(jnts); // making a list of excluded joints
 
 	mo->apply(time);
@@ -766,10 +759,10 @@ void SBAnimationBlend::plotMotionFrameTime(const std::string& motionName, const 
 	}
 	else
 		line.push_color(SrColor::lightgray);
-	for(unsigned int k=0; k<jnts.size(); k++) // set k=1 to skip ref root
+	for(auto& joint : jnts) // set k=1 to skip ref root
 	{
-		SkJoint* j = jnts[k];
-		if(isExcluded(j)) continue;
+		auto j = joint.get();
+			if(isExcluded(j)) continue;
 		for(int m=0; m<j->num_children();m++)
 		{
 			if(isExcluded(j->child(m))) continue;
@@ -899,15 +892,15 @@ void SBAnimationBlend::setPlotVectorFlowTransform(SrVec offset, float yRot)
 
 
 void SBAnimationBlend::getJointsGPosFromSkel(SkSkeleton* sk, SrArray<SrVec>& pnts_array,
-											  const std::vector<SkJoint*>& jnt_list)
+											  const std::vector<std::unique_ptr<SkJoint>>& jnt_list)
 {
-	const unsigned int size = jnt_list.size();
+	auto size = jnt_list.size();
 	pnts_array.capacity(size);
 	pnts_array.size(size);
 
-	for(unsigned int k=0; k<size; k++) // set k=1 to skip ref root
+	for(size_t k=0; k<size; k++) // set k=1 to skip ref root
 	{
-		SkJoint* j = jnt_list[k];
+		auto& j = jnt_list[k];
 		pnts_array[k] = j->gcenter();
 	}
 }
@@ -930,13 +923,13 @@ float SBAnimationBlend::getVectorMaxNorm(SrArray<SrArray<SrVec>*>& pnts_arr)
 }
 
 
-void SBAnimationBlend::createJointExclusionArray(const std::vector<SkJoint*>& orig_list)
+void SBAnimationBlend::createJointExclusionArray(const std::vector<std::unique_ptr<SkJoint>>& orig_list)
 {
 	plot_excld_list.resize(0);
-	for(unsigned int i=0; i<orig_list.size(); i++)
+	for(auto& joint : orig_list)
 	{
-		SkJoint* j = orig_list[i];
-		SrString jname(j->jointName().c_str());
+		auto j = joint.get();
+			SrString jname(j->jointName().c_str());
 		if(jname.search("face")>=0) { plot_excld_list.emplace_back(j); continue; }
 		if(jname.search("brow")>=0) { plot_excld_list.emplace_back(j); continue; }
 		if(jname.search("eye")>=0)  { plot_excld_list.emplace_back(j); continue; }
@@ -958,8 +951,8 @@ void SBAnimationBlend::createJointExclusionArray(const std::vector<SkJoint*>& or
 
 bool SBAnimationBlend::isExcluded(SkJoint* j)
 {
-	for(unsigned int i=0; i<plot_excld_list.size(); i++)
-		if(plot_excld_list[i] == j)
+	for(auto & i : plot_excld_list)
+		if(i == j)
 			return true;
 	return false;
 }
@@ -1442,15 +1435,12 @@ KeyTagMap* SBAnimationBlend::getKeyTagMap( const std::string& motionName )
 
 MotionAnalysis* SBAnimationBlend::getMotionAnalysis()
 {
-	return motionAnalysis;
+	return motionAnalysis.get();
 }
 
 void SBAnimationBlend::buildMotionAnalysis( const std::string& skeletonName, const std::string& baseName, const std::vector<std::string>& motions, std::string motionPrefix )
 {
-	if (motionAnalysis)
-		delete motionAnalysis;	
-
-	motionAnalysis = new MotionAnalysis();
+	motionAnalysis = std::make_unique<MotionAnalysis>();
 	motionAnalysis->init(skeletonName,baseName, this, motions, motionPrefix);	
 }
 

@@ -29,13 +29,15 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 /* Physics Sim ODE                                                      */
 /************************************************************************/
 
-ODEPhysicsSim::ODEPhysicsSim(void)
+ODEPhysicsSim::ODEPhysicsSim()
 {
 	hasInit = false;
 	initSimulation();
 }
-ODEPhysicsSim::~ODEPhysicsSim(void)
+ODEPhysicsSim::~ODEPhysicsSim()
 {
+	dSpaceDestroy(spaceID);
+	dWorldDestroy(worldID);
 }
 
 void ODEPhysicsSim::nearCallBack(void *data, dGeomID o1, dGeomID o2)
@@ -119,7 +121,7 @@ void ODEPhysicsSim::initSimulation()
 	//dWorldSetCFM(worldID,1e-3);	
 
 	//spaceID = dHashSpaceCreate(0);
-	spaceID = dSimpleSpaceCreate(0);
+	spaceID = dSimpleSpaceCreate(nullptr);
 
 	groundID = dCreatePlane(spaceID,0,1,0,0.0f); // create a plane at y = 0
 
@@ -304,11 +306,10 @@ void ODEPhysicsSim::addPhysicsCharacter( SmartBody::SBPhysicsCharacter* phyChar 
 
 	// add rigid body
 	SmartBody::SBPhysicsSim::addPhysicsCharacter(phyChar);
-	for (unsigned int i=0;i<jointObjList.size();i++)
+	for (auto obj : jointObjList)
 	{
-		SmartBody::SbmJointObj* obj = jointObjList[i];
-		addPhysicsObj(obj);
-		updatePhyObjGeometry(obj,obj->getColObj());	
+			addPhysicsObj(obj);
+		updatePhyObjGeometry(obj);
 		//SmartBody::util::log("joint obj name = %s",obj->getSBJoint()->getName().c_str());
 		
 // 		if (obj->getParentObj() == nullptr || obj->getSBJoint()->getName() == "base")
@@ -323,10 +324,9 @@ void ODEPhysicsSim::addPhysicsCharacter( SmartBody::SBPhysicsCharacter* phyChar 
 	}
 	// add joint constraints	
 	
-	for (unsigned int i=0;i<jointObjList.size();i++)
+	for (auto obj : jointObjList)
 	{
-		SmartBody::SbmJointObj* obj = jointObjList[i];		
-		linkJointObj(obj);
+			linkJointObj(obj);
 	}	
 	//phyChar->getJointObj("base")->enablePhysicsSim(false);
 	//std::string jname = "world_offset";
@@ -369,7 +369,7 @@ void ODEPhysicsSim::addPhysicsObj( SmartBody::SBPhysicsObj* obj )
 		dBodySetPosition(odeObj->bodyID,(dReal)curT.tran[0],(dReal)curT.tran[1],(dReal)curT.tran[2]);
 	}
 	if (obj->getColObj())
-		updatePhyObjGeometry(obj,obj->getColObj());
+		updatePhyObjGeometry(obj);
 }
 
 
@@ -454,7 +454,7 @@ SrVec ODEPhysicsSim::getJointRotationAxis( SmartBody::SBPhysicsJoint* joint, int
 	return SrVec((float)jointAxis[0],(float)jointAxis[1],(float)jointAxis[2])*10.f;	
 }
 
-void ODEPhysicsSim::updatePhyObjGeometry( SmartBody::SBPhysicsObj* obj, SBGeomObject* geom /*= nullptr*/ )
+void ODEPhysicsSim::updatePhyObjGeometry( SmartBody::SBPhysicsObj* obj)
 {
 	ODEPhysicsSim* odeSim = ODEPhysicsSim::getODESim();
 	if (!odeSim)	return;
@@ -462,10 +462,6 @@ void ODEPhysicsSim::updatePhyObjGeometry( SmartBody::SBPhysicsObj* obj, SBGeomOb
 	ODEObj* odeObj = getODEObj(obj);	
 	if (odeObj)
 	{
-		if (geom && geom != obj->getColObj())
-		{
-			obj->setGeometry(geom);		
-		}
 		odeObj->cleanGeometry();
 		//odeObj->geomID = createODEGeometry(obj,obj->getDensity());
 		//obj->setMass(1.f);		
@@ -720,7 +716,7 @@ ODECollisionSpace::ODECollisionSpace()
 {
 	// in case ode is not yet initialized
 	dInitODE();	
-	spaceID = dSimpleSpaceCreate(0);	
+	spaceID = dSimpleSpaceCreate(nullptr);
 }
 
 void ODECollisionSpace::addCollisionObjects( const std::string& objName )
@@ -797,7 +793,7 @@ void ODECollisionSpace::collisionSpaceNearCallBack( void *data, dGeomID o1, dGeo
 
 ODECollisionSpace::~ODECollisionSpace()
 {
-
+	dSpaceDestroy(spaceID);
 }
 
 std::string ODECollisionSpace::getODEGeomName( dGeomID geomID )

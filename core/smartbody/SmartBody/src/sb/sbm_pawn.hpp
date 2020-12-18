@@ -41,7 +41,7 @@ class MeControllerTreeRoot;
 
 #define SBM_PAWN_USE_WORLD_OFFSET_WRITER	(1)
 
-class SbmPawn : public SmartBody::SBObject, public SBTransformObjInterface, public boost::noncopyable {
+class SbmPawn : public SmartBody::SBObject, public SBTransformObjInterface {
 public:
 	//  Public Constants
 	static const char* WORLD_OFFSET_JOINT_NAME;

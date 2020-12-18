@@ -10,9 +10,7 @@ BMLObject::BMLObject()
 		"Id of this BML request");
 }
 
-BMLObject::~BMLObject()
-{
-}
+BMLObject::~BMLObject() = default;
 
 BMLObject* BMLObject::copy()
 {
@@ -26,14 +24,12 @@ void BMLObject::constructBML()
 	strstr << "<" << getName();
 
 	int numUsedElements = 0;
-	std::map<std::string, SmartBody::SBAttribute*>& attributes = getAttributeList();
-	for (std::map<std::string, SmartBody::SBAttribute*>::iterator iter = attributes.begin();
-		 iter != attributes.end();
-		 iter++)
+	auto& attributes = getAttributeList();
+	for (auto & iter : attributes)
 	{
-		SmartBody::SBAttribute* attribute = (*iter).second;
+		auto attribute = iter.second.get();
 
-		SmartBody::BoolAttribute* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
+		auto* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 		if (boolAttribute)
 		{
 			if (boolAttribute->getValue() != boolAttribute->getDefaultValue())
@@ -43,7 +39,7 @@ void BMLObject::constructBML()
 			}
 		}
 		
-		SmartBody::IntAttribute* intAttribute = dynamic_cast<SmartBody::IntAttribute*>(attribute);
+		auto* intAttribute = dynamic_cast<SmartBody::IntAttribute*>(attribute);
 		if (intAttribute)
 		{
 			if (intAttribute->getValue() != intAttribute->getDefaultValue())
@@ -53,7 +49,7 @@ void BMLObject::constructBML()
 			}
 		}
 
-		SmartBody::DoubleAttribute* doubleAttribute = dynamic_cast<SmartBody::DoubleAttribute*>(attribute);
+		auto* doubleAttribute = dynamic_cast<SmartBody::DoubleAttribute*>(attribute);
 		if (doubleAttribute)
 		{
 			if (doubleAttribute->getValue() != doubleAttribute->getDefaultValue())
@@ -63,7 +59,7 @@ void BMLObject::constructBML()
 			}
 		}
 
-		SmartBody::Vec3Attribute* vecAttribute = dynamic_cast<SmartBody::Vec3Attribute*>(attribute);
+		auto* vecAttribute = dynamic_cast<SmartBody::Vec3Attribute*>(attribute);
 		if (vecAttribute)
 		{
 			if (vecAttribute->getValue() != vecAttribute->getDefaultValue())
@@ -73,7 +69,7 @@ void BMLObject::constructBML()
 			}
 		}
 
-		SmartBody::StringAttribute* stringAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
+		auto* stringAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
 		if (stringAttribute)
 		{
 			if (stringAttribute->getValue() != stringAttribute->getDefaultValue())
@@ -98,7 +94,7 @@ std::string BMLObject::getBML()
 
 void BMLObject::notify(SBSubject* subject)
 {
-	SmartBody::SBAttribute* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
 	if (attribute)
 	{
 		constructBML();
@@ -124,18 +120,16 @@ void BMLObject::parse(rapidxml::xml_node<>* node)
 			SmartBody::util::log("No parameter named '%s' in BML '%s', ignoring...", attrName.c_str(), this->getName().c_str());
 		}
 
-		SmartBody::StringAttribute* stringAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
+		auto* stringAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
 		if (stringAttribute)
 		{
 			const std::vector<std::string>& validValues = stringAttribute->getValidValues();
-			if (validValues.size() > 0)
+			if (!validValues.empty())
 			{
 				bool match = false;
-				for (std::vector<std::string>::const_iterator validIter = validValues.begin();
-					 validIter != validValues.end();
-					 validIter++)
+				for (const auto & validValue : validValues)
 				{
-					if ((*validIter) == attrValue)
+					if (validValue == attrValue)
 					{
 						match = true;
 						break;
@@ -152,12 +146,12 @@ void BMLObject::parse(rapidxml::xml_node<>* node)
 			}
 		}
 		
-		SmartBody::DoubleAttribute* doubleAttribute = dynamic_cast<SmartBody::DoubleAttribute*>(attribute);
+		auto* doubleAttribute = dynamic_cast<SmartBody::DoubleAttribute*>(attribute);
 		if (doubleAttribute)
 		{
 			try 
 			{
-				double val = boost::lexical_cast<double>(attrValue);
+				auto val = boost::lexical_cast<double>(attrValue);
 				if (doubleAttribute->getMin() > val)
 				{
 					SmartBody::util::log("Value '%s' for parameter '%s' in BML behavior '%s' is too small. Setting to '%f' instead.", attrValue.c_str(), attrName.c_str(), behaviorName.c_str(), doubleAttribute->getMin());			
@@ -176,7 +170,7 @@ void BMLObject::parse(rapidxml::xml_node<>* node)
 			}
 		}
 
-		SmartBody::IntAttribute* intAttribute = dynamic_cast<SmartBody::IntAttribute*>(attribute);
+		auto* intAttribute = dynamic_cast<SmartBody::IntAttribute*>(attribute);
 		if (intAttribute)
 		{
 			try 
@@ -200,7 +194,7 @@ void BMLObject::parse(rapidxml::xml_node<>* node)
 			}
 		}
 
-		SmartBody::BoolAttribute* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
+		auto* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 		if (boolAttribute)
 		{
 			if (attrValue == "true" || 
@@ -226,10 +220,10 @@ std::vector<SmartBody::SBSyncPoint*> BMLObject::getSyncPointObjects()
 	std::vector<SmartBody::SBSyncPoint*> syncPoints;
 
 	std::string id = this->getStringAttribute("id");
-	if (id != "")
+	if (!id.empty())
 	{
-			SmartBody::SBSyncPoint* spStart = new SmartBody::SBSyncPoint(id + ":start");
-			SmartBody::SBSyncPoint* spEnd = new SmartBody::SBSyncPoint(id + ":end");
+			auto* spStart = new SmartBody::SBSyncPoint(id + ":start");
+			auto* spEnd = new SmartBody::SBSyncPoint(id + ":end");
 			syncPoints.emplace_back(spStart);
 			syncPoints.emplace_back(spEnd);
 	}
@@ -242,17 +236,17 @@ std::vector<SmartBody::SBTrigger*> BMLObject::getTriggers()
 	std::vector<SmartBody::SBTrigger*> triggers;
 
 	std::string start = this->getStringAttribute("start");
-	if (start != "")
+	if (!start.empty())
 	{
-		SmartBody::SBTrigger* trigger = new SmartBody::SBTrigger();
+		auto* trigger = new SmartBody::SBTrigger();
 		trigger->setStartTag(start);
 		triggers.emplace_back(trigger);
 	}
 
 	std::string end = this->getStringAttribute("end");
-	if (end != "")
+	if (!end.empty())
 	{
-		SmartBody::SBTrigger* trigger = new SmartBody::SBTrigger();
+		auto* trigger = new SmartBody::SBTrigger();
 		trigger->setEndTag(end);
 		triggers.emplace_back(trigger);
 	}

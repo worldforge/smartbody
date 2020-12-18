@@ -112,13 +112,10 @@ void AttributeWindow::cleanUpAttributesInfo()
 	// unregister the observer for each object attributes before destruction
 	SmartBody::SBObject* obj = getObject();	
 	//obj->getAttributeManager()->unregisterObserver(this);
-	std::map<std::string, SmartBody::SBAttribute*>& attrList = obj->getAttributeList();
-	std::map<std::string, SmartBody::SBAttribute*>::iterator ai;
-	for ( ai  = attrList.begin();
-		ai != attrList.end();
-		ai++)
+	auto& attrList = obj->getAttributeList();
+	for (auto & ai : attrList)
 	{
-		SmartBody::SBAttribute* attr = dynamic_cast<SmartBody::SBAttribute*>(ai->second);
+		auto* attr = dynamic_cast<SmartBody::SBAttribute*>(ai.second.get());
 		if (attr)
 		{
 			attr->unregisterObserver(this);

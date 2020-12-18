@@ -42,22 +42,20 @@ void RealTimeLipSyncController::updateLipSyncChannels()
 	if (attribute)
 	{
 		const std::string& value = attribute->getValue();
-		std::vector<SmartBody::SBDiphone*>& allDiphones = SmartBody::SBScene::getScene()->getDiphoneManager()->getDiphones(value);
+		auto& allDiphones = SmartBody::SBScene::getScene()->getDiphoneManager()->getDiphones(value);
 		std::set<std::string> allVisemes;
-		for (size_t d = 0; d < allDiphones.size(); d++)
+		for (auto & allDiphone : allDiphones)
 		{
-			std::vector<std::string> visemes = allDiphones[d]->getVisemeNames();
-			for (size_t v = 0; v < visemes.size(); v++)
+			std::vector<std::string> visemes = allDiphone->getVisemeNames();
+			for (auto & viseme : visemes)
 			{
-				allVisemes.insert(visemes[v]);
+				allVisemes.insert(viseme);
 			}
 		}
 	}
 }
 
-RealTimeLipSyncController::~RealTimeLipSyncController()
-{
-}
+RealTimeLipSyncController::~RealTimeLipSyncController() = default;
 
 void RealTimeLipSyncController::init(SmartBody::SBPawn* pawn)
 {

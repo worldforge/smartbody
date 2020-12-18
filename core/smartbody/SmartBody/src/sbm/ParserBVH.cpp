@@ -432,7 +432,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 					state = 11;
 
 					// set up the bvhIndex map
-					const std::vector<SkJoint*>& allJoints = skeleton.joints();
+					auto& allJoints = skeleton.joints();
 					for (size_t j = 0; j < allJoints.size(); j++)
 					{
 						ChannelInfoPtr channelInfo = channelInfoMap[j];
@@ -496,7 +496,7 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 							}
 
 							std::pair<int, int>& pair = bvhIndex[index];
-							SkJoint* j = skeleton.joints()[pair.first];
+							SkJoint* j = skeleton.joints()[pair.first].get();
 							channelNum = pair.second;
 							if (j != oldJoint)
 							{
@@ -517,8 +517,8 @@ bool ParserBVH::parse(SkSkeleton& skeleton, SkMotion& motion, std::string name, 
 									ParserBVH::convertBVHtoSmartBody(oldJoint, motion, channelInfo.get(), frames, posture, curFrame * frameTime, scale);
 								}
 
-								for (int x = 0; x < 6; x++)
-									frames[x] = 0.0;
+								for (double & frame : frames)
+									frame = 0.0;
 								oldJoint = j;
 							}
 

@@ -113,10 +113,10 @@ void SkScene::initInternal()
    SrMat arot;
    SrSnGroup* gaxis;
    SrSnLines* axis;
-   SrSnSphere* sphere;
+   boost::intrusive_ptr<SrSnSphere> sphere;
    SrSnSharedModel* smodel;
 
-   const std::vector<SkJoint*>& joints = _skeleton->joints ();
+   auto& joints = _skeleton->joints ();
    _jgroup.size ( joints.size() );
    _jgroup.setall(nullptr);
 
@@ -144,7 +144,7 @@ void SkScene::initInternal()
 
    for (size_t i=0; i<joints.size(); i++ )
     { 
-      SkJoint* joint_p = joints[i];
+      SkJoint* joint_p = joints[i].get();
       // axis shows the frame after correction, but before the joint local rotation:
       gaxis = new SrSnGroup;
       gaxis->separator ( true );
@@ -161,7 +161,7 @@ void SkScene::initInternal()
 
 	sphere = createSphere(scaleFactor*1.0f);	 
 	group_p->add ( new SrSnMatrix, MatrixPos );
-	group_p->add ( sphere, SpherePos );
+	group_p->add ( sphere.get(), SpherePos );
 	//group_p->add (axis);
 	if (!_showJoints)
 		group_p->visible(false);
@@ -214,14 +214,14 @@ void SkScene::update ()
    if ( !_skeleton ) return;
    if (_needsInit)
 	   initInternal();
-   const std::vector<SkJoint*>& joints = _skeleton->joints ();
+   auto& joints = _skeleton->joints ();
    for (size_t i=0; i<joints.size(); i++ ) update ( i );
  }
 
 void SkScene::update ( int j )
  { 
    if ( !_skeleton ) return;
-   SkJoint* joint = _skeleton->joints()[j];
+   SkJoint* joint = _skeleton->joints()[j].get();
    joint->update_lmat();
    if (_jgroup.size() <= j) 
 	   return; // workaround for size mismatch between _jgroup and joints() size
@@ -232,7 +232,7 @@ void SkScene::update ( int j )
 void SkScene::rebuild ()
  {
    if ( !_skeleton ) return;
-   const std::vector<SkJoint*>& joints = _skeleton->joints();
+   auto& joints = _skeleton->joints();
    for (size_t i=0; i<joints.size(); i++ ) rebuild ( i );
  }
 
@@ -240,7 +240,7 @@ void SkScene::rebuild ( int j )
  { 
    if ( !_skeleton ) return;
    SrSnGroup* g;
-   SkJoint* joint = _skeleton->joints()[j];
+   SkJoint* joint = _skeleton->joints()[j].get();
    joint->update_lmat();
 
    // update framerot:
@@ -273,10 +273,10 @@ void SkScene::set_visibility ( int skel, int visgeo, int colgeo, int vaxis )
    if (_needsInit)
 	   initInternal();
 
-   const std::vector<SkJoint*>& joints = _skeleton->joints();
-   for (size_t i=0; i<joints.size(); i++ )
+   auto& joints = _skeleton->joints();
+   for (const auto & joint : joints)
     { 
-      set_visibility ( joints[i], skel, visgeo, colgeo, vaxis );
+      set_visibility ( joint.get(), skel, visgeo, colgeo, vaxis );
     }
  }
 
@@ -383,10 +383,10 @@ void SkScene::set_axis_length ( float l )
    SrSnGroup* g;
    SrSnLines* axis;
 
-   if ( _axislen==l || _skeleton==0 ) return;
+   if ( _axislen==l || _skeleton==nullptr ) return;
    _axislen = l;
 
-    const std::vector<SkJoint*>& joints = _skeleton->joints();
+    auto& joints = _skeleton->joints();
    
    if (_jgroup.size() > 0)
     { g = _jgroup[0];
@@ -482,9 +482,9 @@ void SkScene::get_defaults ( float& sradius, float& alen )
    alen = _axislen;
  }
 
-SrSnSphere* SkScene::createSphere(float scaleFactor )
+boost::intrusive_ptr<SrSnSphere> SkScene::createSphere(float scaleFactor )
 {
-	SrSnSphere* sphere = new SrSnSphere; // shared sphere
+	boost::intrusive_ptr<SrSnSphere> sphere(new SrSnSphere); // shared sphere
 	sphere->color(SrColor::white);   
 	sphere->shape().radius = scaleFactor * _cradius * _sfactor;
 	sphere->visible ( true );

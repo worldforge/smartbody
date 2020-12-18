@@ -1606,7 +1606,7 @@ void saveLipSyncing(SBRenderScene& renderScene, std::ostream& ostream, bool remo
 	ostream << "diphoneMapManager = scene.getDiphoneManager()\n";
 	for (auto& diphoneMapName : diphoneMapNames) {
 		auto& diphones = diphoneManager->getDiphones(diphoneMapName);
-		for (auto diphone : diphones) {
+		for (auto& diphone : diphones) {
 			const std::string& fromPhoneme = diphone->getFromPhonemeName();
 			const std::string& toPhoneme = diphone->getToPhonemeName();
 			ostream << "diphone = diphoneMapManager.createDiphone(\"" << fromPhoneme << "\", \"" << toPhoneme << "\", \"" << diphoneMapName << "\")\n";

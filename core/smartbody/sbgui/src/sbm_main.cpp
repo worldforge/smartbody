@@ -663,8 +663,8 @@ int main( int argc, char **argv )	{
 	//FltkViewer* viewer = new FltkViewer(100, 150, 640, 480, "SmartBody");
 
 	// register the log listener
-	auto* listener = new SmartBody::util::StdoutListener();
-	SmartBody::util::g_log.AddListener(listener);
+	SmartBody::util::StdoutListener listener;
+	SmartBody::util::g_log.AddListener(&listener);
 
 	int err;
 	string net_host;
@@ -1177,96 +1177,86 @@ int main( int argc, char **argv )	{
 		locY += 10;
 		locH -= 10;
 	}
+	{
+		BaseWindow baseWindow(useEditor, locX, locY, locW, locH, windowName.c_str());
 
-	BaseWindow baseWindow(useEditor, locX, locY, locW, locH, windowName.c_str());
-
-	SmartBody::PythonInterface::getViewerFn = [&]() {
-		return &baseWindow;
-	};
-	Session::current->renderScene.createCamera("cameraDefault");
+		SmartBody::PythonInterface::getViewerFn = [&]() {
+			return &baseWindow;
+		};
+		Session::current->renderScene.createCamera("cameraDefault");
 
 
-	scene.getSpeechManager()->festivalRelay()->initSpeechRelay(festivalLibDir,festivalCacheDir);
-	scene.getSpeechManager()->cereprocRelay()->initSpeechRelay(cereprocLibDir,festivalCacheDir);
+		scene.getSpeechManager()->festivalRelay()->initSpeechRelay(festivalLibDir, festivalCacheDir);
+		scene.getSpeechManager()->cereprocRelay()->initSpeechRelay(cereprocLibDir, festivalCacheDir);
 
 #if LINK_VHMSG_CLIENT
-	char * vhmsg_server = getenv( "VHMSG_SERVER" );
-	char * vhmsg_port = getenv("VHMSG_PORT");
-	bool vhmsg_disabled = ( vhmsg_server != nullptr && strcasecmp( vhmsg_server, "none" ) == 0 );  // hope there is no valid server named "none"
-	std::string vhmsgServerStr;
-	if (vhmsg_server)
-		vhmsgServerStr = vhmsg_server;
-	std::string vhmsgPortStr;
-	if (vhmsg_port)
-		vhmsgPortStr = vhmsg_port;
+		char* vhmsg_server = getenv("VHMSG_SERVER");
+		char* vhmsg_port = getenv("VHMSG_PORT");
+		bool vhmsg_disabled = (vhmsg_server != nullptr && strcasecmp(vhmsg_server, "none") == 0);  // hope there is no valid server named "none"
+		std::string vhmsgServerStr;
+		if (vhmsg_server)
+			vhmsgServerStr = vhmsg_server;
+		std::string vhmsgPortStr;
+		if (vhmsg_port)
+			vhmsgPortStr = vhmsg_port;
 
 
-	auto& vhmsgManager = Session::current->vhmMsgManager;
-	if( !vhmsg_disabled)
-	{
-		if (!vhmsgServerStr.empty())
-			vhmsgManager.setServer(vhmsgServerStr);
-		if (!vhmsgPortStr.empty())
-			vhmsgManager.setPort(vhmsgPortStr);
-		
-		vhmsgManager.setEnable(true);
-		if (!vhmsgManager.isEnable())
-		{
-			SmartBody::util::log("Could not connect to server %s, VHMSG service not enabled.", vhmsg_server);
-		}
-	}
-	else
-	{
-		if( vhmsg_disabled )
-		{
-			SmartBody::util::log( "SmartBody: VHMSG_SERVER='%s': Messaging disabled.\n", vhmsg_server?"nullptr":vhmsg_server );
+		auto& vhmsgManager = Session::current->vhmMsgManager;
+		if (!vhmsg_disabled) {
+			if (!vhmsgServerStr.empty())
+				vhmsgManager.setServer(vhmsgServerStr);
+			if (!vhmsgPortStr.empty())
+				vhmsgManager.setPort(vhmsgPortStr);
+
+			vhmsgManager.setEnable(true);
+			if (!vhmsgManager.isEnable()) {
+				SmartBody::util::log("Could not connect to server %s, VHMSG service not enabled.", vhmsg_server);
+			}
 		} else {
+			if (vhmsg_disabled) {
+				SmartBody::util::log("SmartBody: VHMSG_SERVER='%s': Messaging disabled.\n", vhmsg_server ? "nullptr" : vhmsg_server);
+			} else {
 #if 0 // disable server name query until vhmsg is fixed
-			std::string vhserver = (vhmsg_server? vhmsg_server : "localhost");
-			std::string vhport = (vhmsg_port ? vhmsg_port : "61616");
-			SmartBody::util::log( "SmartBody Error: ttu_open FAILED\n" );
-			SmartBody::util::log("Could not connect to %s:%s", vhserver.c_str(), vhport.c_str());
+				std::string vhserver = (vhmsg_server? vhmsg_server : "localhost");
+				std::string vhport = (vhmsg_port ? vhmsg_port : "61616");
+				SmartBody::util::log( "SmartBody Error: ttu_open FAILED\n" );
+				SmartBody::util::log("Could not connect to %s:%s", vhserver.c_str(), vhport.c_str());
 #endif
+			}
+			vhmsgManager.setEnable(false);
 		}
-		vhmsgManager.setEnable(false);
-	}
 #endif
 
-	// Sets up the network connection for sending bone rotations over to the renderer
-	
-	if( !net_host.empty() )
-	{
-		Session::current->bonebusManager.setHost(net_host);
-		Session::current->bonebusManager.setEnable(true);
-	}
+		// Sets up the network connection for sending bone rotations over to the renderer
 
-	if( !proc_id.empty() )
-	{
-		scene.setProcessId( proc_id );
-
-		// Using a process id is a sign that we're running in a multiple SBM environment.
-		// So.. ignore BML requests with unknown agents by default
-		scene.getBmlProcessor()->getBMLProcessor()->set_warn_unknown_agents( false );
-	}
-
-	if (scene.getBoolAttribute("internalAudio"))
-	{
-		if ( !AUDIO_Init() )
-		{
-			SmartBody::util::log( "ERROR: Audio initialization failed\n" );
+		if (!net_host.empty()) {
+			Session::current->bonebusManager.setHost(net_host);
+			Session::current->bonebusManager.setEnable(true);
 		}
-	}
 
-	Session::current->debuggerServer.setStringAttribute("id", "sbgui");
+		if (!proc_id.empty()) {
+			scene.setProcessId(proc_id);
 
-	// initialize any Python environment variables from the command line
-	for (unsigned int x = 0; x < envNames.size(); x++)
-	{
-		std::stringstream strstr;
-		strstr << envNames[x] << " = \"" << envValues[x] << "\"";
-		SmartBody::util::log(strstr.str().c_str());
-		scene.run(strstr.str());
-	}
+			// Using a process id is a sign that we're running in a multiple SBM environment.
+			// So.. ignore BML requests with unknown agents by default
+			scene.getBmlProcessor()->getBMLProcessor()->set_warn_unknown_agents(false);
+		}
+
+		if (scene.getBoolAttribute("internalAudio")) {
+			if (!AUDIO_Init()) {
+				SmartBody::util::log("ERROR: Audio initialization failed\n");
+			}
+		}
+
+		Session::current->debuggerServer.setStringAttribute("id", "sbgui");
+
+		// initialize any Python environment variables from the command line
+		for (unsigned int x = 0; x < envNames.size(); x++) {
+			std::stringstream strstr;
+			strstr << envNames[x] << " = \"" << envValues[x] << "\"";
+			SmartBody::util::log(strstr.str().c_str());
+			scene.run(strstr.str());
+		}
 
 //	(void)signal( SIGABRT, signal_handler );
 //	(void)signal( SIGFPE, signal_handler );
@@ -1275,178 +1265,168 @@ int main( int argc, char **argv )	{
 //	(void)signal( SIGSEGV, signal_handler );
 //	(void)signal( SIGTERM, signal_handler );
 #ifdef WIN32
-	(void)signal( SIGBREAK, signal_handler );
+		(void)signal( SIGBREAK, signal_handler );
 #endif
 //	atexit( exit_callback );
 
-	gwiz::cmdl commandline;
-	//commandline.set_callback( cmdl_tab_callback );
+		gwiz::cmdl commandline;
+		//commandline.set_callback( cmdl_tab_callback );
 
-	vector<string>::iterator it;
+		vector<string>::iterator it;
 
-	if( seq_paths.empty() && py_paths.empty() ) {
-		SmartBody::util::log( "No script paths specified. Adding current working directory to script path.\n" );
-		seq_paths.emplace_back( mediaPath + "/sbm-common/scripts" );
-	}
+		if (seq_paths.empty() && py_paths.empty()) {
+			SmartBody::util::log("No script paths specified. Adding current working directory to script path.\n");
+			seq_paths.emplace_back(mediaPath + "/sbm-common/scripts");
+		}
 
-	for( it = me_paths.begin();
-	     it != me_paths.end();
-		 ++it )
-	{
-		std::stringstream strstr;
-		strstr << "path me " << it->c_str();
-		scene.command( (char *) strstr.str().c_str() );
-	}
+		for (it = me_paths.begin();
+			 it != me_paths.end();
+			 ++it) {
+			std::stringstream strstr;
+			strstr << "path me " << it->c_str();
+			scene.command((char*) strstr.str().c_str());
+		}
 
-	for( it = seq_paths.begin();
-	     it != seq_paths.end();
-		 ++it )
-	{
-		std::stringstream strstr;
-		strstr << "path seq " << (it->c_str());
-		scene.command( (char *) strstr.str().c_str() );
-	}
+		for (it = seq_paths.begin();
+			 it != seq_paths.end();
+			 ++it) {
+			std::stringstream strstr;
+			strstr << "path seq " << (it->c_str());
+			scene.command((char*) strstr.str().c_str());
+		}
 
-	for( it = audio_paths.begin();
-	     it != audio_paths.end();
-		 ++it )
-	{
-		std::stringstream strstr;
-		strstr <<  "path audio " << it->c_str();
-		scene.command( (char *) strstr.str().c_str() );
-	}
+		for (it = audio_paths.begin();
+			 it != audio_paths.end();
+			 ++it) {
+			std::stringstream strstr;
+			strstr << "path audio " << it->c_str();
+			scene.command((char*) strstr.str().c_str());
+		}
 
 
-	for( it = py_paths.begin();
-	     it != py_paths.end();
-		 ++it )
-	{
-		std::stringstream strstr;
-		strstr << "scene.addAssetPath('script', '" << it->c_str() << "')";
-		scene.run( (char *) strstr.str().c_str() );
-	}
+		for (it = py_paths.begin();
+			 it != py_paths.end();
+			 ++it) {
+			std::stringstream strstr;
+			strstr << "scene.addAssetPath('script', '" << it->c_str() << "')";
+			scene.run((char*) strstr.str().c_str());
+		}
 
-	// run the specified scripts
-	if( init_seqs.empty() && init_pys.empty())
-	{
-		SmartBody::util::log( "No Python scripts specified. Loading default configuration.\n" );
-		scene.run("getViewer().show()\ngetCamera().reset()");
-	}
+		// run the specified scripts
+		if (init_seqs.empty() && init_pys.empty()) {
+			SmartBody::util::log("No Python scripts specified. Loading default configuration.\n");
+			scene.run("getViewer().show()\ngetCamera().reset()");
+		}
 
-	for( it = init_seqs.begin();
-		 it != init_seqs.end();
-		 ++it )
-	{
-		string seq_command = "seq " + (*it) + " begin";
-		scene.command((char *)seq_command.c_str());
-	}
+		for (it = init_seqs.begin();
+			 it != init_seqs.end();
+			 ++it) {
+			string seq_command = "seq " + (*it) + " begin";
+			scene.command((char*) seq_command.c_str());
+		}
 
 
-	for( it = init_pys.begin();
-		 it != init_pys.end();
-		 ++it )
-	{
-		std::string cmd = *it;
-		std::stringstream strstr;
-		strstr << "scene.run(\"" << cmd.c_str() << "\")";
-		scene.run(strstr.str());
-		SmartBody::util::log("Run Script = %s", strstr.str().c_str());
-	}
-	SmartBody::util::log("After running init python script");
-	me_paths.clear();
-	seq_paths.clear();
-	init_seqs.clear();
+		for (it = init_pys.begin();
+			 it != init_pys.end();
+			 ++it) {
+			std::string cmd = *it;
+			std::stringstream strstr;
+			strstr << "scene.run(\"" << cmd.c_str() << "\")";
+			scene.run(strstr.str());
+			SmartBody::util::log("Run Script = %s", strstr.str().c_str());
+		}
+		SmartBody::util::log("After running init python script");
+		me_paths.clear();
+		seq_paths.clear();
+		init_seqs.clear();
 
-	// Notify world SBM is ready to receive messages
-	srArgBuffer argBuff("");
-	mcu_vrAllCall_func( argBuff, Session::current->vhmMsgManager );
+		// Notify world SBM is ready to receive messages
+		srArgBuffer argBuff("");
+		mcu_vrAllCall_func(argBuff, Session::current->vhmMsgManager);
 
-	scene.getSimulationManager()->start();
+		scene.getSimulationManager()->start();
 
 #if ENABLE_808_TEST
-	return( 0 );
+		return( 0 );
 #endif
 
 #if EARLY_EXIT
-	mcu.loop = 0;
+		mcu.loop = 0;
 #endif
 //	commandline.render_prompt( "> " );
 
-	std::string pythonPrompt = "# ";
-	std::string commandPrompt = "> ";
+		std::string pythonPrompt = "# ";
+		std::string commandPrompt = "> ";
 
-	//scene.getCommandManager()->execute("viewer open");
+		//scene.getCommandManager()->execute("viewer open");
 
-	SrTimer timer;
-	timer.start();
-	double lastUICheckTime = -1.0;
-	while((Session::current->scene.getSimulationManager()->isRunning()))	{
+		SrTimer timer;
+		timer.start();
+		double lastUICheckTime = -1.0;
+		while ((Session::current->scene.getSimulationManager()->isRunning())) {
 
 
 //		mcu.update_profiler( SBM_get_real_time() );
-		bool update_sim = Session::current->scene.getSimulationManager()->updateTimer();
+			bool update_sim = Session::current->scene.getSimulationManager()->updateTimer();
 //		bool update_sim = mcu.update_timer( SBM_get_real_time() );
 
-	//	mcu.mark( "main", 0, "fltk-check" );
-		Fl::check();
-		/*double curTime = timer.time();
-		if (curTime - lastUICheckTime > .016)
-		{
-			lastUICheckTime = curTime;
+			//	mcu.mark( "main", 0, "fltk-check" );
 			Fl::check();
-		}*/
+			/*double curTime = timer.time();
+			if (curTime - lastUICheckTime > .016)
+			{
+				lastUICheckTime = curTime;
+				Fl::check();
+			}*/
 
-		auto& theScene = Session::current->scene;
+			auto& theScene = Session::current->scene;
 
 #if LINK_VHMSG_CLIENT
-		if (Session::current->vhmMsgManager.isEnable())
-		{
-			err = Session::current->vhmMsgManager.poll();
-			if( err == CMD_FAILURE )	{
-				fprintf( stderr, "ttu_poll ERROR\n" );
+			if (Session::current->vhmMsgManager.isEnable()) {
+				err = Session::current->vhmMsgManager.poll();
+				if (err == CMD_FAILURE) {
+					fprintf(stderr, "ttu_poll ERROR\n");
+				}
 			}
-		}
 #endif
 
-		vector<string> commands;// = mcu.bonebus.GetCommand();
-		for (auto & command : commands) {
-			theScene.command( (char *)command.c_str() );
-		}
+			vector<string> commands;// = mcu.bonebus.GetCommand();
+			for (auto& command : commands) {
+				theScene.command((char*) command.c_str());
+			}
 
-		if (isInteractive)
-		{
-			bool hasCommands = false;
-			hasCommands =  commandline.pending( pythonPrompt );
+			if (isInteractive) {
+				bool hasCommands = false;
+				hasCommands = commandline.pending(pythonPrompt);
 
-			if ( hasCommands )
-			{
-				std::string cmd_str = commandline.read();
-				char *cmd = (char*)cmd_str.c_str();
+				if (hasCommands) {
+					std::string cmd_str = commandline.read();
+					char* cmd = (char*) cmd_str.c_str();
 
-				if( strlen( cmd ) )	{
+					if (strlen(cmd)) {
 
-					bool result = Session::current->scene.run(cmd);
+						bool result = Session::current->scene.run(cmd);
 
-					if (!result)
-					{
-						printf("SmartBody Error: when running command: %s", cmd);
+						if (!result) {
+							printf("SmartBody Error: when running command: %s", cmd);
+						}
 					}
 				}
 			}
-		}
 
-		if( update_sim )	{
-			theScene.update();
+			if (update_sim) {
+				theScene.update();
+			}
 		}
-	}	
-	
-	cleanup();
+		cleanup();
+	}
 
 	//vhcl::Log::g_log.RemoveAllListeners();
 	//delete listener;
 //	delete sbmWindow;
 	// finally, delete SBScene
-	Session::current = {};
-//	return( 0 ); // NOT NEEDED ??
+	delete Session::current;
+	SmartBody::util::g_log.RemoveListener(&listener);
+	return 0;
 }
 

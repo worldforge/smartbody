@@ -352,11 +352,16 @@ bool SbmTextureData::loadImage( const char* fileName )
 	}
 #endif
 
+	struct free_delete
+	{
+		void operator()(void* x) { free(x); }
+	};
+
 	stbi_hdr_to_ldr_gamma(2.2f);
 	stbi_hdr_to_ldr_scale(1.0f);
 	int transparentPixel = 0;
 	stbi_set_flip_vertically_on_load(true);
-	std::unique_ptr<unsigned char[]> tmpBuffer(stbi_load(fileName, &width, &height, &channels, 0));
+	std::unique_ptr<unsigned char[], free_delete> tmpBuffer(stbi_load(fileName, &width, &height, &channels, 0));
 	if (!tmpBuffer)
 	{
 		SmartBody::util::log("Image %s failed to load.", fileName);

@@ -2124,19 +2124,17 @@ void SkMotion::smoothByMask(std::vector<int>& frameIds, std::vector<float>& mask
 		memcpy(this->posture(frameIds[i]), newFrameData[i], posture_size());
 
 	// clear memory
-	for (size_t i = 0; i < newFrameData.size(); ++i)
-		delete [] newFrameData[i];
-	newFrameData.clear();
+	for (auto & i : newFrameData)
+		delete [] i;
 }
 
 
 SkMotion* SkMotion::buildMirrorMotion(SkSkeleton* skeleton, std::vector<std::string> from, std::vector<std::string> to)
 {
 	std::map<std::string, bool> jointNameMap;
-	for (unsigned int i = 0; i<skeleton->joints().size(); i++)
+	for (const auto & joint : skeleton->joints())
 	{
-		SkJoint* joint = skeleton->joints()[i];
-		jointNameMap[joint->getMappedJointName()] = true;
+			jointNameMap[joint->getMappedJointName()] = true;
 	}
 	return buildMirrorMotionJoints(skeleton, jointNameMap, from, to);
 }

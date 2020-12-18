@@ -130,7 +130,30 @@ SBScene::SBScene(CoreServices coreServices) :
 		SBObject(),
 		_assetStore(std::make_unique<SBAssetStore>(*this)),
 		_coreServices(std::move(coreServices)),
-		_vhMsgProvider(nullptr) {
+		_sim(std::make_unique<SBSimulationManager>()),
+		_profiler(std::make_unique<SBProfiler>()),
+		_bml(std::make_unique<SBBmlProcessor>()),
+		_blendManager(std::make_unique<SBAnimationBlendManager>()),
+		_reachManager(std::make_unique<SBReachManager>()),
+		_steerManager(std::make_unique<SBSteerManager>(*this)),
+		_realtimeManager(std::make_unique<SBRealtimeManager>()),
+		_serviceManager(std::make_unique<SBServiceManager>()),
+		_gestureMapManager(std::make_unique<SBGestureMapManager>()),
+		_jointMapManager(std::make_unique<SBJointMapManager>()),
+		_phonemeManager(std::make_unique<SBPhonemeManager>()),
+		_behaviorSetManager(std::make_unique<SBBehaviorSetManager>()),
+		_retargetManager(std::make_unique<SBRetargetManager>()),
+		_eventManager(std::make_unique<SBEventManager>()),
+		_assetManager(std::make_unique<SBAssetManager>(*_assetStore)),
+		_speechManager(std::make_unique<SBSpeechManager>()),
+		_commandManager(std::make_unique<SBCommandManager>()),
+		_motionGraphManager(std::make_unique<SBMotionGraphManager>()),
+		_handConfigManager(std::make_unique<SBHandConfigurationManager>()),
+		_parser(std::make_unique<SBParser>()),
+		_forwardLogListener(std::make_unique<ForwardLogListener>()),
+		_stdLogListener(std::make_unique<SmartBody::util::StdoutListener>()),
+		_vhMsgProvider(nullptr)
+		{
 	_scene = this;
 	_processId = "";
 	_lastScriptDirectory = "";
@@ -139,39 +162,20 @@ SBScene::SBScene(CoreServices coreServices) :
 
 	_sceneListeners.clear();
 
-	_sim = new SBSimulationManager();
-	_profiler = new SBProfiler();
-	_bml = new SBBmlProcessor();
-	_blendManager = new SBAnimationBlendManager();
-	_reachManager = new SBReachManager();
-	_steerManager = new SBSteerManager(*this);
-	_realtimeManager = new SBRealtimeManager();
-	_serviceManager = new SBServiceManager();
-	_gestureMapManager = new SBGestureMapManager();
-	_jointMapManager = new SBJointMapManager();
-	_phonemeManager = new SBPhonemeManager();
-	_behaviorSetManager = new SBBehaviorSetManager();
-	_retargetManager = new SBRetargetManager();
-	_eventManager = new SBEventManager();
-	_assetManager = new SBAssetManager(*_assetStore);
-	_speechManager = new SBSpeechManager();
-	_commandManager = new SBCommandManager();
-	_motionGraphManager = new SBMotionGraphManager();
-	_handConfigManager = new SBHandConfigurationManager();
+
 
 	//_scale = .01f; // default scale is centimeters
 	_scale = 1.f;
 
 	// add the services
-	_serviceManager->addService(_steerManager);
+	_serviceManager->addService(_steerManager.get());
 	_serviceManager->addService(_coreServices.physicsManager.get());
 	_serviceManager->addService(_coreServices.collisionManager.get());
-	_serviceManager->addService(_realtimeManager);
-	_serviceManager->addService(_phonemeManager);
-	_serviceManager->addService(_profiler);
+	_serviceManager->addService(_realtimeManager.get());
+	_serviceManager->addService(_phonemeManager.get());
+	_serviceManager->addService(_profiler.get());
 	//_serviceManager->addService(_debuggerServer);
 
-	_parser = new SBParser();
 
 	//_debuggerClient = new SBDebuggerClient();
 	//_debuggerUtility = new SBDebuggerUtility();
@@ -220,11 +224,9 @@ SBScene::SBScene(CoreServices coreServices) :
 	createBoolAttribute("drawMeshWireframe",false,true,"",120,false,false,false,"Render mesh with wireframe.");
 	
 	SmartBody::util::g_log.RemoveAllListeners();
-	auto* forwardListener = new ForwardLogListener();
-	SmartBody::util::g_log.AddListener(forwardListener);
+	SmartBody::util::g_log.AddListener(_forwardLogListener.get());
 #if !defined(WIN_BUILD) && !defined(NATIVE_FRAMEWORK_BUILD)
-	auto* stdoutListener = new SmartBody::util::StdoutListener();
-	SmartBody::util::g_log.AddListener(stdoutListener);
+	SmartBody::util::g_log.AddListener(_stdLogListener.get());
 #endif
 	
 	//consoleAttr->setValue(true); // set up the console logging
@@ -237,7 +239,6 @@ SBScene::SBScene(CoreServices coreServices) :
 //	_viewerFactory = nullptr;
 
 	_rootGroup = new SrSnGroup();
-	_rootGroup->ref();
 
 	_heightField = nullptr;
 	_navigationMesh = nullptr;
@@ -284,11 +285,6 @@ SBScene::SBScene(CoreServices coreServices) :
 ////		SbmShaderManager::singleton().setViewer(nullptr);
 ////#endif
 //	}
-
-	_logListener = nullptr;
-
-
-	auto bmlCopy = _bml;
 
 
 	auto lambda = [](){};
@@ -370,46 +366,8 @@ SBScene::~SBScene()
 	removeAllAssetPaths("mesh");
 	removeAllAssetPaths("audio");
 
-	delete _sim;
-	delete _profiler;
-	delete _bml;
-	delete _blendManager;
-	delete _reachManager;
-	delete _steerManager;
-	delete _serviceManager;
-	delete _gestureMapManager;
-	delete _jointMapManager;
-	delete _phonemeManager;
-	delete _behaviorSetManager;
-	delete _retargetManager;
-	delete _eventManager;
-	delete _assetManager;
-	delete _speechManager;
-	delete _commandManager;
+
 	delete _kinectProcessor;
-	delete _handConfigManager;
-
-	_sim = nullptr;
-	_profiler = nullptr;
-	_bml = nullptr;
-	_blendManager = nullptr;
-	_reachManager = nullptr;
-	_steerManager= nullptr;
-	_serviceManager = nullptr;
-	_gestureMapManager= nullptr;
-	_jointMapManager = nullptr;
-	_phonemeManager = nullptr;
-	_behaviorSetManager = nullptr;
-	_retargetManager = nullptr;
-	_eventManager = nullptr;
-	_assetManager = nullptr;
-	_commandManager = nullptr;
-	_speechManager = nullptr;
-
-	_kinectProcessor = nullptr;
-
-
-
 
 	delete _heightField;
 
@@ -423,17 +381,7 @@ SBScene::~SBScene()
 #endif
 	_navigationMesh = nullptr;
 
-	_rootGroup->unref();
-	_rootGroup = nullptr;
-
-//	_viewer = nullptr;
-
-
-
-//#if !defined(SB_IPHONE)
-//	SbmTextureManager::destroy_singleton();
-//	SbmShaderManager::destroy_singleton();
-//#endif
+	_rootGroup.reset();
 
 	for (auto iter = _scripts.begin();
 		 iter != _scripts.end();
@@ -442,18 +390,16 @@ SBScene::~SBScene()
 	//	delete (*iter).second;
 	}
 
-	delete _parser;
+	SmartBody::util::g_log.RemoveListener(_forwardLogListener.get());
+#if !defined(WIN_BUILD) && !defined(NATIVE_FRAMEWORK_BUILD)
+	SmartBody::util::g_log.RemoveListener(_stdLogListener.get());
+#endif
+	stopFileLogging();
 
 	if (_scene == this) {
 		_scene = nullptr;
 	}
 
-//	_debuggerClient->Disconnect();
-//  // TODO: should delete these in reverse order?
-//	delete _debuggerClient;
-//	delete _debuggerUtility;
-//	
-	//mcu.reset();
 }
 
 
@@ -1122,7 +1068,7 @@ void SBScene::setDefaultRecipient(const std::string& recipient)
 
 SBEventManager* SBScene::getEventManager()
 {
-	return _eventManager;
+	return _eventManager.get();
 }
 
 
@@ -1210,42 +1156,42 @@ bool SBScene::runScript(const std::string& script)
 
 SBSimulationManager* SBScene::getSimulationManager()
 {
-	return _sim;
+	return _sim.get();
 }
 
 SBProfiler* SBScene::getProfiler()
 {
-	return _profiler;
+	return _profiler.get();
 }
 
 SBBmlProcessor* SBScene::getBmlProcessor()
 {
-	return _bml;
+	return _bml.get();
 }
 
 SBAnimationBlendManager* SBScene::getBlendManager()
 {
-	return _blendManager;
+	return _blendManager.get();
 }
 
 SBReachManager* SBScene::getReachManager()
 {
-	return _reachManager;
+	return _reachManager.get();
 }
 
 SBSteerManager* SBScene::getSteerManager()
 {
-	return _steerManager;
+	return _steerManager.get();
 }
 
 SBAPI SBRealtimeManager* SBScene::getRealtimeManager()
 {
-	return _realtimeManager;
+	return _realtimeManager.get();
 }
 
 SBServiceManager* SBScene::getServiceManager()
 {
-	return _serviceManager;
+	return _serviceManager.get();
 }
 
 
@@ -1256,32 +1202,32 @@ SBCollisionManager* SBScene::getCollisionManager()
 
 SBPhonemeManager* SBScene::getDiphoneManager()
 {
-	return _phonemeManager;
+	return _phonemeManager.get();
 }
 
 SBBehaviorSetManager* SBScene::getBehaviorSetManager()
 {
-	return _behaviorSetManager;
+	return _behaviorSetManager.get();
 }
 
 SBMotionGraphManager* SBScene::getMotionGraphManager()
 {
-	return _motionGraphManager;
+	return _motionGraphManager.get();
 }
 
 SBRetargetManager* SBScene::getRetargetManager()
 {
-	return _retargetManager;
+	return _retargetManager.get();
 }
 
 SBAssetManager* SBScene::getAssetManager()
 {
-	return _assetManager;
+	return _assetManager.get();
 }
 
 SBSpeechManager* SBScene::getSpeechManager()
 {
-	return _speechManager;
+	return _speechManager.get();
 }
 
 SBPhysicsManager* SBScene::getPhysicsManager()
@@ -1291,31 +1237,31 @@ SBPhysicsManager* SBScene::getPhysicsManager()
 
 SBGestureMapManager* SBScene::getGestureMapManager()
 {
-	return _gestureMapManager;
+	return _gestureMapManager.get();
 }
 
 SBHandConfigurationManager* SBScene::getHandConfigurationManager()
 {
-	return _handConfigManager;
+	return _handConfigManager.get();
 }
 
 SBJointMapManager* SBScene::getJointMapManager()
 {
-	return _jointMapManager;
+	return _jointMapManager.get();
 }
 
 SBCommandManager* SBScene::getCommandManager()
 {
-	return _commandManager;
+	return _commandManager.get();
 }
 
 
 SBParser* SBScene::getParser()
 {
-	return _parser;
+	return _parser.get();
 }
 
-bool SBScene::isRemoteMode()	
+bool SBScene::isRemoteMode() const
 { 
 	return _isRemoteMode; 
 }
@@ -1543,7 +1489,7 @@ std::vector<std::string> SBScene::getSystemParameterNames()
 	return names;
 }
 
-std::vector<SBController*>& SBScene::getDefaultControllers()
+std::vector<boost::intrusive_ptr<SBController>>& SBScene::getDefaultControllers()
 {
 	return _defaultControllers;
 }
@@ -1560,14 +1506,10 @@ void SBScene::createDefaultControllers()
 	 _defaultControllers.emplace_back(new MeCtGenericHand());
 	 _defaultControllers.emplace_back(new RealTimeLipSyncController());
 
-	 for (auto & _defaultController : _defaultControllers)
-		 _defaultController->ref();
 }
 
 void SBScene::removeDefaultControllers()
 {
-	 for (auto & _defaultController : _defaultControllers)
-		 _defaultController->unref();
 	 _defaultControllers.clear();
 }
 
@@ -1716,7 +1658,7 @@ boost::intrusive_ptr<SBSkeleton> SBScene::getSkeleton(const std::string& name)
 
 SrSnGroup* SBScene::getRootGroup()
 {
-	return _rootGroup;
+	return _rootGroup.get();
 }
 
 
@@ -1844,14 +1786,14 @@ std::map<std::string, GeneralParam*>& SBScene::getGeneralParameters()
 
 void SBScene::startFileLogging(const std::string& filename)
 {
-	_logListener = new SmartBody::util::FileListener(filename.c_str());
-	SmartBody::util::g_log.AddListener(_logListener);
+	_logListener = std::make_unique<SmartBody::util::FileListener>(filename.c_str());
+	SmartBody::util::g_log.AddListener(_logListener.get());
 }
 
 void SBScene::stopFileLogging()
 {
 	if (_logListener)
-		SmartBody::util::g_log.RemoveListener(_logListener);
+		SmartBody::util::g_log.RemoveListener(_logListener.get());
 }
 
 std::string SBScene::getStringFromObject(SmartBody::SBObject* object)

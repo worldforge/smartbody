@@ -30,7 +30,7 @@ class TimeIntervalProfiler;
 
 namespace SmartBody {
 
-class SBProfiler : public SBService, public boost::noncopyable
+class SBProfiler : public SBService
 {
 	public:
 		SBAPI SBProfiler();
@@ -57,7 +57,7 @@ class SBProfiler : public SBService, public boost::noncopyable
 
 
 
-class SBSimulationManager : public SBObject, public boost::noncopyable
+class SBSimulationManager : public SBObject
 {
 	public:
 		SBAPI SBSimulationManager();

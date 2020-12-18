@@ -43,7 +43,8 @@ const int SrFrustum::INSIDE = 3;
 //=================================== SrCamera ===================================
 
 SrCamera::SrCamera (SmartBody::SBRenderScene& renderScene) : SBPawn(),
-_renderScene(renderScene)
+_renderScene(renderScene),
+															 smoothTargetCam(false)
  {
 	setAttributeGroupPriority("Camera", 50);
 	createDoubleAttribute("centerX", 0.0, true, "Camera", 200, false, false, false, "");
@@ -84,9 +85,7 @@ SrCamera::SrCamera (SmartBody::SBRenderScene& renderScene, const SrPnt& e, const
    setScale(1.0f);
  }
 
-SrCamera::~SrCamera ()
-{
-}
+SrCamera::~SrCamera () = default;
 
 void SrCamera::copyCamera( const SrCamera* c )
 {

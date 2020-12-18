@@ -2152,7 +2152,7 @@ void BaseWindow::TrackCharacterCB(Fl_Widget* w, void* data)
 	if (!character->getSkeleton())
 		return;
 
-	SkJoint* joint = character->getSkeleton()->joints()[0];
+	auto& joint = character->getSkeleton()->joints()[0];
 
 // 	std::string trackCommand = "camera track ";
 // 	trackCommand.append(character->getName());

@@ -3154,7 +3154,9 @@ void DeformableMeshInstance::updateJointList()
 		for (auto & jname : skinWeight->infJointName)
 		{
 				SkJoint* joint = _skeleton->search_joint(jname.c_str());
-			jlist.emplace_back(joint);
+				if (joint) {
+					jlist.emplace_back(joint);
+				}
 		}
 		_boneJointList.emplace_back(jlist);
 	}

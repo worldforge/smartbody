@@ -107,7 +107,7 @@ void SBPhonemeManager::addPhonemeMapping(const std::string& from, const std::str
 	std::transform(upperCaseFrom.begin(), upperCaseFrom.end(), upperCaseFrom.begin(), ::toupper);
 	std::transform(upperCaseTo.begin(), upperCaseTo.end(), upperCaseTo.begin(), ::toupper);
 
-	std::map<std::string, std::string>::iterator iter = _phonemeToCommonPhonemeMap.find(upperCaseFrom);
+	auto iter = _phonemeToCommonPhonemeMap.find(upperCaseFrom);
 	if (iter != _phonemeToCommonPhonemeMap.end())
 	{
 		SmartBody::util::log("Phoneme mapping from %s->%s already found, replacing with %s->%s", (*iter).first.c_str(), (*iter).second.c_str(), upperCaseFrom.c_str(), upperCaseTo.c_str());
@@ -119,7 +119,7 @@ std::string SBPhonemeManager::getPhonemeMapping(const std::string& from)
 {
 	std::string uppercaseFrom = from;
 	std::transform(uppercaseFrom.begin(), uppercaseFrom.end(), uppercaseFrom.begin(), ::toupper);
-	std::map<std::string, std::string>::iterator iter = _phonemeToCommonPhonemeMap.find(uppercaseFrom);
+	auto iter = _phonemeToCommonPhonemeMap.find(uppercaseFrom);
 	if (iter != _phonemeToCommonPhonemeMap.end())
 	{
 		return  (*iter).second;
@@ -137,38 +137,21 @@ std::vector<std::string> SBPhonemeManager::getCommonPhonemes()
 {
 	std::set<std::string> commonPhonemeSet;
 
-	for (std::map<std::string, std::string>::iterator iter = _phonemeToCommonPhonemeMap.begin();
-		 iter != _phonemeToCommonPhonemeMap.end();
-		 iter++)
+	for (auto & iter : _phonemeToCommonPhonemeMap)
 	{
-		commonPhonemeSet.insert((*iter).second);
+		commonPhonemeSet.insert(iter.second);
 	}
 
 	std::vector<std::string> commonPhonemesVector;
 
-	for (std::set<std::string>::iterator iter = commonPhonemeSet.begin();
-		 iter != commonPhonemeSet.end();
-		 iter++)
+	for (const auto & iter : commonPhonemeSet)
 	{
-		commonPhonemesVector.emplace_back(*iter);
+		commonPhonemesVector.emplace_back(iter);
 	}
 	return commonPhonemesVector;
 }
 
-SBPhonemeManager::~SBPhonemeManager()
-{
-	std::map<std::string, std::vector<SBDiphone*> >::iterator iter = _diphoneMap.begin();
-	for (; iter != _diphoneMap.end(); iter++)
-	{
-		std::vector<SBDiphone*>& diphones = getDiphones(iter->first);
-		for (size_t i = 0; i < diphones.size(); i++)
-		{
-			delete diphones[i];
-			diphones[i] = nullptr;
-		}
-		diphones.clear();
-	}
-}
+SBPhonemeManager::~SBPhonemeManager() = default;
 
 
 void SBPhonemeManager::deleteDiphoneSet(const std::string& name)
@@ -200,15 +183,16 @@ SBDiphone* SBPhonemeManager::createDiphone(const std::string& fromPhoneme, const
 	return diphone;
 }
 
-std::vector<SBDiphone*>& SBPhonemeManager::getDiphones(const std::string& name)
+std::vector<std::unique_ptr<SBDiphone>>& SBPhonemeManager::getDiphones(const std::string& name)
 {	
-	std::map<std::string, std::vector<SBDiphone*> >::iterator iter = _diphoneMap.find(name);
+	auto iter = _diphoneMap.find(name);
 	if (iter == _diphoneMap.end())
 	{
-		std::vector<SBDiphone*> newDiphones;
-		_diphoneMap.insert(std::make_pair(name, newDiphones));
+		auto result = _diphoneMap.emplace(name, std::vector<std::unique_ptr<SBDiphone>>());
+		return result.first->second;
+	} else {
+		return iter->second;
 	}
-	return _diphoneMap[name];
 }
 
 SBDiphone* SBPhonemeManager::getMappedDiphone(const std::string& fromPhoneme, const std::string& toPhoneme, const std::string& name)
@@ -267,19 +251,16 @@ int SBPhonemeManager::getNumDiphoneMap()
 
 int SBPhonemeManager::getNumDiphones(const std::string& name)
 {
-	std::vector<SBDiphone*>& diphones = getDiphones(name);
+	auto& diphones = getDiphones(name);
 	return diphones.size();
 }
 
 std::vector<std::string> SBPhonemeManager::getDiphoneMapNames()
 {
 	std::vector<std::string> diphoneMaps;
-	for (std::map<std::string, std::vector<SBDiphone*> >::iterator iter = _diphoneMap.begin();
-		 iter != _diphoneMap.end();
-		 iter++)
+	for (auto & iter : _diphoneMap)
 	{
-		diphoneMaps.emplace_back((*iter).first);
-		
+		diphoneMaps.emplace_back(iter.first);
 	}
 
 	return diphoneMaps;
@@ -288,37 +269,28 @@ std::vector<std::string> SBPhonemeManager::getDiphoneMapNames()
 
 void SBPhonemeManager::normalizeCurves(const std::string& name)
 {
-	std::map<std::string, std::vector<SBDiphone*> >::iterator iter = _diphoneMap.find(name);
+	auto iter = _diphoneMap.find(name);
 	if (iter != _diphoneMap.end())
 	{
 		// iterate through the phone bigrams
-		for (std::map<std::string, std::vector<SBDiphone*> >::iterator iter2 = _diphoneMap.begin();
+		for (auto iter2 = _diphoneMap.begin();
 			 iter2 != _diphoneMap.end();
 			 iter2++)
 		{
 			// get the phone bigram
-			std::vector<SBDiphone*>& diphones = getDiphones(iter->first);
-			for (std::vector<SBDiphone*>::iterator diphoneIter = diphones.begin();
-				 diphoneIter != diphones.end();
-				 diphoneIter++)
+			auto& diphones = getDiphones(iter->first);
+			for (auto& diphone : diphones)
 			{
-				SBDiphone* diphone = (*diphoneIter);
-				// get the keys and find the largest value in the list
+					// get the keys and find the largest value in the list
 				float maxVal = -1.0f;
 				std::vector<std::string> visemes = diphone->getVisemeNames();
-				for (std::vector<std::string>::iterator visemeIter = visemes.begin();
-					 visemeIter != visemes.end();
-					 visemeIter++)
+				for (auto & viseme : visemes)
 				{
-					const std::string& viseme = (*visemeIter);
-					std::vector<float>& keys = diphone->getKeys(viseme);
+						std::vector<float>& keys = diphone->getKeys(viseme);
 					bool isTime = true;
-					for (std::vector<float>::iterator keyIter = keys.begin();
-						 keyIter != keys.end();
-						 keyIter++)
+					for (float & val : keys)
 					{
-						float& val = (*keyIter);
-						if (isTime)
+							if (isTime)
 						{
 							isTime = false;
 						}
@@ -339,19 +311,13 @@ void SBPhonemeManager::normalizeCurves(const std::string& name)
 				// normalize the values according the the scale
 				SmartBody::util::log("Normalize scale is %f", maxVal);
 				float scale = 1.0f / ((1.0f + maxVal) / 2.0f);
-				for (std::vector<std::string>::iterator visemeIter = visemes.begin();
-					 visemeIter != visemes.end();
-					 visemeIter++)
+				for (auto & viseme : visemes)
 				{
-					const std::string& viseme = (*visemeIter);
-					std::vector<float>& keys = diphone->getKeys(viseme);
+						std::vector<float>& keys = diphone->getKeys(viseme);
 					bool isTime = true;
-					for (std::vector<float>::iterator keyIter = keys.begin();
-						 keyIter != keys.end();
-						 keyIter++)
+					for (float & val : keys)
 					{
-						float& val = (*keyIter);
-						if (isTime)
+							if (isTime)
 						{
 							isTime = false;
 						}
@@ -603,7 +569,7 @@ void SBPhonemeManager::setPhonemesRealtime(const std::string& character, const s
 
 void SBPhonemeManager::clearPhonemesRealtime(const std::string& character, const std::string& phoneme)
 {
-	std::map<std::string, std::vector<RealTimePhoneme> >::iterator iter = _realtimePhonemes.find(character);
+	auto iter = _realtimePhonemes.find(character);
 	if (iter != _realtimePhonemes.end())
 	{
 		(*iter).second.clear();
@@ -614,19 +580,19 @@ void SBPhonemeManager::clearPhonemesRealtime(const std::string& character, const
 void SBPhonemeManager::generatePhoneTrigrams(const std::string& lipsyncSetName)
 {
 	
-	std::map<std::string, std::vector<SBDiphone*> >::iterator iter = _diphoneMap.find(lipsyncSetName);
+	auto iter = _diphoneMap.find(lipsyncSetName);
 	if (iter == _diphoneMap.end())
 	{
 		SmartBody::util::log("Cannot produce trigrams for lip sync set name: %s, does not exist.", lipsyncSetName.c_str());
 		return;
 	}
 
-	std::vector<SBDiphone*>& allDiphones = (*iter).second;
-	for (std::vector<SBDiphone*>::iterator bigramIter = allDiphones.begin();
+	auto& allDiphones = (*iter).second;
+	for (auto bigramIter = allDiphones.begin();
 		 bigramIter != allDiphones.end();
 		 bigramIter++)
 	{
-		for (std::vector<SBDiphone*>::iterator bigramIter2 = (bigramIter + 1);
+		for (auto bigramIter2 = (bigramIter + 1);
 			 bigramIter2 != allDiphones.end();
 			 bigramIter2++)
 		{
@@ -748,7 +714,7 @@ void SBPhonemeManager::saveLipSyncAnimation(const std::string characterName, con
 		return;
 	}
 
-	std::vector<SmartBody::SBDiphone*>& diphones = this->getDiphones(lipSyncSetName);
+	auto& diphones = this->getDiphones(lipSyncSetName);
 	if (diphones.size() == 0)
 	{
 		SmartBody::util::log("Lip sync data for set '%s' is empty. Please load a lip sync set first. No output file named '%s' written.", lipSyncSetName.c_str(), outputFile.c_str());
@@ -835,17 +801,15 @@ void SBPhonemeManager::saveLipSyncAnimation(const std::string characterName, con
 
 	daeStream << "<animation name=\"" << basename << "\" id=\"" << animName << "\">" << std::endl;
 
-	for (std::map<std::string, std::vector<float> >::iterator curvesIter = tempCurves.begin();
-		 curvesIter != tempCurves.end();
-		 curvesIter++)
+	for (auto & tempCurve : tempCurves)
 	{
-		std::string channelName = (*curvesIter).first;
+		std::string channelName = tempCurve.first;
 		std::string sourceName = animName + "-" + channelName;
 
 		// input
 		daeStream << "<source id=\"" << sourceName << "-input\">" << std::endl;
 		daeStream << "<float_array id=\"" << sourceName << "-input-array\" count=\"";
-		std::vector<float>& values = (*curvesIter).second;
+		std::vector<float>& values = tempCurve.second;
 		daeStream << values.size() / 2.0 << "\">";
 		for (size_t i = 0; i < values.size(); i+=2)
 		{
@@ -919,18 +883,14 @@ void SBPhonemeManager::createFastMap()
 {
 	_fastDiphoneMap.clear();
 
-	for (std::map<std::string, std::vector<SBDiphone*> >::iterator iter = _diphoneMap.begin();
-		iter != _diphoneMap.end();
-		iter++)
+	for (auto & iter : _diphoneMap)
 	{
-		std::string setName = (*iter).first;
-		for (std::vector<SBDiphone*>::iterator iter2 = (*iter).second.begin();
-			iter2 != (*iter).second.end();
-			iter2++)
+		std::string setName = iter.first;
+		for (auto & iter2 : iter.second)
 		{
 			std::stringstream strstr;
-			strstr << setName << "_" << (*iter2)->getFromPhonemeName() << "_" << (*iter2)->getToPhonemeName();
-			_fastDiphoneMap.insert(std::pair<std::string, SBDiphone*>(strstr.str(), (*iter2)));
+			strstr << setName << "_" << iter2->getFromPhonemeName() << "_" << iter2->getToPhonemeName();
+			_fastDiphoneMap.emplace(strstr.str(), iter2.get());
 		}
 	}
 

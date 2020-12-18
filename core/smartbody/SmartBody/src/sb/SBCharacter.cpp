@@ -1316,7 +1316,7 @@ SBAPI const SBM_CharacterFrameDataMarshalFriendly & SBCharacter::GetFrameDataMar
    frameDataMarshalFriendly->ry = q.y;
    frameDataMarshalFriendly->rz = q.z;
 
-   const std::vector<SkJoint *> & joints  = getSkeleton()->joints();
+   auto & joints  = getSkeleton()->joints();
 
    if (frameDataMarshalFriendly->m_numJoints == 0 || frameDataMarshalFriendly->m_numJoints != joints.size())
    {
@@ -1342,7 +1342,7 @@ SBAPI const SBM_CharacterFrameDataMarshalFriendly & SBCharacter::GetFrameDataMar
 
    for ( size_t i = 0; i < joints.size(); i++ )
    {
-      SkJoint * j = joints[i];
+      auto& j = joints[i];
       SrQuat q = j->quat()->value();
 
       //printf( "%s %f %f %f %f\n", (const char *)j->name(), q.w, q.x, q.y, q.z );

@@ -30,10 +30,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/noncopyable.hpp>
 namespace SmartBody {
 
-class SBCollisionManager : public SBService, public boost::noncopyable
+class SBCollisionManager : public SBService
 {
 	public:
-		SBAPI SBCollisionManager(std::unique_ptr<SBCollisionSpace> collisionSpace);
+		SBAPI explicit SBCollisionManager(std::unique_ptr<SBCollisionSpace> collisionSpace);
 		SBAPI ~SBCollisionManager();
 
 		SBAPI void setEnable(bool enable) override;
@@ -53,7 +53,7 @@ class SBCollisionManager : public SBService, public boost::noncopyable
 		SBAPI bool           removeCollisionObject(const std::string& geomName);
 		SBAPI bool           addObjectToCollisionSpace(const std::string& geomName);
 		SBAPI bool           removeObjectFromCollisionSpace(const std::string& geomName);
-		SBAPI std::map<std::string, SBGeomObject*>& getAllCollisionObjects();
+		SBAPI std::map<std::string, std::unique_ptr<SBGeomObject>>& getAllCollisionObjects();
 
 	protected:
 		std::unique_ptr<SBCollisionSpace> _collisionSpace;
@@ -61,7 +61,7 @@ class SBCollisionManager : public SBService, public boost::noncopyable
 		int _maxIterations;
 		std::map<std::string, SrVec> _velocities;
 		std::map<std::string, SrVec> _positions;
-		std::map<std::string, SBGeomObject*> geomObjectMap;
+		std::map<std::string, std::unique_ptr<SBGeomObject>> geomObjectMap;
 
 		bool _singleChrCapsuleMode;
 		float _jointBVLenRadRatio;

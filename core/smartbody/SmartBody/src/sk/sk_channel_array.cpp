@@ -185,11 +185,10 @@ void SkChannelArray::add_active_channels ( SkSkeleton* sk, bool connect )
 {
 	int i;
 	int jsize = sk->joints().size();
-	SkJoint* joint;
 
 	for (i = 0; i < jsize; i++)
 	{
-		auto joint = sk->joints()[i];
+		auto joint = sk->joints()[i].get();
 
 		// position channels:
 		if (!joint->pos()->frozen(0))

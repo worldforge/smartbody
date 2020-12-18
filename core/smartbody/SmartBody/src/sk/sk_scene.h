@@ -62,7 +62,7 @@ class SBAPI SkScene : public SrSnGroup
         The skeleton ref()/unref() methods are respected. */
     void init ( boost::intrusive_ptr<SkSkeleton> s, float scale = 1.f );
 
-	SrSnSphere* createSphere( float scaleFactor );
+	boost::intrusive_ptr<SrSnSphere> createSphere( float scaleFactor );
     /*! Update the transformations of the scene graph according
         to the joints in the skeleton sent to init(). */
     void update ();

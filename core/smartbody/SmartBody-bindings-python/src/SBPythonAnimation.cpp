@@ -83,7 +83,7 @@ namespace SmartBody
 
 void pythonFuncsAnimation()
 {
-	boost::python::class_<SBAnimationBlend>("SBAnimationBlend")
+	boost::python::class_<SBAnimationBlend, boost::noncopyable>("SBAnimationBlend", boost::python::no_init)
 		.def("addCorrespondencePoints", &SBAnimationBlend::addCorrespondencePoints, "Correspondence points for motions inside the blend.")
 		.def("addCorrespondancePoints", &SBAnimationBlend::addCorrespondencePoints, "Correspondence points for motions inside the blend.")
 		.def("setIncrementWorldOffsetY", &SBAnimationBlend::setIncrementWorldOffsetY, "Boolean flag that increment world offset y-axis value according to the base joint value.")
@@ -117,28 +117,28 @@ void pythonFuncsAnimation()
 		.def("createMotionFromBlend", &SBAnimationBlend::createMotionFromBlend, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Construct a new motion with a given name from the blend.")
 		;
 
-	boost::python::class_<SBAnimationBlend0D, boost::python::bases<SBAnimationBlend> >("SBAnimationBlend0D")
+	boost::python::class_<SBAnimationBlend0D, boost::python::bases<SBAnimationBlend>, boost::noncopyable >("SBAnimationBlend0D", boost::python::no_init)
 		.def("addMotion", &SBAnimationBlend0D::addMotion, "Add motion to 0D state. \n Input: motion name. \n Output: NULL")
 	;
 
-	boost::python::class_<SBAnimationBlend1D, boost::python::bases<SBAnimationBlend> >("SBAnimationBlend1D")
+	boost::python::class_<SBAnimationBlend1D, boost::python::bases<SBAnimationBlend>, boost::noncopyable >("SBAnimationBlend1D", boost::python::no_init)
 		.def("addMotion", &SBAnimationBlend1D::addMotion, "Add motion and one parameter to 1D state. \n Input: motion name, parameter. \n Output: NULL")
 		.def("setParameter", &SBAnimationBlend1D::setParameter, "Set/Change the parameter for given motion. \n Input: motion name, parameter. \n Output: NULL")
 	;
 
-	boost::python::class_<SBAnimationBlend2D, boost::python::bases<SBAnimationBlend> >("SBAnimationBlend2D")
+	boost::python::class_<SBAnimationBlend2D, boost::python::bases<SBAnimationBlend>, boost::noncopyable >("SBAnimationBlend2D", boost::python::no_init)
 		.def("addMotion", &SBAnimationBlend2D::addMotion, "Add motion and two parameters to 2D state. \n Input: motion name, parameter1, parameter2. \n Output: NULL")
 		.def("setParameter", &SBAnimationBlend2D::setParameter, "Set/Change the parameter for given motion. \n Input: motion name, parameter1, parameter2. \n Output: NULL")
 		.def("addTriangle", &SBAnimationBlend2D::addTriangle, "Add triangles to the state. By changing the point inside triangle, you can get different blending weights and different results")
 	;
 
-	boost::python::class_<SBAnimationBlend3D, boost::python::bases<SBAnimationBlend> >("SBAnimationBlend3D")
+	boost::python::class_<SBAnimationBlend3D, boost::python::bases<SBAnimationBlend>, boost::noncopyable >("SBAnimationBlend3D", boost::python::no_init)
 		.def("addMotion", &SBAnimationBlend3D::addMotion, "Add motion and three parameters to 3D state. \n Input: motion name, parameter1, parameter2, parameter3. \n Output: NULL")
 		.def("setParameter", &SBAnimationBlend3D::setParameter, "Set/Change the parameter for given motion. \n Input: motion name, parameter1, parameter2, parameter3. \n Output: NULL")
 		.def("addTetrahedron", &SBAnimationBlend3D::addTetrahedron, "Add tetrahedrons to the state. By changing the point inside tetrahedron, you can get different blending weights and different results")
 	;
 
-	boost::python::class_<SBMotionBlendBase, boost::python::bases<SBAnimationBlend> >("SBMotionBlendBase")
+	boost::python::class_<SBMotionBlendBase, boost::python::bases<SBAnimationBlend>, boost::noncopyable >("SBMotionBlendBase", boost::python::no_init)
 		.def("addMotion", &SBMotionBlendBase::addMotion, "Add motion and its parameters to animation state. \n Input: motion name, vector of parameters. \n Output: NULL")
 		.def("setParameter", &SBMotionBlendBase::setMotionParameter, "Set/Change the parameter for given motion. \n Input: motion name, vector of parameters. \n Output: NULL")
 		.def("getParameter", &SBMotionBlendBase::getMotionParameter, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the parameter of a given motion")
@@ -150,7 +150,7 @@ void pythonFuncsAnimation()
 		.def("getNumDimensions", &SBMotionBlendBase::getParameterDimension, "Returns the number of dimensions for the blend.")
 		;
 
-	boost::python::class_<SBAnimationTransition>("SBAnimationTransition")
+	boost::python::class_<SBAnimationTransition, boost::noncopyable>("SBAnimationTransition", boost::python::no_init)
 		.def("set", &SBAnimationTransition::set, "")
 		.def("setSourceState", &SBAnimationTransition::setSourceBlend, "")
 		.def("getSourceState", &SBAnimationTransition::getSourceBlend, boost::python::return_value_policy<boost::python::reference_existing_object>(), "")

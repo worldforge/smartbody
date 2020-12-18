@@ -140,16 +140,15 @@ SBTransform& SBGeomObject::getCombineTransform()
 	return combineTransform;	
 }
 
-SBGeomObject* SBGeomObject::createGeometry(const std::string& type, SrVec size, SrVec from, SrVec to)
+std::unique_ptr<SBGeomObject> SBGeomObject::createGeometry(const std::string& type, SrVec size, const SrVec& from, const SrVec& to)
 {
-	SBGeomObject* geomObj = nullptr;
 	if (type == "sphere")
 	{
-		geomObj = new SBGeomSphere(size[0]);		
+		return std::make_unique<SBGeomSphere>(size[0]);
 	}
 	else if (type == "box")
 	{
-		geomObj = new SBGeomBox(SrVec(size[0],size[1],size[2]));		
+		return std::make_unique<SBGeomBox>(SrVec(size[0],size[1],size[2]));
 	}
 	else if (type == "capsule")
 	{	
@@ -157,18 +156,17 @@ SBGeomObject* SBGeomObject::createGeometry(const std::string& type, SrVec size, 
 		if (from == to && from == SrVec())
 		{
 			p1 = SrVec(0,-size[0],0); p2 = SrVec(0,size[0],0);
-			geomObj = new SBGeomCapsule(size[0]*2.f,size[1]);//new SBGeomCapsule(p1,p2,size[1]);//new SBGeomCapsule(size[0]*2.f,size[1]);
+			return std::make_unique<SBGeomCapsule>(size[0]*2.f,size[1]);//new SBGeomCapsule(p1,p2,size[1]);//new SBGeomCapsule(size[0]*2.f,size[1]);
 		}
 		else
 		{
-			geomObj = new SBGeomCapsule(from, to, size[1]);
+			return std::make_unique<SBGeomCapsule>(from, to, size[1]);
 		}				
 	}	
 	else
 	{
-		geomObj = new SBGeomNullObject();
+		return std::make_unique<SBGeomNullObject>();
 	}
-	return geomObj;
 }
 
 void SBGeomObject::setLocalTransform( SBTransform& newLocalTran )

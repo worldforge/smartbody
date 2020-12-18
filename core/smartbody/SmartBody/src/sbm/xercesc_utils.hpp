@@ -43,6 +43,16 @@ struct XmlContext {
 	XercesDOMParser parser;
 };
 
+struct xmlstring_delete
+{
+	void operator()(XMLCh* x) {
+		if (x) {
+			XMLString::release(&x);
+		}
+	}
+};
+typedef std::unique_ptr<XMLCh, xmlstring_delete> XMLPtr;
+
 namespace xml_utils {
 
 ////////////

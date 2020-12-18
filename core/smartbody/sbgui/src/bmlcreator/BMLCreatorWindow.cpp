@@ -121,7 +121,7 @@ void BMLCreatorWindow::updateBMLBuffer()
 {
 	_editor->buffer()->remove(0, _editor->buffer()->length());
 	std::stringstream strstr;
-	if (_curBML.size() > 0)
+	if (!_curBML.empty())
 		strstr << "bml.execBML('" << _curCharacter << "', '";
 	
 	_editor->buffer()->insert(0, strstr.str().c_str());
@@ -157,55 +157,52 @@ void BMLCreatorWindow::RunBMLCB(Fl_Widget* w, void *data)
 
 void BMLCreatorWindow::RefreshCharactersCB(Fl_Widget* w, void *data)
 {
-	BMLCreatorWindow* window = (BMLCreatorWindow*) data;
+	auto* window = (BMLCreatorWindow*) data;
 	
 	window->_choiceCharacters->clear();
 	window->_choiceCharacters->add("*");
 
 	const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
-	for (size_t i = 0; i < charNames.size(); i++)
+	for (const auto & charName : charNames)
 	{
-		const std::string & charName = charNames[i];
-		window->_choiceCharacters->add(charName.c_str());
+			window->_choiceCharacters->add(charName.c_str());
 	}
 }
 
 void BMLCreatorWindow::ResetBMLCB(Fl_Widget* w, void *data)
 {
-	BMLCreatorWindow* window = (BMLCreatorWindow*) data;
+	auto* window = (BMLCreatorWindow*) data;
 	
-	for (size_t x = 0; x < window->_bmlObjects.size(); x++)
+	for (auto & _bmlObject : window->_bmlObjects)
 	{
-		std::map<std::string, SmartBody::SBAttribute*>& attributes = window->_bmlObjects[x]->getAttributeList();
-		for (std::map<std::string, SmartBody::SBAttribute*>::iterator iter = attributes.begin();
-			iter != attributes.end();
-			iter++)
+		auto& attributes = _bmlObject->getAttributeList();
+		for (auto & attribute : attributes)
 		{
-			SmartBody::BoolAttribute* boolAttr = dynamic_cast<SmartBody::BoolAttribute*>((*iter).second);
+			auto* boolAttr = dynamic_cast<SmartBody::BoolAttribute*>(attribute.second.get());
 			if (boolAttr)
 			{
 				boolAttr->setValue(boolAttr->getDefaultValue());
 			}
 
-			SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>((*iter).second);
+			auto* intAttr = dynamic_cast<SmartBody::IntAttribute*>(attribute.second.get());
 			if (intAttr)
 			{
 				intAttr->setValue(intAttr->getDefaultValue());
 			}
 
-			SmartBody::DoubleAttribute* doubleAttr = dynamic_cast<SmartBody::DoubleAttribute*>((*iter).second);
+			auto* doubleAttr = dynamic_cast<SmartBody::DoubleAttribute*>(attribute.second.get());
 			if (doubleAttr)
 			{
 				doubleAttr->setValue(doubleAttr->getDefaultValue());
 			}
 
-			SmartBody::Vec3Attribute* vec3Attr = dynamic_cast<SmartBody::Vec3Attribute*>((*iter).second);
+			auto* vec3Attr = dynamic_cast<SmartBody::Vec3Attribute*>(attribute.second.get());
 			if (vec3Attr)
 			{
 				vec3Attr->setValue(vec3Attr->getDefaultValue());
 			}
 
-			SmartBody::StringAttribute* stringAttr = dynamic_cast<SmartBody::StringAttribute*>((*iter).second);
+			auto* stringAttr = dynamic_cast<SmartBody::StringAttribute*>(attribute.second.get());
 			if (stringAttr)
 			{
 				stringAttr->setValue(stringAttr->getDefaultValue());
@@ -217,16 +214,15 @@ void BMLCreatorWindow::ResetBMLCB(Fl_Widget* w, void *data)
 	window->_choiceCharacters->add("*");
 
 	const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
-	for (size_t i = 0; i < charNames.size(); i++)
+	for (const auto & charName : charNames)
 	{
-		const std::string & charName = charNames[i];
-		window->_choiceCharacters->add(charName.c_str());
+			window->_choiceCharacters->add(charName.c_str());
 	}
 }
 
 void BMLCreatorWindow::ChooseCharactersCB(Fl_Widget* w, void *data)
 {
-	BMLCreatorWindow* window = (BMLCreatorWindow*) data;
+	auto* window = (BMLCreatorWindow*) data;
 	
 	int choice = window->_choiceCharacters->value();
 	if (choice > -1)

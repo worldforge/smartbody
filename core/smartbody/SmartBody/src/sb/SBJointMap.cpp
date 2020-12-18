@@ -650,7 +650,7 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 	SkJoint *r_pinky1=0, *r_pinky2=0, *r_pinky3=0, *r_pinky4=0;
 
 
-	const std::vector<SkJoint*> jnts = skeleton->joints();
+	auto& jnts = skeleton->joints();
 
 	//SmartBody::util::log("Automatic joint name matching for %s \n", skeleton->getName().c_str());
 
@@ -677,7 +677,7 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 		{
 			if(jnts[i]->num_children()==3)
 			{
-				base = jnts[i];
+				base = jnts[i].get();
 				setJointMap("base", base, prtMap);
 				break;
 			}
@@ -690,7 +690,7 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 		{
 			if(jnts[i]->num_children()>=2)
 			{
-				base = jnts[i];
+				base = jnts[i].get();
 				setJointMap("base", base, prtMap);
 				break;
 			}
@@ -1615,16 +1615,16 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 // get joint index from joint array (linear search)
 int SBJointMap::getJointIndex(SkJoint* j)
 {
-	if(j==0)
+	if(j==nullptr)
 		return -1; // not found
 
 	SkSkeleton* sk = j->skeleton();
-	if(sk==0)
+	if(sk==nullptr)
 		return -1; // not found
 
 	for(unsigned int i=0; i<sk->joints().size(); i++)
 	{
-		if(sk->joints()[i]==j) // found
+		if(sk->joints()[i].get()==j) // found
 		{
 			return i;
 			break;
@@ -1739,7 +1739,7 @@ void SBJointMap::listChildrenJoints(SkJoint* j, std::vector<SkJoint*>& j_list)
 SkJoint* SBJointMap::getDeepestLevelJoint(const std::vector<SkJoint*>& j_list)
 {
 	unsigned int size = j_list.size();
-	if(size <= 1) return 0;
+	if(size <= 1) return nullptr;
 
 	SkJoint* return_j = j_list[0];
 	int max_level = getJointHierarchyLevel(return_j);

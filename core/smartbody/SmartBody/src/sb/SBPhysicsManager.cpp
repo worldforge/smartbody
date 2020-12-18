@@ -210,8 +210,8 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsPawn(const std::string& pawn
 
 		phyObj = new SBPhysicsObj();
 		phyObj->setName(pawnName);
-		SBGeomObject* geomObj = SBGeomObject::createGeometry(geomType, geomSize);
-		phyObj->setGeometry(geomObj);
+		auto geomObj = SBGeomObject::createGeometry(geomType, geomSize);
+		phyObj->setGeometry(std::move(geomObj));
 		//phyObj->changeGeometry(geomType,geomSize);
 		getPhysicsEngine()->addPhysicsObj(phyObj);
 		getPhysicsEngine()->updatePhyObjGeometry(phyObj);
@@ -232,7 +232,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter(const std::string&
 			return phyChar; // physics character of the same name already exist
 
 		// create physics character
-		const std::vector<SkJoint*>& joints = sbmChar->getSkeleton()->joints();
+		auto& joints = sbmChar->getSkeleton()->joints();
 		//printf("init physics obj\n");
 		phyChar = new SBPhysicsCharacter();
 		std::queue<SkJoint*> tempJointList;
@@ -260,7 +260,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter(const std::string&
 				continue;
 			for (int i = 0; i < joint->num_children(); i++) {
 				SkJoint* cj = joint->child(i);
-				if (std::find(joints.begin(), joints.end(), cj) != joints.end())
+				if (std::find_if(joints.begin(), joints.end(), [cj](const std::unique_ptr<SkJoint>& entry){ return entry.get() == cj;}) != joints.end())
 					tempJointList.push(cj);
 			}
 		}

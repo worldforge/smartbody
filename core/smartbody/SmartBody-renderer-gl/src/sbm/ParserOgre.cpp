@@ -527,9 +527,9 @@ bool ParserOgre::parseSkeleton(DOMNode* skeletonNode, SmartBody::SBSkeleton& ske
 	SkJoint* rootJoint = nullptr;
 	for (unsigned int i=0;i<skeleton.joints().size();i++)
 	{
-		SkJoint* joint = skeleton.joints()[i];
+		auto& joint = skeleton.joints()[i];
 		std::string jointName = joint->jointName();
-		std::map<std::string, std::string>::iterator iter = parentHierarchy.find(jointName);
+		auto iter = parentHierarchy.find(jointName);
 		if (iter != parentHierarchy.end())
 		{
 			const std::string& parent = (*iter).second;
@@ -540,13 +540,13 @@ bool ParserOgre::parseSkeleton(DOMNode* skeletonNode, SmartBody::SBSkeleton& ske
 			}
 			else
 			{
-				parentJoint->add_child(joint);
+				parentJoint->add_child(joint.get());
 			}
 		}
 		else // root joint
 		{
 			//SmartBody::util::log("root joint = %s",joint->name().c_str());
-			rootJoint = joint;
+			rootJoint = joint.get();
 			skeleton.root(rootJoint);
 		}
 	}	

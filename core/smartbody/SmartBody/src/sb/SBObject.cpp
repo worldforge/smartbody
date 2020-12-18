@@ -33,9 +33,8 @@ std::string SBObject::defaultString = "";
 SrVec SBObject::defaultVec = SrVec();
 SrMat SBObject::defaultMatrix = SrMat();
 
-SBObject::SBObject() : SBSubject(), SBObserver()
+SBObject::SBObject() : SBSubject(), SBObserver(), m_attributeManager(std::make_unique<SBAttributeManager>())
 {
-	m_attributeManager = new SBAttributeManager();
 }
 
 SBObject::~SBObject()
@@ -44,13 +43,6 @@ SBObject::~SBObject()
 	{
 		iter->onDependencyRemoval(this);
 	}
-
-	for (auto & iter : m_attributeList)
-	{
-		delete iter.second;
-	}
-	delete m_attributeManager;
-
 }
 
 void SBObject::setName(const std::string& name)
@@ -67,70 +59,69 @@ const std::string& SBObject::getName() const
 
 void SBObject::copyAllAttributes( SBObject* origObj )
 {
-	std::map<std::string, SBAttribute*>& attrList = origObj->getAttributeList();
-	std::map<std::string, SBAttribute*>::iterator vi;
-	for ( vi  = attrList.begin();
-		  vi != attrList.end();
-		  vi++)
+	auto& attrList = origObj->getAttributeList();
+	for (auto & vi : attrList)
 	{
-		std::string attrName = vi->first;
-		SBAttribute* attr = vi->second;
+		std::string attrName = vi.first;
+		auto& attr = vi.second;
 		SBAttribute* existAttr = getAttribute(attrName);
 		if (existAttr) // copy over the value
 		{
-			existAttr->copyAttrValue(attr); // this ensure observer get notify
+			existAttr->copyAttrValue(attr.get()); // this ensure observer get notify
 		}
 		else // create a new copy 
 		{
-			SBAttribute* attrCopy = attr->copy();		
+			std::unique_ptr<SBAttribute> attrCopy(attr->copy());
 			attrCopy->registerObserver(this);
-			addAttribute(attrCopy);
+			addAttribute(std::move(attrCopy));
 		}
 	}	
 }
 
 
-void SBObject::addAttribute(SBAttribute* attr)
+void SBObject::addAttribute(std::unique_ptr<SBAttribute> attr)
 {
 	 // check for the existence of the attribute
 	auto iter = m_attributeList.find(attr->getName());
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
 	{
-		SBAttribute* rmattr = iter->second;
+		auto& rmattr = iter->second;
 
 		// notify the attribute manager of the change
-		this->getAttributeManager()->notifyRemoveAttribute(rmattr);
+		this->getAttributeManager()->notifyRemoveAttribute(rmattr.get());
 		m_attributeList.erase(iter);		
-		delete rmattr;
 	}
 
-	m_attributeList[attr->getName()] = attr;
-	attr->setObject(this);
-	// notify the attribute manager of the change
-	this->getAttributeManager()->notifyCreateAttribute(attr);
+	auto result = m_attributeList.emplace(attr->getName(), std::move(attr));
+	if (result.second) {
+		result.first->second->setObject(this);
+		// notify the attribute manager of the change
+		this->getAttributeManager()->notifyCreateAttribute(result.first->second.get());
+	}
 }
 
-void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
+void SBObject::addAttribute( std::unique_ptr<SBAttribute> attr, const std::string& groupName )
 {
 	// check for the existence of the attribute
 	auto iter = m_attributeList.find(attr->getName());
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
 	{
-		SBAttribute* attr = iter->second;
+		auto& rmattr = iter->second;
 
 		// notify the attribute manager of the change
-		this->getAttributeManager()->notifyRemoveAttribute(attr);
+		this->getAttributeManager()->notifyRemoveAttribute(rmattr.get());
 
 		m_attributeList.erase(iter);
-		delete attr;
 	}
 
-	m_attributeList[attr->getName()] = attr;
-	SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
-	attr->getAttributeInfo()->setGroup(group);
-	attr->setObject(this);
-	// notify the attribute manager of the change
-	this->getAttributeManager()->notifyCreateAttribute(attr);
+	auto result = m_attributeList.emplace(attr->getName(), std::move(attr));
+	if (result.second) {
+		SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
+		result.first->second->getAttributeInfo()->setGroup(group);
+		result.first->second->setObject(this);
+		// notify the attribute manager of the change
+		this->getAttributeManager()->notifyCreateAttribute(result.first->second.get());
+	}
 }
 
  bool SBObject::hasAttribute(const std::string& name)
@@ -151,7 +142,7 @@ void SBObject::addAttribute( SBAttribute* attr, const std::string& groupName )
 	auto iter = m_attributeList.find(name);
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
 	{
-		return iter->second;
+		return iter->second.get();
 	}
 	else
 	{
@@ -192,18 +183,17 @@ std::vector<std::string> SBObject::getAttributeNames()
  bool SBObject::removeAttribute(const std::string& name)
  {
 	// check for the existence of the attribute
-	std::map<std::string, SBAttribute*>::iterator iter = m_attributeList.find(name);
+	auto iter = m_attributeList.find(name);
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
 	{
 
-		SBAttribute* attr = iter->second;
+		auto& attr = iter->second;
 	
 		// notify the attribute manager of the change
-		this->getAttributeManager()->notifyRemoveAttribute(attr);
+		this->getAttributeManager()->notifyRemoveAttribute(attr.get());
 		
 		m_attributeList.erase(iter);
-		delete attr;
-		
+
 		return true;
 	}
 
@@ -216,7 +206,7 @@ std::vector<std::string> SBObject::getAttributeNames()
 											  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description)
  {
 
-	 BoolAttribute* boolAttr = new BoolAttribute();
+	 auto* boolAttr = new BoolAttribute();
 	 boolAttr->setName(name);
 	 boolAttr->setValue(value);
 	 boolAttr->setDefaultValue(value);
@@ -226,21 +216,17 @@ std::vector<std::string> SBObject::getAttributeNames()
 	 boolAttr->getAttributeInfo()->setHidden(isHidden);
 	 boolAttr->getAttributeInfo()->setDescription(description);
 
-	 this->addAttribute(boolAttr);
-
-	 SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
-	 boolAttr->getAttributeInfo()->setGroup(group);
-
 	 if (notifySelf)
-		boolAttr->registerObserver(this);
-
+		 boolAttr->registerObserver(this);
+	 this->addAttribute(std::unique_ptr<BoolAttribute>(boolAttr), groupName);
 	 return boolAttr;
+
 }
 
-IntAttribute* SBObject::createIntAttribute(const std::string& name, int value, bool notifySelf, const std::string& groupName, int priority, 
+IntAttribute* SBObject::createIntAttribute(const std::string& name, int value, bool notifySelf, const std::string& groupName, int priority,
 												  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description)
  {
-	 IntAttribute* intAttr = new IntAttribute();
+	 auto* intAttr = new IntAttribute();
 	 intAttr->setName(name);
 	 intAttr->setValue(value);
 	 intAttr->setDefaultValue(value);
@@ -250,21 +236,18 @@ IntAttribute* SBObject::createIntAttribute(const std::string& name, int value, b
 	 intAttr->getAttributeInfo()->setHidden(isHidden);
 	 intAttr->getAttributeInfo()->setDescription(description);
 
-	 this->addAttribute(intAttr);
-
-	 SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
-	 intAttr->getAttributeInfo()->setGroup(group);
-
 	 if (notifySelf)
-		intAttr->registerObserver(this);
+		 intAttr->registerObserver(this);
+
+	 this->addAttribute(std::unique_ptr<IntAttribute>(intAttr), groupName);
 
 	  return intAttr;
 }
 
- DoubleAttribute* SBObject::createDoubleAttribute(const std::string& name, double value, bool notifySelf, const std::string& groupName, int priority, 
+ DoubleAttribute* SBObject::createDoubleAttribute(const std::string& name, double value, bool notifySelf, const std::string& groupName, int priority,
 												  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description)
  {
-	 DoubleAttribute* doubleAttr = new DoubleAttribute();
+	 auto* doubleAttr = new DoubleAttribute();
 	 doubleAttr->setName(name);
 	 doubleAttr->setValue(value);
 	 doubleAttr->setDefaultValue(value);
@@ -274,21 +257,18 @@ IntAttribute* SBObject::createIntAttribute(const std::string& name, int value, b
 	 doubleAttr->getAttributeInfo()->setHidden(isHidden);
 	 doubleAttr->getAttributeInfo()->setDescription(description);
 
-	 this->addAttribute(doubleAttr);
-
-	 SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
-	 doubleAttr->getAttributeInfo()->setGroup(group);
-
 	 if (notifySelf)
-		doubleAttr->registerObserver(this);
+		 doubleAttr->registerObserver(this);
+
+	 this->addAttribute(std::unique_ptr<DoubleAttribute>(doubleAttr), groupName);
 
 	  return doubleAttr;
 }
 
- Vec3Attribute* SBObject::createVec3Attribute(const std::string& name, float val1, float val2, float val3, bool notifySelf, const std::string& groupName, int priority, 
+ Vec3Attribute* SBObject::createVec3Attribute(const std::string& name, float val1, float val2, float val3, bool notifySelf, const std::string& groupName, int priority,
 												  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description)
  {
-	 Vec3Attribute* vec3Attr = new Vec3Attribute();
+	 auto* vec3Attr = new Vec3Attribute();
 	 vec3Attr->setName(name);
 	 SrVec vec(val1, val2, val3);
 	 vec3Attr->setValue(vec);
@@ -299,22 +279,19 @@ IntAttribute* SBObject::createIntAttribute(const std::string& name, int value, b
 	 vec3Attr->getAttributeInfo()->setHidden(isHidden);
 	 vec3Attr->getAttributeInfo()->setDescription(description);
 
-	 this->addAttribute(vec3Attr);
-
-	 SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
-	 vec3Attr->getAttributeInfo()->setGroup(group);
-
 	 if (notifySelf)
-		vec3Attr->registerObserver(this);
+		 vec3Attr->registerObserver(this);
+
+	 this->addAttribute(std::unique_ptr<Vec3Attribute>(vec3Attr), groupName);
 
 	  return vec3Attr;
 }
 
 
- StringAttribute* SBObject::createStringAttribute(const std::string& name, const std::string& value, bool notifySelf, const std::string& groupName, int priority, 
+ StringAttribute* SBObject::createStringAttribute(const std::string& name, const std::string& value, bool notifySelf, const std::string& groupName, int priority,
 												  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description)
  {
-	 StringAttribute* strAttr = new StringAttribute();
+	 auto* strAttr = new StringAttribute();
 	 strAttr->setName(name);
 	 strAttr->setValue(value);
 	 strAttr->setDefaultValue(value);
@@ -324,21 +301,18 @@ IntAttribute* SBObject::createIntAttribute(const std::string& name, int value, b
 	 strAttr->getAttributeInfo()->setHidden(isHidden);
 	 strAttr->getAttributeInfo()->setDescription(description);
 
-	 this->addAttribute(strAttr);
-
-	 SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
-	 strAttr->getAttributeInfo()->setGroup(group);
-	
 	 if (notifySelf)
-		strAttr->registerObserver(this);
+		 strAttr->registerObserver(this);
+
+	 this->addAttribute(std::unique_ptr<StringAttribute>(strAttr), groupName);
 
 	 return strAttr;
 }
 
- MatrixAttribute* SBObject::createMatrixAttribute(const std::string& name, SrMat& value, bool notifySelf, const std::string& groupName, int priority, 
+ MatrixAttribute* SBObject::createMatrixAttribute(const std::string& name, SrMat& value, bool notifySelf, const std::string& groupName, int priority,
 												  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description)
  {
-	 MatrixAttribute* matrixAttr = new MatrixAttribute();
+	 auto* matrixAttr = new MatrixAttribute();
 	 matrixAttr->setName(name);
 	 matrixAttr->setValue(value);
 	 matrixAttr->setDefaultValue(value);
@@ -348,21 +322,18 @@ IntAttribute* SBObject::createIntAttribute(const std::string& name, int value, b
 	 matrixAttr->getAttributeInfo()->setHidden(isHidden);
 	 matrixAttr->getAttributeInfo()->setDescription(description);
 
-	 this->addAttribute(matrixAttr);
-
-	 SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
-	 matrixAttr->getAttributeInfo()->setGroup(group);
-
 	 if (notifySelf)
-		matrixAttr->registerObserver(this);
+		 matrixAttr->registerObserver(this);
+
+	 this->addAttribute(std::unique_ptr<MatrixAttribute>(matrixAttr), groupName);
 
 	  return matrixAttr;
 }
 
- ActionAttribute* SBObject::createActionAttribute(const std::string& name, bool notifySelf, const std::string& groupName, int priority, 
+ ActionAttribute* SBObject::createActionAttribute(const std::string& name, bool notifySelf, const std::string& groupName, int priority,
 											  bool isReadOnly, bool isLocked, bool isHidden, const std::string& description)
  {
-	 ActionAttribute* actionAttr = new ActionAttribute();
+	 auto* actionAttr = new ActionAttribute();
 	 actionAttr->setName(name);
 
 	 actionAttr->getAttributeInfo()->setPriority(priority);
@@ -370,14 +341,11 @@ IntAttribute* SBObject::createIntAttribute(const std::string& name, int value, b
 	 actionAttr->getAttributeInfo()->setLocked(isLocked);
 	 actionAttr->getAttributeInfo()->setHidden(isHidden);
 	 actionAttr->getAttributeInfo()->setDescription(description);
- 	
-	 this->addAttribute(actionAttr);
-
-	 SBAttributeGroup* group = this->getAttributeManager()->getGroup(groupName, true);
-	 actionAttr->getAttributeInfo()->setGroup(group);
 
 	 if (notifySelf)
-	 	actionAttr->registerObserver(this);
+		 actionAttr->registerObserver(this);
+
+	 this->addAttribute(std::unique_ptr<ActionAttribute>(actionAttr), groupName);
 
 	 return actionAttr;
  }
@@ -403,7 +371,7 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	
 }
 
-  std::map<std::string, SBAttribute*>& SBObject::getAttributeList()
+  std::map<std::string, std::unique_ptr<SBAttribute>>& SBObject::getAttributeList()
  {
 	return m_attributeList;
  }
@@ -411,7 +379,7 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 
   SBAttributeManager* SBObject::getAttributeManager()
 {
-	return m_attributeManager;
+	return m_attributeManager.get();
 }
 
   void SBObject::notify(SBSubject* subject)

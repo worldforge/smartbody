@@ -31,7 +31,7 @@ namespace SmartBody
 			.def("getInfluencesByJointIndex", &SkinWeight::getInfluencesByJointIndex, "Returns vertex numbers affected by joint index.")
 			;
 
-		boost::python::class_<DeformableMesh, boost::python::bases<SBObject> >("SBMesh")
+		boost::python::class_<DeformableMesh, boost::python::bases<SBObject>, boost::noncopyable >("SBMesh", boost::python::no_init)
 			.def(boost::python::init<>())
 			.def("isSkinnedMesh", &DeformableMesh::isSkinnedMesh, "Whether the current mesh is static or skinned/deformable")
 			.def("saveToSmb", &DeformableMesh::saveToSmb, "Save the static mesh into a binary file with extension .smb")

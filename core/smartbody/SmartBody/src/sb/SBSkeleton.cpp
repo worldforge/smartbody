@@ -244,7 +244,7 @@ const std::string& SBSkeleton::getFileName()
 
 bool SBSkeleton::load(const std::string& skeletonFile)
 {
-	auto skeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonFile.c_str());
+	auto skeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonFile);
 	if (skeleton)
 	{
 		*this = *skeleton;
@@ -362,10 +362,10 @@ SBJoint* SBSkeleton::getJointByMappedName(const std::string& jointName)
 std::vector<std::string> SBSkeleton::getJointMappedNames()
 {
 	std::vector<std::string> jointNames;
-	const std::vector<SkJoint*>& alljoints = joints();
-	for (size_t i = 0; i < alljoints.size(); i++)
+	auto& alljoints = joints();
+	for (auto& alljoint : alljoints)
 	{
-		jointNames.emplace_back(alljoints[i]->getMappedJointName());
+		jointNames.emplace_back(alljoint->getMappedJointName());
 	}
 	return jointNames;
 }
@@ -373,10 +373,10 @@ std::vector<std::string> SBSkeleton::getJointMappedNames()
 std::vector<std::string> SBSkeleton::getJointNames()
 {
 	std::vector<std::string> jointNames;
-	const std::vector<SkJoint*>& alljoints = joints();
-	for (size_t i = 0; i < alljoints.size(); i++)
+	auto& alljoints = joints();
+	for (auto& alljoint : alljoints)
 	{
-		jointNames.emplace_back(alljoints[i]->jointName());
+		jointNames.emplace_back(alljoint->jointName());
 	}
 	return jointNames;
 }
@@ -384,10 +384,10 @@ std::vector<std::string> SBSkeleton::getJointNames()
 std::vector<std::string> SBSkeleton::getJointOriginalNames()
 {
 	std::vector<std::string> jointNames;
-	const std::vector<SkJoint*>& alljoints = joints();
-	for (size_t i = 0; i < alljoints.size(); i++)
+	auto& alljoints = joints();
+	for (auto& alljoint : alljoints)
 	{
-		jointNames.emplace_back(alljoints[i]->extName());
+		jointNames.emplace_back(alljoint->extName());
 	}
 	return jointNames;
 }
@@ -403,18 +403,18 @@ std::vector<std::string> SBSkeleton::getUpperBodyJointNames()
 	}
 	std::vector<SkJoint*> alljoints;
 	SkJoint::recursive_children(alljoints, spine1);
-	for (size_t i = 0; i < alljoints.size(); ++i)
-		jointNames.emplace_back(alljoints[i]->jointName());
+	for (auto & alljoint : alljoints)
+		jointNames.emplace_back(alljoint->jointName());
 
 	return jointNames;
 }
 
 SBJoint* SBSkeleton::getJoint(int index)
 {
-	const std::vector<SkJoint*>& alljoints = joints();
+	auto& alljoints = joints();
 	if (index >=0 && size_t(index) < alljoints.size())
 	{
-		SBJoint* sbJoint = dynamic_cast<SBJoint*>(alljoints[index]);
+		SBJoint* sbJoint = dynamic_cast<SBJoint*>(alljoints[index].get());
 		return sbJoint;
 	}
 	else
@@ -462,11 +462,9 @@ SBPawn* SBSkeleton::getPawn()
 		return skelPawn;
 
 	const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
-	for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-		pawnIter != pawns.end();
-		pawnIter++)
+	for (const auto & pawnIter : pawns)
 	{
-		SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn((*pawnIter));
+		SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
 		if (pawn->getSkeleton() == this)
 		{
 			setPawnName(pawn->getName());
@@ -492,9 +490,9 @@ void SBSkeleton::update()
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 		
 		std::vector<SBSceneListener*>& listeners = scene->getSceneListeners();
-		for (size_t i = 0; i < listeners.size(); i++)
+		for (auto & listener : listeners)
 		{
-			listeners[i]->OnCharacterUpdate( character->getName().c_str() );
+			listener->OnCharacterUpdate( character->getName().c_str() );
 		}
 	}
 }
@@ -503,13 +501,12 @@ void SBSkeleton::update()
 /* the following are designed to re-orient joints local axes. added by David Huang Jun 2012*/
 /* Orient skeleton joints local axes to match world coordinate axes (Y-up Z-front)
 // put skel into T-pose before running this! */
-void SBSkeleton::orientJointsLocalAxesToWorld(void)
+void SBSkeleton::orientJointsLocalAxesToWorld()
 {
-	const std::vector<SkJoint*>& jnts = SkSkeleton::joints();
+	auto& jnts = SkSkeleton::joints();
 	update_global_matrices();
-	for(size_t i=0; i<jnts.size(); i++)
+	for(const auto & j : jnts)
 	{
-		SkJoint* j = jnts[i];
 		j->quat()->orientation(/*j->prerot() * */j->quat()->value());
 		const SrMat& gmat = j->gmat();
 		SrQuat grot; grot.set(gmat);
@@ -518,7 +515,7 @@ void SBSkeleton::orientJointsLocalAxesToWorld(void)
 	}
 	
 	// now we can remove local rotations
-	for(auto jnt : jnts)
+	for(auto& jnt : jnts)
 		jnt->init_rot();
 	update_global_matrices();
 }
@@ -540,10 +537,10 @@ void SBSkeleton::_createSkelWithoutPreRot(SBSkeleton* TposeSk, SBSkeleton* newSk
 		newSk->skfilename(fname);
 	}
 	
-	const std::vector<SkJoint*>& new_jnts = newSk->joints();
+	auto& new_jnts = newSk->joints();
 	for(size_t i=1; i<new_jnts.size(); i++)
 	{
-		SkJoint* new_j = new_jnts[i];
+		auto& new_j = new_jnts[i];
 		if(!new_j->parent()) continue;
 		SkJoint* src_j = TposeSk->search_joint(new_j->jointName().c_str());
 		if(!src_j) continue;
@@ -555,7 +552,7 @@ void SBSkeleton::_createSkelWithoutPreRot(SBSkeleton* TposeSk, SBSkeleton* newSk
 	
 	for(size_t i=1; i<new_jnts.size(); i++)
 	{
-		SkJoint* new_j = new_jnts[i];
+		auto& new_j = new_jnts[i];
 		new_j->init_values();
 		new_j->quat()->prerot(SrQuat::null);
 		new_j->quat()->postrot(SrQuat::null);
@@ -571,9 +568,9 @@ SBSkeleton* SBSkeleton::createSkelWithoutPreRot(const char* new_name)
 
 void SBSkeleton::rescale( float scaleRatio )
 {
-	for (auto i : joints())
+	for (auto& i : joints())
 	{
-		SBJoint* joint = dynamic_cast<SBJoint*>(i);
+		SBJoint* joint = dynamic_cast<SBJoint*>(i.get());
 		if (joint)
 			joint->setOffset(joint->getOffset()*(float)scaleRatio / _scale);
 	}

@@ -7,6 +7,8 @@ namespace BML {
 
 class BMLDefs
 {
+	private:
+		static std::list<XMLPtr> sAttributes;
 	public:
 		BMLDefs();
 		~BMLDefs();

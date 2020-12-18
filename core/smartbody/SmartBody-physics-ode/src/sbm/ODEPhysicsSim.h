@@ -68,30 +68,30 @@ protected:
 	ODEObjMap odeObjMap;
 	ODEJointMap odeJointMap;
 public:
-	ODEPhysicsSim(void);
-	~ODEPhysicsSim(void);
+	ODEPhysicsSim();
+	~ODEPhysicsSim() override;
 	dWorldID getWorldID() { return worldID; }
 	dSpaceID getSpaceID() { return spaceID; }	
 	dJointGroupID getContactGroupID() { return contactGroupID; }
-	bool   systemIsInit() { return hasInit; }
+	bool   systemIsInit() const { return hasInit; }
 public:	
-	virtual void initSimulation();	
+	void initSimulation() override;
 	
-	virtual void addPhysicsObj(SmartBody::SBPhysicsObj* obj);	
-	virtual void removePhysicsObj(SmartBody::SBPhysicsObj* obj);
-	virtual void addPhysicsCharacter(SmartBody::SBPhysicsCharacter* phyChar);
-	virtual void removePhysicsCharacter(SmartBody::SBPhysicsCharacter* phyChar);
+	void addPhysicsObj(SmartBody::SBPhysicsObj* obj) override;
+	void removePhysicsObj(SmartBody::SBPhysicsObj* obj) override;
+	void addPhysicsCharacter(SmartBody::SBPhysicsCharacter* phyChar) override;
+	void removePhysicsCharacter(SmartBody::SBPhysicsCharacter* phyChar) override;
 
-	virtual void updateSimulationInternal(float timeStep);	
-	virtual SmartBody::SBPhysicsObj* createPhyObj(); 	
-	virtual SrVec getJointConstraintPos(SmartBody::SBPhysicsJoint* joint);
-	virtual SrVec getJointRotationAxis(SmartBody::SBPhysicsJoint* joint, int axis);
-	virtual void updatePhysicsJoint(SmartBody::SBPhysicsJoint* phyJoint); // update joint parameters		
-	virtual void updatePhyObjGeometry(SmartBody::SBPhysicsObj* obj, SBGeomObject* geom = nullptr);
-	virtual void enablePhysicsSim(SmartBody::SBPhysicsObj* obj, bool bSim);
-	virtual void enableCollisionSim(SmartBody::SBPhysicsObj* obj, bool bCol);	
-	virtual void writeToPhysicsObj(SmartBody::SBPhysicsObj* obj); // write sim data to colObj
-	virtual void readFromPhysicsObj(SmartBody::SBPhysicsObj* obj); // read sim data from colObj	
+	void updateSimulationInternal(float timeStep) override;
+	SmartBody::SBPhysicsObj* createPhyObj() override;
+	SrVec getJointConstraintPos(SmartBody::SBPhysicsJoint* joint) override;
+	SrVec getJointRotationAxis(SmartBody::SBPhysicsJoint* joint, int axis) override;
+	void updatePhysicsJoint(SmartBody::SBPhysicsJoint* phyJoint) override; // update joint parameters
+	void updatePhyObjGeometry(SmartBody::SBPhysicsObj* obj) override;
+	void enablePhysicsSim(SmartBody::SBPhysicsObj* obj, bool bSim) override;
+	void enableCollisionSim(SmartBody::SBPhysicsObj* obj, bool bCol) override;
+	void writeToPhysicsObj(SmartBody::SBPhysicsObj* obj) override; // write sim data to colObj
+	void readFromPhysicsObj(SmartBody::SBPhysicsObj* obj) override; // read sim data from colObj
 
 public:
 	static dGeomID createODERawGeometry(SBGeomObject* geomObj); 	

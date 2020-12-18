@@ -30,7 +30,7 @@ namespace SmartBody {
 
 class SBPhysicsSim;
 
-class SBPhysicsManager : public SBService, public boost::noncopyable
+class SBPhysicsManager : public SBService
 {		
 	public:
 		SBAPI explicit SBPhysicsManager(std::unique_ptr<SBPhysicsSim> physicsSim);
