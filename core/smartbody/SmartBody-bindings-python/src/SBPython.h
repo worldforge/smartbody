@@ -14,6 +14,8 @@ SBAPI void initPython();
 
 SBAPI void setupPython(SmartBody::SBScene& scene);
 
+void executeSafe(const std::function<void()>& fn);
+
 extern std::vector<std::function<void()>> pythonExtraModuleDeclarations;
 
 #endif

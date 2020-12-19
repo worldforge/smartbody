@@ -1895,7 +1895,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 		time_sec min_time = std::numeric_limits<time_sec>::max();
 		for( auto i = behaviors.begin(); i != behav_end;  ++i ) {
 			BehaviorRequestPtr behavior = *i;
-			if (behavior->ignore == true)
+			if (behavior->ignore)
 				continue;
 
 			try {
@@ -1917,7 +1917,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 				ostringstream error_msg;
 				error_msg << "BehaviorRequest \""<<behavior->unique_id<<"\" SchedulingException: "<<e.what();
 
-				throw BML::RealizingException( error_msg.str().c_str() );
+				throw BML::RealizingException( error_msg.str() );
 			}
 		}
 
@@ -1964,14 +1964,14 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 		if (character)
 		{
 		
-			for( VecOfBehaviorRequest::iterator i = behaviors.begin(); i != behav_end;  ++i )
+			for( auto i = behaviors.begin(); i != behav_end;  ++i )
 			{
 				BehaviorRequestPtr behavior = *i;
-				BML::SpeechRequest* speechRequest = dynamic_cast<BML::SpeechRequest*>(&(*behavior));
+				auto* speechRequest = dynamic_cast<BML::SpeechRequest*>(&(*behavior));
 				if (speechRequest)
 				{
-					std::string utterancePolicy = "";
-					if (speechRequest->policy != "")
+					std::string utterancePolicy;
+					if (!speechRequest->policy.empty())
 					{
 						utterancePolicy = speechRequest->policy;
 					}
@@ -1995,7 +1995,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 						// ignore the current behavior
 							ostringstream oss;
 							oss << "BML block will not be executed since character " << actorId << " is already performing an utterance and the 'utterancePolicy' is set to 'ignore', msgId=\"" << msgId << "\""; 
-							throw RealizingException( oss.str().c_str() );
+							throw RealizingException( oss.str() );
 					}
 
 					else if (utterancePolicy == "queue")

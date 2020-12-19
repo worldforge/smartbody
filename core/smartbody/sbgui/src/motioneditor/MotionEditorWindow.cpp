@@ -528,7 +528,7 @@ void MotionEditorWindow::PlayAnimation(const std::string& characterName, const s
    SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
 	if (!sbScene->isRemoteMode())
 	{
-      SmartBody::SBScene::getScene()->getBmlProcessor()->execBML(characterName, bml);
+		Session::current->bmlProcessor.execBML(characterName, bml);
 	}
 	else
 	{
@@ -549,7 +549,7 @@ void MotionEditorWindow::GazeAt(const std::string& characterName, const std::str
    SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
 	if (!sbScene->isRemoteMode())
 	{
-      SmartBody::SBScene::getScene()->getBmlProcessor()->execBML(characterName, bml);
+		Session::current->bmlProcessor.execBML(characterName, bml);
 	}
 	else
 	{
@@ -589,7 +589,7 @@ void MotionEditorWindow::OnCheckButtonPlayMotion(Fl_Widget* widget, void* data)
 			return;
 	}
 
-	editor->_isScrubbing = editor->_checkButtonPlayMotion->value() == 1? true: false;
+	editor->_isScrubbing = editor->_checkButtonPlayMotion->value() == 1;
 
 	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(editor->_selectedMotion));
 	if (!curMotion)	
@@ -742,7 +742,7 @@ void MotionEditorWindow::OnButtonPlayMotionFolder(Fl_Widget* widget, void* data)
 		else
 			command << " start=\"0\"/>";
 	}
-	SmartBody::SBScene::getScene()->getBmlProcessor()->execBML(curChar->getName(), command.str());
+	Session::current->bmlProcessor.execBML(curChar->getName(), command.str());
 }
 
 void MotionEditorWindow::updateSyncPointsUI()

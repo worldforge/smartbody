@@ -184,7 +184,7 @@ void VisemeViewerWindow::show()
 	SBWindowListener::windowShow();
 	Fl_Double_Window::show();
 
-	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
+	auto bp = Session::current->bmlProcessor.getBMLProcessor();
 	bp->registerRequestCallback(OnBmlRequestCB, this);
 }
 
@@ -193,7 +193,7 @@ void VisemeViewerWindow::hide()
 	SBWindowListener::windowHide();
 	Fl_Double_Window::hide();
 
-	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
+	auto bp = Session::current->bmlProcessor.getBMLProcessor();
 	bp->registerRequestCallback(nullptr, nullptr);
 }
 
@@ -941,7 +941,7 @@ void VisemeViewerWindow::OnXMLFileSelectCB(Fl_Widget* widget, void* data)
 			std::string xmlPath = strstr.str();
 			path /= xmlPath;
 			SmartBody::util::log("Playing XML file %s", path.string().c_str());
-			SmartBody::SBScene::getScene()->getBmlProcessor()->execXMLFile(character->getName(), path.string());
+			Session::current->bmlProcessor.execXMLFile(character->getName(), path.string());
 		}
 	}
 }

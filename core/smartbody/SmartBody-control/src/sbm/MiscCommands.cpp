@@ -454,7 +454,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	}
 }
 
-int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
+int character_cmd_func( srArgBuffer& args, BML::Processor* bmlProcessor)
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
@@ -511,13 +511,11 @@ int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		all_characters = true;
 		const std::vector<std::string>& characters =  scene->getCharacterNames();
 
-		for (std::vector<std::string>::const_iterator citer = characters.begin();
-			citer != characters.end();
-			citer++)
+		for (const auto & citer : characters)
 		{
 			srArgBuffer copy_args( args.peek_string() );
-			character = scene->getCharacter( *citer );
-			int err = character_parse_character_command( character, char_cmd, copy_args, true );
+			character = scene->getCharacter( citer );
+			int err = character_parse_character_command( character, char_cmd, copy_args, true , bmlProcessor);
 			if( err != CMD_SUCCESS )
 				return( err );
 		}
@@ -527,7 +525,7 @@ int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	character = scene->getCharacter( char_name );
 	if( character ) {
 
-		int err = character_parse_character_command( character, char_cmd, args, false );
+		int err = character_parse_character_command( character, char_cmd, args, false, bmlProcessor );
 		if( err != CMD_NOT_FOUND )	{
 			return( err );
 		}
@@ -537,7 +535,7 @@ int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		{
 
 			char* param_name = args.read_token();
-			GeneralParam * new_param = new GeneralParam;
+			auto * new_param = new GeneralParam;
 			new_param->size = args.read_int();
 
 			if( new_param->size == 0 )
@@ -608,9 +606,9 @@ int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 	int err = pawn_p->init( skeleton );
 
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-	for (size_t i = 0; i < listeners.size(); i++)
+	for (auto & listener : listeners)
 	{
-		listeners[i]->OnCharacterCreate( pawn_and_attribute, "" );
+		listener->OnCharacterCreate( pawn_and_attribute, "" );
 	}
 		
 	if( err != CMD_SUCCESS ) {
@@ -860,7 +858,7 @@ int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer&
 	}
 }
 
-int character_parse_character_command( SbmCharacter* character, std::string cmd, srArgBuffer& args, bool all_characters )
+int character_parse_character_command( SbmCharacter* character, const std::string& cmd, srArgBuffer& args, bool all_characters, BML::Processor* bp)
 {
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
@@ -927,65 +925,62 @@ int character_parse_character_command( SbmCharacter* character, std::string cmd,
 						else 
 							if (cmd == "requests")
 							{
-								BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-								for (auto & iter : bp->getBMLRequestMap())
-								{
-									if (all_characters)
-									{
-										SmartBody::util::log("%s", iter.second->requestId.c_str());
-									}
-									else
-									{			
-										// make sure the requests is for this character
-										std::string requestWithName = iter.second->requestId;
-										std::string charName = character->getName();
-										charName.append("|");
-										int index = requestWithName.find(charName);
-										if (index == 0)
-										{
+								if (bp) {
+									for (auto& iter : bp->getBMLRequestMap()) {
+										if (all_characters) {
 											SmartBody::util::log("%s", iter.second->requestId.c_str());
+										} else {
+											// make sure the requests is for this character
+											std::string requestWithName = iter.second->requestId;
+											std::string charName = character->getName();
+											charName.append("|");
+											int index = requestWithName.find(charName);
+											if (index == 0) {
+												SmartBody::util::log("%s", iter.second->requestId.c_str());
+											}
 										}
 									}
+									return CMD_SUCCESS;
 								}
-								return CMD_SUCCESS;
 							}
 							if (cmd == "interrupt")
 							{
 								int numRequestsInterrupted = 0;
-								BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-								for (auto & iter : bp->getBMLRequestMap())
-								{
-									std::string requestWithName = iter.second->requestId;
-									if (all_characters)
+								if (bp) {
+									for (auto & iter : bp->getBMLRequestMap())
 									{
-										int pipeLocation = requestWithName.find("|");
-										std::string charName = requestWithName.substr(0, pipeLocation);
-										std::string request = requestWithName.substr(pipeLocation + 1);
-										std::stringstream strstr;
-										strstr << "bp interrupt " << charName << " " << request << " .5"; 
-										SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) strstr.str().c_str());
-										numRequestsInterrupted++;
-									}
-									else
-									{			
-										// make sure the requests is for this character
-
-										std::string charName = character->getName();
-										charName.append("|");
-										int index = requestWithName.find(charName);
-										if (index == 0)
+										std::string requestWithName = iter.second->requestId;
+										if (all_characters)
 										{
-											std::string request = requestWithName.substr(charName.size());
+											int pipeLocation = requestWithName.find("|");
+											std::string charName = requestWithName.substr(0, pipeLocation);
+											std::string request = requestWithName.substr(pipeLocation + 1);
 											std::stringstream strstr;
-											strstr << "bp interrupt " << character->getName() << " " << request << " .5"; 
+											strstr << "bp interrupt " << charName << " " << request << " .5";
 											SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) strstr.str().c_str());
 											numRequestsInterrupted++;
 										}
+										else
+										{
+											// make sure the requests is for this character
+
+											std::string charName = character->getName();
+											charName.append("|");
+											int index = requestWithName.find(charName);
+											if (index == 0)
+											{
+												std::string request = requestWithName.substr(charName.size());
+												std::stringstream strstr;
+												strstr << "bp interrupt " << character->getName() << " " << request << " .5";
+												SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) strstr.str().c_str());
+												numRequestsInterrupted++;
+											}
+										}
+										std::string name = character->getName();
+										SmartBody::util::log("%d requests interrupted on character %s.", numRequestsInterrupted, name.c_str());
 									}
-									std::string name = character->getName();
-									SmartBody::util::log("%d requests interrupted on character %s.", numRequestsInterrupted, name.c_str());
+									return CMD_SUCCESS;
 								}
-								return CMD_SUCCESS;
 							}
 							else if( cmd == "prune" ) {
 						return( character->prune_controller_tree( ) );

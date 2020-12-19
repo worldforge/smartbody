@@ -22,8 +22,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <exception>
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <stack>
@@ -32,7 +30,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/sr_arg_buff.h"
 #include <sbm/lin_win.h>
 
-#include <xercesc/util/XMLStringTokenizer.hpp>
 #include "bml_exception.hpp"
 #include "bml_processor.hpp"
 #include "bml_xml_consts.hpp"
@@ -43,7 +40,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "bml_face.hpp"
 #include "bml_gaze.hpp"
 #include "bml_saccade.hpp"
-#include "bml_reach.hpp"
 #include "bml_constraint.hpp"
 #include "bml_bodyreach.hpp"
 #include "bml_grab.hpp"
@@ -56,7 +52,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "controllers/me_ct_examples.h"
 #include "controllers/me_ct_gaze.h"
-#include "controllers/me_ct_pose.h"
 #include "sbm/BMLDefs.h"
 
 #include <boost/version.hpp>
@@ -68,7 +63,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBMotion.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBBmlProcessor.h>
 #include "SBUtilities.h"
 
 using namespace BML;
@@ -85,7 +79,7 @@ const double SQROOT_2 = 1.4142135623730950488016887242097;
 ///////////////////////////////////////////////////////////////////////
 //  Helper Functions
 namespace BML {
-	std::string buildRequestId( SbmCharacter* character, std::string messageId ) {
+	std::string buildRequestId( SbmCharacter* character, const std::string& messageId ) {
 		std::ostringstream out;
 		out << character->getName() << "|" << messageId;  // pipe is unlikely to be found in either field
 		return out.str();
@@ -116,7 +110,7 @@ namespace BML {
 		// Old vrSpeakFailed form (sans recipient)
 		std::ostringstream buff;
 		buff << agent_id << " RECIPIENT " << message_id << " " << error_msg;
-		scene->sendVHMsg2( "vrSpeakFailed", buff.str().c_str() );
+		scene->sendVHMsg2( "vrSpeakFailed", buff.str() );
 
 		// New vrAgentBML form...
 		std::ostringstream buff2;
@@ -126,7 +120,7 @@ namespace BML {
 		buff2 << agent_id << " " << message_id << " end error " << error_msg;
 #endif
 		
-		scene->sendVHMsg2( "vrAgentBML", buff2.str().c_str() );
+		scene->sendVHMsg2( "vrAgentBML", buff2.str() );
 	}
 }
 
@@ -235,8 +229,7 @@ double BML::Processor::getLastScheduledSpeechBehavior(SbmCharacter& character)
 {
 	double lastTime =-1.0;
 
-	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
-	for (auto & iter : bmlRequestMap)
+	for (auto & iter : bml_requests)
 	{
 		std::string requestName = iter.first;
 		BML::BmlRequestPtr bmlRequestPtr = iter.second;
@@ -1091,7 +1084,6 @@ std::string BML::Processor::hasSpeechBehavior(SbmCharacter& character)
 	BML::MapOfBmlRequest& bmlRequestMap = getBMLRequestMap();
 	for (auto & iter : bmlRequestMap)
 	{
-		std::string requestName = iter.first;
 		BML::BmlRequestPtr bmlRequestPtr = iter.second;
 		if (bmlRequestPtr->actor->getName() == character.getName())
 		{
@@ -1360,7 +1352,6 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 int BML::Processor::vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	Processor* bp = scene->getBmlProcessor()->getBMLProcessor();
 
 	//cout << "DEBUG: vrSpoke " << args.read_remainder_raw() << endl;
 	char *agent_id     = args.read_token();
@@ -1382,7 +1373,7 @@ int BML::Processor::vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager
 #else
 		BMLProcessorMsg bpMsg( agent_id, message_id, agent, nullptr, args );
 #endif
-		return bp->bml_end( bpMsg, scene );
+		return bml_end( bpMsg, scene );
 	} catch( BmlException& e ) {
 		std::ostringstream msg;
 		msg << e.type() << ": "<<e.what();
@@ -1403,11 +1394,10 @@ int BML::Processor::vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager
 int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {	
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	Processor* bp = scene->getBmlProcessor()->getBMLProcessor();
 
     std::string command = args.read_token();
     if( command == "reset" ) {
-        bp->reset();
+        reset();
         return CMD_SUCCESS;
 	} else if( command == "speech_ready" ) {
 		//SmartBody::util::log("bp speech ready");
@@ -1424,7 +1414,7 @@ int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager*
 		char* requestIdStr = args.read_token(); // as string
 		SmartBody::RequestId requestId = atoi( requestIdStr );
 
-		bp->speechReply( actor, requestId, args, scene );
+		speechReply( actor, requestId, args, scene );
 		return CMD_SUCCESS;  // Errors are dealt with out of band
 	} else if( command == "interrupt" ) {
 		// bp speech_ready <actor id> <BML performace/act id>
@@ -1463,13 +1453,13 @@ int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			duration = 0;
 		}
 
-		return bp->interrupt( actor, performance_id, duration, scene );
+		return interrupt( actor, performance_id, duration, scene );
 	} else if( command == "feedback" ) {
 		std::string flag = args.read_token();
 		if (flag == "on")
-			bp->set_bml_feedback(true);
+			set_bml_feedback(true);
 		else
-			bp->set_bml_feedback(false);
+			set_bml_feedback(false);
 		return CMD_SUCCESS;
 	} else {
         return CMD_NOT_FOUND;
@@ -1479,17 +1469,16 @@ int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager*
 int BML::Processor::set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	Processor* bp = scene->getBmlProcessor()->getBMLProcessor();
 
 	std::string attribute = args.read_token();
 	if( attribute == "auto_print_controllers" ||
 	    attribute == "auto-print-controllers" ) {
 		std::string value = args.read_token();
 		if( value == "on" ) {
-			bp->auto_print_controllers = true;
+			auto_print_controllers = true;
 			return CMD_SUCCESS;
 		} else if( value == "off" ) {
-			bp->auto_print_controllers = false;
+			auto_print_controllers = false;
 			return CMD_SUCCESS;
 		} else {
 			std::stringstream strstr;
@@ -1501,10 +1490,10 @@ int BML::Processor::set_func( srArgBuffer& args, SmartBody::SBCommandManager* cm
 	           attribute == "auto-print-sequence" ) {
 		std::string value = args.read_token();
 		if( value == "on" ) {
-			bp->auto_print_sequence = true;
+			auto_print_sequence = true;
 			return CMD_SUCCESS;
 		} else if( value == "off" ) {
-			bp->auto_print_sequence = false;
+			auto_print_sequence = false;
 			return CMD_SUCCESS;
 		} else {
 			std::stringstream strstr;
@@ -1516,10 +1505,10 @@ int BML::Processor::set_func( srArgBuffer& args, SmartBody::SBCommandManager* cm
 	           attribute == "log-sync-points" ) {
 		std::string value = args.read_token();
 		if( value == "on" ) {
-			bp->log_syncpoints = true;
+			log_syncpoints = true;
 			return CMD_SUCCESS;
 		} else if( value == "off" ) {
-			bp->log_syncpoints = false;
+			log_syncpoints = false;
 			return CMD_SUCCESS;
 		} else {
 			std::stringstream strstr;
@@ -1537,8 +1526,8 @@ int BML::Processor::set_func( srArgBuffer& args, SmartBody::SBCommandManager* cm
 			return CMD_FAILURE;
 		}
 
-		float ct_speed_min = bp->ct_speed_min;
-		float ct_speed_max = bp->ct_speed_max;
+		float ct_speed_min = ct_speed_min;
+		float ct_speed_max = ct_speed_max;
 
 		while( !sub_attribute.empty() ) {
 			if( sub_attribute == "min" ) {
@@ -1589,8 +1578,8 @@ int BML::Processor::set_func( srArgBuffer& args, SmartBody::SBCommandManager* cm
 			valid = false;
 		}
 		if( valid ) {
-			bp->ct_speed_min = ct_speed_min;
-			bp->ct_speed_max = ct_speed_max;
+			ct_speed_min = ct_speed_min;
+			ct_speed_max = ct_speed_max;
 			return CMD_SUCCESS;
 		} else {
 			return CMD_FAILURE;
@@ -1629,27 +1618,26 @@ int BML::Processor::set_func( srArgBuffer& args, SmartBody::SBCommandManager* cm
 int BML::Processor::print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	Processor* bp = scene->getBmlProcessor()->getBMLProcessor();
 
 	std::string attribute = args.read_token();
 	if( attribute == "auto_print_controllers" ||
 		attribute == "auto-print-controllers" ) {
 		std::cout << "BML Processor auto_print_controllers: "<<
-			(bp->auto_print_controllers? "on" : "off") << std::endl;
+			(auto_print_controllers? "on" : "off") << std::endl;
 		return CMD_SUCCESS;
 	} else if( attribute == "auto_print_sequence" ||
 	           attribute == "auto-print-sequence" ) {
 		std::cout << "BML Processor auto_print_sequence: "<<
-			(bp->auto_print_sequence? "on" : "off") << std::endl;
+			(auto_print_sequence? "on" : "off") << std::endl;
 		return CMD_SUCCESS;
 	} else if( attribute == "log_syncpoints" ||
 	           attribute == "log-syncpoints" ) {
 		std::cout << "BML Processor log_syncpoints: "<<
-			(bp->log_syncpoints? "on" : "off") << std::endl;
+			(log_syncpoints? "on" : "off") << std::endl;
 		return CMD_SUCCESS;
 	} else if( attribute == "controller_speed" ||
 	           attribute == "controller-speed" ) {
-	   std::cout << "BML Processor "<<attribute<<": min="<<bp->ct_speed_min<<", max="<<bp->ct_speed_max<< std::endl;
+	   std::cout << "BML Processor "<<attribute<<": min="<<ct_speed_min<<", max="<<ct_speed_max<< std::endl;
 	   return CMD_SUCCESS;
 	} else if( attribute == "gaze" ) {
 		attribute = args.read_token();

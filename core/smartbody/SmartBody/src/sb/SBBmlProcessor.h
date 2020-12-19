@@ -22,6 +22,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define _SBBMLPROCESSOR_H
 
 #include <sb/SBTypes.h>
+#include "sb/SpeechBehaviourProvider.h"
 #include <string>
 #include <ostream>
 #include <sb/SBObject.h>
@@ -35,6 +36,8 @@ namespace BML {
 class BMLObject;
 
 namespace SmartBody {
+
+class SBScene;
 
 class SBTrigger : public SBSubject
 {
@@ -84,10 +87,10 @@ class SBBMLSchedule
 };
 
 
-class SBBmlProcessor : boost::noncopyable
+class SBBmlProcessor : public boost::noncopyable, public SpeechBehaviourProvider
 {
 	public:
-		SBAPI SBBmlProcessor();
+		SBAPI SBBmlProcessor(SBScene& scene);
 		SBAPI ~SBBmlProcessor();
 
 		SBAPI void vrSpeak(std::string agent, std::string recip, std::string msgId, std::string msg);
@@ -108,7 +111,12 @@ class SBBmlProcessor : boost::noncopyable
 
 		SBAPI BML::Processor* getBMLProcessor();
 
+		bool hasSpeechBehavior(SbmCharacter& character) const override ;
+
 	protected:
+		SBScene& _scene;
+		std::unique_ptr<SBObserver> _sceneObserver;
+
 		std::vector<BMLObject*> parseBML(const std::string& bml);
 		void scheduleBML(std::vector<BMLObject*>& behaviors);
 		void processBML(double time);

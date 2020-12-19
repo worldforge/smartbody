@@ -723,6 +723,11 @@ void BaseWindow::ResetScene()
 
 	std::string pythonLibPath = SmartBody::SBScene::getSystemParameter("pythonlibpath");
 	setupPython(scene);
+	executeSafe([](){
+		boost::python::object module = boost::python::import("__main__");
+		boost::python::object dict  = module.attr("__dict__");
+		dict["bml"] = boost::python::ptr(&Session::current->bmlProcessor);
+	});
 	if (!mediaPath.empty()) {
 		mSession->scene.setMediaPath(mediaPath);
 	} else {

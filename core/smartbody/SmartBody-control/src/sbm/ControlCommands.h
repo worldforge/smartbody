@@ -21,13 +21,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SMARTBODY_CONTROLCOMMANDS_H
 #define SMARTBODY_CONTROLCOMMANDS_H
 
+namespace BML {
+class Processor;
+}
+
 namespace SmartBody {
 class SBCommandManager;
 class SBVHMsgManager;
 class SBBoneBusManager;
+class SBBmlProcessor;
 void registerControlCommands(SmartBody::SBCommandManager& commandManager,
 							 SmartBody::SBVHMsgManager* sbvhMsgManager,
-							 SmartBody::SBBoneBusManager* boneBusManager);
+							 SmartBody::SBBoneBusManager* boneBusManager,
+							 BML::Processor* bmlProcessor);
 }
 
 

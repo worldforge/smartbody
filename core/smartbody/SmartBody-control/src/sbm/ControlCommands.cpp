@@ -29,7 +29,8 @@ namespace SmartBody {
 
 void registerControlCommands(SmartBody::SBCommandManager& commandManager,
 							 SmartBody::SBVHMsgManager* sbvhMsgManager,
-							 SmartBody::SBBoneBusManager* boneBusManager) {
+							 SmartBody::SBBoneBusManager* boneBusManager,
+							 BML::Processor* bmlProcessor) {
 	commandManager.insert("sb", sb_main_func);
 	commandManager.insert("sbm", sbm_main_func);
 
@@ -89,7 +90,7 @@ void registerControlCommands(SmartBody::SBCommandManager& commandManager,
 	commandManager.insert("triggerevent", deprecatedMessage);
 
 	commandManager.insert("pawn", pawn_cmd_func);
-	commandManager.insert("char", character_cmd_func);
+	commandManager.insert("char", [=](srArgBuffer& args) { return character_cmd_func(args, bmlProcessor); });
 
 	commandManager.insert("create_remote_pawn", create_remote_pawn_func);
 	commandManager.insert_set_cmd("pawn", pawn_set_cmd_funcx);

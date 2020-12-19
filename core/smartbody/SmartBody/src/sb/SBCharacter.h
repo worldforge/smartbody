@@ -42,7 +42,7 @@ class SBCharacter : public SbmCharacter
 	public:
 		SBAPI SBCharacter();
 		SBAPI SBCharacter(const std::string& name, const std::string& type = "");
-		SBAPI virtual ~SBCharacter();
+		SBAPI ~SBCharacter() override;
 
 		SBAPI const std::string& getName() const override;
 		SBAPI void setName(const std::string& name) override;
@@ -50,7 +50,7 @@ class SBCharacter : public SbmCharacter
 		SBAPI void setType(const std::string& type);
 		SBAPI std::string getType();
 		
-		SBAPI virtual int setup();
+		SBAPI int setup() override;
 
 		SBAPI int getNumControllers();
 
@@ -91,13 +91,13 @@ class SBCharacter : public SbmCharacter
 		//SBAPI double getLastScheduledSpeechBehavior();
 		//SBAPI std::string hasSpeechBehavior();
 
-		SBAPI virtual SBFaceDefinition* getFaceDefinition();
-		SBAPI virtual void setFaceDefinition(SBFaceDefinition* face);
+		SBAPI SBFaceDefinition* getFaceDefinition() override;
+		SBAPI void setFaceDefinition(SBFaceDefinition* face) override;
 		SBAPI virtual void updateDefaultFacePose();
 
 		SBAPI void interruptFace(double seconds);
 
-		SBAPI void notify(SBSubject* subject);	
+		SBAPI void notify(SBSubject* subject) override;
 		SBAPI std::string getPostureName(); // get the current posture of character
 		SBAPI void setDeformableMeshScale(double meshScale);
 	    SBAPI void copy(SBCharacter* origChar);

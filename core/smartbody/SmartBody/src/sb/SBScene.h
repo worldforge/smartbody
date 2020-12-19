@@ -78,6 +78,8 @@ class SBAssetStore;
 
 class ForwardLogListener;
 
+class SpeechBehaviourProvider;
+
 class SBScene : public SBObject
 {
 	public:
@@ -96,6 +98,8 @@ class SBScene : public SBObject
 			std::function<SmartBody::SBObject*(const std::string&)> objectProvider;
 			std::function<std::string(SmartBody::SBObject&)> stringProvider;
 		};
+
+
 
 		SBAPI explicit SBScene(CoreServices coreServices);
 		SBAPI ~SBScene();
@@ -175,7 +179,6 @@ class SBScene : public SBObject
 		SBAPI SBEventManager* getEventManager();		
 		SBAPI SBSimulationManager* getSimulationManager();
 		SBAPI SBProfiler* getProfiler();
-		SBAPI SBBmlProcessor* getBmlProcessor();
 		SBAPI SBAnimationBlendManager* getBlendManager();
 		SBAPI SBReachManager* getReachManager();
 		SBAPI SBSteerManager* getSteerManager();
@@ -272,6 +275,12 @@ class SBScene : public SBObject
 	void setCommandRunner(std::function<bool(const std::string&)> commandRunner);
 	void setScriptRunner(std::function<bool(const std::string&)> commandRunner);
 	void setVHMsgProvider(VHMsgProvider* vhMsgProvider);
+	void setSpeechBehaviourProvider(SpeechBehaviourProvider* provider) {
+		_speechBehaviourProvider = provider;
+	}
+	const SpeechBehaviourProvider* getSpeechBehaviourProvider() const {
+		return _speechBehaviourProvider;
+	};
 
 	protected:
 
@@ -283,7 +292,6 @@ class SBScene : public SBObject
 
 		std::unique_ptr<SBSimulationManager> _sim;
 		std::unique_ptr<SBProfiler> _profiler;
-		std::unique_ptr<SBBmlProcessor> _bml;
 		std::unique_ptr<SBAnimationBlendManager> _blendManager;
 		std::unique_ptr<SBReachManager> _reachManager;
 		std::unique_ptr<SBSteerManager> _steerManager;
@@ -354,6 +362,7 @@ class SBScene : public SBObject
 		std::function<bool(const std::string&)> _scriptRunner;
 
 		VHMsgProvider* _vhMsgProvider;
+		SpeechBehaviourProvider* _speechBehaviourProvider;
 };
 
 

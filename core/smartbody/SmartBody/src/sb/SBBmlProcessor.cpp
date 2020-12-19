@@ -48,6 +48,22 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
+struct SceneObserver : public SBObserver {
+	SBBmlProcessor& processor;
+	SceneObserver(SBBmlProcessor& processor_) : processor(processor_){
+
+	}
+
+	void notify(SBSubject* subject) override {
+		BoolAttribute* boolAttr = dynamic_cast<BoolAttribute*>(subject);
+		if (boolAttr && boolAttr->getName() == "bmlstatus")
+		{
+			processor.getBMLProcessor()->set_bml_feedback(boolAttr->getValue());
+		}
+	}
+
+};
+
 SBTrigger::SBTrigger()
 {
 	_offset = 0;
@@ -118,8 +134,10 @@ void SBBMLSchedule::remove()
 	// mark any dependent blocks since they are no longer valid
 }
 
-SBBmlProcessor::SBBmlProcessor()
-: _bmlProcessor(std::make_unique<BML::Processor>())
+SBBmlProcessor::SBBmlProcessor(SBScene& scene)
+: _scene(scene),
+  _sceneObserver(std::make_unique<SceneObserver>(*this)),
+_bmlProcessor(std::make_unique<BML::Processor>())
 {
 
 	auto addBmlObject = [&](std::unique_ptr<BMLObject> bmlObject){
@@ -142,9 +160,30 @@ SBBmlProcessor::SBBmlProcessor()
 	addBmlObject(std::make_unique<BMLSaccadeObject>());
 	addBmlObject(std::make_unique<BMLSpeechObject>());
 	addBmlObject(std::make_unique<BMLStateObject>());
+
+	_scene.registerObserver(_sceneObserver.get());
+
+	scene.getCommandManager()->insert("vrAgentBML", [this](srArgBuffer& args) -> int {
+		return getBMLProcessor()->vrAgentBML_cmd_func(args, nullptr);
+	});
+	scene.getCommandManager()->insert("bp", [this](srArgBuffer& args) -> int {
+		return getBMLProcessor()->bp_cmd_func(args, nullptr);
+	});
+	scene.getCommandManager()->insert("vrSpeak", [this](srArgBuffer& args) -> int {
+		return getBMLProcessor()->vrSpeak_func(args, nullptr);
+	});
+
+	scene.getCommandManager()->insert_set_cmd("bp", [this](srArgBuffer& args) -> int {
+		return getBMLProcessor()->set_func(args, nullptr);
+	});
+	scene.getCommandManager()->insert_print_cmd("bp", [this](srArgBuffer& args) -> int {
+		return getBMLProcessor()->print_func(args, nullptr);
+	});
 }
 
-SBBmlProcessor::~SBBmlProcessor() = default;
+SBBmlProcessor::~SBBmlProcessor() {
+	_scene.unregisterObserver(_sceneObserver.get());
+}
 
 // This command is inside bml_processor.cpp. So unable to rewrite, instead, re-routine to bp.
 void SBBmlProcessor::vrSpeak(std::string agent, std::string recip, std::string msgId, std::string msg)
@@ -152,8 +191,7 @@ void SBBmlProcessor::vrSpeak(std::string agent, std::string recip, std::string m
 	std::stringstream msgStr;
 	msgStr << agent << " " << recip << " " << msgId << " " << msg;
 	srArgBuffer vrMsg(msgStr.str().c_str());
-	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-	bp->vrSpeak_func(vrMsg, SmartBody::SBScene::getScene()->getCommandManager());
+	_bmlProcessor->vrSpeak_func(vrMsg, SmartBody::SBScene::getScene()->getCommandManager());
 }
 
 void SBBmlProcessor::vrAgentBML(std::string op, std::string agent, std::string msgId, std::string msg)
@@ -163,8 +201,7 @@ void SBBmlProcessor::vrAgentBML(std::string op, std::string agent, std::string m
 		std::stringstream msgStr;
 		msgStr << agent << " " << msgId << " " << op << " " << msg;
 		srArgBuffer vrMsg(msgStr.str().c_str());
-		BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-		bp->vrAgentBML_cmd_func(vrMsg, SmartBody::SBScene::getScene()->getCommandManager());
+		_bmlProcessor->vrAgentBML_cmd_func(vrMsg, SmartBody::SBScene::getScene()->getCommandManager());
 	}
 	else
 	{
@@ -396,8 +433,7 @@ void SBBmlProcessor::interruptCharacter(const std::string& character, double sec
 		return;
 	}
 
-	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-	bp->interrupt(sbCharacter, seconds, scene);
+	_bmlProcessor->interrupt(sbCharacter, seconds, scene);
 	
 }
 
@@ -411,8 +447,7 @@ void SBBmlProcessor::interruptBML(const std::string& character, const std::strin
 		return;
 	}
 
-	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
-	bp->interrupt(sbCharacter, id, seconds, scene);
+	_bmlProcessor->interrupt(sbCharacter, id, seconds, scene);
 }
 
 
@@ -420,6 +455,11 @@ BML::Processor* SBBmlProcessor::getBMLProcessor()
 {
 	return _bmlProcessor.get();
 }
+
+bool SBBmlProcessor::hasSpeechBehavior(SbmCharacter& character) const {
+	return !_bmlProcessor->hasSpeechBehavior(character).empty();
+}
+
 
 std::vector<BMLObject*> SBBmlProcessor::parseBML(const std::string& bml)
 {

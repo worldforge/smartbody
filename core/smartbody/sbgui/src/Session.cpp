@@ -53,7 +53,8 @@ Session::Session()
 												 std::make_unique<SmartBody::SBCollisionManager>(std::make_unique<ODECollisionSpace>())}),
 		  renderAssetManager(scene, scene.getAssetStore()),
 		  renderScene(scene, renderAssetManager),
-		  debuggerServer(renderScene) {
+		  debuggerServer(renderScene),
+		  bmlProcessor(scene){
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerSkm>());
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerSk>());
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerCOLLADA>());
@@ -71,15 +72,17 @@ Session::Session()
 
 	scene.getServiceManager()->addService(&vhmMsgManager);
 	scene.getServiceManager()->addService(&bonebusManager);
+	scene.setSpeechBehaviourProvider(&bmlProcessor);
 
 	SmartBody::installDebuggerCommand(*scene.getCommandManager(), vhmMsgManager);
 	SmartBody::PythonInterface::renderScene = &renderScene;
 
-	registerControlCommands(*scene.getCommandManager(), &vhmMsgManager, &bonebusManager);
+	registerControlCommands(*scene.getCommandManager(), &vhmMsgManager, &bonebusManager, bmlProcessor.getBMLProcessor());
 
 }
 
 Session::~Session() {
+	scene.setSpeechBehaviourProvider(nullptr);
 	if (vhmMsgManager.isEnable() && vhmMsgManager.isConnected())
 		vhmMsgManager.send( "vrProcEnd sbm" );
 

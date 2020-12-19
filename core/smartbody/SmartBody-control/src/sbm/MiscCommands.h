@@ -25,7 +25,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/sr_arg_buff.h>
 #include <sb/SBCommandManager.h>
 
-
+namespace BML {
+class Processor;
+}
 class SbmPawn;
 class SbmCharacter;
 
@@ -33,11 +35,10 @@ int pawn_set_cmd_funcx( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
 int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
 int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer& args);
 
-int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
+int character_cmd_func( srArgBuffer& args, BML::Processor* bp);
 int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
 int character_set_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
-int character_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr);
-int character_parse_character_command( SbmCharacter* character, std::string cmd, srArgBuffer& args, bool all_characters );
+int character_parse_character_command( SbmCharacter* character, const std::string& cmd, srArgBuffer& args, bool all_characters, BML::Processor* bmlProcessor );
 
 
 int set_world_offset_cmd( SbmPawn* pawn, srArgBuffer& args );

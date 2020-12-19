@@ -6098,7 +6098,7 @@ SrVec& GestureData::getSyncPointColor(int type)
 
 void GestureData::toggleFeedback(bool val)
 {
-	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
+	BML::Processor* bp = Session::current->bmlProcessor.getBMLProcessor();
 	bp->set_bml_feedback(val);
 }
 
@@ -6106,9 +6106,9 @@ void GestureData::reset()
 {
 
 	currentCharacter = "";
-	for (size_t i = 0; i < gestureSections.size(); i++)
+	for (auto & gestureSection : gestureSections)
 	{
-		gestureSections[i].data.clear();
+		gestureSection.data.clear();
 	}
 
 	gestureSections.clear();

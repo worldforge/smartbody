@@ -18,32 +18,15 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#ifndef SMARTBODY_SESSION_H
-#define SMARTBODY_SESSION_H
+#ifndef SMARTBODY_SPEECHBEHAVIOURPROVIDER_H
+#define SMARTBODY_SPEECHBEHAVIOURPROVIDER_H
 
-#include <sb/SBVHMsgManager.h>
-#include "sb/SBScene.h"
-#include "sbm/SBRenderScene.h"
-#include "sb/SBRenderAssetManager.h"
-#include "sb/SBDebuggerServer.h"
-#include "sb/SBBoneBusManager.h"
-#include "sb/SBBmlProcessor.h"
+class SbmCharacter;
 
-struct Session {
-	static Session* current;
-
-	Session();
-
-	~Session();
-
-	SmartBody::SBScene scene;
-	SmartBody::SBRenderAssetManager renderAssetManager;
-	SmartBody::SBRenderScene renderScene;
-	SmartBody::SBDebuggerServer debuggerServer;
-	SmartBody::SBVHMsgManager vhmMsgManager;
-	SmartBody::SBBoneBusManager bonebusManager;
-	SmartBody::SBBmlProcessor bmlProcessor;
+namespace SmartBody {
+struct SpeechBehaviourProvider {
+	virtual bool hasSpeechBehavior(SbmCharacter& character) const = 0;
 };
+}
 
-
-#endif //SMARTBODY_SESSION_H
+#endif //SMARTBODY_SPEECHBEHAVIOURPROVIDER_H

@@ -38,9 +38,7 @@ SBController::SBController(const SBController& controller)
 	// ?
 }
 
-SBController::~SBController()
-{
-}
+SBController::~SBController() = default;
 
 void SBController::setPawn(SBPawn* pawn)
 {

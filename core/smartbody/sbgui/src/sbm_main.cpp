@@ -1139,7 +1139,12 @@ int main( int argc, char **argv )	{
 
 	initPython();
 	setupPython(scene);
-	
+	executeSafe([](){
+		boost::python::object module = boost::python::import("__main__");
+		boost::python::object dict  = module.attr("__dict__");
+		dict["bml"] = boost::python::ptr(&Session::current->bmlProcessor);
+	});
+
 	mcu_register_callbacks();
 
 	//scene.addSceneListener(&fltkListener);
@@ -1239,7 +1244,7 @@ int main( int argc, char **argv )	{
 
 			// Using a process id is a sign that we're running in a multiple SBM environment.
 			// So.. ignore BML requests with unknown agents by default
-			scene.getBmlProcessor()->getBMLProcessor()->set_warn_unknown_agents(false);
+			Session::current->bmlProcessor.getBMLProcessor()->set_warn_unknown_agents(false);
 		}
 
 		if (scene.getBoolAttribute("internalAudio")) {

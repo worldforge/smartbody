@@ -126,11 +126,34 @@ namespace boost
 
 std::vector<std::function<void()>> pythonExtraModuleDeclarations;
 
+
 namespace {
-	//boost.python can't handle std::unique_ptrs in a good way, so we'll provide this version which does away with the result
-	void SBAssetStore_loadAsset(SmartBody::SBAssetStore* store, const std::string& assetPath) {
-		store->loadAsset(assetPath);
+// decode a Python exception into a string
+std::string handle_pyerror() {
+	using namespace boost::python;
+	using namespace boost;
+
+	PyObject * exc, *val, *tb;
+	object formatted_list, formatted;
+	PyErr_Fetch(&exc, &val, &tb);
+	PyErr_NormalizeException(&exc, &val, &tb);
+	handle<> hexc(exc), hval(allow_null(val)), htb(allow_null(tb));
+	object traceback(import("traceback"));
+	if (!tb) {
+		object format_exception_only(traceback.attr("format_exception_only"));
+		formatted_list = format_exception_only(hexc, hval);
+	} else {
+		object format_exception(traceback.attr("format_exception"));
+		formatted_list = format_exception(hexc, hval, htb);
 	}
+	formatted = str("\n").join(formatted_list);
+	return extract<std::string>(formatted);
+}
+
+//boost.python can't handle std::unique_ptrs in a good way, so we'll provide this version which does away with the result
+void SBAssetStore_loadAsset(SmartBody::SBAssetStore* store, const std::string& assetPath) {
+	store->loadAsset(assetPath);
+}
 }
 
 namespace SmartBody
@@ -1129,9 +1152,9 @@ void setupPython(SmartBody::SBScene& scene)
 		return false;
 	});
 
-	try {
+	executeSafe([&](){
 #ifdef PYLOG
-#if defined(__ANDROID__) || defined(SB_IPHONE)
+		#if defined(__ANDROID__) || defined(SB_IPHONE)
 		const char* pyfilename = "/sdcard/sbmmedia/pylog.txt";
 #else
 		const char* pyfilename = "C:\\SbmAndroid\\android\\pylog.txt";
@@ -1139,7 +1162,7 @@ void setupPython(SmartBody::SBScene& scene)
 		FILE* file = fopen(pyfilename,"rt");
 		if (file)
 		{
-			SmartBody::util::log("Open file success\n");		
+			SmartBody::util::log("Open file success\n");
 			PyRun_SimpleFile(file,pyfilename);
 			PyRun_SimpleString("logwriter = WritableObject()");
 			//#ifndef __ANDROID__
@@ -1149,31 +1172,42 @@ void setupPython(SmartBody::SBScene& scene)
 		else
 		{
 			SmartBody::util::log("Open File Fail!!!\n");
-		}	
+		}
 #else
-		PyRun_SimpleString("import sys");
-		PyRun_SimpleString("class WritableObject:\n\tdef __init__(self):\n\t\tself.content = []\n\tdef write(self, string):\n\t\tprintlog(string)\n");
-		PyRun_SimpleString("logwriter = WritableObject()");
-		PyRun_SimpleString("sys.stdout = logwriter");
-		PyRun_SimpleString("sys.stderr = logwriter");
-#endif		
-		
-		if (PyErr_Occurred())
-			PyErr_Print();
-
-	
-		PyRun_SimpleString("from os import *");
-		PyRun_SimpleString("from SmartBody import *");
-		PyRun_SimpleString("scene = getScene()");
-		PyRun_SimpleString("bml = scene.getBmlProcessor()");
-		PyRun_SimpleString("sim = scene.getSimulationManager()");
-		PyRun_SimpleString("assets = scene.getAssetManager()");
+		boost::python::exec(
+				"import sys\n"
+				"class WritableObject:\n\tdef __init__(self):\n\t\tself.content = []\n\tdef write(self, string):\n\t\tprintlog(string)\n\n"
+				"logwriter = WritableObject()\n"
+				"sys.stdout = logwriter\n"
+				"sys.stderr = logwriter\n"
+				,dict);
+#endif
 
 		if (PyErr_Occurred())
 			PyErr_Print();
-		
 
+		dict["scene"] = boost::python::ptr(SmartBody::SBScene::getScene());
+		dict["sim"] = boost::python::ptr(SmartBody::SBScene::getScene()->getSimulationManager());
+		dict["assets"] = boost::python::ptr(SmartBody::SBScene::getScene()->getAssetManager());
+		boost::python::exec(
+				"from os import *\n"
+				"from SmartBody import *",
+				dict);
+	});
+
+}
+
+void executeSafe(const std::function<void()>& fn) {
+	try {
+		fn();
 	} catch (...) {
-		PyErr_Print();
+
+		if (PyErr_Occurred()) {
+			auto msg = handle_pyerror();
+			SmartBody::util::log("Python error: '%s'", msg.c_str());
+			PyErr_Clear();
+		}
 	}
 }
+
+

@@ -132,7 +132,6 @@ SBScene::SBScene(CoreServices coreServices) :
 		_coreServices(std::move(coreServices)),
 		_sim(std::make_unique<SBSimulationManager>()),
 		_profiler(std::make_unique<SBProfiler>()),
-		_bml(std::make_unique<SBBmlProcessor>()),
 		_blendManager(std::make_unique<SBAnimationBlendManager>()),
 		_reachManager(std::make_unique<SBReachManager>()),
 		_steerManager(std::make_unique<SBSteerManager>(*this)),
@@ -235,9 +234,6 @@ SBScene::SBScene(CoreServices coreServices) :
 		// re-initialize
 	// initialize everything
 
-//	_viewer = nullptr;
-//	_viewerFactory = nullptr;
-
 	_rootGroup = new SrSnGroup();
 
 	_heightField = nullptr;
@@ -257,57 +253,6 @@ SBScene::SBScene(CoreServices coreServices) :
 	// reset timer & viewer window
 	getSimulationManager()->reset();
 //	getSimulationManager()->start();
-
-	/*
-#ifndef __native_client__
-	SrViewer* viewer = SmartBody::getViewer();
-	if (viewer)
-		viewer->show_viewer();
-#endif
-
-	command("vhmsgconnect");
-#ifndef __native_client__
-	//Py_Finalize();
-	//initPython(initPythonLibPath);
-#ifndef SB_NO_PYTHON
-	PyRun_SimpleString("scene = getScene()");
-	PyRun_SimpleString("bml = scene.getBmlProcessor()");
-	PyRun_SimpleString("sim = scene.getSimulationManager()");
-#endif
-#endif
-	*/	
-//	if (_viewer)
-//	{
-////		if (_viewerFactory)
-////			_viewerFactory->reset(_viewer);
-//		_viewer = nullptr;
-////#if !defined (__ANDROID__) && !defined(SB_IPHONE) && !defined(__native_client__) && !defined(EMSCRIPTEN)
-////		SbmShaderManager::singleton().setViewer(nullptr);
-////#endif
-//	}
-
-
-	auto lambda = [](){};
-
-	_commandManager->insert("vrAgentBML", [this](srArgBuffer& args) -> int {
-		return _bml->getBMLProcessor()->vrAgentBML_cmd_func(args, nullptr);
-	});
-	_commandManager->insert("bp", [this](srArgBuffer& args) -> int {
-		return _bml->getBMLProcessor()->bp_cmd_func(args, nullptr);
-	});
-	_commandManager->insert("vrSpeak", [this](srArgBuffer& args) -> int {
-		return _bml->getBMLProcessor()->vrSpeak_func(args, nullptr);
-	});
-
-	_commandManager->insert_set_cmd("bp", [this](srArgBuffer& args) -> int {
-		return _bml->getBMLProcessor()->set_func(args, nullptr);
-	});
-	_commandManager->insert_print_cmd("bp", [this](srArgBuffer& args) -> int {
-		return _bml->getBMLProcessor()->print_func(args, nullptr);
-	});
-
-
-
 
 }
 
@@ -660,11 +605,6 @@ void SBScene::notify( SBSubject* subject )
 		{		
 			SmartBody::util::g_log.RemoveAllListeners();
 		}
-	}
-
-  if (boolAttr && boolAttr->getName() == "bmlstatus")
-	{
-		this->getBmlProcessor()->getBMLProcessor()->set_bml_feedback(boolAttr->getValue());
 	}
 
 	DoubleAttribute* doubleAttr = dynamic_cast<DoubleAttribute*>(subject);
@@ -1162,11 +1102,6 @@ SBSimulationManager* SBScene::getSimulationManager()
 SBProfiler* SBScene::getProfiler()
 {
 	return _profiler.get();
-}
-
-SBBmlProcessor* SBScene::getBmlProcessor()
-{
-	return _bml.get();
 }
 
 SBAnimationBlendManager* SBScene::getBlendManager()
@@ -1799,7 +1734,7 @@ void SBScene::stopFileLogging()
 std::string SBScene::getStringFromObject(SmartBody::SBObject* object)
 {
 	std::stringstream strstr;
-	SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(object);
+	auto* character = dynamic_cast<SmartBody::SBCharacter*>(object);
 	if (character)
 	{
 		strstr << "character/" << character->getName();

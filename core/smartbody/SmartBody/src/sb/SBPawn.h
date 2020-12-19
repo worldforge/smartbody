@@ -36,7 +36,7 @@ class SBPawn : public SbmPawn
 		SBAPI SBPawn( const char* name );
 		SBAPI ~SBPawn();
 
-		SBAPI void setName(const std::string& name);
+		SBAPI void setName(const std::string& name) override;
 
 		SBAPI virtual boost::intrusive_ptr<SmartBody::SBSkeleton> getSkeleton() const;
 		SBAPI virtual void setSkeleton(boost::intrusive_ptr<SmartBody::SBSkeleton> skel);
@@ -54,8 +54,8 @@ class SBPawn : public SbmPawn
 //		SBAPI DeformableMeshInstance* getActiveMesh();
 		SBAPI void createMeshFromCollisionSurface(std::string name, SrVec color);
 
-		SBAPI virtual void afterUpdate(double time);
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void afterUpdate(double time) override;
+		SBAPI void notify(SBSubject* subject) override;
 		SBAPI virtual void copy(SBPawn* orignalPawn);
 
 	private:

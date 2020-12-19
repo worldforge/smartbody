@@ -25,7 +25,7 @@
 #include <bml/behavior_scheduler_fixed.hpp>
 #include "sbm/xercesc_utils.hpp"
 #include <bml/bml_processor.hpp>
-
+#include "Session.h"
 
 
 BehaviorWindow::BehaviorWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(w, h, name), GenericViewer(x, y, w, h)
@@ -110,7 +110,7 @@ void BehaviorWindow::label_viewer(std::string name)
 
 void BehaviorWindow::show_viewer()
 {
-	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
+	auto bp = Session::current->bmlProcessor.getBMLProcessor();
 	bp->registerRequestCallback(OnRequest, this);
 
 	this->show();
@@ -120,7 +120,7 @@ void BehaviorWindow::show_viewer()
 
 void BehaviorWindow::hide_viewer()
 {
-	BML::Processor* bp = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor();
+	auto bp = Session::current->bmlProcessor.getBMLProcessor();
 	bp->registerRequestCallback(nullptr, nullptr);
 	this->hide();
 }
