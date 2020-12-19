@@ -309,7 +309,7 @@ bool SBRenderAssetManager::createMeshFromBlendMasks(const std::string& neutralSh
 	std::shared_ptr<SbmTexture> neutralTexture;
 
 	if (neutralMesh) {
-		for (auto subMesh : neutralMesh->subMeshList) {
+		for (auto& subMesh : neutralMesh->subMeshList) {
 			neutralTexture = texManager.findTexture(subMesh->texName.c_str());
 			if (neutralTexture) {
 				break;
@@ -350,7 +350,7 @@ bool SBRenderAssetManager::createMeshFromBlendMasks(const std::string& neutralSh
 	std::shared_ptr<SbmTexture> expressiveTexture = nullptr;
 
 	if (expressiveMesh) {
-		for (auto subMesh : expressiveMesh->subMeshList) {
+		for (auto& subMesh : expressiveMesh->subMeshList) {
 			expressiveTexture = texManager.findTexture(subMesh->texName.c_str());
 			if (expressiveTexture) {
 				break;
@@ -922,7 +922,7 @@ bool SBRenderAssetManager::addModelToMesh(std::string templateMeshName, std::str
 	bool found = false;
 	for (size_t m = 0; m < mesh->dMeshStatic_p.size(); m++)
 	{
-		SrSnModel* staticModel = mesh->dMeshStatic_p[m];
+		auto& staticModel = mesh->dMeshStatic_p[m];
 		SrModel& s = staticModel->shape();
 		std::string curShapeName = (const char*) s.name;
 		SmartBody::util::log("Comparing mesh names: %s to  %s", curShapeName.c_str(), newModelName.c_str());
@@ -930,11 +930,11 @@ bool SBRenderAssetManager::addModelToMesh(std::string templateMeshName, std::str
 		if (curShapeName == newModelName)
 		{
 			// model already exists, replace it
-			SrSnModel* curModel = mesh->dMeshStatic_p[m];
+			auto& curModel = mesh->dMeshStatic_p[m];
 			curModel->unref();
 			mesh->dMeshStatic_p[m] = modelSrSn;
 			mesh->dMeshStatic_p[m]->changed(true);
-			SrSnModel* curDynamicModel = mesh->dMeshDynamic_p[m];
+			auto& curDynamicModel = mesh->dMeshDynamic_p[m];
 			curDynamicModel->unref();
 			mesh->dMeshDynamic_p[m] = modelSrSn;
 			mesh->dMeshDynamic_p[m]->changed(true);
@@ -959,7 +959,7 @@ bool SBRenderAssetManager::addModelToMesh(std::string templateMeshName, std::str
 	}
 
 	// copy the skin weights from the proper mesh using a joint, bind matrix
-	SkinWeight* existingSkinWeights = mesh->skinWeights[0];
+	auto& existingSkinWeights = mesh->skinWeights[0];
 
 	auto* modelSkin = new SkinWeight();
 
@@ -1011,7 +1011,7 @@ bool SBRenderAssetManager::addBlendshapeToModel(std::string templateMeshName, st
 
 	for (size_t m = 0; m < mesh->dMeshStatic_p.size(); m++)
 	{
-		SrSnModel* staticModel = mesh->dMeshStatic_p[m];
+		auto& staticModel = mesh->dMeshStatic_p[m];
 		SrModel& s = staticModel->shape();
 		std::string curShapeName = (const char*) s.name;
 		if (curShapeName == submeshName)
@@ -1038,9 +1038,9 @@ bool SBRenderAssetManager::addBlendshapeToModel(std::string templateMeshName, st
 				mesh->dMeshStatic_p[m]->shape().V = baseModel->shape().V;
 				mesh->dMeshStatic_p[m]->shape().N = baseModel->shape().N;
 
-				std::vector<SrSnModel*> modelList;
+				std::vector<boost::intrusive_ptr<SrSnModel>> modelList;
 				modelList.emplace_back(baseModel);
-				mesh->blendShapeMap.insert(std::pair<std::string, std::vector<SrSnModel*> >(submeshName, modelList));
+				mesh->blendShapeMap.emplace(submeshName, modelList);
 				std::vector<std::string> morphTargetList;
 				morphTargetList.emplace_back(shapeName);
 				mesh->morphTargets.insert(std::pair<std::string, std::vector<std::string> >(submeshName, morphTargetList));
@@ -1049,7 +1049,7 @@ bool SBRenderAssetManager::addBlendshapeToModel(std::string templateMeshName, st
 			{
 				// controller exists, see if the shape also exists
 				bool found = false;
-				std::vector<SrSnModel*>& existingShapeModels = (*mapIter).second;
+				auto& existingShapeModels = (*mapIter).second;
 				for (auto & existingShapeModel : existingShapeModels)
 				{
 					std::string modelName = (const char*) existingShapeModel->shape().name;

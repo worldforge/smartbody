@@ -237,7 +237,7 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 	{
 
 		DeformableMesh* deformMesh = meshInstance->getDeformableMesh();
-		SkinWeight* sw = deformMesh->skinWeights[0];
+		auto& sw = deformMesh->skinWeights[0];
 		sw->numInfJoints.clear();
 		sw->weightIndex.clear();
 		sw->bindWeight.clear();
@@ -301,8 +301,8 @@ bool SBAutoRigManager::updateSkinWeightFromCharacterMesh( const std::string& cha
 		}
 
 		SmartBody::util::log("transfer skin weights");
-		DeformableMesh* deformMesh = meshInstance->getDeformableMesh();
-		SkinWeight* sw = deformMesh->skinWeights[0];
+		auto deformMesh = meshInstance->getDeformableMesh();
+		auto& sw = deformMesh->skinWeights[0];
 		sw->numInfJoints.clear();
 		sw->weightIndex.clear();
 		sw->bindWeight.clear();

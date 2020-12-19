@@ -797,7 +797,7 @@ void ResourceWindow::updateMesh( Fl_Tree_Item* tree, DeformableMesh* mesh )
 					continue;
 				}
 
-				std::vector<SrSnModel*>& models = blendShapeIter.second;
+				auto& models = blendShapeIter.second;
 				for (auto & model : models)
 				{
 					if (model)

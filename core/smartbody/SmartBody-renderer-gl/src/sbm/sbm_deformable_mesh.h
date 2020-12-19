@@ -175,16 +175,16 @@ struct BlendShapeData
 class DeformableMesh : public SmartBody::SBAsset
 {
 public:
-	std::vector<SrSnModel*>		dMeshDynamic_p;
-	std::vector<SrSnModel*>		dMeshStatic_p;
-	std::vector<SkinWeight*>	skinWeights;
-	std::map<std::string, std::vector<SrSnModel*> > blendShapeMap;	// the key store the base shape name, vector stores morph target SrModels. first one in the vector is always the base one
+	std::vector<boost::intrusive_ptr<SrSnModel>>		dMeshDynamic_p;
+	std::vector<boost::intrusive_ptr<SrSnModel>>		dMeshStatic_p;
+	std::vector<std::unique_ptr<SkinWeight>>	skinWeights;
+	std::map<std::string, std::vector<boost::intrusive_ptr<SrSnModel>> > blendShapeMap;	// the key store the base shape name, vector stores morph target SrModels. first one in the vector is always the base one
 	std::map<int, std::vector<int> > blendShapeNewVtxIdxMap; 
 	std::map<std::string, std::vector<std::string> > morphTargets;	// stores a vector of morph target names, first one is always the base one
 	std::map<std::string, std::vector<BlendShapeData> > optimizedBlendShapeData;						// stores optimized information when calculating blend shapes; list of vertices affected, and their differential vector and normal amounts
 	
 	std::string                 skeletonName;						// binding skeleton for this deformable model
-	SkSkeleton*					skeleton;							// pointer to current skeleton
+	boost::intrusive_ptr<SkSkeleton>					skeleton;							// pointer to current skeleton
 	
 	// unrolled all vertices into a single buffer for faster GPU rendering
 	bool initStaticVertexBuffer, initSkinnedVertexBuffer;	
@@ -196,7 +196,7 @@ public:
 	std::vector<SrVec>          meshColorBuf;
 	std::vector<SrVec2>         texCoordBuf;	
 	std::vector<SrVec3i>        triBuf;
-	std::vector<SbmSubMesh*>    subMeshList;
+	std::vector<std::unique_ptr<SbmSubMesh>>    subMeshList;
 
 	std::vector<int>			boneCountBuf;
 	std::vector<SrVec>          boneColorMap;
@@ -221,7 +221,7 @@ public:
 	SBAPI void initDeformMesh(std::vector<SrModel*>& meshVec);
 	SBAPI SkinWeight* getSkinWeight(const std::string& skinSourceName);
 	SBAPI SkinWeight* getSkinWeightIndex(int index);
-	SBAPI int getNumMeshes();
+	SBAPI int getNumMeshes() const;
 	SBAPI std::string getMeshName(int index);
 	SBAPI SrModel& getStaticModel(int index);
 	SBAPI int	getMesh(const std::string& meshName);				// get the position given the mesh name
@@ -232,14 +232,14 @@ public:
 	SBAPI virtual bool buildSkinnedVertexBuffer(); // unrolled all models inside this deformable mesh into a GPU-friendly format
 	SBAPI virtual bool buildBlendShapes();
 	SBAPI void updateVertexBuffer(); // update the values in the vertex buffer based on dMeshStatic_p	
-	SBAPI bool isSkinnedMesh();
+	SBAPI bool isSkinnedMesh() const;
 	SBAPI bool saveToSmb(std::string inputFileName);
 	SBAPI bool saveToDmb(std::string inputFileName);
 	SBAPI bool saveToDae(SmartBody::SBRenderAssetManager& renderAssetManager, std::string inputFileName, std::string skeletonName);
 	SBAPI bool readFromSmb(std::string inputFileName);
 	SBAPI bool readFromDmb(std::string inputFileName);
 	// helper function
-	void saveToStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh, std::string objectName);
+	void saveToStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh, const std::string& objectName);
 	void readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh, std::vector<SrModel*>& models, std::string file);
 	void loadAllFoundTextures(std::string textureDirectory);
 	SBAPI SrVec computeCenterOfMass();

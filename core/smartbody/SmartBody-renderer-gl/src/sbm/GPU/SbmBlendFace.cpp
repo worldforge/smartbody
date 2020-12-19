@@ -147,10 +147,9 @@ bool SbmBlendFace::buildVertexBufferGPU(int number_of_shapes)
 	_VBOTexCoord			= new VBOVec2f((char*)"TexCoord", VERTEX_TEXCOORD, _mesh->texCoordBuf);
 	_VBOTri					= new VBOVec3i((char*)"TriIdx", GL_ELEMENT_ARRAY_BUFFER, _mesh->triBuf);
 	
-	for (unsigned int i=0; i<_mesh->subMeshList.size(); i++)
+	for (auto& subMesh : _mesh->subMeshList)
 	{
-		SbmSubMesh* subMesh		= _mesh->subMeshList[i];
-		VBOVec3i* subMeshTriBuf = new VBOVec3i((char*)"TriIdx",GL_ELEMENT_ARRAY_BUFFER,subMesh->triBuf);
+			VBOVec3i* subMeshTriBuf = new VBOVec3i((char*)"TriIdx",GL_ELEMENT_ARRAY_BUFFER,subMesh->triBuf);
 		subMeshTris.emplace_back(subMeshTriBuf);
 	}
 	
@@ -171,9 +170,9 @@ void SbmBlendFace::addFace(SrSnModel* newFace)
 {
 	std::vector<SrVec> v = newFace->shape().V;
 	std::vector<SrVec> vertices;
-	for (int i = 0; i < v.size(); i++) {
+	for (auto & i : v) {
 		//std::cerr << "Adding face "<< i << ": " << v[i].x << ", " << v[i].y << ", " << v[i].z << "\n";
-		vertices.emplace_back( v[i] );
+		vertices.emplace_back( i );
 	}
 	addFaceVertices(vertices);
 }
@@ -1096,14 +1095,13 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 	std::vector<SrPnt> visemeV;
 
 	// find the base shape and other shapes
-	std::map<std::string, std::vector<SrSnModel*> >::iterator mIter;
-	for (mIter = _mesh->blendShapeMap.begin(); mIter != _mesh->blendShapeMap.end(); ++mIter)
+	for (auto & mIter : _mesh->blendShapeMap)
 	{
-		for (size_t i = 0; i < mIter->second.size(); ++i)
+		for (size_t i = 0; i < mIter.second.size(); ++i)
 		{
-			if (strcmp(mIter->first.c_str(), (const char*)mIter->second[i]->shape().name) == 0)
+			if (strcmp(mIter.first.c_str(), (const char*)mIter.second[i]->shape().name) == 0)
 			{
-				baseModel		= mIter->second[i];
+				baseModel		= mIter.second[i].get();
 				foundBaseModel	= true;
 				break;
 			}
@@ -1119,15 +1117,15 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 		// Copies reference to the shape vector
 		shapes.emplace_back(&(baseModel->shape().V));
 
-		for (size_t i = 0; i < mIter->second.size(); ++i)
+		for (size_t i = 0; i < mIter.second.size(); ++i)
 		{
-			if ((i == 0) ||(!mIter->second[i]))
+			if ((i == 0) ||(!mIter.second[i]))
 			{
 				continue;
 			}
 		
-			visemeV = mIter->second[i]->shape().V;
-			aux->addFace(mIter->second[i]);
+			visemeV = mIter.second[i]->shape().V;
+			aux->addFace(mIter.second[i].get());
 
 			// Copies reference to the shape vector
 			shapes.emplace_back(&(baseModel->shape().V));
@@ -1520,14 +1518,13 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 	std::vector<SrPnt> neutralV;
 	std::vector<SrPnt> visemeV;
 	// find the base shape and other shapes
-	std::map<std::string, std::vector<SrSnModel*> >::iterator mIter;
-	for (mIter = _mesh->blendShapeMap.begin(); mIter != _mesh->blendShapeMap.end(); ++mIter)
+	for (auto & mIter : _mesh->blendShapeMap)
 	{
-		for (size_t i = 0; i < mIter->second.size(); ++i)
+		for (size_t i = 0; i < mIter.second.size(); ++i)
 		{
-			if (strcmp(mIter->first.c_str(), (const char*)mIter->second[i]->shape().name) == 0)
+			if (strcmp(mIter.first.c_str(), (const char*)mIter.second[i]->shape().name) == 0)
 			{
-				baseModel		= mIter->second[i];
+				baseModel		= mIter.second[i].get();
 				foundBaseModel	= true;
 				break;
 			}
@@ -1543,15 +1540,15 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 		// Copies reference to the shape vector
 		shapes.emplace_back(&(baseModel->shape().V));
 
-		for (size_t i = 0; i < mIter->second.size(); ++i)
+		for (size_t i = 0; i < mIter.second.size(); ++i)
 		{
-			if ((i == 0) ||(!mIter->second[i]))
+			if ((i == 0) ||(!mIter.second[i]))
 			{
 				continue;
 			}
 		
-			visemeV = mIter->second[i]->shape().V;
-			aux->addFace(mIter->second[i]);
+			visemeV = mIter.second[i]->shape().V;
+			aux->addFace(mIter.second[i].get());
 
 			// Copies reference to the shape vector
 			shapes.emplace_back(&(baseModel->shape().V));
@@ -1985,14 +1982,13 @@ void SbmBlendTextures::BlendGeometryWithMasksFeedback( GLuint * FBODst, std::vec
 	std::vector<SrPnt> visemeV;
 
 	// find the base shape and other shapes
-	std::map<std::string, std::vector<SrSnModel*> >::iterator mIter;
-	for (mIter = _mesh->blendShapeMap.begin(); mIter != _mesh->blendShapeMap.end(); ++mIter)
+	for (auto mIter = _mesh->blendShapeMap.begin(); mIter != _mesh->blendShapeMap.end(); ++mIter)
 	{
 		for (size_t i = 0; i < mIter->second.size(); ++i)
 		{
 			if (strcmp(mIter->first.c_str(), (const char*)mIter->second[i]->shape().name) == 0)
 			{
-				baseModel		= mIter->second[i];
+				baseModel		= mIter->second[i].get();
 				foundBaseModel	= true;
 				break;
 			}

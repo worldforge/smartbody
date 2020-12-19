@@ -379,7 +379,7 @@ void deformableMeshTextureReplace(const std::string& meshName, const std::string
 
 	bool meshTextureExist = false;
 	std::string finalTextureName;
-	for (auto subMesh : mesh->subMeshList)
+	for (auto& subMesh : mesh->subMeshList)
 	{
 			//if (subMesh->texName == textureName)
 		//	meshTextureExist = true;
@@ -480,17 +480,17 @@ void addModelToMesh(std::string templateMeshName, std::string modelFile, std::st
 	bool found = false;
 	for (size_t m = 0; m < mesh->dMeshStatic_p.size(); m++)
 	{
-		SrSnModel* staticModel = mesh->dMeshStatic_p[m];
+		auto& staticModel = mesh->dMeshStatic_p[m];
 		SrModel& s = staticModel->shape();
 		std::string curShapeName = (const char*) s.name;
 		if (curShapeName == newModelName)
 		{
 			// model already exists, replace it
-			SrSnModel* curModel = mesh->dMeshStatic_p[m];
+			auto& curModel = mesh->dMeshStatic_p[m];
 			curModel->unref();
 			mesh->dMeshStatic_p[m] = modelSrSn;
 			mesh->dMeshStatic_p[m]->changed(true);
-			SrSnModel* curDynamicModel = mesh->dMeshDynamic_p[m];
+			auto& curDynamicModel = mesh->dMeshDynamic_p[m];
 			curDynamicModel->unref();
 			mesh->dMeshDynamic_p[m] = modelSrSn;
 			mesh->dMeshDynamic_p[m]->changed(true);
@@ -512,7 +512,7 @@ void addModelToMesh(std::string templateMeshName, std::string modelFile, std::st
 	}
 	
 	// copy the skin weights from the proper mesh using a joint, bind matrix
-	SkinWeight* existingSkinWeights = mesh->skinWeights[0];
+	auto& existingSkinWeights = mesh->skinWeights[0];
 	
 	SkinWeight* modelSkin = new SkinWeight();
 	
@@ -565,7 +565,7 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 
 	for (size_t m = 0; m < mesh->dMeshStatic_p.size(); m++)
 	{
-		SrSnModel* staticModel = mesh->dMeshStatic_p[m];
+		auto& staticModel = mesh->dMeshStatic_p[m];
 		SrModel& s = staticModel->shape();
 		std::string curShapeName = (const char*) s.name;
 		if (curShapeName == submeshName)
@@ -592,9 +592,9 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 				mesh->dMeshStatic_p[m]->shape().V = baseModel->shape().V;
 				mesh->dMeshStatic_p[m]->shape().N = baseModel->shape().N;
 
-				std::vector<SrSnModel*> modelList;
+				std::vector<boost::intrusive_ptr<SrSnModel>> modelList;
 				modelList.emplace_back(baseModel);
-				mesh->blendShapeMap.insert(std::pair<std::string, std::vector<SrSnModel*> >(submeshName, modelList));
+				mesh->blendShapeMap.emplace(submeshName, modelList);
 				std::vector<std::string> morphTargetList;
 				morphTargetList.emplace_back(shapeName);
 				mesh->morphTargets.insert(std::pair<std::string, std::vector<std::string> >(submeshName, morphTargetList));
@@ -603,7 +603,7 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 			{
 				// controller exists, see if the shape also exists
 				bool found = false;
-				std::vector<SrSnModel*>& existingShapeModels = (*mapIter).second;
+				auto& existingShapeModels = (*mapIter).second;
 				for (auto & existingShapeModel : existingShapeModels)
 				{
 					std::string modelName = (const char*) existingShapeModel->shape().name;
@@ -658,7 +658,7 @@ void createCustomMeshFromBlendshapes(std::string templateMeshName, std::string b
 		iter != mesh->blendShapeMap.end();
 		iter++)
 	{
-		std::vector<SrSnModel*>& targets = (*iter).second;
+		auto& targets = (*iter).second;
 		for (size_t t = 0; t < targets.size(); t++) // ignore first target since it is a base mesh
 		{
 			if (targets[t] == nullptr)
@@ -691,14 +691,14 @@ void createCustomMeshFromBlendshapes(std::string templateMeshName, std::string b
 				std::string hairFileName = blendshapesDir + "/" + hairMeshName;
 				hairModel.import_ply(hairFileName.c_str());
 
-				SrSnModel* hairSrSn = new SrSnModel();
+				auto* hairSrSn = new SrSnModel();
 				std::string hairName = "HairMesh";
 				hairSrSn->shape(hairModel);
 				hairSrSn->shape().name = hairName.c_str();
 				mesh->dMeshStatic_p.emplace_back(hairSrSn);
 
-				SkinWeight* hairSkin = new SkinWeight();
-				SkinWeight* headSkin = mesh->skinWeights[0];
+				auto* hairSkin = new SkinWeight();
+				auto& headSkin = mesh->skinWeights[0];
 				SrMat hairBindShape = headSkin->bindShapeMat;
 				SrMat hairBindPose;
 				std::string headJointName = "Head";

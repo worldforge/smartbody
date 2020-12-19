@@ -155,7 +155,7 @@ void SkSkeleton::init ()
 
 void SkSkeleton::refresh_joints()
 {
-	_joints.clear();
+	auto joints = std::move(_joints);
 
 	SkJoint* j = _root;
 	std::queue<SkJoint*> queue;
@@ -167,11 +167,18 @@ void SkSkeleton::refresh_joints()
 	while (!queue.empty())
 	{
 		SkJoint* joint = queue.front();
-		joint->set_index(curIndex);
-		curIndex++;
-		_joints.emplace_back(joint);
-		for (int c = 0; c < joint->num_children(); c++)
-			queue.push(joint->child(c));
+
+		auto I = std::find_if(joints.begin(), joints.end(), [&](const std::unique_ptr<SkJoint>& entry){ return entry.get() == joint;});
+		if (I != joints.end()) {
+			joint->set_index(curIndex);
+			curIndex++;
+			for (int c = 0; c < joint->num_children(); c++) {
+				queue.push(joint->child(c));
+			}
+			_joints.emplace_back(std::move(*I));
+		}
+
+
 		queue.pop();
 	}
 }

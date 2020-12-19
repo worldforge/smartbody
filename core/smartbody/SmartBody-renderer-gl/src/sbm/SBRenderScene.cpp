@@ -865,7 +865,7 @@ SBAPI void SBRenderScene::rescalePartialMeshSkeleton(const std::string& meshName
 	for (unsigned int i = 0; i < mesh->dMeshStatic_p.size(); i++) {
 		SrModel& model = mesh->dMeshStatic_p[i]->shape();
 		SrModel& dynModel = mesh->dMeshDynamic_p[i]->shape();
-		SkinWeight* skinWeight = mesh->skinWeights[i];
+		auto& skinWeight = mesh->skinWeights[i];
 		skinWeight->buildSkinWeightBuf();
 		std::string modelName = (const char*) model.name;
 		if (skipMeshMap.find(modelName) != skipMeshMap.end()) // skip the mesh
@@ -893,7 +893,7 @@ SBAPI void SBRenderScene::rescalePartialMeshSkeleton(const std::string& meshName
 		//std::string modelName = (const char*)model.name;
 		if (mesh->blendShapeMap.find(modelName) != mesh->blendShapeMap.end()) // the shape is associated with blendshape
 		{
-			std::vector<SrSnModel*>& blendShapes = mesh->blendShapeMap[modelName];
+			auto& blendShapes = mesh->blendShapeMap[modelName];
 			for (auto & blendShape : blendShapes) {
 				SrModel& faceModel = blendShape->shape();
 				for (unsigned int k = 0; k < faceModel.V.size(); k++) {
@@ -944,7 +944,7 @@ SBAPI void SBRenderScene::rescalePartialMeshSkeleton(const std::string& meshName
 	skel->updateGlobalMatricesZero();
 
 	// update bind pose matrices
-	for (auto sw : mesh->skinWeights) {
+	for (auto& sw : mesh->skinWeights) {
 			for (unsigned int k = 0; k < sw->infJointName.size(); k++) {
 			// manually add all joint names
 			SmartBody::SBJoint* joint = skel->getJointByName(sw->infJointName[k]);

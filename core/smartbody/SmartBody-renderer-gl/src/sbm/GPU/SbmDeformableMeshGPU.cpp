@@ -790,7 +790,7 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 	
 	for (unsigned int i=0;i<subMeshList.size();i++)
 	{	
-		SbmSubMesh* mesh = subMeshList[i];
+		auto& mesh = subMeshList[i];
 		float color[4];
 		mesh->material.diffuse.get(color);		
 		glUniform4f(diffuseLoc,color[0],color[1],color[2],color[3]);
@@ -1573,11 +1573,9 @@ bool SbmDeformableMeshGPU::buildVertexBufferGPU()
 	VBOTri     = new VBOVec3i((char*)"TriIdx",GL_ELEMENT_ARRAY_BUFFER,triBuf);	
 	SbmShaderProgram::printOglError("SbmDeformableMeshGPU::buildVertexBufferGPU #2 triBuf");
 	
-	for (unsigned int i=0;i<subMeshList.size();i++)
+	for (auto& subMesh : subMeshList)
 	{
-		SbmSubMesh* subMesh = subMeshList[i];
-		
-		//SmartBody::util::log("subMeshTriBuf size = %d", subMesh->triBuf.size());
+			//SmartBody::util::log("subMeshTriBuf size = %d", subMesh->triBuf.size());
 		VBOVec3i* subMeshTriBuf = new VBOVec3i((char*)"TriIdx",GL_ELEMENT_ARRAY_BUFFER,subMesh->triBuf);
 		SbmShaderProgram::printOglError("SbmDeformableMeshGPU::buildVertexBufferGPU #3 subMesh");
 		subMeshTris.emplace_back(subMeshTriBuf);
@@ -1705,26 +1703,26 @@ void SbmDeformableMeshGPUInstance::gpuBlendShape()
 {
 #if 1 //!defined(__ANDROID__)
 	//SmartBody::util::log("gpuBlendShape::start gpuBlendShape");
-	SbmDeformableMeshGPU* gpuMesh = dynamic_cast<SbmDeformableMeshGPU*>(_mesh);
+	auto* gpuMesh = dynamic_cast<SbmDeformableMeshGPU*>(_mesh);
 	if (!gpuMesh) return;
-	if (gpuMesh->blendShapeMap.size() == 0) return;
+	if (gpuMesh->blendShapeMap.empty()) return;
 
-	for (std::map<std::string, std::vector<SrSnModel*> >::iterator mIter = gpuMesh->blendShapeMap.begin();
+	for (auto mIter = gpuMesh->blendShapeMap.begin();
 		mIter != gpuMesh->blendShapeMap.end();
 		mIter++)
 	{
 		SrSnModel* writeToBaseModel = nullptr;
 		SkinWeight* skinWeight = nullptr;
 		int vtxBaseIdx = 0;
-		std::vector<SrSnModel*>& targets = (*mIter).second;
+		auto& targets = (*mIter).second;
 		//SmartBody::util::log("gpuBlendShape::gpuMesh->dMeshStatic_p.size() = %d", gpuMesh->dMeshStatic_p.size());
 		for (size_t i = 0; i < gpuMesh->dMeshStatic_p.size(); ++i)
 		{
 			if (strcmp(gpuMesh->dMeshStatic_p[i]->shape().name, mIter->first.c_str()) == 0)
 			{
-				writeToBaseModel = gpuMesh->dMeshStatic_p[i];
+				writeToBaseModel = gpuMesh->dMeshStatic_p[i].get();
 				if (gpuMesh->skinWeights.size() > i)
-					skinWeight = gpuMesh->skinWeights[i];
+					skinWeight = gpuMesh->skinWeights[i].get();
 				else
 					skinWeight = nullptr;
 				break;
@@ -1744,8 +1742,8 @@ void SbmDeformableMeshGPUInstance::gpuBlendShape()
 			{
 				// can't find the base model, assuming it's the first mesh
 				//SmartBody::util::log("Can't find BlendShape BaseModel, will assume it's the first mesh.");
-				writeToBaseModel = gpuMesh->dMeshStatic_p[0];
-				skinWeight = gpuMesh->skinWeights[0];
+				writeToBaseModel = gpuMesh->dMeshStatic_p[0].get();
+				skinWeight = gpuMesh->skinWeights[0].get();
 				vtxBaseIdx = 0;
 			}
 			//continue;

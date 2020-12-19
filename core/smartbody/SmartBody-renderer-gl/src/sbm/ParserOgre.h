@@ -39,13 +39,13 @@ class ParserOgre
 {
 	public:
 		static bool parse(SmartBody::SBSkeleton& skeleton, std::vector<std::unique_ptr<SmartBody::SBMotion>>& motions, std::string fileName, float scale, bool doParseSkeleton, bool doParseMotion);
-		static bool parseSkinMesh(std::vector<SrModel*>& meshModelVec, std::vector<SkinWeight*>& skinWeights, std::string filename, std::string& skeletonName, float scale, bool doParseMesh, bool doParseSkinWeight);
+		static bool parseSkinMesh(std::vector<SrModel*>& meshModelVec, std::vector<std::unique_ptr<SkinWeight>>& skinWeights, std::string filename, std::string& skeletonName, float scale, bool doParseMesh, bool doParseSkinWeight);
 		static DOMNode* getNode(const std::string& nodeName, DOMNode* node);
 
 		static bool parseSkeleton(DOMNode* skeletonNode, SmartBody::SBSkeleton& skeleton, std::string fileName, float scale);
 		static bool parseMotion(DOMNode* motionNode, std::vector<std::unique_ptr<SmartBody::SBMotion>>&, std::string fileName, float scale);
 		static bool parseMesh(DOMNode* meshNode, std::vector<SrModel*>& meshModelVec, float scaleFactor);
-		static bool parseSkinWeight(DOMNode* node, std::vector<SkinWeight*>& skinWeights, float scaleFactor);
+		static bool parseSkinWeight(DOMNode* node, std::vector<std::unique_ptr<SkinWeight>>& skinWeights, float scaleFactor);
 		static bool parseMeshMaterial(std::vector<SrModel*>& meshModelVec, std::string materialFilePath);
 			
 		static bool exportOgreXMLMesh(DeformableMesh* mesh, std::string meshName, std::string outPathName);

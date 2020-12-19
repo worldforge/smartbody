@@ -555,11 +555,11 @@ void SBBaseRenderer::renderMesh(DeformableMeshInstance* meshInstance, SbmShaderP
 
 	
 
-	std::vector<SbmSubMesh*>& subMeshList = mesh->subMeshList;
-	std::vector<VBOVec3i*>& subMeshTris = gpuMesh->getVBOSubMeshTris();
+	auto& subMeshList = mesh->subMeshList;
+	auto& subMeshTris = gpuMesh->getVBOSubMeshTris();
 	for (unsigned int i = 0; i < subMeshList.size(); i++)
 	{
-		SbmSubMesh* subMesh = subMeshList[i];	
+		auto& subMesh = subMeshList[i];
 		VBOVec3i* subMeshVBO = subMeshTris[i];
 		glMaterial(subMesh->material);		
 // 		if (subMesh->material.useAlphaBlend)

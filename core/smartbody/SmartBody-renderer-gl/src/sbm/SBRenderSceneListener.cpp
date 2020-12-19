@@ -345,12 +345,12 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 									auto& assetManager = parent.mRenderScene._renderAssetManager;
 
 									DeformableMesh* neutralMesh = assetManager.getDeformableMesh(shapeName);
-									SrSnModel* staticModel = neutralMesh->dMeshStatic_p[0];
+									auto& staticModel = neutralMesh->dMeshStatic_p[0];
 									SrModel& s = staticModel->shape();
 									std::string blendShapeMapName = (const char*) s.name;
 									(*shapeIter).second[0] = blendShapeMapName;
 									//mesh->blendShapeMap.insert(std::pair<std::string, std::vector<SrSnModel*> >(neutralMesh->getName(), std::vector<SrSnModel*>() ));
-									mesh->blendShapeMap.insert(std::pair<std::string, std::vector<SrSnModel*> >(blendShapeMapName, std::vector<SrSnModel*>()));
+									mesh->blendShapeMap.emplace(blendShapeMapName, std::vector<boost::intrusive_ptr<SrSnModel>>());
 									auto blendshapeIter = mesh->blendShapeMap.begin();
 									(*blendshapeIter).second.resize(numShapeAttributes);
 									auto* model = new SrSnModel();

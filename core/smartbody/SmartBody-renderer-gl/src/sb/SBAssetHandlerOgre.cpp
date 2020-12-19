@@ -98,7 +98,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 				existingSkeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonName);
 				if (existingSkeleton)
 				{
-					for (auto sw : mesh->skinWeights)
+					for (auto& sw : mesh->skinWeights)
 					{
 							for (int k=0; k < existingSkeleton->getNumJoints(); k++)
 						{

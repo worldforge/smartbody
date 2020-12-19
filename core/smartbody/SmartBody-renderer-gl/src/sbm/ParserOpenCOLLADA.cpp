@@ -3020,9 +3020,9 @@ bool ParserOpenCOLLADA::exportCollada(SmartBody::SBRenderAssetManager& renderAss
 		ParserOpenCOLLADA::exportSkinMesh(renderAssetManager, fp, deformMeshName, meshScale, skeletonName);
 		SbmTextureManager& texManager = SbmTextureManager::singleton();
 		printf("export textures\n");
-		for (unsigned int i=0;i<defMesh->subMeshList.size();i++)
+		for (auto & i : defMesh->subMeshList)
 		{
-			SbmSubMesh* subMesh = defMesh->subMeshList[i];
+			auto& subMesh = i;
 			auto tex = texManager.findTexture(subMesh->texName.c_str());
 			if (tex) // copy texture
 			{
@@ -3059,7 +3059,7 @@ bool ParserOpenCOLLADA::exportMaterials(SmartBody::SBRenderAssetManager& renderA
 	// write out submeshes for the deformable mesh
 	for (auto & i : defMesh->subMeshList)
 	{
-		submeshes.emplace_back(i);
+		submeshes.emplace_back(i.get());
 	}
 	// if there are any composited blendshapes, add those submeshes as well
 	for (auto & iter : defMesh->morphTargets)
@@ -3075,7 +3075,7 @@ bool ParserOpenCOLLADA::exportMaterials(SmartBody::SBRenderAssetManager& renderA
 				morphMesh->rebuildVertexBuffer(true);
 				for (auto & i : morphMesh->subMeshList)
 				{
-					submeshes.emplace_back(i);
+					submeshes.emplace_back(i.get());
 				}
 			}
 		}
@@ -3348,10 +3348,10 @@ bool ParserOpenCOLLADA::exportSkinMesh( SmartBody::SBRenderAssetManager& renderA
 	// morph targets
 	for (auto & iter : defMesh->blendShapeMap)
 	{
-		std::vector<SrSnModel*>& shapes = iter.second;
+		auto& shapes = iter.second;
 		for (unsigned int s = 1; s < shapes.size(); s++) // first shape is the base shape, already written out
 		{
-			SrSnModel* srsnModel = shapes[s];
+			auto& srsnModel = shapes[s];
 			if (!srsnModel)
 				continue;
 			SrModel& model = srsnModel->shape();
@@ -3368,12 +3368,8 @@ bool ParserOpenCOLLADA::exportSkinMesh( SmartBody::SBRenderAssetManager& renderA
 	// make sure that any missing joints are added with zero weights
 	auto sbSk = assetManager->getSkeleton(skeletonName);
 	
-	// get a list of joints involved with the binding information, remove from joint set, leaving unused joints
-	for (auto skinWeight : defMesh->skinWeights)
-	{
-			}
 
-	for (auto skinWeight : defMesh->skinWeights)
+	for (auto& skinWeight : defMesh->skinWeights)
 	{
 		std::set<std::string> allJoints;
 		for (int j = 0; j < sbSk->getNumJoints(); j++)
@@ -3573,7 +3569,7 @@ bool ParserOpenCOLLADA::exportVisualScene( SmartBody::SBRenderAssetManager& rend
 			std::string rootJointName = rootJoint->getName();
 			for (unsigned int i=0;i<defMesh->skinWeights.size();i++)
 			{
-				SkinWeight* skinWeight = defMesh->skinWeights[i];
+				auto& skinWeight = defMesh->skinWeights[i];
 				std::string meshID = skinWeight->sourceMesh;
 				std::string controllerID = skinWeight->sourceMesh+"-skin";
 				int validMeshIdx = defMesh->getValidSkinMesh(skinWeight->sourceMesh);

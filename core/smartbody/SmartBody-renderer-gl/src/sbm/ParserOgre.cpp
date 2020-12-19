@@ -44,7 +44,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 
-bool ParserOgre::parseSkinMesh( std::vector<SrModel*>& meshModelVec, std::vector<SkinWeight*>& skinWeights, std::string pathName, std::string& skeletonName, float scale, bool doParseMesh, bool doParseSkinWeight )
+bool ParserOgre::parseSkinMesh( std::vector<SrModel*>& meshModelVec, std::vector<std::unique_ptr<SkinWeight>>& skinWeights, std::string pathName, std::string& skeletonName, float scale, bool doParseMesh, bool doParseSkinWeight )
 {
 	try 
 	{
@@ -75,7 +75,7 @@ bool ParserOgre::parseSkinMesh( std::vector<SrModel*>& meshModelVec, std::vector
 		//SmartBody::util::log("directory string = %s",filepath.parent_path().directory_string().c_str());
 		//std::string filepath = boost::filesystem::
 		std::stringstream strstr;
-		if (fileextension.size() > 0 && fileextension[0] == '.')
+		if (!fileextension.empty() && fileextension[0] == '.')
 			strstr << filebasename << fileextension;
 		else
 			strstr << filebasename << "." << fileextension;
@@ -1223,7 +1223,7 @@ bool ParserOgre::parseMesh( DOMNode* meshNode, std::vector<SrModel*>& meshModelV
 	return true;
 }
 
-bool ParserOgre::parseSkinWeight( DOMNode* meshNode, std::vector<SkinWeight*>& skinWeights, float scaleFactor )
+bool ParserOgre::parseSkinWeight( DOMNode* meshNode, std::vector<std::unique_ptr<SkinWeight>>& skinWeights, float scaleFactor )
 {
 	//SmartBody::util::log("ParseOgre::parseSkinWeight");
 	DOMNode* subMeshNode = getNode("submeshes",meshNode);
@@ -1584,17 +1584,17 @@ bool ParserOgre::exportOgreXMLMesh( DeformableMesh* defMesh, std::string meshNam
 	FILE* fp = fopen(meshFileName.c_str(),"wt");
 	fprintf(fp,"<mesh>\n");
 	fprintf(fp,"<submeshes>\n"); 
-	std::vector<SkinWeight*>& skinWeights = defMesh->skinWeights;
-	std::vector<SrSnModel*>& models = defMesh->dMeshStatic_p;
+	auto& skinWeights = defMesh->skinWeights;
+	auto& models = defMesh->dMeshStatic_p;
 	
 	for (unsigned int i=0;i<skinWeights.size();i++)
 	{
-		SkinWeight* weight = skinWeights[i];
+		auto& weight = skinWeights[i];
 		SrModel& model = models[i]->shape();
 		SrMaterial mat;
 		std::string matName = "defaultMat";	
-		std::string textureName = "";
-		if (model.M.size() > 0)
+		std::string textureName;
+		if (!model.M.empty())
 		{
 			matName = model.mtlnames[0];						
 			mat = model.M[0];

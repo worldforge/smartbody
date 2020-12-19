@@ -209,7 +209,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 				ParserCOLLADAFast::parseLibraryControllers(controllerNode, *mesh, factor, jointNamePrefix);
 			}	
 			
-			for (auto skinWeight : mesh->skinWeights)
+			for (auto& skinWeight : mesh->skinWeights)
 			{
 					for (auto & j : skinWeight->infJointName)
 				{
@@ -295,7 +295,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 					auto iter = mesh->blendShapeMap.find(baseShape);
 					if (iter == mesh->blendShapeMap.end())
 					{
-						mesh->blendShapeMap.insert(std::make_pair(baseShape, std::vector<SrSnModel*>()));
+						mesh->blendShapeMap.emplace(baseShape, std::vector<boost::intrusive_ptr<SrSnModel>>());
 						//SmartBody::util::log("ADDED BLENDSHAPE FROM BASE %s", baseShape.c_str());
 						iter = mesh->blendShapeMap.find(baseShape);
 					}
@@ -303,7 +303,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 					{
 						//SmartBody::util::log("RETRIEVED BASE %s", baseShape.c_str());
 					}
-					std::vector<SrSnModel*>& models = (*iter).second;
+					auto& models = (*iter).second;
 					models.emplace_back(srSnModelStatic);
 					//SmartBody::util::log("INSERTED BLENDSHAPE %s INTO BASE %s", (const char*) srSnModelStatic->shape().name, baseShape.c_str());
 					srSnModelStatic->ref();
@@ -362,7 +362,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 			for (auto & iter : mesh->blendShapeMap)
 			{
 				//SmartBody::util::log("BLENDSHAPE: %s", iter->first.c_str());
-				std::vector<SrSnModel*>& modelList = iter.second;
+				auto& modelList = iter.second;
 				for (auto & iter2 : modelList)
 				{
 					SmartBody::util::log("\t %s", (const char*) iter2->shape().name);

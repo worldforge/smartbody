@@ -290,7 +290,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 				SmartBody::SBPawn* pawn		= skel->getPawn();
 
 				const std::string& parentJoint = pawn->getStringAttribute("blendShape.parentJoint");
-				if (parentJoint != "")
+				if (!parentJoint.empty())
 				{
 					SmartBody::SBJoint* joint = skel->getJointByName(parentJoint);
 					if (joint)
@@ -336,7 +336,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 				glPushMatrix();
 
 				const std::string& parentJoint = pawn->getStringAttribute("blendShape.parentJoint");
-				if (parentJoint != "")
+				if (!parentJoint.empty())
 				{
 					SmartBody::SBJoint* joint = skel->getJointByName(parentJoint);
 					if (joint)
@@ -366,7 +366,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 				glScalef(meshScale[0], meshScale[1], meshScale[2]);
 			}
 
-			std::vector<SbmSubMesh*>& subMeshList = mesh->subMeshList;
+			auto& subMeshList = mesh->subMeshList;
 #if 0
 			myGLEnable(GL_LIGHTING);
 			myGLEnable(GL_TEXTURE_2D);	
@@ -390,12 +390,12 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 
 			//SrVec tempPos = shape->_deformPosBuf[150];
 			//SmartBody::util::log("deformPos = %f %f %f",tempPos[0],tempPos[1],tempPos[2]);
-			if (shape->_deformPosBuf.size() > 0)
+			if (!shape->_deformPosBuf.empty())
 			{
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glVertexPointer(3, GL_FLOAT, 0, shape->_deformPosBuf[0].data());
 			}
-			if (mesh->normalBuf.size() > 0)
+			if (!mesh->normalBuf.empty())
 			{
 				glEnableClientState(GL_NORMAL_ARRAY);
 				glNormalPointer(GL_FLOAT, 0, mesh->normalBuf[0].data());
@@ -427,7 +427,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 				myGLEnable(GL_LIGHTING);
 			}
 		
-			if (mesh->texCoordBuf.size() > 0)
+			if (!mesh->texCoordBuf.empty())
 			{
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);  	
 				glTexCoordPointer(2, GL_FLOAT, 0, mesh->texCoordBuf[0].data());
@@ -439,12 +439,11 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 #endif
 			
 			//SmartBody::util::log("subMeshList size = %d", subMeshList.size());
-			for (unsigned int i=0;i<subMeshList.size();i++)
+			for (auto& subMesh : subMeshList)
 			{	
-				SbmSubMesh* subMesh = subMeshList[i];
-				bool blendShapeMesh = false;
-				std::map<std::string, std::vector<SrSnModel*> > ::iterator mi = mesh->blendShapeMap.find(subMesh->modelName);
-				std::map<std::string, std::vector<SrSnModel*> > ::iterator endIt =  mesh->blendShapeMap.end();
+					bool blendShapeMesh = false;
+				auto mi = mesh->blendShapeMap.find(subMesh->modelName);
+				auto endIt =  mesh->blendShapeMap.end();
 				int hitCount = mesh->blendShapeMap.count(subMesh->modelName);
 				if (mi != endIt)
 					blendShapeMesh = true;
