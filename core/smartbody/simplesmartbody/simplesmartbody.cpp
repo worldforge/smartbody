@@ -3,7 +3,6 @@
 #include <sb/SBSkeleton.h>
 #include "SBPython.h"
 #include <sb/SBSimulationManager.h>
-#include <sb/SBBmlProcessor.h>
 #include <sb/SBSceneListener.h>
 #include "SBUtilities.h"
 

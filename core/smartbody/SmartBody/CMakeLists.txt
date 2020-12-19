@@ -97,47 +97,6 @@ set(SMARTBODY_LIB_SR_SRC
 set(SMARTBODY_LIB_SBM_SRC
 
         src/sbm/BMLDefs.cpp
-        src/bml/behavior_scheduler_constant_speed.cpp
-        src/bml/behavior_scheduler.cpp
-        src/bml/behavior_scheduler_fixed.cpp
-        src/bml/behavior_scheduler_gesture.cpp
-        src/bml/behavior_span.cpp
-        src/bml/bml_animation.cpp
-        src/bml/bml_gesture.cpp
-        src/bml/bml_bodyreach.cpp
-        src/bml/bml_constraint.cpp
-        src/bml/bml.cpp
-        src/bml/bml_event.cpp
-        src/bml/bml_face.cpp
-        src/bml/bml_gaze.cpp
-        src/bml/bml_general_param.cpp
-        src/bml/bml_grab.cpp
-        src/bml/bml_interrupt.cpp
-        src/bml/bml_locomotion.cpp
-        src/bml/bml_processor.cpp
-        src/bml/bml_reach.cpp
-        src/bml/bml_speech.cpp
-        src/bml/bml_sync_point.cpp
-        src/bml/bml_target.cpp
-        src/bml/bml_saccade.cpp
-        src/bml/bml_noise.cpp
-        src/bml/bml_states.cpp
-        src/bml/BMLAnimationObject.cpp
-        src/bml/BMLBodyObject.cpp
-        src/bml/BMLConstraintObject.cpp
-        src/bml/BMLEventObject.cpp
-        src/bml/BMLFaceObject.cpp
-        src/bml/BMLGazeObject.cpp
-        src/bml/BMLGestureObject.cpp
-        src/bml/BMLHeadObject.cpp
-        src/bml/BMLLocomotionObject.cpp
-        src/bml/BMLObject.cpp
-        src/bml/BMLReachObject.cpp
-        src/bml/BMLSpeechObject.cpp
-        src/bml/BMLSaccadeObject.cpp
-        src/bml/BMLHandObject.cpp
-        src/bml/BMLStateObject.cpp
-        src/bml/BMLNoiseObject.cpp
 
         src/sbm/Heightfield.cpp
         src/sbm/lin_win.cpp
@@ -198,9 +157,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/controllers/MeCtReachEngine.cpp
         src/controllers/me_ct_saccade.cpp
         src/sbm/local_speech.cpp
-        ## UNUSED:
-        ##      sbm/sbm_bml.cpp
-        #src/sbm/sbm_deformable_mesh.cpp
         src/sbm/sbm_speech_audiofile.cpp
         src/sbm/sbm_speech.cpp
         src/sbm/sbm_speech_impl_skeleton.cpp
@@ -243,7 +199,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBSkeleton.cpp
         src/sb/SBController.cpp
         src/sb/SBSimulationManager.cpp
-        src/sb/SBBmlProcessor.cpp
         src/sb/SBAnimationState.cpp
         src/sb/SBAnimationTransition.cpp
         src/sb/SBAnimationTransitionRule.cpp

@@ -2831,14 +2831,32 @@ void MeControllerRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScen
 	MeCtMotion* motionController = dynamic_cast<MeCtMotion*>(anim_ct);
 	if (motionController)
 	{
-		schedule_ct->schedule( anim_ct, behav_syncs);
+		MeCtScheduler2::ScheduleData scheduleData{
+				behav_syncs.sync_start()->time(),
+				behav_syncs.sync_ready()->time(),
+				behav_syncs.sync_stroke_start()->time(),
+				behav_syncs.sync_stroke()->time(),
+				behav_syncs.sync_stroke_end()->time(),
+				behav_syncs.sync_relax()->time(),
+				behav_syncs.sync_end()->time(),
+		};
+		schedule_ct->schedule( anim_ct, scheduleData);
 	}
 	else
 	{
 		MeCtSimpleNod* nod = dynamic_cast<MeCtSimpleNod*>(anim_ct);
 		if (nod)
 		{
-			schedule_ct->schedule( anim_ct, behav_syncs);
+			MeCtScheduler2::ScheduleData scheduleData{
+					behav_syncs.sync_start()->time(),
+					behav_syncs.sync_ready()->time(),
+					behav_syncs.sync_stroke_start()->time(),
+					behav_syncs.sync_stroke()->time(),
+					behav_syncs.sync_stroke_end()->time(),
+					behav_syncs.sync_relax()->time(),
+					behav_syncs.sync_end()->time(),
+			};
+			schedule_ct->schedule( anim_ct, scheduleData);
 		}
 		else
 		{			

@@ -33,21 +33,22 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/GPU/SbmTexture.h"
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
+#include "sb/SBSkeleton.h"
 
 
 class TextLineSplitterFast
 {
 public:
 
-	TextLineSplitterFast( const size_t max_line_len );
+	TextLineSplitterFast( size_t max_line_len );
 
 	~TextLineSplitterFast();
 
 	void            SplitLine( const char *line,
-							   const char sep_char = ','
+							   char sep_char = ','
 							 );
 
-	inline size_t   NumTokens( void ) const
+	inline size_t   NumTokens( ) const
 	{
 		return mNumTokens;
 	}
@@ -65,7 +66,7 @@ private:
 	char          **mTokens;
 	size_t          mNumTokens;
 
-	inline void     ResetContent( void )
+	inline void     ResetContent( )
 	{
 		memset( mBuff, 0, mStorageSize );
 		// mark all items as empty:

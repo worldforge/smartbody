@@ -36,10 +36,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
-#include <sb/SBBmlProcessor.h>
 #include <sb/SBReach.h>
 #include "SBUtilities.h"
-#include <sb/SBTypes.h>
 #include <bml/bml_processor.hpp>
 #include <controllers/me_ct_scheduler2.h>
 #include <controllers/me_ct_blend.hpp>
@@ -49,8 +47,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_channel_writer.hpp>
 #include <controllers/MeCtReachEngine.h>
 #include <controllers/me_ct_example_body_reach.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/version.hpp>
 #include "sb/SBServiceManager.h"
 #include "sb/SBSteerManager.h"
 

@@ -17,7 +17,6 @@
 #include <sb/SBService.h>
 #include <sb/SBServiceManager.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBBmlProcessor.h>
 #include <sb/SBAnimationState.h>
 #include <sb/SBMotionBlendBase.h>
 #include <sb/SBAnimationTransition.h>

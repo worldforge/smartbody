@@ -50,14 +50,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_saccade.h>
 #include <controllers/me_ct_motion_graph.hpp>
 #include <controllers/me_ct_generic_hand.h>
-//#include <sbm/remote_speech.h>
 #include <sbm/local_speech.h>
 #include <sbm/text_speech.h>
 #include <sbm/sbm_speech_audiofile.hpp>
-#include <bml/bml_processor.hpp>
 #include <sk/sk_channel_array.h>
 #include <sr/sr_random.h>
-
+#include "controllers/me_ct_motion.h"
 
 namespace SmartBody {
 

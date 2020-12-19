@@ -94,9 +94,9 @@ namespace BML {
 			SmartBody::SpeechInterface* speech_impl,
 			SmartBody::SpeechInterface* speech_impl_backup,
 			SmartBody::RequestId speech_request_id,
-			const std::string& policyOverride,
+			std::string  policyOverride,
 			std::vector<SpeechMark>& marks,
-			BmlRequestPtr request,
+			const BmlRequestPtr& request,
 			const std::string& speechAsXML
 		);
 		virtual ~SpeechRequest();
@@ -191,23 +191,6 @@ namespace BML {
 
 		std::string policy;
 
-		// following is the functions that are needed for lip sync run time
-		static std::map<std::string, std::vector<float> > generateCurvesGivenDiphoneSet(std::vector<SmartBody::VisemeData*>* visemes, std::string mappingName, std::string characterName, bool secondpass, bool thirdpass, bool fourthpass);
-
-		static std::vector<float> scaleCurve(std::vector<float>& c1, std::vector<float>& weights);
-
-		static std::vector<float> addCurve(std::vector<float>& c1, std::vector<float>& c2);
-
-		static std::vector<float> stitchCurve(std::vector<float>& c1, std::vector<float>& c2);
-
-		static void smoothCurve(std::vector<float>& c, std::vector<float>& timeMarkers, float windowSize);
-
-		static void filterCurve(std::vector<float>&c, float speedLimit);
-
-		static void constrainCurve(std::vector<float>& openCurve, std::vector<float>& otherCurve, float ratio = 1.0f);
-		static void constrainWidenCurve(std::vector<float>& widenCurve, float time);
-
-		static bool getLineIntersection(float p0_x, float p0_y, float p1_x, float p1_y, float p2_x, float p2_y, float p3_x, float p3_y, float& i_x, float& i_y);
 
 	protected:
 		void createStandardSyncPoint( const std::wstring& attr, SyncPointPtr& sync );

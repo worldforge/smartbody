@@ -13,7 +13,6 @@
 #include "fltk_viewer.h"
 #include "RootWindow.h"
 #include <channelbufferviewer/channelbufferWindow.hpp>
-#include <faceviewer/FaceViewer.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -25,7 +24,6 @@
 
 #include <sb/SBScene.h>
 #include <sbm/mcontrol_callbacks.h>
-#include <sbm/sbm_test_cmds.hpp>
 #include <bml/bml_processor.hpp>
 #include <sbm/remote_speech.h>
 #include <sbm/local_speech.h>
@@ -43,6 +41,7 @@
 #include "FLTKListener.h"
 #include "sb/SBDebuggerServer.h"
 #include <sbm/PPRAISteeringAgent.h>
+#include <SBBMLProcessorPython.h>
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1135,6 +1134,7 @@ int main( int argc, char **argv )	{
 	pythonExtraModuleDeclarations.emplace_back([](){
 		initPythonRenderer();
 		initPythonNavmesh();
+		initPythonBML();
 	});
 
 	initPython();

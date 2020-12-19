@@ -24,8 +24,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 using namespace gwiz;
 
 #include "sbm/sbm_constants.h"
-#include <bml/bml.hpp>
 #include "SBUtilities.h"
+#include "sbm/BMLDefs.h"
+#include "sb/SBPawn.h"
+#include "sb/SBSkeleton.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +39,9 @@ HEAD ORIENT JOINTS: { "spine4", "spine5", "skullbase" }
 
 std::string MeCtHeadOrient::_type_name = "HeadOrient";
 
-MeCtHeadOrient::MeCtHeadOrient( void )	{
+enum HeadBehaviorType { HEAD_NOD, HEAD_SHAKE, HEAD_TOSS, HEAD_ORIENT, HEAD_WIGGLE, HEAD_WAGGLE, HEAD_PARAMETERIZED };
+
+MeCtHeadOrient::MeCtHeadOrient( )	{
 
 	_duration = -1.0;
 	_pitch_deg = 0.0;
@@ -45,7 +49,7 @@ MeCtHeadOrient::MeCtHeadOrient( void )	{
 	_roll_deg = 0.0;
 }
 
-MeCtHeadOrient::~MeCtHeadOrient( void )	{}
+MeCtHeadOrient::~MeCtHeadOrient( )	= default;
 
 void MeCtHeadOrient::init(SmartBody::SBPawn* pawn)
 {
@@ -141,13 +145,13 @@ TILTING JOINTS: { "spine4", "spine5", "skullbase" }
 
 std::string MeCtSimpleTilt::_type_name = "SimpleTilt";
 
-MeCtSimpleTilt::MeCtSimpleTilt( void )	{
+MeCtSimpleTilt::MeCtSimpleTilt( )	{
 
 	_duration = -1.0;
 	_angle_deg = 0.0;
 }
 
-MeCtSimpleTilt::~MeCtSimpleTilt( void )	{}
+MeCtSimpleTilt::~MeCtSimpleTilt( )	= default;
 
 void MeCtSimpleTilt::init(SmartBody::SBPawn* pawn)	{
 	char joint_labels[ 3 ][ MAX_JOINT_LABEL_LEN ] = {
@@ -244,7 +248,7 @@ MeCtSimpleNod::MeCtSimpleNod( void )	{
 	_duration = -1.0;
 	_magnitude = 0.0;
 	_repetitions = 0.0;
-	_movementType = BML::HEAD_NOD;
+	_movementType = HEAD_NOD;
 }
 
 MeCtSimpleNod::~MeCtSimpleNod( void )	{}
@@ -282,17 +286,17 @@ void MeCtSimpleNod::set_nod( float dur, float mag, float rep, int movementType, 
 
 bool MeCtSimpleNod::isNod()
 {
-	return (_movementType == BML::HEAD_NOD && _mode == NOD_SIMPLE);
+	return (_movementType == HEAD_NOD && _mode == NOD_SIMPLE);
 }
 
 bool MeCtSimpleNod::isShake()
 {
-	return (_movementType == BML::HEAD_SHAKE && _mode == NOD_SIMPLE);
+	return (_movementType == HEAD_SHAKE && _mode == NOD_SIMPLE);
 }
 
 bool MeCtSimpleNod::isTilt()
 {
-	return (_movementType == BML::HEAD_TOSS && _mode == NOD_SIMPLE);
+	return (_movementType == HEAD_TOSS && _mode == NOD_SIMPLE);
 }
 
 void MeCtSimpleNod::controller_start()	{}
@@ -440,15 +444,15 @@ bool MeCtSimpleNod::controller_evaluate( double t, MeFrameData& frame )	{
 		const std::string& jointName = _channels.name(local_channel_index);
 		SkJoint* channelJoint = frame.context()->channels().skeleton()->search_joint(jointName.c_str());
 		SrVec rotAxis = SrVec(0,0,1);
-		if (_movementType == BML::HEAD_NOD )
+		if (_movementType == HEAD_NOD )
 		{
 			 rotAxis = channelJoint->localGlobalAxis(0);
 		}
-		else if (_movementType == BML::HEAD_SHAKE )
+		else if (_movementType == HEAD_SHAKE )
 		{
 			rotAxis = channelJoint->localGlobalAxis(1);
 		}
-		else if (_movementType == BML::HEAD_TOSS )
+		else if (_movementType == HEAD_TOSS )
 		{
 			rotAxis = channelJoint->localGlobalAxis(2);
 		}

@@ -30,6 +30,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 namespace SmartBody {
 
 class SBDiphone;
+class VisemeData;
 
 struct RealTimePhoneme {
 	std::string phoneme;
@@ -77,6 +78,14 @@ class SBPhonemeManager : public SBService
 		SBAPI void saveLipSyncAnimation(const std::string characterName, const std::string lipsyncFile, const std::string outputFile);
 		SBAPI void exportForService(const std::string filename);
 		SBAPI void createFastMap();
+
+	std::map<std::string, std::vector<float> > generateCurvesGivenDiphoneSet(std::vector<SmartBody::VisemeData*>* visemes,
+																			 std::string mappingName,
+																			 std::string characterName,
+																			 bool secondpass,
+																			 bool thirdpass,
+																			 bool fourthpass,
+																			 std::vector<SmartBody::VisemeData*>& debugVisemeCurves);
 
 	protected:
 		

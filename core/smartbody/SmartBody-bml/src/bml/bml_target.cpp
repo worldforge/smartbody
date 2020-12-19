@@ -21,13 +21,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include "bml_target.hpp"
 #include "sbm/BMLDefs.h"
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
+#include "sb/SBCharacter.h"
 
 #define DEBUG_BML_TARGET				(0)
 

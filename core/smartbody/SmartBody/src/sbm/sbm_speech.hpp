@@ -279,6 +279,23 @@ namespace SmartBody {
         virtual void requestComplete( RequestId requestId ) = 0;
 
     };
+
+// following is the functions that are needed for lip sync run time
+
+std::vector<float> scaleCurve(std::vector<float>& c1, std::vector<float>& weights);
+
+std::vector<float> addCurve(std::vector<float>& c1, std::vector<float>& c2);
+
+std::vector<float> stitchCurve(std::vector<float>& c1, std::vector<float>& c2);
+
+void smoothCurve(std::vector<float>& c, std::vector<float>& timeMarkers, float windowSize);
+
+void filterCurve(std::vector<float>&c, float speedLimit);
+
+void constrainCurve(std::vector<float>& openCurve, std::vector<float>& otherCurve, float ratio = 1.0f);
+void constrainWidenCurve(std::vector<float>& widenCurve, float time);
+
+bool getLineIntersection(float p0_x, float p0_y, float p1_x, float p1_y, float p2_x, float p2_y, float p3_x, float p3_y, float& i_x, float& i_y);
 }  // end namespace SmartBody
 
 # endif // SBM_AUDIO_HPP

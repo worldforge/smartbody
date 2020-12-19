@@ -390,16 +390,23 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct, double tin,
 	return create_track( blendingCt, timingCt, ct );
 }
 
-MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct, BML::BehaviorSyncPoints& syncPoints)
+MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct, ScheduleData& scheduleData)
 {
-	double startAt  = syncPoints.sync_start()->time();
-	double readyAt  = syncPoints.sync_ready()->time();
-	double strokeStartAt = syncPoints.sync_stroke_start()->time();
-	double strokeAt = syncPoints.sync_stroke()->time();
-	double strokeEndAt = syncPoints.sync_stroke_end()->time();
-	double relaxAt  = syncPoints.sync_relax()->time();
-	double endAt    = syncPoints.sync_end()->time();
+//	double startAt  = syncPoints.sync_start()->time();
+//	double readyAt  = syncPoints.sync_ready()->time();
+//	double strokeStartAt = syncPoints.sync_stroke_start()->time();
+//	double strokeAt = syncPoints.sync_stroke()->time();
+//	double strokeEndAt = syncPoints.sync_stroke_end()->time();
+//	double relaxAt  = syncPoints.sync_relax()->time();
+//	double endAt    = syncPoints.sync_end()->time();
 
+	double startAt  = scheduleData.startAt;
+	double readyAt  = scheduleData.readyAt;
+	double strokeStartAt = scheduleData.strokeStartAt;
+	double strokeAt = scheduleData.strokeAt;
+	double strokeEndAt = scheduleData.strokeEndAt;
+	double relaxAt  = scheduleData.readyAt;
+	double endAt    = scheduleData.endAt;
 	
 	double now = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();;
 
@@ -618,17 +625,24 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct, BML::Behavi
 }
 
 
-MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct1, MeController* ct2, float value, bool loop, BML::BehaviorSyncPoints& syncPoints)
+MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct1, MeController* ct2, float value, bool loop, ScheduleData& scheduleData)
 {
-	double startAt  = syncPoints.sync_start()->time();
-	double readyAt  = syncPoints.sync_ready()->time();
-	double strokeStartAt = syncPoints.sync_stroke_start()->time();
-	double strokeAt = syncPoints.sync_stroke()->time();
-	double strokeEndAt = syncPoints.sync_stroke_end()->time();
-	double relaxAt  = syncPoints.sync_relax()->time();
-	double endAt    = syncPoints.sync_end()->time();
+//	double startAt  = syncPoints.sync_start()->time();
+//	double readyAt  = syncPoints.sync_ready()->time();
+//	double strokeStartAt = syncPoints.sync_stroke_start()->time();
+//	double strokeAt = syncPoints.sync_stroke()->time();
+//	double strokeEndAt = syncPoints.sync_stroke_end()->time();
+//	double relaxAt  = syncPoints.sync_relax()->time();
+//	double endAt    = syncPoints.sync_end()->time();
 
-	
+	double startAt  = scheduleData.startAt;
+	double readyAt  = scheduleData.readyAt;
+	double strokeStartAt = scheduleData.strokeStartAt;
+	double strokeAt = scheduleData.strokeAt;
+	double strokeEndAt = scheduleData.strokeEndAt;
+	double relaxAt  = scheduleData.readyAt;
+	double endAt    = scheduleData.endAt;
+
 	double now = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();;
 
 	// if any of the sync points begin before the current time, 

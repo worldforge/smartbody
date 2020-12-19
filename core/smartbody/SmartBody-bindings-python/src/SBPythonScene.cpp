@@ -1,10 +1,7 @@
 
-#include "SBPython.h"
 #include "SBPythonClass.h"
 #include "controllers/me_ct_scheduler2.h"
-#include "controllers/me_ct_gaze.h"
 #include "controllers/me_ct_eyelid.h"
-#include "controllers/me_ct_curve_writer.hpp"
 #include "sb/SBFaceDefinition.h"
 #include <sb/nvbg.h>
 #include "sb/SBBehavior.h"
@@ -12,11 +9,9 @@
 #include <sb/SBParseNode.h>
 
 #include <sb/SBScene.h>
-#include <sb/SBScript.h>
 #include <sb/SBService.h>
 #include <sb/SBServiceManager.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBBmlProcessor.h>
 #include <sb/SBAnimationState.h>
 #include <sb/SBMotionBlendBase.h>
 #include <sb/SBAnimationTransition.h>
@@ -33,8 +28,6 @@
 #include <sb/SBJointMap.h>
 #include <sb/SBJointMapManager.h>
 #include <sb/SBParser.h>
-#include <sb/SBBoneBusManager.h>
-#include <sb/SBVHMsgManager.h>
 #include <sb/SBCollisionManager.h>
 #include <sb/SBSteerAgent.h>
 #include <sb/SBPhoneme.h>
@@ -45,23 +38,17 @@
 #include <sb/SBRetargetManager.h>
 #include <sb/SBEvent.h>
 #include <sb/SBSceneListener.h>
-#include <sb/SBSceneListener.h>
 #include <sb/SBHandConfigurationManager.h>
-#include <sb/SBDebuggerServer.h>
 #include <sb/SBMotionGraph.h>
 #include <sr/sr_box.h>
 #include <sr/sr_camera.h>
-#include <stdlib.h>
 #include <controllers/me_ct_motion.h>
 
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
 
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/return_internal_reference.hpp>
-#include <boost/python/args.hpp>
 
-#include "SBPythonInternal.h"
 
 
 typedef std::map<std::string,SrQuat> QuatMap;

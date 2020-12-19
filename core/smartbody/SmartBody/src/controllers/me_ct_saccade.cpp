@@ -19,18 +19,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "controllers/me_ct_saccade.h"
-#include <cstdlib>
-#include <ctime> 
-#include <math.h>
 
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBAttributeManager.h>
-#include "sb/SBBmlProcessor.h"
-#include "bml/bml_processor.hpp"
 #include "SBUtilities.h"
+#include "sb/SpeechBehaviourProvider.h"
+
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
 
 using namespace gwiz;
 std::string MeCtSaccade::CONTROLLER_TYPE = "Saccade";

@@ -71,20 +71,20 @@ class MeCtSimpleTilt : public SmartBody::SBController	{
 	
 	public:
 		MeCtSimpleTilt();
-		virtual ~MeCtSimpleTilt();
+		~MeCtSimpleTilt() override;
 		
-		void init(SmartBody::SBPawn* pawn);
+		void init(SmartBody::SBPawn* pawn) override;
 		void set_tilt( float dur, float angle_deg );
 		
 		// Following must be public for comparisons
 		static std::string _type_name;
 
 	private:
-		virtual void controller_start();
-		virtual bool controller_evaluate( double t, MeFrameData& frame );
+		void controller_start() override;
+		bool controller_evaluate( double t, MeFrameData& frame ) override;
 		
-		virtual SkChannelArray& controller_channels()	{ return( _channels ); }
-		virtual double controller_duration()			{ return( (double)_duration ); }
+		SkChannelArray& controller_channels() override	{ return( _channels ); }
+		double controller_duration() override			{ return( (double)_duration ); }
 		virtual const std::string& controller_type()			{ return( _type_name ); }
 		
 		SkChannelArray _channels;

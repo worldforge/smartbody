@@ -8,7 +8,6 @@
 #include "sb/SBFaceDefinition.h"
 #include <sb/nvbg.h>
 #include "sb/SBBehavior.h"
-#include <sb/SBMotion.h>
 #include <sb/SBParseNode.h>
 
 #include <sb/SBScene.h>
@@ -16,7 +15,6 @@
 #include <sb/SBService.h>
 #include <sb/SBServiceManager.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBBmlProcessor.h>
 #include <sb/SBAnimationState.h>
 #include <sb/SBMotionBlendBase.h>
 #include <sb/SBAnimationTransition.h>
@@ -29,7 +27,6 @@
 #include <sb/SBGestureMap.h>
 #include <sb/SBGestureMapManager.h>
 #include <sb/SBVHMsgManager.h>
-#include <sb/SBAssetManager.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBJointMap.h>
 #include <sb/SBJointMapManager.h>
@@ -46,18 +43,15 @@
 #include <sb/SBRetargetManager.h>
 #include <sb/SBHandConfigurationManager.h>
 #include <sb/SBHandConfiguration.h>
-#include <sb/SBDebuggerServer.h>
 #include <sb/SBEvent.h>
 #include <sb/SBSceneListener.h>
 #include "SBUtilities.h"
-#include <sr/sr_box.h>
-#include <sr/sr_camera.h>
 #include <cstdlib>
 #include <controllers/me_ct_motion.h>
 #include <controllers/me_ct_new_locomotion.h>
+#include "sbm/xercesc_utils.hpp"
 
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
 
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/return_internal_reference.hpp>
@@ -403,22 +397,6 @@ BOOST_PYTHON_MODULE(SmartBody)
 
 
 	pythonFuncsSimulation();
-
-
-	boost::python::class_<SBBmlProcessor, boost::noncopyable>("BmlProcessor", boost::python::no_init)
-		.def("execBML", &SBBmlProcessor::execBML, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute a generic BML instruction to a given character. Adds the <?xml..> and <act><bml>...</bml></act> elements.")
-		.def("execBMLFile", &SBBmlProcessor::execBMLFile, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute the BML instructions contained in a file for a given character.")
-		.def("execBMLFileId", &SBBmlProcessor::execBMLFileId, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute the BML instructions contained in a file for a given character.")
-		.def("execXML", &SBBmlProcessor::execXML, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute a generic XML instruction to a given character. Adds the <?xml..> header.")
-		.def("execXMLFile", &SBBmlProcessor::execXMLFile, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute a generic XML instructions contained in a file to a given character.")
-		.def("execXMLFileId", &SBBmlProcessor::execXMLFileId, boost::python::return_value_policy<boost::python::return_by_value>(), "Execute a generic XML instructions contained in a file to a given character and pass a BML id.")
-		.def("execBMLAt", &SBBmlProcessor::execBMLAt, "Execute a generic BML instruction to a given character at a time in the future. Adds the <?xml..> and <act><bml>...</bml></act> elements.")
-		.def("execBMLFileAt", &SBBmlProcessor::execBMLFileAt, "Execute the BML instructions contained in a file for a given character at a time in the future..")
-		.def("execXMLAt", &SBBmlProcessor::execXMLAt, "Execute a generic XML instruction to a given character at a time in the future.. Adds the <?xml..> header.")
-		.def("interruptCharacter", &SBBmlProcessor::interruptCharacter, "Interrupts all BML behaviors associated with a given character at a future time in seconds (zero seconds means immediately).")
-		.def("interruptBML", &SBBmlProcessor::interruptBML, "Interrupts a specific BML block behaviors associated with a given character at a future time in seconds (zero seconds means immediately).")
-
-		;
 
 
 	pythonFuncsAnimation();

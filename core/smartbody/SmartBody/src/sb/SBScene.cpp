@@ -41,7 +41,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBEvent.h>
 #include <sb/SBPhoneme.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBBmlProcessor.h>
 #include "sb/SBAnimationState.h"
 #include <sb/SBAnimationTransition.h>
 #include <sb/SBAnimationStateManager.h>
@@ -86,7 +85,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/RealTimeLipSyncController.h>
 #include <sbm/KinectProcessor.h>
 #include <controllers/me_controller_tree_root.hpp>
-#include <bml/bml_processor.hpp>
 #include <sr/sr_sn_group.h>
 
 #include <sstream>

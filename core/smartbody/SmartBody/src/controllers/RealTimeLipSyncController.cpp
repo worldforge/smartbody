@@ -4,7 +4,7 @@
 #include <sb/SBPhonemeManager.h>
 #include <sb/SBPhoneme.h>
 #include "SBUtilities.h"
-#include <bml/bml_speech.hpp>
+#include "sbm/sbm_speech.hpp"
 #include <vector>
 
 RealTimeLipSyncController::RealTimeLipSyncController(SmartBody::SBCharacter* c) : SmartBody::SBController()
@@ -92,7 +92,7 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 	double timeDelay = _pawn->getDoubleAttribute("lipsync.realTimeLipSyncDelay");
 
 	// remove any curves that are no longer valid
-	if (_currentCurves.size() > 0)
+	if (!_currentCurves.empty())
 	{
 		if (_pawn->getBoolAttribute("lipsync.useRealTimeCurveCleanup"))
 		{
@@ -100,7 +100,7 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 			while (removeCurves)
 			{
 				removeCurves = false;
-				for (std::vector<std::pair<std::string, srLinearCurve*> >::iterator iter = _currentCurves.begin();
+				for (auto iter = _currentCurves.begin();
 					 iter != _currentCurves.end();
 					 iter++)
 				{
@@ -120,16 +120,14 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 
 
 
-	if (_currentCurves.size() > 0)
+	if (!_currentCurves.empty())
 	{
 		
 		std::vector<std::pair<std::string, double> > curveData;
-		for (std::vector<std::pair<std::string, srLinearCurve*> >::iterator iter = _currentCurves.begin();
-			 iter != _currentCurves.end();
-			 iter++)
+		for (auto & _currentCurve : _currentCurves)
 		{
-			const std::string& visemeName = (*iter).first;
-			srLinearCurve* curve = (*iter).second;
+			const std::string& visemeName = _currentCurve.first;
+			srLinearCurve* curve = _currentCurve.second;
 
 			double value = curve->evaluate(t - timeDelay);
 			if (value > 0.0)
@@ -142,19 +140,19 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 		// need to derive a single value based on multiple curve data.
 		// loop through all the evaluated data and take the max value of any duplicated curve
 		std::set<std::string> finishedVisemes;
-		std::vector<std::pair<std::string, double> >::iterator startIter = curveData.begin();
+		auto startIter = curveData.begin();
 		while (startIter != curveData.end())
 		{
 
 			std::string curCurveName = "";
 			double val = 0.0;
-			for (std::vector<std::pair<std::string, double> >::iterator curIter = startIter;
+			for (auto curIter = startIter;
 				 curIter != curveData.end();
 				 curIter++)
 			{
 				if (curCurveName == "")
 				{
-					std::set<std::string>::iterator existIter = finishedVisemes.find((*curIter).first);
+					auto existIter = finishedVisemes.find((*curIter).first);
 					if (existIter != finishedVisemes.end())
 						continue;
 					curCurveName = (*curIter).first;
@@ -232,8 +230,8 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 		std::string fromPhoneme = _currentPhonemes[_currentPhonemes.size() - 3];
 		std::string toPhoneme = _currentPhonemes[_currentPhonemes.size() - 2];
 		
-		SmartBody::VisemeData* visemeStart = new SmartBody::VisemeData(fromPhoneme, 0);
-		SmartBody::VisemeData* visemeEnd = new SmartBody::VisemeData(toPhoneme, (float) diphoneInterval);
+		auto* visemeStart = new SmartBody::VisemeData(fromPhoneme, 0);
+		auto* visemeEnd = new SmartBody::VisemeData(toPhoneme, (float) diphoneInterval);
 		std::vector<SmartBody::VisemeData*> visemes;
 		visemes.emplace_back(visemeStart);
 		visemes.emplace_back(visemeEnd);
@@ -243,23 +241,21 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 		bool pass3 = _pawn->getBoolAttribute("lipsync.usePass3");
 		bool pass4 = _pawn->getBoolAttribute("lipsync.usePass4");
 		bool pass5 = _pawn->getBoolAttribute("lipsync.usePass5");
-		std::map<std::string, std::vector<float> > lipSyncCurves = BML::SpeechRequest::generateCurvesGivenDiphoneSet(&visemes, lipSyncSetName, _pawn->getName(), pass3, pass4, pass5);
+
+		std::vector<SmartBody::VisemeData*> debugVisemeCurves;
+		std::map<std::string, std::vector<float> > lipSyncCurves = SmartBody::SBScene::getScene()->getDiphoneManager()->generateCurvesGivenDiphoneSet(&visemes, lipSyncSetName, _pawn->getName(), pass3, pass4, pass5, debugVisemeCurves);
 
 		// smooth the curves
-		for (std::map<std::string, std::vector<float> >::iterator iter = lipSyncCurves.begin();
-				iter != lipSyncCurves.end();
-				iter++)
+		for (auto & lipSyncCurve : lipSyncCurves)
 		{
-			smoothCurve((*iter).second,  _pawn->getDoubleAttribute("lipSyncSmoothWindow"));
+			smoothCurve(lipSyncCurve.second,  _pawn->getDoubleAttribute("lipSyncSmoothWindow"));
 		}
 
-		for (std::map<std::string, std::vector<float> >::iterator iter = lipSyncCurves.begin();
-				iter != lipSyncCurves.end();
-				iter++)
+		for (auto & lipSyncCurve : lipSyncCurves)
 		{
 			srLinearCurve* curve = new srLinearCurve();
-			for (std::vector<float>::iterator fiter = (*iter).second.begin();
-					fiter != (*iter).second.end();
+			for (std::vector<float>::iterator fiter = lipSyncCurve.second.begin();
+					fiter != lipSyncCurve.second.end();
 					fiter++)
 			{
 				float time = (*fiter);
@@ -267,7 +263,7 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 				float value = (*fiter);
 				curve->insert(time + _lastPhonemeTime, value);
 			}
-			_currentCurves.emplace_back(std::pair<std::string, srLinearCurve*>((*iter).first, curve));
+			_currentCurves.emplace_back(std::pair<std::string, srLinearCurve*>(lipSyncCurve.first, curve));
 			
 		}
 

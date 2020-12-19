@@ -19,25 +19,21 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "ParserOgre.h"
-#include "sr/sr_euler.h"
 #include <boost/version.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/algorithm/string.hpp>    
 #include <boost/lexical_cast.hpp>    
-#include <algorithm>
-#include <map>
-#include <cctype>
-#include <string>
-#include <fstream>
-#include <stdio.h>
 #include <sbm/BMLDefs.h>
 #include <sb/SBMotion.h>
 #include <sb/SBSkeleton.h>
-#include <sb/SBTypes.h>
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
-
+#include <algorithm>
+#include <map>
+#include <string>
+#include <fstream>
+#include <cstdio>
 
 #if !defined (__ANDROID__) && !defined(SB_IPHONE)
 #include "sbm/GPU/SbmTexture.h"

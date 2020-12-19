@@ -1,7 +1,8 @@
 #ifndef _BMLDEFS_H_
 #define _BMLDEFS_H_
 
-#include "bml/bml.hpp"
+#include "sbm/xercesc_utils.hpp"
+#include <list>
 
 namespace BML {
 

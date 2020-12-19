@@ -22,25 +22,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
 
 #include "sbm_test_cmds.hpp"
-#include "bml/bml.hpp"  // for #define USE_RECIPIENT
 #include <controllers/me_ct_scheduler2.h>
 #include <controllers/me_ct_channel_writer.hpp>
 #include <sb/SBScene.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
-#include <sb/SBBmlProcessor.h>
 #include <sb/SBAttribute.h>
+#include "sb/SBCharacter.h"
 #include "SBUtilities.h"
 #include <boost/filesystem.hpp>
 #include <boost/version.hpp>
-#include <bml/bml_processor.hpp>
-#include <sbm/BMLDefs.h>
 
 
 using namespace std;
@@ -139,7 +133,7 @@ void build_vrX( ostringstream& buffer, const string& cmd, const string& char_id,
 	if( for_seq )
 		buffer << "send " << cmd << " ";
 	buffer << char_id << " "<< recip_id << " sbm";
-	if (scene->getProcessId() != "" )  // Insert process_id if present.
+	if (!scene->getProcessId().empty() )  // Insert process_id if present.
 		buffer << '_' << scene->getProcessId(); 
 
 	SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(scene->getAttribute("bmlIndex"));
@@ -175,12 +169,12 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 				for (const auto & characterName : characterNames)
 				{
 					SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
-					build_vrX( msg, cmd, character->getName().c_str(), recip_id, bml, false );
-					SmartBody::SBScene::getScene()->sendVHMsg2( cmd, msg.str().c_str() );
+					build_vrX( msg, cmd, character->getName(), recip_id, bml, false );
+					SmartBody::SBScene::getScene()->sendVHMsg2( cmd, msg.str() );
 				}
 			} else {
 				build_vrX( msg, cmd, char_id, recip_id, bml, false );
-				SmartBody::SBScene::getScene()->sendVHMsg2( cmd, msg.str().c_str() );
+				SmartBody::SBScene::getScene()->sendVHMsg2( cmd, msg.str() );
 			}
 		}
 		return CMD_SUCCESS;
@@ -736,7 +730,7 @@ int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 					   seq_id, echo, send ) )
 		return CMD_FAILURE;
 
-	if( arg=="" || arg=="help") {
+	if( arg.empty() || arg=="help") {
 		print_test_fml_help();
 		return CMD_SUCCESS;
 	} else if( arg[0]=='<' ) {
@@ -751,7 +745,7 @@ int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 		} else if( arg.compare(0,4,"<fml",4)==0 ) {
 			fml << "<?xml version=\"1.0\" ?>";
 			const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
-			if (procId != "")
+			if (!procId.empty())
 				fml << "<act procid=\"" << procId << "\">\n";
 			else
 				fml << "<act>\n";
