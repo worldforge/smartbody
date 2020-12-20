@@ -44,6 +44,7 @@
 #include "sb/SBAnimationTransition.h"
 #include "sb/SBGestureMap.h"
 #include "sb/SBRenderAssetManager.h"
+#include "sb/SBSerializer.h"
 #include "sbm/action_unit.hpp"
 #include <sbm/ParserOpenCOLLADA.h>
 
@@ -519,7 +520,7 @@ SBAPI void exportScenePackage(SBRenderScene& renderScene, const std::string& out
 		if (motion->getFullFilePath().empty()) {
 			std::string motionFullPath = tempPath.string() + "/" + motion->getName() + ".skm";
 			SmartBody::util::log("Skeleton %s is not loaded from a file, save the skeleton to temp directory %s", motion->getName().c_str(), motionFullPath.c_str());
-			motion->saveToSkm(motionFullPath);
+			SBSerializer::saveToSkm(*motion, motionFullPath);
 			motion->setFullFilePath(motionFullPath);
 		}
 

@@ -29,6 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
 #include <sr/sr_model.h>
+#include "sb/SBSerializer.h"
 
 namespace SmartBody {
 
@@ -52,7 +53,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkmb::getAssets(const std::s
 	std::string extension =  boost::filesystem::extension( p );
 
 	auto motion = std::make_unique<SBMotion>();
-	bool ok = motion->readFromSkb(convertedPath);
+	bool ok = SBSerializer::readFromSkb(*motion, convertedPath);
 	if (ok)
 		assets.emplace_back(std::move(motion));
 

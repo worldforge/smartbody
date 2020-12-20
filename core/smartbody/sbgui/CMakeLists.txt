@@ -168,6 +168,7 @@ target_link_libraries(sbgui
         SmartBody-bonebus
         SmartBody-bml
         SmartBody-bml-bindings-python
+        SmartBody-serialize
         jpge
         pinocchio
         ${MORE_LIBS}
@@ -191,6 +192,7 @@ target_include_directories(sbgui PUBLIC
         $<TARGET_PROPERTY:SmartBody-bonebus,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bml,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bml-bindings-python,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-serialize,INCLUDE_DIRECTORIES>
         )
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")

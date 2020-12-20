@@ -23,7 +23,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-#include <boost/algorithm/string.hpp>
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include <sb/SBAssetManager.h>

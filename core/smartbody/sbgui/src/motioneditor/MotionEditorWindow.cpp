@@ -3,6 +3,7 @@
 #include <sb/SBBmlProcessor.h>
 #include <sb/SBJointMapManager.h>
 #include <sb/SBJointMap.h>
+#include "sb/SBSerializer.h"
 #include "SBUtilities.h"
 #include <FL/Fl_File_Chooser.H>
 #include <boost/version.hpp>
@@ -390,7 +391,7 @@ void MotionEditorWindow::OnButtonSaveMotion(Fl_Widget* widget, void* data)
 	std::string rootDir = path.parent_path().string();
 
 	std::string fileLocation = BaseWindow::chooseFile("Save To:", "Motion\t*.skm\n", rootDir);
-	motion->saveToSkm(fileLocation);
+	SmartBody::SBSerializer::saveToSkm(*motion, fileLocation);
 }
 
 void MotionEditorWindow::OnBrowserMotionList(Fl_Widget* widget, void* data)

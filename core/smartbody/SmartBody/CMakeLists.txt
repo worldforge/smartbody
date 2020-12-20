@@ -28,16 +28,6 @@ else ()
 endif ()
 
 
-add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.pb.cc
-        COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
-        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbmotion.proto
-        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbutilities.proto
-        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbmesh.proto
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto
-)
-
 
 set(SMARTBODY_LIB_ME_SRC
 
@@ -244,20 +234,11 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBCommandManager.cpp
 
         src/sb/SBAssetHandler.cpp
-        src/sb/SBAssetHandlerSk.cpp
-        src/sb/SBAssetHandlerSkm.cpp
-        src/sb/SBAssetHandlerAsf.cpp
-        src/sb/SBAssetHandlerAmc.cpp
-        src/sb/SBAssetHandlerBvh.cpp
         src/sb/SBBehavior.cpp
-        src/sb/SBAssetHandlerSkmb.cpp
         src/sb/SBRealtimeManager.cpp
         src/sb/SBRigNode.cpp
         src/sbm/SteerPath.cpp
 
-        src/protocols/sbmotion.pb.cc
-        src/protocols/sbutilities.pb.cc
-        src/protocols/sbmesh.pb.cc
 
         )
 

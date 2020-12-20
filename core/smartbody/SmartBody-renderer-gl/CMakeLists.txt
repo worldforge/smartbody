@@ -1,3 +1,12 @@
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.pb.cc
+        COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
+        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbmesh.proto
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto
+)
+
+
 add_library(
         SmartBody-renderer-gl
 
@@ -33,11 +42,16 @@ add_library(
         src/sr/sr_model_import_ply.cpp
         src/sr/sr_sa_gl_render.cpp
         src/sr/sr_sn_colorsurf.cpp
+
+        src/protocols/sbmesh.pb.cc
+        src/protocols/sbutilities.pb.cc
+
 )
 
 target_include_directories(SmartBody-renderer-gl PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-serialize,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rply,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SOIL,INCLUDE_DIRECTORIES>
@@ -46,6 +60,7 @@ target_include_directories(SmartBody-renderer-gl PUBLIC
 
 target_link_libraries(SmartBody-renderer-gl PUBLIC
         SmartBody
+        SmartBody-serialize
         sr
         rply
         SOIL

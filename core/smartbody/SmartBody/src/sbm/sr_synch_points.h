@@ -24,7 +24,7 @@
 #define SR_SYNCH_POINTS_H
 
 #include <sb/SBTypes.h>
-#include <stdio.h>
+#include <cstdio>
 #include <sbm/sr_linear_curve.h>
 
 /*

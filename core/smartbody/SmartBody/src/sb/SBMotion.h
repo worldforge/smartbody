@@ -45,8 +45,8 @@ class FootStepRecord
 
 		std::vector<std::string> jointNames; // all joints related to a footstep
 		std::vector<SrVec> posVec; // desired positions for these joints
-		float startTime;
-		float endTime;	
+		float startTime{};
+		float endTime{};
 };
 
 class JointTrajectory
@@ -77,18 +77,20 @@ struct rotationCurve {
 	srLinearCurve* z;
 };
 
+class SBSerializer;
 
 class SBMotion : public SkMotion
 {
 	public:
+		friend class SBSerializer;
 		enum MotionType
 		{
 			Unknown, Posture, Gesture, Locomotion, Reach
 		};
 		SBAPI SBMotion();
 		SBAPI SBMotion(const SBMotion& motion);
-		SBAPI SBMotion(std::string motionFile);
-		SBAPI ~SBMotion();
+		SBAPI explicit SBMotion(std::string motionFile);
+		SBAPI ~SBMotion() override;
 		SBAPI const std::string& getMotionFileName() const;
 		SBAPI int getNumFrames();
 		SBAPI std::vector<float> getFrameData(int i);
@@ -126,7 +128,7 @@ class SBMotion : public SkMotion
 		SBAPI void checkSkeleton(std::string skel);
 		
 		SBAPI virtual int connect(SBSkeleton* skel);
-		SBAPI virtual void disconnect();
+		SBAPI void disconnect() override;
 
 		SBAPI void setEmptyMotion(float duration, int numFrames);
 
@@ -163,11 +165,11 @@ class SBMotion : public SkMotion
 
 		SBAPI bool trim(int numFramesFromFront, int numFramesFromBack);
 	//	bool move(int startFrame, int endFrame, int position);
-		SBAPI void saveToSkm(const std::string& fileName);
-		SBAPI void saveToSkmByFrames(const std::string& fileName, int startFrame, int endFrame);
-		SBAPI void saveToSkb(const std::string& fileName);
-		SBAPI void saveToBVH(const std::string& fileName, const std::string& skelName);
-		SBAPI bool readFromSkb(const std::string& fileName);
+//		SBAPI void saveToSkm(const std::string& fileName);
+//		SBAPI void saveToSkmByFrames(const std::string& fileName, int startFrame, int endFrame);
+//		SBAPI void saveToSkb(const std::string& fileName);
+//		SBAPI void saveToBVH(const std::string& fileName, const std::string& skelName);
+//		SBAPI bool readFromSkb(const std::string& fileName);
 
 		SBAPI float getJointSpeed(SBJoint* joint, float startTime, float endTime);
 		SBAPI float getJointSpeedAxis(SBJoint* joint, const std::string& axis, float startTime, float endTime);
@@ -249,18 +251,6 @@ class SBMotion : public SkMotion
 		SrVec getGestureStartLocation();
 		void setGestureHoldLocation(SrVec vec);
 		void setGestureStartLocation(SrVec vec);
-
-		// serializable data
-		std::string sName;
-		int sNumChannels;
-		std::vector<std::string> sChannelNames;
-		std::vector<int> sChannelTypes;
-		int sFrames;
-		std::vector<float> sKeyTimes;
-		std::vector<std::vector<float> > sKeyValues;
-		std::vector<std::string> sMetaDataNames;
-		std::vector<std::string> sMetaDataValues;
-		std::vector<float> sSyncPoints;
 
 	protected:
 		void alignToSide(int numFrames, int direction = 0);
