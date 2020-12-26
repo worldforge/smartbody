@@ -22,9 +22,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb/sbm_character.hpp"
 
-#include <cstdio>
-
-#include <iostream>
 #include <string>
 #include <cstring>
 #include <map>
@@ -40,21 +37,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_time_shift_warp.hpp>
 
 #include "sb/SBScene.h"
-#include <controllers/me_spline_1d.hpp>
 #include <controllers/me_ct_interpolator.h>
 #include "sbm/sr_curve_builder.h"
-#include "sbm/lin_win.h"
 #include "sbm/sbm_speech.hpp"
-#include "sbm/general_param_setting.h"
-#include <sbm/PPRAISteeringAgent.h>
-#include <sb/SBSkeleton.h>
+
 #include <sb/SBMotion.h>
-#include <sb/SBScene.h>
 #include <sb/SBJoint.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBSteerManager.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBSteerAgent.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBAnimationState.h>
 #include <sb/SBSceneListener.h>
@@ -78,15 +68,15 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_face.h>
 #include <controllers/me_ct_curve_writer.hpp>
 #include <controllers/me_controller_tree_root.hpp>
-#include <controllers/me_ct_reach.hpp>
-#include <controllers/me_ct_example_body_reach.hpp>
+
 #include <controllers/me_ct_pose_postprocessing.hpp>
 #include <controllers/me_ct_motion_graph.hpp>
 #include <controllers/me_ct_generic_hand.h>
 #include <controllers/RealTimeLipSyncController.h>
 #include <controllers/me_ct_data_receiver.h>
 #include <controllers/me_ct_physics_controller.h>
-
+#include <ostream>
+#include <fstream>
 
 #define USE_NEW_LOCOMOTION 1
 #define USE_REACH 1
@@ -981,8 +971,6 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 	//scene_p->init( _skeleton );
 
 	SmartBody::SBCharacter* sbcharacter = dynamic_cast<SmartBody::SBCharacter*>(this);
-	SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-	SmartBody::SBSteerAgent* steerAgent = steerManager->createSteerAgent(getName());
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
@@ -2604,86 +2592,6 @@ void SbmCharacter::setMiniBrain(SmartBody::MiniBrain* mini)
 SmartBody::MiniBrain* SbmCharacter::getMiniBrain()
 {
 	return _miniBrain;
-}
-
-
-bool SbmCharacter::checkExamples()
-{
-	SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-	SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(getName());
-	if (steerAgent)
-	{
-		PPRAISteeringAgent* steersuiteAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-		steersuiteAgent->updateSteerStateName();
-	}
-
-	
-	std::string prefix = this->getName();
-	if (this->statePrefix != "")
-	{
-		prefix = this->statePrefix;
-	}
-	std::string locomotionName = prefix + "Locomotion";
-	std::string stepName = prefix + "Step";
-	std::string startingLName = prefix + "StartingLeft";
-	std::string startingRName = prefix + "StartingRight";
-	std::string idleTurnName = prefix + "IdleTurn";
-	std::vector<std::string> standardRequiredStates;
-	standardRequiredStates.emplace_back(locomotionName);
-	standardRequiredStates.emplace_back(stepName);
-	standardRequiredStates.emplace_back(startingLName);
-	standardRequiredStates.emplace_back(startingRName);
-	standardRequiredStates.emplace_back(idleTurnName);
-
-	int numMissing = 0;
-	for (size_t x = 0; x < standardRequiredStates.size(); x++)
-	{
-		SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(standardRequiredStates[x]);
-		if (!state)
-		{
-			numMissing++;
-//			SmartBody::util::log("SteeringAgent::checkExamples() standard config: Could not find state '%s' needed for example-based locomotion.", standardRequiredStates[x].c_str());
-		}
-	}
-	if (numMissing == 0)
-	{
-		//SmartBody::util::log("%s: Steering works under standard config.", this->getName().c_str());
-		if (steerAgent)
-		{
-			PPRAISteeringAgent* steersuiteAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-			steersuiteAgent->steeringConfig = PPRAISteeringAgent::STANDARD;
-			return true;
-		}
-		
-	}
-
-	std::vector<std::string> minimalRequiredStates;
-	minimalRequiredStates.emplace_back(locomotionName);
-	minimalRequiredStates.emplace_back(startingLName);
-	minimalRequiredStates.emplace_back(startingRName);
-	minimalRequiredStates.emplace_back(stepName);
-
-	int numMissing1 = 0;
-	for (size_t x = 0; x < minimalRequiredStates.size(); x++)
-	{
-		PABlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(minimalRequiredStates[x]);
-		if (!state)
-		{
-			numMissing1++;
-//			SmartBody::util::log("SteeringAgent::checkExamples() minimal config: Could not find state '%s' needed for example-based locomotion.", minimalRequiredStates[x].c_str());
-		}
-	}
-	if (numMissing1 == 0)
-	{
-		SmartBody::util::log("%s: Steering works under minimal config.", this->getName().c_str());
-		PPRAISteeringAgent* steersuiteAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-    if (steersuiteAgent) {
-      steersuiteAgent->steeringConfig = PPRAISteeringAgent::MINIMAL;
-    }
-		return true;
-	}
-	SmartBody::util::log("%s: Steering cannot work under example mode, reverting back to basic mode", this->getName().c_str());
-	return false;
 }
 
 void SbmCharacter::addFootStep( int iLeg, SrVec& footPos, bool Update /*= false*/ )

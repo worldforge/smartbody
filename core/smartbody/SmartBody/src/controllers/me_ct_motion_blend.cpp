@@ -18,20 +18,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#include <assert.h>
 #include <sstream>
-#include <algorithm>
-#include <time.h>
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-#include <sr/sr_timer.h>
 
 #include "sb/SBScene.h"
 #include <controllers/me_ct_motion_blend.hpp>
 #include <controllers/me_ct_example_body_reach.hpp>
 #include "me_ct_barycentric_interpolation.h"
 #include <sb/SBEvent.h>
-#include <sb/SBSteerManager.h>
 
 
 using namespace boost;
@@ -54,10 +48,7 @@ MeCtMotionBlend::MeCtMotionBlend( std::map<int,MeCtBlendEngine*>& blendMap )  : 
 	ReachEngineMap::iterator mi;	
 }
 
-MeCtMotionBlend::~MeCtMotionBlend( void )
-{
-	
-}
+MeCtMotionBlend::~MeCtMotionBlend( ) = default;
 
 
 void MeCtMotionBlend::setParameterTargetPawn( SbmPawn* targetPawn )
@@ -112,11 +103,9 @@ void MeCtMotionBlend::init(SmartBody::SBPawn* pawn)
 	for (int i=0;i<3;i++)
 		_channels.add(rootNode->joint->jointName(), (SkChannel::Type)(SkChannel::XPos+i));
 	affectedJoints.clear();
-	for (unsigned int i=0;i<nodeList.size();i++)
+	for (auto node : nodeList)
 	{
-		MeCtIKTreeNode* node = nodeList[i];
-		SkJoint* joint = node->joint;
-		SkJointQuat* skQuat = joint->quat();				
+			SkJoint* joint = node->joint;
 		affectedJoints.emplace_back(joint);
 		_channels.add(joint->jointName(), SkChannel::Quat);		
 	}			
@@ -144,10 +133,9 @@ void MeCtMotionBlend::updateChannelBuffer( MeFrameData& frame, BodyMotionFrame& 
 	if (motionFrame.jointQuat.size() != affectedJoints.size())
 		motionFrame.jointQuat.resize(affectedJoints.size());
 
-	for (unsigned int i=0;i<motionFrame.jointQuat.size();i++)
+	for (auto & quat : motionFrame.jointQuat)
 	{
-		SrQuat& quat = motionFrame.jointQuat[i];		
-		int index = frame.toBufferIndex(_toContextCh[count++]);	
+			int index = frame.toBufferIndex(_toContextCh[count++]);
 		//printf("buffer index = %d\n",index);		
 		if (index == -1)
 		{

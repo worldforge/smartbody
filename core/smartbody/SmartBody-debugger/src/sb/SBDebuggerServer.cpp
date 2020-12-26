@@ -23,11 +23,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBDebuggerServer.h"
 
-#include <stdio.h>
+#include <cstdio>
 
-#ifndef SB_NO_VHMSG
 #include "vhmsg-tt.h"
-#endif
 
 #include <sb/SBAttribute.h>
 #include <sb/SBScene.h>
@@ -46,14 +44,15 @@ using std::vector;
 
 namespace SmartBody {
 
-SBDebuggerServer::SBDebuggerServer(SBRenderScene& renderScene)
+SBDebuggerServer::SBDebuggerServer(SBRenderScene& renderScene, std::function<void(std::ostream&, bool)> exportFn)
 		: SBService(),
 		  m_renderScene(renderScene),
 		  m_sbmFriendlyName("sb"),
 		  m_connectResult(false),
 		  m_updateFrequencyS(0),
 		  m_lastUpdate(m_timer.GetTime()),
-		  m_rendererIsRightHanded(true)
+		  m_rendererIsRightHanded(true),
+		  m_exportFn(std::move(exportFn))
 {
 	this->setName("debugger");
 
@@ -83,7 +82,6 @@ vector< vhcl::socket_t > m_sockConnectionsTCP;
 
 void SBDebuggerServer::Init()
 {
-#ifndef SB_NO_VHMSG
 
    bool ret = vhcl::SocketStartup();
    if (!ret)
@@ -149,13 +147,11 @@ void SBDebuggerServer::Init()
 
    vhcl::SocketListen(m_sockTCP);
 
-#endif
    //return true;
 }
 
 void SBDebuggerServer::Close()
 {
-#ifndef SB_NO_VHMSG
 
    if ( m_sockTCP )
    {
@@ -164,12 +160,10 @@ void SBDebuggerServer::Close()
    }
 
    vhcl::SocketShutdown();
-#endif
 }
 
 void SBDebuggerServer::Update()
 {
-#ifndef SB_NO_VHMSG
 
    if (m_updateFrequencyS > 0)
    {
@@ -253,11 +247,11 @@ void SBDebuggerServer::Update()
                   sentPawnUpdates = true;
                }
 
-               for ( size_t i = 0; i < m_sockConnectionsTCP.size(); i++ )
+               for (int i : m_sockConnectionsTCP)
                {
                   //static int c = 0;
                   //SmartBody::util::log("TCP Send %d - %d\n", c++, i);
-                  vhcl::SocketSend(m_sockConnectionsTCP[ i ], msg);
+                  vhcl::SocketSend(i, msg);
                }
             //}
          }
@@ -290,10 +284,10 @@ void SBDebuggerServer::Update()
       bool tcpDataPending;
       tcpDataPending = vhcl::SocketIsDataPending(s);
 
-      std::string overflowData = "";
+      std::string overflowData;
       while ( tcpDataPending )
       {
-         tcpDataPending = 0;
+         tcpDataPending = false;
 
          char str[ 1000 ];
          memset( str, 0, sizeof( char ) * 1000 );
@@ -306,12 +300,12 @@ void SBDebuggerServer::Update()
             vector< string > tokens;
 			SmartBody::util::tokenize( recvStr, tokens, ";" );
 
-            for ( int t = 0; t < (int)tokens.size(); t++ )
+            for (auto & token : tokens)
             {
                vector< string > msgTokens;
-			   SmartBody::util::tokenize( tokens[ t ], msgTokens, "|" );
+			   SmartBody::util::tokenize( token, msgTokens, "|" );
 
-               if ( msgTokens.size() > 0 )
+               if ( !msgTokens.empty() )
                {
                   if ( msgTokens[ 0 ] == "TestMessage" )
                   {
@@ -333,13 +327,11 @@ void SBDebuggerServer::Update()
          tcpDataPending = vhcl::SocketIsDataPending(s);
       }
    }
-#endif
 }
 
 
 void SBDebuggerServer::GenerateInitHierarchyMsg(SmartBody::SBJoint * root, string & msg, int tab)
 {
-#ifndef SB_NO_VHMSG
 
    string name = root->getName();
    float posx = root->offset().x;
@@ -357,13 +349,11 @@ void SBDebuggerServer::GenerateInitHierarchyMsg(SmartBody::SBJoint * root, strin
 
    msg += string().assign(tab, ' ');
    msg += vhcl::Format("}\n");
-#endif
 }
 
 
 void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 {
-#ifndef SB_NO_VHMSG
 
    string message = string(op) + " " + string(args);
    vector<string> split;
@@ -396,119 +386,119 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
                   }
                   else if (split[2] == "send_init")
                   {
-                     if (true)
-                     {
-						 std::string message = vhcl::Format("sbmdebugger %s init scene\n", m_fullId.c_str());	
-						 //SmartBody::util::log("before scene save");
-						 std::stringstream ss;
-						 save(m_renderScene,ss, true); // save for remote connection
-						 //SmartBody::util::log("initScript = %s",initScript.c_str());
-						 message += ss.str();
-						 //SmartBody::util::log("initScript size = %d",initScript.size());
-						 //FILE* fp = fopen("e:/sceneServer.py","wt");
-						 //fprintf(fp,"%s",initScript.c_str());
-						 //fclose(fp);
-						 vhmsg::ttu_notify1(message.c_str());
+                  	if (m_exportFn) {
+						std::string message = vhcl::Format("sbmdebugger %s init scene\n", m_fullId.c_str());
+						//SmartBody::util::log("before scene save");
+						std::stringstream ss;
+						m_exportFn(ss, true);// save for remote connection
+						//save(m_renderScene, ss, true);
+						//SmartBody::util::log("initScript = %s",initScript.c_str());
+						message += ss.str();
+						//SmartBody::util::log("initScript size = %d",initScript.size());
+						//FILE* fp = fopen("e:/sceneServer.py","wt");
+						//fprintf(fp,"%s",initScript.c_str());
+						//fclose(fp);
+						vhmsg::ttu_notify1(message.c_str());
 
 #if 0
-						 std::vector<string> skeletonNames = m_scene->getSkeletonNames();
-						for (size_t i = 0; i < skeletonNames.size(); ++i)
-						{
-							auto skeleton = m_scene->getSkeleton(skeletonNames[i]);
-							if (!skeleton)
-							{
-								SmartBody::util::log("Cannot find skeleton %s.", skeletonNames[i].c_str());
-							}
-							else
-							{
-								std::string msg = vhcl::Format("sbmdebugger %s init skeleton %s ", m_fullId.c_str(), skeleton->skfilename().c_str());
-								msg += skeleton->saveToString();
-								vhmsg::ttu_notify1(msg.c_str());	
+						std::vector<string> skeletonNames = m_scene->getSkeletonNames();
+					   for (size_t i = 0; i < skeletonNames.size(); ++i)
+					   {
+						   auto skeleton = m_scene->getSkeleton(skeletonNames[i]);
+						   if (!skeleton)
+						   {
+							   SmartBody::util::log("Cannot find skeleton %s.", skeletonNames[i].c_str());
+						   }
+						   else
+						   {
+							   std::string msg = vhcl::Format("sbmdebugger %s init skeleton %s ", m_fullId.c_str(), skeleton->skfilename().c_str());
+							   msg += skeleton->saveToString();
+							   vhmsg::ttu_notify1(msg.c_str());
 
-							}
-						}						
+						   }
+					   }
 
-                        const std::vector<string>& charNames = m_scene->getCharacterNames();
-                        for (size_t i = 0; i < charNames.size(); i++)
-                        {
-                           SmartBody::SBCharacter * c = m_scene->getCharacter(charNames[i]);
+					   const std::vector<string>& charNames = m_scene->getCharacterNames();
+					   for (size_t i = 0; i < charNames.size(); i++)
+					   {
+						  SmartBody::SBCharacter * c = m_scene->getCharacter(charNames[i]);
 
-                           size_t numBones = c->getSkeleton()->getNumJoints();
+						  size_t numBones = c->getSkeleton()->getNumJoints();
 
-						   // SbmMonitor character format
-                           string msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
-                           msg += vhcl::Format(" character %s bones %d\n", c->getName().c_str(), numBones);
-						   SmartBody::SBJoint * root = c->getSkeleton()->getJoint(0);
-                           GenerateInitHierarchyMsg(root, msg, 4);
+						  // SbmMonitor character format
+						  string msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
+						  msg += vhcl::Format(" character %s bones %d\n", c->getName().c_str(), numBones);
+						  SmartBody::SBJoint * root = c->getSkeleton()->getJoint(0);
+						  GenerateInitHierarchyMsg(root, msg, 4);
+						  vhmsg::ttu_notify1(msg.c_str());
+
+						 // this is used for smartbody-monitor (use character-skeleton to not conflict with sbm-monitor)
+						  msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
+						  msg += vhcl::Format(" character-skeleton %s %s\n", c->getName().c_str(), c->getSkeleton()->getName().c_str());
+						  vhmsg::ttu_notify1(msg.c_str());
+
+						  // render direction information
+						  msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
+						  msg += vhcl::Format(" renderer right_handed %d\n", m_rendererIsRightHanded ? 1 : 0);
+						  vhmsg::ttu_notify1(msg.c_str());
+					   }
+
+					   const std::vector<std::string>& pawnNames = m_scene->getPawnNames();
+					   for (size_t i = 0; i < pawnNames.size(); i++)
+					   {
+						  SmartBody::SBPawn* p = m_scene->getPawn(pawnNames[i]);
+						  string msg = vhcl::Format("sbmdebugger %s init pawn %s", m_fullId.c_str(), p->getName().c_str());
+						  SrVec pos = p->getPosition();
+						  SrQuat rot = p->getOrientation();
+						  msg += vhcl::Format(" pos %.3f %.3f %.3f rot %.3f %.3f %.3f %.3f geom %s size %.3f",
+							 pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, rot.w, "sphere", 10.0f);
+
+						  vhmsg::ttu_notify1(msg.c_str());
+					   }
+
+					   const std::vector<std::string>& faceDefNames = m_scene->getFaceDefinitionNames();
+					   for (size_t i = 0; i < faceDefNames.size(); i++)
+					   {
+						   SmartBody::SBFaceDefinition* faceDefinition = m_scene->getFaceDefinition(faceDefNames[i]);
+						   std::string msg = vhcl::Format("sbmdebugger %s init face_definition %s", m_fullId.c_str(), faceDefNames[i].c_str());
+						   msg += faceDefinition->saveToString();
+
 						   vhmsg::ttu_notify1(msg.c_str());
+					   }
 
-						  // this is used for smartbody-monitor (use character-skeleton to not conflict with sbm-monitor)
-						   msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
-						   msg += vhcl::Format(" character-skeleton %s %s\n", c->getName().c_str(), c->getSkeleton()->getName().c_str());
+					   for (size_t i = 0; i < charNames.size(); i++)
+					   {
+						   SmartBody::SBCharacter * c = m_scene->getCharacter(charNames[i]);
+						   string msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
+						   SmartBody::SBFaceDefinition* faceDef = c->getFaceDefinition();
+						   if (faceDef)
+						   {
+							   msg += vhcl::Format(" character-face_definition %s %s\n", c->getName().c_str(), faceDef->getName().c_str());
+							   vhmsg::ttu_notify1(msg.c_str());
+						   }
+					   }
+
+					   SmartBody::SBAnimationBlendManager* blendManager = m_scene->getBlendManager();
+					   const std::vector<std::string>& blendNames = blendManager->getBlendNames();
+					   for (size_t i = 0; i < blendNames.size(); i++)
+					   {
+						   SmartBody::SBAnimationBlend* blend = blendManager->getBlend(blendNames[i]);
+						   std::string msg = vhcl::Format("sbmdebugger %s init blend %s", m_fullId.c_str(), blendNames[i].c_str());
+						   msg += blend->saveToString();
+
 						   vhmsg::ttu_notify1(msg.c_str());
+					   }
 
-						   // render direction information
-                           msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
-						   msg += vhcl::Format(" renderer right_handed %d\n", m_rendererIsRightHanded ? 1 : 0);
-                           vhmsg::ttu_notify1(msg.c_str());
-                        }
+					   for (int i = 0; i < blendManager->getNumTransitions(); ++i)
+					   {
+						   SmartBody::SBAnimationTransition* transition = blendManager->getTransitionByIndex(i);
+						   std::string msg = vhcl::Format("sbmdebugger %s init transition ", m_fullId.c_str());
+						   msg += transition->saveToString();
 
-                        const std::vector<std::string>& pawnNames = m_scene->getPawnNames();
-                        for (size_t i = 0; i < pawnNames.size(); i++)
-                        {
-                           SmartBody::SBPawn* p = m_scene->getPawn(pawnNames[i]);
-                           string msg = vhcl::Format("sbmdebugger %s init pawn %s", m_fullId.c_str(), p->getName().c_str());
-                           SrVec pos = p->getPosition();
-                           SrQuat rot = p->getOrientation();
-                           msg += vhcl::Format(" pos %.3f %.3f %.3f rot %.3f %.3f %.3f %.3f geom %s size %.3f", 
-                              pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, rot.w, "sphere", 10.0f);
-
-                           vhmsg::ttu_notify1(msg.c_str());
-                        }
-
-						const std::vector<std::string>& faceDefNames = m_scene->getFaceDefinitionNames();
-						for (size_t i = 0; i < faceDefNames.size(); i++)
-						{
-							SmartBody::SBFaceDefinition* faceDefinition = m_scene->getFaceDefinition(faceDefNames[i]);
-							std::string msg = vhcl::Format("sbmdebugger %s init face_definition %s", m_fullId.c_str(), faceDefNames[i].c_str());
-							msg += faceDefinition->saveToString();
-
-							vhmsg::ttu_notify1(msg.c_str());
-						}
-
-						for (size_t i = 0; i < charNames.size(); i++)
-						{
-							SmartBody::SBCharacter * c = m_scene->getCharacter(charNames[i]);
-							string msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
-							SmartBody::SBFaceDefinition* faceDef = c->getFaceDefinition();
-							if (faceDef)
-							{
-								msg += vhcl::Format(" character-face_definition %s %s\n", c->getName().c_str(), faceDef->getName().c_str());
-								vhmsg::ttu_notify1(msg.c_str());
-							}
-						}
-						
-						SmartBody::SBAnimationBlendManager* blendManager = m_scene->getBlendManager();
-						const std::vector<std::string>& blendNames = blendManager->getBlendNames();
-						for (size_t i = 0; i < blendNames.size(); i++)
-						{
-							SmartBody::SBAnimationBlend* blend = blendManager->getBlend(blendNames[i]);
-							std::string msg = vhcl::Format("sbmdebugger %s init blend %s", m_fullId.c_str(), blendNames[i].c_str());
-							msg += blend->saveToString();
-
-							vhmsg::ttu_notify1(msg.c_str());
-						}
-
-						for (int i = 0; i < blendManager->getNumTransitions(); ++i)
-						{
-							SmartBody::SBAnimationTransition* transition = blendManager->getTransitionByIndex(i);
-							std::string msg = vhcl::Format("sbmdebugger %s init transition ", m_fullId.c_str());
-							msg += transition->saveToString();
-
-							vhmsg::ttu_notify1(msg.c_str());
-						}
+						   vhmsg::ttu_notify1(msg.c_str());
+					   }
 #endif
-                     }
+					}
                   }
                   else if (split[2] == "start_update")
                   {
@@ -531,7 +521,6 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
          }
       }
    }
-#endif
 }
 
 void SBDebuggerServer::afterUpdate(double time)

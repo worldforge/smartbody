@@ -29,6 +29,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/PPRAISteeringAgent.h>
 #include <sbm/SteerSuiteEngineDriver.h>
 #include <SteerLib.h>
+#include "sb/SBAnimationStateManager.h"
+#include "sb/PABlend.h"
 
 namespace SmartBody {
 
@@ -62,7 +64,7 @@ SBSteerManager::SBSteerManager(SBScene& scene)
 	createDoubleAttribute("initialConditions.radius", 0.4, true, "Basic", 60, false, false, false, "Initial radius of agents in meters.");
 	createBoolAttribute("addBoundaryWalls", true, true, "Basic", 60, false, false, false, "Adds boundaries around the perimeter of the grid to prevent agents from leaving grid area.");
 	createBoolAttribute("useEnvironmentCollisions", true, true, "Basic", 60, false, false, false, "Determines whether to include the environment (pawns) when determining steering path. If set to false, objects in the environment will be ignored.");
-	createDoubleAttribute("maxUpdateFrequency", 60.0, true, "Basic", 60, false, false, false, "Maximum frequency of steering updates.");	
+	createDoubleAttribute("maxUpdateFrequency", 60.0, true, "Basic", 60, false, false, false, "Maximum frequency of steering updates.");
 }
 
 SBSteerManager::~SBSteerManager() = default;
@@ -89,7 +91,7 @@ void SBSteerManager::setEnable(bool enable)
 
 void SBSteerManager::beforeUpdate(double time)
 {
-	
+
 }
 
 void SBSteerManager::update(double time)
@@ -127,7 +129,7 @@ void SBSteerManager::update(double time)
 			if (timeDiff >= _maxUpdateFrequency)
 			{ // limit steering to 60 fps
 				getEngineDriver()->setLastUpdateTime(_scene.getSimulationManager()->getTime());
-			
+
 				bool running = getEngineDriver()->_engine->update(false, true, (float) (_scene.getSimulationManager()->getTime() - getEngineDriver()->getStartTime()));
 				if (!running)
 					getEngineDriver()->setDone(true);
@@ -202,15 +204,15 @@ void SBSteerManager::start()
 	try {
 		getEngineDriver()->init(steerOptions);
 	} catch (Util::GenericException& ge) {
-		SmartBody::util::log("Problem starting steering engine: %s", ge.what()); 
+		SmartBody::util::log("Problem starting steering engine: %s", ge.what());
 		getEngineDriver()->finish();
 		delete steerOptions;
 		return;
 	} catch (std::exception& e) {
 		if (e.what())
-			SmartBody::util::log("Problem starting steering engine: %s", e.what()); 
+			SmartBody::util::log("Problem starting steering engine: %s", e.what());
 		else
-			SmartBody::util::log("Unknown problem starting steering engine: %s", e.what()); 
+			SmartBody::util::log("Unknown problem starting steering engine: %s", e.what());
 
 		getEngineDriver()->finish();
 		delete steerOptions;
@@ -227,8 +229,7 @@ void SBSteerManager::start()
 	for (const auto & characterName : characterNames)
 	{
 		SmartBody::SBCharacter* character = _scene.getCharacter(characterName);
-		SmartBody::SBSteerManager* steerManager = _scene.getSteerManager();
-		SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+		SmartBody::SBSteerAgent* steerAgent = getSteerAgent(character->getName());
 		if (!steerAgent)
 		{
 			SmartBody::util::log("No steering agent for character %s", character->getName().c_str());
@@ -249,8 +250,8 @@ void SBSteerManager::start()
 			initialConditions.radius = (float) initialRadius;
 		initialConditions.speed = 0.0f;
 		initialConditions.goals.clear();
-		initialConditions.name = character->getName();		
-		SteerLib::AgentInterface* agent = getEngineDriver()->_engine->createAgent( initialConditions, pprAIModule );			
+		initialConditions.name = character->getName();
+		SteerLib::AgentInterface* agent = getEngineDriver()->_engine->createAgent( initialConditions, pprAIModule );
 		auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 		ppraiAgent->setAgent(agent);
 		agent->reset(initialConditions, dynamic_cast<SteerLib::EngineInterface*>(pprAIModule));
@@ -301,7 +302,7 @@ void SBSteerManager::start()
 
 void SBSteerManager::stop()
 {
-	
+
 	if (getEngineDriver()->isInitialized())
 	{
 		getEngineDriver()->stopSimulation();
@@ -313,13 +314,13 @@ void SBSteerManager::stop()
 		{
 			SmartBody::SBCharacter* character = _scene.getCharacter(characterName);
 			SmartBody::SBSteerAgent* steerAgent = getSteerAgent(character->getName());
-		
+
 			if (steerAgent)
 			{
 				auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 				ppraiAgent->setAgent(nullptr);
 			}
-				
+
 		}
 
 		//No need to remove from engine as that's reset anyway.
@@ -416,14 +417,43 @@ PawnObstacle* SBSteerManager::createObstacleForPawn(const std::string& name) {
 	return nullptr;
 }
 
+SBSteerManager::CharacterObserver::CharacterObserver(SBCharacter& character_, SBSteerManager& steerManager_)
+: character(character_), steerManager(steerManager_){
+	character_.registerObserver(this);
+}
+
+SBSteerManager::CharacterObserver::~CharacterObserver() {
+	character.unregisterObserver(this);
+}
+
+void SBSteerManager::CharacterObserver::notify(SBSubject* subject) {
+	auto* attribute = dynamic_cast<SBAttribute*>(subject);
+	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	if (attribute)
+	{
+		if (attribute->getName().find("steering.") == 0)
+		{
+			// update the steering params on the next evaluation cycle
+			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character.getName());
+			if (steerAgent)
+			{
+				auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
+				ppraiAgent->setSteerParamsDirty(true);
+			}
+		}
+	}
+}
+
+
+
 SBSteerAgent* SBSteerManager::createSteerAgent(const std::string& name)
 {
-	
+
 	auto iter = _steerAgents.find(name);
 	if (iter != _steerAgents.end())
 	{
 		SmartBody::util::log("Steer agent with name %s already exists.", name.c_str());
-		return iter->second.get();
+		return iter->second.agent.get();
 	}
 	SBCharacter* character = _scene.getCharacter(name);
 	if (!character)
@@ -431,9 +461,16 @@ SBSteerAgent* SBSteerManager::createSteerAgent(const std::string& name)
 		SmartBody::util::log("Character named '%s' does not exist, steering agent cannot be constructed.", name.c_str());
 		return nullptr;
 	}
-	SBSteerAgent* agent = new PPRAISteeringAgent(character);
-	_steerAgents.insert(std::pair<std::string, SBSteerAgent*>(name, agent));
-	return agent;
+	auto result = _steerAgents.emplace(name, SteerAgentEntry {std::make_unique<PPRAISteeringAgent>(character, *this), CharacterObserver(*character, *this)});
+	if (result.second) {
+		auto agent = result.first->second.agent.get();
+		character->setLocomotionStatusProvider([agent]()->bool {
+			auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(agent);
+			return ppraiAgent->isInLocomotion();
+		});
+		return result.first->second.agent.get();
+	}
+	return nullptr;
 }
 
 void SBSteerManager::removeSteerAgent(const std::string& name)
@@ -441,6 +478,8 @@ void SBSteerManager::removeSteerAgent(const std::string& name)
 	auto iter = _steerAgents.find(name);
 	if (iter != _steerAgents.end())
 	{
+		//Reset locomotion status provider function.
+		iter->second.agent->getCharacter()->setLocomotionStatusProvider({});
 		_steerAgents.erase(iter);
 		return;
 	}
@@ -458,7 +497,7 @@ SBSteerAgent* SBSteerManager::getSteerAgent(const std::string& name)
 	if (iter == _steerAgents.end())
 		return nullptr;
 	else
-		return (*iter).second.get();
+		return (*iter).second.agent.get();
 }
 
 std::vector<std::string> SBSteerManager::getSteerAgentNames()
@@ -473,10 +512,10 @@ std::vector<std::string> SBSteerManager::getSteerAgentNames()
 	return steerAgentNames;
 }
 
-std::map<std::string, std::unique_ptr<SBSteerAgent>>& SBSteerManager::getSteerAgents()
-{
-	return _steerAgents;
-}
+//std::map<std::string, std::unique_ptr<SBSteerAgent>>& SBSteerManager::getSteerAgents()
+//{
+//	return _steerAgents;
+//}
 
 void SBSteerManager::onPawnDelete(SBPawn* pawn)  {
 	auto I = _pawnObstacles.find(pawn->getName());
@@ -493,6 +532,98 @@ void SBSteerManager::onPawnDelete(SBPawn* pawn)  {
 void SBSteerManager::onCharacterDelete(SBCharacter* character)
 {
 	removeSteerAgent(character->getName());
+}
+
+void SBSteerManager::onCharacterCreate(SBCharacter *character) {
+	auto I = _steerAgents.find(character->getName());
+	if (I != _steerAgents.end()) {
+		_steerAgents.erase(I);
+	}
+}
+
+bool SBSteerManager::checkExamples(SbmCharacter& character)
+{
+	SmartBody::SBSteerAgent* steerAgent = getSteerAgent(getName());
+	if (steerAgent)
+	{
+		return checkExamples(*steerAgent);
+	}
+	return false;
+}
+
+bool SBSteerManager::checkExamples(SBSteerAgent& steerAgent)
+{
+	auto* steersuiteAgent = dynamic_cast<PPRAISteeringAgent*>(&steerAgent);
+	if (steersuiteAgent) {
+		steersuiteAgent->updateSteerStateName();
+	}
+
+	auto& character = *steerAgent.getCharacter();
+
+	std::string prefix = character.getName();
+	if (!character.statePrefix.empty())
+	{
+		prefix = character.statePrefix;
+	}
+	std::string locomotionName = prefix + "Locomotion";
+	std::string stepName = prefix + "Step";
+	std::string startingLName = prefix + "StartingLeft";
+	std::string startingRName = prefix + "StartingRight";
+	std::string idleTurnName = prefix + "IdleTurn";
+	std::vector<std::string> standardRequiredStates;
+	standardRequiredStates.emplace_back(locomotionName);
+	standardRequiredStates.emplace_back(stepName);
+	standardRequiredStates.emplace_back(startingLName);
+	standardRequiredStates.emplace_back(startingRName);
+	standardRequiredStates.emplace_back(idleTurnName);
+
+	int numMissing = 0;
+	for (auto & standardRequiredState : standardRequiredStates)
+	{
+		SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(standardRequiredState);
+		if (!state)
+		{
+			numMissing++;
+//			SmartBody::util::log("SteeringAgent::checkExamples() standard config: Could not find state '%s' needed for example-based locomotion.", standardRequiredStates[x].c_str());
+		}
+	}
+	if (numMissing == 0)
+	{
+		//SmartBody::util::log("%s: Steering works under standard config.", character.getName().c_str());
+		if (steersuiteAgent) {
+			steersuiteAgent->steeringConfig = PPRAISteeringAgent::STANDARD;
+		}
+			return true;
+
+
+	}
+
+	std::vector<std::string> minimalRequiredStates;
+	minimalRequiredStates.emplace_back(locomotionName);
+	minimalRequiredStates.emplace_back(startingLName);
+	minimalRequiredStates.emplace_back(startingRName);
+	minimalRequiredStates.emplace_back(stepName);
+
+	int numMissing1 = 0;
+	for (auto & minimalRequiredState : minimalRequiredStates)
+	{
+		auto state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(minimalRequiredState);
+		if (!state)
+		{
+			numMissing1++;
+//			SmartBody::util::log("SteeringAgent::checkExamples() minimal config: Could not find state '%s' needed for example-based locomotion.", minimalRequiredStates[x].c_str());
+		}
+	}
+	if (numMissing1 == 0)
+	{
+		SmartBody::util::log("%s: Steering works under minimal config.", character.getName().c_str());
+		if (steersuiteAgent) {
+			steersuiteAgent->steeringConfig = PPRAISteeringAgent::MINIMAL;
+		}
+		return true;
+	}
+	SmartBody::util::log("%s: Steering cannot work under example mode, reverting back to basic mode", character.getName().c_str());
+	return false;
 }
 
 }

@@ -48,7 +48,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define FastStart 1
 #define SOLVE_HEADING_ONLY 1
 
-PPRAISteeringAgent::PPRAISteeringAgent(SmartBody::SBCharacter* c) : SmartBody::SBSteerAgent(c)
+PPRAISteeringAgent::PPRAISteeringAgent(SmartBody::SBCharacter* c, SmartBody::SBSteerManager& steerManager)
+: SmartBody::SBSteerAgent(c, steerManager)
 {
 	character = c;
 	
@@ -399,8 +400,6 @@ void PPRAISteeringAgent::updateSteerStateName()
 SrVec PPRAISteeringAgent::getCollisionFreeGoal( SrVec targetPos, SrVec curPos )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSteerManager* manager = scene->getSteerManager();
-
 	SmartBody::SBCharacter* character = this->getCharacter();
 	if (character->hasAttribute("steering.useCollisionFreeGoal"))
 	{
@@ -419,7 +418,7 @@ SrVec PPRAISteeringAgent::getCollisionFreeGoal( SrVec targetPos, SrVec curPos )
 	
 	try 
 	{
-		SteerSuiteEngineDriver* driver = manager->getEngineDriver();	
+		SteerSuiteEngineDriver* driver = _steerManager.getEngineDriver();
 		float penetrationDeth = driver->collisionPenetration(newGoal, agent->radius(), agent);
 		float dist = (scaleTarget-scaleCurPos).len();
 		SrVec dir = (scaleCurPos-scaleTarget);
@@ -449,8 +448,7 @@ void PPRAISteeringAgent::evaluate(double dtime)
 {
 	//SmartBody::util::log("evaluate PPRAISteeringAgent, time = %f",dtime);
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSteerManager* manager = scene->getSteerManager();
-	
+
 	float dt = (float) dtime;
 
 	if (!character)
@@ -486,7 +484,7 @@ void PPRAISteeringAgent::evaluate(double dtime)
 		numGoals = goalQueue.size();
 
 		// make sure the character is within the grid
-		if (!pathFollowing && manager->getEngineDriver()->_engine->getSpatialDatabase()->getCellIndexFromLocation(x * scene->getScale(), z * scene->getScale()) == -1)
+		if (!pathFollowing && _steerManager.getEngineDriver()->_engine->getSpatialDatabase()->getCellIndexFromLocation(x * scene->getScale(), z * scene->getScale()) == -1)
 		{
 			if (numGoals > 0)
 			{
@@ -520,7 +518,7 @@ void PPRAISteeringAgent::evaluate(double dtime)
 			// compute a collision free goal toward the target
 			goal.targetLocation = Util::Point(newGoal.x , 0.0f, newGoal.z);
 			// make sure that the desired goal is within the bounds of the steering grid
-			if (!pathFollowing && manager->getEngineDriver()->_engine->getSpatialDatabase()->getCellIndexFromLocation(goal.targetLocation.x, goal.targetLocation.z) == -1)
+			if (!pathFollowing && _steerManager.getEngineDriver()->_engine->getSpatialDatabase()->getCellIndexFromLocation(goal.targetLocation.x, goal.targetLocation.z) == -1)
 			{
 				SmartBody::util::log("Goal (%f, %f) for character %s is out of range of grid.", goal.targetLocation.x, goal.targetLocation.z, character->getName().c_str());
 			}
@@ -1439,7 +1437,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 
 		// WJ added end
 		//---------------------------------------------------------------------------		
-		if (goalQueue.size() > 0)
+		if (!goalQueue.empty())
 		{
 			targetLoc.x = goalQueue.front().targetLocation.x;
 			targetLoc.y = goalQueue.front().targetLocation.y;
@@ -1449,8 +1447,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 
 			if (distToTarget < agent->radius()*10.f)
 			{
-				SmartBody::SBSteerManager* manager = scene->getSteerManager();
-				SteerSuiteEngineDriver* driver = manager->getEngineDriver();	
+				SteerSuiteEngineDriver* driver = _steerManager.getEngineDriver();
 				float penetration = driver->collisionPenetration(targetLoc,agent->radius(),agent);		
 				if (penetration > 0) 
 					collisionTime += dt;
@@ -1510,11 +1507,11 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 
 	// slow down mechanism when close to the target
 	float targetSpeed = steeringCommand.targetSpeed;	
-	if (distToTarget < targetSpeed * brakingGain && goalList.size() == 0)
+	if (distToTarget < targetSpeed * brakingGain && goalList.empty())
 		targetSpeed = distToTarget / brakingGain;
 
 	if (stepAdjust)
-		if (!character->param_animation_ct->hasPABlend(stepStateName.c_str()))
+		if (!character->param_animation_ct->hasPABlend(stepStateName))
 		{
 			agentToTargetDist = distToTarget / scene->getScale();
 			agentToTargetVec.x = targetLoc.x - x * scene->getScale();
@@ -1534,7 +1531,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 		float y = dot(agentToTargetVec, heading);
 		SrVec verticalHeading = SrVec(sin(degToRad(yaw - 90)), 0, cos(degToRad(yaw - 90)));
 		float x = dot(agentToTargetVec, verticalHeading);
-		if (!character->param_animation_ct->hasPABlend(stepStateName.c_str()))
+		if (!character->param_animation_ct->hasPABlend(stepStateName))
 		{
 			adjustLocomotionBlend(character, stepStateName, 2, x, y, 0, false, false);
 			return 0;
@@ -1543,7 +1540,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 	}
 
 	//---start locomotion
-	if (character->param_animation_ct->isIdle() && numGoals != 0 && nextStateName == "" && distToTarget > distDownThreshold)
+	if (character->param_animation_ct->isIdle() && numGoals != 0 && nextStateName.empty() && distToTarget > distDownThreshold)
 	{
 		// check to see if there's anything obstacles around it		
 		//float targetAngle = radToDeg(atan2(pprAgent->getStartTargetPosition().x - x * scene->getScale(), pprAgent->getStartTargetPosition().z - z * scene->getScale()));
@@ -1559,12 +1556,10 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 
 		std::vector<float> neigbors;
 		const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
-		for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-			pawnIter != pawns.end();
-			pawnIter++)
+		for (const auto & pawnIter : pawns)
 		{
 		
-			SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(*pawnIter);
+			SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
 			if (pawn->getName() != character->getName())
 			{
 				float cX, cY, cZ, cYaw, cRoll, cPitch;

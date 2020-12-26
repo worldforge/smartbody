@@ -132,7 +132,6 @@ brad.setStringAttribute("displayType", "GPUmesh")
 
 # Set up steering
 print('Setting up steering')
-steerManager = scene.getSteerManager()
 steerManager.setEnable(False)
 brad.setBoolAttribute('steering.pathFollowingMode', False)  # disable path following mode so that obstacles will be respected
 steerManager.setEnable(True)

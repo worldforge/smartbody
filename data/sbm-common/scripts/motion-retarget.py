@@ -407,7 +407,6 @@ def retargetCharacter(charName, targetSkelName, reach=True):
 
     # setup steering
     scene.run("init-steer-agents.py")
-    steerManager = scene.getSteerManager()
-    steerManager.setEnable(False)
+        steerManager.setEnable(False)
     setupSteerAgent(charName, targetSkelName)
     steerManager.setEnable(True)

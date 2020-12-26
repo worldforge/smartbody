@@ -33,8 +33,6 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBGestureMapManager.h>
 #include <sb/SBRetargetManager.h>
 #include <sb/SBRetarget.h>
-#include <sb/SBSteerManager.h>
-#include <sb/SBSteerAgent.h>
 #include <sb/SBBehavior.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBMotion.h>
@@ -42,7 +40,6 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationState.h>
 #include <controllers/me_ct_motion.h>
 #include <controllers/me_ct_scheduler2.h>
-#include <sbm/PPRAISteeringAgent.h>
 #include <sb/SBMotion.h>
 #include "SBUtilities.h"
 
@@ -138,9 +135,9 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		if (request->actor->posture_sched_p)
 		{
 			MeCtScheduler2::VecOfTrack tracks = request->actor->posture_sched_p->tracks();
-			for (size_t t = 0; t < tracks.size(); t++)
+			for (auto & track : tracks)
 			{
-				MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(tracks[t]->animation_ct());
+				MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(track->animation_ct());
 				if (motionCt)
 				{
 					posture = motionCt->motion()->getName();
@@ -426,24 +423,35 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		}
 
 		// gesture + locomotion
-		SmartBody::SBCharacter* sbCharacter = dynamic_cast<SmartBody::SBCharacter*>(request->actor);
-		bool isInLocomotion = false;
-		SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-		SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(request->actor->getName());
-		if (steerAgent)
-		{
-			for (size_t i = 0; i < request->behaviors.size(); ++i)
+		auto* sbCharacter = dynamic_cast<SmartBody::SBCharacter*>(request->actor);
+		bool isInLocomotion = sbCharacter->isInLocomotion();
+		if (!isInLocomotion) {
+			for (auto & behavior : request->behaviors)
 			{
-				if ((request->behaviors)[i]->local_id == "locomotion")
+				if (behavior->local_id == "locomotion")
 				{
 					isInLocomotion = true;
 					break;
 				}
 			}
-			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-			if (ppraiAgent->isInLocomotion())
-				isInLocomotion = true;
 		}
+
+//		SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
+//		SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(request->actor->getName());
+//		if (steerAgent)
+//		{
+//			for (auto & behavior : request->behaviors)
+//			{
+//				if (behavior->local_id == "locomotion")
+//				{
+//					isInLocomotion = true;
+//					break;
+//				}
+//			}
+//			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
+//			if (ppraiAgent->isInLocomotion())
+//				isInLocomotion = true;
+//		}
 		if (isInLocomotion)
 		{
 			std::vector<std::string> jointNames = sbCharacter->getSkeleton()->getUpperBodyJointNames();

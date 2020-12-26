@@ -20,6 +20,7 @@ target_include_directories(SmartBody-bindings-javascript PUBLIC
         $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bonebus,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-steering-steerlib,INCLUDE_DIRECTORIES>
         )
 
 
@@ -28,4 +29,5 @@ target_link_libraries(SmartBody-bindings-javascript
         SmartBody-renderer-gl
         SmartBody-vhmsg
         SmartBody-bonebus
+        SmartBody-steering-steerlib
         )

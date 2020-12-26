@@ -21,13 +21,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SMARTBODY_SESSION_H
 #define SMARTBODY_SESSION_H
 
-#include <sb/SBVHMsgManager.h>
+#include "sb/SBVHMsgManager.h"
 #include "sb/SBScene.h"
 #include "sbm/SBRenderScene.h"
 #include "sb/SBRenderAssetManager.h"
 #include "sb/SBDebuggerServer.h"
 #include "sb/SBBoneBusManager.h"
 #include "sb/SBBmlProcessor.h"
+#include "sb/SBSteerManager.h"
+
+namespace SmartBody {
+struct SteeringBml;
+}
 
 struct Session {
 	static Session* current;
@@ -43,6 +48,11 @@ struct Session {
 	SmartBody::SBVHMsgManager vhmMsgManager;
 	SmartBody::SBBoneBusManager bonebusManager;
 	SmartBody::SBBmlProcessor bmlProcessor;
+	SmartBody::SBSteerManager steerManager;
+	/**
+	 * Acts as a bridge between the steer manager and the BML system.
+	 */
+	std::unique_ptr<SmartBody::SteeringBml> steeringBml;
 };
 
 

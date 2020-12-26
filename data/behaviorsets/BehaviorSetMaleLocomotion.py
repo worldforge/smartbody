@@ -108,7 +108,6 @@ def retargetBehaviorSet(charName):
 
     # setup steering
     scene.run("init-steer-agents.py")
-    steerManager = scene.getSteerManager()
     steerManager.setEnable(False)
     setupSteerAgent(charName, 'all')
     steerManager.setEnable(True)

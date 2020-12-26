@@ -26,7 +26,6 @@ add_library(
         src/sbm/ParserCOLLADAFast.cpp
         src/sbm/ParserOpenCOLLADA.cpp
         src/sbm/ParserOgre.cpp
-        src/sbm/SceneExporter.cpp
 
         src/sbm/GPU/SbmTexture.cpp
         src/sbm/GPU/SbmDeformableMeshGPU.cpp
@@ -52,7 +51,6 @@ target_include_directories(SmartBody-renderer-gl PUBLIC
         src
         $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-serialize,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rply,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SOIL,INCLUDE_DIRECTORIES>
         )
@@ -61,7 +59,6 @@ target_include_directories(SmartBody-renderer-gl PUBLIC
 target_link_libraries(SmartBody-renderer-gl PUBLIC
         SmartBody
         SmartBody-serialize
-        sr
         rply
         SOIL
         )

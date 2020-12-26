@@ -35,11 +35,11 @@ class PPRAISteeringAgent : public SmartBody::SBSteerAgent
 	public:
 		enum SteeringStateConfig { MINIMAL = 0, STANDARD};
 		
-		PPRAISteeringAgent(SmartBody::SBCharacter* c);
+		PPRAISteeringAgent(SmartBody::SBCharacter* c, SmartBody::SBSteerManager& steerManager);
 		~PPRAISteeringAgent();
 
 		void setCharacter(SmartBody::SBCharacter* c);
-		void evaluate(double dt);
+		void evaluate(double dt) override;
 
 		SBAPI void setAgent(SteerLib::AgentInterface* a);
 		SteerLib::AgentInterface* getAgent();
@@ -91,7 +91,6 @@ class PPRAISteeringAgent : public SmartBody::SBSteerAgent
 		void adjustLocomotionBlend(SmartBody::SBCharacter* character, const std::string& blendName, int blendDimension, double x, double y, double z, bool directPlay, bool queued);
 
 	private:
-		
 		int	_numSteeringGoal;
 		
 		SteerLib::AgentInterface* agent;

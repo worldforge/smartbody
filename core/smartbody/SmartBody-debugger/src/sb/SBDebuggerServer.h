@@ -26,6 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 #include <sb/SBService.h>
+#include <functional>
 
 namespace SmartBody {
 
@@ -36,7 +37,7 @@ class SBRenderScene;
 class SBDebuggerServer : public SBService
 {
 	public:
-		SBAPI explicit SBDebuggerServer(SBRenderScene& renderScene);
+		SBAPI explicit SBDebuggerServer(SBRenderScene& renderScene, std::function<void(std::ostream&, bool)> exportFn);
 		SBAPI virtual ~SBDebuggerServer();
 
 		SBAPI void setEnable(bool val) override;
@@ -76,7 +77,7 @@ class SBDebuggerServer : public SBService
 		bool m_connectResult;
 		double m_updateFrequencyS;
 		double m_lastUpdate;
-
+		std::function<void(std::ostream&, bool)> m_exportFn;
 public:
 
 

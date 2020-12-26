@@ -117,14 +117,14 @@ void ExportWindow::ExportAllCB( Fl_Widget* widget, void* data )
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	if (window->exportToFolder && isExportAsset)
 	{
-		SmartBody::exportScenePackage(Session::current->renderScene, fname);
+		SmartBody::exportScenePackage(Session::current->renderScene, &Session::current->steerManager, fname);
 	}
 	else if (isExportZip && isExportAsset)
 	{
 		std::string fileBase = fs::basename(fname);
 		fs::path fullFile(fname);
 		fs::path filePath = fullFile.parent_path();
-		SmartBody::exportScenePackage(Session::current->renderScene, filePath.string(), fileBase+".zip");
+		SmartBody::exportScenePackage(Session::current->renderScene, &Session::current->steerManager, filePath.string(), fileBase+".zip");
 	}
 	else
 	{
@@ -165,7 +165,7 @@ void ExportWindow::ExportCB(Fl_Widget* widget, void* data)
 			aspects.emplace_back(iter->label());
 		}
 	}
-	SmartBody::exportScene(Session::current->renderScene, file, aspects, "", false);
+	SmartBody::exportScene(Session::current->renderScene, &Session::current->steerManager, file, aspects, "", false);
 	file.close();
 
 	fl_alert("Saved to: %s", fname);
@@ -193,7 +193,7 @@ void ExportWindow::exportSceneScript( const std::string& filename, std::vector<s
 	if (!separateScriptFile) // write all setup in one single file
 	{
 		std::ofstream file(filename.c_str());
-		SmartBody::exportScene(Session::current->renderScene, file, aspects, "", false);
+		SmartBody::exportScene(Session::current->renderScene, &Session::current->steerManager,  file, aspects, "", false);
 		file.close();
 	}
 	else // write each configuration aspect into separate file
@@ -204,7 +204,7 @@ void ExportWindow::exportSceneScript( const std::string& filename, std::vector<s
 			std::vector<std::string> oneAspect;
 			oneAspect.emplace_back(aspect);
 			std::ofstream file(filename.c_str());
-			SmartBody::exportScene(Session::current->renderScene, file, oneAspect, "", false);
+			SmartBody::exportScene(Session::current->renderScene, &Session::current->steerManager,  file, oneAspect, "", false);
 			file.close();
 		}
 	}		

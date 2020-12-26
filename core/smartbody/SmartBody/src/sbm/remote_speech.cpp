@@ -22,17 +22,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "remote_speech.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 #include <string>
-#include <sys/types.h>
-#if 0
-#include <sys/timeb.h>
-#endif
-#include <sstream>
-#include <float.h>
-#include "time.h"
+#include <cfloat>
+#include <ctime>
+#include "sb/SBCharacter.h"
 #include <sb/SBSpeechManager.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
@@ -61,8 +57,7 @@ remote_speech::remote_speech( float timeOutInSeconds )
 	timeOut( timeOutInSeconds ) // default is 10 seconds
 {}
 
-remote_speech::~remote_speech()
-{}
+remote_speech::~remote_speech() = default;
 
 
 /**
@@ -72,9 +67,9 @@ remote_speech::~remote_speech()
 RequestId remote_speech::requestSpeechAudio( const char* agentName, const std::string voiceCode, const DOMNode* node, const char* callbackCmd ){
 	//TODO: Test this function with a variety of XML documents
 
-	std::string encoding = "";
+	std::string encoding;
 	xml_utils::xml_translate(&encoding, node->getOwnerDocument()->getXmlEncoding());
-	std::string version = "";
+	std::string version;
 	xml_utils::xml_translate(&version, node->getOwnerDocument()->getXmlVersion());
 
 	string xmlConverted="<?xml version=\"" + version.substr(0,6)+ "\" "; 
@@ -230,7 +225,7 @@ std::vector<VisemeData*>* remote_speech::extractVisemes(DOMNode* node, vector<Vi
 		DOMElement *element= (DOMElement *)node; //instantiate an element using this node
 		if( XMLString::compareString( element->getTagName(), BML::BMLDefs::TAG_VISEME )==0 ){
 			
-			std::string id = "";
+			std::string id;
 
 			DOMNamedNodeMap* attributes= element->getAttributes();
 			for(unsigned int i=0; i< (attributes->getLength()); i++){ //iterates through and includes all attributes (viseme type and start time)

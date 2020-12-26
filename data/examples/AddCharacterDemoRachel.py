@@ -129,7 +129,6 @@ Rachel.setStringAttribute("displayType", "GPUmesh")
 
 # Set up steering
 print('Setting up steering')
-steerManager = scene.getSteerManager()
 steerManager.setEnable(False)
 Rachel.setBoolAttribute('steering.pathFollowingMode', False)  # disable path following mode so that obstacles will be respected
 steerManager.setEnable(True)

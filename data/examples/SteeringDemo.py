@@ -19,6 +19,7 @@ print('Configuring scene parameters and camera')
 scene.setScale(1.0)
 scene.setBoolAttribute('internalAudio', True)
 scene.run('default-viewer.py')
+scene.run('BehaviorSetMaleMocapLocomotion.py')
 camera = getCamera()
 camera.setEye(0, 15.49, 24.47)
 camera.setCenter(0, 14.37, 22.82)
@@ -44,7 +45,6 @@ zebra2Map.applySkeleton(rachelSkeleton)
 zebra2Map.applyMotionRecurse('ChrRachel')
 
 # Retarget setup
-steerManager = scene.getSteerManager()
 # Setting up group of Brads
 print('Setting up Brads')
 bradList = []
@@ -64,18 +64,17 @@ for i in range(10):
     # Set defomable mesh
     brad.setVec3Attribute('deformableMeshScale', .01, .01, .01)
     brad.setStringAttribute('deformableMesh', 'ChrBrad.dae')
-    # Play idle animation
-    bml.execBML(baseName, '<body posture="ChrMarine@Idle01"/>')
     # Retarget character
     # retargetCharacter(baseName, 'ChrBrad.sk', False)
     if i == 0:
-        scene.run('BehaviorSetMaleMocapLocomotion.py')
         setupBehaviorSet()
         retargetBehaviorSet(baseName)
     else:
         steerAgent = steerManager.createSteerAgent(baseName)
         steerAgent.setSteerStateNamePrefix("mocap")
         steerAgent.setSteerType("example")
+    # Play idle animation
+    bml.execBML(baseName, '<body posture="ChrMarine@Idle01"/>')
     retargetBehaviorSet(baseName)
     # Add current Brad into list
     bradList.append(brad)
@@ -99,17 +98,16 @@ for i in range(10):
     # Set deformable mesh
     rachel.setVec3Attribute('deformableMeshScale', .01, .01, .01)
     rachel.setStringAttribute('deformableMesh', 'ChrRachel.dae')
-    # Play idle animation
-    bml.execBML(baseName, '<body posture="ChrMarine@Idle01"/>')
     # Retarget character
     if i == 0:
-        scene.run('BehaviorSetMaleMocapLocomotion.py')
         setupBehaviorSet()
         retargetBehaviorSet(baseName)
     else:
         steerAgent = steerManager.createSteerAgent(baseName)
         steerAgent.setSteerStateNamePrefix("mocap")
         steerAgent.setSteerType("example")
+    # Play idle animation
+    bml.execBML(baseName, '<body posture="ChrMarine@Idle01"/>')
     # Add Rachel into list
     rachelList.append(rachel)
 

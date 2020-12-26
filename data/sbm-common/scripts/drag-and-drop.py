@@ -34,8 +34,7 @@ def createDragAndDropCharacter(charName, skelName, meshName, position):
 
     createStandardCharacter(charName, skelName, meshName, position)
     print('drag and drop position =' + str(position.getData(0)) + ' ,' + str(position.getData(1)) + ', ' + str(position.getData(2)))
-    # steerManager = scene.getSteerManager()
-    # steerManager.setBoolAttribute("useEnvironmentCollisions",False)
+    #     # steerManager.setBoolAttribute("useEnvironmentCollisions",False)
     # steerManager.setEnable(False)
     # steerManager.setEnable(True)
     scene.setBoolAttribute("internalAudio", True)

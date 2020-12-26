@@ -45,6 +45,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/ControlCommands.h"
 
 #include "sbm/sbm_audio.h"
+#include "sbm/SceneExporter.h"
+#include "pythonbind/PythonSetup.h"
+#include "sb/SteeringBml.h"
 
 Session* Session::current = nullptr;
 
@@ -53,8 +56,10 @@ Session::Session()
 												 std::make_unique<SmartBody::SBCollisionManager>(std::make_unique<ODECollisionSpace>())}),
 		  renderAssetManager(scene, scene.getAssetStore()),
 		  renderScene(scene, renderAssetManager),
-		  debuggerServer(renderScene),
-		  bmlProcessor(scene){
+		  debuggerServer(renderScene, [this](std::ostream& ss, bool remoteSetup) { SmartBody::save(renderScene, &steerManager, ss, true); }),
+		  bmlProcessor(scene),
+		  steerManager(scene),
+		  steeringBml(std::make_unique<SmartBody::SteeringBml>(*bmlProcessor.getBMLProcessor(), steerManager)) {
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerSkm>());
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerSk>());
 	scene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerCOLLADA>());
@@ -72,20 +77,24 @@ Session::Session()
 
 	scene.getServiceManager()->addService(&vhmMsgManager);
 	scene.getServiceManager()->addService(&bonebusManager);
+	scene.getServiceManager()->addService(&steerManager);
 	scene.setSpeechBehaviourProvider(&bmlProcessor);
 
 	SmartBody::installDebuggerCommand(*scene.getCommandManager(), vhmMsgManager);
 	SmartBody::PythonInterface::renderScene = &renderScene;
 
-	registerControlCommands(*scene.getCommandManager(), &vhmMsgManager, &bonebusManager, bmlProcessor.getBMLProcessor());
+	registerControlCommands(*scene.getCommandManager(), &vhmMsgManager, &bonebusManager, bmlProcessor.getBMLProcessor(), &steerManager);
+
+	setupPython(*this);
 
 }
 
 Session::~Session() {
 	scene.setSpeechBehaviourProvider(nullptr);
 	if (vhmMsgManager.isEnable() && vhmMsgManager.isConnected())
-		vhmMsgManager.send( "vrProcEnd sbm" );
+		vhmMsgManager.send("vrProcEnd sbm");
 
+	scene.getServiceManager()->removeService(steerManager.getName());
 	scene.getServiceManager()->removeService(bonebusManager.getName());
 	scene.getServiceManager()->removeService(vhmMsgManager.getName());
 

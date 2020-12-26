@@ -164,8 +164,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sbm/xercesc_utils.cpp
 
 
-        src/sbm/PPRAISteeringAgent.cpp
-        src/sbm/SteerSuiteEnginerDriver.cpp
         src/sbm/sr_path_list.cpp
 
         src/sb/sbm_character.cpp
@@ -194,8 +192,8 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBAnimationTransitionRule.cpp
         src/sb/SBAnimationStateManager.cpp
         src/sb/SBMotionGraph.cpp
-        src/sb/SBSteerManager.cpp
-        src/sb/SBSteerAgent.cpp
+#        src/sb/SBSteerManager.cpp
+#        src/sb/SBSteerAgent.cpp
         src/sb/SBReachManager.cpp
         src/sb/SBReach.cpp
         src/sb/SBHandSynthesis.cpp
@@ -230,7 +228,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBAssetManager.cpp
         src/sb/SBAssetStore.cpp
         src/sb/SBSpeechManager.cpp
-        # src/sb/SBVHMsgManager.cpp
         src/sb/SBCommandManager.cpp
 
         src/sb/SBAssetHandler.cpp
@@ -255,8 +252,7 @@ target_include_directories(SmartBody PUBLIC
         $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:math,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:steerlib,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:pprAI,INCLUDE_DIRECTORIES>)
+)
 
 target_include_directories(SmartBody PRIVATE
         ${PROJECT_SOURCE_DIR}/external/rapidxml)
@@ -267,8 +263,6 @@ target_include_directories(SmartBody PRIVATE
 
 target_link_libraries(SmartBody
         sr
-        steerlib
-        pprAI
         parser
         perlin
         math

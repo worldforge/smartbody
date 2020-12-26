@@ -31,7 +31,6 @@
 namespace SmartBody {
 	class SBRenderScene;
 	class SBDebuggerClient;
-	class SBDebuggerServer;
 }
 
 class SbmCharacter;

@@ -23,20 +23,17 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBCharacter.h>
 #include <sbm/PPRAISteeringAgent.h>
 
+#include <utility>
+#include "SBSteerManager.h"
+
 namespace SmartBody {
 
-SBSteerAgent::SBSteerAgent() 
+SBSteerAgent::SBSteerAgent(SBCharacter* sbCharacter, SmartBody::SBSteerManager& steerManager)
+: _steerManager(steerManager), _character(sbCharacter)
 {
 }
 
-SBSteerAgent::SBSteerAgent(SBCharacter* sbCharacter) 
-{
-	_character = sbCharacter;
-}
-
-SBSteerAgent::~SBSteerAgent()
-{
-}
+SBSteerAgent::~SBSteerAgent() = default;
 
 void SBSteerAgent::evaluate(double dtime)
 {
@@ -49,9 +46,8 @@ SBCharacter* SBSteerAgent::getCharacter()
 
 void SBSteerAgent::setSteerStateNamePrefix(std::string prefix)
 {
-	_stateNamePrefix = prefix;
-	PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(this);
-	SbmCharacter* character = ppraiAgent->getCharacter();
+	_stateNamePrefix = std::move(prefix);
+	auto* character = getCharacter();
 	if (character)
 		character->statePrefix = _stateNamePrefix;
 }
@@ -61,11 +57,11 @@ const std::string& SBSteerAgent::getSteerStateNamePrefix()
 	return _stateNamePrefix;
 }
 
-void SBSteerAgent::setSteerType(std::string type)
+void SBSteerAgent::setSteerType(const std::string& type)
 {
 	_steerType = type;
 	
-	SbmCharacter* character = this->getCharacter();
+	auto* character = getCharacter();
 	if (!character)
 		return;
 
@@ -73,7 +69,7 @@ void SBSteerAgent::setSteerType(std::string type)
 
 	if (_steerType == "example")
 	{
-		if (character->checkExamples())
+		if (_steerManager.checkExamples(*this))
 			character->locomotion_type = character->Example;
 		else
 			character->locomotion_type = character->Basic;
@@ -81,6 +77,7 @@ void SBSteerAgent::setSteerType(std::string type)
 	if (type == "procedural")
 	{
 		character->locomotion_type = character->Procedural;
+		//FIXME: This should be put in the subclass
 		PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(this);
 		if (ppraiAgent)
 			ppraiAgent->desiredSpeed = 1.6f;

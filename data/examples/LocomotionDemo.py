@@ -36,7 +36,6 @@ bradSkeleton = scene.getSkeleton('ChrBrad.sk')
 zebra2Map.applySkeleton(bradSkeleton)
 zebra2Map.applyMotionRecurse('ChrBrad')
 
-steerManager = scene.getSteerManager()
 # Setting up Brads
 print('Setting up Brads')
 amount = 16

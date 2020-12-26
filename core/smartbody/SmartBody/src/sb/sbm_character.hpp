@@ -88,7 +88,7 @@ public:
 	
 	LocomotionType								locomotion_type;
 	std::string									statePrefix;
-	bool checkExamples();
+	//bool checkExamples();
 
 public:
 	// Static Constants

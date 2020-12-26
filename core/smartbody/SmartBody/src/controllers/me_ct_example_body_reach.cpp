@@ -36,10 +36,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "me_ct_barycentric_interpolation.h"
 
 #include "MeCtBodyReachState.h"
-#include <sb/SBSteerManager.h>
 #include <controllers/me_ct_example_body_reach.hpp>
 #include <controllers/me_ct_pose_postprocessing.hpp>
-#include <sbm/SteerSuiteEngineDriver.h>
 
 using namespace boost;
 
@@ -79,7 +77,7 @@ MeCtExampleBodyReach::MeCtExampleBodyReach( SmartBody::SBReach* reach)  : SmartB
 	setReach(reach);
 }
 
-MeCtExampleBodyReach::~MeCtExampleBodyReach( void )
+MeCtExampleBodyReach::~MeCtExampleBodyReach( )
 {
 	// remove any registered subjects
 	if (currentReachData)
@@ -229,12 +227,12 @@ bool MeCtExampleBodyReach::updateLocomotion()
 			updateReachType(targetPos);
 		return true;
 	}
-	else if (dist > character->getHeight()*0.35f && !isMoving && startReach && SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->isInitialized() )//currentReachData->startReach) 
+	else if (dist > character->getHeight()*0.35f && !isMoving && startReach)//currentReachData->startReach)
 	{	
 		// if the target is far away, move the character first
 		//printf("idle to walk\n");
 		std::string cmd;
-		std::string charName = character->getName();		
+		const std::string& charName = character->getName();
 		SrVec curXZ = curPos; curXZ.y = 0.f;
 		SrVec targetDir = targetXZ - curXZ; targetDir.normalize();					
 		SrVec steerTarget = curXZ + targetDir*(dist - character->getHeight()*0.15f);

@@ -19,7 +19,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <string>
@@ -28,7 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 
 #include "sbm/sr_arg_buff.h"
-#include <sbm/lin_win.h>
+#include "sbm/lin_win.h"
 
 #include "bml_exception.hpp"
 #include "bml_processor.hpp"
@@ -45,7 +45,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "bml_grab.hpp"
 #include "bml_interrupt.hpp"
 #include "bml_speech.hpp"
-#include "bml_locomotion.hpp"
 #include "bml_general_param.hpp"
 #include "bml_states.hpp"
 #include "bml_noise.hpp"
@@ -246,6 +245,19 @@ double BML::Processor::getLastScheduledSpeechBehavior(SbmCharacter& character)
 	return lastTime;
 }
 
+void BML::Processor::registerBmlHandler(BMLHandler* handler)
+{
+	_bmlHandlers.emplace_back(handler);
+}
+void BML::Processor::deregisterBmlHandler(BMLHandler* handler)
+{
+	auto I = std::find(_bmlHandlers.begin(), _bmlHandlers.end(), handler);
+	if (I != _bmlHandlers.end()) {
+		_bmlHandlers.erase(I);
+	}
+}
+
+
 
 void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* scene )
 {
@@ -360,7 +372,7 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 	}
 }
 
-void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr request, SmartBody::SBScene* scene,
+void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr& request, SmartBody::SBScene* scene,
                                          size_t& behavior_ordinal, bool required )
 {
 	if (request->actor->getBoolAttribute("gestureRequest.useLastRandomGesture"))
@@ -387,7 +399,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 			if (bml_feedback)
 			{
 				
-				if (idStr == "")
+				if (idStr.empty())
 				{
 					// automatically create an id for this request
 					std::stringstream newIdStr;
@@ -479,18 +491,29 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 				behavior = parse_bml_event( child, unique_id, behav_syncs, required, request, scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_SPEECH )==0 ) {
 				SmartBody::util::log("ERROR: BML::Processor::parseBML(): <speech> BML tag must be first behavior (TEMPORARY HACK).");
-			} else if( XMLString::compareString( tag, BMLDefs::TAG_LOCOTMOTION )==0 ) {
-				behavior = parse_bml_locomotion( child, unique_id, behav_syncs, required, request, scene );
+//			} else if( XMLString::compareString( tag, BMLDefs::TAG_LOCOTMOTION )==0 ) {
+//				behavior = parse_bml_locomotion( child, unique_id, behav_syncs, required, request, scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_STATES )==0 || XMLString::compareString( tag, BMLDefs::TAG_BLEND )==0) {
 				behavior = parse_bml_states( child, unique_id, behav_syncs, required, request, scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_GESTURE )==0 ) {
 				behavior = parse_bml_gesture( child, unique_id, behav_syncs, required, request, scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_INTERRUPT )==0 ) {
-				behavior = parse_bml_interrupt( child, unique_id, behav_syncs, required, request, scene );
+				behavior = parse_bml_interrupt(child, unique_id, behav_syncs, required, request, scene);
 			} else {
-				std::wstringstream wstrstr;
-				wstrstr<<"WARNING: BML::Processor::parseBML(): <"<<tag<<"> BML tag unrecognized or unsupported.";
-				SmartBody::util::log(convertWStringToString(wstrstr.str()).c_str());
+				for (auto handler : _bmlHandlers) {
+					BMLHandler::Payload payload {
+						*child, unique_id, behav_syncs, required, request, *scene
+					};
+					behavior = handler->parseBML(*tag, payload);
+					if (behavior) {
+						break;
+					}
+				}
+			}
+			if (!behavior){
+				std::stringstream ss;
+				ss<<"WARNING: BML::Processor::parseBML(): <"<<tagStr<<"> BML tag unrecognized or unsupported.";
+				SmartBody::util::log(ss.str().c_str());
 			}
 
 			
@@ -510,7 +533,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 						BehaviorSyncPoints feedbackSyncStart;
 						//bml char doctor <animation name="LHandOnHip_RArm_SweepRight"/>
 						std::stringstream msg;
-						std::string localId = idStr;
+						const std::string& localId = idStr;
 						std::string option;
 						if (i == 0) option = "start";
 						if (i == 1) option = "ready";
@@ -536,13 +559,13 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 
 				std::ostringstream err_msg;
 				err_msg << "Required behavior <" << asciiStr;
-				if ( idStr != "" )
+				if ( !idStr.empty() )
 				{
 					err_msg << " id=\"" << idStr << "\"";
 				}
 				err_msg << "> (behavior #"<<behavior_ordinal<<") failed to parse.";
 
-				throw BML::BmlException( err_msg.str().c_str() );
+				throw BML::BmlException( err_msg.str() );
 			}
 			else
 			{
@@ -555,7 +578,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, BmlRequestPtr reques
 	}
 }
 
-void BML::Processor::parseBML( DOMElement *bmlElem, BmlRequestPtr request, SmartBody::SBScene* scene ) {
+void BML::Processor::parseBML( DOMElement *bmlElem, const BmlRequestPtr& request, SmartBody::SBScene* scene ) {
 	size_t behavior_ordinal	= 0;
 
 	SmartBody::SBScene::getScene()->getProfiler()->mark_time("BML", 1, "parseBML", SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
@@ -571,7 +594,7 @@ void BML::Processor::parseBML( DOMElement *bmlElem, BmlRequestPtr request, Smart
 	}
 }
 
-BehaviorRequestPtr BML::Processor::parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) {
+BehaviorRequestPtr BML::Processor::parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, const BmlRequestPtr& request, SmartBody::SBScene* scene ) {
 	
 	const XMLCh* id = elem->getAttribute(BMLDefs::ATTR_ID);
 	std::string localId;
@@ -962,7 +985,7 @@ void BML::Processor::interrupt( SbmCharacter* actor, time_sec duration, SmartBod
 	std::vector<std::string> keysToErase;
     std::vector<BmlRequestPtr> requestsToInterrupt;
     std::vector<std::string> requestsNames;
-	BML::MapOfBmlRequest::iterator iter = bml_requests.begin();
+	auto iter = bml_requests.begin();
 	for ( ; iter != bml_requests.end(); iter++)
 	{
 		BmlRequestPtr request = iter->second;
@@ -981,20 +1004,18 @@ void BML::Processor::interrupt( SbmCharacter* actor, time_sec duration, SmartBod
 		}
     }
 
-	for (std::vector<std::string>::iterator iter = keysToErase.begin();
-		 iter != keysToErase.end();
-		 iter++)
+	for (auto & iter : keysToErase)
 	{
-		BML::MapOfBmlRequest::iterator requestIter = bml_requests.find((*iter));
+		auto requestIter = bml_requests.find(iter);
 		if (requestIter != bml_requests.end())
-			bml_requests.erase((*iter));
+			bml_requests.erase(iter);
 	}
 }
 
 // Interrupt BML Performance (usually via message from InterruptBehavior)
 int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performance_id, time_sec duration, SmartBody::SBScene* scene ) {
 	std::string request_id = performance_id; //buildRequestId( actor, performance_id );
-	MapOfBmlRequest::iterator result = bml_requests.find( request_id );
+	auto result = bml_requests.find( request_id );
 	if( result != bml_requests.end() ) {
 		BmlRequestPtr request = result->second;
 
@@ -1008,11 +1029,9 @@ int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performan
 		pendingInterrupts[request_id] = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
 		// clean up any old requests that have expired
 		std::vector<std::string> interruptsToDelete;
-		for (std::map<std::string, double>::iterator iter = pendingInterrupts.begin();
-			 iter != pendingInterrupts.end();
-			 iter++)
+		for (auto & pendingInterrupt : pendingInterrupts)
 		{
-			double lastTime = (*iter).second;
+			double lastTime = pendingInterrupt.second;
 			if (lastTime - SmartBody::SBScene::getScene()->getSimulationManager()->getTime() > 60.0) // has a minute elapsed?
 			{
 				interruptsToDelete.emplace_back(request_id);
@@ -1020,7 +1039,7 @@ int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performan
 		}
 		for (size_t d = 0; d < interruptsToDelete.size(); d++)
 		{
-			std::map<std::string, double>::iterator iterToDelete = pendingInterrupts.find(request_id);
+			auto iterToDelete = pendingInterrupts.find(request_id);
 			if (iterToDelete !=  pendingInterrupts.end())
 				 pendingInterrupts.erase(iterToDelete);
 		}

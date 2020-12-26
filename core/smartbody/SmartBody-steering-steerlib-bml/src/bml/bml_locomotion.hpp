@@ -23,11 +23,11 @@
 #ifndef BML_LOCOMOTION_HPP
 #define BML_LOCOMOTION_HPP
 
-#include "bml.hpp"
+#include "bml/bml.hpp"
 
 #define BML_LOCOMOTION_TARGET_TYPE_UNKNOWN -1
-#define BML_LOCOMOTION_TARGET_TYPE_TARGET 0 
-#define BML_LOCOMOTION_TARGET_TYPE_DIRECTION 1 
+#define BML_LOCOMOTION_TARGET_TYPE_TARGET 0
+#define BML_LOCOMOTION_TARGET_TYPE_DIRECTION 1
 
 // Forward Declaration
 
@@ -35,16 +35,23 @@
 
 #pragma once
 
-namespace BML 
-{
-	namespace Locomotion
-	{
-		void parse_routine(DOMElement* elem, BmlRequestPtr request, int type, int id);
-	};
+namespace BML {
+namespace Locomotion {
+void parse_routine(DOMElement& elem, BmlRequestPtr request, int type, int id, SmartBody::SBSteerManager& steerManager);
 
-	BML::BehaviorRequestPtr parse_bml_locomotion( DOMElement* elem, const std::string& unique_id, BML::BehaviorSyncPoints& behav_syncs, bool required, BML::BmlRequestPtr request, SmartBody::SBScene* scene );
+void parse_routine(DOMElement& elem, BmlRequestPtr request, int type, int id);
 
-	BML::BehaviorRequestPtr parse_bml_example_locomotion( DOMElement* elem, const std::string& unique_id, BML::BehaviorSyncPoints& behav_syncs, bool required, BML::BmlRequestPtr request, SmartBody::SBScene* scene );
+};
+
+BML::BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
+											 const std::string& unique_id,
+											 BML::BehaviorSyncPoints& behav_syncs,
+											 bool required,
+											 BML::BmlRequestPtr request,
+											 SmartBody::SBScene& scene,
+											 SmartBody::SBSteerManager& steerManager);
+
+BML::BehaviorRequestPtr parse_bml_example_locomotion(DOMElement& elem, const std::string& unique_id, BML::BehaviorSyncPoints& behav_syncs, bool required, BML::BmlRequestPtr request, SmartBody::SBScene& scene);
 
 };
 

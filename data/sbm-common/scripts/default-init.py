@@ -139,7 +139,6 @@ retargetBehaviorSet('ChrRachel')
 
 # Set up steering
 print('Setting up steering')
-steerManager = scene.getSteerManager()
 steerManager.setEnable(False)
 steerManager.setEnable(True)
 # Start the simulation

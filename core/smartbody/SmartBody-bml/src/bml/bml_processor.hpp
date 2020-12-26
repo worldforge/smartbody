@@ -48,6 +48,22 @@ namespace BML {
 	const float CONTROLLER_SPEED_MIN_DEFAULT = 0.25;
 	const float CONTROLLER_SPEED_MAX_DEFAULT = 4;
 
+
+
+	struct BMLHandler {
+		struct Payload {
+			DOMElement& child;
+			const std::string& unique_id;
+			BehaviorSyncPoints& behav_syncs;
+			bool required;
+			BmlRequestPtr request;
+			SmartBody::SBScene& scene;
+		};
+
+		virtual BehaviorRequestPtr parseBML(const XMLCh &tag, Payload& payload) = 0;
+
+	};
+
 	class Processor {
 	private:
 
@@ -149,7 +165,7 @@ namespace BML {
 		/**
 		 *  Parses <BML> elements
 		 */
-		void parseBML( DOMElement *el, BML::BmlRequestPtr request, SmartBody::SBScene* scene );
+		void parseBML( DOMElement *el, const BML::BmlRequestPtr& request, SmartBody::SBScene* scene );
 
 		/**
 		 */
@@ -222,6 +238,9 @@ namespace BML {
 
 		double getLastScheduledSpeechBehavior(SbmCharacter& character);
 
+		void registerBmlHandler(BMLHandler* handler);
+		void deregisterBmlHandler(BMLHandler* handler);
+
 
 	protected:
 		//////////////////////////////////////////////////////////////////////////
@@ -236,12 +255,12 @@ namespace BML {
 		 *  Parses a group of behavior tags, such as <bml> or <required>.
 		 *  The workhorse function of parseBML(..)
 		 */
-		void parseBehaviorGroup( DOMElement *el, BML::BmlRequestPtr request, SmartBody::SBScene* scene, size_t& behavior_ordinal, bool required );
+		void parseBehaviorGroup( DOMElement *el, const BML::BmlRequestPtr& request, SmartBody::SBScene* scene, size_t& behavior_ordinal, bool required );
 
-		BehaviorRequestPtr parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene );
+		BehaviorRequestPtr parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, const BmlRequestPtr& request, SmartBody::SBScene* scene );
 		BehaviorRequestPtr parse_bml_head( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene );
 
-
+		std::vector<BMLHandler*> _bmlHandlers;
 ///  Is the following necessary anymore?
 //		friend BML::BehaviorRequest* BML::parse_bml_interrupt( DOMElement* elem, BML::BehaviorSyncPoints& behav_syncs, BML::BmlRequestPtr request, mcuCBHandle *mcu );
 		

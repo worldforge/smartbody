@@ -22,7 +22,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttribute.h>
 #include <sb/SBScene.h>
 #include <sb/SBCharacter.h>
-#include <sb/SBSteerManager.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBEvent.h>
@@ -75,7 +74,6 @@ void SBCollisionManager::setEnable(bool enable)
 
 void SBCollisionManager::start()
 {
-#ifndef SB_NO_ODE_PHYSICS
 	_singleChrCapsuleMode = getBoolAttribute("singleChrCapsuleMode");
 	float jointBVLenRadRatio = (float)(getDoubleAttribute("jointBVLenRadRatio"));
 
@@ -83,13 +81,7 @@ void SBCollisionManager::start()
 	_jointBVLenRadRatio = jointBVLenRadRatio;
 
 	SBScene* scene = SmartBody::SBScene::getScene();
-	SBSteerManager* steerManager = scene->getSteerManager();
-	_characterRadius = (float) steerManager->getDoubleAttribute("initialConditions.radius");
-	double sceneScale = scene->getDoubleAttribute("scale");
-	if (sceneScale != 0.0)
-	{
-		_characterRadius *= (float) (1.0 / sceneScale);
-	}
+
 	_positions.clear();
 	_velocities.clear();
 //	if (!collisionSpace)
@@ -108,9 +100,10 @@ void SBCollisionManager::start()
 			if(_singleChrCapsuleMode)
 			{
 				//SBGeomObject* obj = new SBGeomCapsule()			
-				SrBox bbox = character->getBoundingBox();	
+				SrBox bbox = character->getBoundingBox();
+				auto radius = std::max(bbox.getSize().x / 2.0, bbox.getSize().y / 2.0);
 				float yoffset = bbox.getMinimum().y - character->get_world_offset().get_translation().y;
-				SrVec size = SrVec(0,_characterRadius,0);
+				SrVec size = SrVec(0,radius,0);
 				SBGeomObject* obj = createCollisionObject(character->getGeomObjectName(),"capsule",size,SrVec(0,yoffset,0),SrVec(0,yoffset+character->getHeight(),0));
 				obj->attachToObj(character);
 				addObjectToCollisionSpace(character->getGeomObjectName());
@@ -185,7 +178,6 @@ void SBCollisionManager::start()
 			addObjectToCollisionSpace(pawn->getGeomObjectName());
 		}
 	}
-#endif
 }
 
 bool SBCollisionManager::isJointExcluded(SkJoint* j, const std::vector<SkJoint*>& jnt_excld_list)

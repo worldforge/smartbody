@@ -25,10 +25,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBService.h>
 #include <boost/noncopyable.hpp>
 #include <memory>
-#include "sbm_pawn.hpp"
-#include "SBSceneListener.h"
+#include "sb/sbm_pawn.hpp"
+#include "sb/SBSceneListener.h"
 
 class SteerSuiteEngineDriver;
+class SbmCharacter;
 namespace SteerLib
 {
 	class BoxObstacle;
@@ -50,7 +51,7 @@ class SBSteerManager : public SmartBody::SBService
 	public:
 		SBAPI explicit SBSteerManager(SBScene& scene);
 		SBAPI ~SBSteerManager();
-		
+
 		SBAPI void setEnable(bool enable) override;
 		SBAPI void start() override;
 		SBAPI void beforeUpdate(double time) override;
@@ -59,6 +60,7 @@ class SBSteerManager : public SmartBody::SBService
 		SBAPI void stop() override;
 
 		SBAPI void onPawnDelete(SBPawn* pawn) override;
+		void onCharacterCreate(SBCharacter *character) override;
 		SBAPI void onCharacterDelete(SBCharacter* character) override;
 
 		SBAPI SteerSuiteEngineDriver* getEngineDriver();
@@ -68,7 +70,7 @@ class SBSteerManager : public SmartBody::SBService
 		SBAPI int getNumSteerAgents();
 		SBAPI SBSteerAgent* getSteerAgent(const std::string& name);
 		SBAPI std::vector<std::string> getSteerAgentNames();
-		SBAPI std::map<std::string, std::unique_ptr<SBSteerAgent>>& getSteerAgents();
+//		SBAPI std::map<std::string, std::unique_ptr<SBSteerAgent>>& getSteerAgents();
 		SBAPI std::map<std::string, PawnObstacle>& getObstacles() {
 			return _pawnObstacles;
 		}
@@ -80,9 +82,25 @@ class SBSteerManager : public SmartBody::SBService
 
 		void applyPawnObstacle(PawnObstacle& pawnObstacle);
 
-	protected:
+		bool checkExamples(SbmCharacter& character);
+		bool checkExamples(SBSteerAgent& steerAgent);
+
+protected:
+		struct CharacterObserver : public SBObserver {
+			SBCharacter& character;
+			SBSteerManager& steerManager;
+			CharacterObserver(SBCharacter& character_, SBSteerManager& steerManager_);
+			~CharacterObserver();
+			void notify(SBSubject* subject) override;
+		};
+
+		struct SteerAgentEntry {
+			std::unique_ptr<SBSteerAgent> agent;
+			CharacterObserver observer;
+		};
+
 		SBScene& _scene;
-		std::map<std::string, std::unique_ptr<SBSteerAgent>> _steerAgents;
+		std::map<std::string, SteerAgentEntry> _steerAgents;
 		std::vector<std::unique_ptr<SteerLib::BoxObstacle>> _boundaryObstacles;
 		std::map<std::string, PawnObstacle> _pawnObstacles;
 

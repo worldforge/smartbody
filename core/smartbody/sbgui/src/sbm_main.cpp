@@ -39,9 +39,9 @@
 #include <sb/SBAssetManager.h>
 #include "SBUtilities.h"
 #include "FLTKListener.h"
-#include "sb/SBDebuggerServer.h"
 #include <sbm/PPRAISteeringAgent.h>
 #include <SBBMLProcessorPython.h>
+#include <boost/optional.hpp>
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -437,19 +437,20 @@ int mcu_quit_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )	{
 
 	
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	scene->getSimulationManager()->stop();
-	if (scene->getSteerManager()->getEngineDriver()->isInitialized())
+	auto& scene = Session::current->scene;
+	scene.getSimulationManager()->stop();
+	auto& steerManager = Session::current->steerManager;
+	if (steerManager.getEngineDriver()->isInitialized())
 	{
-		scene->getSteerManager()->getEngineDriver()->stopSimulation();
-		scene->getSteerManager()->getEngineDriver()->unloadSimulation();
-		scene->getSteerManager()->getEngineDriver()->finish();
+		steerManager.getEngineDriver()->stopSimulation();
+		steerManager.getEngineDriver()->unloadSimulation();
+		steerManager.getEngineDriver()->finish();
 	
-		const std::vector<std::string>& characterNames = scene->getCharacterNames();
+		const std::vector<std::string>& characterNames = scene.getCharacterNames();
 		for (const auto & characterName : characterNames)
 		{
-			SmartBody::SBCharacter* character = scene->getCharacter(characterName);
-			SmartBody::SBSteerAgent* steerAgent = Session::current->scene.getSteerManager()->getSteerAgent(character->getName());
+			SmartBody::SBCharacter* character = scene.getCharacter(characterName);
+			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 			if (steerAgent)
 			{
 				auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
@@ -863,11 +864,6 @@ int main( int argc, char **argv )	{
 	SmartBody::SBScene::setSystemParameter("mediapath", mediaPath);
 	settingsFile.close();
 
-	//Create the global session here.
-	Session::current = new Session();
-
-	auto& scene = Session::current->scene;
-
 	// EDF - taken from tre_main.cpp, a fancier command line parser can be put here if desired.
 	//	check	command line parameters:
 	bool lock_dt_mode = false;
@@ -888,6 +884,10 @@ int main( int argc, char **argv )	{
 	std::vector<std::string> envValues;
 
 	std::string logFile = "./smartbody.log";
+
+	boost::optional<bool> audioEnabled;
+	boost::optional<float> skeletonScale;
+
 	for (int i=1; i<argc; i++ )
 	{
 		SmartBody::util::log( "SmartBody ARG[%d]: '%s'", i, argv[i] );
@@ -1000,7 +1000,7 @@ int main( int argc, char **argv )	{
 		}
 		else if( s == "-audio" )  // argument equals -audio
 		{
-			 scene.setBoolAttribute("internalAudio", true);
+			audioEnabled = true;
 		}
 		else if( s == "-lockdt" )  // argument equals -lockdt
 		{
@@ -1027,18 +1027,17 @@ int main( int argc, char **argv )	{
 		{
 			string skScale = s;
 			skScale.erase( 0, 9 );
-			scene.getAssetManager()->setGlobalSkeletonScale(atof(skScale.c_str()));
+			skeletonScale = atof(skScale.c_str());
 		}
 		else if ( s == "-skmscale=" )
 		{
 			string skmScale = s;
 			skmScale.erase( 0, 10 );
-			scene.getAssetManager()->setGlobalSkeletonScale(atof(skmScale.c_str()));
+			skeletonScale = atof(skmScale.c_str());
 		}
 		else if (mediapathstr == "-mediapath")
 		{
 			mediaPath = s.substr(11);
-			scene.setMediaPath(mediaPath);
 		}
         else if ( s == "-noninteractive")
         {
@@ -1138,12 +1137,19 @@ int main( int argc, char **argv )	{
 	});
 
 	initPython();
-	setupPython(scene);
-	executeSafe([](){
-		boost::python::object module = boost::python::import("__main__");
-		boost::python::object dict  = module.attr("__dict__");
-		dict["bml"] = boost::python::ptr(&Session::current->bmlProcessor);
-	});
+
+	//Create the global session here.
+	Session::current = new Session();
+
+	auto& scene = Session::current->scene;
+
+	if (audioEnabled) {
+		scene.setBoolAttribute("internalAudio", *audioEnabled);
+	}
+	if (skeletonScale) {
+		scene.getAssetManager()->setGlobalSkeletonScale(*skeletonScale);
+	}
+
 
 	mcu_register_callbacks();
 

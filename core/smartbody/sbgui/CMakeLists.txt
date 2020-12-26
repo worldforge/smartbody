@@ -148,6 +148,7 @@ set(SBM_FLTK_SRC
         src/flu/FluSimpleString.cpp
 
         src/pythonbind/SBPythonAutorig.cpp
+        src/pythonbind/PythonSetup.cpp
         )
 
 add_executable(sbgui
@@ -169,6 +170,9 @@ target_link_libraries(sbgui
         SmartBody-bml
         SmartBody-bml-bindings-python
         SmartBody-serialize
+        SmartBody-steering-steerlib
+        SmartBody-steering-steerlib-bml
+        SmartBody-export
         jpge
         pinocchio
         ${MORE_LIBS}
@@ -193,6 +197,9 @@ target_include_directories(sbgui PUBLIC
         $<TARGET_PROPERTY:SmartBody-bml,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bml-bindings-python,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-serialize,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-steering-steerlib,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-steering-steerlib-bml,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-export,INCLUDE_DIRECTORIES>
         )
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")

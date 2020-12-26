@@ -41,7 +41,7 @@ class SBCharacter : public SbmCharacter
 {
 	public:
 		SBAPI SBCharacter();
-		SBAPI SBCharacter(const std::string& name, const std::string& type = "");
+		SBAPI explicit SBCharacter(const std::string& name, const std::string& type = "");
 		SBAPI ~SBCharacter() override;
 
 		SBAPI const std::string& getName() const override;
@@ -134,6 +134,10 @@ class SBCharacter : public SbmCharacter
 		SBAPI void removeParserListener();
 		SBAPI SBParserListener* getParserListener();
 
+		bool isInLocomotion() const;
+
+		void setLocomotionStatusProvider(std::function<bool()> provider);
+
 	protected:
 		void InitFrameDataMarshalFriendly();
 		void FreeFrameDataJointsMarshalFriendly();
@@ -150,6 +154,7 @@ class SBCharacter : public SbmCharacter
 
 		bool _useBlendFaceTextures;
 		SBParserListener* _parserListener;
+		std::function<bool()> _locomotionStatusProvider;
 
 };
 

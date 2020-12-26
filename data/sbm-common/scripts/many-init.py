@@ -38,7 +38,6 @@ scene.setDefaultRecipient("brad1")
 scene.run("init-param-animation.py")
 
 scene.run("init-steer-agents.py")
-steerManager = scene.getSteerManager()
 
 numCharacters = scene.getNumCharacters()
 charNames = scene.getCharacterNames()

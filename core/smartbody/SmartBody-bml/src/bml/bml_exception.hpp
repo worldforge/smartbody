@@ -31,25 +31,15 @@
 namespace BML {
 	// Class Definitions
 	/** Base class for all BML exceptions. */
-	class BmlException : public std::exception {
+	class BmlException : public std::runtime_error {
 
 public:
-		BmlException(std::string str)
-		:	std::exception()
-		{
-			_problem = str;
-		}
+		BmlException() : std::runtime_error("Unknown Exception") {}
 
-		~BmlException() throw()
+		explicit BmlException(const std::string& str)
+		:	std::runtime_error(str)
 		{
 		}
-
-		virtual const char* what() const throw()
-		{
-			return _problem.c_str();
-		}
-
-		std::string _problem;
 
 			virtual const char* type()
 		{	return "BML::BmlException"; }
@@ -58,31 +48,31 @@ public:
 	/** Exception of errors that occur during parsing. */
 	class ParsingException : public BmlException {
 	public:
-		ParsingException(std::string what_string )
+		explicit ParsingException(const std::string& what_string )
 		:	BmlException( what_string )
 		{}
 
-		virtual const char* type()
+		const char* type() override
 		{	return "BML::ParsingException"; }
 	};
 	/** Exception of errors that occur during scheduling. */
 	class SchedulingException : public BmlException {
 	public:
-		SchedulingException(std::string what_string )
+		explicit SchedulingException(const std::string& what_string )
 		:	BmlException( what_string )
 		{}
 
-		virtual const char* type()
+		const char* type() override
 		{	return "BML::SchedulingException"; }
 	};
 	/** Exception of errors that occur during realizing. */
 	class RealizingException : public BmlException {
 	public:
-		RealizingException(std::string what_string )
+		explicit RealizingException(const std::string& what_string )
 		:	BmlException( what_string )
 		{}
 
-		virtual const char* type()
+		const char* type() override
 		{	return "BML::RealizingException"; }
 	};
 } // namespace BML

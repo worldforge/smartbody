@@ -45,8 +45,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationTransition.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBReachManager.h>
-#include <sb/SBSteerAgent.h>
-#include <sb/SBSteerManager.h>
+//#include <sb/SBSteerAgent.h>
+//#include <sb/SBSteerManager.h>
 #include <sb/SBRealtimeManager.h>
 #include <sb/SBServiceManager.h>
 #include <sb/SBService.h>
@@ -132,7 +132,7 @@ SBScene::SBScene(CoreServices coreServices) :
 		_profiler(std::make_unique<SBProfiler>()),
 		_blendManager(std::make_unique<SBAnimationBlendManager>()),
 		_reachManager(std::make_unique<SBReachManager>()),
-		_steerManager(std::make_unique<SBSteerManager>(*this)),
+		//_steerManager(std::make_unique<SBSteerManager>(*this)),
 		_realtimeManager(std::make_unique<SBRealtimeManager>()),
 		_serviceManager(std::make_unique<SBServiceManager>()),
 		_gestureMapManager(std::make_unique<SBGestureMapManager>()),
@@ -165,7 +165,7 @@ SBScene::SBScene(CoreServices coreServices) :
 	_scale = 1.f;
 
 	// add the services
-	_serviceManager->addService(_steerManager.get());
+	//_serviceManager->addService(_steerManager.get());
 	_serviceManager->addService(_coreServices.physicsManager.get());
 	_serviceManager->addService(_coreServices.collisionManager.get());
 	_serviceManager->addService(_realtimeManager.get());
@@ -588,6 +588,7 @@ void SBScene::notify( SBSubject* subject )
 	BoolAttribute* boolAttr = dynamic_cast<BoolAttribute*>(subject);
 
 
+	//TODO: perhaps remove this?
   if (boolAttr && boolAttr->getName() == "enableConsoleLogging")
 	{
 		bool val = boolAttr->getValue();
@@ -613,45 +614,45 @@ void SBScene::notify( SBSubject* subject )
 	}
 }
 
-
-SBAPI SBCharacter* SBScene::copyCharacter( const std::string& origCharName, const std::string& copyCharName )
-{
-	SmartBody::SBCharacter* origChar = getCharacter(origCharName);
-	if (!origChar)
-	{
-		SmartBody::util::log("Character '%s' does not exists !", origCharName.c_str());
-		return nullptr;
-	}
-	else
-	{
-		SmartBody::SBCharacter* copyChar = createCharacter(copyCharName,"");
-		if (!copyChar)
-		{
-			SmartBody::util::log("Can not copy to existing character '%s'",copyCharName.c_str());
-			return nullptr;
-		}
-		// successfully create a new character
-		boost::intrusive_ptr<SmartBody::SBSkeleton> sk(new SmartBody::SBSkeleton(*origChar->getSkeleton()));
-		copyChar->setSkeleton(sk);
-		copyChar->createStandardControllers();
-		copyChar->copy(origChar);
-		SmartBody::SBSteerManager* steerManager = getSteerManager();
-		SmartBody::SBSteerAgent* origAgent = steerManager->getSteerAgent(origCharName);
-		if (origAgent) // the original character has steering
-		{
-			SmartBody::SBSteerAgent* agent = steerManager->createSteerAgent(copyCharName);
-			agent->setSteerType(origAgent->getSteerType());
-			agent->setSteerStateNamePrefix(origAgent->getSteerStateNamePrefix());
-			bool steerEnable = steerManager->isEnable();
-			if (steerEnable)
-			{
-				steerManager->setEnable(false);
-				steerManager->setEnable(true);
-			}			
-		}
-		return copyChar;
-	}
-}
+// TODO: Check if this method really is needed, if not remove it altogether
+//SBAPI SBCharacter* SBScene::copyCharacter( const std::string& origCharName, const std::string& copyCharName )
+//{
+//	SmartBody::SBCharacter* origChar = getCharacter(origCharName);
+//	if (!origChar)
+//	{
+//		SmartBody::util::log("Character '%s' does not exists !", origCharName.c_str());
+//		return nullptr;
+//	}
+//	else
+//	{
+//		SmartBody::SBCharacter* copyChar = createCharacter(copyCharName,"");
+//		if (!copyChar)
+//		{
+//			SmartBody::util::log("Can not copy to existing character '%s'",copyCharName.c_str());
+//			return nullptr;
+//		}
+//		// successfully create a new character
+//		boost::intrusive_ptr<SmartBody::SBSkeleton> sk(new SmartBody::SBSkeleton(*origChar->getSkeleton()));
+//		copyChar->setSkeleton(sk);
+//		copyChar->createStandardControllers();
+//		copyChar->copy(origChar);
+//		SmartBody::SBSteerManager* steerManager = getSteerManager();
+//		SmartBody::SBSteerAgent* origAgent = steerManager->getSteerAgent(origCharName);
+//		if (origAgent) // the original character has steering
+//		{
+//			SmartBody::SBSteerAgent* agent = steerManager->createSteerAgent(copyCharName);
+//			agent->setSteerType(origAgent->getSteerType());
+//			agent->setSteerStateNamePrefix(origAgent->getSteerStateNamePrefix());
+//			bool steerEnable = steerManager->isEnable();
+//			if (steerEnable)
+//			{
+//				steerManager->setEnable(false);
+//				steerManager->setEnable(true);
+//			}
+//		}
+//		return copyChar;
+//	}
+//}
 
 
 SBAPI SBPawn* SBScene::copyPawn( const std::string& origPawnName, const std::string& copyPawnName )
@@ -680,41 +681,36 @@ SBAPI SBPawn* SBScene::copyPawn( const std::string& origPawnName, const std::str
 
 SBCharacter* SBScene::createCharacter(const std::string& charName, const std::string& metaInfo)
 {	
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(charName);
-	if (character)
+	if (SmartBody::SBScene::getScene()->getCharacter(charName))
 	{
 		SmartBody::util::log("Character '%s' already exists!", charName.c_str());
 		return nullptr;
 	}
 	else
 	{
-		SBCharacter* character = new SBCharacter(charName, metaInfo);
-		
-		auto iter = _pawnMap.find(character->getName());
-		if (iter != _pawnMap.end())
+
+		if (_pawnMap.find(charName) != _pawnMap.end())
 		{
-			SmartBody::util::log( "Register character: pawn_map.insert(..) '%s' FAILED\n", character->getName().c_str() );
-			delete character;
+			SmartBody::util::log( "Register character: pawn_map.insert(..) '%s' FAILED\n", charName.c_str() );
 			return nullptr;
 		}
 
-		_pawnMap.insert(std::pair<std::string, SbmPawn*>(character->getName(), character));
-		_pawnNames.emplace_back(character->getName());
-	
-		auto citer = _characterMap.find(character->getName());
+
+		auto citer = _characterMap.find(charName);
 		if (citer != _characterMap.end())
 		{
-			SmartBody::util::log( "Register character: character_map.insert(..) '%s' FAILED\n", character->getName().c_str() );
-			_pawnMap.erase(iter);
-			delete character;
+			SmartBody::util::log( "Register character: character_map.insert(..) '%s' FAILED\n", charName.c_str() );
 			return nullptr;
 		}
+		auto* character = new SBCharacter(charName, metaInfo);
+		_pawnMap.insert(std::pair<std::string, SbmPawn*>(character->getName(), character));
+		_pawnNames.emplace_back(character->getName());
 		_characterMap.insert(std::pair<std::string, SbmCharacter*>(character->getName(), character));
 		_characterNames.emplace_back(character->getName());
 
 		//if (getCharacterListener() )
 		//	getCharacterListener()->OnCharacterCreate( character->getName().c_str(), character->getClassType() );
-		SBSkeleton* skeleton = new SBSkeleton();		
+		auto* skeleton = new SBSkeleton();
 		character->setSkeleton(skeleton);
 //		SkJoint* joint = skeleton->add_joint(SkJoint::TypeQuat);
 //		joint->setName("world_offset");		
@@ -723,7 +719,7 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 		std::vector<SmartBody::SBSceneListener*>& listeners = this->getSceneListeners();
 		for (auto & listener : listeners)
 		{
-			listener->OnCharacterCreate( character->getName().c_str(), character->getClassType() );
+			listener->OnCharacterCreate( character->getName(), character->getClassType() );
 		}
 
 		// notify the services		
@@ -1060,11 +1056,11 @@ void SBScene::sendVHMsg2(const std::string& message, const std::string& message2
 	}
 }
 
-void SBScene::setCommandRunner(std::function<bool(const std::string&)> commandRunner) {
+void SBScene::setCommandRunner(std::function<bool(SBScene&, const std::string&)> commandRunner) {
 	_commandRunner = std::move(commandRunner);
 }
 
-void SBScene::setScriptRunner(std::function<bool(const std::string&)> scriptRunner) {
+void SBScene::setScriptRunner(std::function<bool(SBScene&, const std::string&)> scriptRunner) {
 	_scriptRunner = std::move(scriptRunner);
 }
 void SBScene::setVHMsgProvider(VHMsgProvider* vhMsgProvider) {
@@ -1075,7 +1071,7 @@ void SBScene::setVHMsgProvider(VHMsgProvider* vhMsgProvider) {
 bool SBScene::run(const std::string& command)
 {
 	if (_commandRunner) {
-		return _commandRunner(command);
+		return _commandRunner(*this, command);
 	} else {
 		SmartBody::util::log("No command runner registered in the Scene.");
 		return false;
@@ -1085,7 +1081,7 @@ bool SBScene::run(const std::string& command)
 bool SBScene::runScript(const std::string& script)
 {
 	if (_scriptRunner) {
-		return _scriptRunner(script);
+		return _scriptRunner(*this, script);
 	} else {
 		SmartBody::util::log("No script runner registered in the Scene.");
 		return false;
@@ -1112,10 +1108,10 @@ SBReachManager* SBScene::getReachManager()
 	return _reachManager.get();
 }
 
-SBSteerManager* SBScene::getSteerManager()
-{
-	return _steerManager.get();
-}
+//SBSteerManager* SBScene::getSteerManager()
+//{
+//	return _steerManager.get();
+//}
 
 SBAPI SBRealtimeManager* SBScene::getRealtimeManager()
 {

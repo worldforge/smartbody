@@ -15,6 +15,7 @@ target_include_directories(SmartBody-control PUBLIC
         $<TARGET_PROPERTY:SmartBody-bonebus,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-audio,INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:SmartBody-bml,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:SmartBody-steering-steerlib,INCLUDE_DIRECTORIES>
         )
 
 
@@ -24,5 +25,6 @@ target_link_libraries(SmartBody-control PUBLIC
         SmartBody-vhmsg
         SmartBody-audio
         SmartBody-bml
+        SmartBody-steering-steerlib
         SmartBody
         )

@@ -25,16 +25,32 @@
 
 namespace SmartBody {
 class SBRenderScene;
+class SBSteerManager;
 
-SBAPI void save(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup = false, const std::string& mediaPath = "");
+SBAPI void save(SBRenderScene& renderScene,
+				SBSteerManager* steerManager,
+				std::ostream& ostream,
+				bool remoteSetup = false,
+				const std::string& mediaPath = "");
 
-SBAPI void exportScene(SBRenderScene& renderScene, std::ostream& ostream, const std::vector<std::string>& aspects, const std::string& mediaPath = "", bool remoteSetup = false);
+SBAPI void exportScene(SBRenderScene& renderScene,
+					   SBSteerManager* steerManager,
+					   std::ostream& ostream,
+					   const std::vector<std::string>& aspects,
+					   const std::string& mediaPath = "",
+					   bool remoteSetup = false);
 
 SBAPI void saveSceneSettings(SBRenderScene& renderScene, std::ostream& ostream);
 
-SBAPI void exportScenePackage(SBRenderScene& renderScene, const std::string& outDir, const std::string& outZipArchiveName = "");
+SBAPI void exportScenePackage(SBRenderScene& renderScene,
+							  SBSteerManager* steerManager,
+							  const std::string& outDir,
+							  const std::string& outZipArchiveName = "");
 
-SBAPI void exportCharacter(SBRenderScene& renderScene, const std::string& charName, std::string outDir);
+SBAPI void exportCharacter(SBRenderScene& renderScene,
+						   SBSteerManager* steerManager,
+						   const std::string& charName,
+						   std::string outDir);
 
 
 void saveScene(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
@@ -45,7 +61,7 @@ void saveCameras(SBRenderScene& renderScene, std::ostream& ostream, bool remoteS
 
 void savePawns(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void saveCharacters(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void saveCharacters(SBRenderScene& renderScene, SBSteerManager* steerManager, std::ostream& ostream, bool remoteSetup);
 
 void saveLights(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
@@ -63,7 +79,10 @@ void saveLipSyncing(SBRenderScene& renderScene, std::ostream& ostream, bool remo
 
 void saveServices(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
-void savePositions(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+void savePositions(SBRenderScene& renderScene,
+				   SBSteerManager* steerManager,
+				   std::ostream& ostream,
+				   bool remoteSetup);
 
 }
 

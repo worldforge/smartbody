@@ -36,7 +36,6 @@ zebra2Map.applySkeleton(bradSkeleton)
 zebra2Map.applyMotionRecurse('ChrMaarten')
 
 # Retarget setup
-steerManager = scene.getSteerManager()
 # Setting up group of Brads
 print('Setting up Brads')
 bradList = []

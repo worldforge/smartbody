@@ -28,8 +28,6 @@ camera.setEye(1, 13.43, 18.63)
 camera.setCenter(1, 12, 16.91)
 scene.getPawn('camera').setPosition(SrVec(0, -50, 0))
 
-steerManager = scene.getSteerManager()
-
 # Setting up Brads
 print('Setting up Brads')
 amount = 20

@@ -191,7 +191,6 @@ def retargetBehaviorSet(charName):
     # sbChar.addJointTrajectoryConstraint('r_ankle','base')
     # setup steering
     scene.run("init-steer-agents.py")
-    steerManager = scene.getSteerManager()
     steerManager.setEnable(False)
     setupSteerAgent(charName, 'mocap')
     steerManager.setEnable(True)

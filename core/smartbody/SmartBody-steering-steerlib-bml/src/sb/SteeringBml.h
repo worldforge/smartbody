@@ -1,5 +1,5 @@
 /*************************************************************
-Copyright (C) 2017 University of Southern California
+Copyright (C) 2020 Erik Ogenvik <erik@ogenvik.org>
 
 This file is part of Smartbody.
 
@@ -18,38 +18,27 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#ifndef _STEERAGENT_H_
-#define _STEERAGENT_H_
+#ifndef SMARTBODY_STEERINGBML_H
+#define SMARTBODY_STEERINGBML_H
 
-#include <sb/SBTypes.h>
-#include <string>
+#include <bml/bml_processor.hpp>
 
 namespace SmartBody {
+class SBSteerManager;
+}
 
-class SBCharacter;
+namespace SmartBody {
+struct SteeringBml : public BML::BMLHandler {
+	SteeringBml(BML::Processor& bmlProcessor, SmartBody::SBSteerManager& steerManager);
 
-class SBSteerAgent
-{
-	public:
-		SBAPI SBSteerAgent();
-		SBAPI SBSteerAgent(SBCharacter* sbCharacter);
-		SBAPI ~SBSteerAgent();
+	~SteeringBml();
 
-		SBAPI SBCharacter* getCharacter();
+	BML::BehaviorRequestPtr parseBML(const XMLCh& tag, Payload& payload) override;
 
-		SBAPI virtual void evaluate(double dt);
+	BML::Processor& bmlProcessor;
+	SmartBody::SBSteerManager& steerManager;
 
-		SBAPI void setSteerStateNamePrefix(std::string prefix);
-		SBAPI const std::string& getSteerStateNamePrefix();
-		SBAPI void setSteerType(std::string type);
-		SBAPI const std::string& getSteerType();
-
-
-	private:
-		std::string _steerType;
-		std::string _stateNamePrefix;
-		SBCharacter* _character;
 };
 }
 
-#endif
+#endif //SMARTBODY_STEERINGBML_H

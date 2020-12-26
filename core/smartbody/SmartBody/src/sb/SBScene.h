@@ -127,7 +127,7 @@ class SBScene : public SBObject
 		SBAPI void sendVHMsg2(const std::string&, const std::string& encodedMessage);		
 
 		SBAPI SBCharacter* createCharacter(const std::string&, const std::string&);
-		SBAPI SBCharacter* copyCharacter(const std::string& origCharacter, const std::string& newCharacter);
+		//SBAPI SBCharacter* copyCharacter(const std::string& origCharacter, const std::string& newCharacter);
 		SBAPI SBPawn* createPawn(const std::string& pawnName);
 		SBAPI SBPawn* copyPawn(const std::string& origPawn, const std::string& newPawn);
 
@@ -181,7 +181,7 @@ class SBScene : public SBObject
 		SBAPI SBProfiler* getProfiler();
 		SBAPI SBAnimationBlendManager* getBlendManager();
 		SBAPI SBReachManager* getReachManager();
-		SBAPI SBSteerManager* getSteerManager();
+		//SBAPI SBSteerManager* getSteerManager();
 		SBAPI SBRealtimeManager* getRealtimeManager();
 		SBAPI SBServiceManager* getServiceManager();
 		SBAPI SBPhysicsManager* getPhysicsManager();
@@ -272,8 +272,8 @@ class SBScene : public SBObject
 			return *_assetStore;
 		}
 
-	void setCommandRunner(std::function<bool(const std::string&)> commandRunner);
-	void setScriptRunner(std::function<bool(const std::string&)> commandRunner);
+	void setCommandRunner(std::function<bool(SBScene&, const std::string&)> commandRunner);
+	void setScriptRunner(std::function<bool(SBScene&, const std::string&)> commandRunner);
 	void setVHMsgProvider(VHMsgProvider* vhMsgProvider);
 	void setSpeechBehaviourProvider(SpeechBehaviourProvider* provider) {
 		_speechBehaviourProvider = provider;
@@ -294,7 +294,7 @@ class SBScene : public SBObject
 		std::unique_ptr<SBProfiler> _profiler;
 		std::unique_ptr<SBAnimationBlendManager> _blendManager;
 		std::unique_ptr<SBReachManager> _reachManager;
-		std::unique_ptr<SBSteerManager> _steerManager;
+//		std::unique_ptr<SBSteerManager> _steerManager;
 		std::unique_ptr<SBRealtimeManager> _realtimeManager;
 		std::unique_ptr<SBServiceManager> _serviceManager;
 		std::unique_ptr<SBGestureMapManager> _gestureMapManager;
@@ -354,12 +354,12 @@ class SBScene : public SBObject
 		/**
 		 * HACK: executes commands, which are Python scripts. This should be moved out of the core Scene instance, but we'll keep it for now to avoid updating all scripts.
 		 */
-		std::function<bool(const std::string&)> _commandRunner;
+		std::function<bool(SBScene&, const std::string&)> _commandRunner;
 
 		/**
 		 * HACK: executes scripts. This should be moved out of the core Scene instance, but we'll keep it for now to avoid updating all scripts.
 		 */
-		std::function<bool(const std::string&)> _scriptRunner;
+		std::function<bool(SBScene&, const std::string&)> _scriptRunner;
 
 		VHMsgProvider* _vhMsgProvider;
 		SpeechBehaviourProvider* _speechBehaviourProvider;

@@ -141,8 +141,7 @@ LOCOMOTION = 2
 totalChr = 30
 maxItemsPerGridCell = 7
 if (totalChr > maxItemsPerGridCell):
-    steerManager = scene.getSteerManager()
-    steerManager.setIntAttribute("gridDatabaseOptions.maxItemsPerGridCell", totalChr)
+        steerManager.setIntAttribute("gridDatabaseOptions.maxItemsPerGridCell", totalChr)
 chrCircleRadiusHeightRatio = 0.467
 
 scene.run("default-viewer.py")
@@ -192,7 +191,6 @@ dummy = scene.createPawn("dummyobj")
 scene.run("init-param-animation.py")
 
 scene.run("init-steer-agents.py")
-steerManager = scene.getSteerManager()
 
 # set up steering
 numCharacters = scene.getNumCharacters()

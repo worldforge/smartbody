@@ -30,10 +30,12 @@ class SBCommandManager;
 class SBVHMsgManager;
 class SBBoneBusManager;
 class SBBmlProcessor;
+class SBSteerManager;
 void registerControlCommands(SmartBody::SBCommandManager& commandManager,
 							 SmartBody::SBVHMsgManager* sbvhMsgManager,
 							 SmartBody::SBBoneBusManager* boneBusManager,
-							 BML::Processor* bmlProcessor);
+							 BML::Processor* bmlProcessor,
+							 SmartBody::SBSteerManager* steerManager);
 }
 
 

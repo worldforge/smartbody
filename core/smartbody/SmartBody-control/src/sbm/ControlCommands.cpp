@@ -30,7 +30,8 @@ namespace SmartBody {
 void registerControlCommands(SmartBody::SBCommandManager& commandManager,
 							 SmartBody::SBVHMsgManager* sbvhMsgManager,
 							 SmartBody::SBBoneBusManager* boneBusManager,
-							 BML::Processor* bmlProcessor) {
+							 BML::Processor* bmlProcessor,
+							 SmartBody::SBSteerManager* steerManager) {
 	commandManager.insert("sb", sb_main_func);
 	commandManager.insert("sbm", sbm_main_func);
 
@@ -57,7 +58,9 @@ void registerControlCommands(SmartBody::SBCommandManager& commandManager,
 	commandManager.insert("pythonscript", mcu_pythonscript_func);
 	commandManager.insert("python", mcu_python_func);
 	commandManager.insert("p", mcu_python_func);
-	commandManager.insert("steer", mcu_steer_func);
+	if (steerManager) {
+		commandManager.insert("steer", [=](srArgBuffer& args) { return mcu_steer_func(args, *steerManager); });
+	}
 	commandManager.insert("syncpoint", syncpoint_func);
 	if (sbvhMsgManager) {
 		commandManager.insert("send", [=](srArgBuffer& args) { return sbm_vhmsg_send_func(args, *sbvhMsgManager); });

@@ -22,19 +22,16 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "vhcl_socket.h"
 
 #include "SBDebuggerClient.h"
-#include "SBDebuggerUtility.h"
 #include "sb/SBSimulationManager.h"
 #include "SBUtilities.h"
 #include "sb/SBSceneListener.h"
 #include <string>
 #include <vector>
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
-#ifndef SB_NO_VHMSG
 #include "vhmsg-tt.h"
-#endif
 
 #include <sb/SBScene.h>
 
@@ -55,9 +52,7 @@ SBDebuggerClient::~SBDebuggerClient() = default;
 void SBDebuggerClient::QuerySbmProcessIds()
 {
    m_processIdList.clear();
-#ifndef SB_NO_VHMSG
    vhmsg::ttu_notify1("sbmdebugger queryids");
-#endif
 }
 
 
@@ -66,7 +61,6 @@ void SBDebuggerClient::QuerySbmProcessIds()
 
 void SBDebuggerClient::Connect(const string & id)
 {
-#ifndef SB_NO_VHMSG
    m_sbmId = id;
    m_connectResult = false;
    vhmsg::ttu_notify1(vhcl::Format("sbmdebugger %s connect", m_sbmId.c_str()).c_str());
@@ -105,14 +99,10 @@ void SBDebuggerClient::Connect(const string & id)
       vhcl::SocketShutdown();
       return;
    }
-#else
-	SmartBody::util::log("VHMSG has been disabled, debugger is not available.");
-#endif
 }
 
 void SBDebuggerClient::Disconnect()
 {
-#ifndef SB_NO_VHMSG
    if ( m_sockTCP_client )
    {
       vhcl::SocketClose(m_sockTCP_client);
@@ -126,18 +116,11 @@ void SBDebuggerClient::Disconnect()
    m_processIdList.clear();
    m_sbmId = "";
    m_connectResult = false;
-#else
-	SmartBody::util::log("VHMSG has been disabled, debugger cannot connect.");
-#endif
 }
 
 void SBDebuggerClient::Init()
 {
-#ifndef SB_NO_VHMSG
    vhmsg::ttu_notify1(vhcl::Format("sbmdebugger %s send_init", m_sbmId.c_str()).c_str());
-#else
-	SmartBody::util::log("VHMSG has been disabled, debugger cannot init.");
-#endif
 }
 
 
@@ -318,44 +301,35 @@ void SBDebuggerClient::Update()
 
 void SBDebuggerClient::StartUpdates(double updateFrequencyS)
 {
-#ifndef SB_NO_VHMSG
    vhmsg::ttu_notify1(vhcl::Format("sbmdebugger %s start_update %f", m_sbmId.c_str(), updateFrequencyS).c_str());
-#endif
 }
 
 void SBDebuggerClient::EndUpdates()
 {
-#ifndef SB_NO_VHMSG
    vhmsg::ttu_notify1(vhcl::Format("sbmdebugger %s end_update", m_sbmId.c_str()).c_str());
-#endif
 }
 
 void SBDebuggerClient::SendSBMCommand(int requestId, const std::string & command)
 {
-#ifndef SB_NO_VHMSG
    // send a void command, not expecting a return
    vhmsg::ttu_notify1(vhcl::Format("sbmdebugger %s %d request void \"ret = %s\"", m_sbmId.c_str(), 42, command.c_str()).c_str());
 
    m_netRequestManager.CreateNetRequest(requestId, nullptr, nullptr);
-#endif
 }
 
 void SBDebuggerClient::SendSBMCommand(int requestId, const std::string & returnValue, const std::string & functionNameandParams,
                                        NetRequest::RequestCallback cb,  void* callbackOwner)
 {
-#ifndef SB_NO_VHMSG
    // send a void com
    vhmsg::ttu_notify1(vhcl::Format("sbmdebugger %s %d request %s \"ret = %s\"", m_sbmId.c_str(),
       requestId, returnValue.c_str(), functionNameandParams.c_str()).c_str());
 
    m_netRequestManager.CreateNetRequest(requestId, cb, callbackOwner);
-#endif
 }
 
 void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
 {
-#ifndef SB_NO_VHMSG
-   string message = string(op) + " " + string(args);    
+   string message = string(op) + " " + string(args);
    vector<string> split;
    // get first line of the string
    size_t nl = message.find_first_of('\n');//std::find( message.begin(), message.end(), '\n' ) ;
@@ -499,7 +473,6 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
          
       }
    }
-#endif
 }
 
 void SBDebuggerClient::attachToScene(SBScene& scene) {

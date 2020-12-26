@@ -27,12 +27,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 //#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-//#include "SOIL/SOIL.h"
-//#include <FL/enumerations.H>
-#if !defined (__ANDROID__) && !defined(SBM_IPHONE) // disable shader support
 #include "sbm/GPU/SbmShader.h"
 #include "sbm/GPU/SbmTexture.h"
-#endif
 # include <sbm/GPU/SbmDeformableMeshGPU.h>
 # include "fltk_viewer.h"
 # include <FL/Fl.H>
@@ -2570,14 +2566,14 @@ int FltkViewer::handle ( int event )
 			 bool hasSelection = (selectedPawn != nullptr);
 			 createRightClickMenu(hasSelection,Fl::event_x(), Fl::event_y());
 		 }
-		 else if (SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->isInitialized() && e.button3 && !e.alt)
+		 else if (Session::current->steerManager.getEngineDriver()->isInitialized() && e.button3 && !e.alt)
 		 {
 		
 			 SbmPawn* selectedPawn = _objManipulator.get_selected_pawn();
 			 auto* character = dynamic_cast<SmartBody::SBCharacter*>(selectedPawn);
 			 if (!character)
 				 return ret;
-			 SmartBody::SBSteerAgent* steerAgent = SmartBody::SBScene::getScene()->getSteerManager()->getSteerAgent(character->getName());
+			 SmartBody::SBSteerAgent* steerAgent = Session::current->steerManager.getSteerAgent(character->getName());
 			 if (steerAgent)
 			 {
 				 PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
@@ -3032,7 +3028,7 @@ int FltkViewer::handle_object_manipulation( const SrEvent& e)
 				SbmCharacter* selectedCharacter = dynamic_cast<SbmCharacter*> (selectedPawn);
 				if (selectedCharacter)
 				{
-					SmartBody::SBSteerAgent* steerAgent = SmartBody::SBScene::getScene()->getSteerManager()->getSteerAgent(selectedPawn->getName());
+					SmartBody::SBSteerAgent* steerAgent = Session::current->steerManager.getSteerAgent(selectedPawn->getName());
 					if (steerAgent)
 					{
 						PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
@@ -4894,7 +4890,7 @@ void FltkViewer::drawLocomotion()
 			glEnd();
 
 			float scale = (float)1.0/SmartBody::SBScene::getScene()->getScale(); // if it's in meters
-			SmartBody::SBSteerAgent* steerAgent = SmartBody::SBScene::getScene()->getSteerManager()->getSteerAgent(character->getName());
+			SmartBody::SBSteerAgent* steerAgent = Session::current->steerManager.getSteerAgent(character->getName());
 			if (steerAgent)
 			{
 				PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
@@ -5483,8 +5479,9 @@ void FltkViewer::drawSteeringInfo()
 		return;
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	if (!scene->getSteerManager()->getEngineDriver()->isInitialized() || 
-		!scene->getSteerManager()->getEngineDriver()->_engine)
+	auto& steerManager = Session::current->steerManager;
+	if (!steerManager.getEngineDriver()->isInitialized() || 
+		!steerManager.getEngineDriver()->_engine)
 		return;
 
 	glPushAttrib( GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
@@ -5495,14 +5492,14 @@ void FltkViewer::drawSteeringInfo()
 	glScalef(1.0f / scene->getScale(), 1.0f / scene->getScale(), 1.0f / scene->getScale());
 
 	//comment out for now, have to take a look at the steering code
-	const std::vector<SteerLib::AgentInterface*>& agents = scene->getSteerManager()->getEngineDriver()->_engine->getAgents();
+	const std::vector<SteerLib::AgentInterface*>& agents = steerManager.getEngineDriver()->_engine->getAgents();
 	for (auto agent : agents)
 	{
-		scene->getSteerManager()->getEngineDriver()->_engine->selectAgent(agent);
+		steerManager.getEngineDriver()->_engine->selectAgent(agent);
 		agent->draw();
 	}
 
-	const std::set<SteerLib::ObstacleInterface*>& obstacles = scene->getSteerManager()->getEngineDriver()->_engine->getObstacles();
+	const std::set<SteerLib::ObstacleInterface*>& obstacles = steerManager.getEngineDriver()->_engine->getObstacles();
 	for (auto obstacle : obstacles)
 	{
 		obstacle->draw();
@@ -5510,7 +5507,7 @@ void FltkViewer::drawSteeringInfo()
 	
 	if (_data->steerMode == ModeSteerAll)
 	{
-		scene->getSteerManager()->getEngineDriver()->_engine->getSpatialDatabase()->draw();
+		steerManager.getEngineDriver()->_engine->getSpatialDatabase()->draw();
 	}
 
 	glPopMatrix();

@@ -25,7 +25,6 @@ sinbadMap = jointMapManager.getJointMap('Sinbad.skeleton.xml')
 ogreSk = scene.getSkeleton(sinbadSkName)
 sinbadMap.applySkeleton(ogreSk)
 
-steerManager = scene.getSteerManager()
 print('Setting up Sinbads')
 amount = 40
 row = 0;

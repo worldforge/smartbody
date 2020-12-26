@@ -57,7 +57,6 @@ class SBCollisionManager : public SBService
 
 	protected:
 		std::unique_ptr<SBCollisionSpace> _collisionSpace;
-		float _characterRadius;
 		int _maxIterations;
 		std::map<std::string, SrVec> _velocities;
 		std::map<std::string, SrVec> _positions;

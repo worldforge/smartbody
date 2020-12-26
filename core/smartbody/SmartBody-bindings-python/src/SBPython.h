@@ -12,10 +12,13 @@ class SBScene;
 
 SBAPI void initPython();
 
-SBAPI void setupPython(SmartBody::SBScene& scene);
-
 void executeSafe(const std::function<void()>& fn);
 
 extern std::vector<std::function<void()>> pythonExtraModuleDeclarations;
+
+struct SBPython {
+	static std::function<bool(SmartBody::SBScene& scene, const std::string&)> scriptRunner;
+	static std::function<bool(SmartBody::SBScene& scene, const std::string&)> commandRunner;
+};
 
 #endif

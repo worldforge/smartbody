@@ -7,22 +7,16 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
 #include <sstream>
-#include <FL/filename.H>
 #include "boost/filesystem.hpp"
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
-#include <utility>
 #include <boost/version.hpp>
-#include "sbm/sbm_audio.h"
-#include <fstream>
 #include "CommandWindow.h"
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>
 #include "sb/SBDebuggerClient.h"
-#include "sb/SBDebuggerServer.h"
 #include <sb/SBSimulationManager.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBVHMsgManager.h>
 #include <sbm/Heightfield.h>
 #include "SBPython.h"
 #include <sb/SBVersion.hpp>
@@ -35,11 +29,10 @@
 
 
 #include "SBGUIManager.h"
-#include "sbm/SBRenderScene.h"
 #include "sbm/SBRenderSceneListener.h"
-#include "sb/SBRenderAssetManager.h"
 
 #include "SBPythonClass.h"
+#include "pythonbind/PythonSetup.h"
 
 
 #define TEST_EXPORT_SMARTBODY_PACKAGE 1
@@ -719,19 +712,10 @@ void BaseWindow::ResetScene()
 	// setup python
 	auto& scene = Session::current->scene;
 
-
-
-	std::string pythonLibPath = SmartBody::SBScene::getSystemParameter("pythonlibpath");
-	setupPython(scene);
-	executeSafe([](){
-		boost::python::object module = boost::python::import("__main__");
-		boost::python::object dict  = module.attr("__dict__");
-		dict["bml"] = boost::python::ptr(&Session::current->bmlProcessor);
-	});
 	if (!mediaPath.empty()) {
-		mSession->scene.setMediaPath(mediaPath);
+		scene.setMediaPath(mediaPath);
 	} else {
-		mSession->scene.setMediaPath(SMARTBODY_DATADIR "/smartbody/data");
+		scene.setMediaPath(SMARTBODY_DATADIR "/smartbody/data");
 	}
 
 	mSession->vhmMsgManager.setEnable(true);
@@ -806,7 +790,7 @@ void BaseWindow::SaveCB(Fl_Widget* widget, void* data)
 		message.append("'");
 		fl_alert(message.c_str());
 	} else {
-		SmartBody::save(window->mSession->renderScene, file);
+		SmartBody::save(window->mSession->renderScene, &Session::current->steerManager, file);
 	}
 	file.close();
 	
@@ -843,12 +827,12 @@ void BaseWindow::ExportPackageCB( Fl_Widget* widget, void* data )
 		//LOG("Select filename = %s",fileName.c_str());
 		if (!useZip)
 		{
-			SmartBody::exportScenePackage(renderScene, fileName);
+			SmartBody::exportScenePackage(renderScene, &Session::current->steerManager, fileName);
 		}
 		else
 		{
 			boost::filesystem::path filePath(fileName);
-			SmartBody::exportScenePackage(renderScene, filePath.parent_path().string(),boost::filesystem::basename(fileName)+".zip");
+			SmartBody::exportScenePackage(renderScene, &Session::current->steerManager, filePath.parent_path().string(),boost::filesystem::basename(fileName)+".zip");
 		}
 	}
 }

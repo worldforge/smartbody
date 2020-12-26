@@ -48,7 +48,6 @@ for c in range(0, numCharacters):
 		scene.run('BehaviorSetMaleLocomotion.py')
 		setupBehaviorSet()
 		retargetBehaviorSet(sinbadName)
-	steerManager = scene.getSteerManager()
 	steerAgent = steerManager.createSteerAgent(sinbadName)
 	steerAgent.setSteerStateNamePrefix("all")
 	steerAgent.setSteerType("example")

@@ -28,6 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 namespace SmartBody {
 	class SBVHMsgManager;
 	class SBBoneBusManager;
+	class SBSteerManager;
 }
 
 int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
@@ -82,7 +83,7 @@ int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhm
 int mcu_python_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  );
 int mcu_pythonscript_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  );
 
-int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager );
 int syncpoint_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
 #ifdef USE_GOOGLE_PROFILER
 int startprofile_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );

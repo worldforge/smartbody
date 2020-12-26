@@ -21,7 +21,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef __native_client__
 #ifndef SB_NO_VHMSG
-#include "vhmsg.h"
 #include "vhmsg-tt.h"
 #endif
 #endif
@@ -30,7 +29,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 #include <string>
 #include <boost/version.hpp>
-#include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
@@ -52,15 +50,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_breathing.h>
 #include <controllers/me_controller_tree_root.hpp>
 #include <sbm/PPRAISteeringAgent.h>
+#include "sb/SBSteerManager.h"
 #include <sbm/Heightfield.h>
 #include <sbm/KinectProcessor.h>
 #include <sbm/local_speech.h>
-#include <sr/sr_timer.h>
 
 #include <sbm/action_unit.hpp>
-#ifndef SB_NO_VHMSG
-#include <vhmsg.h>
-#endif
 
 #ifdef WIN32
 #include <direct.h>
@@ -77,22 +72,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/sbm_audio.h"
 
 #include "sr/sr_model.h"
-#include "sb/sbm_pawn.hpp"
 #include "sb/SBEvent.h"
-#include "rapidxml_utils.hpp"
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
 #include <boost/algorithm/string.hpp>
 #include "sb/SBCharacter.h"
-#include <sbm/BMLDefs.h>
 #include <sb/SBSteerManager.h>
 #include <sb/SBJointMapManager.h>
 #include <sb/SBJointMap.h>
-#include <sb/SBAnimationState.h>
-#include <sb/SBMotion.h>
-#include <sb/SBScene.h>
-#include <math.h>
+#include <cmath>
 #include <controllers/me_ct_gaze.h>
 #include <controllers/me_ct_motion_player.h>
 
@@ -2289,7 +2276,7 @@ int mcu_pythonscript_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMg
 }
 
 
-int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	
@@ -2307,12 +2294,12 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	}
 	else if (command == "start")
 	{
-		SmartBody::SBScene::getScene()->getSteerManager()->setEnable(true);
+		steerManager.setEnable(true);
 		return CMD_SUCCESS;
 	}
 	else if (command == "stop")
 	{
-		SmartBody::SBScene::getScene()->getSteerManager()->setEnable(false);
+		steerManager.setEnable(false);
 		return CMD_SUCCESS;
 	}
 	else if (command == "move")
@@ -2326,13 +2313,12 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			SmartBody::util::log("Syntax: steer move <character> <mode> <x1> <y1> <z1> <x2> <y2> <z2> ...");
 			return CMD_FAILURE;
 		}
-		if (SmartBody::SBScene::getScene()->getSteerManager()->getEngineDriver()->isInitialized())
+		if (steerManager.getEngineDriver()->isInitialized())
 		{
 			SbmCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 			if (character)
 			{
-				SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-				SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+				SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 				if (steerAgent)
 				{
 					PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
@@ -2400,8 +2386,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 		if (character)
 		{
-			SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 			if (steerAgent)
 			{
@@ -2421,8 +2406,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 		if (character)
 		{
-			SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 			std::string fastinitialString = args.read_token();
 			if (fastinitialString == "true")
@@ -2438,8 +2422,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 		if (character)
 		{
-			SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 			if (character->locomotion_type != character->Procedural)
 			{
@@ -2469,7 +2452,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			std::string type = args.read_token();
 			if (type == "example")
 			{
-				if (character->checkExamples())
+				if (steerManager.checkExamples(*character))
 					character->locomotion_type = character->Example;
 				else
 					character->locomotion_type = character->Basic;
@@ -2486,8 +2469,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			if (type == "procedural")
 			{
 				character->locomotion_type = character->Procedural;
-				SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-				SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+				SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 				if (steerAgent)
 				{
 					PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
@@ -2531,8 +2513,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 		if (character)
 		{
-			SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 			ppraiAgent->facingAngle = (float)args.read_double();
 			return CMD_SUCCESS;
@@ -2544,8 +2525,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 		if (character)
 		{
-			SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 			ppraiAgent->brakingGain = (float)args.read_double();
 			if (ppraiAgent->brakingGain < 1.0f)
@@ -2561,8 +2541,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 		if (character)
 		{
-			SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(character->getName());
+			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 			ppraiAgent->startParameterTesting();
 			return CMD_SUCCESS;

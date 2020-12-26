@@ -31,8 +31,6 @@ scene.run('behaviorsetup.py')
 
 # Animation setup
 # scene.run('init-param-animation.py')
-steerManager = scene.getSteerManager()
-
 # Setting up Sinbad
 print('Setting up Sinbad')
 sinbadName = 'sinbad'

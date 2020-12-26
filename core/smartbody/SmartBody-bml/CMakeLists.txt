@@ -17,7 +17,6 @@ add_library(
         src/bml/bml_general_param.cpp
         src/bml/bml_grab.cpp
         src/bml/bml_interrupt.cpp
-        src/bml/bml_locomotion.cpp
         src/bml/bml_processor.cpp
         src/bml/bml_reach.cpp
         src/bml/bml_speech.cpp

@@ -23,11 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb/SBController.h"
 #include "sb/SBBehavior.h"
-#include <sbm/PPRAISteeringAgent.h>
-#include <sb/SBSteerAgent.h>
 #include <sb/SBPhysicsManager.h>
-#include <sb/SBSteerManager.h>
-#include <sb/SBSteerAgent.h>
 #include <sb/SBPhoneme.h>
 #include <sb/SBPhonemeManager.h>
 #include <sb/SBAssetManager.h>
@@ -712,10 +708,9 @@ void SBCharacter::notify(SBSubject* subject)
 			int shapesAdded = 0;
 			std::vector<std::string> attributeNames = this->getAttributeNames();
 			std::vector<std::string> shapeNames;
-			for (size_t i = 0; i < attributeNames.size(); ++i)
+			for (auto attrName : attributeNames)
 			{
-				std::string attrName = attributeNames[i];
-				if (attrName.find("blendShape.channelName.") != std::string::npos)
+					if (attrName.find("blendShape.channelName.") != std::string::npos)
 				{
 					std::string channelName = getStringAttribute(attrName);
 					if (channelName != "")
@@ -750,9 +745,9 @@ void SBCharacter::notify(SBSubject* subject)
 			if (this->posture_sched_p)
 			{
 				MeCtScheduler2::VecOfTrack tracks = this->posture_sched_p->tracks();
-				for (size_t t = 0; t < tracks.size(); t++)
+				for (auto & track : tracks)
 				{
-					MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(tracks[t]->animation_ct());
+					MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(track->animation_ct());
 					if (motionCt)
 					{
 						motionCt->useOffset(postureDiff->getValue());
@@ -871,17 +866,6 @@ void SBCharacter::notify(SBSubject* subject)
 				}
 			}
 
-		}
-		if (attrName.find("steering.") == 0)
-		{
-			// update the steering params on the next evaluation cycle
-			SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
-			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(getName());
-			if (steerAgent)
-			{
-				PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-				ppraiAgent->setSteerParamsDirty(true);
-			}
 		}
 #if 1 // rocket box test		
 		if (attrName == "_1testHead")
@@ -1430,6 +1414,17 @@ void SBCharacter::removeParserListener()
 SBParserListener* SBCharacter::getParserListener()
 {
 	return _parserListener;
+}
+
+bool SBCharacter::isInLocomotion() const {
+	if (_locomotionStatusProvider) {
+		return _locomotionStatusProvider();
+	}
+	return false;
+}
+
+void SBCharacter::setLocomotionStatusProvider(std::function<bool()> provider) {
+	_locomotionStatusProvider = std::move(provider);
 }
 
 

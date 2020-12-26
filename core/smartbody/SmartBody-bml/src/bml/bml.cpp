@@ -54,11 +54,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBGestureMapManager.h>
 #include <sb/SBGestureMap.h>
 #include <sb/SBSimulationManager.h>
-#include <sb/SBSteerManager.h>
-#include <sb/SBSteerAgent.h>
 #include <sb/SBCommandManager.h>
 #include "SBUtilities.h"
-#include <sbm/PPRAISteeringAgent.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
@@ -2739,7 +2736,7 @@ void BehaviorRequest::schedule( time_sec now ) {
 }
 
 void BehaviorRequest::realize( BmlRequestPtr request, SmartBody::SBScene* scene ) {
-	realize_impl( request, scene );
+	realize_impl( std::move(request), scene );
 }
 
 
@@ -2918,23 +2915,34 @@ void GestureRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene* sc
 			if (sbHoldM)
 				sbHoldM->setMotionSkeletonName(sbMotion->getMotionSkeletonName());
 			SBCharacter* sbCharacter = dynamic_cast<SBCharacter*>(request->actor);
-			bool isInLocomotion = false;
-			SmartBody::SBSteerManager* steerManager = scene->getSteerManager();
-			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(sbCharacter->getName());
-			if (steerAgent)
-			{
-				for (size_t i = 0; i < request->behaviors.size(); ++i)
+			bool isInLocomotion = sbCharacter->isInLocomotion();
+			if (!isInLocomotion) {
+				for (auto & behavior : request->behaviors)
 				{
-					if ((request->behaviors)[i]->local_id == "locomotion")
+					if (behavior->local_id == "locomotion")
 					{
 						isInLocomotion = true;
 						break;
 					}
 				}
-				PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-				if (ppraiAgent->isInLocomotion())
-					isInLocomotion = true;
 			}
+//			SmartBody::SBSteerManager* steerManager = scene->getSteerManager();
+//
+//			SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(sbCharacter->getName());
+//			if (steerAgent)
+//			{
+//				for (auto & behavior : request->behaviors)
+//				{
+//					if (behavior->local_id == "locomotion")
+//					{
+//						isInLocomotion = true;
+//						break;
+//					}
+//				}
+//				PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
+//				if (ppraiAgent->isInLocomotion())
+//					isInLocomotion = true;
+//			}
 			if (isInLocomotion)
 			{
 				std::vector<std::string> jointNames = sbCharacter->getSkeleton()->getUpperBodyJointNames();

@@ -19,11 +19,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-#include <errno.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 
 #include "sbm/xercesc_utils.hpp"
 #include "SBUtilities.h"
