@@ -25,7 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sr_hash_map.h"
 #include "sr_arg_buff.h"
-#include <string.h>
+#include <cstring>
 
 //////////////////////////////////////////////////////////////////
 

@@ -23,7 +23,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/BMLDefs.h"
 
 #include "rapidxml_utils.hpp"
-#include <fstream>
 #include <sb/SBScene.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBCommandManager.h>

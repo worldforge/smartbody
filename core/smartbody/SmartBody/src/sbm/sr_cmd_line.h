@@ -25,9 +25,9 @@
 #define SR_CMD_LINE_H
 
 #include	<sys/types.h>
-#include	<stdio.h>
-#include    <stdlib.h>
-#include	<string.h>
+#include	<cstdio>
+#include    <cstdlib>
+#include	<cstring>
 #include	<iostream>
 #include	<list>
 

@@ -24,8 +24,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef WIN32
 #else
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #define _snprintf snprintf
 

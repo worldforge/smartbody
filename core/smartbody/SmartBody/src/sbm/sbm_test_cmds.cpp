@@ -201,11 +201,9 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 		if( all_characters )
 		{
 			const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
-			for (std::vector<std::string>::const_iterator iter = characterNames.begin();
-				iter != characterNames.end();
-				iter++)
+			for (const auto & characterName : characterNames)
 			{
-				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(*iter);
+				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
 				build_vrX( msg, cmd, character->getName().c_str(), recip_id, bml, true );
 
 				//echo.str("");

@@ -20,13 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sbm/lin_win.h"
 
-#ifdef WIN32
-
-#else
-
-#endif
-
-#include <string.h>
+#include <cstring>
 
 /////////////////////////////////////////////////////////////////
 
