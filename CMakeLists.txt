@@ -64,27 +64,6 @@ set(BUILD_FESTIVAL FALSE)
 # uses the Assimp asset importer
 #set(SB_NO_ASSIMP TRUE)
 
-# uses Python as a scripting language
-#set( SB_NO_PYTHON FALSE)
-
-# uses the Virtual Human Message system
-#set( SB_NO_VHMSG TRUE)
-
-# uses the bonebus network 
-#set( SB_NO_BONEBUS TRUE)
-
-# uses the Open Dynamics Engine (ODE) physics library
-#set( SB_NO_ODE_PHYSICS TRUE)
-
-if (${SB_NO_BONEBUS})
-    add_definitions(-DSB_NO_BONEBUS)
-    set(BONEBUS_INCLUDE
-            )
-else ()
-    set(BONEBUS_INCLUDE
-            lib/bonebus/include
-            )
-endif ()
 
 add_subdirectory(external)
 add_subdirectory(lib)
