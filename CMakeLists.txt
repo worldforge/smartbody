@@ -40,9 +40,6 @@ if (GOOGLE_PROFILER)
     link_libraries(${GPERFTOOLS_LIBRARIES})
 endif()
 
-option(BUILD_STATIC "build static library" ON)
-option(BUILD_DYNAMIC "build dynamic library" ON)
-
 
 #Temporarily disable the boost warning messages, as they spam the output.
 add_compile_definitions(BOOST_ALLOW_DEPRECATED_HEADERS)
