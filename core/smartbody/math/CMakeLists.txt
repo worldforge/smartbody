@@ -6,7 +6,6 @@ add_library(
 
 target_include_directories(math PUBLIC
         src
-        $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
         )
 
 

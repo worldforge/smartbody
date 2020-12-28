@@ -40,13 +40,6 @@ if (GOOGLE_PROFILER)
     link_libraries(${GPERFTOOLS_LIBRARIES})
 endif()
 
-
-#Make external libs available everywhere.
-include_directories(
-        ${PROJECT_SOURCE_DIR}/external/boost-numeric-bindings
-        ${PROJECT_SOURCE_DIR}/external
-)
-
 option(BUILD_STATIC "build static library" ON)
 option(BUILD_DYNAMIC "build dynamic library" ON)
 

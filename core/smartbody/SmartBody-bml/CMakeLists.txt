@@ -47,7 +47,6 @@ add_library(
 
 target_include_directories(SmartBody-bml PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         )
 
 

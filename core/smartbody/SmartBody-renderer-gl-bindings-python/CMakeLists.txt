@@ -6,8 +6,6 @@ add_library(
 
 target_include_directories(SmartBody-renderer-gl-bindings-python PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
         ${PYTHON_INCLUDE_DIRS}
         )
 

@@ -7,8 +7,6 @@ add_library(
 
 target_include_directories(SmartBody-steering-steerlib-bml PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody-bml,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-steering-steerlib,INCLUDE_DIRECTORIES>
         )
 
 

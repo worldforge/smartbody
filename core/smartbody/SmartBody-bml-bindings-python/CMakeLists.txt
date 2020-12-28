@@ -6,7 +6,6 @@ add_library(
 
 target_include_directories(SmartBody-bml-bindings-python PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody-bml,INCLUDE_DIRECTORIES>
         ${PYTHON_INCLUDE_DIRS}
         )
 

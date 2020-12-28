@@ -9,13 +9,6 @@ add_library(
 
 target_include_directories(SmartBody-control PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-navmesh,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-bonebus,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-audio,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-bml,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-steering-steerlib,INCLUDE_DIRECTORIES>
         )
 
 

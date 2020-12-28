@@ -249,23 +249,19 @@ add_library(
 
 target_include_directories(SmartBody PUBLIC
         src
-        $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:math,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
 )
-
-target_include_directories(SmartBody PRIVATE
-        ${PROJECT_SOURCE_DIR}/external/rapidxml)
 
 #if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 #    conan_target_link_libraries(SmartBody)
 #endif ()
 
-target_link_libraries(SmartBody
+target_link_libraries(SmartBody PUBLIC
         sr
         parser
         perlin
         math
         util
+        boost-numeric-bindings
+        rapidxml
         ${MORE_LIBS}
         )

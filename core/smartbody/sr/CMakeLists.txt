@@ -51,12 +51,11 @@ add_library(
 
 target_include_directories(sr PUBLIC
         src
-        $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:math,INCLUDE_DIRECTORIES>
         )
 
 target_link_libraries(sr PUBLIC
-        util)
+        util
+        math)
 
 #if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 #    conan_target_link_libraries(SmartBody)

@@ -182,24 +182,6 @@ target_link_libraries(sbgui
 
 target_include_directories(sbgui PUBLIC
         src
-        $<TARGET_PROPERTY:util,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-navmesh,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-bindings-python,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-renderer-gl-bindings-python,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-navmesh-bindings-python,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-physics-ode,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-control,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-vhmsg,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-bonebus,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-bml,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-bml-bindings-python,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-serialize,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-steering-steerlib,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-steering-steerlib-bml,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-export,INCLUDE_DIRECTORIES>
         )
 
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")

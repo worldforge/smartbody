@@ -6,10 +6,6 @@ add_library(
 
 target_include_directories(SmartBody-vhmsg PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:sr,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:vhmsg,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:vhcl,INCLUDE_DIRECTORIES>
         )
 
 
@@ -18,5 +14,4 @@ target_link_libraries(SmartBody-vhmsg PUBLIC
         sr
         vhmsg
         vhcl
-        ${ACTIVEMQLIB}
         )

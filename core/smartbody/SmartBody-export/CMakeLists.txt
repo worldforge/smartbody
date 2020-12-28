@@ -6,10 +6,6 @@ add_library(
 
 target_include_directories(SmartBody-export PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-serialize,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-steering-steerlib,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
         )
 
 

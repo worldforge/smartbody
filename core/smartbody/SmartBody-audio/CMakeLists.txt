@@ -6,8 +6,6 @@ add_library(
 
 target_include_directories(SmartBody-audio PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:vhcl,INCLUDE_DIRECTORIES>
         )
 
 

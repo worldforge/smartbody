@@ -8,10 +8,6 @@ add_library(
 
 target_include_directories(SmartBody-debugger PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-renderer-gl,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:SmartBody-export,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:vhmsg,INCLUDE_DIRECTORIES>
         )
 
 

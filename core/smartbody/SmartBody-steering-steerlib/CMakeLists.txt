@@ -10,9 +10,6 @@ add_library(
 
 target_include_directories(SmartBody-steering-steerlib PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:steerlib,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:pprAI,INCLUDE_DIRECTORIES>
         )
 
 

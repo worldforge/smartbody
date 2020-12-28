@@ -6,8 +6,6 @@ add_library(
 
 target_include_directories(SmartBody-bonebus PUBLIC
         src
-        $<TARGET_PROPERTY:SmartBody,INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:bonebus,INCLUDE_DIRECTORIES>
         )
 
 target_link_libraries(SmartBody-bonebus PUBLIC
