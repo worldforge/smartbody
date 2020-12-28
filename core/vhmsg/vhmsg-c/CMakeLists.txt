@@ -9,4 +9,5 @@ target_include_directories(vhmsg PUBLIC
         )
 
 target_link_libraries(vhmsg PUBLIC
-        vhcl)
+        vhcl
+        CONAN_PKG::activemq-cpp)

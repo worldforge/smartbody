@@ -9,5 +9,5 @@ add_library(bonebus
 target_include_directories(bonebus PUBLIC
         include)
 
-target_link_libraries(bonebus
+target_link_libraries(bonebus PUBLIC
         vhcl)

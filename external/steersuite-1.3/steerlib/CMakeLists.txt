@@ -53,4 +53,6 @@ target_include_directories(steerlib PUBLIC
 
 
 target_link_libraries(steerlib PUBLIC
-        mersenne)
+        mersenne
+        CONAN_PKG::ticpp
+        )

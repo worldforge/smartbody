@@ -11,6 +11,6 @@ target_include_directories(SmartBody-speech-remote PUBLIC
 
 
 target_link_libraries(SmartBody-speech-remote PUBLIC
-        SmartBody
         SmartBody-debugger
+        SmartBody
         )

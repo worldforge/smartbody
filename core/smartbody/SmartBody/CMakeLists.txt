@@ -251,10 +251,6 @@ target_include_directories(SmartBody PUBLIC
         src
 )
 
-#if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-#    conan_target_link_libraries(SmartBody)
-#endif ()
-
 target_link_libraries(SmartBody PUBLIC
         sr
         parser
@@ -264,4 +260,8 @@ target_link_libraries(SmartBody PUBLIC
         boost-numeric-bindings
         rapidxml
         ${MORE_LIBS}
+        CONAN_PKG::nanoflann
+        CONAN_PKG::stb
+        CONAN_PKG::xerces-c
+        CONAN_PKG::boost
         )

@@ -38,5 +38,9 @@ target_include_directories(vhcl PUBLIC
 
 # only for vhcl_crash.cpp
 target_include_directories(vhcl PRIVATE
-        src/nocturnal/Debug
-        )
+        src/nocturnal/Debug)
+
+target_link_libraries(vhcl PUBLIC
+        CONAN_PKG::openal
+        CONAN_PKG::alut
+        CONAN_PKG::libsndfile)

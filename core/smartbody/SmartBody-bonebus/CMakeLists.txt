@@ -9,6 +9,6 @@ target_include_directories(SmartBody-bonebus PUBLIC
         )
 
 target_link_libraries(SmartBody-bonebus PUBLIC
-        SmartBody
         bonebus
+        SmartBody
         )

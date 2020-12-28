@@ -1,5 +1,4 @@
-add_library(
-        SmartBody-c-dll
+add_library(SmartBody-c-dll SHARED
         src/smartbody-c-dll.cpp
 )
 
@@ -7,12 +6,7 @@ target_include_directories(SmartBody-c-dll PUBLIC
         src
 )
 
-#if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-#    conan_target_link_libraries(SmartBody)
-#endif ()
-
 target_link_libraries(SmartBody-c-dll
-        SmartBody
         SmartBody-renderer-gl
         SmartBody-debugger
         SmartBody-bindings-python

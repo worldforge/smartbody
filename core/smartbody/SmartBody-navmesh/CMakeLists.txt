@@ -11,6 +11,6 @@ target_include_directories(SmartBody-navmesh PUBLIC
 
 
 target_link_libraries(SmartBody-navmesh PUBLIC
+        CONAN_PKG::recastnavigation
         SmartBody
-        sr
         )

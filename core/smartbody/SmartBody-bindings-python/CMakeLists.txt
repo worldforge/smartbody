@@ -23,10 +23,10 @@ target_include_directories(SmartBody-bindings-python PUBLIC
 
 
 target_link_libraries(SmartBody-bindings-python PUBLIC
-        SmartBody
         SmartBody-debugger
         SmartBody-vhmsg
         SmartBody-bonebus
+        SmartBody
         ${PYTHON_LIBRARIES}
         )
 

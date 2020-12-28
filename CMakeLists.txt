@@ -11,7 +11,7 @@ include(CMakeDependentOption)
 if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     message(STATUS "Using Conan for dependency resolution.")
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup()
+    conan_basic_setup(TARGETS)
     #We need to copy all .dll files that Conan installed too.
     #TODO: make sure that Conan only builds static libraries on Windows.
     if (WIN32)
@@ -66,7 +66,6 @@ set(BUILD_FESTIVAL FALSE)
 
 
 add_subdirectory(external)
-add_subdirectory(lib)
 add_subdirectory(core)
 
 #Install all data

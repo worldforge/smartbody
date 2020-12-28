@@ -20,7 +20,6 @@ target_include_directories(SmartBody-bindings-javascript PUBLIC
 
 
 target_link_libraries(SmartBody-bindings-javascript
-        SmartBody
         SmartBody-renderer-gl
         SmartBody-vhmsg
         SmartBody-bonebus

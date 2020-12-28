@@ -57,7 +57,3 @@ target_link_libraries(sr PUBLIC
         util
         math)
 
-#if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-#    conan_target_link_libraries(SmartBody)
-#endif ()
-

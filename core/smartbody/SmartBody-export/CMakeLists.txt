@@ -10,7 +10,7 @@ target_include_directories(SmartBody-export PUBLIC
 
 
 target_link_libraries(SmartBody-export PUBLIC
-        SmartBody
+        CONAN_PKG::zlib
         SmartBody-serialize
         SmartBody-steering-steerlib
         SmartBody-renderer-gl

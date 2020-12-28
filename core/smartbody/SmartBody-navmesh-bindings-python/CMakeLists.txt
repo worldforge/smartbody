@@ -11,10 +11,8 @@ target_include_directories(SmartBody-navmesh-bindings-python PUBLIC
 
 
 target_link_libraries(SmartBody-navmesh-bindings-python PUBLIC
-        SmartBody-navmesh
-        SmartBody
-        sr
         ${PYTHON_LIBRARIES}
+        SmartBody-navmesh
         )
 
 target_link_directories(SmartBody-navmesh-bindings-python PUBLIC

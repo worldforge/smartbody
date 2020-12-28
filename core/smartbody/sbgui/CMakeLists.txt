@@ -2,38 +2,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     find_library(COREAUDIO_LIBRARY CoreAudio)
     find_library(AUDIOUNIT_LIBRARY AudioUnit)
     find_library(CORESERVICES_LIBRARY CoreServices)
-endif ()
-
-
-if (${BUILD_OGRE})
-    find_path(OGRE_INCLUDE_PATH Ogre.h)
-    include_directories(${OGRE_INCLUDE_PATH})
-    set(OGREMAINLIB OgreMain)
-    set(OISLIB OIS)
-    set(OGRE_LIBS
-            ${OGREMAINLIB}
-            ${OISLIB}
-            #${RTSHADERLIB}
-            )
-
-    set(OGRE_SRCS
-            src/EmbeddedOgre.cpp
-            src/ExampleFrameListener.cpp
-            src/FLTKOgreViewer.cpp
-            src/OgreFrameListener.cpp
-            src/SBOgreListener.cpp
-            )
-else ()
-    set(OGRE_LIBS
-            )
-    set(OGRE_SRCS
-            )
-    add_definitions(-DNO_OGRE_VIEWER_CMD)
-endif ()
-
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
     link_directories(/usr/X11R6/lib)
     if (${BUILD_FESTIVAL})
         set(FESTIVAL_LIBS
@@ -55,7 +23,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             )
 else ()
     set(MORE_LIBS)
-
 endif ()
 
 set(SBM_FLTK_SRC
@@ -64,7 +31,6 @@ set(SBM_FLTK_SRC
         src/sbm_main.cpp
         src/ppm.cpp
         src/pic.cpp
-        #	src/glfont2.cpp
         src/CommandWindow.cpp
         src/ObjectManipulationHandle.cpp
         src/PawnPosControl.cpp
@@ -76,7 +42,6 @@ set(SBM_FLTK_SRC
         src/SBWindowListener.cpp
         src/SBSelectionManager.cpp
         src/SBInterfaceListener.cpp
-        ${OGRE_SRCS}
         src/pic.cpp
         src/ppm.cpp
         src/bmlviewer/BehaviorBlock.cpp
@@ -156,37 +121,34 @@ add_executable(sbgui
         )
 
 target_link_libraries(sbgui
-        SmartBody
-        SmartBody-renderer-gl
-        SmartBody-bindings-python
-        SmartBody-debugger
         SmartBody-renderer-gl-bindings-python
+        SmartBody-bindings-python
+        SmartBody-navmesh-bindings-python
+        SmartBody-bml-bindings-python
+        SmartBody-renderer-gl
+        SmartBody-debugger
         SmartBody-physics-ode
         SmartBody-control
         SmartBody-navmesh
-        SmartBody-navmesh-bindings-python
         SmartBody-vhmsg
         SmartBody-bonebus
-        SmartBody-bml
-        SmartBody-bml-bindings-python
         SmartBody-serialize
-        SmartBody-steering-steerlib
         SmartBody-steering-steerlib-bml
+        SmartBody-steering-steerlib
         SmartBody-export
+        SmartBody-bml
+        SmartBody
+        CONAN_PKG::polyvox
+        CONAN_PKG::fltk
         jpge
         pinocchio
         ${MORE_LIBS}
-        ${OGRE_LIBS}
         pthread
         )
 
 target_include_directories(sbgui PUBLIC
         src
         )
-
-if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    conan_target_link_libraries(sbgui)
-endif ()
 
 
 install(TARGETS sbgui DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
