@@ -25,10 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBScene.h"
 #include "sb/SBAttribute.h"
 
-#include "vhcl.h"
 #include "vhcl_audio.h"
-#include <sstream>
-#include <cstdlib>
 
 #define USEAUDIODURATION 1
 

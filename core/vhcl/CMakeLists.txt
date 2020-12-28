@@ -6,7 +6,6 @@ endif (MSVC)
 
 set(SRC
         src/Pow2Assert.cpp
-        src/vhcl_audio.cpp
         src/vhcl_crash.cpp
         src/vhcl_log.cpp
         src/vhcl_math.cpp
@@ -40,7 +39,18 @@ target_include_directories(vhcl PUBLIC
 target_include_directories(vhcl PRIVATE
         src/nocturnal/Debug)
 
-target_link_libraries(vhcl PUBLIC
+target_link_libraries(vhcl PUBLIC)
+
+add_library(vhcl-audio
+        src/vhcl_audio.cpp
+        )
+
+target_include_directories(vhcl-audio PUBLIC
+        include
+        )
+
+target_link_libraries(vhcl-audio PUBLIC
+        vhcl
         CONAN_PKG::openal
         CONAN_PKG::alut
         CONAN_PKG::libsndfile)

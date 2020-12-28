@@ -10,4 +10,5 @@ target_link_libraries(SmartBody-c-dll
         SmartBody-renderer-gl
         SmartBody-debugger
         SmartBody-bindings-python
+        SmartBody-control
         )

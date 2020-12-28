@@ -11,5 +11,5 @@ target_include_directories(SmartBody-audio PUBLIC
 
 target_link_libraries(SmartBody-audio PUBLIC
         SmartBody
-        vhcl
+        vhcl-audio
         )
