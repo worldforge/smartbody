@@ -1,2 +1,5 @@
 add_library(jpge
-        jpge.cpp)
+        jpge/jpge.cpp)
+
+target_include_directories(jpge PUBLIC
+        .)

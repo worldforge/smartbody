@@ -1,2 +1,6 @@
 add_library(rply
-        rply.c)
+        rply/rply.c)
+
+
+target_include_directories(rply PUBLIC
+        .)

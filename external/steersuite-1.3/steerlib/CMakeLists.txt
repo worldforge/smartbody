@@ -10,8 +10,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif ()
 
 
-add_library(
-        steerlib
+add_library(steerlib
         src/AgentMetricsCollector.cpp
         src/CompositeTechnique02.cpp
         src/PerformanceProfiler.cpp
@@ -47,4 +46,11 @@ add_library(
 )
 
 target_include_directories(steerlib PUBLIC
-        include)
+        include
+        )
+
+
+
+
+target_link_libraries(steerlib PUBLIC
+        mersenne)
