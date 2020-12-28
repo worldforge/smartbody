@@ -1,9 +1,3 @@
-include_directories(include)
-
-
-# only for vhcl_crash.cpp
-include_directories(src/nocturnal/Debug)
-
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     add_definitions(/EHa)
@@ -37,4 +31,12 @@ add_library(vhcl
         ${SRC}
         )
 
+target_include_directories(vhcl PUBLIC
+        include
+        )
 
+
+# only for vhcl_crash.cpp
+target_include_directories(vhcl PRIVATE
+        src/nocturnal/Debug
+        )

@@ -6,5 +6,7 @@ add_library(vhmsg
 
 target_include_directories(vhmsg PUBLIC
         include
-        $<TARGET_PROPERTY:vhcl,INCLUDE_DIRECTORIES>
         )
+
+target_link_libraries(vhmsg PUBLIC
+        vhcl)
