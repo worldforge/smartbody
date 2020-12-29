@@ -55,5 +55,7 @@ target_include_directories(sr PUBLIC
 
 target_link_libraries(sr PUBLIC
         util
-        math)
+        math
+        CONAN_PKG::boost
+        )
 
