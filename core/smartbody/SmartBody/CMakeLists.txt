@@ -264,4 +264,5 @@ target_link_libraries(SmartBody PUBLIC
         CONAN_PKG::stb
         CONAN_PKG::xerces-c
         CONAN_PKG::boost
+        CONAN_PKG::eigen
         )

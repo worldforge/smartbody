@@ -1,10 +1,6 @@
 //#include <boost/numeric/bindings/atlas/cblas.hpp>
 #include "controllers/me_ct_ublas.hpp"
 #include "sb/SBScene.h"
-#include <boost/numeric/bindings/blas/blas.hpp>
-#include <boost/numeric/bindings/lapack/lapack.hpp>
-#include <boost/numeric/bindings/traits/ublas_matrix.hpp>
-#include <boost/numeric/bindings/traits/ublas_vector.hpp>
 
 #define __SB_LA_NONE 0
 #define __SB_LA_UBLAS 1
@@ -13,29 +9,34 @@
 #if defined(EMSCRIPTEN)
 #define __SB_LA __SB_LA_EIGEN
 #else
-#define __SB_LA __SB_LA_UBLAS
+#define __SB_LA __SB_LA_EIGEN
+//#define __SB_LA __SB_LA_UBLAS
 #endif
 
 #if __SB_LA == __SB_LA_UBLAS
+#include <boost/numeric/bindings/blas/blas.hpp>
+#include <boost/numeric/bindings/traits/ublas_matrix.hpp>
+#include <boost/numeric/bindings/traits/ublas_vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/banded.hpp> 
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/triangular.hpp>
+#include <boost/numeric/bindings/lapack/lapack.hpp>
+namespace blas   = boost::numeric::bindings::blas;
+namespace lapack = boost::numeric::bindings::lapack;
 #endif
 #include <boost/numeric/ublas/lu.hpp>
 
 
 #if __SB_LA == __SB_LA_EIGEN
-#include <Eigen/Dense>
-#include <Eigen/SVD>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/SVD>
 using namespace Eigen;
 #endif
 
 
 #include <ctime>
 
-namespace lapack = boost::numeric::bindings::lapack;
-namespace blas   = boost::numeric::bindings::blas;
 //namespace ublas  = boost::numeric::ublas;
 
 void MeCtUBLAS::matrixMatMult(const dMatrix& mat1, const dMatrix& mat2, dMatrix& mat3)
@@ -91,7 +92,7 @@ bool MeCtUBLAS::inverseMatrix( const dMatrix& mat, dMatrix& inv )
 	using namespace boost::numeric::ublas;
 	dMatrix A(mat);
 	inv = identity_matrix<double>(mat.size1());
-#if !defined(EMSCRIPTEN)
+#if __SB_LA == __SB_LA_UBLAS
 	lapack::gesv(A,inv);
 #elif __SB_LA == __SB_LA_EIGEN
 	MatrixXd m(mat.size1(), mat.size2()), mInv;

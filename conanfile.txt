@@ -3,7 +3,7 @@
 #ogre/1.12.4@smartbody/stable
 ticpp/2.5.3@smartbody/stable
 recastnavigation/cci.20200511
-lapack/3.7.1@smartbody/stable
+#lapack/3.7.1@smartbody/stable
 fltk/1.3.5@smartbody/stable
 ncurses/6.2
 polyvox/0.2.1@smartbody/stable
@@ -22,6 +22,7 @@ zlib/1.2.11
 #openssl/1.0.2u
 glm/0.9.9.8
 nanoflann/1.3.2
+eigen/3.3.9
 
 [generators]
 cmake
