@@ -28,35 +28,19 @@
 namespace vhmsg
 {
 
-class Message
+struct Message
 {
-   private:
-      std::string m_message;
-      std::map< std::string, std::string > m_messageMap;
+      std::string message;
+      std::map< std::string, std::string > messageMap;
 
-      std::wstring m_wmessage;
-      std::map< std::wstring, std::wstring > m_wmessageMap;
+      std::wstring wmessage;
+      std::map< std::wstring, std::wstring > wmessageMap;
 
-   public:
-      Message() = default;
-      const std::string & GetString() const { return m_message; }
-      void SetString( const char * message ) { m_message = message; }
-
-      const std::wstring & GetWString() const { return m_wmessage; }
-      void SetWString( const wchar_t * message ) { m_wmessage = message; }
-
-
-      const std::map< std::string, std::string > & GetMap() const { return m_messageMap; }
-      void InsertItem( const std::pair< std::string, std::string > & p ) { m_messageMap.insert( p ); }
-
-      const std::map< std::wstring, std::wstring > & GetWMap() const { return m_wmessageMap; }
-      void InsertWItem( const std::pair< std::wstring, std::wstring > & p ) { m_wmessageMap.insert( p ); }
 };
 
 
-class Listener
+struct Listener
 {
-   public:
       virtual void OnMessage( const Message & message ) {}
 };
 

@@ -51,17 +51,17 @@ namespace vhmsg
 
 // This is used to set whatever the client callback will be for tt_utils
 static void (*g_clientCallback)( const char * op, const char * args, void * user_data );
-static void * g_clientCallbackUserData = NULL;
+static void * g_clientCallbackUserData = nullptr;
 static void (*g_clientCallback_ws)( const wchar_t * op, const wchar_t * args, void * user_data );
-static void * g_clientCallbackUserData_ws = NULL;
+static void * g_clientCallbackUserData_ws = nullptr;
 static void (*g_clientCallbackMap)( const char * op, const char * args, const std::map< string, string > * messageMap, void * user_data );
-static void * g_clientCallbackMapUserData = NULL;
+static void * g_clientCallbackMapUserData = nullptr;
 static void (*g_clientCallbackMap_ws)( const wchar_t * op, const wchar_t * args, const std::map< wstring, wstring > * messageMap, void * user_data );
-static void * g_clientCallbackMapUserData_ws = NULL;
+static void * g_clientCallbackMapUserData_ws = nullptr;
 static bool g_useMapCallback = false;
 static bool g_useWideStrings = false;
 
-static Client * g_vhmsg = NULL;
+static Client * g_vhmsg = nullptr;
 
 static string g_lastUsedHostname = "localhost";
 static string g_lastUsedPort = "61616";
@@ -71,13 +71,13 @@ static string g_lastUsedScope = "DEFAULT_SCOPE";
 class TTUListener : public Listener
 {
    public:
-      virtual void OnMessage( const Message & message )
+      void OnMessage( const Message & message ) override
       {
-         const string & m = message.GetString();
+         auto& m = message.message;
          string name;
          string value;
 
-         size_t index = m.find_first_of( " " );
+         size_t index = m.find_first_of( ' ' );
          if ( index == string::npos )
          {
             name  = m;
@@ -95,7 +95,7 @@ class TTUListener : public Listener
          {
             if ( g_useWideStrings )
             {
-               const map< wstring, wstring > & messageMap = message.GetWMap();
+               auto& messageMap = message.wmessageMap;
 
                if ( g_clientCallbackMap_ws )
                {
@@ -104,7 +104,7 @@ class TTUListener : public Listener
             }
             else
             {
-               const map< string, string > & messageMap = message.GetMap();
+               auto& messageMap = message.messageMap;
 
                if ( g_clientCallbackMap )
                {
@@ -201,15 +201,15 @@ int ttu_open( const char * hostname, const char * scope,  const char * port )
 {
    g_vhmsg = new Client();
 
-   if ( scope != NULL && strcmp( scope, "" ) != 0 )
+   if ( scope != nullptr && strcmp( scope, "" ) != 0 )
    {
       g_vhmsg->SetScope( scope );
    }
 
    bool ret;
-   if ( hostname != NULL && strcmp( hostname, "" ) != 0 )
+   if ( hostname != nullptr && strcmp( hostname, "" ) != 0 )
    {
-      if ( port != NULL && strcmp( port, "" ) != 0 )
+      if ( port != nullptr && strcmp( port, "" ) != 0 )
          ret = g_vhmsg->OpenConnection( hostname, port );
       else
          ret = g_vhmsg->OpenConnection( hostname );
@@ -226,7 +226,7 @@ int ttu_open( const char * hostname, const char * scope,  const char * port )
    if ( !ret )
    {
       delete g_vhmsg;
-      g_vhmsg = NULL;
+      g_vhmsg = nullptr;
 
       Log( "tt_utils: Error: Connection to server failure" );
       return TTU_ERROR;
@@ -253,7 +253,7 @@ int ttu_close()
       g_vhmsg->CloseConnection();
 
    delete g_vhmsg;
-   g_vhmsg = NULL;
+   g_vhmsg = nullptr;
 
    return TTU_SUCCESS;
 }
@@ -290,7 +290,7 @@ void ttu_set_bypass_mode( bool enable )
 
 int ttu_register( const char * opname )
 {
-   if ( g_vhmsg == NULL )
+   if ( g_vhmsg == nullptr )
    {
       Log( "tt_utils: Error: Not connected, cannot subscribe" );
       return TTU_ERROR;
@@ -311,7 +311,7 @@ int ttu_register( const char * opname )
 
 int ttu_unregister( const char * opname )
 {
-   if ( g_vhmsg == NULL )
+   if ( g_vhmsg == nullptr )
    {
       Log( "tt_utils: Error: Not connected, cannot subscribe" );
       return TTU_ERROR;
@@ -332,7 +332,7 @@ int ttu_unregister( const char * opname )
 
 int ttu_notify1( const char * msg )
 {
-   if ( g_vhmsg == NULL )
+   if ( g_vhmsg == nullptr )
    {
       Log( "tt_utils: Error: Not connected, cannot send notification" );
       return TTU_ERROR;
@@ -350,7 +350,7 @@ int ttu_notify1( const char * msg )
 
 int ttu_notify2( const char * opname, const char * msg )
 {
-   if ( g_vhmsg == NULL )
+   if ( g_vhmsg == nullptr )
    {
       Log( "tt_utils: Error: Not connected, cannot send notification" );
       return TTU_ERROR;
@@ -409,10 +409,10 @@ int ttu_report_version( const char * component, const char * subcomponent, const
 
    string versionFile;
 
-   if ( file_name == NULL )
+   if ( file_name == nullptr )
    {
       char fullExePath[ 1024 ];
-      GetModuleFileName( NULL, fullExePath, 1024 );
+      GetModuleFileName( nullptr, fullExePath, 1024 );
 
       string path;
       string file;

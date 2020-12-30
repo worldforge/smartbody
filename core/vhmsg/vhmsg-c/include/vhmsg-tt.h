@@ -39,10 +39,10 @@ static const int TTU_ERROR   = 1;
 // * Sets the callback function to be used
 // * Inputs: Memory address of some function
 // * Output: None
-void ttu_set_client_callback( void (*cb)( const char * op, const char * args, void * user_data ), void * user_data = NULL );
-void ttu_set_client_callback_ws( void (*cb)( const wchar_t * op, const wchar_t * args, void * user_data ), void * user_data = NULL );
-void ttu_set_client_callback_map( void (*cb)( const char * op, const char * args, const std::map< std::string, std::string > * messageMap, void * user_data ), void * user_data = NULL );
-void ttu_set_client_callback_map_ws( void (*cb)( const wchar_t * op, const wchar_t * args, const std::map< std::wstring, std::wstring > * messageMap, void * user_data ), void * user_data = NULL );
+void ttu_set_client_callback( void (*cb)( const char * op, const char * args, void * user_data ), void * user_data = nullptr );
+void ttu_set_client_callback_ws( void (*cb)( const wchar_t * op, const wchar_t * args, void * user_data ), void * user_data = nullptr );
+void ttu_set_client_callback_map( void (*cb)( const char * op, const char * args, const std::map< std::string, std::string > * messageMap, void * user_data ), void * user_data = nullptr );
+void ttu_set_client_callback_map_ws( void (*cb)( const wchar_t * op, const wchar_t * args, const std::map< std::wstring, std::wstring > * messageMap, void * user_data ), void * user_data = nullptr );
 
 
 // ttu_get_server
@@ -67,7 +67,7 @@ const char * ttu_get_scope();
 // * Opens the ttu connection
 // * Inputs: The server to connect to
 // * Output: TTU_ERROR or TTU_SUCCESS 
-int ttu_open( const char * hostname = NULL, const char * scope = NULL, const char * port = NULL );
+int ttu_open( const char * hostname = nullptr, const char * scope = nullptr, const char * port = nullptr );
 
 // ttu_close
 // * Closes the ttu connection
@@ -119,10 +119,10 @@ int ttu_wait( const double waittime_secs );
 
 // ttu_report_version
 // * This function sends out a message with the version of the given component.  This is based on the given .ini file.
-// * If file_name is NULL, it uses version.ini in the executable's directory.
+// * If file_name is nullptr, it uses version.ini in the executable's directory.
 // * Inputs:
 // * Output: TTU_ERROR or TTU_SUCCESS
-int ttu_report_version( const char * component, const char * subcomponent, const char * type, const char * file_name = NULL );
+int ttu_report_version( const char * component, const char * subcomponent, const char * type, const char * file_name = nullptr );
 
 
 };

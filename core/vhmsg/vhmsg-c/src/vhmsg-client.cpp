@@ -197,10 +197,10 @@ public:
 
    ClientImpl()
    {
-      m_connection = NULL;
-      m_session = NULL;
-      m_destination = NULL;
-      m_producer = NULL;
+      m_connection = nullptr;
+      m_session = nullptr;
+      m_destination = nullptr;
+      m_producer = nullptr;
 
       m_ignoreListener.SetIgnore( true );
 
@@ -224,10 +224,10 @@ Client::Client()
    SetPortFromEnv();
    SetScopeFromEnv();
 
-   pthread_mutex_init( &pimpl->m_messageLock, NULL ); 
+   pthread_mutex_init( &pimpl->m_messageLock, nullptr );
    pimpl->m_messageLockInitialized = true;
-   pthread_cond_init( &pimpl->m_waitCondition, NULL );
-   pthread_mutex_init( &pimpl->m_waitMutex, NULL );
+   pthread_cond_init( &pimpl->m_waitCondition, nullptr );
+   pthread_mutex_init( &pimpl->m_waitMutex, nullptr );
 }
 
 
@@ -239,7 +239,7 @@ Client::~Client()
    CloseConnection();
 
    delete pimpl;
-   pimpl = NULL;
+   pimpl = nullptr;
 }
 
 
@@ -266,7 +266,7 @@ bool Client::OpenConnection()
 
 
 
-   activemq::core::ActiveMQConnectionFactory * connectionFactory = NULL;
+   activemq::core::ActiveMQConnectionFactory * connectionFactory = nullptr;
 
    try
    {
@@ -289,7 +289,7 @@ bool Client::OpenConnection()
 
       // free the factory, we are done with it.
       delete connectionFactory;
-      connectionFactory = NULL;
+      connectionFactory = nullptr;
 
       // Create a Session
       pimpl->m_session = pimpl->m_connection->createSession( cms::Session::AUTO_ACKNOWLEDGE );
@@ -360,7 +360,7 @@ void Client::CloseConnection()
    try
    {
       bool shutdownActiveMQLibrary = false;
-      if ( pimpl->m_connection != NULL )  // isOpen()?
+      if ( pimpl->m_connection != nullptr )  // isOpen()?
       {
          g_initCount--;
          if ( g_initCount == 0 )
@@ -375,7 +375,7 @@ void Client::CloseConnection()
       }
 
       delete pimpl->m_destination;
-      pimpl->m_destination = NULL;
+      pimpl->m_destination = nullptr;
 
       size_t i;
       for ( i = 0; i < pimpl->m_consumers.size(); i++ )
@@ -385,19 +385,19 @@ void Client::CloseConnection()
       pimpl->m_consumers.clear();
 
       delete pimpl->m_producer;
-      pimpl->m_producer = NULL;
+      pimpl->m_producer = nullptr;
 
-      if ( pimpl->m_session != NULL )
+      if ( pimpl->m_session != nullptr )
          pimpl->m_session->close();
 
-      if ( pimpl->m_connection != NULL )
+      if ( pimpl->m_connection != nullptr )
          pimpl->m_connection->close();
 
       delete pimpl->m_session;
-      pimpl->m_session = NULL;
+      pimpl->m_session = nullptr;
 
       delete pimpl->m_connection;
-      pimpl->m_connection = NULL;
+      pimpl->m_connection = nullptr;
 
       if ( shutdownActiveMQLibrary )
       {
@@ -411,7 +411,7 @@ void Client::CloseConnection()
 
 
    delete pimpl->m_connection;
-   pimpl->m_connection = NULL;
+   pimpl->m_connection = nullptr;
 }
 
 
@@ -433,7 +433,7 @@ bool Client::Send( const char * op, const char * arg )
    string arg_encoded = encodeString(arg);
    string mess = string( op ) + " " + arg_encoded;
 
-   cms::TextMessage * message = NULL;
+   cms::TextMessage * message = nullptr;
    try
    {
       message = pimpl->m_session->createTextMessage( mess );
@@ -478,15 +478,15 @@ bool Client::Send( const Message & in_message )
     string op;
     string encodedArg;
 
-    if (in_message.GetString() != string() )
+    if (in_message.message != string() )
     {
-        pair<string, string> opArg = split(in_message.GetString(), string(" "));
+        pair<string, string> opArg = split(in_message.message, string(" "));
         op = opArg.first;
         encodedArg = encodeString(opArg.second);
     }
-    else if (in_message.GetWString() != wstring() )
+    else if (in_message.wmessage != wstring() )
     {
-        pair<wstring, wstring> opArg = split(in_message.GetWString(), wstring(L" "));
+        pair<wstring, wstring> opArg = split(in_message.wmessage, wstring(L" "));
         op = vhcl::WStringToAnsi(opArg.first);
         encodedArg = encodeString(opArg.second);
     }
@@ -497,8 +497,8 @@ bool Client::Send( const Message & in_message )
 
     std::map< string, string > args;
     const string esss = encodeString(string());
-    for ( std::map< std::string, std::string >::const_iterator iter = in_message.GetMap().begin();
-          iter != in_message.GetMap().end(); iter++ )
+    for ( std::map< std::string, std::string >::const_iterator iter = in_message.messageMap.begin();
+          iter != in_message.messageMap.end(); iter++ )
     {
         string encodedValue = encodeString(iter->second);
 
@@ -513,8 +513,8 @@ bool Client::Send( const Message & in_message )
     std::wstring wop = vhcl::AnsiToWString( op );
     const string esws = encodeString(wstring());
   
-    for ( std::map< std::wstring, std::wstring >::const_iterator iter = in_message.GetWMap().begin();
-          iter != in_message.GetWMap().end(); iter++ )
+    for ( std::map< std::wstring, std::wstring >::const_iterator iter = in_message.wmessageMap.begin();
+          iter != in_message.wmessageMap.end(); iter++ )
     {
         string encodedValue = encodeString(iter->second);
         if ( iter->first == wop && encodedArg == esws && encodedArg != encodedValue )
@@ -526,7 +526,7 @@ bool Client::Send( const Message & in_message )
     }
 
 
-    cms::TextMessage * message = NULL;
+    cms::TextMessage * message = nullptr;
 
     try
     {
@@ -818,7 +818,7 @@ void Client::SetScope( const char * scope )
 void Client::SetServerFromEnv()
 {
    const char * host = getenv( "VHMSG_SERVER" );
-   if ( host != NULL )
+   if ( host != nullptr )
    {
       pimpl->m_host = host;
    }
@@ -835,7 +835,7 @@ void Client::SetServerFromEnv()
 void Client::SetPortFromEnv()
 {
    const char * port = getenv( "VHMSG_PORT" );
-   if ( port != NULL )
+   if ( port != nullptr )
    {
       pimpl->m_port = port;
    }
@@ -852,7 +852,7 @@ void Client::SetPortFromEnv()
 void Client::SetScopeFromEnv()
 {
    const char * scope = getenv( "VHMSG_SCOPE" );
-   if ( scope != NULL )
+   if ( scope != nullptr )
    {
       pimpl->m_scope = scope;
    }
@@ -876,13 +876,12 @@ void ClientImpl::InternalListener::onMessage( const cms::Message * message ) thr
       Message m;
 
       pair<string, wstring> s_ws = decodeString( ((cms::TextMessage *)message)->getText() );
-      m.SetString( s_ws.first.c_str() );
-      m.SetWString( s_ws.second.c_str() );
+      m.message = s_ws.first;
+      m.wmessage = s_ws.second;
 
       vector< string > properties = message->getPropertyNames();
-      for ( size_t i = 0; i < properties.size(); i++ )
+      for (auto & property : properties)
       {
-         const string& property = properties[ i ];
          if ( property == "ELVISH_SCOPE" )
          {
             continue;
@@ -892,17 +891,17 @@ void ClientImpl::InternalListener::onMessage( const cms::Message * message ) thr
             // note that the value of MESSAGE_PREFIX is never encoded, there is
             // no need to decode it.
             const string & prefix = message->getStringProperty( property );
-            string remainder = m.GetString();
+            string remainder = m.message;
             remainder.erase( 0, prefix.length() + 1 );
 
-            m.InsertItem( make_pair( prefix, remainder ) );
-            m.InsertWItem( make_pair( vhcl::AnsiToWString( prefix ), vhcl::AnsiToWString( remainder ) ) );
+            m.messageMap.emplace(prefix, remainder );
+            m.wmessageMap.emplace( vhcl::AnsiToWString( prefix ), vhcl::AnsiToWString( remainder )  );
             continue;
          }
 
          pair<string, wstring> s_ws_value = decodeString( message->getStringProperty( property ) );
-         m.InsertItem( make_pair( property, s_ws_value.first ) );
-         m.InsertWItem( make_pair( vhcl::AnsiToWString( property ), s_ws_value.second ) );
+		 m.messageMap.emplace( property, s_ws_value.first );
+		 m.wmessageMap.emplace( vhcl::AnsiToWString( property ), s_ws_value.second );
       }
 
 
@@ -914,7 +913,7 @@ void ClientImpl::InternalListener::onMessage( const cms::Message * message ) thr
       {
          pthread_mutex_lock( &m_client->m_messageLock );
 
-         //printf( "onMessage: '%s'\n", message.GetString().c_str() );
+         //printf( "onMessage: '%s'\n", message.message.c_str() );
 
          m_client->m_messages.emplace_back( m );  // this makes a copy
 
