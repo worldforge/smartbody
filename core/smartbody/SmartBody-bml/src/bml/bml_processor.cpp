@@ -245,16 +245,13 @@ double BML::Processor::getLastScheduledSpeechBehavior(SbmCharacter& character)
 	return lastTime;
 }
 
-void BML::Processor::registerBmlHandler(BMLHandler* handler)
+void BML::Processor::registerBmlHandler(std::string tag, BMLHandler* handler)
 {
-	_bmlHandlers.emplace_back(handler);
+	_bmlHandlers.emplace(std::move(tag), handler);
 }
-void BML::Processor::deregisterBmlHandler(BMLHandler* handler)
+void BML::Processor::deregisterBmlHandler(const std::string& tag)
 {
-	auto I = std::find(_bmlHandlers.begin(), _bmlHandlers.end(), handler);
-	if (I != _bmlHandlers.end()) {
-		_bmlHandlers.erase(I);
-	}
+	_bmlHandlers.erase(tag);
 }
 
 
@@ -500,23 +497,19 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr&
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_INTERRUPT )==0 ) {
 				behavior = parse_bml_interrupt(child, unique_id, behav_syncs, required, request, scene);
 			} else {
-				for (auto handler : _bmlHandlers) {
+				auto I = _bmlHandlers.find(tagStr);
+				if (I != _bmlHandlers.end()) {
 					BMLHandler::Payload payload {
-						*child, unique_id, behav_syncs, required, request, *scene
+							*child, unique_id, behav_syncs, required, request, *scene
 					};
-					behavior = handler->parseBML(*tag, payload);
-					if (behavior) {
-						break;
-					}
+					behavior = I->second->parseBML(*tag, payload);
+				} else {
+					std::stringstream ss;
+					ss<<"WARNING: BML::Processor::parseBML(): <"<<tagStr<<"> BML tag unrecognized or unsupported.";
+					SmartBody::util::log(ss.str().c_str());
 				}
 			}
-			if (!behavior){
-				std::stringstream ss;
-				ss<<"WARNING: BML::Processor::parseBML(): <"<<tagStr<<"> BML tag unrecognized or unsupported.";
-				SmartBody::util::log(ss.str().c_str());
-			}
 
-			
 
 			if( behavior != nullptr ) {
 				const XMLCh* groupIdAttr = child->getAttribute(BMLDefs::ATTR_GROUP);

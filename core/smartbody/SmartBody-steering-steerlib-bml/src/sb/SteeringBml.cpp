@@ -28,16 +28,17 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 SmartBody::SteeringBml::SteeringBml(BML::Processor& bmlProcessor, SmartBody::SBSteerManager& steerManager)
 		: bmlProcessor(bmlProcessor), steerManager(steerManager) {
-	bmlProcessor.registerBmlHandler(this);
+	std::string tagStr;
+	xml_utils::xml_translate(&tagStr, BML::BMLDefs::TAG_LOCOTMOTION);
+	bmlProcessor.registerBmlHandler(tagStr, this);
 }
 
 SmartBody::SteeringBml::~SteeringBml() {
-	bmlProcessor.deregisterBmlHandler(this);
+	std::string tagStr;
+	xml_utils::xml_translate(&tagStr, BML::BMLDefs::TAG_LOCOTMOTION);
+	bmlProcessor.deregisterBmlHandler(tagStr);
 }
 
 BML::BehaviorRequestPtr SmartBody::SteeringBml::parseBML(const XMLCh& tag, BML::BMLHandler::Payload& payload) {
-	if (XMLString::compareString(&tag, BML::BMLDefs::TAG_LOCOTMOTION) == 0) {
-		return parse_bml_locomotion(payload.child, payload.unique_id, payload.behav_syncs, payload.required, payload.request, payload.scene, steerManager);
-	}
-	return nullptr;
+	return parse_bml_locomotion(payload.child, payload.unique_id, payload.behav_syncs, payload.required, payload.request, payload.scene, steerManager);
 }

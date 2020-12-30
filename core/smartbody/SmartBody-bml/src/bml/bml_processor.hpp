@@ -238,8 +238,8 @@ namespace BML {
 
 		double getLastScheduledSpeechBehavior(SbmCharacter& character);
 
-		void registerBmlHandler(BMLHandler* handler);
-		void deregisterBmlHandler(BMLHandler* handler);
+		void registerBmlHandler(std::string tag, BMLHandler* handler);
+		void deregisterBmlHandler(const std::string& tag);
 
 
 	protected:
@@ -260,7 +260,7 @@ namespace BML {
 		BehaviorRequestPtr parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, const BmlRequestPtr& request, SmartBody::SBScene* scene );
 		BehaviorRequestPtr parse_bml_head( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene );
 
-		std::vector<BMLHandler*> _bmlHandlers;
+		std::map<std::string, BMLHandler*> _bmlHandlers;
 ///  Is the following necessary anymore?
 //		friend BML::BehaviorRequest* BML::parse_bml_interrupt( DOMElement* elem, BML::BehaviorSyncPoints& behav_syncs, BML::BmlRequestPtr request, mcuCBHandle *mcu );
 		

@@ -59,13 +59,13 @@ for i in range(2):
     # Set deformable mesh
     brad.setVec3Attribute('deformableMeshScale', .01, .01, .01)
     brad.setStringAttribute('deformableMesh', 'ChrBrad.dae')
-    # Play idle animation
-    bml.execBML(baseName, '<body posture="ChrBrad@Idle01"/>')
     # Retarget character
     # retargetCharacter(baseName, 'ChrBrad.dae')
     if i == 0:
         scene.run('BehaviorSetReaching.py')
         setupBehaviorSet()
+    # Play idle animation
+    bml.execBML(baseName, '<body posture="ChrBrad@Idle01"/>')
 
     retargetBehaviorSet(baseName)
 
@@ -79,11 +79,11 @@ for i in range(2):
     # Set deformable mesh
     rachel.setVec3Attribute('deformableMeshScale', .01, .01, .01)
     rachel.setStringAttribute('deformableMesh', 'ChrRachel.dae')
-    # Play idle animation
-    bml.execBML(baseName, '<body posture="ChrRachel_ChrBrad@Idle01"/>')
     # Retarget character
     # retargetCharacter(baseName, 'ChrRachel.dae')
     retargetBehaviorSet(baseName)
+    # Play idle animation
+    bml.execBML(baseName, '<body posture="ChrRachel_ChrBrad@Idle01"/>')
 
 # add locomotion for ChrBrad2
 # scene.run('BehaviorSetMaleLocomotion.py')
