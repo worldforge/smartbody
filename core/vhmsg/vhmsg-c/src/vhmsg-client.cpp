@@ -25,18 +25,16 @@
 #endif
 #endif
 
-#include "vhcl.h"
+#include "vhmsg-client.h"
 
-#include "vhmsg.h"
+#include "vhcl.h"
 
 #if defined(WIN_BUILD)
 #include <windows.h>
 #endif
 
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 #include <string>
 #include <vector>
 #include <list>
@@ -54,8 +52,6 @@
 #include <cms/Connection.h>
 #include <cms/Session.h>
 #include <cms/TextMessage.h>
-#include <cms/BytesMessage.h>
-#include <cms/MapMessage.h>
 #include <cms/ExceptionListener.h>
 #include <cms/MessageListener.h>
 
@@ -160,13 +156,13 @@ public:
          bool m_ignoreMessages;
 
       public:
-         InternalListener() { m_listener = NULL; m_client = NULL; m_ignoreMessages = false; }
+         InternalListener() { m_listener = nullptr; m_client = nullptr; m_ignoreMessages = false; }
          void SetListener( Listener * listener ) { m_listener = listener; }
          Listener * GetListener() { return m_listener; }
          void SetClient( ClientImpl * client ) { m_client = client; }
          void SetIgnore( bool ignore ) { m_ignoreMessages = ignore; }
 
-         void onMessage( const cms::Message * message ) throw();
+         void onMessage( const cms::Message * message ) throw() override;
    };
 
 

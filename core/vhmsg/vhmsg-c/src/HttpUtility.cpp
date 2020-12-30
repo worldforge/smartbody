@@ -64,12 +64,12 @@ using std::wstring;
 using std::vector;
 
 
-int GetInt( const unsigned char b );
-int GetChar( const string & str, const int offset, const int length );
-wstring GetChars( const vector< unsigned char > & bytes, const int enc );
-string GetChars_Byte( const vector< unsigned char > & bytes, const int enc );
-bool NotEncoded( const wchar_t c );
-void UrlEncodeChar( const wchar_t c, wstring & result, const bool isUnicode );
+int GetInt( unsigned char b );
+int GetChar( const string & str, int offset, int length );
+wstring GetChars( const vector< unsigned char > & bytes, int enc );
+string GetChars_Byte( const vector< unsigned char > & bytes, int enc );
+bool NotEncoded( wchar_t c );
+void UrlEncodeChar( wchar_t c, wstring & result, bool isUnicode );
 
 
 static const char * hexChars = "0123456789abcdef";
@@ -91,7 +91,7 @@ wstring HtppUtility_UrlDecode( const string & s )
       {
          if ( s[ i + 1 ] == 'u' && i + 5 < len )
          {
-            if ( bytes.size() > 0 )
+            if ( !bytes.empty() )
             {
                output.append( GetChars( bytes, e ) );
                bytes.clear();
@@ -121,7 +121,7 @@ wstring HtppUtility_UrlDecode( const string & s )
          continue;
       }
 
-      if ( bytes.size() > 0 )
+      if ( !bytes.empty() )
       {
          output.append( GetChars( bytes, e ) );
          bytes.clear();
@@ -137,7 +137,7 @@ wstring HtppUtility_UrlDecode( const string & s )
       }
    }
 
-   if ( bytes.size() > 0 )
+   if ( !bytes.empty() )
    {
       output.append( GetChars( bytes, e ) );
    }
@@ -177,7 +177,7 @@ string HtppUtility_UrlDecode_ByteChar( const string & s )
       {
          if ( s[ i + 1 ] == 'u' && i + 5 < len )
          {
-            if ( bytes.size() > 0 )
+            if ( !bytes.empty() )
             {
                output.append( GetChars_Byte( bytes, e ) );
                bytes.clear();
@@ -207,7 +207,7 @@ string HtppUtility_UrlDecode_ByteChar( const string & s )
          continue;
       }
 
-      if ( bytes.size() > 0 )
+      if ( !bytes.empty() )
       {
          output.append( GetChars_Byte( bytes, e ) );
          bytes.clear();
@@ -223,7 +223,7 @@ string HtppUtility_UrlDecode_ByteChar( const string & s )
       }
    }
 
-   if ( bytes.size() > 0 )
+   if ( !bytes.empty() )
    {
       output.append( GetChars_Byte( bytes, e ) );
    }
@@ -279,21 +279,21 @@ int GetChar( const string & str, const int offset, const int length )
 wstring GetChars( const vector< unsigned char > & bytes, const int enc )
 {
    string s;
-   for ( size_t i = 0; i < bytes.size(); i++ )
+   for (unsigned char byte : bytes)
    {
-      s += bytes[ i ];
+      s += byte;
    }
 
-   return vhcl::Utf8ToWString( s.c_str() );
+   return vhcl::Utf8ToWString( s );
 }
 
 
 string GetChars_Byte( const vector< unsigned char > & bytes, const int enc )
 {
    string s;
-   for ( size_t i = 0; i < bytes.size(); i++ )
+   for (unsigned char byte : bytes)
    {
-      s += bytes[ i ];
+      s += byte;
    }
 
    return s;

@@ -21,8 +21,9 @@
 #include "vhcl.h"
 
 #include "vhmsg-tt.h"
+#include "vhmsg-client.h"
 
-#include <string.h>
+#include <cstring>
 
 #ifdef WIN_BUILD
 #include <windows.h>

@@ -21,9 +21,6 @@
 #ifndef VHMSG_H
 #define VHMSG_H
 
-
-#include "vhcl_public.h"
-
 #include <string>
 #include <map>
 
@@ -41,7 +38,7 @@ class Message
       std::map< std::wstring, std::wstring > m_wmessageMap;
 
    public:
-      Message() {}
+      Message() = default;
       const std::string & GetString() const { return m_message; }
       void SetString( const char * message ) { m_message = message; }
 
@@ -63,49 +60,6 @@ class Listener
       virtual void OnMessage( const Message & message ) {}
 };
 
-
-class Client
-{
-   private:
-      class ClientImpl * pimpl;
-
-   public:
-      Client();
-      virtual ~Client();
-
-
-      bool OpenConnection();
-      bool OpenConnection( const char * server );
-      bool OpenConnection( const char * server, const char * port );
-
-      void CloseConnection();
-
-      bool IsOpen();
-
-      bool Send( const char * name, const char * value );
-      bool Send( const char * message );
-      bool Send( const Message & in_message );
-
-      void EnablePollingMethod();
-      void EnableImmediateMethod();
-      void SetBypassMode( bool enable );
-      void SetListener( Listener * listener );
-      bool Subscribe( const char * req );
-      bool Unsubscribe( const char * req );
-
-      void Poll();
-      void WaitAndPoll( const double waitTimeSeconds );
-
-      const std::string & GetServer() const;
-      const std::string & GetPort() const;
-      const std::string & GetScope() const;
-      void SetScope( const char * scope );
-
-   protected:
-      void SetServerFromEnv();
-      void SetScopeFromEnv();
-      void SetPortFromEnv();
-};
 
 
 };

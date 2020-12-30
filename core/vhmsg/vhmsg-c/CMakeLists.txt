@@ -1,13 +1,21 @@
-add_library(vhmsg
-        src/HttpUtility.cpp
-        src/vhmsg.cpp
-        src/vhmsg-tt.cpp
-        )
+add_library(vhmsg INTERFACE)
 
-target_include_directories(vhmsg PUBLIC
+target_include_directories(vhmsg INTERFACE
         include
         )
 
-target_link_libraries(vhmsg PUBLIC
+
+add_library(vhmsg-client
+        src/HttpUtility.cpp
+        src/vhmsg-tt.cpp
+        src/vhmsg-client.cpp
+        )
+
+target_include_directories(vhmsg-client PUBLIC
+        include
+        )
+
+target_link_libraries(vhmsg-client PUBLIC
+        vhmsg
         vhcl
         CONAN_PKG::activemq-cpp)

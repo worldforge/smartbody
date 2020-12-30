@@ -1046,6 +1046,14 @@ void SBScene::sendVHMsg(const std::string& message)
 {
 	if (_vhMsgProvider) {
 		_vhMsgProvider->send(message.c_str());
+	} else {
+		// append to command queue if header token has callback function
+		srArgBuffer tokenizer( message.c_str() );
+		char* token = tokenizer.read_token();
+		if( _commandManager->hasCommand( token ) ) {
+			// Append to command queue
+			_commandManager->execute_later( message.c_str() );
+		}
 	}
 }
 
@@ -1053,6 +1061,14 @@ void SBScene::sendVHMsg2(const std::string& message, const std::string& message2
 {
 	if (_vhMsgProvider) {
 		_vhMsgProvider->send2(message.c_str(), message2.c_str());
+	} else {
+		// append to command queue if header token has callback function
+		if( _commandManager->hasCommand( message ) ) {
+			// Append to command queue
+			std::ostringstream command;
+			command << message << " " << message;
+			_commandManager->execute_later( command.str().c_str() );
+		}
 	}
 }
 

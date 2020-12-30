@@ -119,17 +119,12 @@ bool SBVHMsgManager::isEnable()
 
 bool SBVHMsgManager::isConnected()
 {
-#ifndef SB_NO_VHMSG
 	return vhmsg::ttu_is_open();
-#else
-	return false;
-#endif
 
 }
 
 bool SBVHMsgManager::connect()
 {
-#ifndef SB_NO_VHMSG
 	if (vhmsg::ttu_is_open())
 		vhmsg::ttu_close();
 
@@ -164,19 +159,13 @@ bool SBVHMsgManager::connect()
 		setEnable(false);
 		return false;
 	}
-#else
-	SmartBody::util::log("VHMSG has been disabled.");
-	return false;
-#endif
 }
 
 void SBVHMsgManager::disconnect()
 {
 
-#ifndef SB_NO_VHMSG
 	if (vhmsg::ttu_is_open())
 		vhmsg::ttu_close();
-#endif
 }
 
 void SBVHMsgManager::stop()
@@ -186,9 +175,7 @@ void SBVHMsgManager::stop()
 
 int SBVHMsgManager::send2( const char *op, const char* message )
 {
-#ifndef SB_NO_VHMSG
-#if LINK_VHMSG_CLIENT
-	
+
 	if( isEnable() )
 	{
 		int err = vhmsg::ttu_notify2( op, message );
@@ -204,8 +191,6 @@ int SBVHMsgManager::send2( const char *op, const char* message )
 	else
 	{
 		// append to command queue if header token has callback function
-		srArgBuffer tokenizer( message );
-		char* token = tokenizer.read_token();
 		if( SmartBody::SBScene::getScene()->getCommandManager()->hasCommand( op ) ) {
 			// Append to command queue
 			std::ostringstream command;
@@ -213,31 +198,13 @@ int SBVHMsgManager::send2( const char *op, const char* message )
 			SmartBody::SBScene::getScene()->getCommandManager()->execute_later( command.str().c_str() );
 		}
 	}
-#else
-	// append to command queue if header token has callback function
-	srArgBuffer tokenizer( message );
-	char* token = tokenizer.read_token();
-	if( cmd_map.is_command( op ) ) {
-		// Append to command queue
-		ostringstream command;
-		command << op << " " << message;
-		execute_later( command.str().c_str() );
-	}
-#endif
-#else
-	// send the command locally
-	std::stringstream strstr;
-	strstr << op << " " << message;
-	SmartBody::SBScene::getScene()->command(strstr.str());
-#endif
+
 	return( CMD_SUCCESS );
 
 }
 
 int SBVHMsgManager::send( const char* message )
 {
-#ifndef SB_NO_VHMSG
-#if LINK_VHMSG_CLIENT
 	if( isEnable() && vhmsg::ttu_is_open())
 	{
 		int err = vhmsg::ttu_notify1( message );
@@ -257,27 +224,13 @@ int SBVHMsgManager::send( const char* message )
 			SmartBody::SBScene::getScene()->getCommandManager()->execute_later( message );
 		}
 	}
-#else
-	// append to command queue if header token has callback function
-	srArgBuffer tokenizer( message );
-	char* token = tokenizer.read_token();
-	if( cmd_map.is_command( token ) ) {
-		// Append to command queue
-		execute_later( message );
-	}
-#endif
-#else
-	// send the command locally
-	SmartBody::SBScene::getScene()->command(message);
-#endif
 
 	return( CMD_SUCCESS );
 }
 
 int SBVHMsgManager::poll()
 {
-#ifndef SB_NO_VHMSG
-#if LINK_VHMSG_CLIENT
+
 	if( isEnable() )
 	{
 		int ret = vhmsg::ttu_poll();
@@ -286,8 +239,6 @@ int SBVHMsgManager::poll()
 		else
 			return CMD_FAILURE;
 	}
-#endif
-#endif
 	return CMD_SUCCESS;
 }
 

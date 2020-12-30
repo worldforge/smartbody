@@ -259,6 +259,7 @@ target_link_libraries(SmartBody PUBLIC
         util
         boost-numeric-bindings
         rapidxml
+        vhcl
         ${MORE_LIBS}
         CONAN_PKG::nanoflann
         CONAN_PKG::stb

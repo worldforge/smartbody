@@ -12,6 +12,6 @@ target_include_directories(SmartBody-vhmsg PUBLIC
 target_link_libraries(SmartBody-vhmsg PUBLIC
         SmartBody
         sr
-        vhmsg
+        vhmsg-client
         vhcl
         )
