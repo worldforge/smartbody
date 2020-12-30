@@ -1064,7 +1064,7 @@ void SBScene::setScriptRunner(std::function<bool(SBScene&, const std::string&)> 
 	_scriptRunner = std::move(scriptRunner);
 }
 void SBScene::setVHMsgProvider(VHMsgProvider* vhMsgProvider) {
-	vhMsgProvider = vhMsgProvider;
+	_vhMsgProvider = vhMsgProvider;
 }
 
 
