@@ -252,7 +252,7 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::create_track( MeCtUnary* blending,
 	TrackPtr track( new Track( blending, timing, animation ) );
 	track->_schedule_weak = MeCtScheduler2WeakPtr( _self );
 
-	pos = _tracks.insert( pos, track );
+	_tracks.insert( pos, track );
 
 	auto& root = track->_root;
 

@@ -72,9 +72,9 @@ public:
 };
 
 struct rotationCurve {
-	srLinearCurve* x;
-	srLinearCurve* y;
-	srLinearCurve* z;
+	std::unique_ptr<srLinearCurve> x;
+	std::unique_ptr<srLinearCurve> y;
+	std::unique_ptr<srLinearCurve> z;
 };
 
 class SBSerializer;
@@ -117,7 +117,7 @@ class SBMotion : public SkMotion
 		SBAPI void addFrame(float frameTime, const std::vector<float>& frameData);
 
 		SBAPI void addKeyFrameChannel(const std::string& channelName, const std::string& channelType, float keyTime, float value);
-		SBAPI void addKeyFrameQuat(const std::string& channelName, const std::string& channelType, float keyTime, SrQuat value);
+		SBAPI void addKeyFrameQuat(const std::string& channelName, const std::string& channelType, float keyTime, const SrQuat& value);
 		SBAPI void bakeFrames(float fps);
 
 		SBAPI void setMotionSkeletonName(std::string skelName);
@@ -265,7 +265,7 @@ class SBMotion : public SkMotion
 		std::string _motionSkeleton;
 		int alignIndex;
 		std::map<std::string, std::string> tagAttrMap; // store the tagged attributes in a map
-		std::map<std::string, JointTrajectory*> trajMap;
+		std::map<std::string, std::unique_ptr<JointTrajectory>> trajMap;
 		
 		MotionType _motionType;
 		float _scale;
@@ -277,14 +277,14 @@ class SBMotion : public SkMotion
 		SrVec _holdLocation;
 		SrVec _startLocation;
 
-		SBMotion* _offsetMotion;
+		std::unique_ptr<SBMotion> _offsetMotion;
 		std::vector<std::string> _similarPoses;
 
 		std::map<int, SBMotion*> _offsetMotions;
 		SBMotion* _offsetParent;
 
-		std::map<std::string, srLinearCurve* > _channelFrameValues;
-		std::map<std::string, rotationCurve* > _quatFrameValues;
+		std::map<std::string, std::unique_ptr<srLinearCurve> > _channelFrameValues;
+		std::map<std::string, std::unique_ptr<rotationCurve> > _quatFrameValues;
 		float _maxFrameValue;
 };
 

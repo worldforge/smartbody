@@ -43,8 +43,8 @@ class SBFaceDefinition : public SBObject
 {
 	public:
 		SBAPI SBFaceDefinition();
-		SBAPI SBFaceDefinition(const std::string& name);
-		SBAPI SBFaceDefinition(SBFaceDefinition* source);
+		SBAPI explicit SBFaceDefinition(const std::string& name);
+		SBAPI explicit SBFaceDefinition(SBFaceDefinition* source);
 
 		SBAPI ~SBFaceDefinition();
 
@@ -73,7 +73,7 @@ class SBFaceDefinition : public SBObject
 		SBAPI int getNumAUChannels();
 		SBAPI int getAUNum(int index);
 		SBAPI std::vector<int> getAUNumbers();
-		SBAPI SBMotion* getAUMotion(int num, std::string side);
+		SBAPI SBMotion* getAUMotion(int num, const std::string& side);
 		SBAPI ActionUnit* getAU(int index);
 		SBAPI std::string getAUSide(int num);
 
@@ -84,7 +84,7 @@ class SBFaceDefinition : public SBObject
 		void addAU(int auNum, ActionUnit* au);
 		SkMotion* _faceNeutral;
 
-		std::map<int, ActionUnit*> _auMap;
+		std::map<int, std::unique_ptr<ActionUnit>> _auMap;
 		std::map<std::string, std::pair<SkMotion*, float> > _visemeMap;
 		std::string _name;
 		std::string _emptyString;

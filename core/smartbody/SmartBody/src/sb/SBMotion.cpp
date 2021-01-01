@@ -48,10 +48,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-FootStepRecord::FootStepRecord()
-{
-
-}
+FootStepRecord::FootStepRecord() = default;
 
 FootStepRecord::~FootStepRecord() = default;
 
@@ -153,39 +150,7 @@ SBMotion::SBMotion(std::string file) : SkMotion()
 	_offsetParent = nullptr;
 }
 
-SBMotion::~SBMotion()
-{
-	_motionFile = "";
-
-	
-
-	std::map<std::string, JointTrajectory*>::iterator jointTrajectoryIter;
-	for (jointTrajectoryIter = trajMap.begin(); jointTrajectoryIter != trajMap.end(); ++jointTrajectoryIter)
-	{
-
-			delete jointTrajectoryIter->second;
-	}
-	trajMap.clear();
-
-
-		delete _offsetMotion;
-	_offsetMotion = nullptr;
-	_offsetParent = nullptr;
-
-	for (auto & _channelFrameValue : _channelFrameValues)
-	{
-		delete _channelFrameValue.second;
-	}
-
-	for (auto & _quatFrameValue : _quatFrameValues)
-	{
-		delete _quatFrameValue.second->x;
-		delete _quatFrameValue.second->y;
-		delete _quatFrameValue.second->z;
-		delete _quatFrameValue.second;
-	}
-
-}
+SBMotion::~SBMotion() = default;
 
 void SBMotion::setMotionType(MotionType type)
 {
@@ -336,7 +301,7 @@ void SBMotion::addKeyFrameChannel(const std::string& channelName, const std::str
 {
 	srLinearCurve* curve = nullptr;
 	std::string key = channelName + "/" + channelType;
-	std::map<std::string, srLinearCurve* >::iterator iter = _channelFrameValues.find(key);
+	auto iter = _channelFrameValues.find(key);
 	if (iter == _channelFrameValues.end())
 	{
 		curve = new srLinearCurve();
@@ -344,29 +309,29 @@ void SBMotion::addKeyFrameChannel(const std::string& channelName, const std::str
 	}
 	else
 	{
-		curve = (*iter).second;
+		curve = (*iter).second.get();
 	}
 	curve->insert(keyTime, value);
 	if (keyTime > _maxFrameValue)
 		_maxFrameValue = keyTime;
 }
 
-void SBMotion::addKeyFrameQuat(const std::string& channelName, const std::string& channelType, float keyTime, SrQuat value)
+void SBMotion::addKeyFrameQuat(const std::string& channelName, const std::string& channelType, float keyTime, const SrQuat& value)
 {
 	rotationCurve* curve = nullptr;
 	std::string key = channelName;
-	std::map<std::string, rotationCurve* >::iterator iter = _quatFrameValues.find(key);
+	auto iter = _quatFrameValues.find(key);
 	if (iter == _quatFrameValues.end())
 	{
 		curve = new rotationCurve();
-		curve->x = new srLinearCurve();
-		curve->y = new srLinearCurve();
-		curve->z = new srLinearCurve();
+		curve->x = std::make_unique<srLinearCurve>();
+		curve->y = std::make_unique<srLinearCurve>();
+		curve->z = std::make_unique<srLinearCurve>();
 		_quatFrameValues.insert(std::pair<std::string, rotationCurve*>(key, curve));
 	}
 	else
 	{
-		curve = (*iter).second;
+		curve = (*iter).second.get();
 	}
 	// convert the quaternion to xyz rotations
 	SrMat mat;
@@ -433,20 +398,20 @@ void SBMotion::bakeFrames(float fps)
 				channelType == SkChannel::YPos ||
 				channelType == SkChannel::ZPos)
 			{
-				std::map<std::string, srLinearCurve* >::iterator iter = _channelFrameValues.find(keyName);
+				auto iter = _channelFrameValues.find(keyName);
 				if (iter == _channelFrameValues.end())
 				{
 					data.emplace_back(0.0);
 					continue;
 				}
 
-				srLinearCurve* curve = (*iter).second;
+				auto& curve = (*iter).second;
 				double value = curve->evaluate(curTime);
 				data.emplace_back((float) value);
 			}
 			else if (channelType == SkChannel::Quat)
 			{
-				std::map<std::string, rotationCurve* >::iterator iter = _quatFrameValues.find(keyName);
+				auto iter = _quatFrameValues.find(keyName);
 				if (iter == _quatFrameValues.end())
 				{
 					data.emplace_back(1.0);
@@ -456,7 +421,7 @@ void SBMotion::bakeFrames(float fps)
 					continue;
 				}
 
-				rotationCurve* curve = (*iter).second;
+				auto& curve = (*iter).second;
 				// need to slerp between quaternions
 				SrVec euler;
 				euler.x = curve->x->evaluate(curTime);
@@ -2653,10 +2618,9 @@ bool SBMotion::autoFootPlantDetection( SBSkeleton* srcSk, std::vector<std::strin
 			float speed = getJointSpeed(joint, startTime, endTime);		
 
 			std::vector<SBJoint*> descendants = joint->getDescendants();
-			for (size_t k = 0; k < descendants.size(); k++)
+			for (auto des : descendants)
 			{
-				SBJoint* des = descendants[k];
-				gPos += des->gmat().get_translation();
+					gPos += des->gmat().get_translation();
 				speed += getJointSpeed(des, startTime, endTime);
 			}
 			gPos /= (float)(descendants.size()+1);
@@ -2953,7 +2917,7 @@ SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, cons
 	{
 		SmartBody::util::log("Effector joint '%s' or reference joint '%s' does not exist.", effectorName.c_str(), refJointName.c_str());
 	}
-	JointTrajectory* traj = new JointTrajectory();
+	auto traj = std::make_unique<JointTrajectory>();
 	traj->effectorName = effectorName;
 	traj->refJointName = refJointName;
 	connect(&skelCopy);
@@ -2972,7 +2936,7 @@ SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, cons
 		traj->jointTrajectory.emplace_back(trajPos);
 	}
 	disconnect();	
-	trajMap[effectorName] = traj;
+	trajMap[effectorName] = std::move(traj);
 }
 
 SBAPI JointTrajectory* SBMotion::getJointTrajectory( const std::string& effectorName )
@@ -2981,7 +2945,7 @@ SBAPI JointTrajectory* SBMotion::getJointTrajectory( const std::string& effector
 	{
 		return nullptr;
 	}	
-	return trajMap[effectorName];
+	return trajMap[effectorName].get();
 }
 
 

@@ -77,22 +77,12 @@ SBFaceDefinition::SBFaceDefinition(SBFaceDefinition* source)
 
 SBFaceDefinition::~SBFaceDefinition()
 {
-	for (std::map<std::string, std::pair<SkMotion*, float> >::iterator iter = _visemeMap.begin();
-		 iter != _visemeMap.end();
-		 iter++)
+	for (auto & iter : _visemeMap)
 	{
-		SkMotion* motion = (*iter).second.first;
+		SkMotion* motion = iter.second.first;
 	}
 
-	_visemeMap.clear();
 
-	for (std::map<int, ActionUnit*>::iterator iter = _auMap.begin();
-		 iter != _auMap.end();
-		 iter++)
-	{
-		ActionUnit* au = (*iter).second;
-		delete au;
-	}
 }
 
 void SBFaceDefinition::setFaceNeutral(const std::string& motionName)
@@ -147,14 +137,14 @@ std::vector<std::string> SBFaceDefinition::getDefaultFacePoses()
 std::vector<float> SBFaceDefinition::getDefaultFaceValues()
 {
 	std::vector<float> values;
-	for (unsigned int x = 0; x < _defaultFaceValues.size(); x++)
-		values.emplace_back(_defaultFaceValues[x]);
+	for (float & _defaultFaceValue : _defaultFaceValues)
+		values.emplace_back(_defaultFaceValue);
 	return values;
 }
 
 bool SBFaceDefinition::hasAU(int auNum)
 {
-	std::map<int, ActionUnit*>::iterator iter = _auMap.find(auNum);
+	auto iter = _auMap.find(auNum);
 	if (iter == _auMap.end())
 	{
 		return false;
@@ -317,7 +307,7 @@ void SBFaceDefinition::addAU(int auNum, ActionUnit* au)
 		return;
 	}
 
-	std::map<int, ActionUnit*>::iterator iter = _auMap.find(auNum);
+	auto iter = _auMap.find(auNum);
 	if (iter == _auMap.end())
 	{
 		_auMap.insert(std::pair<int, ActionUnit*>(auNum, au));
@@ -333,7 +323,7 @@ void SBFaceDefinition::addAU(int auNum, ActionUnit* au)
 
 bool SBFaceDefinition::hasViseme(const std::string& visemeName)
 {
-	std::map<std::string, std::pair<SkMotion*, float> >::iterator iter = _visemeMap.find(visemeName);
+	auto iter = _visemeMap.find(visemeName);
 	if (iter == _visemeMap.end())
 	{
 		return false;
@@ -346,7 +336,7 @@ bool SBFaceDefinition::hasViseme(const std::string& visemeName)
 
 void SBFaceDefinition::setViseme(const std::string& visemeName, const std::string& motionName)
 {
-	std::map<std::string, std::pair<SkMotion*, float> >::iterator iter = _visemeMap.find(visemeName);
+	auto iter = _visemeMap.find(visemeName);
 	if (iter == _visemeMap.end())
 	{
 		// no motion given, add the viseme only
@@ -403,7 +393,7 @@ void SBFaceDefinition::setViseme(const std::string& visemeName, const std::strin
 
 void SBFaceDefinition::setVisemeWeight(const std::string& visemeName, float weight)
 {
-	std::map<std::string, std::pair<SkMotion*, float> >::iterator iter = _visemeMap.find(visemeName);
+	auto iter = _visemeMap.find(visemeName);
 	if (iter == _visemeMap.end())
 	{
 		SmartBody::util::log("Viseme '%s' does not exist, cannot set its' weight.", visemeName.c_str());
@@ -424,11 +414,9 @@ int SBFaceDefinition::getNumVisemes()
 std::vector<std::string> SBFaceDefinition::getVisemeNames()
 {
 	std::vector<std::string> visemeNames;
-	for (std::map<std::string, std::pair<SkMotion*, float> >::iterator iter = _visemeMap.begin();
-		 iter != _visemeMap.end();
-		 iter++)
+	for (auto & iter : _visemeMap)
 	{
-		visemeNames.emplace_back((*iter).first);
+		visemeNames.emplace_back(iter.first);
 	}
 
 	return visemeNames;
@@ -437,13 +425,11 @@ std::vector<std::string> SBFaceDefinition::getVisemeNames()
 const std::string& SBFaceDefinition::getVisemeName(int index)
 {
 	int counter = 0;
-	for (std::map<std::string, std::pair<SkMotion*, float> >::iterator iter = _visemeMap.begin();
-		 iter != _visemeMap.end();
-		 iter++)
+	for (auto & iter : _visemeMap)
 	{
 		if (counter == index)
 		{
-			return (*iter).first;
+			return iter.first;
 			break;
 		}
 		counter++;
@@ -454,7 +440,7 @@ const std::string& SBFaceDefinition::getVisemeName(int index)
 
 SkMotion* SBFaceDefinition::getVisemeMotion(const std::string& viseme)
 {
-	std::map<std::string, std::pair<SkMotion*, float> >::iterator iter = _visemeMap.find(viseme);
+	auto iter = _visemeMap.find(viseme);
 	if (iter != _visemeMap.end())
 	{
 		return (*iter).second.first;
@@ -465,7 +451,7 @@ SkMotion* SBFaceDefinition::getVisemeMotion(const std::string& viseme)
 
 float SBFaceDefinition::getVisemeWeight(const std::string& viseme)
 {
-	std::map<std::string, std::pair<SkMotion*, float> >::iterator iter = _visemeMap.find(viseme);
+	auto iter = _visemeMap.find(viseme);
 	if (iter != _visemeMap.end())
 	{
 		return (*iter).second.second;
@@ -482,7 +468,7 @@ int SBFaceDefinition::getNumAUs()
 int SBFaceDefinition::getNumAUChannels()
 {
 	int numAuChannels = 0;
-	std::map<int, ActionUnit*>::iterator iter = _auMap.begin();
+	auto iter = _auMap.begin();
 	for (; iter != _auMap.end(); iter++)
 	{
 		if (iter->second->is_bilateral())
@@ -496,13 +482,11 @@ int SBFaceDefinition::getNumAUChannels()
 int SBFaceDefinition::getAUNum(int index)
 {
 	int counter = 0;
-	for (std::map<int, ActionUnit*>::iterator iter = _auMap.begin();
-		 iter != _auMap.end();
-		 iter++)
+	for (auto & iter : _auMap)
 	{
 		if (counter == index)
 		{
-			return (*iter).first;
+			return iter.first;
 			break;
 		}
 		counter++;
@@ -513,21 +497,19 @@ int SBFaceDefinition::getAUNum(int index)
 
 ActionUnit* SBFaceDefinition::getAU(int index)
 {
-	std::map<int, ActionUnit*>::iterator iter = _auMap.find(index);
+	auto iter = _auMap.find(index);
 	if (iter == _auMap.end())
 		return nullptr;
 	else
-		return (*iter).second;
+		return (*iter).second.get();
 }
 
 std::vector<int> SBFaceDefinition::getAUNumbers()
 {
 	std::vector<int> auNames;
-	for (std::map<int, ActionUnit*>::iterator iter = _auMap.begin();
-		 iter != _auMap.end();
-		 iter++)
+	for (auto & iter : _auMap)
 	{
-		auNames.emplace_back((*iter).first);
+		auNames.emplace_back(iter.first);
 	}
 
 	return auNames;
@@ -535,7 +517,7 @@ std::vector<int> SBFaceDefinition::getAUNumbers()
 
 std::string SBFaceDefinition::getAUSide(int num)
 {
-	std::map<int, ActionUnit*>::iterator iter = _auMap.find(num);
+	auto iter = _auMap.find(num);
 	if (iter == _auMap.end())
 	{
 		SmartBody::util::log("AU %d not found.", num);
@@ -553,9 +535,9 @@ std::string SBFaceDefinition::getAUSide(int num)
 
 }
 
-SBMotion* SBFaceDefinition::getAUMotion(int num, std::string side)
+SBMotion* SBFaceDefinition::getAUMotion(int num, const std::string& side)
 {
-	std::map<int, ActionUnit*>::iterator iter = _auMap.find(num);
+	auto iter = _auMap.find(num);
 	if (iter == _auMap.end())
 	{
 		SmartBody::util::log("AU %d not found.", num);
@@ -563,7 +545,7 @@ SBMotion* SBFaceDefinition::getAUMotion(int num, std::string side)
 	}
 
 	SkMotion* motion = nullptr;
-	ActionUnit* au = (*iter).second;
+	auto& au = (*iter).second;
 	if (side == "LEFT" || side == "left")
 	{
 		if (au->is_left())
@@ -606,7 +588,7 @@ SBMotion* SBFaceDefinition::getAUMotion(int num, std::string side)
 		return nullptr;
 	}
 
-	SBMotion* sbmotion = dynamic_cast<SBMotion*>(motion);
+	auto* sbmotion = dynamic_cast<SBMotion*>(motion);
 	return sbmotion;
 }
 
@@ -645,7 +627,7 @@ std::string SBFaceDefinition::saveToString()
 void SBFaceDefinition::save(const std::string& fileName)
 {
 	std::ofstream file(fileName.c_str());
-	if (file.is_open() != true)
+	if (!file.is_open())
 	{
 		SmartBody::util::log("Problem writing to file %s, face definition was not saved.", fileName.c_str());
 		return;
