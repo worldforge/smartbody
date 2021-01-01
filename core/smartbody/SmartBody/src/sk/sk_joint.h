@@ -35,9 +35,11 @@
 # include <sk/sk_joint_quat.h>
 # include <sk/sk_joint_euler.h>
 # include <sk/sk_joint_swing_twist.h>
+#include "sr/sr_shared_ptr.hpp"
 #include <sb/SBObject.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 class SrModel;
@@ -65,8 +67,8 @@ TypeOther
 };
 
 protected:
-	SrModel* _visgeo; // the attached geometry to visualize this joint
-	SrModel* _colgeo; // the attached geometry used for collision detection
+	boost::intrusive_ptr<SrModel> _visgeo; // the attached geometry to visualize this joint
+	boost::intrusive_ptr<SrModel> _colgeo; // the attached geometry used for collision detection
 	SkJoint* _parent;
 	std::vector<SkJoint*> _children;
 	SrMat _gmat;           // global matrix: from the root to the children of this joint
@@ -84,7 +86,7 @@ protected:
 	SrVec _offset;         // offset from the joint to its children
 	SrVec _endEffectorOffset;         // offset from the joint to its children
 	char _rtype;           // one of the RotType enumerator
-	SkJointQuat* _quat;    // generic access to the quaternion of any parameterization
+	std::unique_ptr<SkJointQuat> _quat;    // generic access to the quaternion of any parameterization
 	SkJointPos _pos;       // controls the translation parameterization
 	float _mass;		   // mass of the bone associated with the joint
 	int _jointType;
@@ -103,12 +105,12 @@ public:
 	/*! Get a pointer for the attached geometry for visualization,
 	or null if no such geometry was loaded. The geometry pointers
 	can be shared ( see SrModel::ref/unref). */
-	SrModel* visgeo () const { return _visgeo; }
+	SrModel* visgeo () const { return _visgeo.get(); }
 
 	/*! Get a pointer for the attached geometry for collision detection,
 	or null if no such geometry was loaded. The geometry pointers
 	can be shared ( see SrModel::ref/unref). */
-	SrModel* colgeo () const { return _colgeo; }
+	SrModel* colgeo () const { return _colgeo.get(); }
 
 	/*! Replaces the visualization geometry pointer with the new one.
 	The ref/unref methods are used during replacement and null can be
@@ -148,10 +150,10 @@ public:
 	void extName ( const std::string& jn ) { _extName=jn; }
 	const std::string& extName () const { return _extName; }
 	
-	void extID(std::string val) { _extID = val; }
+	void extID(std::string val) { _extID = std::move(val); }
 	const std::string& extID() const { return _extID; }
 
-	void extSID(std::string val) { _extSID = val; }
+	void extSID(std::string val) { _extSID = std::move(val); }
 	const std::string& extSID() const { return _extSID; }
 
 	/*! Returns the index of this joint in the SkSkeleton list
@@ -179,7 +181,7 @@ public:
 
 	/*! Access the translation parameterization of the joint. */
 	SkJointPos* pos () { return &_pos; }
-	const SkJointPos* const_pos () const { return &_pos; }
+	const SkJointPos* pos () const { return &_pos; }
 
 	/*! Set the desired rotation model. The associated parameterization
 	class (derived from SkJointParam) will then replace the current one.
@@ -192,19 +194,19 @@ public:
 
 	/*! Access the Euler rotation parameterization model of the joint.
 	This method can only be called if the joint is in Euler mode */
-	SkJointEuler* euler () { return (SkJointEuler*)_quat; }
-	const SkJointEuler* const_euler () const { return (SkJointEuler*)_quat; }
+	SkJointEuler* euler () { return (SkJointEuler*)_quat.get(); }
+	const SkJointEuler* euler () const { return (SkJointEuler*)_quat.get(); }
 
 	/*! Access the Swing and Twist rotation parameterization model of the joint.
 	This method can only be called if the joint is in SwingTwist mode */
-	SkJointSwingTwist* st () { return (SkJointSwingTwist*)_quat; }
-	const SkJointSwingTwist* const_st () const { return (SkJointSwingTwist*)_quat; }
+	SkJointSwingTwist* st () { return (SkJointSwingTwist*)_quat.get(); }
+	const SkJointSwingTwist* st () const { return (SkJointSwingTwist*)_quat.get(); }
 
 	/*! Access the quaternion-based rotation of the joint. It can be accessed
 	regardless of the parameterization type, however conflicts may arise 
 	if a new quaternion is set while the joint is not in TypeQuat mode */
-	SkJointQuat* quat () { return _quat; }
-	const SkJointQuat* const_quat () const { return _quat; }
+	SkJointQuat* quat () { return _quat.get(); }
+	const SkJointQuat* quat () const { return _quat.get(); }
 
 	/*! Set the active position channels to their "zero" values */
 	void init_pos ();
@@ -273,7 +275,7 @@ public:
 	/*! Gets the mass of the bone. */
 	float mass () const { return _mass; };
 
-	int getJointType() { return _jointType; };
+	int getJointType() const { return _jointType; };
 	void setJointType(int jtype) {  _jointType = jtype; };
 
 	SBAPI void add_child ( SkJoint* child );

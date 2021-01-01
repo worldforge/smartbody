@@ -233,13 +233,13 @@ static SrModel* read_model(SrInput& in, SrPathArray& paths, SrMat* mat) {
 		//m->ref();
 	} else { //SR_TRACE2 ( "Loading Error!" );
 		delete m;
-		m = 0;
+		m = nullptr;
 	}
 
 	return m;
 }
 
-static void _setmodel(SrModel*& curm, SrModel* newm) {
+static void _setmodel(SrModel* curm, SrModel* newm) {
 	if (!newm) return;
 	if (curm) {
 		curm->add_model(*newm);
@@ -310,10 +310,10 @@ int SkSkeleton::_loadjdata(SrInput& in, SkJoint* j, SrStringArray& paths) {
 							 SkJointQuat::AlignPostInv, v);
 		} else if (kw == VISGEO) // keyword only in hm format
 		{
-			_setmodel(j->_visgeo, read_model(in, (SrPathArray&) paths, hasmat ? &curmat : 0));
+			_setmodel(j->_visgeo.get(), read_model(in, (SrPathArray&) paths, hasmat ? &curmat : nullptr));
 		} else if (kw == COLGEO) // keyword only in hm format
 		{
-			_setmodel(j->_colgeo, read_model(in, (SrPathArray&) paths, hasmat ? &curmat : 0));
+			_setmodel(j->_colgeo.get(), read_model(in, (SrPathArray&) paths, hasmat ? &curmat : nullptr));
 		} else if (kw == JOINT || kw == END) {
 			return kw;
 		} else if (in.last_token()[0] == '}') return -1;

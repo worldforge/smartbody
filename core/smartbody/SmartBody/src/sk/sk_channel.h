@@ -45,7 +45,7 @@ class SkChannel
    public :
 
     /*! Constructor */
-    SkChannel ( SkJoint* j=0, Type t=XPos ) { joint=j; type=t; }
+    explicit SkChannel ( SkJoint* j=nullptr, Type t=XPos ) { joint=j; type=t; }
 
     /*! set both values at once */
     void set ( SkJoint* j, Type t ) { joint=j; type=t; }
@@ -86,7 +86,7 @@ class SkChannel
     static void change_values ( Type type, float* values, float mfactor, const float* offset );
 
     /*! Member function version of change_values() */
-    void change_values ( float* values, float mfactor, const float* offset )
+    void change_values ( float* values, float mfactor, const float* offset ) const
          { change_values ( type, values, mfactor, offset ); }
 
     /*! The size of a channel can be 1, 2(Swing), or 4 (Quat) */
@@ -126,7 +126,7 @@ class SkChannel
     static int load ( Type type, SrInput& in, float* v, double scale = 1.0 ); // static
 
     /*! Member function version of load() */
-    int load ( SrInput& in, float* v, double scale = 1.0 ) { return load(type,in,v,scale); }
+    int load ( SrInput& in, float* v, double scale = 1.0 ) const { return load(type,in,v,scale); }
  };
 
 //==================================== End of File ===========================================

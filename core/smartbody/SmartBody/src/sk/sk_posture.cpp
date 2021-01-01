@@ -194,9 +194,9 @@ void SkPosture::make_points ( SkJoint* j )
    _syncpoints = true;
  }
 
-void SkPosture::operator= ( const SkPosture& p )
+SkPosture& SkPosture::operator= ( const SkPosture& p )
  {
-   if ( &p==this ) return;
+   if ( &p==this ) return *this;
 
    _syncpoints = p._syncpoints;
 
@@ -214,6 +214,7 @@ void SkPosture::operator= ( const SkPosture& p )
 
    values = p.values;
    points = p.points;
+   return *this;
  }
 
 //============================= friends ============================

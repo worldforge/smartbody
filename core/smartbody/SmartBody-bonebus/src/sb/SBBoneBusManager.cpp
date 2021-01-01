@@ -162,7 +162,7 @@ void SBBoneBusManager::afterUpdate(double time)
 
 			const SkJoint* joint = character->get_world_offset_joint();
 
-			const SkJointPos* pos = joint->const_pos();
+			const SkJointPos* pos = joint->pos();
 			float x = pos->value(SkJointPos::X);
 			float y = pos->value(SkJointPos::Y);
 			float z = pos->value(SkJointPos::Z);

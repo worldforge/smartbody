@@ -26,13 +26,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBJointMapManager.h>
 #include <sb/SBJointMap.h>
+
+#include <memory>
 #include "SBUtilities.h"
 //============================= SkJoint ============================
 
 SkJoint::SkJoint()
 {
-   _visgeo = 0;
-   _colgeo = 0;
    _pos.init();
 
    _coldetid = -1;
@@ -45,7 +45,6 @@ SkJoint::SkJoint()
    _skeleton = nullptr;
 
    _pos._joint = this; // as we initialized it with null (to avoid a warning)
-   _quat = 0;
    _rtype =-1;
    rot_type(TypeQuat);
    _jointType = TypeJoint;
@@ -55,8 +54,6 @@ SkJoint::SkJoint()
 
 SkJoint::SkJoint ( SkSkeleton* sk, SkJoint* parent, RotType rtype, int i )
  {
-   _visgeo = 0;
-   _colgeo = 0;
    _pos.init();
 
    _coldetid = -1;
@@ -69,7 +66,6 @@ SkJoint::SkJoint ( SkSkeleton* sk, SkJoint* parent, RotType rtype, int i )
    _skeleton = sk;
 
    _pos._joint = this; // as we initialized it with null (to avoid a warning)
-   _quat = 0;
    _rtype =-1;
    rot_type ( rtype );
 
@@ -81,13 +77,7 @@ SkJoint::SkJoint ( SkSkeleton* sk, SkJoint* parent, RotType rtype, int i )
 	   parent->_children.emplace_back(this);
  }
 
-SkJoint::~SkJoint()
- {
-   if ( _visgeo ) _visgeo->unref();
-   if ( _colgeo ) _colgeo->unref();
-
-   delete _quat;
- }
+SkJoint::~SkJoint() = default;
 
 void SkJoint::visgeo ( SrModel* m )
  { 
@@ -121,16 +111,15 @@ void SkJoint::rot_type ( RotType t )
  {
    if ( char(t)==_rtype ) return; // no change required
    
-   delete _quat;
    _rtype = (char)t;
 
    set_lmat_changed ();
 
    switch (_rtype)
-    { case TypeEuler: _quat = new SkJointEuler(this); break;
-      case TypeSwingTwist: _quat = new SkJointSwingTwist(this); break;
+    { case TypeEuler: _quat = std::make_unique<SkJointEuler>(this); break;
+      case TypeSwingTwist: _quat = std::make_unique<SkJointSwingTwist>(this); break;
       default: _rtype = TypeQuat;
-               _quat = new SkJointQuat(this);
+               _quat = std::make_unique<SkJointQuat>(this);
     }
  }
 
@@ -198,8 +187,8 @@ void SkJoint::update_gmat ()
 
    _gmat.mult ( _lmat, pmat );
 
-   for (size_t i=0; i<_children.size(); i++ )
-    { _children[i]->update_gmat();
+   for (auto & i : _children)
+    { i->update_gmat();
     }
  }
 
@@ -211,11 +200,11 @@ void SkJoint::update_gmat ( std::vector<SkJoint*>& end_joints )
 
    _gmat.mult ( _lmat, pmat );
 
-   for (size_t i=0; i<end_joints.size(); i++ )
-    if ( this==end_joints[i] ) return;
+   for (auto & end_joint : end_joints)
+    if ( this==end_joint ) return;
 
-   for (size_t i=0; i<_children.size(); i++ )
-    { _children[i]->update_gmat(end_joints);
+   for (auto & i : _children)
+    { i->update_gmat(end_joints);
     }
  }
 
@@ -233,9 +222,9 @@ void SkJoint::update_gmat_up ( SkJoint* stop_joint )
    SkJoint* j = this;
    do { joints.push() = j;
         j = j->_parent;
-      } while ( j!=0 && j!=stop_joint );
+      } while ( j!=nullptr && j!=stop_joint );
       
-   while ( joints.size()>0 )
+   while ( !joints.empty() )
     { joints.pop()->update_gmat_local();
     }
  }
@@ -249,7 +238,7 @@ void SkJoint::set_lmat_changed ()
 
 static void _unite ( const SkJoint* j, SrModel& m, SrModel& tmp, bool ifvisgeo )
  {
-   const SrModel* geo=0;
+   const SrModel* geo=nullptr;
 
    if (  ifvisgeo && j->visgeo() ) geo = j->visgeo();
    if ( !ifvisgeo && j->colgeo() ) geo = j->colgeo();
@@ -336,7 +325,7 @@ void SkJoint::updateMappedJointName()
 		if (jointMap)
 		{
 			const std::string& target = jointMap->getMapTarget(_name);
-			if (target != "")
+			if (!target.empty())
 				_sbName = target;
 		}		
 	}	
@@ -375,8 +364,8 @@ void SkJoint::copyTo( SkJoint* dest )
 	dest->extName(_extName);
 	dest->extID(_extID);
 	dest->extSID(_extSID);
-	dest->visgeo(_visgeo);
-	dest->colgeo(_colgeo);
+//	dest->visgeo(_visgeo);
+//	dest->colgeo(_colgeo);
 
 	SkJointPos* srcPos = pos();
 	SkJointPos* destPos = dest->pos();

@@ -77,10 +77,10 @@ class SkPosture
 
     /*! Constructor from a given channel array and (optionally) a dfjoint list,
         which will be both shared */
-    SkPosture ( SkChannelArray* ca, SkPostureDfJoints* dfj=0 );
+    explicit SkPosture ( SkChannelArray* ca, SkPostureDfJoints* dfj=0 );
 
     /*! Constructor shares the channel array with the given skeleton */
-    SkPosture ( SkSkeleton* s );
+    explicit SkPosture ( SkSkeleton* s );
 
     /*! Destructor. Be sure to access it through unref() when needed. */
     virtual ~SkPosture ();
@@ -159,10 +159,10 @@ class SkPosture
         (default), all the skeleton connected to the channel array is updated.
         This function is automatically called when need, usually the user does
         not need to call it. */
-    void make_points ( SkJoint* j=0 );
+    void make_points ( SkJoint* j=nullptr );
 
     /*! Copy operator copies all internal data, but does not copy the name. */
-    void operator= ( const SkPosture& p );
+	SkPosture& operator= ( const SkPosture& p );
 
     /*! Put in p the interpolation between p1 and p2 at the parametric position t in [0,1].
         All given postures must have compatible existing referenced channel arrays */

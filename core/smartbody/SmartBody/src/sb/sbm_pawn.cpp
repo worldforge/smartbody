@@ -472,7 +472,7 @@ void SbmPawn::wo_cache_update() {
 		//SmartBody::util::log(strstr.str().c_str());
 		return;
 	}
-	const SkJointPos* pos = joint->const_pos();
+	const SkJointPos* pos = joint->pos();
 	float x = pos->value( SkJointPos::X );
 	float y = pos->value( SkJointPos::Y );
 	float z = pos->value( SkJointPos::Z );

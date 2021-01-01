@@ -61,11 +61,11 @@ int SkChannel::get ( float* v )
     }
 
    if ( type<=ZPos )
-    { v[0] = joint->const_pos()->value ( int(type) );
+    { v[0] = joint->pos()->value (int(type) );
       return 1;
     }
    if ( type<=ZRot )
-    { v[0] = joint->const_euler()->value ( int(type)-3 );
+    { v[0] = joint->euler()->value (int(type) - 3 );
       return 1;
     }
    if ( type==Quat )
