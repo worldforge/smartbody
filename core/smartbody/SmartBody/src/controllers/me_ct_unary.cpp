@@ -23,8 +23,6 @@
 
 #include <controllers/me_ct_unary.hpp>
 
-
-#include <iostream>
 #include <string>
 
 
@@ -64,8 +62,8 @@ void MeCtUnary::Context::child_channels_updated( MeController* child ) {
 std::string MeCtUnary::CONTROLLER_TYPE = "MeCtUnary";
 
 MeCtUnary::MeCtUnary(
-	MeCtUnary::Context* sub_context,
-	MeController* child,
+	const boost::intrusive_ptr<MeCtUnary::Context>& sub_context,
+	const boost::intrusive_ptr<MeController>& child,
 	bool copy_channels
 )
 :	MeCtContainer( sub_context ),
@@ -73,7 +71,6 @@ MeCtUnary::MeCtUnary(
 	_copy_child_channels( copy_channels )
 {
 	if( child ) {
-		child->ref();
 		if( copy_channels ) {
 			controller_channels() = child->controller_channels();
 		}
@@ -83,7 +80,7 @@ MeCtUnary::MeCtUnary(
 
 MeCtUnary::~MeCtUnary() {
 	if( _child ) {
-		remove_child( _child );
+		remove_child( _child.get() );
 	}
 }
 
@@ -97,35 +94,34 @@ size_t MeCtUnary::count_children() {
 
 MeController* MeCtUnary::child( size_t n ) {
 	if( n==0 )
-		return _child;
+		return _child ? _child.get() : nullptr;
 	else
 		return nullptr;
 }
 
 
-void MeCtUnary::init( MeController* child ) {
+void MeCtUnary::init( const boost::intrusive_ptr<MeController>& child ) {
 	if( _child == child )
 		return;
 
 	if( child ) {
 		if( _child ) {
 			if( _child != child ) {
-				remove_child( _child );
+				remove_child( _child.get() );
 				_child = child;
-				_child->ref();
 			}
 		}
 	} else {
 		if( _child )
-			remove_child( _child );
+			remove_child( _child.get() );
 	}
 
 	if( _child ) {
 		if( _copy_child_channels && child )
 			controller_channels() = child->controller_channels();
 
-		_sub_context->add_controller( child );
-		_sub_context->child_channels_updated( child );
+		_sub_context->add_controller( child.get());
+		_sub_context->child_channels_updated( child.get() );
 	} else {
 		controller_channels() = SkChannelArray::empty_channel_array();
 	}
@@ -156,7 +152,6 @@ bool MeCtUnary::remove_child( MeController* child ) {
 	if( is_child )
 	{
 		//_sub_context->remove_controller( child );
-		_child->unref();
 		_child = nullptr;
 	}
 	return is_child;

@@ -22,6 +22,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sb/sbm_character.hpp"
 
+#include <memory>
 #include <string>
 #include <cstring>
 #include <map>
@@ -119,7 +120,7 @@ MeCtSchedulerClass* CreateSchedulerCt( const char* character_name, const char* s
 	sched_name += "_";
 	sched_name += sched_type_name;
 	sched_name += "Schedule";
-	sched_p->setName( sched_name.c_str() );
+	sched_p->setName( sched_name );
 	return sched_p;
 }
 
@@ -177,91 +178,7 @@ _soft_eyes_enabled( ENABLE_EYELID_CORRECTIVE_CT )
 
 
 //  Destructor
-SbmCharacter::~SbmCharacter( )	{
-
-	//printf("delete character %s\n",this->getName().c_str());
-
-
-		delete _faceDefinition;
-
-	if (posture_sched_p)
-		posture_sched_p->unref();
-	if (motion_sched_p)
-		motion_sched_p->unref();
-	if (breathing_p)
-		breathing_p->unref();
-	if (gaze_sched_p)
-		gaze_sched_p->unref();
-	if (reach_sched_p)
-		reach_sched_p->unref();
-
-	if (grab_sched_p)
-		grab_sched_p->unref();
-
-	if (constraint_sched_p)
-		constraint_sched_p->unref();
-
-	if( eyelid_reg_ct_p )
-		eyelid_reg_ct_p->unref();
-
-	if (head_sched_p)
-		head_sched_p->unref();
-	if (param_sched_p)
-		param_sched_p->unref();
-	if( face_ct )
-		face_ct->unref();
-	/*
-	if (eyelid_ct)
-	eyelid_ct->unref();
-	*/
-
-	if (param_animation_ct)
-		param_animation_ct->unref();
-	if (head_param_anim_ct)
-		head_param_anim_ct->unref();
-	if (param_animation_ct_layer1)
-		param_animation_ct_layer1->unref();
-	if (param_animation_ct_layer2)
-		param_animation_ct_layer2->unref();
-	if (motionplayer_ct)
-		motionplayer_ct->unref();
-	if (saccade_ct)
-		saccade_ct->unref();
-
-	if (physics_ct)
-		physics_ct->unref();
-	if (noise_ct)
-		noise_ct->unref();
-	if (record_ct)
-		record_ct->unref();
-	if (basic_locomotion_ct)
-		basic_locomotion_ct->unref();
-#if USE_NEW_LOCOMOTION
-	if (new_locomotion_ct)
-		new_locomotion_ct->unref();
-#endif
-	if (postprocess_ct)
-		postprocess_ct->unref();
-	if (generic_hand_ct)
-		generic_hand_ct->unref();
-
-	if (motiongraph_ct)
-		motiongraph_ct->unref();
-
-	//if (overlayMotion_sched_p)
-		//overlayMotion_sched_p->unref();
-
-	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	
-	if( viseme_history_arr )	{
-		delete [] viseme_history_arr;
-		viseme_history_arr = nullptr;
-	}
-
-
-		delete _miniBrain;
-}
+SbmCharacter::~SbmCharacter( )	= default;
 
 void SbmCharacter::copy( SbmCharacter* origChar )
 {	
@@ -304,35 +221,30 @@ void SbmCharacter::createStandardControllers()
 	// example-based locomotion
 	this->param_animation_ct = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName = getName() + "_paramAnimationController";
-	this->param_animation_ct->setName(paramAnimationName.c_str());
-	this->param_animation_ct->ref();
+	this->param_animation_ct->setName(paramAnimationName);
 	this->param_animation_ct->init(this);
 
 	this->param_animation_ct_layer1 = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName1 = getName() + "_paramAnimationController_Layer1";
-	this->param_animation_ct_layer1->setName(paramAnimationName1.c_str());
-	this->param_animation_ct_layer1->ref();
+	this->param_animation_ct_layer1->setName(paramAnimationName1);
 	this->param_animation_ct_layer1->init(this);
 
 	this->param_animation_ct_layer2 = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName2 = getName() + "_paramAnimationController_Layer2";
-	this->param_animation_ct_layer2->setName(paramAnimationName2.c_str());
-	this->param_animation_ct_layer2->ref();
+	this->param_animation_ct_layer2->setName(paramAnimationName2);
 	this->param_animation_ct_layer2->init(this);
 
 	// basic locomotion
 	this->basic_locomotion_ct = new MeCtBasicLocomotion(this);
 	std::string bLocoName = getName() + "_basicLocomotionController";
-	this->basic_locomotion_ct->setName(bLocoName.c_str());
-	this->basic_locomotion_ct->ref();
+	this->basic_locomotion_ct->setName(bLocoName);
 	//this->basic_locomotion_ct->set_pass_through(false);
 
 	// new locomotion
 #if USE_NEW_LOCOMOTION
 	this->new_locomotion_ct = new MeCtNewLocomotion();
 	std::string nLocoName = getName() + "_newLocomotionController";
-	this->new_locomotion_ct->setName(nLocoName.c_str());
-	this->new_locomotion_ct->ref();
+	this->new_locomotion_ct->setName(nLocoName);
 	this->new_locomotion_ct->init(this);
 #endif
 	
@@ -342,19 +254,16 @@ void SbmCharacter::createStandardControllers()
 
 	this->generic_hand_ct = new MeCtGenericHand(sbSkel,this);
 	std::string gHandName = getName() + "_genericHandController";
-	this->generic_hand_ct->setName(gHandName.c_str());
-	this->generic_hand_ct->ref();	
-	
+	this->generic_hand_ct->setName(gHandName);
+
 	this->head_param_anim_ct = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string headParamAnimName = getName() + "_paramAnimHeadController";
-	this->head_param_anim_ct->setName(headParamAnimName.c_str());
-	this->head_param_anim_ct->ref();
+	this->head_param_anim_ct->setName(headParamAnimName);
 
-	SmartBody::SBCharacter* sbChar = dynamic_cast<SmartBody::SBCharacter*>(this);
+	auto* sbChar = dynamic_cast<SmartBody::SBCharacter*>(this);
 	this->motiongraph_ct = new MeCtMotionGraph(sbChar);
 	std::string motionGraphName = getName() + "_motionGraphController";
 	this->motiongraph_ct->setName(motionGraphName);
-	this->motiongraph_ct->ref();
 
 	//auto sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
 	SmartBody::SBJoint* effector = sbSkel->getJointByMappedName("r_middle1");
@@ -372,18 +281,16 @@ void SbmCharacter::createStandardControllers()
 #if !defined(EMSCRIPTEN)
 	postprocess_ct = new MeCtPosePostProcessing(sbSkel);
 	postprocess_ct->setName(getName() + "_postprocessController");
-	postprocess_ct->ref();
 #endif
 	breathing_p = new MeCtBreathing();
 	breathing_p->setName(getName() + "_breathingController");
-	breathing_p->ref();
 	// add two channels for blendshape-based breathing
 	//auto sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
-	SmartBody::SBJoint* rootJoint = dynamic_cast<SmartBody::SBJoint*>(sbSkel->root());
+	auto* rootJoint = dynamic_cast<SmartBody::SBJoint*>(sbSkel->root());
 
 	if (rootJoint)
 	{
-		SmartBody::SBJoint* breathingJointX = new SmartBody::SBJoint();
+		auto* breathingJointX = new SmartBody::SBJoint();
 		std::string breathNameX = "breathX"; // parametric breath time
 		breathingJointX->setName(breathNameX);
 		breathingJointX->setJointType(SkJoint::TypeOther);
@@ -391,7 +298,7 @@ void SbmCharacter::createStandardControllers()
 		breathingJointX->pos()->limits(SkJointPos::X, -1000, 1000);  // Setting upper bound to 2 allows some exageration
 		rootJoint->addChild(breathingJointX);
 
-		SmartBody::SBJoint* breathingJointY = new SmartBody::SBJoint();
+		auto* breathingJointY = new SmartBody::SBJoint();
 		std::string breathNameY = "breathY"; // breathing intensity
 		breathingJointY->setName(breathNameY);
 		breathingJointY->setJointType(SkJoint::TypeOther);
@@ -409,7 +316,6 @@ void SbmCharacter::createStandardControllers()
 	face_ct->setName(faceCtName);
 
 	eyelid_reg_ct_p = new MeCtEyeLidRegulator();
-	eyelid_reg_ct_p->ref();
 	if (!_faceDefinition || !_faceDefinition->getFaceNeutral())
 	{
 		eyelid_reg_ct_p->set_use_blink_viseme( true );
@@ -424,33 +330,32 @@ void SbmCharacter::createStandardControllers()
 	eyelid_reg_ct_p->set_close_angle( 30.0 );
 	ostringstream ct_name;
 	ct_name << getName() << "_eyelidController";
-	eyelid_reg_ct_p->setName( ct_name.str().c_str() );
+	eyelid_reg_ct_p->setName( ct_name.str() );
 
 	this->saccade_ct = new MeCtSaccade(this);
 	this->saccade_ct->init(this);
 	std::string saccadeCtName = getName() + "_eyeSaccadeController";
-	this->saccade_ct->setName(saccadeCtName.c_str());
+	this->saccade_ct->setName(saccadeCtName);
 
 	// motion player
 	motionplayer_ct = new MeCtMotionPlayer(this);
-	motionplayer_ct->ref();
 	std::string mpName = getName();
 	mpName += "_motionPlayer";
-	motionplayer_ct->setName(mpName.c_str());
+	motionplayer_ct->setName(mpName);
 	motionplayer_ct->setActive(false);
 
 	this->datareceiver_ct = new MeCtDataReceiver(this->_skeleton);
 	std::string datareceiverCtName = getName() + "_dataReceiverController";
-	this->datareceiver_ct->setName(datareceiverCtName.c_str());
+	this->datareceiver_ct->setName(datareceiverCtName);
 
 	this->physics_ct = new MeCtPhysicsController(this);
 	std::string physicsCtName = getName() + "_physicsController";
-	this->physics_ct->setName(physicsCtName.c_str());
+	this->physics_ct->setName(physicsCtName);
 	
 
 	this->noise_ct = new MeCtNoiseController(this);
 	std::string noiseCtName = getName() + "_noiseController";
-	this->noise_ct->setName(noiseCtName.c_str());
+	this->noise_ct->setName(noiseCtName);
 
 	if (!sbChar)
 	{
@@ -458,24 +363,11 @@ void SbmCharacter::createStandardControllers()
 	}
 	this->record_ct = new MeCtMotionRecorder(sbChar);
 	std::string recordCtName = getName() + "_recorderController";
-	this->record_ct->setName(recordCtName.c_str());
+	this->record_ct->setName(recordCtName);
 
 	this->realTimeLipSyncCt = new RealTimeLipSyncController();
 	std::string realTimeLipSyncName = getName() + "_realTimeLipSyncController";
 	this->realTimeLipSyncCt->setName(realTimeLipSyncName);
-
-	posture_sched_p->ref();
-	motion_sched_p->ref();
-	gaze_sched_p->ref();
-	head_sched_p->ref();
-	face_ct->ref();
-	param_sched_p->ref();
-	reach_sched_p->ref();
-	grab_sched_p->ref();
-	constraint_sched_p->ref();
-	overlayMotion_sched_p->ref();
-	physics_ct->ref();
-	noise_ct->ref();
 
 	posture_sched_p->init(this);
 	motion_sched_p->init(this);
@@ -498,42 +390,43 @@ void SbmCharacter::createStandardControllers()
 
 	realTimeLipSyncCt->init(this);
 
-	ct_tree_p->add_controller( posture_sched_p );
+	ct_tree_p->add_controller( posture_sched_p.get() );
 	//ct_tree_p->add_controller( locomotion_ct );
 	
-	ct_tree_p->add_controller( param_animation_ct );
-	ct_tree_p->add_controller( param_animation_ct_layer1 );
-	ct_tree_p->add_controller( param_animation_ct_layer1 );
-	ct_tree_p->add_controller( motiongraph_ct );
-	ct_tree_p->add_controller( basic_locomotion_ct );
+	ct_tree_p->add_controller( param_animation_ct.get() );
+	ct_tree_p->add_controller( param_animation_ct_layer1.get() );
+	ct_tree_p->add_controller( param_animation_ct_layer1.get() );
+	ct_tree_p->add_controller( motiongraph_ct.get() );
+	ct_tree_p->add_controller( basic_locomotion_ct.get() );
 #if USE_NEW_LOCOMOTION
-	ct_tree_p->add_controller( new_locomotion_ct );
+	ct_tree_p->add_controller( new_locomotion_ct.get() );
 #endif
-	ct_tree_p->add_controller( motion_sched_p );
+	ct_tree_p->add_controller( motion_sched_p.get() );
 #if !defined(EMSCRIPTEN)
-	ct_tree_p->add_controller( postprocess_ct );	
+	ct_tree_p->add_controller( postprocess_ct.get() );
 #endif
-	ct_tree_p->add_controller( generic_hand_ct);		ct_tree_p->add_controller( reach_sched_p );	
-	ct_tree_p->add_controller( grab_sched_p );
-	ct_tree_p->add_controller( breathing_p );
-	ct_tree_p->add_controller( gaze_sched_p );
-	ct_tree_p->add_controller( saccade_ct );
-	ct_tree_p->add_controller( eyelid_reg_ct_p );
-	ct_tree_p->add_controller( head_sched_p );
+	ct_tree_p->add_controller( generic_hand_ct.get());
+	ct_tree_p->add_controller( reach_sched_p.get() );
+	ct_tree_p->add_controller( grab_sched_p.get() );
+	ct_tree_p->add_controller( breathing_p.get() );
+	ct_tree_p->add_controller( gaze_sched_p.get() );
+	ct_tree_p->add_controller( saccade_ct.get() );
+	ct_tree_p->add_controller( eyelid_reg_ct_p.get() );
+	ct_tree_p->add_controller( head_sched_p.get() );
 
-	ct_tree_p->add_controller(realTimeLipSyncCt);
+	ct_tree_p->add_controller(realTimeLipSyncCt.get());
 	//ct_tree_p->add_controller( head_param_anim_ct );
-	ct_tree_p->add_controller( face_ct );
-	ct_tree_p->add_controller( param_sched_p );
+	ct_tree_p->add_controller( face_ct.get() );
+	ct_tree_p->add_controller( param_sched_p.get() );
 #if USE_PHYSICS_CHARACTER
-	ct_tree_p->add_controller( physics_ct );
+	ct_tree_p->add_controller( physics_ct.get() );
 #endif
-	ct_tree_p->add_controller( noise_ct );
-	ct_tree_p->add_controller( constraint_sched_p );	
-	ct_tree_p->add_controller( motionplayer_ct );
-	ct_tree_p->add_controller( datareceiver_ct );
-	ct_tree_p->add_controller(overlayMotion_sched_p);
-	ct_tree_p->add_controller( record_ct );
+	ct_tree_p->add_controller( noise_ct.get() );
+	ct_tree_p->add_controller( constraint_sched_p.get() );
+	ct_tree_p->add_controller( motionplayer_ct.get() );
+	ct_tree_p->add_controller( datareceiver_ct.get() );
+	ct_tree_p->add_controller(overlayMotion_sched_p.get());
+	ct_tree_p->add_controller( record_ct.get() );
 	
 
 	// get the default attributes from the default controllers
@@ -557,13 +450,13 @@ void SbmCharacter::createStandardControllers()
 			if (!scheduler)
 			{
 				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
-					attributeCopy->registerObserver(eyelid_reg_ct_p);
+					attributeCopy->registerObserver(eyelid_reg_ct_p.get());
 				else if (dynamic_cast<MeCtBreathing*>(controller))
-					attributeCopy->registerObserver(breathing_p);
+					attributeCopy->registerObserver(breathing_p.get());
 				else if (dynamic_cast<MeCtSaccade*>(controller))
-					attributeCopy->registerObserver(saccade_ct);
+					attributeCopy->registerObserver(saccade_ct.get());
 				else if (dynamic_cast<MeCtFace*>(controller))
-					attributeCopy->registerObserver(face_ct);
+					attributeCopy->registerObserver(face_ct.get());
 				else if (dynamic_cast<MeCtParamAnimation*>(controller))
 				{
 					attributeCopy->registerObserver(controller);
@@ -573,11 +466,11 @@ void SbmCharacter::createStandardControllers()
 				//else if (dynamic_cast<MeCtLocomotion*>(controller))
 					//attributeCopy->registerObserver(locomotion_ct);
 				else if (dynamic_cast<MeCtBasicLocomotion*>(controller))
-					attributeCopy->registerObserver(basic_locomotion_ct);
+					attributeCopy->registerObserver(basic_locomotion_ct.get());
 				else if (dynamic_cast<MeCtNewLocomotion*>(controller))
-					attributeCopy->registerObserver(new_locomotion_ct);
+					attributeCopy->registerObserver(new_locomotion_ct.get());
 				else if (dynamic_cast<MeCtGenericHand*>(controller))
-					attributeCopy->registerObserver(generic_hand_ct);
+					attributeCopy->registerObserver(generic_hand_ct.get());
 			}
 		}
 	}
@@ -603,7 +496,6 @@ void SbmCharacter::createMinimalControllers()
 	face_ct->setName(faceCtName);
 
 	eyelid_reg_ct_p = new MeCtEyeLidRegulator();
-	eyelid_reg_ct_p->ref();
 	if (!_faceDefinition || !_faceDefinition->getFaceNeutral())
 	{
 		eyelid_reg_ct_p->set_use_blink_viseme( true );
@@ -625,11 +517,6 @@ void SbmCharacter::createMinimalControllers()
 	std::string saccadeCtName = getName() + "_eyeSaccadeController";
 	this->saccade_ct->setName(saccadeCtName.c_str());
 
-	posture_sched_p->ref();
-	motion_sched_p->ref();
-	gaze_sched_p->ref();
-	head_sched_p->ref();
-	face_ct->ref();
 
 	posture_sched_p->init(this);
 	motion_sched_p->init(this);
@@ -639,16 +526,16 @@ void SbmCharacter::createMinimalControllers()
 	head_sched_p->init(this);
 	face_ct->init( this );
 
-	ct_tree_p->add_controller( posture_sched_p );
+	ct_tree_p->add_controller( posture_sched_p.get() );
 	//ct_tree_p->add_controller( locomotion_ct );
 	
-	ct_tree_p->add_controller( motion_sched_p );
-	ct_tree_p->add_controller( gaze_sched_p );
-	ct_tree_p->add_controller( saccade_ct );
-	ct_tree_p->add_controller( eyelid_reg_ct_p );
-	ct_tree_p->add_controller( head_sched_p );
+	ct_tree_p->add_controller( motion_sched_p.get() );
+	ct_tree_p->add_controller( gaze_sched_p.get() );
+	ct_tree_p->add_controller( saccade_ct.get() );
+	ct_tree_p->add_controller( eyelid_reg_ct_p.get() );
+	ct_tree_p->add_controller( head_sched_p.get() );
 	//ct_tree_p->add_controller( head_param_anim_ct );
-	ct_tree_p->add_controller( face_ct );
+	ct_tree_p->add_controller( face_ct.get() );
 
 	// get the default attributes from the default controllers
 	
@@ -671,11 +558,11 @@ void SbmCharacter::createMinimalControllers()
 			if (!scheduler)
 			{
 				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
-					attributeCopy->registerObserver(eyelid_reg_ct_p);
+					attributeCopy->registerObserver(eyelid_reg_ct_p.get());
 				else if (dynamic_cast<MeCtSaccade*>(controller))
-					attributeCopy->registerObserver(saccade_ct);
+					attributeCopy->registerObserver(saccade_ct.get());
 				else if (dynamic_cast<MeCtFace*>(controller))
-					attributeCopy->registerObserver(face_ct);
+					attributeCopy->registerObserver(face_ct.get());
 				else if (dynamic_cast<MeCtParamAnimation*>(controller))
 				{
 					attributeCopy->registerObserver(controller);
@@ -734,7 +621,7 @@ void SbmCharacter::initData()
 	viseme_channel_count = 0;
 	viseme_channel_start_pos = 0;
 	viseme_channel_end_pos = 0;
-	viseme_history_arr = nullptr;
+	viseme_history_arr.clear();
 	_diphoneSetName = "";
 	_minVisemeTime = 0.0f;
 	_isControllerPruning = true;
@@ -812,7 +699,7 @@ void SbmCharacter::setJointCollider( std::string jointName, float len, float rad
 
 
 
-int SbmCharacter::init(SkSkeleton* new_skeleton_p,
+int SbmCharacter::init(boost::intrusive_ptr<SkSkeleton> new_skeleton_p,
 					   SmartBody::SBFaceDefinition* faceDefinition,
 					   GeneralParamMap* param_map,
 					   const char* classType)
@@ -1000,13 +887,13 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 			if (!scheduler)
 			{
 				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
-					attributeCopy->registerObserver(eyelid_reg_ct_p);
+					attributeCopy->registerObserver(eyelid_reg_ct_p.get());
 				else if (dynamic_cast<MeCtBreathing*>(controller))
-					attributeCopy->registerObserver(breathing_p);
+					attributeCopy->registerObserver(breathing_p.get());
 				else if (dynamic_cast<MeCtSaccade*>(controller))
-					attributeCopy->registerObserver(saccade_ct);
+					attributeCopy->registerObserver(saccade_ct.get());
 				else if (dynamic_cast<MeCtFace*>(controller))
-					attributeCopy->registerObserver(face_ct);
+					attributeCopy->registerObserver(face_ct.get());
 				else if (dynamic_cast<MeCtParamAnimation*>(controller))
 				{
 					attributeCopy->registerObserver(controller);
@@ -1014,11 +901,11 @@ int SbmCharacter::init(SkSkeleton* new_skeleton_p,
 					//attributeCopy->registerObserver(head_param_anim_ct);
 				}
 				else if (dynamic_cast<MeCtBasicLocomotion*>(controller))
-					attributeCopy->registerObserver(basic_locomotion_ct);
+					attributeCopy->registerObserver(basic_locomotion_ct.get());
 				else if (dynamic_cast<MeCtNewLocomotion*>(controller))
-					attributeCopy->registerObserver(new_locomotion_ct);
+					attributeCopy->registerObserver(new_locomotion_ct.get());
 				else if (dynamic_cast<MeCtGenericHand*>(controller))
-					attributeCopy->registerObserver(generic_hand_ct);
+					attributeCopy->registerObserver(generic_hand_ct.get());
 			}
 
 		}
@@ -1092,7 +979,7 @@ int SbmCharacter::init_skeleton() {
 		listener->OnCharacterUpdate( getName() );
 	}
 
-  if (viseme_history_arr) {
+  if (!viseme_history_arr.empty()) {
     for( int i=0; i<viseme_channel_count; i++ ) {
       viseme_history_arr[ i ] = -1.0;
     }
@@ -1113,11 +1000,11 @@ int SbmCharacter::setup() {
 bool test_ct_for_pruning( MeCtScheduler2::TrackPtr track ) {
 	bool prune_ok = true;
 
-	MeController* ct = track->animation_ct();
-	if( ct != nullptr ) {
+	const auto& ct = track->animation_ct();
+	if( ct ) {
 		MePrunePolicy* prune_policy = ct->prune_policy();
 		if( prune_policy != nullptr ) {
-			prune_ok = prune_policy->shouldPrune( ct, track->animation_parent_ct() );
+			prune_ok = prune_policy->shouldPrune( ct.get(), track->animation_parent_ct() );
 
 			if( LOG_CONTROLLER_TREE_PRUNING && !prune_ok )
 				SmartBody::util::log("DEBUG: %s \"%s\" withheld from pruning by MePrunePolicy.", ct->controller_type().c_str(), ct->getName().c_str());
@@ -1169,7 +1056,7 @@ void prune_schedule( SbmCharacter*   actor,
 							bool in_use     = true;
 							bool flat_blend_curve = true;  // No blend controller means the blend is always 1, thus flat
 
-							MeController* anim_source = track->animation_ct();
+							const auto& anim_source = track->animation_ct();
 							if( anim_source ) {
 
 #if 0 // DYNAMIC_CASTS_ACTUALLY_WORK?
@@ -1177,15 +1064,15 @@ void prune_schedule( SbmCharacter*   actor,
 								MeCtBlend*         blend_ct = dynamic_cast<MeCtBlend*>( track->blending_ct() );
 								MeCtTimeShiftWarp* timing_ct = dynamic_cast<MeCtTimeShiftWarp*>( track->timing_ct() );
 #else // Trying using manual runtime typing
-								MeCtUnary* unary_blend_ct = track->blending_ct();
+								const auto& unary_blend_ct = track->blending_ct();
 								MeCtBlend* blend_ct = nullptr;
 								if( unary_blend_ct && unary_blend_ct->controller_type() == MeCtBlend::CONTROLLER_TYPE )
-									blend_ct = (MeCtBlend*)unary_blend_ct;
+									blend_ct = (MeCtBlend*)unary_blend_ct.get();
 
-								MeCtUnary*         unary_timing_ct = track->timing_ct();
+								const auto&         unary_timing_ct = track->timing_ct();
 								MeCtTimeShiftWarp* timing_ct = nullptr;
 								if( unary_timing_ct && unary_timing_ct->controller_type() == MeCtTimeShiftWarp::CONTROLLER_TYPE )
-									timing_ct = (MeCtTimeShiftWarp*)unary_timing_ct;
+									timing_ct = (MeCtTimeShiftWarp*)unary_timing_ct.get();
 #endif
 
 								if( blend_ct ) {
@@ -1303,7 +1190,7 @@ void prune_schedule( SbmCharacter*   actor,
 											time_offset = timing_ct->get_curve().evaluate( time );
 										}
 
-										MeCtScheduler2* sched_ct = (MeCtScheduler2*)anim_source;
+										const auto& sched_ct = (MeCtScheduler2*)anim_source.get();
 
 										if( sched_ct==posture_sched_p ) {
 											//ostringstream oss;
@@ -1340,7 +1227,7 @@ void prune_schedule( SbmCharacter*   actor,
 										else if (nod_ct)
 										{
 											// only mark animation for pruning if another nod is using the same axis
-											MeCtSimpleNod* curNod = dynamic_cast<MeCtSimpleNod*>(anim_source);
+											const auto& curNod = dynamic_cast<MeCtSimpleNod*>(anim_source.get());
 											if (nod_ct->isNod() && curNod->isNod())
 												in_use = false;
 											else if (nod_ct->isShake() && curNod->isShake())
@@ -1348,17 +1235,17 @@ void prune_schedule( SbmCharacter*   actor,
 											else if (nod_ct->isTilt() && curNod->isTilt())
 												in_use = false;
 											else
-												nod_ct = (MeCtSimpleNod*)anim_source;
+												nod_ct = (MeCtSimpleNod*)anim_source.get();
 										}
 										else
 										{
-											nod_ct = (MeCtSimpleNod*)anim_source;
+											nod_ct = (MeCtSimpleNod*)anim_source.get();
 										}
 									} else if( anim_ct_type == MeCtGaze::CONTROLLER_TYPE ) {
 										if( motion_ct || pose_ct ) {
 											in_use = false;
 										} else {
-											MeCtGaze* gaze_ct = (MeCtGaze*)anim_source;
+											MeCtGaze* gaze_ct = (MeCtGaze*)anim_source.get();
 
 											bool is_occluded = true;
 											for( int key=0; key<MeCtGaze::NUM_GAZE_KEYS; ++key ) {
@@ -1412,7 +1299,7 @@ void prune_schedule( SbmCharacter*   actor,
 										}
 									} 
 #endif
-									else if (dynamic_cast<MeCtConstraint*>(anim_source)) {
+									else if (dynamic_cast<MeCtConstraint*>(anim_source.get())) {
 										//MeCtConstraint* ct_constraint = dynamic_cast<MeCtConstraint*>(anim_source);
 										if (hasConstraint)
 										{
@@ -1423,8 +1310,8 @@ void prune_schedule( SbmCharacter*   actor,
 											hasConstraint = true;
 										}
 									}
-									else if (dynamic_cast<MeCtHand*>(anim_source)) {
-										MeCtHand* ct_hand = dynamic_cast<MeCtHand*>(anim_source);
+									else if (dynamic_cast<MeCtHand*>(anim_source.get())) {
+										MeCtHand* ct_hand = dynamic_cast<MeCtHand*>(anim_source.get());
 
 										if (ct_hand->getGrabType() == MeCtReachEngine::RIGHT_ARM)
 										{
@@ -1460,7 +1347,7 @@ void prune_schedule( SbmCharacter*   actor,
 										}
 										*/
 									}
-									else if (dynamic_cast<MeCtExampleBodyReach*>(anim_source)) {
+									else if (dynamic_cast<MeCtExampleBodyReach*>(anim_source.get())) {
 										//MeCtExampleBodyReach* ct_bodyReach = dynamic_cast<MeCtExampleBodyReach*>(anim_source);
 										if (hasBodyReach)
 										{
@@ -1493,15 +1380,15 @@ void prune_schedule( SbmCharacter*   actor,
 												}
 												else
 												{
-													motion_ct = anim_source;
+													motion_ct = anim_source.get();
 												}
 											}
 											else
 											{
-												motion_ct = anim_source;
+												motion_ct = anim_source.get();
 											}
 										} else {
-											motion_ct = anim_source;
+											motion_ct = anim_source.get();
 										}
 									} 
 									else 
@@ -1509,7 +1396,7 @@ void prune_schedule( SbmCharacter*   actor,
 											if( pose_ct ) {
 												in_use = false;
 											} else {
-												pose_ct = (MeCtPose*)anim_source;
+												pose_ct = (MeCtPose*)anim_source.get();
 											}
 										} 
 										else 
@@ -1620,17 +1507,17 @@ int SbmCharacter::prune_controller_tree( )
 
 	// Traverse the controller tree from highest priority down, most recent to earliest
 	if (head_sched_p)
-		prune_schedule( this, head_sched_p, time, posture_sched_p, gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
+		prune_schedule( this, head_sched_p.get(), time, posture_sched_p.get(), gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
 	if (reach_sched_p)
-		prune_schedule( this, reach_sched_p, time, posture_sched_p, gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
+		prune_schedule( this, reach_sched_p.get(), time, posture_sched_p.get(), gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
 	if (grab_sched_p)
-		prune_schedule( this, grab_sched_p, time, posture_sched_p, gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
+		prune_schedule( this, grab_sched_p.get(), time, posture_sched_p.get(), gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
 	if (gaze_sched_p)
-		prune_schedule( this, gaze_sched_p, time, posture_sched_p, gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
+		prune_schedule( this, gaze_sched_p.get(), time, posture_sched_p.get(), gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
 	if (constraint_sched_p)
-		prune_schedule( this, constraint_sched_p, time, posture_sched_p, gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
+		prune_schedule( this, constraint_sched_p.get(), time, posture_sched_p.get(), gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
 	if (motion_sched_p)
-		prune_schedule( this, motion_sched_p, time, posture_sched_p, gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
+		prune_schedule( this, motion_sched_p.get(), time, posture_sched_p.get(), gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
 
 	// For the posture track, ignore prior controllers, as they should never be used to mark a posture as unused
 	for( int key=0; key<MeCtGaze::NUM_GAZE_KEYS; ++key )
@@ -1639,7 +1526,7 @@ int SbmCharacter::prune_controller_tree( )
 	motion_ct = nullptr;  // also covers quickdraw
 	pose_ct   = nullptr;
 	raw_channels = SkChannelArray::empty_channel_array();
-	prune_schedule( this, posture_sched_p, time, posture_sched_p, gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
+	prune_schedule( this, posture_sched_p.get(), time, posture_sched_p.get(), gaze_key_cts, nod_ct,  motion_ct, pose_ct, raw_channels );
 
 	delete[] gaze_key_cts;
 
@@ -1723,8 +1610,8 @@ void SbmCharacter::schedule_viseme_curve(
 		iter = viseme_name_patch.find(viseme);
 		if (iter != viseme_name_patch.end())
 		{
-			for (size_t nCount = 0; nCount < iter->second.size(); nCount++)
-				visemeNames.emplace_back(iter->second[nCount]);
+			for (auto & nCount : iter->second)
+				visemeNames.emplace_back(nCount);
 		}
 		else
 			visemeNames.emplace_back(viseme);
@@ -1756,7 +1643,7 @@ void SbmCharacter::schedule_viseme_curve(
 			}
 		}
 
-		for( size_t nCount = 0; nCount < visemeNames.size(); nCount++ )
+		for(auto & visemeName : visemeNames)
 		{
 			if( num_keys > 0 )
 			{
@@ -1764,21 +1651,21 @@ void SbmCharacter::schedule_viseme_curve(
 				float timeDelay = this->get_viseme_time_delay();
 
 				ostringstream ct_name;
-				ct_name << visemeNames[nCount];
+				ct_name << visemeName;
 				if (faceDefinition)
 				{
-					if (faceDefinition->hasViseme(visemeNames[nCount]))
+					if (faceDefinition->hasViseme(visemeName))
 					{
-						visemeWeight = faceDefinition->getVisemeWeight(visemeNames[nCount]);
+						visemeWeight = faceDefinition->getVisemeWeight(visemeName);
 					}
 				}
 
 
 				SkChannelArray channels;
-				channels.add( visemeNames[nCount], SkChannel::XPos );
+				channels.add( visemeName, SkChannel::XPos );
 
 				MeCtCurveWriter* ct_p = new MeCtCurveWriter();
-				ct_p->setName( ct_name.str().c_str() );
+				ct_p->setName( ct_name.str() );
 				ct_p->init(this, channels ); // CROP, CROP, true
 
 				if (num_keys <= 2)
@@ -1972,7 +1859,7 @@ void SbmCharacter::forward_visemes( double curTime )
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
 	
-	if( listeners.size() )
+	if( !listeners.empty() )
 	{
 		SkChannelArray& channels = _skeleton->channels();
 		MeFrameData& frameData = ct_tree_p->getLastFrame();
@@ -1986,12 +1873,12 @@ void SbmCharacter::forward_visemes( double curTime )
 			if( buffIndex > -1 )	
 			{
 				float value = frameData.buffer()[ buffIndex ];
-				if( viseme_history_arr && value != viseme_history_arr[ i ] )
+				if( !viseme_history_arr.empty() && value != viseme_history_arr[ i ] )
 				{
 
-					for (size_t l = 0; l < listeners.size();l++)
+					for (auto & listener : listeners)
 					{
-						listeners[l]->OnViseme( getName(), channels.name(c), value, 0  );
+						listener->OnViseme( getName(), channels.name(c), value, 0  );
 					}
 
 					viseme_history_arr[ i ] = value;
@@ -2222,7 +2109,7 @@ void SbmCharacter::writeSkeletonHierarchyRecurse(SkJoint* joint, std::ofstream& 
 
 SmartBody::SBFaceDefinition* SbmCharacter::getFaceDefinition()
 {
-	return _faceDefinition;
+	return _faceDefinition.get();
 }
 
 void SbmCharacter::setFaceDefinition(SmartBody::SBFaceDefinition* faceDefinition)
@@ -2232,10 +2119,9 @@ void SbmCharacter::setFaceDefinition(SmartBody::SBFaceDefinition* faceDefinition
 
 	if (_faceDefinition)
 	{
-		delete _faceDefinition;
 		this->removeAllFaceChannels();
 	}
-	_faceDefinition = new SmartBody::SBFaceDefinition(faceDefinition);
+	_faceDefinition = std::make_unique<SmartBody::SBFaceDefinition>(faceDefinition);
 //	_faceDefinition->setName(faceDefinition->getName() + "_copy");
 	
 	// why add _copy suffix? 
@@ -2308,10 +2194,9 @@ void SbmCharacter::updateFaceDefinition()
 	viseme_channel_count = viseme_channel_end_pos - viseme_channel_start_pos;
 //	viseme_channel_count = numAUChannels + numVisemeChannels;
 
-  if (viseme_history_arr) {
-    delete [] viseme_history_arr;
-  }
-	viseme_history_arr = new float[viseme_channel_count];
+
+	viseme_history_arr.clear();
+	viseme_history_arr.resize(viseme_channel_count);
 	for( int i=0; i<viseme_channel_count; i++ ) {
 		viseme_history_arr[ i ] = -1.0;
 	}
@@ -2365,7 +2250,7 @@ void SbmCharacter::removeAllBlendShapeChannels()
 	for (int i = 0; i < sbSkel->getNumJoints(); ++i)
 	{
 		SkJoint* joint = sbSkel->getJoint(i);
-		SmartBody::SBJoint* sbJoint = dynamic_cast<SmartBody::SBJoint*> (joint);
+		auto* sbJoint = dynamic_cast<SmartBody::SBJoint*> (joint);
 		if (!joint)	continue;
 
 		if (joint->getJointType() == SkJoint::TypeBlendShape)
@@ -2373,7 +2258,7 @@ void SbmCharacter::removeAllBlendShapeChannels()
 			SkJoint* jointParent = joint->parent();
 			if (jointParent)
 			{
-				SmartBody::SBJoint* sbJointParent = dynamic_cast<SmartBody::SBJoint*> (jointParent);
+				auto* sbJointParent = dynamic_cast<SmartBody::SBJoint*> (jointParent);
 				sbJointParent->removeChild(sbJoint);
 				i--;
 				//SmartBody::util::log("remove joint %s", joint->getName().c_str());
@@ -2584,14 +2469,14 @@ SmartBody::Nvbg* SbmCharacter::getNvbg()
 	return _nvbg;
 }
 
-void SbmCharacter::setMiniBrain(SmartBody::MiniBrain* mini)
+void SbmCharacter::setMiniBrain(std::unique_ptr<SmartBody::MiniBrain> mini)
 {
-	_miniBrain = mini;
+	_miniBrain = std::move(mini);
 }
 
 SmartBody::MiniBrain* SbmCharacter::getMiniBrain()
 {
-	return _miniBrain;
+	return _miniBrain.get();
 }
 
 void SbmCharacter::addFootStep( int iLeg, SrVec& footPos, bool Update /*= false*/ )

@@ -51,6 +51,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "controllers/me_ct_examples.h"
 #include "controllers/me_ct_gaze.h"
+#include "controllers/me_ct_scheduler2.h"
+#include "controllers/me_ct_param_animation.h"
 #include "sbm/BMLDefs.h"
 
 #include <boost/version.hpp>

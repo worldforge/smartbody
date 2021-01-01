@@ -147,7 +147,7 @@ void SbmPawn::setSkeleton(boost::intrusive_ptr<SkSkeleton> sk)
 	}
 }
 
-int SbmPawn::init( SkSkeleton* new_skeleton_p ) {
+int SbmPawn::init( boost::intrusive_ptr<SkSkeleton> new_skeleton_p ) {
 	if( _skeleton ) {
 		ct_tree_p->remove_skeleton( _skeleton->getName() );
 	}

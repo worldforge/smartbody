@@ -46,6 +46,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_prune_policy.hpp>
 
 #include "bml_sync_point.hpp"
+#include "sr/sr_shared_ptr.hpp"
 
 const bool LOG_BML_VISEMES	= false;
 const bool LOG_AUDIO		= false;
@@ -141,7 +142,7 @@ namespace BML {
 #if VRAGENTBML_USES_RECIPIENT
 		BmlRequest( SbmCharacter* agent, const std::string& actorId, const std::string& requestId, const std::string& recipientId, const std::string & msgId, const XERCES_CPP_NAMESPACE::DOMDocument* doc );
 #else
-	BmlRequest( SbmCharacter* agent, const std::string& actorId, const std::string& requestId, const std::string & msgId, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> doc );
+	BmlRequest( SbmCharacter* agent, std::string  actorId, std::string  requestId, std::string  msgId, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> doc );
 #endif
 		void init( BmlRequestPtr self );
 
@@ -232,11 +233,11 @@ namespace BML {
     ///////////////////////////////////////////////////////////////////
     //  Methods
 	public:
-		BehaviorRequest( const std::string& unique_id, const std::string& local_id, const BehaviorSyncPoints& behav_syncs );
+		BehaviorRequest( std::string  unique_id, std::string  local_id, const BehaviorSyncPoints& behav_syncs );
 		virtual ~BehaviorRequest();
 
 		void set_scheduler( BehaviorSchedulerPtr scheduler );
-		BehaviorSchedulerPtr get_scheduler();
+		BehaviorSchedulerPtr get_scheduler() const;
 
 		/**
 		 *  Schedules the behavior's SyncPoints, returning the earliest time (usually the start time).
@@ -309,25 +310,25 @@ namespace BML {
 
 	public: ///// Methods
 		/** Controller holding the source of the animation (not necessarily a motion or animation). */
-		MeController*            anim_ct;
+		boost::intrusive_ptr<MeController>            anim_ct;
 		/** The schedule controller the animation was added to. */
-		MeCtScheduler2*          schedule_ct;
+		boost::intrusive_ptr<MeCtScheduler2>          schedule_ct;
 
 		bool                     persistent;
 
 		MeControllerRequest( const std::string& unique_id,
 						     const std::string& local,
-		                     MeController *anim_ct,
-							 MeCtSchedulerClass* schedule_ct,
+							 const boost::intrusive_ptr<MeController>& anim_ct,
+							 boost::intrusive_ptr<MeCtSchedulerClass> schedule_ct,
 			                 const BehaviorSyncPoints& behav_syncs,
 							 MeControllerRequest::SchduleType sched_type = LINEAR );
-		virtual ~MeControllerRequest();
+		~MeControllerRequest() override;
 
 		/**
 		 *  returns true is behaviors involves controllers
 		 *  Temporary transition in pruning algorithm
 		 */
-		virtual bool has_cts()
+		bool has_cts() override
 		{	return true; }
 
 		/**
@@ -340,7 +341,7 @@ namespace BML {
 		 *  It's highly recommended to override with a simple boolean
 		 *  value if you know it ahead of time.
 		 */
-		bool is_persistent()
+		bool is_persistent() const
 		{	return persistent; }
 
 		void set_persistent( bool new_value )
@@ -351,33 +352,33 @@ namespace BML {
 		 **/
 		virtual void register_controller_prune_policy( MePrunePolicy* prune_policy );
 
-		virtual void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene );
+		void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene ) override;
 
 		/**
 		 *  Implemtents BehaviorRequest::unschedule(..),
 		 *  ramping down the blend curve of the MeController.
 		 */
-		virtual void unschedule( SmartBody::SBScene* scene, BmlRequestPtr request, time_sec duration );
+		void unschedule( SmartBody::SBScene* scene, BmlRequestPtr request, time_sec duration ) override;
 
 		/**
 		 *  Implemtents BehaviorRequest::cleanup(..),
 		 *  removing the MeController from its parent.
 		 */
-		virtual void cleanup( SmartBody::SBScene* scene, BmlRequestPtr request );
+		void cleanup( SmartBody::SBScene* scene, BmlRequestPtr request ) override;
 	};
 
 	class MotionRequest : public MeControllerRequest {
 	public:
-		MotionRequest( const std::string& unique_id, const std::string& localId, MeCtMotion* motion_ct, MeCtSchedulerClass* schedule_ct,
+		MotionRequest( const std::string& unique_id, const std::string& localId, boost::intrusive_ptr<MeCtMotion> motion_ct, boost::intrusive_ptr<MeCtSchedulerClass> schedule_ct,
 			           const BehaviorSyncPoints& behav_syncs );
 	};
 
 	class GestureRequest : public MeControllerRequest {
 	public:
-		GestureRequest( const std::string& unique_id, const std::string& localId, MeCtMotion* motion_ct, MeCtSchedulerClass* schedule_ct,
+		GestureRequest( const std::string& unique_id, const std::string& localId, boost::intrusive_ptr<MeCtMotion> motion_ct, boost::intrusive_ptr<MeCtSchedulerClass> schedule_ct,
 			const BehaviorSyncPoints& behav_syncs, std::vector<std::string>& gl, const std::string& js = "", float s = 0.03f, float freq = 0.02f, int priority = 0);
 
-		virtual void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene );
+		void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene ) override;
 
 	public:
 		bool filtered;
@@ -400,11 +401,11 @@ namespace BML {
 	class ParameterizedAnimationRequest : public BehaviorRequest 
 	{
 	public:
-		ParameterizedAnimationRequest( MeCtParamAnimation* param_anim_ct, const std::string& sName, double x, double y, double z, BML::ParamAnimBehaviorType type, const std::string& unique_id, const std::string& localId, const BehaviorSyncPoints& behav_syncs);
+		ParameterizedAnimationRequest( boost::intrusive_ptr<MeCtParamAnimation> param_anim_ct, const std::string& sName, double x, double y, double z, BML::ParamAnimBehaviorType type, const std::string& unique_id, const std::string& localId, const BehaviorSyncPoints& behav_syncs);
 
-		virtual void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene );
+		void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene ) override;
 		
-		virtual void unschedule( SmartBody::SBScene* scene, BmlRequestPtr request, time_sec duration );
+		void unschedule( SmartBody::SBScene* scene, BmlRequestPtr request, time_sec duration ) override;
 
 	private:
 		std::string stateName;
@@ -412,7 +413,7 @@ namespace BML {
 		double y;
 		double z;
 		BML::ParamAnimBehaviorType behaviorType;
-		MeCtParamAnimation* paramAnimCt;
+		boost::intrusive_ptr<MeCtParamAnimation> paramAnimCt;
 	};
 
 	class NodRequest : public MeControllerRequest {
@@ -474,9 +475,9 @@ namespace BML {
 		bool hasGazeSchedule;
 
 	public:
-		GazeRequest(   float interval, int mode, const std::string& unique_id, const std::string& localId, MeController* gaze, MeCtSchedulerClass* schedule_ct,
+		GazeRequest(   float interval, int mode, const std::string& unique_id, const std::string& localId, const boost::intrusive_ptr<MeController>& gaze, boost::intrusive_ptr<MeCtSchedulerClass> schedule_ct,
 			           const BehaviorSyncPoints& behav_syncs, MeCtGaze::GazeScheduleInfo g, bool hasSchedule );
-		virtual void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene );
+		void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene ) override;
 	};
 
 	class SequenceRequest : public BehaviorRequest {

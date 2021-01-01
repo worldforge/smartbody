@@ -24,7 +24,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "GL/glew.h"
 
 
-//#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
 #include "sbm/GPU/SbmShader.h"
@@ -34,13 +33,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <FL/Fl.H>
 # include <sr/sr_gl.h>
 # include <FL/glut.H>
-//# include <fltk/visual.h>
-//# include <fltk/compat/FL/Fl_Menu_Item.H>
+
 # include <FL/fl_draw.H>
 # include <FL/Fl_Color_Chooser.H>
 # include <FL/Fl_File_Chooser.H>
-# include <FL/Fl_Browser.H>
-//# include <fltk/ToggleItem.h>
+
 # include <sr/sr_box.h>
 # include <sr/sr_sphere.h>
 # include <sr/sr_cylinder.h>
@@ -51,15 +48,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sr/sr_string.h>
 
 # include <sr/sr_camera.h>
-# include <sr/sr_trackball.h>
 # include <sr/sr_lines.h>
 # include <sr/sr_color.h>
-# include <sr/sr_points.h>
 # include <sr/sr_euler.h>
 
 # include <sr/sr_sn_matrix.h>
-# include <sr/sr_sn.h>
-# include <sr/sr_sn_group.h>
 
 # include <sr/sr_sa.h>
 # include <sr/sr_sa_event.h>
@@ -77,9 +70,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sb/SBColObject.h>
 # include <sb/PABlend.h>
 # include <sb/SBScene.h>
-# include <sb/SBSkeleton.h>
 # include <sb/SBCharacter.h>
-# include <sb/SBSteerManager.h>
 # include <sb/SBSteerAgent.h>
 # include <sb/SBAnimationStateManager.h>
 # include <sb/SBCollisionManager.h>
@@ -91,7 +82,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sb/SBNavigationMesh.h>
 #include "SBUtilities.h"
 
-#include <boost/version.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/algorithm/string.hpp>
@@ -105,28 +95,16 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sbm/PPRAISteeringAgent.h>
 #include "SBGUIManager.h"
-#include <autorig/SBAutoRigManager.h>
 #include <sbm/sbm_deformable_mesh.h>
 #include "FLTKListener.h"
 #include "RootWindow.h"
 #include "SBInterfaceListener.h"
 #include "SBRenderer.h"
 
-#include <sbm/GPU/SbmBlendFace.h>
-#include <sbm/GPU/SbmTexture.h>
 
 #include "jpge/jpge.h"
 
-/*
-#define USE_CEGUI 1
-#if USE_CEGUI
-#include <CEGUI.h>
-#include "RendererModules/OpenGL/CEGUIOpenGLRenderer.h"
-#endif
-*/
-//#include <sbm/SbmShader.h>
 
-//#include "Heightfield.h"
 
 ////# define SR_USE_TRACE1  // basic fltk events
 ////# define SR_USE_TRACE2  // more fltk events
@@ -5124,7 +5102,7 @@ SmartBody::SBAnimationBlend* FltkViewer::getCurrentCharacterAnimationBlend()
 
 	SmartBody::SBAnimationBlend* animBlend = nullptr;
 
-	MeCtParamAnimation* panimCt = character->param_animation_ct;
+	auto& panimCt = character->param_animation_ct;
 	if (panimCt)
 	{
 		PABlendData* pblendData = panimCt->getCurrentPABlendData();
@@ -5141,16 +5119,16 @@ MeCtExampleBodyReach* FltkViewer::getCurrentCharacterBodyReachController()
 	MeCtExampleBodyReach* reachCt = nullptr;
 	if ( character )
 	{
-		MeCtSchedulerClass* reachSched = character->reach_sched_p;
+		auto& reachSched = character->reach_sched_p;
 		if (!reachSched)
 			return nullptr;
 		MeCtSchedulerClass::VecOfTrack reach_tracks = reachSched->tracks();		
 		MeCtReach* tempCt = nullptr;
 		for (auto & reach_track : reach_tracks)
 		{
-			MeController* controller = reach_track->animation_ct();
+			const auto& controller = reach_track->animation_ct();
 			//reachCt = dynamic_cast<MeCtConstraint*>(controller);
-			reachCt = dynamic_cast<MeCtExampleBodyReach*>(controller);
+			reachCt = dynamic_cast<MeCtExampleBodyReach*>(controller.get());
 			//tempCt  = dynamic_cast<MeCtReach*>(controller);
 			if (reachCt)
 				break;
@@ -5166,15 +5144,15 @@ MeCtConstraint* FltkViewer::getCurrentCharacterConstraintController()
 	MeCtConstraint* reachCt = nullptr;
 	if ( character )
 	{
-		MeCtSchedulerClass* reachSched = character->constraint_sched_p;
+		auto& reachSched = character->constraint_sched_p;
 		if (!reachSched)
 			return nullptr;
 		MeCtSchedulerClass::VecOfTrack reach_tracks = reachSched->tracks();		
 		MeCtReach* tempCt = nullptr;
 		for (auto & reach_track : reach_tracks)
 		{
-			MeController* controller = reach_track->animation_ct();
-			reachCt = dynamic_cast<MeCtConstraint*>(controller);
+			const auto& controller = reach_track->animation_ct();
+			reachCt = dynamic_cast<MeCtConstraint*>(controller.get());
 			//tempCt  = dynamic_cast<MeCtReach*>(controller);
 			if (reachCt)
 				break;
@@ -5196,7 +5174,7 @@ void FltkViewer::drawReach()
 
 	MeCtExampleBodyReach* reachCt = getCurrentCharacterBodyReachController();
 	
-	SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(getCurrentCharacter());
+	auto* character = dynamic_cast<SmartBody::SBCharacter*>(getCurrentCharacter());
 	if (!character)
 		return;
 	float sphereSize = character->getHeight() / 80.0f;	

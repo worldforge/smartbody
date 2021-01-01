@@ -27,6 +27,7 @@
 #include <string>
 
 #include "bml_animation.hpp"
+#include "controllers/me_ct_scheduler2.h"
 
 #include "bml_xml_consts.hpp"
 #include <sb/SBSkeleton.h>
@@ -85,7 +86,7 @@ BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::s
 */
 			double twarp = xml_utils::xml_parse_double( BMLDefs::ATTR_SPEED, elem, 1.0 );
 			
-			MeCtMotion* motionCt = new MeCtMotion();
+			boost::intrusive_ptr<MeCtMotion> motionCt(new MeCtMotion());
 
 			if (additive == "true")
 			{
@@ -102,7 +103,7 @@ BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::s
 			// Name controller with behavior unique_id
 			ostringstream name;
 			name << unique_id << ' ' << motion->getName();
-			motionCt->setName( name.str().c_str() );  // TODO: include BML act and behavior ids
+			motionCt->setName( name.str() );  // TODO: include BML act and behavior ids
 			motionCt->init( const_cast<SbmCharacter*>(request->actor), motion, 0.0, 1.0 / twarp );
 			if (overlayType == "true")
 			{

@@ -22,6 +22,8 @@
 
 #include "controllers/me_controller_context_proxy.hpp"
 
+#include <utility>
+
 
 
 // Silly constant used when there isn't a parent context.
@@ -34,32 +36,21 @@ std::set<int> NO_CHANNEL_INDICES_FOR_PROXY;
 
 std::string MeControllerContextProxy::CONTEXT_TYPE = "MeControllerContextProxy";
 
-MeControllerContextProxy::MeControllerContextProxy( MeControllerContext* context )
-:	_context( context )
+MeControllerContextProxy::MeControllerContextProxy( boost::intrusive_ptr<MeControllerContext> context )
+:	_context( std::move(context) )
 {
-	if( _context )
-		_context->ref();
 }
 
-MeControllerContextProxy::~MeControllerContextProxy() {
-	if( _context ) {
-		_context->unref();
-		_context = nullptr;
-	}
-}
+MeControllerContextProxy::~MeControllerContextProxy() = default;
 
 SkChannelArray& MeControllerContextProxy::channels() {
 	return _context? _context->channels() : SkChannelArray::empty_channel_array();
 }
 
-void MeControllerContextProxy::context( MeControllerContext* context ) {
+void MeControllerContextProxy::context( boost::intrusive_ptr<MeControllerContext> context ) {
 	if( _context == context )
 		return;
-	if( _context )
-		_context->unref();
-	_context = context;
-	if( _context )
-		_context->ref();
+	_context = std::move(context);
 }
 
 int MeControllerContextProxy::toBufferIndex( int chanIndex ) {

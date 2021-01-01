@@ -913,10 +913,9 @@ bool SBRenderAssetManager::addModelToMesh(std::string templateMeshName, std::str
 		return false;
 	}
 
-	auto* modelSrSn = new SrSnModel();
+	boost::intrusive_ptr<SrSnModel> modelSrSn(new SrSnModel());
 	modelSrSn->shape(model);
 	modelSrSn->shape().name = newModelName.c_str();
-	modelSrSn->ref();
 
 	// does a mesh with this name already exist? If so, replace it
 	bool found = false;
@@ -931,11 +930,9 @@ bool SBRenderAssetManager::addModelToMesh(std::string templateMeshName, std::str
 		{
 			// model already exists, replace it
 			auto& curModel = mesh->dMeshStatic_p[m];
-			curModel->unref();
 			mesh->dMeshStatic_p[m] = modelSrSn;
 			mesh->dMeshStatic_p[m]->changed(true);
 			auto& curDynamicModel = mesh->dMeshDynamic_p[m];
-			curDynamicModel->unref();
 			mesh->dMeshDynamic_p[m] = modelSrSn;
 			mesh->dMeshDynamic_p[m]->changed(true);
 			found = true;
@@ -1027,12 +1024,11 @@ bool SBRenderAssetManager::addBlendshapeToModel(std::string templateMeshName, st
 			if (mapIter == mesh->blendShapeMap.end())
 			{
 				// no controller for this exists yet, set one up
-				auto* baseModel = new SrSnModel();
+				boost::intrusive_ptr<SrSnModel> baseModel(new SrSnModel());
 				baseModel->shape(blendshapeModel);
 				baseModel->shape().name = shapeName.c_str();
 				baseModel->changed(true);
 				baseModel->visible(false);
-				baseModel->ref();
 
 				// since this is the base model, overwrite the submesh's V and N
 				mesh->dMeshStatic_p[m]->shape().V = baseModel->shape().V;
@@ -1066,12 +1062,11 @@ bool SBRenderAssetManager::addBlendshapeToModel(std::string templateMeshName, st
 				}
 				if (!found)
 				{
-					auto* baseModel = new SrSnModel();
+					boost::intrusive_ptr<SrSnModel> baseModel(new SrSnModel());
 					baseModel->shape(blendshapeModel);
 					baseModel->shape().name = shapeName.c_str();
 					baseModel->changed(true);
 					baseModel->visible(false);
-					baseModel->ref();
 
 					existingShapeModels.emplace_back(baseModel);
 					auto morphNameIter = mesh->morphTargets.find(submeshName);

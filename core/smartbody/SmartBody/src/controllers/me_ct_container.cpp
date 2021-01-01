@@ -23,6 +23,7 @@
 
 
 #include <controllers/me_ct_container.hpp>
+#include <utility>
 
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
@@ -31,8 +32,8 @@
 //////////////////////////////////////////////////////////////
 // MeCtContainer::Context
 // Constructor
-MeCtContainer::Context::Context( MeCtContainer* container, MeControllerContext* context )
-:	MeControllerContextProxy( context ),
+MeCtContainer::Context::Context( MeCtContainer* container, boost::intrusive_ptr<MeControllerContext> context )
+:	MeControllerContextProxy( std::move(context) ),
 	_container( container )
 {
 	// Don't ref _container parent:
@@ -51,21 +52,18 @@ void MeCtContainer::Context::add_controller( MeController* child ) {
 }
 
 void MeCtContainer::Context::remove_controller( MeController* child ) {
-	child->ref();
 	child->stop(SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
 	if( _container && _container->remove_child( child ) )
 		MeControllerContext::remove_controller( child );
-	child->unref();
 }
 
 //////////////////////////////////////////////////////////////
 // MeCtContainer
 
 // Public Methods
-MeCtContainer::MeCtContainer( MeCtContainer::Context* sub_context )
-:	_sub_context( sub_context )
+MeCtContainer::MeCtContainer( boost::intrusive_ptr<MeCtContainer::Context> sub_context )
+:	_sub_context( std::move(sub_context) )
 {
-	_sub_context->ref();
 }
 
 
@@ -73,7 +71,6 @@ MeCtContainer::~MeCtContainer() {
 	remove_all_children();
 
 	_sub_context->_container = nullptr;  // erase reverse reference
-	_sub_context->unref();
 }
 
 void MeCtContainer::controller_map_updated() {

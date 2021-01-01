@@ -167,7 +167,6 @@ void SBAssetManager::processAssets(std::vector<std::unique_ptr<SBAsset>>& assets
 				}
 				asset.release();
 				this->addSkeleton({skeleton});
-				skeleton->ref();
 				addAssetHistory("SKELETON " + skeleton->getName());
 				continue;
 			}

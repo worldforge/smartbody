@@ -24,6 +24,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationState.h>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
+
+#include <utility>
 #include "SBUtilities.h"
 
 std::string MeCtInterpolator::Context::CONTEXT_TYPE = "MeCtInterpolator::Context";
@@ -33,18 +35,17 @@ void MeCtInterpolator::Context::child_channels_updated( MeController* child )
 {
 }
 
-MeCtInterpolator::MeCtInterpolator(MeController* c1, MeController* c2, double time, double w, bool l, std::string controllerName) : MeCtContainer(new MeCtInterpolator::Context(this)), child1(c1), child2(c2)
+MeCtInterpolator::MeCtInterpolator(boost::intrusive_ptr<MeController> c1, boost::intrusive_ptr<MeController> c2, double time, double w, bool l, std::string controllerName)
+: MeCtContainer(new MeCtInterpolator::Context(this)), child1(std::move(c1)), child2(std::move(c2))
 {
 	// controller initialization
 	if (child1)
 	{
-		_sub_context->add_controller(child1);
-		child1->ref();
+		_sub_context->add_controller(child1.get());
 	}
 	if (child2)
 	{
-		_sub_context->add_controller(child2);
-		child2->ref();
+		_sub_context->add_controller(child2.get());
 	}
 	channels.init();
 	channels.merge(child1->controller_channels());
@@ -62,7 +63,7 @@ MeCtInterpolator::MeCtInterpolator(MeController* c1, MeController* c2, double ti
 	startTime = time;
 	weight = w;
 
-	this->setName(controllerName.c_str());
+	this->setName(controllerName);
 
 	initKeys();
 	initDuration();
@@ -72,22 +73,18 @@ MeCtInterpolator::~MeCtInterpolator()
 {
 	if (child1)
 	{
-		_sub_context->remove_controller(child1);
-		child1->unref();
-		child1 = nullptr;
+		_sub_context->remove_controller(child1.get());
 	}
 	if (child2)
 	{
-		_sub_context->remove_controller(child2);
-		child2->unref();
-		child2 = nullptr;
+		_sub_context->remove_controller(child2.get());
 	}
 }
 
 MeController* MeCtInterpolator::child(size_t n)
 {
-	if (n == 0) return child1;
-	else if (n == 1) return child2;
+	if (n == 0) return child1.get();
+	else if (n == 1) return child2.get();
 	else
 	{
 		SmartBody::util::log("MeCtInterpolator Error: No accessable Controller!");
@@ -95,10 +92,10 @@ MeController* MeCtInterpolator::child(size_t n)
 	}
 }
 
-int MeCtInterpolator::child(std::string name)
+int MeCtInterpolator::child(const std::string& name)
 {
-	MeCtMotion* motionCt1 = dynamic_cast<MeCtMotion*> (child1);
-	MeCtMotion* motionCt2 = dynamic_cast<MeCtMotion*> (child2);
+	auto* motionCt1 = dynamic_cast<MeCtMotion*> (child1.get());
+	auto* motionCt2 = dynamic_cast<MeCtMotion*> (child2.get());
 	if (motionCt1->motion()->getName() == name)
 		return 0;
 	if (motionCt2->motion()->getName() == name)
@@ -107,7 +104,7 @@ int MeCtInterpolator::child(std::string name)
 
 }
 
-double MeCtInterpolator::getWeight()
+double MeCtInterpolator::getWeight() const
 {
 	return weight;
 }
@@ -119,7 +116,7 @@ void MeCtInterpolator::setWeight(float w)
 	initDuration();
 }
 
-bool MeCtInterpolator::getLoop()
+bool MeCtInterpolator::getLoop() const
 {
 	return loop;
 }
@@ -129,7 +126,7 @@ void MeCtInterpolator::setLoop(bool l)
 	loop = l;
 }
 
-bool MeCtInterpolator::getNewLoop()
+bool MeCtInterpolator::getNewLoop() const
 {
 	return newLoop;
 }
@@ -139,7 +136,7 @@ void MeCtInterpolator::setNewLoop(bool l)
 	newLoop = l;
 }
 
-bool MeCtInterpolator::getNewCycle(int index)
+bool MeCtInterpolator::getNewCycle(int index) const
 {
 	if (index == 1)	return newCycle1;
 	if (index == 2) return newCycle2;
@@ -153,7 +150,7 @@ std::vector<double>& MeCtInterpolator::getKey(int index)
 	return key1;
 }
 
-double MeCtInterpolator::phaseDuration()
+double MeCtInterpolator::phaseDuration() const
 {
 	return duration;
 }
@@ -161,8 +158,8 @@ double MeCtInterpolator::phaseDuration()
 void MeCtInterpolator::initKeys()
 {
 	
-	MeCtMotion* motionCt1 = dynamic_cast<MeCtMotion*> (child1);
-	MeCtMotion* motionCt2 = dynamic_cast<MeCtMotion*> (child2);
+	MeCtMotion* motionCt1 = dynamic_cast<MeCtMotion*> (child1.get());
+	MeCtMotion* motionCt2 = dynamic_cast<MeCtMotion*> (child2.get());
 	SkMotion* motion1 = motionCt1->motion();
 	SkMotion* motion2 = motionCt2->motion();
 	
@@ -236,15 +233,13 @@ void MeCtInterpolator::initDuration()
 	duration = dur1 * weight + dur2 * (1 - weight);
 }
 
-void MeCtInterpolator::updateChildren(int index, MeController* newController)
+void MeCtInterpolator::updateChildren(int index, boost::intrusive_ptr<MeController> newController)
 {
 	MeController* anotherChild = this->child(1 - index);
 	MeController* replacedChild = this->child(index);
 
 	_sub_context->remove_controller(replacedChild);
-	replacedChild->unref();
-	_sub_context->add_controller(newController);
-	newController->ref();
+	_sub_context->add_controller(newController.get());
 
 	channels.init();
 	channels.merge(newController->controller_channels());
@@ -294,8 +289,8 @@ void MeCtInterpolator::getTiming(double t, double& t1, double& t2)
 	t1 =  key1[section - 1] + (key1[section] - key1[section - 1]) * (t - key[section - 1]) / (key[section] - key[section - 1]);
 	t2 =  key2[section - 1] + (key2[section] - key2[section - 1]) * (t - key[section - 1]) / (key[section] - key[section - 1]);
 
-	MeCtMotion* motionCt1 = dynamic_cast<MeCtMotion*> (child1);
-	MeCtMotion* motionCt2 = dynamic_cast<MeCtMotion*> (child2);
+	MeCtMotion* motionCt1 = dynamic_cast<MeCtMotion*> (child1.get());
+	MeCtMotion* motionCt2 = dynamic_cast<MeCtMotion*> (child2.get());
 	double dur1 = key1[key1.size() - 1] - key1[0];
 	if (t1 > motionCt1->motion()->duration())
 	{
@@ -360,9 +355,9 @@ void MeCtInterpolator::getFrame(int index, double t, SrBuffer<float>& buffer)
 {
 	MeCtMotion* motionCt = nullptr;
 	if (index == 1)
-		motionCt = dynamic_cast<MeCtMotion*> (child1);
+		motionCt = dynamic_cast<MeCtMotion*> (child1.get());
 	else if (index == 2)
-		motionCt = dynamic_cast<MeCtMotion*> (child2);
+		motionCt = dynamic_cast<MeCtMotion*> (child2.get());
 	else 
 		return;
 	SkMotion* motion = motionCt->motion();
@@ -401,8 +396,8 @@ bool MeCtInterpolator::controller_evaluate(double t, MeFrameData& frame)
 	
 	if (continuing)
 	{
-		MeCtMotion* motionCt1 = dynamic_cast<MeCtMotion*> (child1);
-		MeCtMotion* motionCt2 = dynamic_cast<MeCtMotion*> (child2);
+		MeCtMotion* motionCt1 = dynamic_cast<MeCtMotion*> (child1.get());
+		MeCtMotion* motionCt2 = dynamic_cast<MeCtMotion*> (child2.get());
 		SkMotion* motion1 = motionCt1->motion();
 		SkMotion* motion2 = motionCt2->motion();
 

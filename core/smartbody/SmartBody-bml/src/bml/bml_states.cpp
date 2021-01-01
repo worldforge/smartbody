@@ -35,7 +35,7 @@ BML::BehaviorRequestPtr BML::parse_bml_states( DOMElement* elem, const std::stri
 	}
 
 
-	MeCtParamAnimation* paramCt = character->param_animation_ct;
+	auto& paramCt = character->param_animation_ct;
 	std::string layer = xml_parse_string(BMLDefs::ATTR_LAYER, elem);
 	if (layer == "1")
 		paramCt = character->param_animation_ct;

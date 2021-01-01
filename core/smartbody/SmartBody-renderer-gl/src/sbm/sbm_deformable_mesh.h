@@ -95,11 +95,11 @@ public:
 	SBAPI void mergeRedundantWeight(std::vector<int>& vtxIdxMap);
 	SBAPI void buildSkinWeightBuf();
 
-	SBAPI std::vector<std::string> getInfluenceJointNames();
-	SBAPI int getNumVertices();
+	SBAPI std::vector<std::string> getInfluenceJointNames() const;
+	SBAPI int getNumVertices() const;
 	SBAPI std::vector<int> getInfluenceJoints(int index);
 	SBAPI std::vector<float> getInfluenceWeights(int index);
-	SBAPI SrMat getBindShape();
+	SBAPI SrMat getBindShape() const;
 	SBAPI SrMat getBindJoint(int jointIndex);
 	SBAPI void createCache();
 	SBAPI std::vector<int> getInfluencesByJointIndex(int index);
@@ -240,7 +240,7 @@ public:
 	SBAPI bool readFromDmb(std::string inputFileName);
 	// helper function
 	void saveToStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh, const std::string& objectName);
-	void readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh, std::vector<SrModel*>& models, std::string file);
+	void readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh, std::vector<boost::intrusive_ptr<SrModel>>& models, std::string file);
 	void loadAllFoundTextures(std::string textureDirectory);
 	SBAPI SrVec computeCenterOfMass();
 	SBAPI SrBox computeBoundingBox();

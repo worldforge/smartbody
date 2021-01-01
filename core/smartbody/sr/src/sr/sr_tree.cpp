@@ -240,7 +240,6 @@ SrTreeBase::SrTreeBase ( SrClassManagerBase* m )
    _root = _cur = NIL;
    _elements = 0;
    _man = m;
-   _man->ref();
  }
 
 SrTreeBase::SrTreeBase ( const SrTreeBase& t )
@@ -248,14 +247,12 @@ SrTreeBase::SrTreeBase ( const SrTreeBase& t )
    _root = _cur = NIL;
    _elements = 0;
    _man = t._man;
-   _man->ref();
    insert_tree ( t );
  }
 
 SrTreeBase::~SrTreeBase ()
  {
    init ();
-   _man->unref();
  }
 
 void SrTreeBase::init ()

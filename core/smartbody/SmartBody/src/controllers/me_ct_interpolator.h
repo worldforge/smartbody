@@ -45,56 +45,56 @@ public:
 	protected:
 		static std::string CONTEXT_TYPE;
 	public:
-		Context( MeCtInterpolator* container, MeControllerContext* context = nullptr )
+		explicit Context( MeCtInterpolator* container, MeControllerContext* context = nullptr )
 			:	MeCtContainer::Context( container, context )
 		{}
 
-		const std::string& context_type() const {	return CONTEXT_TYPE; }
-		void child_channels_updated( MeController* child );
+		const std::string& context_type() const override {	return CONTEXT_TYPE; }
+		void child_channels_updated( MeController* child ) override;
 	};
 
 public:
 	// constructor
-	MeCtInterpolator(MeController* child1 = nullptr, MeController* child2 = nullptr, double time = 0.0, double w = 0.0, bool loop = false, std::string controllerName = "");
-	~MeCtInterpolator();
+	explicit MeCtInterpolator(boost::intrusive_ptr<MeController> child1 = nullptr, boost::intrusive_ptr<MeController> child2 = nullptr, double time = 0.0, double w = 0.0, bool loop = false, std::string controllerName = "");
+	~MeCtInterpolator() override;
 
 	// child accessor
-	MeController* child(size_t n);
-	int child(std::string name);
+	MeController* child(size_t n) override;
+	int child(const std::string& name);
 
-	double getWeight();
+	double getWeight() const;
 	void setWeight(float w);
 
-	bool getLoop();
+	bool getLoop() const;
 	void setLoop(bool l);
 
-	bool getNewLoop();
+	bool getNewLoop() const;
 	void setNewLoop(bool l);
 
-	bool getNewCycle(int index);
+	bool getNewCycle(int index) const;
 
 	void setReverseWeight(bool rW)	{reverseWeight = rW;}
-	bool getReverseWeight()			{return reverseWeight;}
+	bool getReverseWeight() const			{return reverseWeight;}
 
-	double getStartTime() {return startTime;}
+	double getStartTime() const {return startTime;}
 	void setStartTime(double time) {startTime = time;}
 
 	std::vector<double>& getKey(int index);
 
-	double phaseDuration();
-	int getNumLoops()	{return numLoops;}
+	double phaseDuration() const;
+	int getNumLoops() const	{return numLoops;}
 
 	void initKeys();
 	double getDuration(int index);
 	void initDuration();
-	void updateChildren(int index, MeController* newController);	// replace child[index] with new controller
+	void updateChildren(int index, boost::intrusive_ptr<MeController> newController);	// replace child[index] with new controller
 
 	// callbacks for the base class
-	virtual void controller_map_updated();
-    virtual bool controller_evaluate( double t, MeFrameData& frame );
-    virtual SkChannelArray& controller_channels();
-    virtual double controller_duration();
-	virtual const std::string& controller_type() const {return CONTROLLER_TYPE;}
+	void controller_map_updated() override;
+    bool controller_evaluate( double t, MeFrameData& frame ) override;
+    SkChannelArray& controller_channels() override;
+    double controller_duration() override;
+	const std::string& controller_type() const override {return CONTROLLER_TYPE;}
 
 private:
 	void getTiming(double t, double& t1, double& t2);
@@ -118,8 +118,8 @@ private:
 	std::vector<double> key2;	// key times for child2
 
 	SkChannelArray channels;	// channels for this controller
-	MeController* child1;		// child1 controller
-	MeController* child2;		// child2 controller
+	boost::intrusive_ptr<MeController> child1;		// child1 controller
+	boost::intrusive_ptr<MeController> child2;		// child2 controller
 };
 
 #endif

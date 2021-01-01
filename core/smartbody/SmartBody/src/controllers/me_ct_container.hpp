@@ -46,7 +46,7 @@ public:
 	public:
 		///////////////////////////////////////////////////////////////
 		//  Constructors
-		Context( MeCtContainer* container, MeControllerContext* context = nullptr );
+		explicit Context( MeCtContainer* container, boost::intrusive_ptr<MeControllerContext> context = nullptr );
 
 		/**
 		 *  Adds/Registers a child with the container context.
@@ -54,14 +54,14 @@ public:
 		 *
 		 *  Public (unlike overridden method) to provide container controller access.
 		 */
-		void add_controller( MeController* child );
+		void add_controller( MeController* child ) override;
 
 		/**
 		 *  Removes/Unregisters from the child with the container context.
 		 *
 		 *  Public (unlike overridden method) to provide container controller access.
 		 */
-		void remove_controller( MeController* child );
+		void remove_controller( MeController* child ) override;
 
 	};
 
@@ -71,15 +71,15 @@ public:
 protected:
 	//////////////////////////////////////////////////////////
 	//  Private Data
-	MeCtContainer::Context* const _sub_context;
+	boost::intrusive_ptr<MeCtContainer::Context> const _sub_context;
 
 	//////////////////////////////////////////////////////////
 	//  Private Methods
-	MeCtContainer( MeCtContainer::Context* sub_context );
+	explicit MeCtContainer( boost::intrusive_ptr<MeCtContainer::Context> sub_context );
 
 
 	/** Destructor removes all children before deletion */
-	virtual ~MeCtContainer();
+	~MeCtContainer() override;
 
 
 	//////// Removed to use pointer
@@ -93,18 +93,18 @@ protected:
 	 *
 	 *  Call remap on all children.
 	 */
-	virtual void controller_map_updated();
+	void controller_map_updated() override;
 
 	// Called immeidately after a context has been set.
-	virtual void context_updated();
+	void context_updated() override;
 
 
 protected:
 	// Overrides MeController::controller_start() to call start() on each child.
-	virtual void controller_start();
+	void controller_start() override;
 
 	// Overrides MeController::controller_stop() to call stop() on each child.
-	virtual void controller_stop();
+	void controller_stop() override;
 };
 
 

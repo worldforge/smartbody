@@ -21,12 +21,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sbm_deformable_mesh.h"
 #include <google/protobuf/io/coded_stream.h>
-#include <sb/SBTypes.h>
 
-#if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#endif
-
 #include "sbm/GPU/SbmBlendFace.h"
 
 #include <sb/SBSkeleton.h>
@@ -96,48 +92,48 @@ void SkinWeight::normalizeWeights()
 void SkinWeight::copyWeights(SkinWeight* copy, const std::string& morphName)
 {
 	infJointName.clear();
-	for (size_t jn = 0; jn < copy->infJointName.size(); jn++)
+	for (auto & jn : copy->infJointName)
 	{
-		infJointName.emplace_back(copy->infJointName[jn]);
+		infJointName.emplace_back(jn);
 	}
 
 	infJoint.clear();
-	for (size_t j = 0; j < copy->infJoint.size(); j++)
+	for (auto & j : copy->infJoint)
 	{
-		infJoint.emplace_back(copy->infJoint[j]);
+		infJoint.emplace_back(j);
 	}
 
 	bindWeight.clear();
-	for (size_t bw = 0; bw < copy->bindWeight.size(); bw++)
+	for (float & bw : copy->bindWeight)
 	{
-		bindWeight.emplace_back(copy->bindWeight[bw]);
+		bindWeight.emplace_back(bw);
 	}
 
 	bindPoseMat.clear();
-	for (size_t bp = 0; bp < copy->bindPoseMat.size(); bp++)
+	for (auto & bp : copy->bindPoseMat)
 	{
-		bindPoseMat.emplace_back(copy->bindPoseMat[bp]);
+		bindPoseMat.emplace_back(bp);
 	}
 
 	bindShapeMat = copy->bindShapeMat;
 	sourceMesh = morphName; // set the name to the input parameter, instead of the source name (i.e. copy->sourceMesh)
 
 	numInfJoints.clear();
-	for (size_t n = 0; n < copy->numInfJoints.size(); n++)
+	for (unsigned int & numInfJoint : copy->numInfJoints)
 	{
-		numInfJoints.emplace_back(copy->numInfJoints[n]);
+		numInfJoints.emplace_back(numInfJoint);
 	}
 
 	weightIndex.clear();
-	for (size_t wi = 0; wi < copy->weightIndex.size(); wi++)
+	for (unsigned int & wi : copy->weightIndex)
 	{
-		weightIndex.emplace_back(copy->weightIndex[wi]);
+		weightIndex.emplace_back(wi);
 	}
 
 	jointNameIndex.clear();
-	for (size_t jni = 0; jni < copy->jointNameIndex.size(); jni++)
+	for (unsigned int & jni : copy->jointNameIndex)
 	{
-		jointNameIndex.emplace_back(copy->jointNameIndex[jni]);
+		jointNameIndex.emplace_back(jni);
 	}
 }
 
@@ -197,8 +193,8 @@ SBAPI void SkinWeight::addWeight( SkinWeight* weight )
 	size_t weightIdxOffset = bindWeight.size();
 	bindWeight.insert(bindWeight.end(), weight->bindWeight.begin(), weight->bindWeight.end());
 	numInfJoints.insert(numInfJoints.end(), weight->numInfJoints.begin(), weight->numInfJoints.end());
-	for (unsigned int i=0;i<weight->weightIndex.size();i++)
-		weightIndex.emplace_back(weight->weightIndex[i] + weightIdxOffset);
+	for (unsigned int i : weight->weightIndex)
+		weightIndex.emplace_back(i + weightIdxOffset);
 	for (unsigned int i=0;i<weight->jointNameIndex.size();i++)
 	{
 		jointNameIndex.emplace_back(newJointMap[weight->infJointName[weight->jointNameIndex[i]]]);
@@ -278,7 +274,7 @@ SBAPI void SkinWeight::buildSkinWeightBuf()
 		boneWeights[i] = SrVec4(0,0,0,0);
 	
 		std::vector<IntFloatPair> weightList;
-		if (infJointName.size() > 0)
+		if (!infJointName.empty())
 		{
 			for (int j = 0; j < numOfInfJoints; j++)
 			{
@@ -315,12 +311,12 @@ SBAPI void SkinWeight::buildSkinWeightBuf()
 	}
 }
 
-std::vector<std::string> SkinWeight::getInfluenceJointNames()
+std::vector<std::string> SkinWeight::getInfluenceJointNames() const
 {
 	return this->infJointName;
 }
 
-int SkinWeight::getNumVertices()
+int SkinWeight::getNumVertices() const
 {
 	return this->numInfJoints.size();
 }
@@ -387,7 +383,7 @@ std::vector<int> SkinWeight::getInfluencesByJointIndex(int index)
 	return vertices;
 }
 
-SrMat SkinWeight::getBindShape()
+SrMat SkinWeight::getBindShape() const
 {
 	return this->bindShapeMat;
 }
@@ -1460,7 +1456,7 @@ std::string buildName(std::string modelName, std::string textureName)
 }
 
 
-void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh, std::vector<SrModel*>& models, std::string file)
+void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh, std::vector<boost::intrusive_ptr<SrModel>>& models, std::string file)
 {
 	SmartBodyBinary::StaticMesh staticMesh = *mesh;
 
@@ -1473,7 +1469,7 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 	for (int numMeshModels = 0; numMeshModels < staticMesh.meshmodels_size(); ++numMeshModels)
 	{
 		const SmartBodyBinary::MeshModel& meshModel = staticMesh.meshmodels(numMeshModels);
-		SrModel* newModel = new SrModel();
+		boost::intrusive_ptr<SrModel> newModel = new SrModel();
 		// 1 MeshModel
 		newModel->name.set(meshModel.meshname().c_str());
 		// 2
@@ -1662,16 +1658,15 @@ void DeformableMesh::readFromStaticMeshBinary(SmartBodyBinary::StaticMesh* mesh,
 				if (newModel->mtlTransparentTexNameMap.find(matName) != newModel->mtlTransparentTexNameMap.end())
 				{
 					auto diffuseTex = texManager.findTexture(prefixedName.c_str());
-					SbmTexture* transTex = new SbmTexture("Dummy");
+					SbmTexture transTex("Dummy");
 					std::string transpTexFile = (*newModel->mtlTransparentTexNameMap.find(matName)).second;
 					std::string finalTextureName = ParserCOLLADAFast::getFinalTextureFileName(transpTexFile, paths);
-					transTex->loadImage(finalTextureName.c_str());
-					if (diffuseTex && transTex)
+					transTex.loadImage(finalTextureName.c_str());
+					if (diffuseTex)
 					{
-						diffuseTex->bakeAlphaIntoTexture(transTex, newModel->M[i].useAlphaBlend);
+						diffuseTex->bakeAlphaIntoTexture(&transTex, newModel->M[i].useAlphaBlend);
 					}
 
-				delete transTex;
 				}
 
 				//newModel->mtlTextureNameMap[matName] = prefixedName;
@@ -1954,7 +1949,7 @@ bool DeformableMesh::readFromSmb(std::string inputFileName)
 		return false;
 	}
 
-	std::vector<SrModel*> models;
+	std::vector<boost::intrusive_ptr<SrModel>> models;
 	readFromStaticMeshBinary(&staticMesh, models, inputFileName);
 
 	for (size_t m = 0; m > models.size(); m++)
@@ -1979,9 +1974,7 @@ bool DeformableMesh::readFromSmb(std::string inputFileName)
 	boost::filesystem::path p(inputFileName);
 	std::string filePath = p.parent_path().string();
 	loadAllFoundTextures(filePath);
-  
-  for (auto & model : models)
-    delete model;
+
   models.clear();
   
 	
@@ -2005,21 +1998,21 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 
 	SmartBodyBinary::StaticMesh staticMesh = deformableMesh.staticmesh();
 
-	std::vector<SrModel*> models;
+	std::vector<boost::intrusive_ptr<SrModel>> models;
 	readFromStaticMeshBinary(&staticMesh, models, inputFileName);
 
 	// don't write into static/dynamic models until we'll sure which models
 	// are base shapes and which are morphs. Morphs fo in the blendShapeMap
 
 	// make the models easier to access
-	std::map<std::string, SrSnModel*> modelMap;
+	std::map<std::string, boost::intrusive_ptr<SrSnModel>> modelMap;
 	std::map<std::string, bool> modelsUsed;
 	for (auto & model : models)
 	{
 		boost::intrusive_ptr<SrSnModel> srSnModelStatic(new SrSnModel());
 		srSnModelStatic->shape(*model);
 		srSnModelStatic->shape().name = model->name;
-		modelMap.emplace(model->name, srSnModelStatic.get());
+		modelMap.emplace(model->name, std::move(srSnModelStatic));
 		modelsUsed.emplace(model->name, false);
 	}
 	// keep track of the models used for morphs; non-morph models are assumed to be part of the basic mesh
@@ -2045,7 +2038,7 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 			auto iter = modelMap.find(morphs[n]);
 			if (iter != modelMap.end())
 			{
-				SrSnModel* model = (*iter).second;
+				auto& model = (*iter).second;
 				boost::intrusive_ptr<SrSnModel> baseModelCopy(new SrSnModel());
 				baseModelCopy->shape(model->shape());
 				morphModels.emplace_back(baseModelCopy);
@@ -2057,7 +2050,7 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 			blendShapeMap.emplace(morphs[0], std::move(morphModels));
 	}
 
-	for (auto model : models)
+	for (const auto& model : models)
 	{
 			std::string modelName((const char*) model->name);
 
@@ -2135,18 +2128,8 @@ bool DeformableMesh::readFromDmb(std::string inputFileName)
 	boost::filesystem::path p(inputFileName);
 	std::string filePath = p.parent_path().string();
 	loadAllFoundTextures(filePath);
-  
-  for (auto & model : models)
-    delete model;
+
   models.clear();
-  
-  std::map<std::string, SrSnModel*>::iterator it;
-  for (it  = modelMap.begin();
-       it != modelMap.end();
-       it++)
-  {
-    it->second->unref();
-  }
   modelMap.clear();
 	
 	return true;

@@ -2856,7 +2856,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBC
 		return( CMD_FAILURE );
 	}
 
-	MeCtBreathing* breathing_p = char_p->breathing_p;
+	auto& breathing_p = char_p->breathing_p;
 	if (!breathing_p)
 	{
 		SmartBody::util::log("Character '%s' has no breathing controller.", name);
@@ -2868,7 +2868,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBC
 	if( strcmp( breathing_cmd, "useblendchannels" ) == 0 )	
 	{
 		std::string token = args.read_token();
-		if (token == "true" || token == "")
+		if (token == "true" || token.empty())
 		{
 			breathing_p->setUseBlendChannels(true);
 		}
@@ -2954,7 +2954,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBC
 				return( CMD_FAILURE );
 			}
 			
-			KeyframeBreathCycle* cycle = new KeyframeBreathCycle();
+			auto cycle = new KeyframeBreathCycle();
 			for(int i=0; i<args_count; i = i+2)
 			{
 				float time = args.read_float();
@@ -2999,7 +2999,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBC
 	}
 	else if( strcmp( breathing_cmd, "help" ) == 0 )
 	{
-		printf("Sintax: breathing <controller_name> <options>\n"
+		printf("Syntax: breathing <controller_name> <options>\n"
 			"Options:\n"
 			" help\n"
 			"\tSets the breaths-per-minute rate.\n"

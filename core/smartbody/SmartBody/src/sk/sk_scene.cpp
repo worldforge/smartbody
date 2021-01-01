@@ -112,7 +112,7 @@ void SkScene::initInternal()
 
    SrMat arot;
    SrSnGroup* gaxis;
-   SrSnLines* axis;
+   boost::intrusive_ptr<SrSnLines> axis;
    boost::intrusive_ptr<SrSnSphere> sphere;
    SrSnSharedModel* smodel;
 
@@ -138,7 +138,6 @@ void SkScene::initInternal()
 	//   scaleFactor = _scale;
    axis = new SrSnLines; // shared axis
    axis->shape().push_axis ( SrVec::null, _axislen*scaleFactor, 3, "xyz"/*let*/, false/*rule*/ );
-   axis->ref();
 
    add ( g );
 
@@ -149,7 +148,7 @@ void SkScene::initInternal()
       gaxis = new SrSnGroup;
       gaxis->separator ( true );
       gaxis->add ( new SrSnMatrix );
-      gaxis->add ( axis );
+      gaxis->add ( axis.get() );
       gaxis->visible ( false );
       joint_p->quat()->prerot().get_mat(arot);
       arot.setl4 ( joints[i]->offset() );
@@ -203,7 +202,6 @@ void SkScene::initInternal()
 	  }
     }
    //sphere->unref();
-   axis->unref();
    update ();
 
 

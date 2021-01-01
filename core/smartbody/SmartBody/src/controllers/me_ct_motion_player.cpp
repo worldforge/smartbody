@@ -38,17 +38,13 @@ void MeCtMotionPlayer::Context::child_channels_updated( MeController* child )
 MeCtMotionPlayer::MeCtMotionPlayer(SbmCharacter* c) : MeCtContainer(new MeCtMotionPlayer::Context(this)), character(c)
 {
 	motionName = "";
-	controller = nullptr;
 	frameNum = 0;
 	isActive = false;
 }
 
-MeCtMotionPlayer::~MeCtMotionPlayer()
-{
-	delete controller;
-}
+MeCtMotionPlayer::~MeCtMotionPlayer() = default;
 
-void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, std::string name, double n)
+void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, const std::string& name, double n)
 {
 	if (motionName == name)
 	{
@@ -56,11 +52,9 @@ void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, std::string name, double n)
 		return;
 	}
 	//SmartBody::util::log("controller != nullptr");
-	if (controller != nullptr)
+	if (controller)
 	{
-		_sub_context->remove_controller(controller);
-		//controller->unref();
-		delete controller;
+		_sub_context->remove_controller(controller.get());
 	}
 	//SmartBody::util::log("after if (controller != nullptr)");
 		 
@@ -73,7 +67,7 @@ void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, std::string name, double n)
 	motionName = name;
 	motion->connect(character->getSkeleton().get());
 	controller = new MeCtMotion();
-	MeCtMotion* mController = dynamic_cast<MeCtMotion*> (controller);
+	auto* mController = dynamic_cast<MeCtMotion*> (controller.get());
 	//SmartBody::util::log("mController->init");
 	mController->init(pawn,motion);
 	//SmartBody::util::log("after mController->init");
@@ -82,8 +76,7 @@ void MeCtMotionPlayer::init(SmartBody::SBPawn* pawn, std::string name, double n)
 	controller->setName(controllerName.c_str());
 	
 	//SmartBody::util::log("_sub_context->add_controller");
-	_sub_context->add_controller(controller);
-	controller->ref();
+	_sub_context->add_controller(controller.get());
 	controller_map_updated();
 	//SmartBody::util::log("after controller_map_updated");
 	this->remap();
@@ -95,7 +88,7 @@ void MeCtMotionPlayer::setFrameNum(double n)
 	frameNum = n;
 }
 
-double MeCtMotionPlayer::getFrameNum()
+double MeCtMotionPlayer::getFrameNum() const
 {
 	return frameNum;
 }
@@ -115,7 +108,7 @@ void MeCtMotionPlayer::setActive(bool a)
 	isActive = a;
 }
 
-bool MeCtMotionPlayer::getActive()
+bool MeCtMotionPlayer::getActive() const
 {
 	return isActive;
 }
@@ -147,15 +140,15 @@ bool MeCtMotionPlayer::controller_evaluate(double t, MeFrameData& frame)
 	if (!isActive)
 		return false;
 
-	MeCtMotion* mController = dynamic_cast<MeCtMotion*> (controller);
+	auto* mController = dynamic_cast<MeCtMotion*> (controller.get());
 	SkMotion* motion = mController->motion();
 
 	SmartBody::SBRetarget* retarget = nullptr;
-	SmartBody::SBCharacter* _character = dynamic_cast<SmartBody::SBCharacter*>(character);
+	auto* _character = dynamic_cast<SmartBody::SBCharacter*>(character);
 	if (_character)
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SmartBody::SBMotion* sbMotion = dynamic_cast<SmartBody::SBMotion*>(motion);
+		auto* sbMotion = dynamic_cast<SmartBody::SBMotion*>(motion);
 		if (sbMotion)
 			retarget = scene->getRetargetManager()->getRetarget(sbMotion->getMotionSkeletonName(),_character->getSkeleton()->getName());		
 	}

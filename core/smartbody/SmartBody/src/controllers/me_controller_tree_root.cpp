@@ -181,7 +181,7 @@ protected:
 	//SrBuffer<unsigned int> _updated;   //  Channel n was last updated on frame _updated[n]
     //SrBuffer<float>        _buffer;    // the output of the controller
 
-	MeEvaluationLogger* _logger;
+	boost::intrusive_ptr<MeEvaluationLogger> _logger;
 	set<string>         _logged_joints;
 	set<int>            _logged_channel_indices;
 	SbmPawn*			_pawn;
@@ -219,10 +219,8 @@ public:
 		}*/
 		//printf("after remove controllers\n");
 
-		if( _skeletonName != "" )
+		if( !_skeletonName.empty() )
 			remove_skeleton( _skeletonName );
-		if( _logger )
-			_logger->unref();
 	}
 
 
@@ -239,11 +237,11 @@ public:
 	}
 
 	// Implement MeControllerContext
-	int toBufferIndex( int chanIndex ) {
+	int toBufferIndex( int chanIndex ) override {
 		return _frame_data.toBufferIndex( chanIndex );
 	}
 
-	void child_channels_updated( MeController* child ) {
+	void child_channels_updated( MeController* child ) override {
 		// Force a revalidation on next evaluate.
 		_state = INVALID;
 	}
@@ -273,7 +271,7 @@ public:
      *  Sets channel set to skeletons joints.
      *  Currently only supports one entity/skeleton.
      */
-	void add_skeleton( const std::string& entityName, boost::intrusive_ptr<SkSkeleton> skeleton ) {
+	void add_skeleton( const std::string& entityName, boost::intrusive_ptr<SkSkeleton> skeleton ) override {
 		SR_ASSERT( _state!=REMAPPING );  // simple lock
 
 		if( skeleton==nullptr ) {
@@ -294,7 +292,7 @@ public:
     /**
      *  Removes named entity from the system.
      */
-	void remove_skeleton( const std::string& entityName ) {
+	void remove_skeleton( const std::string& entityName ) override {
 		SR_ASSERT( _state!=REMAPPING );  // simple lock
 		if( _skeletonName==entityName ) {
 			_skeletonName = "";
@@ -302,7 +300,7 @@ public:
 		}
 	}
 
-	void clear() {
+	void clear() override {
 		// Remove controllers
 		// commented out by Shapiro 5/4/11 - need to investigate why this causes a crash in release mode
 		//_controllers.clear(); // yay for smart pointers

@@ -44,19 +44,19 @@ protected:
 	
 
 public:
-	MeCtPeriodicReplay( MeController* child = nullptr );
+	explicit MeCtPeriodicReplay( MeController* child = nullptr );
 	// virtual ~MeCtTimeShiftWarp(); // Default destructor call ~MeCtUnary to delete child
 
 	void init( double period );
 	void init( double period, double period_offset, double child_time_offset );
 
-    const std::string& controller_type() const;
+    const std::string& controller_type() const override;
 
-    double controller_duration();
+    double controller_duration() override;
     //SkChannelArray& controller_channels(); // implemented in MeCtUnary
 
 protected:
-	bool controller_evaluate( double t, MeFrameData & frame );
+	bool controller_evaluate( double t, MeFrameData & frame ) override;
 };
 
 

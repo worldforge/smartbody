@@ -19,7 +19,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "SBCharacter.h"
-#include <sb/SBSkeleton.h>
 
 #include "sb/SBController.h"
 #include "sb/SBBehavior.h"
@@ -37,7 +36,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBUtilities.h"
 #include <controllers/MeCtReachEngine.h>
 #include <controllers/me_ct_motion_recorder.h>
-#include <controllers/me_ct_scheduler2.h>
 #include <controllers/me_ct_scheduler2.h>
 #include <controllers/me_ct_gaze.h>
 #include <controllers/me_controller_tree_root.hpp>
@@ -413,7 +411,7 @@ SBController* SBCharacter::getControllerByName(const std::string& name)
 	
 	for (int i = 0; i < (int)ct_tree_p->count_controllers(); i++)
 	{
-		SBController* controller = dynamic_cast<SBController*>(ct_tree_p->controller(i));
+		auto* controller = dynamic_cast<SBController*>(ct_tree_p->controller(i));
 		const std::string& cName = controller->getName();
 		if (name == cName)
 		{
@@ -436,7 +434,7 @@ std::vector<std::string> SBCharacter::getControllerNames()
 
 void SBCharacter::setVoice(const std::string& type)
 {
-	if (type == "")
+	if (type.empty())
 	{
 		set_speech_impl(nullptr);
 	}
@@ -467,7 +465,7 @@ void SBCharacter::setVoice(const std::string& type)
 
 }
 
-const std::string SBCharacter::getVoice()
+std::string SBCharacter::getVoice()
 {
 	/*
 	
@@ -482,7 +480,7 @@ const std::string SBCharacter::getVoice()
 		type = "local";
 	*/
 	// through attribute system...
-	std::string type = "";
+	std::string type;
 	StringAttribute* attr = dynamic_cast<StringAttribute*>(getAttribute("voice"));
 	if (attr)
 		type = attr->getValue();
@@ -506,7 +504,7 @@ void SBCharacter::setVoiceBackup(const std::string& type)
 {
 	
 
-	if (type == "")
+	if (type.empty())
 	{
 		set_speech_impl_backup(nullptr);
 	}
@@ -692,7 +690,7 @@ void SBCharacter::updateDefaultFacePose()
 
 void SBCharacter::notify(SBSubject* subject)
 {
-	SBAttribute* attribute = dynamic_cast<SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SBAttribute*>(subject);
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	if (attribute)
 	{
@@ -708,12 +706,12 @@ void SBCharacter::notify(SBSubject* subject)
 			int shapesAdded = 0;
 			std::vector<std::string> attributeNames = this->getAttributeNames();
 			std::vector<std::string> shapeNames;
-			for (auto attrName : attributeNames)
+			for (const auto& attrName : attributeNames)
 			{
 					if (attrName.find("blendShape.channelName.") != std::string::npos)
 				{
 					std::string channelName = getStringAttribute(attrName);
-					if (channelName != "")
+					if (!channelName.empty())
 					{
 						int startPos = std::string("blendShape.channelName").size();
 						std::string shapeName = attrName.substr(startPos + 1);
@@ -747,7 +745,7 @@ void SBCharacter::notify(SBSubject* subject)
 				MeCtScheduler2::VecOfTrack tracks = this->posture_sched_p->tracks();
 				for (auto & track : tracks)
 				{
-					MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(track->animation_ct());
+					MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(track->animation_ct().get());
 					if (motionCt)
 					{
 						motionCt->useOffset(postureDiff->getValue());
@@ -787,7 +785,7 @@ void SBCharacter::notify(SBSubject* subject)
 		}
 		else if (attrName == "lipSyncSpeedLimit")
 		{
-			SmartBody::DoubleAttribute* speedLimitAttribute = dynamic_cast<SmartBody::DoubleAttribute*>(attribute);
+			auto* speedLimitAttribute = dynamic_cast<SmartBody::DoubleAttribute*>(attribute);
 			setDiphoneSpeedLimit((float)speedLimitAttribute->getValue());
 		}
 		else if (attrName == "deformableMesh")
@@ -796,27 +794,27 @@ void SBCharacter::notify(SBSubject* subject)
 		}
 		else if (attrName == "voice")
 		{
-			SmartBody::StringAttribute* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
+			auto* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
 			this->setVoice(strAttribute->getValue());
 		}
 		else if (attrName == "voiceCode")
 		{
-			SmartBody::StringAttribute* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
+			auto* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
 			this->setVoiceCode(strAttribute->getValue());
 		}
 		else if (attrName == "voiceBackup")
 		{
-			SmartBody::StringAttribute* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
+			auto* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
 			this->setVoiceBackup(strAttribute->getValue());
 		}
 		else if (attrName == "voiceBackupCode")
 		{
-			SmartBody::StringAttribute* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
+			auto* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
 			this->setVoiceBackupCode(strAttribute->getValue());
 		}
 		else if (attrName == "dominancecurve")
 		{
-			SmartBody::BoolAttribute* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
+			auto* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 			if (boolAttribute->getValue())
 			{
 				if (!this->getAttribute("jaw_rot_min"))
@@ -909,7 +907,6 @@ void SBCharacter::notify(SBSubject* subject)
 	}
 
 	SbmCharacter::notify(subject);
-	SBPawn::notify(subject);
 }
 
 void SBCharacter::interruptFace(double seconds)
@@ -926,15 +923,14 @@ void SBCharacter::interruptFace(double seconds)
 
 	std::vector<MeCtScheduler2::TrackPtr> tracksToRemove;
 
-	for (unsigned int t = 0; t < tracks.size(); t++)
+	for (const auto& track : tracks)
 	{
-		MeCtScheduler2::TrackPtr track = tracks[t];
-		MeController* controller = track->animation_ct();
+		MeController* controller = track->animation_ct().get();
 		// determine the facial unit associated with this track
-		MeCtCurveWriter* curveController = dynamic_cast<MeCtCurveWriter*>(controller);
+		auto* curveController = dynamic_cast<MeCtCurveWriter*>(controller);
 		if (!curveController)
 		{
-			MeCtChannelWriter* channelWriterController = dynamic_cast<MeCtChannelWriter*>(controller);
+			auto* channelWriterController = dynamic_cast<MeCtChannelWriter*>(controller);
 			if (!channelWriterController)
 				continue;
 		}
@@ -958,7 +954,7 @@ void SBCharacter::interruptFace(double seconds)
 			}
 		}
 	}
-	if (tracksToRemove.size() > 0)
+	if (!tracksToRemove.empty())
 		head_sched_p->remove_tracks(tracksToRemove);
 
 	// reset the default face
@@ -986,7 +982,7 @@ void SBCharacter::copy( SmartBody::SBCharacter* origChar )
 void SBCharacter::setReach( SmartBody::SBReach* reach )
 {
 	if (!reach) return;
-	if (reach->getReachEngineMap().size() != 0)
+	if (!reach->getReachEngineMap().empty())
 	{
 		_reach = reach;
 	}
@@ -1013,10 +1009,9 @@ void SBCharacter::setDeformableMeshScale( double meshScale )
 std::string SBCharacter::getPostureName()
 {
 	MeCtScheduler2::VecOfTrack tracks = posture_sched_p->tracks();
-	for (unsigned int i=0;i<tracks.size();i++)
+	for (const auto& tr : tracks)
 	{
-		MeCtScheduler2::TrackPtr tr = tracks[i];
-		MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(tr->animation_ct());
+		MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(tr->animation_ct().get());
 		if (motionCt)
 		{
 			return motionCt->motion()->getName();
@@ -1065,7 +1060,7 @@ void SBCharacter::createBlendShapeChannel(const std::string& channelName)
 	this->addBlendShapeChannel(channelName);
 }
 
-bool SBCharacter::getUseJointConstraint()
+bool SBCharacter::getUseJointConstraint() const
 {
 	//return false;
 	return useJointConstraint;
@@ -1170,7 +1165,7 @@ SBAPI void SBCharacter::startMotionGraphWithPath( const std::vector<SrVec>& path
 			trajectoryGoalList[i*3+k] = pathList[i][k];
 	}
 	_curMotionGraph->synthesizePath(moGraphPath, getSkeleton()->getName(), graphEdges);
-	if (graphEdges.size() == 0)
+	if (graphEdges.empty())
 	{
 		SmartBody::util::log("Error, the resulting graph traversal is empty.");
 		return;
@@ -1179,10 +1174,9 @@ SBAPI void SBCharacter::startMotionGraphWithPath( const std::vector<SrVec>& path
 	std::string startNodeName = graphEdges[0].first;
 	startMotionGraph(startNodeName);	
 
-	for (unsigned int i=0;i<graphEdges.size();i++)
+	for (auto & edge : graphEdges)
 	{
-		std::pair<std::string,std::string>& edge = graphEdges[i];			
-		//SmartBody::util::log("Edge %d, name = %s %s", i, edge.first.c_str(), edge.second.c_str());
+			//SmartBody::util::log("Edge %d, name = %s %s", i, edge.first.c_str(), edge.second.c_str());
 		SBMotionTransitionEdge* motionEdge = _curMotionGraph->getMotionEdge(edge.first,edge.second);
 		if (!motionEdge)
 		{

@@ -31,6 +31,7 @@
 #include <vector>
 # include <sr/sr_model.h>
 # include <sr/sr_sn_shape.h>
+#include "sr/sr_shared_ptr.hpp"
 
 
 /*! \class SrSnColorSurf sr_sn_colorsurf.h
@@ -39,8 +40,8 @@
     Performs color interpolation among mesh vertices. */
 class SrSnColorSurf : public SrSnShapeBase
  { protected :
-    SrModel* _model;
-	
+	boost::intrusive_ptr<SrModel> _model;
+
 
    public :
     static const char* class_name; //<! Contains string SrSnColorSurf
@@ -67,10 +68,10 @@ class SrSnColorSurf : public SrSnShapeBase
     SBAPI void model( SrModel* m );
 
     /*! Access to the (always valid) shared SrModel object. */
-    SBAPI SrModel* model () const { return _model; }
+    SBAPI SrModel* model () const { return _model.get(); }
 
     /*! Const access to the (always valid) shared SrModel. */
-    SBAPI const SrModel* cmodel () const { return _model; }
+    SBAPI const SrModel* cmodel () const { return _model.get(); }
 
    public :
 

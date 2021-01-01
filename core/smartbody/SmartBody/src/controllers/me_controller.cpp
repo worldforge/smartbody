@@ -67,8 +67,6 @@ MeController::MeController ()
 	instance_count ++;
 	_invocation_count = -1;
 
-	_prune_policy->ref();
-
 	_record_mode = RECORD_NULL;
 	_record_max_frames = 0;
 	_record_frame_count = 0;
@@ -86,12 +84,6 @@ MeController::MeController ()
 MeController::~MeController () {
 	//assert( _context==nullptr );  // Controller should not be deleted if still referenced by context
 	stop_record();
-
-
-	if( _prune_policy ) {
-		_prune_policy->unref();
-		_prune_policy = nullptr;
-	}
 
 }
 
@@ -150,20 +142,11 @@ void MeController::init (SmartBody::SBPawn* pawn) {
 }
 
 MePrunePolicy* MeController::prune_policy () {
-	return _prune_policy;
+	return _prune_policy.get();
 }
 
 void MeController::prune_policy( MePrunePolicy* prune_policy ) {
-	if( _prune_policy != prune_policy ) {
-		if( _prune_policy != nullptr ) {
-			_prune_policy->unref();
-			_prune_policy = nullptr;
-		}
-		_prune_policy = prune_policy;
-		if( _prune_policy != nullptr ) {
-			_prune_policy->ref();
-		}
-	}
+	_prune_policy = prune_policy;
 }
 
 

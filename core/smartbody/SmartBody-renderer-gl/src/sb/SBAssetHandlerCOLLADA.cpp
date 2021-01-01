@@ -306,7 +306,6 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 					auto& models = (*iter).second;
 					models.emplace_back(srSnModelStatic);
 					//SmartBody::util::log("INSERTED BLENDSHAPE %s INTO BASE %s", (const char*) srSnModelStatic->shape().name, baseShape.c_str());
-					srSnModelStatic->ref();
 					delete srSnModelDynamic;
 					//SmartBody::util::log("Insert blend shape %s with base shape %s", (const char*)meshModelVec[i]->name, baseShape.c_str());
 				}
@@ -324,18 +323,14 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 					srSnModelDynamicBase->shape().name = i->name;
 
 					mesh->dMeshStatic_p.emplace_back(srSnModelStaticBase);
-					srSnModelStaticBase->ref();
 					mesh->dMeshDynamic_p.emplace_back(srSnModelDynamicBase);
-					srSnModelDynamicBase->ref();
 					//SmartBody::util::log("Insert base mesh %s", (const char*)meshModelVec[i]->name);
 				}
 
 				if (!isBlendShape && !isBaseShape)
 				{
 					mesh->dMeshStatic_p.emplace_back(srSnModelStatic);
-					srSnModelStatic->ref();
 					mesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
-					srSnModelDynamic->ref();
 					//SmartBody::util::log("Insert mesh %s", (const char*)meshModelVec[i]->name);
 				}
 			

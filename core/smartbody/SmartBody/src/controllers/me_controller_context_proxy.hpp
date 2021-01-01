@@ -26,7 +26,6 @@
 
 #include "controllers/me_controller_context.hpp"
 
-
 /**
  *  Convience class for controllers that wish to reimplement or intercept 
  *  calls between their child controllers and the current MeControllerContext.
@@ -42,32 +41,32 @@ public:
 protected:
 	//////////////////////////////////////////////////////////////////////////
 	//  Private Data
-	MeControllerContext* _context;
+	boost::intrusive_ptr<MeControllerContext> _context;
 
 	//////////////////////////////////////////////////////////////////////////
 	//  Private Constructors
 
-	MeControllerContextProxy( MeControllerContext* context = nullptr );
+	explicit MeControllerContextProxy( boost::intrusive_ptr<MeControllerContext> context = nullptr );
 
 public:
-	virtual ~MeControllerContextProxy();
+	~MeControllerContextProxy() override;
 
 	//!  Implements MeControllerContext::context_type()
-	const std::string& context_type() const {	return CONTEXT_TYPE; }
+	const std::string& context_type() const override {	return CONTEXT_TYPE; }
 
 	//!  Implements MeControllerContext::channels()
-	virtual SkChannelArray& channels();
+	SkChannelArray& channels() override;
 
 	/**
 	 *  Update the inner context.
 	 */
-	virtual void context( MeControllerContext* context );
+	void context( boost::intrusive_ptr<MeControllerContext> context );
 
 	/**
 	 *  Returns the float buffer index coresponding 
 	 *  to the given channel index.
      */
-    virtual int toBufferIndex( int chanIndex );
+    int toBufferIndex( int chanIndex ) override;
 
 };
 
@@ -88,7 +87,7 @@ protected:
 	MeFrameData*                    _frame;
 
 public:
-	MeFrameDataProxy( MeControllerContextProxy* context );
+	explicit MeFrameDataProxy( MeControllerContextProxy* context );
 
 	/**
 	 *  Sets the proxied MeFrameData.
@@ -97,19 +96,19 @@ public:
 	virtual void set_proxied_frame( MeFrameData* frame );
 
 	//!  Implements MeFrameData
-	virtual MeControllerContext* context() const;
+	MeControllerContext* context() const override;
 
 	//!  Implements MeFrameData
-	virtual int toBufferIndex( int chanIndex ) const;
+	int toBufferIndex( int chanIndex ) const override;
 
 	//!  Implements MeFrameData
-	virtual SrBuffer<float>& buffer();
+	SrBuffer<float>& buffer() override;
 
 	//!  Implements MeFrameData
-	virtual void channelUpdated( unsigned int n );
+	void channelUpdated( unsigned int n ) override;
 
 	//!  Implements MeFrameData
-	virtual bool isChannelUpdated( unsigned int n ) const;
+	bool isChannelUpdated( unsigned int n ) const override;
 
 
 	///**

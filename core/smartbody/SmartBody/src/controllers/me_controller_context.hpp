@@ -29,7 +29,8 @@
 #include <set>
 
 
-#include <sr/sr_shared_class.h>
+#include "sr/sr_shared_class.h"
+#include "sr/sr_shared_ptr.hpp"
 #include <sr/sr_buffer.h>
 #include <sk/sk_channel_array.h>
 #include <controllers/me_controller_context.hpp>

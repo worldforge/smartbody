@@ -326,7 +326,7 @@ void BehaviorSchedulerConstantSpeed::schedule( BehaviorSyncPoints& behav_syncs, 
 BehaviorSchedulerConstantSpeedPtr BML::buildSchedulerForController( MeController* ct ) {
 	bool is_undefined_duration = ct->controller_duration() < 0;
 
-	MeCtMotion* motionController = dynamic_cast<MeCtMotion*>(ct);
+	auto* motionController = dynamic_cast<MeCtMotion*>(ct);
 	if (motionController)
 	{
 		SkMotion* motion = motionController->motion();

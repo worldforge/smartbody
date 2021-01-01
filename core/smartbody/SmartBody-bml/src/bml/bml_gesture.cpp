@@ -131,13 +131,13 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		}
 
 		// Get current posture
-		std::string posture = "";
+		std::string posture;
 		if (request->actor->posture_sched_p)
 		{
 			MeCtScheduler2::VecOfTrack tracks = request->actor->posture_sched_p->tracks();
 			for (auto & track : tracks)
 			{
-				MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(track->animation_ct());
+				MeCtMotion* motionCt = dynamic_cast<MeCtMotion*>(track->animation_ct().get());
 				if (motionCt)
 				{
 					posture = motionCt->motion()->getName();

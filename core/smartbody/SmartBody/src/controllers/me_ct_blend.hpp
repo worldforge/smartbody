@@ -61,21 +61,21 @@ public:
 
 		///////////////////////////////////////////////////////////////
 		//  Constructor
-		FrameData( MeCtBlend* blend );
+		explicit FrameData( MeCtBlend* blend );
 		~FrameData();
 
 	public:
 		///////////////////////////////////////////////////////////////
 		//  Public Methods implement MeControllerContext
-		MeControllerContext* context() const;
+		MeControllerContext* context() const override;
 
-		SrBuffer<float>& buffer();
+		SrBuffer<float>& buffer() override;
 
-		int toBufferIndex( int chanIndex ) const;
+		int toBufferIndex( int chanIndex ) const override;
 
-		void channelUpdated( unsigned int n );
+		void channelUpdated( unsigned int n ) override;
 
-		bool isChannelUpdated( unsigned int n ) const;
+		bool isChannelUpdated( unsigned int n ) const override;
 	};
 	friend class MeCtBlend::FrameData;
 
@@ -105,7 +105,7 @@ public:
 
 		///////////////////////////////////////////////////////////////
 		//  Constructor
-		Context( MeCtBlend* blend );
+		explicit Context( MeCtBlend* blend );
 
 		/**
 		 *  Loads the intersection of
@@ -121,14 +121,14 @@ public:
 	public:
 		///////////////////////////////////////////////////////////////
 		//  Public Methods
-		const std::string& context_type() const
+		const std::string& context_type() const override
 		{	return CONTEXT_TYPE; }
 
-		SkChannelArray& channels();
+		SkChannelArray& channels() override;
 
-		int toBufferIndex( int chanIndex );
+		int toBufferIndex( int chanIndex ) override;
 
-		void child_channels_updated( MeController* child );
+		void child_channels_updated( MeController* child ) override;
 
 	};
 	friend class MeCtBlend::Context;
@@ -138,7 +138,7 @@ protected:
 	//  MeCtBlend Private Data
 	srLinearCurve	_curve;
 
-	MeCtBlend::Context* const _sub_blend_context;
+	boost::intrusive_ptr<MeCtBlend::Context> _sub_blend_context;
 
 	//  Channel index mappings:
 	std::vector<int> _local_ch_to_parent; // Map local channel index to local buffer value index
@@ -147,22 +147,22 @@ protected:
 
 public:
 	/** Constructor */
-	MeCtBlend( MeController* child = nullptr );
+	explicit MeCtBlend( const boost::intrusive_ptr<MeController>& child = nullptr );
 
 	/** Destructor */
-	virtual ~MeCtBlend();
+	~MeCtBlend() override;
 
 	/** Initialize the Blend controller with the given child controller.  */
-	void init( MeController* child, SmartBody::SBPawn* pawn );
+	void init( const boost::intrusive_ptr<MeController>& child, SmartBody::SBPawn* pawn );
 
 	//virtual void set_child( MeController* child );  // Use init( child )
 
-	srLinearCurve& get_curve( void ) { return _curve; }
+	srLinearCurve& get_curve( ) { return _curve; }
 
 protected:
-	void controller_map_updated();
+	void controller_map_updated() override;
 
-	bool controller_evaluate( double t, MeFrameData & frame );
+	bool controller_evaluate( double t, MeFrameData & frame ) override;
 
 	inline int local_ch_to_buffer( unsigned int i )
 	{	return i<_local_ch_to_buffer.size()? _local_ch_to_buffer[i] : -1; }
@@ -170,7 +170,7 @@ protected:
 	inline int local_ch_to_parent( unsigned int i )
 	{	return i<_local_ch_to_parent.size()? _local_ch_to_parent[i] : -1; }
 public:
-    const std::string& controller_type() const;
+    const std::string& controller_type() const override;
     //SkChannelArray& controller_channels();  // MeCtUnary provides this
 
 	////// Anm - Rolling back change to prevent crash until further testing

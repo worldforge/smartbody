@@ -20,7 +20,7 @@ using namespace BML;
 using namespace xml_utils;
 BehaviorRequestPtr BML::parse_bml_noise( DOMElement* elem, const std::string& unique_id, BML::BehaviorSyncPoints& behav_syncs, bool required, BML::BmlRequestPtr request, SmartBody::SBScene* scene )
 {
-	MeCtNoiseController* noise_ct = request->actor->noise_ct;
+	auto& noise_ct = request->actor->noise_ct;
 	if (!noise_ct)
 	{
 		SmartBody::util::log("Character %s does not have a noise controller, so cannot generate Perlin Noise.", request->actor->getName().c_str());

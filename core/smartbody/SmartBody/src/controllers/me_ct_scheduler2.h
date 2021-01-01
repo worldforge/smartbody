@@ -36,6 +36,7 @@
 // Use Boost Smart Point Impl until TR1 is finalized
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include "sr/sr_shared_ptr.hpp"
 
 /*! The scheduler maps each controller to its internal channel array, so that
     after evaluation, the values are copied and blended into the scheduler buffer */
@@ -82,17 +83,17 @@ protected:
 
 		///////////////////////////////////////////////////////////////
 		//  Constructor
-		Context( MeCtScheduler2* schedule );
+		explicit Context( MeCtScheduler2* schedule );
 
 	public:
 		///////////////////////////////////////////////////////////////
 		//  Public Methods
-		void child_channels_updated( MeController* child );
+		void child_channels_updated( MeController* child ) override;
 
-		const std::string& context_type() const
+		const std::string& context_type() const override
 		{	return CONTEXT_TYPE; }
 
-		void remove_controller( MeController* child );
+		void remove_controller( MeController* child ) override;
 	};
 
 public:
@@ -108,39 +109,39 @@ public:
 		boost::weak_ptr<MeCtScheduler2> _schedule_weak;     // Schedule which this track is a part of.
 
 	protected:
-		MeCtUnary*      _blending_ct;  // blending controller (usually MeCtBlend)
-		MeCtUnary*      _timing_ct;    // timing controller (usually MeCtTimeShiftWarp)
-        MeController*   _animation_ct; // source animation controller
-		MeController*   _root;         // First controller (ordered blending, timing, animation) that isn't nullptr
+		boost::intrusive_ptr<MeCtUnary>      _blending_ct;  // blending controller (usually MeCtBlend)
+		boost::intrusive_ptr<MeCtUnary>      _timing_ct;    // timing controller (usually MeCtTimeShiftWarp)
+		boost::intrusive_ptr<MeController>   _animation_ct; // source animation controller
+		boost::intrusive_ptr<MeController>   _root;         // First controller (ordered blending, timing, animation) that isn't nullptr
 
     public:
 		///////////////////////////////////////////////////////////////
 		//  Public Methods
 
 		// default constructor
-		Track( MeCtUnary* blending,
-			   MeCtUnary* timing,
-			   MeController* animation );
-        Track( const Track& );  // copy constructor
-        virtual ~Track();
+		Track( boost::intrusive_ptr<MeCtUnary> blending,
+		       boost::intrusive_ptr<MeCtUnary> timing,
+			   boost::intrusive_ptr<MeController> animation );
+		//Track( const Track& );  // copy constructor
+		virtual ~Track();
 
 		/*! Copy assignment opperator. */
 		Track& operator=( const Track& other );
 
         /*! returns the blending controller for this Track, possibly nullptr */
-        MeCtUnary* blending_ct()  { return _blending_ct; }
+		boost::intrusive_ptr<MeCtUnary> blending_ct()  { return _blending_ct; }
         /*! returns the timing controller for this Track, possibly nullptr. */
-        MeCtUnary* timing_ct()    { return _timing_ct; }
+		boost::intrusive_ptr<MeCtUnary> timing_ct()    { return _timing_ct; }
         /*! returns the source animation controller for this Track */
-		MeController* animation_ct() { return _animation_ct; }
+		boost::intrusive_ptr<MeController> animation_ct() { return _animation_ct; }
 
 		MeController* animation_parent_ct();
 
-		MeController* root() { return _root; }
+		boost::intrusive_ptr<MeController> root() { return _root; }
 
 		bool evaluate( double time, MeFrameData& frame );
 
-		bool operator==( const MeCtScheduler2::Track& other ) const;
+		//bool operator==( const MeCtScheduler2::Track& other ) const;
 
 	protected:
 		///////////////////////////////////////////////////////////////
@@ -148,7 +149,6 @@ public:
 		/**  Remaps Track context and child controller.  */
 		void remap();
 
-//		void unref_controllers();
     };
 	typedef boost::shared_ptr<Track> TrackPtr;
 	typedef std::vector<TrackPtr>            VecOfTrack;
@@ -184,7 +184,7 @@ protected:
 	/**
 	 *  Local context for children.
 	 */
-	MeCtScheduler2::Context* const _sub_sched_context;
+	boost::intrusive_ptr<MeCtScheduler2::Context> const _sub_sched_context;
 
 	/**
 	 *  Lookup table of buffer values.
@@ -226,10 +226,10 @@ public:
     MeCtScheduler2();
 
     /*! Destructor is public but pay attention to the use of ref()/unref() */
-    virtual ~MeCtScheduler2();
+    ~MeCtScheduler2() override;
 
 	/** Accessor for _active_when_empty. */
-	bool active_when_empty()
+	bool active_when_empty() const
 	{ return _active_when_empty; }
 
 	/** Mutator for _active_when_empty. */
@@ -242,14 +242,14 @@ public:
 	 *
 	 *  Always equals tracks().
 	 */
-	size_t count_children() { return (int)_tracks.size(); }
+	size_t count_children() override { return (int)_tracks.size(); }
 
     /**
      *  Get Nth child
 	 *
      *  Returns nullptr for invalid n.
      */
-	virtual MeController* child( size_t n );
+	MeController* child( size_t n ) override;
 
 ////  Bad design to share iterators to an encapsulated collection
 //	/** Iterator for the first Track, or end() if there are no tracks. */
@@ -286,7 +286,7 @@ public:
     SkChannelArray& channels() { return _channels; }
 
 	//  Implements MeController::context_updated()
-	void context_updated();
+	void context_updated() override;
 
 	/**
 	 *  Schedules a new track at before Track before_pos.
@@ -296,7 +296,7 @@ public:
 	 *  If before_pos is not nullptr and not an active track of this schedule,
 	 *  create_track(..) will return a nullptr TrackPtr.
 	 */
-	TrackPtr create_track( MeCtUnary* blending, MeCtUnary* timing, MeController* ct, TrackPtr before_pos );
+	TrackPtr create_track( MeCtUnary* blending, MeCtUnary* timing, MeController* ct, const TrackPtr& before_pos );
 
 	/**
 	 *  Schedules a new track at position pos.
@@ -325,7 +325,7 @@ public:
      *  numKeyParams - number of values per key.
 	 *	Current Usage for this schedule is for arbitary viseme curve, can be applied to any other blending curve
 	 */	
-	TrackPtr schedule( MeController* c, double tin, float* curve, int numKeys, int numKeyParams );
+	TrackPtr schedule( MeController* c, double tin, const float* curve, int numKeys, int numKeyParams );
 
     /** Backwards compatible schedule function: (sans Static/Once track type)
 	 *
@@ -350,7 +350,7 @@ public:
 	 *  the track_iterator is set to end() and the set of requested channels
 	 *  is recalculated from remaining children.
 	 */
-	bool remove_track( MeCtScheduler2::TrackPtr track );
+	bool remove_track( const MeCtScheduler2::TrackPtr& track );
 
 	/**
 	 *  Removes the given tracks from schedule.
@@ -373,10 +373,10 @@ public:
 protected:
 	///////////////////////////////////////////////////////////////////////
 	//  Private Methods
-	VecOfTrack::iterator pos_of_track( TrackPtr track );
+	VecOfTrack::iterator pos_of_track( const TrackPtr& track );
 
 	bool remove_child_impl( MeController *child );
-	bool remove_track_impl( MeCtScheduler2::TrackPtr track );
+	bool remove_track_impl( const MeCtScheduler2::TrackPtr& track );
 
 	void recalc_channels_requested();
 
@@ -386,17 +386,17 @@ protected:
 	 *  Call remap on each track _root.
 	 *  Overrides MeCtContainer for efficiency (sort of).
 	 */
-	void controller_map_updated();
+	void controller_map_updated() override;
 
 	//! Implements MeCtContainer::remove_child(..)
-	bool remove_child( MeController* child );
+	bool remove_child( MeController* child ) override;
 
 	// callbacks for the base class
-    virtual void controller_init();
-    virtual bool controller_evaluate( double t, MeFrameData& frame );
-    virtual SkChannelArray& controller_channels();
-    virtual double controller_duration();
-    virtual const std::string& controller_type() const;
+    void controller_init() override;
+    bool controller_evaluate( double t, MeFrameData& frame ) override;
+    SkChannelArray& controller_channels() override;
+    double controller_duration() override;
+    const std::string& controller_type() const override;
 
 
 	//

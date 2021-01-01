@@ -24,11 +24,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 #include <vector>
-#include <set>
 
-#include <controllers/me_controller_context_proxy.hpp>
 #include <controllers/me_controller_context_proxy.hpp>
 #include <controllers/me_evaluation_logger.hpp>
 #include "SBUtilities.h"
@@ -146,7 +143,7 @@ MeCtBlend::FrameData::~FrameData() {
 }
 
 MeControllerContext* MeCtBlend::FrameData::context() const {
-	return _blend._sub_blend_context;
+	return _blend._sub_blend_context.get();
 }
 
 SrBuffer<float>& MeCtBlend::FrameData::buffer() {
@@ -184,30 +181,27 @@ bool MeCtBlend::FrameData::isChannelUpdated( unsigned int n ) const {
 
 ///////////////////////////////////////////////////////////////////////////
 //  MeCtBlend
-MeCtBlend::MeCtBlend( MeController* child )
+MeCtBlend::MeCtBlend( const boost::intrusive_ptr<MeController>& child )
  // Ignore Warnings about this: No writes, just passing a reference
-:	MeCtUnary( new MeCtBlend::Context(this), child ),
-	_sub_blend_context( static_cast<MeCtBlend::Context*>( _sub_context ) )
+:	MeCtUnary( boost::intrusive_ptr<MeCtBlend::Context>(new MeCtBlend::Context(this)), child ),
+	_sub_blend_context( dynamic_cast<MeCtBlend::Context*>( _sub_context.get() ) )
 {
-	_sub_blend_context->ref();
 
 	if( child ) {
-		_sub_blend_context->add_controller( child );
+		_sub_blend_context->add_controller( child.get() );
 	}
 }
 
-MeCtBlend::~MeCtBlend() {
-	_sub_blend_context->unref();
-}
+MeCtBlend::~MeCtBlend() = default;
 
-void MeCtBlend::init( MeController* new_child, SmartBody::SBPawn* pawn ) {
-	MeController* old_child = child();
+void MeCtBlend::init( const boost::intrusive_ptr<MeController>& new_child, SmartBody::SBPawn* pawn ) {
+	const auto& old_child = child();
 	if( new_child!=old_child ) {
 		if( old_child )
-			_sub_blend_context->remove_controller( old_child );
+			_sub_blend_context->remove_controller( old_child.get() );
 		MeCtUnary::init( new_child );
 		if( new_child )
-			_sub_blend_context->add_controller( new_child );
+			_sub_blend_context->add_controller( new_child.get() );
 
 		MeController::init(pawn);
 	}

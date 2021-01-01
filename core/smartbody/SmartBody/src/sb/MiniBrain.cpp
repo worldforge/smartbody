@@ -201,14 +201,14 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 				return;
 
 			// make sure that we aren't already gazing at this object
-			MeCtScheduler2* gazeSchedule = character->gaze_sched_p;
+			const auto& gazeSchedule = character->gaze_sched_p;
 			if (!gazeSchedule)
 				return;
-			MeCtScheduler2::VecOfTrack tracks = gazeSchedule->tracks();
-			for (size_t t = 0; t < tracks.size(); t++)
+			auto tracks = gazeSchedule->tracks();
+			for (auto & track : tracks)
 			{
-				MeController* controller = tracks[t]->animation_ct();
-				MeCtGaze* gaze = dynamic_cast<MeCtGaze*>(controller);
+				const auto& controller = track->animation_ct();
+				MeCtGaze* gaze = dynamic_cast<MeCtGaze*>(controller.get());
 				if (gaze)
 				{
 					float x, y, z;
@@ -229,11 +229,9 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 		}
 
 		// if we are staring at nothing, fade out any gazes for objects that have been 'uninteresting' for more than 2 seconds
-		for (std::map<std::string, ObjectData>::iterator piter = _data.begin();
-			 piter != _data.end();
-			 piter++)
+		for (auto & piter : _data)
 		{
-			ObjectData& data = (*piter).second;
+			ObjectData& data = piter.second;
 			if (data.startGazeTime > 0 && (time - data.startGazeTime) > 2.0 + float(rand() % 100) * .01f)
 			{
 				std::stringstream strstr;

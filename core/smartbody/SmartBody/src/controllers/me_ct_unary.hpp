@@ -27,6 +27,7 @@
 
 #include <controllers/me_ct_container.hpp>
 #include <controllers/me_controller_context_proxy.hpp>
+#include <utility>
 
 /**
  *  Virtual controller class for single child operations.
@@ -50,23 +51,23 @@ protected:
 		static std::string CONTEXT_TYPE;
 
 	public:
-		Context( MeCtUnary* container, MeControllerContext* context = nullptr )
-			:	MeCtContainer::Context( container, context )
+		explicit Context( MeCtUnary* container, boost::intrusive_ptr<MeControllerContext> context = nullptr )
+			:	MeCtContainer::Context( container, std::move(context) )
 		{}
 
-		const std::string& context_type() const {	return CONTEXT_TYPE; }
+		const std::string& context_type() const override {	return CONTEXT_TYPE; }
 
 		/**
 		 *  Simple implementation MeControllerContext::child_channels_updated(MeController*).
 		 *  Copies child's channels and propagates the event to _container's _context.
 		 */
-		void child_channels_updated( MeController* child );
+		void child_channels_updated( MeController* child ) override;
 	};
 
 private:
 	//////////////////////////////////////////////////////////
 	//  Private Data
-	MeController* _child;
+	boost::intrusive_ptr<MeController> _child;
 	bool          _copy_child_channels;  // Should really be a class template variable
 
 
@@ -93,38 +94,38 @@ protected:
 	 *  the local context probably doesn't exist when the superclass constructor
 	 *  is called.
 	 */
-	MeCtUnary( MeCtUnary::Context* sub_context, MeController* child = nullptr, bool _copy_child_channels = true );
+	explicit MeCtUnary( const boost::intrusive_ptr<MeCtUnary::Context>& sub_context, const boost::intrusive_ptr<MeController>& child = nullptr, bool _copy_child_channels = true );
 
 public:
 	//////////////////////////////////////////////////////////
 	//  Public Methods
-	virtual ~MeCtUnary();
+	~MeCtUnary() override;
 
-	const std::string& controller_type() const {	return CONTROLLER_TYPE; }
+	const std::string& controller_type() const override {	return CONTROLLER_TYPE; }
 
 	// Overrides MeController::count_children()
-	size_t count_children();
+	size_t count_children() override;
 
 	// Overrides MeController::child(int)
-	MeController* child( size_t n );
+	MeController* child( size_t n ) override;
 
 	// Child controller accessor
-	inline MeController* child() {
+	inline boost::intrusive_ptr<MeController> child() {
 		return _child;
 	}
 
 	// Child controller mutator  (Over-generalizing the init function?)
-	virtual void init( MeController* child );
+	void init( const boost::intrusive_ptr<MeController>& child );
 
 	//! Implements MeCtContainer::remove_child
-	virtual bool remove_child( MeController* child );
+	bool remove_child( MeController* child ) override;
 
 	/**
 	 *  Overrides MeController::controller_channels().
 	 *
 	 *  Assumes the unary controller's channel set is the same as the child's.
 	 */
-	SkChannelArray& controller_channels();
+	SkChannelArray& controller_channels() override;
 
 protected:
 	/**
@@ -133,7 +134,7 @@ protected:
 	 *  Assumes that the unary controller will have the same duration as the
 	 *  child.  Returns 0 if the child is nullptr.
 	 */
-	virtual double controller_duration();
+	double controller_duration() override;
 
 protected:
 	//////////////////////////////////////////////////////////
@@ -145,7 +146,7 @@ protected:
 	 *  Call remap on _child, if present.
 	 *  Overrides MeCtContainer for efficiency.
 	 */
-	virtual void controller_map_updated();
+	void controller_map_updated() override;
 
 	/**
 	 *  Copies timing metadata from the child to the unary meta-controller.

@@ -82,7 +82,7 @@ public:
 
 	SBAPI const boost::intrusive_ptr<SkSkeleton>& getSkeleton() const;
 	SBAPI void setSkeleton(boost::intrusive_ptr<SkSkeleton> sk);
-	SBAPI virtual int init( SkSkeleton* skeleton_p );
+	SBAPI virtual int init( boost::intrusive_ptr<SkSkeleton> skeleton_p );
 
 	SBAPI const std::string& getGeomObjectName();
 	SBAPI SBGeomObject* getGeomObject(); // get geometry object associated with the pawn

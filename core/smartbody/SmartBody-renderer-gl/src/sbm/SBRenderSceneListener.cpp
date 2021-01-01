@@ -353,13 +353,12 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 									mesh->blendShapeMap.emplace(blendShapeMapName, std::vector<boost::intrusive_ptr<SrSnModel>>());
 									auto blendshapeIter = mesh->blendShapeMap.begin();
 									(*blendshapeIter).second.resize(numShapeAttributes);
-									auto* model = new SrSnModel();
+									boost::intrusive_ptr<SrSnModel> model(new SrSnModel());
 									model->shape(staticModel->shape());
 									model->shape().name = staticModel->shape().name;
 									model->changed(true);
 									model->visible(false);
-									(*blendshapeIter).second[0] = model;
-									model->ref();
+									(*blendshapeIter).second[0] = std::move(model);
 									hasNeutral = true;
 									// add the shape to the deformable mesh
 									//mesh->dMeshStatic_p.emplace_back(model);
@@ -392,7 +391,6 @@ void SBRenderSceneListener::Observer::notify(SmartBody::SBSubject* subject) {
 											shapeModel->dMeshStatic_p[0]->shape().translate(blendShapeOffset);
 											shapeModel->dMeshDynamic_p[0]->shape().translate(blendShapeOffset);
 											(*blendshapeIter).second[count] = shapeModel->dMeshStatic_p[0];
-											shapeModel->dMeshStatic_p[0]->ref();
 										} else {
 											(*blendshapeIter).second[count] = nullptr;
 										}

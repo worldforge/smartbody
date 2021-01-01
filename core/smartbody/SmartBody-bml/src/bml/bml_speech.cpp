@@ -726,8 +726,8 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 		}
 
 		// remove results_visemes
-		for (size_t d = 0; d < result_visemes->size(); d++)
-			delete (*result_visemes)[d];
+		for (auto & result_viseme : *result_visemes)
+			delete result_viseme;
 		delete result_visemes;
 
 		vector<VisemeData*>::iterator cur = visemes.begin();
@@ -814,8 +814,8 @@ void BML::SpeechRequest::schedule( time_sec now ) {
 	}
 
 	// Process Word Break SyncPoints
-	MapOfSyncPoint::iterator wb_it  = wbToSync.begin();
-	MapOfSyncPoint::iterator wb_end = wbToSync.end();
+	auto wb_it  = wbToSync.begin();
+	auto wb_end = wbToSync.end();
 	if( wb_it != wb_end ) {
 		for(; wb_it != wb_end; ++wb_it ) {
 			const wstring& wb_id = wb_it->first;
@@ -900,7 +900,7 @@ void BML::SpeechRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene
 	//   visemes are stored in request->visemes as VisemeData objects (defined in bml.hpp)
 	// add audioOffset to each viseme time,
 	double lastTime = endAt;
-	if( visemes.size() > 0 ) {
+	if( !visemes.empty() ) {
 		//// Replaced by addition in next loop
 		//for( int i=0; i<(int)request->visemes.size(); i++ ) {
 		//	request->visemes.at(i)->time+= audioOffset;
@@ -1106,14 +1106,13 @@ void BML::SpeechRequest::unschedule(  SmartBody::SBScene* scene,
 	SmartBody::SBScene::getScene()->getCommandManager()->execute_later( cmd.str().c_str(), 0 );
 	*/
 	MeCtSchedulerClass::VecOfTrack tracks = request->actor->head_sched_p->tracks();
-	for (size_t i = 0; i < tracks.size(); ++i)
+	for (const auto& track : tracks)
 	{
-		MeCtSchedulerClass::TrackPtr track = tracks[i];
-		MeCtUnary* unary_blend_ct = track->blending_ct();
+			const auto& unary_blend_ct = track->blending_ct();
 		if( unary_blend_ct &&
 			unary_blend_ct->controller_type() == MeCtBlend::CONTROLLER_TYPE )
 		{
-			MeCtBlend* blend = static_cast<MeCtBlend*>(unary_blend_ct);
+			MeCtBlend* blend = static_cast<MeCtBlend*>(unary_blend_ct.get());
 			srLinearCurve& blend_curve = blend->get_curve();
 			double t = scene->getSimulationManager()->getTime();
 			double v = blend_curve.evaluate( t );
@@ -1131,8 +1130,8 @@ void BML::SpeechRequest::unschedule(  SmartBody::SBScene* scene,
 	                            
 void BML::SpeechRequest::cleanup( SmartBody::SBScene* scene, BmlRequestPtr request )
 {
-	for (size_t v = 0; v < visemes.size(); v++)
-		delete visemes[v];
+	for (auto & viseme : visemes)
+		delete viseme;
 
 	visemes.clear();
 	unschedule_sequence( scene );

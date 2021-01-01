@@ -19,26 +19,20 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-#include <iostream>
-#include <sstream>
+
 #include <string>
-
-#include <xercesc/util/XMLStringTokenizer.hpp>
-
-#include <sr/sr_vec.h>
-#include <sr/sr_alg.h>
 
 #include "bml_grab.hpp"
 
 
 #include "controllers/me_ct_hand.hpp"
 #include "controllers/me_controller_tree_root.hpp"
+#include "controllers/me_ct_scheduler2.h"
 
 #include "bml_target.hpp"
 #include "bml_xml_consts.hpp"
 #include "sbm/xercesc_utils.hpp"
 #include "sbm/BMLDefs.h"
-#include <sb/SBSkeleton.h>
 #include <sb/SBReach.h>
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
@@ -54,7 +48,7 @@ using namespace xml_utils;
 BehaviorRequestPtr BML::parse_bml_grab( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) {
     
 	const XMLCh* tag      = elem->getTagName();	
-	MeCtHand* handCt = nullptr;
+	boost::intrusive_ptr<MeCtHand> handCt;
 	const XMLCh* attrHandle = elem->getAttribute( BMLDefs::ATTR_HANDLE );
 	std::string handle = "";
 	if( attrHandle && XMLString::stringLen( attrHandle ) ) {

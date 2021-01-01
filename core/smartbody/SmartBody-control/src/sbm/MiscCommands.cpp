@@ -92,7 +92,7 @@ int set_attribute( SbmPawn* pawn, std::string& attribute, srArgBuffer& args)
 		}
 		// is there a function that returns an SkJoint* and not a const SkJoint*?
 		// That would make this next line of code unnecessary.
-		SkJoint* editableJoint = const_cast<SkJoint*>(joint);
+		auto* editableJoint = const_cast<SkJoint*>(joint);
 		editableJoint->mass(mass);
 		//SmartBody::util::log("Set joint '%s' on character '%s' to mass '%f'.", jointName.c_str(), pawn->name, mass);
 		return CMD_SUCCESS;
@@ -336,8 +336,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 
 		pawn_p = scene->createPawn(pawn_name );
 		pawn_p->setClassType("pawn");
-		SkSkeleton* skeleton = new SmartBody::SBSkeleton();
-		skeleton->ref();
+		boost::intrusive_ptr<SkSkeleton> skeleton = new SmartBody::SBSkeleton();
 		std::string skel_name = pawn_name+"-skel";
 		skeleton->setName( skel_name);
 		// Init channels
@@ -349,8 +348,8 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 			std::stringstream strstr;		
 			strstr << "ERROR: Unable to initialize SbmPawn \"" << pawn_name << "\".";
 			SmartBody::util::log(strstr.str().c_str());
+			//TODO: should we really delete here without removing from the scene?
 			delete pawn_p;
-			skeleton->unref();
 			return err;
 		}
 
@@ -592,8 +591,7 @@ int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 
 	pawn_p = scene->createPawn( pawn_and_attribute.c_str() );
 
-	SkSkeleton* skeleton = new SmartBody::SBSkeleton();
-	skeleton->ref();
+	boost::intrusive_ptr<SkSkeleton> skeleton = new SmartBody::SBSkeleton();
 	std::string skel_name = pawn_and_attribute+"-skel";
 	skeleton->setName( skel_name.c_str() );
 	// Init channels
@@ -610,14 +608,12 @@ int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 	if( err != CMD_SUCCESS ) {
 		SmartBody::util::log("ERROR: Unable to initialize SbmPawn \"%s\".", pawn_and_attribute.c_str() );
 		delete pawn_p;
-		skeleton->unref();
 		return err;
 	}
 
 	if( err != CMD_SUCCESS )	{
 		SmartBody::util::log("ERROR: SbmPawn pawn_map.insert(..) \"%s\" FAILED", pawn_and_attribute.c_str() );
 		delete pawn_p;
-		skeleton->unref();
 		return err;
 	}
 
@@ -1000,7 +996,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 							{
 								// reset all of the visemes and action units to zero
 								// clear away all the controllers on the head schedule
-								MeCtScheduler2* scheduler = character->head_sched_p;
+								auto& scheduler = character->head_sched_p;
 								if (!scheduler)
 								{
 									SmartBody::util::log("No scheduler available");
@@ -1008,10 +1004,10 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 								}
 								std::vector<MeCtScheduler2::TrackPtr> tracksToRemove;
 								MeCtScheduler2::VecOfTrack tracks = scheduler->tracks();
-								for (auto track : tracks)
+								for (const auto& track : tracks)
 								{
-										MeController* controller = track->animation_ct();
-									MeCtChannelWriter* channelWriter = dynamic_cast<MeCtChannelWriter*>(controller);
+									const auto& controller = track->animation_ct();
+									MeCtChannelWriter* channelWriter = dynamic_cast<MeCtChannelWriter*>(controller.get());
 									if (channelWriter)
 									{
 										tracksToRemove.emplace_back(track);
@@ -1283,9 +1279,9 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 							int n = track_vec.size();
 							for( int i = 0; i < n; i++ )	{
 								MeCtScheduler2::TrackPtr t_p = track_vec[ i ];
-								MeCtBlend* blend = dynamic_cast<MeCtBlend*>(t_p->blending_ct()); 
-								MeController* ct_p = t_p->animation_ct();
-								MeCtGaze* gaze_p = dynamic_cast<MeCtGaze*> (ct_p);
+								MeCtBlend* blend = dynamic_cast<MeCtBlend*>(t_p->blending_ct().get());
+								const auto& ct_p = t_p->animation_ct();
+								MeCtGaze* gaze_p = dynamic_cast<MeCtGaze*> (ct_p.get());
 								if( gaze_p )	{	
 									if (blend) {
 										// don't fade gaze controllers that are scheduled 
@@ -1529,23 +1525,11 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 										std::string tok = args.read_token();
 										if (tok == "on")
 										{
-											SmartBody::MiniBrain* miniBrain = character->getMiniBrain();
-											if (miniBrain)
-											{
-												delete miniBrain;
-											}
-											miniBrain = new SmartBody::MiniBrain();
-											character->setMiniBrain(miniBrain);
+											character->setMiniBrain(std::make_unique<SmartBody::MiniBrain>());
 											SmartBody::util::log("Minibrain for character %s is now on", character->getName().c_str());
 										}
 										else if (tok == "off")
 										{
-											SmartBody::MiniBrain* miniBrain = character->getMiniBrain();
-											if (miniBrain)
-											{
-												delete miniBrain;
-											}
-											
 											character->setMiniBrain(nullptr);
 											SmartBody::util::log("Minibrain for character %s is now off", character->getName().c_str());
 										}

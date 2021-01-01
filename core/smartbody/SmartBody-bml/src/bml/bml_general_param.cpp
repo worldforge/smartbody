@@ -20,7 +20,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include <sb/SBScene.h>
@@ -32,6 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "bml_xml_consts.hpp"
 #include "sbm/BMLDefs.h"
 #include "controllers/me_ct_channel_writer.hpp"
+#include "controllers/me_ct_scheduler2.h"
 
 
 
@@ -95,7 +95,7 @@ BehaviorRequestPtr BML::parse_bml_param( DOMElement* elem, const std::string& un
 		return BehaviorRequestPtr();
 	}
 
-	MeCtChannelWriter * channelWriter = new MeCtChannelWriter();
+	boost::intrusive_ptr<MeCtChannelWriter> channelWriter = new MeCtChannelWriter();
 	// Name controller with behavior unique_id
 	ostringstream name;
 	name << unique_id;

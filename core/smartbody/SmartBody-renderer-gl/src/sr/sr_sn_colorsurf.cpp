@@ -34,7 +34,6 @@ SrSnColorSurf::SrSnColorSurf ( const char* classname ) : SrSnShapeBase ( classna
 {
 	//SR_TRACE5 ( "Protected Constructor" );
 	_model = new SrModel;
-	_model->ref();
 	surfaceScale = SrVec(1,1,1);
 }
 
@@ -42,22 +41,15 @@ SrSnColorSurf::SrSnColorSurf ( SrModel* m ) : SrSnShapeBase ( class_name )
 {
 	//SR_TRACE5 ( "Constructor" );
 	_model = m? m : new SrModel;
-	_model->ref();
 	surfaceScale = SrVec(1,1,1);
 }
 
-SrSnColorSurf::~SrSnColorSurf ()
-{
-	//SR_TRACE5 ( "Destructor" );
-	_model->unref();
-}
+SrSnColorSurf::~SrSnColorSurf () = default;
 
 void SrSnColorSurf::model ( SrModel* m )
 {
 	if ( _model==m ) return;
-	_model->unref();
 	_model = m? m : new SrModel;
-	_model->ref();
 	changed(true);
 }
 

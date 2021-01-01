@@ -102,15 +102,13 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 	srSnModelStatic->shape(*model);
 	srSnModelStatic->shape().name	= model->name;
 	mesh->dMeshStatic_p.emplace_back(srSnModelStatic);
-	srSnModelStatic->ref();
-	
+
 	auto* srSnModelDynamic		= new SrSnModel();
 	srSnModelDynamic->shape(*model);
 	srSnModelDynamic->changed(true);
 	srSnModelDynamic->visible(false);
 	srSnModelDynamic->shape().name = model->name;
 	mesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
-	srSnModelDynamic->ref();
 
 	mesh->buildSkinnedVertexBuffer();
 

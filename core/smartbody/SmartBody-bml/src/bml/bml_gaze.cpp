@@ -36,6 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/xercesc_utils.hpp"
 #include "sbm/BMLDefs.h"
 #include "controllers/me_controller_tree_root.hpp"
+#include "controllers/me_ct_scheduler2.h"
 #include "SBUtilities.h"
 
 
@@ -304,7 +305,7 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 		return BehaviorRequestPtr();
 	}
 
-	MeCtGaze* gaze_ct = nullptr;
+	boost::intrusive_ptr<MeCtGaze> gaze_ct;
 
 	std::string handle = xml_parse_string( BMLDefs::ATTR_HANDLE, elem );
 	if( !handle.empty() )	{

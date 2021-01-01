@@ -37,38 +37,38 @@ public:
 	protected:
 		static std::string CONTEXT_TYPE;
 	public:
-		Context( MeCtMotionPlayer* container, MeControllerContext* context = nullptr )
+		explicit Context( MeCtMotionPlayer* container, MeControllerContext* context = nullptr )
 			:	MeCtContainer::Context( container, context )
 		{}
 
-		const std::string& context_type() const {	return CONTEXT_TYPE; }
-		void child_channels_updated( MeController* child );
+		const std::string& context_type() const override {	return CONTEXT_TYPE; }
+		void child_channels_updated( MeController* child ) override;
 	};
 
 public:
-	MeCtMotionPlayer(SbmCharacter* c);
-	~MeCtMotionPlayer();
+	explicit MeCtMotionPlayer(SbmCharacter* c);
+	~MeCtMotionPlayer() override;
 
-	void init(SmartBody::SBPawn* pawn, std::string name, double n);
+	void init(SmartBody::SBPawn* pawn, const std::string& name, double n);
 
 	void setFrameNum(double n);
-	double getFrameNum();
+	double getFrameNum() const;
 
 	void setMotionName(const std::string& name);
 	const std::string& getMotionName();
 
 	void setActive(bool a);
-	bool getActive();
+	bool getActive() const;
 
-	virtual void controller_map_updated();
-    virtual SkChannelArray& controller_channels();
-    virtual double controller_duration();
-	virtual const std::string& controller_type() const {return CONTROLLER_TYPE;}
-	virtual bool controller_evaluate( double t, MeFrameData& frame );
+	void controller_map_updated() override;
+    SkChannelArray& controller_channels() override;
+    double controller_duration() override;
+	const std::string& controller_type() const override {return CONTROLLER_TYPE;}
+	bool controller_evaluate( double t, MeFrameData& frame ) override;
 
 private:
 	SbmCharacter*					character;
-	MeController*					controller;		
+	boost::intrusive_ptr<MeController>					controller;
 	SkChannelArray					channels;
 
 	double							frameNum;

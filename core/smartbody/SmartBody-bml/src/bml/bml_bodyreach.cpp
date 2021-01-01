@@ -19,21 +19,17 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <map>
 
-#include <xercesc/util/XMLStringTokenizer.hpp>
-
 #include <sr/sr_vec.h>
-#include <sr/sr_alg.h>
 
 #include "bml_bodyreach.hpp"
 
 
 #include "controllers/me_ct_example_body_reach.hpp"
 #include "controllers/me_controller_tree_root.hpp"
+#include "controllers/me_ct_scheduler2.h"
 #include <sb/SBCharacter.h>
 #include "SBUtilities.h"
 #include "bml_target.hpp"
@@ -72,7 +68,7 @@ using namespace xml_utils;
 BehaviorRequestPtr BML::parse_bml_bodyreach( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) {
     const XMLCh* tag      = elem->getTagName();
 
-	MeCtExampleBodyReach* bodyReachCt = nullptr;
+	boost::intrusive_ptr<MeCtExampleBodyReach> bodyReachCt;
 	SbmCharacter* curCharacter = const_cast<SbmCharacter*>(request->actor);
 	SmartBody::SBCharacter* curSBChar = dynamic_cast<SmartBody::SBCharacter*>(curCharacter);
 	SmartBody::SBReach* reach = curSBChar->getReach();
@@ -261,7 +257,6 @@ BehaviorRequestPtr BML::parse_bml_bodyreach( DOMElement* elem, const std::string
 // 		bodyReachCt->setFadeOut(fadeOutTime);
 
 	boost::shared_ptr<MeControllerRequest> ct_request;
-	ct_request.reset();
 	if (bCreateNewController)
 	{
 		ct_request.reset( new MeControllerRequest( unique_id, localId, bodyReachCt, request->actor->reach_sched_p, behav_syncs ) );

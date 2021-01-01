@@ -940,8 +940,8 @@ void BehaviorWindow::processMotionRequest(BML::MotionRequest* motionRequest, nle
 	*/
 
 
-	MeController* animController = motionRequest->anim_ct;
-	MeCtMotion* motion = dynamic_cast<MeCtMotion*>(animController);
+	auto& animController = motionRequest->anim_ct;
+	MeCtMotion* motion = dynamic_cast<MeCtMotion*>(animController.get());
 	if (motion)
 	{ 
 		/*
@@ -1050,9 +1050,9 @@ void BehaviorWindow::processControllerRequest(BML::MeControllerRequest* controll
 											  double triggerTime, BML::BehaviorSchedulerConstantSpeed* constantSpeedScheduler, 
 											  std::map<std::string, double>& syncMap, std::vector<std::pair<RequestMark*, std::string> >& untimedMarks)
 {
-	MeController* controller = controllerRequest->anim_ct;
+	auto& controller = controllerRequest->anim_ct;
 	
-	MeCtGaze* gazeController = dynamic_cast<MeCtGaze*>(controller);
+	MeCtGaze* gazeController = dynamic_cast<MeCtGaze*>(controller.get());
 	if (gazeController)
 	{
 		RequestTrack* track = new RequestTrack();
@@ -1159,8 +1159,8 @@ void BehaviorWindow::processControllerRequest(BML::MeControllerRequest* controll
 		RequestTrack* track = new RequestTrack();
 		track->setName(controller->controller_type());
 		model->addTrack(track);
-		MeController* animController = postureRequest->anim_ct;
-		MeCtMotion* motion = dynamic_cast<MeCtMotion*>(animController);
+		auto& animController = postureRequest->anim_ct;
+		MeCtMotion* motion = dynamic_cast<MeCtMotion*>(animController.get());
 		if (motion)
 		{ 
 			RequestTrack* track = new RequestTrack();

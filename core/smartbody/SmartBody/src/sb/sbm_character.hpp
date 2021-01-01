@@ -22,7 +22,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define SBM_CHARACTER_HPP
 
 #include <sb/SBTypes.h>
-#include <float.h>
+#include <cfloat>
 #include <iostream>
 #include <string>
 #include <set>
@@ -140,12 +140,12 @@ protected:
 	int 	viseme_channel_count;
 	std::string _diphoneSetName;
 
-	SmartBody::SBFaceDefinition* _faceDefinition;
+	std::unique_ptr<SmartBody::SBFaceDefinition> _faceDefinition;
 
 	bool _isControllerPruning;
 
 	SmartBody::Nvbg* _nvbg;
-	SmartBody::MiniBrain* _miniBrain;	
+	std::unique_ptr<SmartBody::MiniBrain> _miniBrain;
 public:
 	//  Methods
 	SbmCharacter();
@@ -153,7 +153,7 @@ public:
 	SbmCharacter( const char* character_name, std::string type);
 	~SbmCharacter() override;
 	
-	int init( SkSkeleton* skeleton_p,
+	int init( boost::intrusive_ptr<SkSkeleton> skeleton_p,
 			  SmartBody::SBFaceDefinition* faceDefinition,
 			  std::map< std::string, GeneralParam * >* param_map,
 			  const char* classType);
@@ -212,41 +212,41 @@ public:
 
 	// Prioritized Schedules for behaviors (known as "blocking" in manual animation)
 	// TODO: Rename by body part, rather than controller type
-	MeCtSchedulerClass*	posture_sched_p; // legs / stance / posture
-	MeCtSchedulerClass*	motion_sched_p;  // full body motions
-	MeCtSchedulerClass*	gaze_sched_p;    // back / chest / spine
+	boost::intrusive_ptr<MeCtSchedulerClass>	posture_sched_p; // legs / stance / posture
+	boost::intrusive_ptr<MeCtSchedulerClass>	motion_sched_p;  // full body motions
+	boost::intrusive_ptr<MeCtSchedulerClass>	gaze_sched_p;    // back / chest / spine
 	// TODO: Arms
-	MeCtSchedulerClass* constraint_sched_p;
-	MeCtSchedulerClass*	reach_sched_p; // reaching
-	MeCtSchedulerClass*	grab_sched_p; // grabbing (temp)
-	MeCtSchedulerClass*	head_sched_p; // neck / head orientation
-	MeCtSchedulerClass*	param_sched_p; // general parameters
-	MeCtSchedulerClass*	overlayMotion_sched_p;  // full body motions
+	boost::intrusive_ptr<MeCtSchedulerClass>    constraint_sched_p;
+	boost::intrusive_ptr<MeCtSchedulerClass>	reach_sched_p; // reaching
+	boost::intrusive_ptr<MeCtSchedulerClass>	grab_sched_p; // grabbing (temp)
+	boost::intrusive_ptr<MeCtSchedulerClass>	head_sched_p; // neck / head orientation
+	boost::intrusive_ptr<MeCtSchedulerClass>	param_sched_p; // general parameters
+	boost::intrusive_ptr<MeCtSchedulerClass>	overlayMotion_sched_p;  // full body motions
 
-	MeCtEyeLidRegulator*	eyelid_reg_ct_p;
-	MeCtFace*				face_ct;
-	MeCtEyeLid*				eyelid_ct;
+	boost::intrusive_ptr<MeCtEyeLidRegulator>	eyelid_reg_ct_p;
+	boost::intrusive_ptr<MeCtFace>				face_ct;
+	boost::intrusive_ptr<MeCtEyeLid>				eyelid_ct;
 
-	MeCtPhysicsController* physics_ct;
-	MeCtDataReceiver*	datareceiver_ct;
-	MeCtParamAnimation* param_animation_ct;			// layer0
-	MeCtParamAnimation* param_animation_ct_layer1;	// layer1
-	MeCtParamAnimation* param_animation_ct_layer2;	// layer2
-	MeCtParamAnimation* head_param_anim_ct;
-	
-	MeCtMotionPlayer*	motionplayer_ct;
-	MeCtSaccade*		saccade_ct;
-	MeCtNoiseController* noise_ct;
-	MeCtMotionRecorder*  record_ct;
-	MeCtBreathing*			breathing_p;
-	MeCtBasicLocomotion*	basic_locomotion_ct;
-	MeCtNewLocomotion*		new_locomotion_ct;
-	MeCtPosePostProcessing* postprocess_ct;
-	MeCtMotionGraph*        motiongraph_ct;
-	MeCtGenericHand*		generic_hand_ct;
-	RealTimeLipSyncController* realTimeLipSyncCt;
+	boost::intrusive_ptr<MeCtPhysicsController> physics_ct;
+	boost::intrusive_ptr<MeCtDataReceiver>	datareceiver_ct;
+	boost::intrusive_ptr<MeCtParamAnimation> param_animation_ct;			// layer0
+	boost::intrusive_ptr<MeCtParamAnimation> param_animation_ct_layer1;	// layer1
+	boost::intrusive_ptr<MeCtParamAnimation> param_animation_ct_layer2;	// layer2
+	boost::intrusive_ptr<MeCtParamAnimation> head_param_anim_ct;
 
-	float	*viseme_history_arr;
+	boost::intrusive_ptr<MeCtMotionPlayer>	motionplayer_ct;
+	boost::intrusive_ptr<MeCtSaccade>		saccade_ct;
+	boost::intrusive_ptr<MeCtNoiseController> noise_ct;
+	boost::intrusive_ptr<MeCtMotionRecorder>  record_ct;
+	boost::intrusive_ptr<MeCtBreathing>			breathing_p;
+	boost::intrusive_ptr<MeCtBasicLocomotion>	basic_locomotion_ct;
+	boost::intrusive_ptr<MeCtNewLocomotion>		new_locomotion_ct;
+	boost::intrusive_ptr<MeCtPosePostProcessing> postprocess_ct;
+	boost::intrusive_ptr<MeCtMotionGraph>        motiongraph_ct;
+	boost::intrusive_ptr<MeCtGenericHand>		generic_hand_ct;
+	boost::intrusive_ptr<RealTimeLipSyncController> realTimeLipSyncCt;
+
+	std::vector<float>	viseme_history_arr;
 	int 	viseme_channel_start_pos;
 	int 	viseme_channel_end_pos;
 
@@ -339,7 +339,7 @@ public:
 	virtual void setNvbg(SmartBody::Nvbg* nvbg);
 	virtual SmartBody::Nvbg* getNvbg();
 
-	virtual void setMiniBrain(SmartBody::MiniBrain* mini);
+	virtual void setMiniBrain(std::unique_ptr<SmartBody::MiniBrain> mini);
 	virtual SmartBody::MiniBrain* getMiniBrain();
 	int writeSkeletonHierarchy(std::string file, double scale);
 

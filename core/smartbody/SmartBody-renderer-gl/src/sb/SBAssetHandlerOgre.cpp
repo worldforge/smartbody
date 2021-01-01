@@ -143,7 +143,6 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 				srSnModelStatic->shape(*i);
 				srSnModelStatic->shape().name = i->name;
 				mesh->dMeshStatic_p.emplace_back(srSnModelStatic);
-				srSnModelStatic->ref();
 
 				auto* srSnModelDynamic = new SrSnModel();
 				srSnModelDynamic->shape(*i);
@@ -151,8 +150,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 				srSnModelDynamic->visible(false);
 				srSnModelDynamic->shape().name = i->name;
 				mesh->dMeshDynamic_p.emplace_back(srSnModelDynamic);
-				srSnModelDynamic->ref();
-			
+
 				delete i;
 			}
 			assets.emplace_back(std::move(mesh));

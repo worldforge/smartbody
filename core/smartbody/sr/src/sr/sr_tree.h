@@ -30,6 +30,7 @@
 #include "SBABI.h"
 # include <sr/sr_class_manager.h>
 # include <sr/sr_output.h>
+#include "sr/sr_shared_ptr.hpp"
 
 /*! \class SrTreeNode sr_tree_node.h
     \brief A red-black node for SrTree
@@ -84,7 +85,7 @@ class SrTreeBase
  { private :
     SrTreeNode *_root;        // the root of the tree
     SrTreeNode *_cur;         // the current element of the tree
-    SrClassManagerBase* _man; // manager of user data, that derives SrListNode
+    boost::intrusive_ptr<SrClassManagerBase> _man; // manager of user data, that derives SrListNode
     int _elements;            // number of elements of the tree
     int  _search_node ( const SrTreeNode* key );
     void _rotate_right ( SrTreeNode* x );

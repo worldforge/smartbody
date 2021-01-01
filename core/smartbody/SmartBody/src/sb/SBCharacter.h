@@ -66,7 +66,7 @@ class SBCharacter : public SbmCharacter
 
 		SBAPI void setVoice(const std::string& type);
 		SBAPI void setVoiceCode(const std::string& param);
-		SBAPI const std::string getVoice();
+		SBAPI std::string getVoice();
 		SBAPI const std::string& getVoiceCode();
 
 		SBAPI void setVoiceBackup(const std::string& type);
@@ -110,7 +110,7 @@ class SBCharacter : public SbmCharacter
 		SBAPI void startMotionGraphRandomWalk();
 
 		SBAPI void setUseJointConstraint(bool bUseConstraint);
-		SBAPI bool getUseJointConstraint();
+		SBAPI bool getUseJointConstraint() const;
 		SBAPI void addJointTrajectoryConstraint(const std::string& jointName, const std::string& refJointName);
 		SBAPI TrajectoryRecord* getJointTrajectoryConstraint(const std::string& jointName);
 		SBAPI std::vector<std::string> getJointConstraintNames();

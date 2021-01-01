@@ -40,9 +40,9 @@ using namespace std;
 using namespace BML;
 using namespace xml_utils;
 
-BehaviorRequestPtr BML::parse_bml_saccade( DOMElement* elem, const std::string& unique_id, BML::BehaviorSyncPoints& behav_syncs, bool required, BML::BmlRequestPtr request, SmartBody::SBScene* scene )
+BehaviorRequestPtr BML::parse_bml_saccade( DOMElement* elem, const std::string& unique_id, BML::BehaviorSyncPoints& behav_syncs, bool required, const BML::BmlRequestPtr& request, SmartBody::SBScene* scene )
 {
-	MeCtSaccade* saccade_ct = request->actor->saccade_ct;
+	auto& saccade_ct = request->actor->saccade_ct;
 	if (!saccade_ct)
 	{
 		SmartBody::util::log("Character %s does not have a saccade controller, so cannot saccade.", request->actor->getName().c_str());
@@ -86,7 +86,7 @@ BehaviorRequestPtr BML::parse_bml_saccade( DOMElement* elem, const std::string& 
 	//-----
 	std::string bMode;
 	xml_utils::xml_translate(&bMode, elem->getAttribute(BMLDefs::ATTR_MODE));
-	if (bMode != "")
+	if (!bMode.empty())
 	{
 		if (bMode == "talk")
 			saccade_ct->setBehaviorMode(MeCtSaccade::Talking);
@@ -134,7 +134,7 @@ BehaviorRequestPtr BML::parse_bml_saccade( DOMElement* elem, const std::string& 
 
 	std::string finishFlag;
 	xml_utils::xml_translate(&finishFlag, elem->getAttribute(BMLDefs::ATTR_FINISH));
-	if (finishFlag != "")
+	if (!finishFlag.empty())
 	{
 		if (finishFlag == "true" || finishFlag == "TRUE")
 			saccade_ct->setValid(false);

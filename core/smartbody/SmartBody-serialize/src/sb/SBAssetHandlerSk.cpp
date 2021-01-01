@@ -65,7 +65,6 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSk::getAssets(const std::str
 		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalSkeletonScale");
 	if( skeleton->loadSk( input, scale) )
 	{
-		skeleton->ref();
 		skeleton->setFileName(convertedPath);
 		skeleton->setName(fileName + extension);
 		assets.emplace_back(std::move(skeleton));

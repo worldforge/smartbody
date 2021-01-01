@@ -19,14 +19,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-#include <iostream>
-#include <sstream>
 #include <string>
 
-#include <xercesc/util/XMLStringTokenizer.hpp>
 
 #include <sr/sr_vec.h>
-#include <sr/sr_alg.h>
 #include "gwiz_math.h"
 
 #include "bml_constraint.hpp"
@@ -34,6 +30,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "controllers/me_ct_constraint.hpp"
 #include "controllers/me_controller_tree_root.hpp"
+#include "controllers/me_ct_scheduler2.h"
 #include <sb/SBCharacter.h>
 
 #include "bml_target.hpp"
@@ -56,7 +53,7 @@ BehaviorRequestPtr BML::parse_bml_constraint( DOMElement* elem, const std::strin
 		return BehaviorRequestPtr();
 	}
 
-	MeCtConstraint* constraintCt = nullptr;
+	boost::intrusive_ptr<MeCtConstraint> constraintCt;
 
 	std::string handle = xml_parse_string(BMLDefs::ATTR_HANDLE, elem, "", REQUIRED_ATTR);//"";
 	if( !handle.empty() ) {		
@@ -118,7 +115,7 @@ BehaviorRequestPtr BML::parse_bml_constraint( DOMElement* elem, const std::strin
 	if (!constraintCt)
 	{
 		SmartBody::SBCharacter* chr = dynamic_cast<SmartBody::SBCharacter*>(const_cast<SbmCharacter*>(request->actor));
-		constraintCt = new MeCtConstraint(chr->getSkeleton());			
+		constraintCt.reset(new MeCtConstraint(chr->getSkeleton()));
 		float characterHeight = chr->getHeight();		
 		constraintCt->handle(handle);
 		constraintCt->init( chr,rootJointName.c_str() );
@@ -152,7 +149,7 @@ BehaviorRequestPtr BML::parse_bml_constraint( DOMElement* elem, const std::strin
 	if (fadeOutTime >= 0.0)
 		constraintCt->setFadeOut( fadeOutTime );
 
-	BehaviorSyncPoints::iterator end = behav_syncs.sync_end();	
+	auto end = behav_syncs.sync_end();
 	
 	BML::NamedSyncPointPtr syncPtr = (*end);
 	

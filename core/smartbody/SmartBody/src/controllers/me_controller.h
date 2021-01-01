@@ -76,7 +76,7 @@ private :
 	double _stopTime;         // time when the controller was stopped
 
 	//std::string _handle;	  // handle of the controller - used to match requests to changes in the controller parameters
-	MePrunePolicy* _prune_policy;  // controller tree pruning policy for this controller
+	boost::intrusive_ptr<MePrunePolicy> _prune_policy;  // controller tree pruning policy for this controller
 
 
 

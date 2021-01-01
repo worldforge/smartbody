@@ -36,18 +36,18 @@ protected:
 	srLinearCurve	_curve;
 
 public:
-	MeCtTimeShiftWarp( MeController* child = nullptr );
+	explicit MeCtTimeShiftWarp( MeController* child = nullptr );
 	// virtual ~MeCtTimeShiftWarp(); // Default destructor call ~MeCtUnary to delete child
 
 	srLinearCurve& get_curve() { return _curve; }
 
-    const std::string& controller_type() const;
+    const std::string& controller_type() const override;
 
-    double controller_duration();
+    double controller_duration() override;
     //SkChannelArray& controller_channels(); // implemented in MeCtUnary
 
 protected:
-	bool controller_evaluate( double t, MeFrameData & frame );
+	bool controller_evaluate( double t, MeFrameData & frame ) override;
 };
 
 

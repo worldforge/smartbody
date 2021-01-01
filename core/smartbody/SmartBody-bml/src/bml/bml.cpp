@@ -36,13 +36,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "bml_event.hpp"
 
 #include "controllers/me_ct_blend.hpp"
-#include "controllers/me_ct_blend.hpp"
 #include "controllers/me_ct_param_animation.h"
 #include "controllers/me_ct_scheduler2.h"
 #include "controllers/me_ct_gaze.h"
 #include "controllers/me_controller_tree_root.hpp"
-#include "controllers/me_ct_scheduler2.h"
-#include "controllers/me_ct_blend.hpp"
+
 
 #include "sbm/BMLDefs.h"
 #include <sb/SBSimulationManager.h>
@@ -53,10 +51,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBMotion.h>
 #include <sb/SBGestureMapManager.h>
 #include <sb/SBGestureMap.h>
-#include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
 #include "SBUtilities.h"
 #include <boost/lexical_cast.hpp>
+#include <utility>
 
 using namespace std;
 using namespace BML;
@@ -210,12 +208,12 @@ BmlRequest::BmlRequest( const SbmCharacter* actor, const string & actorId, const
 	actorId( actorId ),
 	recipientId( recipientId ),
 #else
-BmlRequest::BmlRequest( SbmCharacter* actor, const string & actorId, const string & requestId, const string & msgId, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> xmlDoc )
+BmlRequest::BmlRequest( SbmCharacter* actor, string  actorId, string  requestId, string  msgId, std::unique_ptr<XERCES_CPP_NAMESPACE::DOMDocument> xmlDoc )
 :	actor( actor ),
-	actorId( actorId ),
+	actorId(std::move( actorId )),
 #endif
-	requestId( requestId ),
-	msgId( msgId ),
+	requestId(std::move( requestId )),
+	msgId(std::move( msgId )),
 	doc (std::move(xmlDoc))
 {
 }
@@ -459,10 +457,10 @@ void showGestureSchedule(std::vector<GestureRequest*>& gestures)
 	double earliestTime = 9999999.0;
 	for (size_t g = 0; g < gestures.size(); g++)
 	{
-		if (gestures[g]->filtered == true)
+		if (gestures[g]->filtered)
 			continue;
 		
-		MeCtMotion* motionController = dynamic_cast<MeCtMotion*> (gestures[g]->anim_ct);
+		MeCtMotion* motionController = dynamic_cast<MeCtMotion*> (gestures[g]->anim_ct.get());
 		double currGestureReadyAt = (double)gestures[g]->behav_syncs.sync_ready()->time();
 		double currGestureStrokeStartAt = (double)gestures[g]->behav_syncs.sync_stroke_start()->time();
 		double currGestureStrokeAt = (double)gestures[g]->behav_syncs.sync_stroke()->time();
@@ -477,7 +475,7 @@ void showGestureSchedule(std::vector<GestureRequest*>& gestures)
 		if (gestures[g]->filtered == true)
 			continue;
 		
-		MeCtMotion* motionController = dynamic_cast<MeCtMotion*> (gestures[g]->anim_ct);
+		MeCtMotion* motionController = dynamic_cast<MeCtMotion*> (gestures[g]->anim_ct.get());
 		double currGestureReadyAt = (double)gestures[g]->behav_syncs.sync_ready()->time();
 		double currGestureStrokeStartAt = (double)gestures[g]->behav_syncs.sync_stroke_start()->time();
 		double currGestureStrokeAt = (double)gestures[g]->behav_syncs.sync_stroke()->time();
@@ -518,10 +516,10 @@ bool canCoarticulate(GestureRequest* a, GestureRequest* b, bool showLog)
 	if (a->workRelaxTime < b->workReadyTime)
 		return true;
 
-	MeCtMotion* aController = dynamic_cast<MeCtMotion*> (a->anim_ct);
+	MeCtMotion* aController = dynamic_cast<MeCtMotion*> (a->anim_ct.get());
 	SBMotion* aMotion = dynamic_cast<SBMotion*>(aController->motion());
 
-	MeCtMotion* bController = dynamic_cast<MeCtMotion*> (b->anim_ct);
+	MeCtMotion* bController = dynamic_cast<MeCtMotion*> (b->anim_ct.get());
 	SBMotion* bMotion = dynamic_cast<SBMotion*>(bController->motion());
 
 	// make sure coarticulation can occur within speed constraints
@@ -587,8 +585,8 @@ int evaluateGestureCompatibility(std::vector<GestureRequest*>& gestures, bool sh
 {
 	std::sort(gestures.begin(), gestures.end(), prioritySortFunction);
 	std::vector<GestureRequest*> timeSortedGestures;
-	for (size_t i = 0; i < gestures.size(); i++)
-		timeSortedGestures.emplace_back(gestures[i]);
+	for (auto & gesture : gestures)
+		timeSortedGestures.emplace_back(gesture);
 	std::sort(timeSortedGestures.begin(), timeSortedGestures.end(), timeSortFunction);
 
 	// evaluate by priority each gesture and the next candidate gesture
@@ -629,9 +627,9 @@ int evaluateGestureCompatibility(std::vector<GestureRequest*>& gestures, bool sh
 			{
 				if (showLog)
 				{
-					MeCtMotion* aController = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct);
+					MeCtMotion* aController = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct.get());
 					SBMotion* aMotion = dynamic_cast<SBMotion*>(aController->motion());
-					MeCtMotion* bController = dynamic_cast<MeCtMotion*> (timeSortedGestures[nextGesture]->anim_ct);
+					MeCtMotion* bController = dynamic_cast<MeCtMotion*> (timeSortedGestures[nextGesture]->anim_ct.get());
 					SBMotion* bMotion = dynamic_cast<SBMotion*>(bController->motion());
 
 					SmartBody::util::log("Gesture %s filtered because lower priority than gesture %s", aMotion->getName().c_str(), bMotion->getName().c_str());
@@ -642,9 +640,9 @@ int evaluateGestureCompatibility(std::vector<GestureRequest*>& gestures, bool sh
 			{
 				if (showLog)
 				{
-					MeCtMotion* aController = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct);
+					MeCtMotion* aController = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct.get());
 					SBMotion* aMotion = dynamic_cast<SBMotion*>(aController->motion());
-					MeCtMotion* bController = dynamic_cast<MeCtMotion*> (timeSortedGestures[nextGesture]->anim_ct);
+					MeCtMotion* bController = dynamic_cast<MeCtMotion*> (timeSortedGestures[nextGesture]->anim_ct.get());
 					SBMotion* bMotion = dynamic_cast<SBMotion*>(bController->motion());
 
 					SmartBody::util::log("Gesture %s filtered because lower priority than gesture %s", bMotion->getName().c_str(), aMotion->getName().c_str());
@@ -672,7 +670,7 @@ void coarticulateGestures(std::vector<GestureRequest*>& gestures, bool showLog)
 		}
 			
 
-		MeCtMotion* aController = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct);
+		MeCtMotion* aController = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct.get());
 		SBMotion* aMotion = dynamic_cast<SBMotion*>(aController->motion());
 
 		for (size_t j = i + 1; j < gestures.size(); j++)
@@ -685,7 +683,7 @@ void coarticulateGestures(std::vector<GestureRequest*>& gestures, bool showLog)
 				continue;
 			}
 
-			MeCtMotion* bController = dynamic_cast<MeCtMotion*> (gestures[j]->anim_ct);
+			MeCtMotion* bController = dynamic_cast<MeCtMotion*> (gestures[j]->anim_ct.get());
 			SBMotion* bMotion = dynamic_cast<SBMotion*>(bController->motion());
 
 			// gestures don't overlap at all
@@ -1369,7 +1367,7 @@ void BmlRequest::gestureRequestProcess()
 	for (size_t i = 0; i < gestures.size(); ++i)
 	{
 		// get motion information	
-		MeCtMotion* motion_ct = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct);
+		MeCtMotion* motion_ct = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct.get());
 		SkMotion* motion = motion_ct->motion();
 		SBMotion* sbMotion = dynamic_cast<SBMotion*>(motion);
 		double motionStroke = motion->time_stroke_emphasis();
@@ -1428,7 +1426,7 @@ void BmlRequest::gestureRequestProcess()
 		if (blendTime > 0)	// check the transition speed, decide whether to filter
 		{
 			// check previous gesture hand position
-			MeCtMotion* prev_motion_ct = dynamic_cast<MeCtMotion*> (gestures[j]->anim_ct);
+			MeCtMotion* prev_motion_ct = dynamic_cast<MeCtMotion*> (gestures[j]->anim_ct.get());
 			SkMotion* prevMotion = prev_motion_ct->motion();
 			SBMotion* prevSBMotion = dynamic_cast<SBMotion*> (prevMotion);
 
@@ -1700,17 +1698,17 @@ void BmlRequest::gestureRequestProcess()
 	// LOG in case if something goes wrong
 	if (useGestureLog)
 	{
-		for (size_t i = 0; i < gestures.size(); ++i)
+		for (auto & gesture : gestures)
 		{
 //			if (gestures[i]->filtered)
 //				continue;
-			MeCtMotion* final_motion_ct = dynamic_cast<MeCtMotion*> (gestures[i]->anim_ct);
-			SmartBody::util::log("Gesture %s's (%s) timing: %f, %f, %f, %f, %f, %f, %f", final_motion_ct->motion()->getName().c_str(), gestures[i]->anim_ct->getName().c_str(), 
-				gestures[i]->behav_syncs.sync_start()->time(), gestures[i]->behav_syncs.sync_ready()->time(),
-				gestures[i]->behav_syncs.sync_stroke_start()->time(), gestures[i]->behav_syncs.sync_stroke()->time(), gestures[i]->behav_syncs.sync_stroke_end()->time(),
-				gestures[i]->behav_syncs.sync_relax()->time(), gestures[i]->behav_syncs.sync_end()->time());
+			MeCtMotion* final_motion_ct = dynamic_cast<MeCtMotion*> (gesture->anim_ct.get());
+			SmartBody::util::log("Gesture %s's (%s) timing: %f, %f, %f, %f, %f, %f, %f", final_motion_ct->motion()->getName().c_str(), gesture->anim_ct->getName().c_str(),
+				gesture->behav_syncs.sync_start()->time(), gesture->behav_syncs.sync_ready()->time(),
+				gesture->behav_syncs.sync_stroke_start()->time(), gesture->behav_syncs.sync_stroke()->time(), gesture->behav_syncs.sync_stroke_end()->time(),
+				gesture->behav_syncs.sync_relax()->time(), gesture->behav_syncs.sync_end()->time());
 
-			if (gestures[i]->behav_syncs.sync_ready()->time() > gestures[i]->behav_syncs.sync_stroke_start()->time())
+			if (gesture->behav_syncs.sync_ready()->time() > gesture->behav_syncs.sync_stroke_start()->time())
 			{
 				SmartBody::util::log("gestureRequestProcess: should not be here, ready time is bigger than stroke start!");
 			}
@@ -1732,29 +1730,26 @@ void BML::BmlRequest::speechRequestProcess()
 
 	std::map<std::string, float> nodReqTimeMap;
 	std::map<std::string, std::vector<BehaviorRequest*> > groupMap; 
-	for (VecOfBehaviorRequest::iterator i = behaviors.begin(); i != behaviors.end(); ++i) 
+	for (auto & i : behaviors)
 	{
-		BehaviorRequest* behavior = (*i).get();
+		BehaviorRequest* behavior = i.get();
 		float startTime = (float)behavior->behav_syncs.sync_start()->time() - curTime;
 		float readyTime = (float)behavior->behav_syncs.sync_ready()->time() - curTime;
 		float strokeTime = (float)behavior->behav_syncs.sync_stroke()->time() - curTime;
 
 		// group behaviors together
-		if (behavior->group_id != "")
+		if (!behavior->group_id.empty())
 		{
-			if (behavior->group_id != "")
+			auto iter = groupMap.find(behavior->group_id);
+			if (iter == groupMap.end())
 			{
-				std::map<std::string, std::vector<BehaviorRequest*> >::iterator iter = groupMap.find(behavior->group_id);
-				if (iter == groupMap.end())
-				{
-					std::vector<BehaviorRequest*> behVec;
-					behVec.emplace_back(behavior);
-					groupMap.insert(std::make_pair(behavior->group_id, behVec));
-				}
-				else
-				{
-					iter->second.emplace_back(behavior);
-				}
+				std::vector<BehaviorRequest*> behVec;
+				behVec.emplace_back(behavior);
+				groupMap.insert(std::make_pair(behavior->group_id, behVec));
+			}
+			else
+			{
+				iter->second.emplace_back(behavior);
 			}
 		}
 
@@ -1796,11 +1791,11 @@ void BML::BmlRequest::speechRequestProcess()
 			SBJoint* r_wrist = actor->getSkeleton()->getJointByMappedName("r_wrist");
 			if (l_wrist && r_wrist)
 			{
-				MeCtMotion* motionCt = dynamic_cast<MeCtMotion*> (gestureRequest->anim_ct);
+				MeCtMotion* motionCt = dynamic_cast<MeCtMotion*> (gestureRequest->anim_ct.get());
 				if (!motionCt)	continue;
 				SBMotion* sbMotion = dynamic_cast<SBMotion*> (motionCt->motion());
 				if (!sbMotion) continue;
-				if (gestureRequest->group_id == "")	// if group id is not specified, should probably also pass it down to Cerebella
+				if (gestureRequest->group_id.empty())	// if group id is not specified, should probably also pass it down to Cerebella
 					continue;
 
 				behList.emplace_back(gestureRequest->group_id);
@@ -2210,7 +2205,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 			if (!gRequest)
 				continue;
 
-			MeCtMotion* motionCt = dynamic_cast<MeCtMotion*> (gRequest->anim_ct);
+			MeCtMotion* motionCt = dynamic_cast<MeCtMotion*> (gRequest->anim_ct.get());
 			gestureBMLAnimations.emplace_back(motionCt->motion()->getName());
 			if (scene->getBoolAttribute("enableExportProcessedBMLLOG"))
 				SmartBody::util::log("BML gesture use animation: %s, filtered: %s)", motionCt->motion()->getName().c_str(), gRequest->filtered? "true" : "false");
@@ -2687,10 +2682,10 @@ const time_sec BehaviorRequest::TEN_MILLION = (time_sec)(10000000.0f);
 
 
 // methods
-BehaviorRequest::BehaviorRequest( const std::string& unique_id, const std::string& local, const BehaviorSyncPoints& behav_syncs  )
+BehaviorRequest::BehaviorRequest( std::string  unique_id, std::string  local, const BehaviorSyncPoints& behav_syncs  )
 :	behav_syncs( behav_syncs ),
-	unique_id( unique_id ),
-	local_id( local ),
+	unique_id(std::move( unique_id )),
+	local_id(std::move( local )),
 	audioOffset(TIME_UNSET),
 	required(false),
 	group_id(""),
@@ -2698,26 +2693,22 @@ BehaviorRequest::BehaviorRequest( const std::string& unique_id, const std::strin
 {
 
 	//std::cout << "BEHAVIOR REQUEST " << unique_id << " WITH " << behav_syncs.size() << " SYNC POINTS" << std::endl;
-	for (BML::BehaviorSyncPoints::iterator iter = this->behav_syncs.begin(); 
-		iter != this->behav_syncs.end();
-		iter++)
+	for (auto & behav_sync : this->behav_syncs)
 	{
-		BML::NamedSyncPointPtr namedSyncPoint = (*iter);
+		BML::NamedSyncPointPtr namedSyncPoint = behav_sync;
 		std::wstring name = namedSyncPoint.name();
 		BML::time_sec time = namedSyncPoint.time();
 		//std::cout << name.c_str() << ": " << time << std::endl;
 	}
 }
 
-BehaviorRequest::~BehaviorRequest() {
-	// nothing to delete.  Yay for SmartPointers!
-}
+BehaviorRequest::~BehaviorRequest()  = default;
 
 void BehaviorRequest::set_scheduler( BehaviorSchedulerPtr scheduler ) {
-	this->scheduler = scheduler;
+	this->scheduler = std::move(scheduler);
 }
 
-BehaviorSchedulerPtr  BehaviorRequest::get_scheduler() {
+BehaviorSchedulerPtr  BehaviorRequest::get_scheduler() const {
 	return this->scheduler;
 }
 
@@ -2729,7 +2720,7 @@ void BehaviorRequest::schedule( time_sec now ) {
 	if( !scheduler ) {
 		ostringstream buffer;
 		buffer << "BehaviorRequest \"" << unique_id << "\" scheduler not set.";
-		throw SchedulingException( buffer.str().c_str() );
+		throw SchedulingException( buffer.str() );
 	}
 
 	scheduler->schedule( behav_syncs, now );
@@ -2762,37 +2753,27 @@ BehaviorSpan BehaviorRequest::getBehaviorSpan() {
 //  MeControllerRequest
 MeControllerRequest::MeControllerRequest( const std::string& unique_id,
 										  const std::string& localId,
-                                          MeController* anim_ct,
-										  MeCtSchedulerClass* schedule_ct,
+										  const boost::intrusive_ptr<MeController>& anim_ct,
+										  boost::intrusive_ptr<MeCtSchedulerClass> schedule_ct,
 						                  const BehaviorSyncPoints& syncs_in,
 										  MeControllerRequest::SchduleType sched_type )
 :	BehaviorRequest( unique_id, localId, syncs_in ),
 	anim_ct( anim_ct ),
-	schedule_ct( schedule_ct ),
+	schedule_ct( std::move(schedule_ct) ),
 	persistent( false )
 {
-	anim_ct->ref();
-	schedule_ct->ref();
+
 
 	switch( sched_type ) {
 	case LINEAR:
-		set_scheduler( buildSchedulerForController( anim_ct ) );
+		set_scheduler( buildSchedulerForController( anim_ct.get() ) );
 		break;
 	case MANUAL:
 		break;
 	}
 }
 
-MeControllerRequest::~MeControllerRequest() {
-	if( schedule_ct ) {
-		schedule_ct->unref();
-		schedule_ct = nullptr;
-	}
-	if( anim_ct ) {
-		anim_ct->unref();
-		anim_ct = nullptr;
-	}
-}
+MeControllerRequest::~MeControllerRequest() = default;
 
 
 void MeControllerRequest::register_controller_prune_policy( MePrunePolicy* prune_policy ) {
@@ -2818,14 +2799,14 @@ void MeControllerRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScen
 
 	// Name unnamed controllers
 	const std::string& name = anim_ct->getName();
-	if( name=="" ) {
+	if( name.empty() ) {
 		anim_ct->setName( unique_id );
 	}
 
 	if(LOG_CONTROLLER_SCHEDULE) {
 		cout << "MeControllerRequest::schedule(..): \""<<(anim_ct->getName())<<"\" startAt="<<startAt<<",  indt="<<indt<<",  outdt="<<outdt<<endl;
 	}
-	MeCtMotion* motionController = dynamic_cast<MeCtMotion*>(anim_ct);
+	MeCtMotion* motionController = dynamic_cast<MeCtMotion*>(anim_ct.get());
 	if (motionController)
 	{
 		MeCtScheduler2::ScheduleData scheduleData{
@@ -2837,11 +2818,11 @@ void MeControllerRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScen
 				behav_syncs.sync_relax()->time(),
 				behav_syncs.sync_end()->time(),
 		};
-		schedule_ct->schedule( anim_ct, scheduleData);
+		schedule_ct->schedule( anim_ct.get(), scheduleData);
 	}
 	else
 	{
-		MeCtSimpleNod* nod = dynamic_cast<MeCtSimpleNod*>(anim_ct);
+		MeCtSimpleNod* nod = dynamic_cast<MeCtSimpleNod*>(anim_ct.get());
 		if (nod)
 		{
 			MeCtScheduler2::ScheduleData scheduleData{
@@ -2853,11 +2834,11 @@ void MeControllerRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScen
 					behav_syncs.sync_relax()->time(),
 					behav_syncs.sync_end()->time(),
 			};
-			schedule_ct->schedule( anim_ct, scheduleData);
+			schedule_ct->schedule( anim_ct.get(), scheduleData);
 		}
 		else
 		{			
-			schedule_ct->schedule( anim_ct, (double)startAt, (double)endAt, (float)indt, (float)outdt );
+			schedule_ct->schedule( anim_ct.get(), (double)startAt, (double)endAt, (float)indt, (float)outdt );
 		}
 	}
 	// TODO: Adapt speed and end time
@@ -2888,7 +2869,7 @@ void GestureRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene* sc
 		double endAt		= (double)behav_syncs.sync_end()->time();
 
 
-		MeCtMotion* motion_ct = dynamic_cast<MeCtMotion*> (anim_ct);
+		MeCtMotion* motion_ct = dynamic_cast<MeCtMotion*> (anim_ct.get());
 		SkMotion* motion = motion_ct->motion();
 		SBMotion* sbMotion = dynamic_cast<SBMotion*>(motion);
 		double motionStroke = motion->time_stroke_emphasis();
@@ -3058,13 +3039,13 @@ void MeControllerRequest::unschedule( SmartBody::SBScene* scene,
                                       BmlRequestPtr request,
                                       time_sec duration )
 {
-	MeCtScheduler2::TrackPtr track = schedule_ct->track_for_anim_ct( anim_ct );
+	MeCtScheduler2::TrackPtr track = schedule_ct->track_for_anim_ct( anim_ct.get() );
 	if( track ) {
-		MeCtUnary* unary_blend_ct = track->blending_ct();
+		const auto& unary_blend_ct = track->blending_ct();
 		if( unary_blend_ct &&
 			unary_blend_ct->controller_type() == MeCtBlend::CONTROLLER_TYPE )
 		{
-			MeCtBlend* blend = static_cast<MeCtBlend*>(unary_blend_ct);
+			MeCtBlend* blend = static_cast<MeCtBlend*>(unary_blend_ct.get());
 			srLinearCurve& blend_curve = blend->get_curve();
 			double t = scene->getSimulationManager()->getTime();
 #if 0
@@ -3097,20 +3078,18 @@ void MeControllerRequest::cleanup( SmartBody::SBScene* scene, BmlRequestPtr requ
 	if( schedule_ct ) {
 		if( !persistent ) {
 			// TODO: If track is no longer valid, the nullptr TrackPtr will be ignored by remove_track
-			schedule_ct->remove_track( schedule_ct->track_for_anim_ct( anim_ct ) );
+			schedule_ct->remove_track( schedule_ct->track_for_anim_ct( anim_ct.get() ) );
 		}
-		schedule_ct->unref();
 		schedule_ct = nullptr;
 	}
 	if( anim_ct ) {
-		anim_ct->unref();
 		anim_ct = nullptr;
 	}
 }
 
 
 //  MotionRequest
-MotionRequest::MotionRequest( const std::string& unique_id, const std::string& local, MeCtMotion* motion_ct, MeCtSchedulerClass* schedule_ct,
+MotionRequest::MotionRequest( const std::string& unique_id, const std::string& local, boost::intrusive_ptr<MeCtMotion> motion_ct, boost::intrusive_ptr<MeCtSchedulerClass> schedule_ct,
 						      const BehaviorSyncPoints& syncs_in )
 :	MeControllerRequest( unique_id,
 						 local,
@@ -3119,7 +3098,7 @@ MotionRequest::MotionRequest( const std::string& unique_id, const std::string& l
 						 syncs_in )
 {}
 
-GestureRequest::GestureRequest( const std::string& unique_id, const std::string& local, MeCtMotion* motion_ct, MeCtSchedulerClass* schedule_ct,
+GestureRequest::GestureRequest( const std::string& unique_id, const std::string& local, boost::intrusive_ptr<MeCtMotion> motion_ct, boost::intrusive_ptr<MeCtSchedulerClass> schedule_ct,
 								const BehaviorSyncPoints& syncs_in, std::vector<std::string>& gl, const std::string& js, float s, float f, int p)
 :	MeControllerRequest( unique_id,
 						 local,
@@ -3129,7 +3108,7 @@ GestureRequest::GestureRequest( const std::string& unique_id, const std::string&
 						 MANUAL )
 {
 
-	BehaviorSchedulerGesturePtr scheduler = buildGestureSchedulerForController(motion_ct);
+	BehaviorSchedulerGesturePtr scheduler = buildGestureSchedulerForController(motion_ct.get());
 	set_scheduler(scheduler);
 
 	gestureList = gl;
@@ -3147,13 +3126,13 @@ GestureRequest::GestureRequest( const std::string& unique_id, const std::string&
 }
 
 // Parameterized Animation Request
-ParameterizedAnimationRequest::ParameterizedAnimationRequest( MeCtParamAnimation* param_anim_ct, const std::string& sName, double paramX, double paramY, double paramZ, BML::ParamAnimBehaviorType type,
+ParameterizedAnimationRequest::ParameterizedAnimationRequest( boost::intrusive_ptr<MeCtParamAnimation> param_anim_ct, const std::string& sName, double paramX, double paramY, double paramZ, BML::ParamAnimBehaviorType type,
 															  const std::string& unique_id, const std::string& localId, const BehaviorSyncPoints& syncs_in)
 :	BehaviorRequest(unique_id,
 					localId,
 					syncs_in)
 {
-	paramAnimCt = param_anim_ct;
+	paramAnimCt = std::move(param_anim_ct);
 	stateName = sName;
 	x = paramX;
 	y = paramY;
@@ -3169,7 +3148,7 @@ NodRequest::NodRequest( const std::string& unique_id, const std::string& local, 
 :	MeControllerRequest( unique_id, local, new MeCtSimpleNod(), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
     type(type), repeats(repeats), frequency(frequency), extent(extent), smooth(smooth), axis(-1), warp(-1), period(-1), accel(-1), pitch(-1), decay(-1)
 {
-    MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct;
+    MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct.get();
 	BehaviorSchedulerConstantSpeedPtr scheduler = buildSchedulerForController( nod );
 	set_scheduler( scheduler );
 
@@ -3233,7 +3212,7 @@ NodRequest::NodRequest( const std::string& unique_id, const std::string& local, 
 : MeControllerRequest( unique_id, local, new MeCtSimpleNod(), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
     type(type), repeats(1.0f), frequency(1.0f), extent(extent), smooth(smooth), axis(axis), period(period), warp(warp), accel(accel), pitch(-1), decay(-1)
 {
-	MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct;
+	MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct.get();
 	BehaviorSchedulerConstantSpeedPtr scheduler = buildSchedulerForController( nod );
 	set_scheduler( scheduler );
 
@@ -3270,7 +3249,7 @@ NodRequest::NodRequest( const std::string& unique_id, const std::string& local, 
 : MeControllerRequest( unique_id, local, new MeCtSimpleNod(), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
     type(type), repeats(1.0f), frequency(1.0f), extent(extent), smooth(smooth), axis(axis), period(period), warp(warp), accel(accel), pitch(pitch), decay(decay)
 {
-	MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct;
+	MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct.get();
 	BehaviorSchedulerConstantSpeedPtr scheduler = buildSchedulerForController( nod );
 	set_scheduler( scheduler );
 
@@ -3344,9 +3323,9 @@ BehaviorSpan PostureRequest::getBehaviorSpan()
 }
 
 
-GazeRequest::GazeRequest(   float interval, int mode, const std::string& unique_id, const std::string& localId, MeController* gaze, MeCtSchedulerClass* schedule_ct,
+GazeRequest::GazeRequest(   float interval, int mode, const std::string& unique_id, const std::string& localId, const boost::intrusive_ptr<MeController>& gaze, boost::intrusive_ptr<MeCtSchedulerClass> schedule_ct,
 							const BehaviorSyncPoints& behav_syncs, MeCtGaze::GazeScheduleInfo g, bool hasSchedule )
-:	MeControllerRequest( unique_id, localId, gaze, schedule_ct, behav_syncs ),
+:	MeControllerRequest( unique_id, localId, gaze, std::move(schedule_ct), behav_syncs ),
     gazeFadeInterval(interval),
 	gazeFadeMode(mode),
 	gazeSchedule(g),
