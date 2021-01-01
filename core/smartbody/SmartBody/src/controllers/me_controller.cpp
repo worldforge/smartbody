@@ -83,6 +83,7 @@ MeController::MeController ()
 
 MeController::~MeController () {
 	//assert( _context==nullptr );  // Controller should not be deleted if still referenced by context
+	//TODO: is this needed?
 	stop_record();
 
 }
@@ -537,13 +538,13 @@ void MeController::record_write( const char *full_prefix ) {
 void MeController::saveMotionRecord( const std::string &recordname )
 {
 	std::string filename;
-	SrOutput* fileOutput = nullptr;
+	std::unique_ptr<SrOutput> fileOutput;
 	SrString stringOutput;
 	if ( _record_mode == RECORD_BVH_MOTION )
 	{
 		filename = _record_full_prefix + recordname + ".bvh";
-		fileOutput = new SrOutput( filename.c_str(), "w" );
-		_record_output = new SrOutput(stringOutput);
+		fileOutput = std::make_unique<SrOutput>( filename.c_str(), "w" );
+		_record_output = std::make_unique<SrOutput>(stringOutput);
 
 		auto skeleton_p = _pawn->getSkeleton();
 
@@ -568,8 +569,8 @@ void MeController::saveMotionRecord( const std::string &recordname )
 	else if( _record_mode == RECORD_MOTION )
 	{
 		filename = _record_full_prefix + recordname + ".skm";
-		fileOutput = new SrOutput( filename.c_str(), "w" );		
-		_record_output = new SrOutput(stringOutput);
+		fileOutput = std::make_unique<SrOutput>( filename.c_str(), "w" );
+		_record_output = std::make_unique<SrOutput>(stringOutput);
 
 		*_record_output << "# SKM Motion Definition - M. Kallmann 2004\n";
 		*_record_output << "# Maya exporter v0.6\n";
@@ -615,7 +616,6 @@ void MeController::saveMotionRecord( const std::string &recordname )
 	if (sbMotion == nullptr)
 	{
 		SmartBody::util::log("Recorded motion %s is already existing!", recordname.c_str());
-    delete fileOutput;
 		return;
 	}
 
@@ -629,8 +629,6 @@ void MeController::saveMotionRecord( const std::string &recordname )
     fileOutput->close();
   }
 
-  //record_clear();
-  delete fileOutput;	
 }
 
 void MeController::cont_record( double time, MeFrameData& frame )	{
@@ -711,7 +709,6 @@ void MeController::stop_record( )	{
 	_record_max_frames = 0;
 	_record_frame_count = 0;
 	if( _record_output )	{
-		delete _record_output;
 		_record_output = nullptr;
 	}
 	_frames.clear();

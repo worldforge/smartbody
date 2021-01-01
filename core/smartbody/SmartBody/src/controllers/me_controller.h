@@ -110,7 +110,7 @@ protected :
 	int			_record_mode;
 	std::string	_record_full_prefix;
 	int			_record_frame_count;
-	SrOutput	*_record_output; // for recording poses and motions of immediate local results
+	std::unique_ptr<SrOutput> _record_output; // for recording poses and motions of immediate local results
 	double		_record_dt;
 	double      _record_duration;
 	typedef std::string FRAME;
