@@ -404,7 +404,13 @@ bool MeCtBlend::controller_evaluate( double t, MeFrameData & frame ) {
 					}
 				}
 			}
+		} else {
+			//Check if the curve has run it's course, i.e. tail is set to crop and we're beyond the time of the tail key.
+			if ((_curve.get_tail_bound_mode() == srLinearCurve::CROP || _curve.get_tail_bound_mode() == srLinearCurve::CLAMP) && _curve.get_tail_param() < t) {
+				return false;
+			}
 		}
+
 		return child()->active();
 	} else {
 		return false;

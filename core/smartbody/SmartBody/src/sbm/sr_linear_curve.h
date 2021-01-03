@@ -42,7 +42,7 @@ class srLinearCurve	{
 			NUM_BOUNDARY_MODES
 		};
 
-		static const char *mode_label( const int index );
+		static const char *mode_label( int index );
 		static int mode_index( const char *label );
 
 		static const double MAX_SLOPE;
@@ -69,21 +69,21 @@ class srLinearCurve	{
 			public:
 
 				Key( double p, double v );
-				~Key(void) {
+				~Key() {
 #if ENABLE_OBJ_KEY_CT
 					objective_key_count--;
 #endif
 				}
 
-				void print( int i );
+				void print( int i ) const;
 
 				void next( Key *set_p ) { next_p = set_p; }
-				Key *next( void ) { return( next_p ); }
+				Key *next( ) { return( next_p ); }
 
-				void update( void );
+				void update( );
 				void copy_delta( Key *key_p );
 
-				double slope( void );
+				double slope( ) const;
 				double lerp( double t );
 
 				double	param; // ANIMATION: time
@@ -102,21 +102,21 @@ class srLinearCurve	{
 		Key 	*curr_query_p;
 		Key		*tail_p;
 
-		void null( void )	{
+		void null( )	{
 			head_bound_mode = 0;
 			tail_bound_mode = 0;
 			min_value = -MAX_VALUE;
 			max_value = MAX_VALUE;
 			init();
 		}
-		void init( void )	{
+		void init( )	{
 			key_count = 0;
 			dirty = false;
 			head_p = nullptr;
 			tail_p = nullptr;
 			reset();
 		}
-		void reset( void )	{
+		void reset( )	{
 			curr_p = nullptr;
 			curr_query_p = nullptr;
 		}
@@ -131,11 +131,11 @@ class srLinearCurve	{
 			null();
 			set_boundary_mode( head_mode, tail_mode );
 		}
-		~srLinearCurve( void )	{
+		~srLinearCurve( )	{
 			clear();
 		}
 
-		void print( void );
+		void print( );
 
 		void set_boundary_mode( int head_mode, int tail_mode )	{
 			head_bound_mode = head_mode;
@@ -146,26 +146,33 @@ class srLinearCurve	{
 			max_value = max;
 		}
 
-		int get_num_keys( void ) { return( key_count ); }
+		int get_num_keys( ) { return( key_count ); }
 		
 		int insert( double p, double v )	{ /* sort by key.time, add after same time */
 			return( insert_key( new Key( p, v ) ) );
 		}
 		
-		void clear( void );
+		void clear( );
 		void clear_after( double t );
 
 	// Preferably these should be subsumed by 
 	//	boundary conditions, crop { PRE, POST }, 
 	//	and simple param-range queries.
 
-		double get_head_param( void );
-		double get_head_value( void );
-		double get_head_slope( void );
+		int get_head_bound_mode() const {
+			return head_bound_mode;
+		}
+		int get_tail_bound_mode() const {
+			return tail_bound_mode;
+		}
+
+		double get_head_param( );
+		double get_head_value( );
+		double get_head_slope( );
 		
-		double get_tail_param( void );
-		double get_tail_value( void );
-		double get_tail_slope( void );
+		double get_tail_param( );
+		double get_tail_value( );
+		double get_tail_slope( );
 
 		double get_key_param(int index);
 		double get_key_value(int index);
@@ -181,10 +188,10 @@ class srLinearCurve	{
 		int insert_key( Key *key_p );
 		void insert_head( Key *key_p );
 		void insert_after( Key *prev_p, Key *key_p );
-		void decrement( void );
-		void increment( void );
+		void decrement( );
+		void increment( );
 		
-		void update( void );
+		void update( );
 		
 		Key* find_floor_key( double t );
 		double head_boundary( double t, bool *cropped_p );
@@ -192,7 +199,7 @@ class srLinearCurve	{
 
 	public:
 
-		void query_reset( void )	{ 
+		void query_reset( )	{
 			if( dirty ) update();
 			curr_query_p = head_p; 
 		}
@@ -219,5 +226,5 @@ class srLinearCurve	{
 #endif
 
 #if 1
-void test_linear_curve( void );
+void test_linear_curve( );
 #endif

@@ -886,6 +886,9 @@ bool MeCtScheduler2::controller_evaluate( double time, MeFrameData& frame ) {
 	{
 		TrackPtr track = *i;
 		bool result = track->evaluate( time, frame );
+		if (!result) {
+			to_remove.emplace_back(track);
+		}
 	}
 
 	if( !to_remove.empty() )

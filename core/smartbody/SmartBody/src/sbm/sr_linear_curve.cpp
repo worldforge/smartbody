@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sbm/lin_win.h"
 
-#include <math.h>
+#include <cmath>
 //#include <sbm/sr_linear_curve.h>
 #include "sr_linear_curve.h"
 #include "sr_curve_builder.h"
@@ -45,8 +45,9 @@ const char *srLinearCurve::mode_label( const int index ) {
 		case CLAMP: 		return( "clamp" );
 		case REPEAT:		return( "repeat" );
 		case EXTRAPOLATE:	return( "extrap" );
+		default:			return( "UNKNOWN" ); // default err			
 	}
-	return( "UNKNOWN" ); // default err
+	
 }
 
 int srLinearCurve::mode_index( const char *label )	{
@@ -73,7 +74,7 @@ srLinearCurve::Key::Key( double p, double v ) {
 #endif
 }
 
-void srLinearCurve::Key::print( int i )	{
+void srLinearCurve::Key::print( int i ) const	{
 
 #if 1
 	printf( " key[ %d ]: ( %f, %f )\n", 
@@ -95,7 +96,7 @@ void srLinearCurve::Key::print( int i )	{
 
 //////////////////////////////////////////////////////////////////
 
-void srLinearCurve::Key::update( void ) {
+void srLinearCurve::Key::update( ) {
 
 	if( next_p )	{
 		dp = next_p->param - param; 
@@ -123,7 +124,7 @@ void srLinearCurve::Key::copy_delta( Key *key_p ) {
 	}
 }
 
-double srLinearCurve::Key::slope( void )	{
+double srLinearCurve::Key::slope( ) const	{
 
 	if( dp > 0.0 )	{ // parameter change
 		return( dv * inv_dp );
@@ -149,7 +150,7 @@ double srLinearCurve::Key::lerp( double t )	{
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void srLinearCurve::print( void )	{
+void srLinearCurve::print( )	{
 
 	if( dirty ) update();
 
@@ -169,7 +170,7 @@ void srLinearCurve::print( void )	{
 
 //////////////////////////////////////////////////////////////////
 
-void srLinearCurve::clear( void )	{
+void srLinearCurve::clear( )	{
 
 	Key *key_p = head_p;
 	while( key_p ) {
@@ -203,21 +204,21 @@ void srLinearCurve::clear_after( double t )	{
 	}
 }
 
-double srLinearCurve::get_head_param( void )	{
+double srLinearCurve::get_head_param()	{
 	if( head_p )	{
 		return( head_p->param );
 	}
 	return( 0.0 );
 }
 
-double srLinearCurve::get_head_value( void )	{
+double srLinearCurve::get_head_value()	{
 	if( head_p )	{
 		return( head_p->value );
 	}
 	return( 0.0 );
 }
 
-double srLinearCurve::get_head_slope( void )	{
+double srLinearCurve::get_head_slope()	{
 	if( dirty ) update();
 	if( head_p )	{
 		return( head_p->slope() );
@@ -225,7 +226,7 @@ double srLinearCurve::get_head_slope( void )	{
 	return( 0.0 );
 }
 
-double srLinearCurve::get_tail_param( void )	{
+double srLinearCurve::get_tail_param()	{
 	if( dirty ) update();
 	if( tail_p )	{
 		return( tail_p->param );
@@ -233,7 +234,7 @@ double srLinearCurve::get_tail_param( void )	{
 	return( 0.0 );
 }
 
-double srLinearCurve::get_tail_value( void )	{
+double srLinearCurve::get_tail_value()	{
 	if( dirty ) update();
 	if( tail_p )	{
 		return( tail_p->value );
@@ -241,7 +242,7 @@ double srLinearCurve::get_tail_value( void )	{
 	return( 0.0 );
 }
 
-double srLinearCurve::get_tail_slope( void )	{
+double srLinearCurve::get_tail_slope()	{
 	if( dirty ) update();
 	if( tail_p )	{
 		return( tail_p->slope() );
@@ -585,19 +586,19 @@ void srLinearCurve::insert_after( Key *prev_p, Key *key_p )	{
 	increment();
 }
 
-void srLinearCurve::decrement( void )	{
+void srLinearCurve::decrement()	{
 
 	key_count--;
 	dirty = true;
 }
 
-void srLinearCurve::increment( void )	{
+void srLinearCurve::increment()	{
 
 	key_count++;
 	dirty = true;
 }
 
-void srLinearCurve::update( void )	{
+void srLinearCurve::update()	{
 
 //G_update_count++;
 
@@ -639,7 +640,7 @@ void srLinearCurve::update( void )	{
 
 #if 1
 
-void test_linear_curve( void )	{
+void test_linear_curve()	{
 	srLinearCurve curve;
 	
 	srCurveBuilder builder;
@@ -704,7 +705,7 @@ void test_run_linear_curve_gamut( srLinearCurve *curve_p ) {
 	test_eval_linear_curve( curve_p );
 }
 
-void test_linear_curve( void )	{
+void test_linear_curve()	{
 	srLinearCurve curve;
 
 #if 1
@@ -753,7 +754,7 @@ void test_linear_curve( void )	{
 
 #if 0
 
-void test_linear_curve( void )	{
+void test_linear_curve()	{
 
 	srLinearCurve C;
 	bool cropped;
@@ -818,7 +819,7 @@ void test_linear_curve( void )	{
 //////////////////////////////////////////////////////////////////
 
 #if 0
-void test_linear_curve( void )	{
+void test_linear_curve()	{
 	srLinearCurve curve;
 	int i;
 #if 1

@@ -490,14 +490,14 @@ namespace BML {
 		 *  Implemtents BehaviorRequest::unschedule(..),
 		 *  cancelling remaining sequence.
 		 */
-		virtual void unschedule( SmartBody::SBScene* scene, BmlRequestPtr request,
-			                     time_sec duration );
+		void unschedule( SmartBody::SBScene* scene, BmlRequestPtr request,
+			                     time_sec duration ) override;
 
 		/**
 		 *  Implemtents BehaviorRequest::cleanup(..),
 		 *  removing the sequence.
 		 */
-		virtual void cleanup( SmartBody::SBScene* scene, BmlRequestPtr request );
+		void cleanup( SmartBody::SBScene* scene, BmlRequestPtr request ) override;
 
 	protected:
 		/**
@@ -541,7 +541,7 @@ namespace BML {
 		SBAPI float getRampUp();
 		SBAPI float getRampDown();
 
-		void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene );
+		void realize_impl( BmlRequestPtr request, SmartBody::SBScene* scene ) override;
 	};
 } // namespace BML
 

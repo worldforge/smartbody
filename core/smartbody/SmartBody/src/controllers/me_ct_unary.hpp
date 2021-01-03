@@ -110,7 +110,7 @@ public:
 	MeController* child( size_t n ) override;
 
 	// Child controller accessor
-	inline boost::intrusive_ptr<MeController> child() {
+	inline const boost::intrusive_ptr<MeController>& child() const {
 		return _child;
 	}
 
