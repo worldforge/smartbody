@@ -23,8 +23,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBABI.h"
 
-#define LINK_VHMSG_CLIENT		(1)
-
 #ifdef __APPLE__
 #include "TargetConditionals.h"
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR

@@ -24,14 +24,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBUtilities.h"
 
 #include <iostream>
-#include <sstream>
 #include <sbm/sr_arg_buff.h>
 #include <sbm/sbm_constants.h>
 #include "vhcl_socket.h"
 
-
-
-#define LINK_VHMSG_CLIENT		(1)
 
 #include "vhmsg-tt.h"
 

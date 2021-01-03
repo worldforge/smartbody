@@ -21,18 +21,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "SBScene.h"
-#ifdef WIN32
-#include <direct.h>
-#endif
+
 
 #include <sb/SBTypes.h>
-
-#ifndef SB_NO_JAVASCRIPT
-#if defined(EMSCRIPTEN)
-#include <emscripten.h>
-#endif
-#endif
-
 #include "sb/SBAssetStore.h"
 #include <sb/SBObject.h>
 #include <sb/SBCharacter.h>
@@ -45,8 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationTransition.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBReachManager.h>
-//#include <sb/SBSteerAgent.h>
-//#include <sb/SBSteerManager.h>
+
 #include <sb/SBRealtimeManager.h>
 #include <sb/SBServiceManager.h>
 #include <sb/SBService.h>
@@ -98,7 +88,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 namespace SmartBody {
 
 SBScene* SBScene::_scene = nullptr;
-bool SBScene::_firstTime = true;
 
 
 std::map<std::string, std::string> SBScene::_systemParameters;
@@ -358,7 +347,6 @@ void SBScene::destroyScene()
 		XMLPlatformUtils::Terminate(); 
 		delete _scene;
 		_scene = nullptr;
-		_firstTime = true;
 	}
 }
 
@@ -381,10 +369,10 @@ void SBScene::update()
 	{
 		// update client
 		//getDebuggerClient()->Update();
-		const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
+		const std::vector<std::string>& pawns = getPawnNames();
 		for (const auto & pawnIter : pawns)
 		{
-			SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
+			SBPawn* pawn = getPawn(pawnIter);
 			pawn->ct_tree_p->evaluate(getSimulationManager()->getTime());
 			pawn->ct_tree_p->applySkeletonToBuffer();
 		}
@@ -461,10 +449,10 @@ void SBScene::update()
 	this->getProfiler()->mark("allsequences");
 
 	this->getProfiler()->mark("pawn", 1, "controller evaluation");
-	const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
+	const std::vector<std::string>& pawns = getPawnNames();
 	for (const auto & pawnIter : pawns)
 	{
-		SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
+		SBPawn* pawn = getPawn(pawnIter);
 		this->getProfiler()->mark(pawn->getName().c_str(), 1, "controller evaluation");
 		pawn->reset_all_channels();
 		pawn->ct_tree_p->evaluate( getSimulationManager()->getTime() );
@@ -578,7 +566,7 @@ void SBScene::setScale(float val)
 	scaleAttribute->setValueFast(_scale);
 }
 
-float SBScene::getScale()
+float SBScene::getScale() const
 {
 	return _scale;
 }
@@ -681,7 +669,7 @@ SBAPI SBPawn* SBScene::copyPawn( const std::string& origPawnName, const std::str
 
 SBCharacter* SBScene::createCharacter(const std::string& charName, const std::string& metaInfo)
 {	
-	if (SmartBody::SBScene::getScene()->getCharacter(charName))
+	if (getCharacter(charName))
 	{
 		SmartBody::util::log("Character '%s' already exists!", charName.c_str());
 		return nullptr;
@@ -857,7 +845,7 @@ void SBScene::removeAllCharacters()
 
 void SBScene::removePawn(const std::string& pawnName)
 {
-	SbmPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+	SbmPawn* pawn = getPawn(pawnName);
 	if (pawn)
 	{
 		const std::string& name = pawn->getName();
@@ -992,12 +980,12 @@ const std::string& SBScene::getMediaPath()
 
 void SBScene::setDefaultCharacter(const std::string& character)
 {
-	SmartBody::SBScene::getScene()->setStringAttribute("defaultCharacter", character);
+	setStringAttribute("defaultCharacter", character);
 }
 
 void SBScene::setDefaultRecipient(const std::string& recipient)
 {
-	SmartBody::SBScene::getScene()->setStringAttribute("defaultRecipient", recipient);
+	setStringAttribute("defaultRecipient", recipient);
 }
 
 SBEventManager* SBScene::getEventManager()
@@ -1219,20 +1207,21 @@ void SBScene::setRemoteMode(bool val)
 SmartBody::SBFaceDefinition* SBScene::createFaceDefinition(const std::string& name)
 {
 	// make sure the name doesn't already exist
-	if (_faceDefinitions.find(name) != _faceDefinitions.end())
+	auto I = _faceDefinitions.find(name);
+	if (I != _faceDefinitions.end())
 	{
 		SmartBody::util::log("Face definition named '%s' already exists. Returning existing one", name.c_str());
-		return _faceDefinitions[name];
+		return I->second.get();
 	}
 
-	SBFaceDefinition* face = new SBFaceDefinition(name);
-	_faceDefinitions.insert(std::pair<std::string, SBFaceDefinition*>(name, face));
-	for (auto & _sceneListener : this->_sceneListeners)
-	{
-		_sceneListener->OnObjectCreate(face);
+	auto result = _faceDefinitions.emplace(name, std::make_unique<SBFaceDefinition>(name));
+	if (result.second) {
+		for (auto& _sceneListener : this->_sceneListeners) {
+			_sceneListener->OnObjectCreate(result.first->second.get());
+		}
 	}
 
-	return face;
+	return nullptr;
 }
 
 void SBScene::removeFaceDefinition(const std::string& name)
@@ -1248,10 +1237,8 @@ void SBScene::removeFaceDefinition(const std::string& name)
 	}
 	for (auto & _sceneListener : this->_sceneListeners)
 	{
-		_sceneListener->OnObjectDelete(iter->second);
+		_sceneListener->OnObjectDelete(iter->second.get());
 	}
-	delete iter->second;
-	iter->second = nullptr;
 	_faceDefinitions.erase(iter);
 
 }
@@ -1266,7 +1253,7 @@ SmartBody::SBFaceDefinition* SBScene::getFaceDefinition(const std::string& name)
 		return nullptr;
 	}
 
-	return (*iter).second;
+	return (*iter).second.get();
 }
 
 int SBScene::getNumFaceDefinitions()
@@ -1426,6 +1413,7 @@ std::vector<std::string> SBScene::getSystemParameterNames()
 {
 
 	std::vector<std::string> names;
+	names.reserve(_systemParameters.size());
 	for (auto & _systemParameter : _systemParameters)
 	{
 		names.emplace_back(_systemParameter.first);

@@ -26,6 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace SmartBody {
 
@@ -40,7 +41,7 @@ class SBAttributeManager : public SBSubject
 
 		SBAPI void addGroup(const std::string& name);
 		SBAPI SBAttributeGroup* getGroup(const std::string& name, bool createIfNotFound = false);
-		SBAPI std::map<std::string, SBAttributeGroup*>& getGroups();
+		SBAPI std::map<std::string, std::unique_ptr<SBAttributeGroup>>& getGroups();
 		SBAPI std::vector<SBAttributeGroup*>& getAttributeGroups();
 
 		SBAPI void notifyCreateAttribute(SBAttribute* attr);
@@ -51,7 +52,7 @@ class SBAttributeManager : public SBSubject
 	protected:
 		void resortGroups();
 
-		std::map<std::string, SBAttributeGroup*> m_groups;
+		std::map<std::string, std::unique_ptr<SBAttributeGroup>> m_groups;
 		std::vector<SBAttributeGroup*> m_groupsByPriority;
 };
 

@@ -28,54 +28,35 @@ SBAttributeManager::SBAttributeManager() : SBSubject()
 {
 }
 
-SBAttributeManager::~SBAttributeManager()
-{
-	for (std::map<std::string, SBAttributeGroup*>::iterator iter = m_groups.begin();
-		 iter != m_groups.end();
-		 iter++)
-	{
-		delete (*iter).second;
-	}
-}
+SBAttributeManager::~SBAttributeManager() = default;
 
 void SBAttributeManager::addGroup(const std::string& name)
 {
-	for (std::map<std::string, SBAttributeGroup*>::iterator iter = m_groups.begin();
-		 iter != m_groups.end();
-		 iter++)
-	{
-		if (name == (*iter).second->getName())
-			return;
+	auto I = m_groups.find(name);
+	if (I != m_groups.end()) {
+		return;
 	}
 
-	SBAttributeGroup* group = new SBAttributeGroup(name);
-	m_groups[name] = group;
+	m_groups.emplace(name, std::make_unique<SBAttributeGroup>(name));
 	resortGroups();
 }
 
 SBAttributeGroup* SBAttributeManager::getGroup(const std::string& name, bool createIfNotFound)
 {
-	for (std::map<std::string, SBAttributeGroup*>::iterator iter = m_groups.begin();
-		 iter != m_groups.end();
-		 iter++)
-	{
-		if (name == (*iter).second->getName())
-		{
-			return (*iter).second;
-		}
+	auto I = m_groups.find(name);
+	if (I != m_groups.end()) {
+		return I->second.get();
 	}
 
 	if (createIfNotFound)
 	{
-		SBAttributeGroup* group = new SBAttributeGroup(name);
-		m_groups[name] = group;
-		resortGroups();
-		return group;
+		auto result = m_groups.emplace(name, std::make_unique<SBAttributeGroup>(name));
+		if (result.second) {
+			resortGroups();
+			return result.first->second.get();
+		}
 	}
-	else
-	{
-		return nullptr;
-	}
+	return nullptr;
 }
 
 struct prioritySort
@@ -89,18 +70,17 @@ struct prioritySort
 void SBAttributeManager::resortGroups()
 {
 	m_groupsByPriority.clear();
-	for (std::map<std::string, SBAttributeGroup*>::iterator iter = m_groups.begin();
-		iter != m_groups.end();
-		iter++)
+	m_groupsByPriority.reserve(m_groups.size());
+	for (auto & m_group : m_groups)
 	{
-		m_groupsByPriority.emplace_back((*iter).second);
+		m_groupsByPriority.emplace_back(m_group.second.get());
 	}
 
 	std::sort(m_groupsByPriority.begin(), m_groupsByPriority.end(), prioritySort());
 	
 }
 
-std::map<std::string, SBAttributeGroup*>& SBAttributeManager::getGroups()
+std::map<std::string, std::unique_ptr<SBAttributeGroup>>& SBAttributeManager::getGroups()
 {
 	return m_groups;
 }

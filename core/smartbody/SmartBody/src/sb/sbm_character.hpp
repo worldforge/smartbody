@@ -148,7 +148,7 @@ protected:
 	std::unique_ptr<SmartBody::MiniBrain> _miniBrain;
 public:
 	//  Methods
-	SbmCharacter();
+	//SbmCharacter();
 	explicit SbmCharacter( const char * char_name );
 	SbmCharacter( const char* character_name, std::string type);
 	~SbmCharacter() override;
@@ -161,7 +161,7 @@ public:
 	int setup() override;
 
 	virtual void createStandardControllers();
-	virtual void createMinimalControllers();
+	//virtual void createMinimalControllers();
 	//* Overrides SbmPawn::prune_controller_tree()
 	int prune_controller_tree() override;
 

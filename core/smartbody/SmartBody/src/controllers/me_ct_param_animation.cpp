@@ -692,21 +692,23 @@ int MeCtParamAnimation::getNumWeights()
 
 const std::string& MeCtParamAnimation::getNextStateName()
 {
+	static std::string emptyString;
 	if (nextStateData)
 		return nextStateData->state->stateName;
 	else
-		return m_emptyString;
+		return emptyString;
 }
 
 const std::string& MeCtParamAnimation::getCurrentStateName()
 {
+	static std::string emptyString;
 	if (curStateData)
 		if (curStateData->state)
 			return curStateData->state->stateName;
 		else
-			return m_emptyString;
+			return emptyString;
 	else
-		return m_emptyString;
+		return emptyString;
 }
 
 PABlendData* MeCtParamAnimation::getCurrentPABlendData()

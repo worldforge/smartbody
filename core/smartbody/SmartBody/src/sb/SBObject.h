@@ -21,15 +21,20 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _SBOBJECT_H_
 #define _SBOBJECT_H_
 
-#include <sb/SBTypes.h>
+#include "SBAttributeManager.h"
+#include "SBObserver.h"
+#include "SBSubject.h"
+#include "SBABI.h"
 #include <map>
 #include <string>
 #include <vector>
-#include "SBObserver.h"
-#include "SBSubject.h"
-#include <sr/sr_mat.h>
+
 #include <memory>
 #include <boost/noncopyable.hpp>
+
+
+class SrMat;
+class SrVec;
 
 namespace SmartBody {
 
@@ -58,7 +63,7 @@ class SBObject : public SBObserver, public SBSubject, public boost::noncopyable
 		SBAPI virtual void setName(const std::string& name);
 		SBAPI virtual const std::string& getName() const;
 		SBAPI bool hasAttribute(const std::string& attrName);
-		SBAPI SBAttribute* getAttribute(const std::string& attrName);
+		SBAPI SBAttribute* getAttribute(const std::string& attrName) const;
 		SBAPI std::map<std::string, std::unique_ptr<SBAttribute>>& getAttributeList();
 		SBAPI SBAttributeManager* getAttributeManager();
 		SBAPI void addAttribute(std::unique_ptr<SBAttribute> attr);
@@ -91,22 +96,22 @@ class SBObject : public SBObserver, public SBSubject, public boost::noncopyable
 		SBAPI void setAttributeGroupPriority(const std::string& name, int value);
 		SBAPI int getAttributeGroupPriority(const std::string& name);
 
-		SBAPI void setBoolAttribute(const std::string& name, bool value);
-		SBAPI void setIntAttribute(const std::string& name, int value);
-		SBAPI void setDoubleAttribute(const std::string& name, double value);
-		SBAPI void setVec3Attribute(const std::string& name, float val1, float val2, float val3);
-		SBAPI void setStringAttribute(const std::string& name, std::string value);
-		SBAPI void setMatrixAttribute(const std::string& name, SrMat& value);
-		SBAPI void setActionAttribute(const std::string& name);
+		SBAPI void setBoolAttribute(const std::string& name, bool value) const;
+		SBAPI void setIntAttribute(const std::string& name, int value) const;
+		SBAPI void setDoubleAttribute(const std::string& name, double value) const;
+		SBAPI void setVec3Attribute(const std::string& name, float val1, float val2, float val3) const;
+		SBAPI void setStringAttribute(const std::string& name, std::string value) const;
+		SBAPI void setMatrixAttribute(const std::string& name, SrMat& value) const;
+		SBAPI void setActionAttribute(const std::string& name) const;
 
-		SBAPI const bool& getBoolAttribute(const std::string& name) ;
-		SBAPI const int&  getIntAttribute(const std::string& name) ;
-		SBAPI const double& getDoubleAttribute(const std::string& name) ;
-		SBAPI const SrVec& getVec3Attribute(const std::string& name) ;
-		SBAPI const std::string& getStringAttribute(const std::string& name) ;
-		SBAPI const SrMat& getMatrixAttribute(const std::string& name) ;
+		SBAPI bool getBoolAttribute(const std::string& name) const;
+		SBAPI int  getIntAttribute(const std::string& name) const;
+		SBAPI double getDoubleAttribute(const std::string& name) const;
+		SBAPI const SrVec& getVec3Attribute(const std::string& name) const;
+		SBAPI const std::string& getStringAttribute(const std::string& name) const;
+		SBAPI const SrMat& getMatrixAttribute(const std::string& name) const;
 
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 		
 		SBAPI void addDependency(SBObject* object);
 		SBAPI void removeDependency(SBObject* object);
@@ -123,18 +128,11 @@ class SBObject : public SBObserver, public SBSubject, public boost::noncopyable
 
 	protected:
 		std::string m_name;
-		std::unique_ptr<SBAttributeManager> m_attributeManager;
+		SBAttributeManager m_attributeManager;
 		std::map<std::string, std::unique_ptr<SBAttribute>> m_attributeList;
-		std::string m_emptyString;
 		std::set<SBObject*> _dependencies;
 		std::set<SBObject*> _dependenciesReverse;
 
-		static bool defaultBool;
-		static int defaultInt;
-		static double defaultDouble;
-		static SrVec defaultVec;
-		static std::string defaultString;
-		static SrMat defaultMatrix;
 };
 
 };

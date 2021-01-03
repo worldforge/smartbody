@@ -1200,7 +1200,6 @@ int main( int argc, char **argv )	{
 		scene.getSpeechManager()->festivalRelay()->initSpeechRelay(festivalLibDir, festivalCacheDir);
 		scene.getSpeechManager()->cereprocRelay()->initSpeechRelay(cereprocLibDir, festivalCacheDir);
 
-#if LINK_VHMSG_CLIENT
 		char* vhmsg_server = getenv("VHMSG_SERVER");
 		char* vhmsg_port = getenv("VHMSG_PORT");
 		bool vhmsg_disabled = (vhmsg_server != nullptr && strcasecmp(vhmsg_server, "none") == 0);  // hope there is no valid server named "none"
@@ -1236,7 +1235,6 @@ int main( int argc, char **argv )	{
 			}
 			vhmsgManager.setEnable(false);
 		}
-#endif
 
 		// Sets up the network connection for sending bone rotations over to the renderer
 
@@ -1392,14 +1390,12 @@ int main( int argc, char **argv )	{
 
 			auto& theScene = Session::current->scene;
 
-#if LINK_VHMSG_CLIENT
 			if (Session::current->vhmMsgManager.isEnable()) {
 				err = Session::current->vhmMsgManager.poll();
 				if (err == CMD_FAILURE) {
 					fprintf(stderr, "ttu_poll ERROR\n");
 				}
 			}
-#endif
 
 			vector<string> commands;// = mcu.bonebus.GetCommand();
 			for (auto& command : commands) {

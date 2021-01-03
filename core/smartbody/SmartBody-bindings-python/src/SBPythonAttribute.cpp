@@ -82,7 +82,7 @@ namespace SmartBody
 
 void pythonFuncsAttribute()
 {
-	boost::python::class_<SBAttributeGroup>("SBAttributeGroup")
+	boost::python::class_<SBAttributeGroup, boost::noncopyable>("SBAttributeGroup", boost::python::no_init)
 		.def("getPriority", &SBAttributeGroup::getPriority, "Returns the priority of the attribute. Used for display purposes.")
 		.def("setPriority", &SBAttributeGroup::setPriority, "Sets the priority of the attribute. Used for display purposes.")
 		.def("addAttribute", &SBAttributeGroup::addAttribute, "Adds an attribute to the attribute group.")
@@ -93,7 +93,7 @@ void pythonFuncsAttribute()
 	;
 
 
-	boost::python::class_<SBAttributeInfo>("SBAttributeInfo")
+	boost::python::class_<SBAttributeInfo, boost::noncopyable>("SBAttributeInfo", boost::python::no_init)
 		.def("getPriority", &SBAttributeInfo::getPriority, "Returns the priority of the attribute. Used for display purposes.")
 		.def("setPriority", &SBAttributeInfo::setPriority, "Sets the priority of the attribute. Used for display purposes.")
 		.def("getReadOnly", &SBAttributeInfo::getReadOnly, "Determines if the attribute is read-only and cannot be changed.")

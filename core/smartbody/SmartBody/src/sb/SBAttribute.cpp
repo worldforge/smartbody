@@ -24,24 +24,16 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sstream>
 #include <limits>
+#include <utility>
 
 namespace SmartBody {
 
-SBAttributeGroup::SBAttributeGroup()
+SBAttributeGroup::SBAttributeGroup(std::string name)
+ : m_name(std::move(name)), m_priority(0)
 {
-	m_name = "";
-	m_priority = 0;
 }
 
-SBAttributeGroup::SBAttributeGroup(const std::string& name)
-{
-	m_name = name;
-	m_priority = 0;
-}
-
-SBAttributeGroup::~SBAttributeGroup()
-{
-}
+SBAttributeGroup::~SBAttributeGroup() = default;
 
 const std::string& SBAttributeGroup::getName() const
 {
@@ -53,7 +45,7 @@ void SBAttributeGroup::setPriority(int val)
 	m_priority = val;
 }
 
-int SBAttributeGroup::getPriority()
+int SBAttributeGroup::getPriority() const
 {
 	return m_priority;
 }
@@ -93,18 +85,16 @@ std::map<std::string, SBAttribute*>& SBAttributeGroup::getAttributes()
 std::vector<std::string> SBAttributeGroup::getAttributeNames()
 {
 	std::vector<std::string> attributes;
-	for (std::map<std::string, SBAttribute*>::iterator iter = m_attributeMap.begin();
-		 iter != m_attributeMap.end();
-		 iter++)
+	for (auto & iter : m_attributeMap)
 	{
-		attributes.emplace_back((*iter).first);
+		attributes.emplace_back(iter.first);
 	}
 	return attributes;
 }
 
-SBAttribute* SBAttributeGroup::getAttribute(std::string name)
+SBAttribute* SBAttributeGroup::getAttribute(const std::string& name)
 {
-	std::map<std::string, SBAttribute*>::iterator iter = m_attributeMap.find(name);
+	auto iter = m_attributeMap.find(name);
 	if (iter == m_attributeMap.end())
 	{
 		SmartBody::util::log("Attribute for %s does not exist in attribute group %s!", name.c_str(), this->getName().c_str());
@@ -121,30 +111,25 @@ SBAttribute* SBAttributeGroup::getAttribute(std::string name)
 // remove the min/max definition for windows systems
 // so that there is no conflict between the min or max macros
 // and the min() or max() functions in numeric_limits
-SBAttributeInfo::SBAttributeInfo()
+SBAttributeInfo::SBAttributeInfo(SBAttribute& m_attr)
+: 	m_priority(0),
+	m_readOnly(false),
+	m_locked(false),
+	m_hidden(false),
+	m_attr(m_attr),
+	m_group(nullptr)
 {
-	m_priority = 0;
-	m_readOnly = false;
-	m_locked = false;
-	m_hidden = false;
-	m_attr = nullptr;
-	m_group = nullptr;
 }
 
 SBAttributeInfo::~SBAttributeInfo()
 {
 	if (m_group)
-		m_group->removeAttribute(this->getAttribute());
-}
-
-void SBAttributeInfo::setAttribute(SBAttribute* attr)
-{
-	m_attr = attr;;
+		m_group->removeAttribute(&m_attr);
 }
 
 SBAttribute* SBAttributeInfo::getAttribute()
 {
-	return m_attr;
+	return &m_attr;
 }
 
 void SBAttributeInfo::setPriority(int val)
@@ -153,7 +138,7 @@ void SBAttributeInfo::setPriority(int val)
 	getAttribute()->notifyObservers();
 }
 
-int SBAttributeInfo::getPriority()
+int SBAttributeInfo::getPriority() const
 {
 	return m_priority;
 }
@@ -164,7 +149,7 @@ void SBAttributeInfo::setReadOnly(bool val)
 	getAttribute()->notifyObservers();
 }
 
-bool SBAttributeInfo::getReadOnly()
+bool SBAttributeInfo::getReadOnly() const
 {
 	return m_readOnly;
 }
@@ -175,7 +160,7 @@ void SBAttributeInfo::setLocked(bool val)
 	getAttribute()->notifyObservers();
 }
 
-bool SBAttributeInfo::getLocked()
+bool SBAttributeInfo::getLocked() const
 {
 	return m_locked;
 }
@@ -186,7 +171,7 @@ void SBAttributeInfo::setHidden(bool val)
 	getAttribute()->notifyObservers();
 }
 
-bool SBAttributeInfo::getHidden()
+bool SBAttributeInfo::getHidden() const
 {
 	return m_hidden;
 }
@@ -283,39 +268,33 @@ std::string SBAttributeInfo::write()
 }
 
 SBAttribute::SBAttribute()
+: m_info(*this),
+m_object(nullptr)
 {
-	m_name = "";
-	m_object = nullptr;
-	m_info = new SBAttributeInfo();
-	m_info->setAttribute(this);
 }
 
-SBAttribute::SBAttribute(const std::string& name)
+SBAttribute::SBAttribute(std::string name)
+: m_name(std::move(name)),
+  m_info(*this),
+  m_object(nullptr)
 {
-	m_name = name;
-	m_info = new SBAttributeInfo();
-	m_info->setAttribute(this);
 }
 
-SBAttribute::~SBAttribute()
-{
-	// by default any observers will no longer
-	// be notified by this subject.
-	// However, there is no event propagated indicating
-	// this fact. I might need to add an event lifecycle
-	// system to accomodate this.
-
-	delete m_info;
-}
+// by default any observers will no longer
+// be notified by this subject.
+// However, there is no event propagated indicating
+// this fact. I might need to add an event lifecycle
+// system to accomodate this.
+SBAttribute::~SBAttribute() = default;
 
 SBAttributeInfo* SBAttribute::getAttributeInfo()
 {
-	return m_info;
+	return &m_info;
 }
 
-void SBAttribute::setName(const std::string& name)
+void SBAttribute::setName(std::string name)
 {
-	m_name = name;
+	m_name = std::move(name);
 }
 
 const std::string& SBAttribute::getName() const
@@ -369,32 +348,30 @@ BoolAttribute::BoolAttribute(const std::string& name, bool val) : SBAttribute(na
 	m_value = val;
 }
 
-BoolAttribute::~BoolAttribute()
-{
-}
+BoolAttribute::~BoolAttribute() = default;
 
-const bool& BoolAttribute::getValue()
+bool BoolAttribute::getValue() const
 {
 	return m_value;
 }
 
-void BoolAttribute::setValue(const bool& val)
+void BoolAttribute::setValue(bool val)
 {
 	m_value = val;
 	notifyObservers();
 }
 
-void BoolAttribute::setValueFast(const bool& val)
+void BoolAttribute::setValueFast(bool val)
 {
 	m_value = val;
 }
 
-void BoolAttribute::setDefaultValue(const bool& defaultVal)
+void BoolAttribute::setDefaultValue(bool defaultVal)
 {
 	m_defaultValue = defaultVal;
 }
 
-const bool& BoolAttribute::getDefaultValue()
+bool BoolAttribute::getDefaultValue() const
 {
 	return m_defaultValue;
 }
@@ -500,16 +477,14 @@ IntAttribute::IntAttribute(const std::string& name, int val, int min, int max) :
 	m_max = max;
 }
 
-IntAttribute::~IntAttribute()
-{
-}
+IntAttribute::~IntAttribute() = default;
 
-const int& IntAttribute::getValue()
+int IntAttribute::getValue() const
 {
 	return m_value;
 }
 
-void IntAttribute::setValue(const int& val)
+void IntAttribute::setValue(int val)
 {
 	if (val < getMin())
 		m_value = getMin();
@@ -521,7 +496,7 @@ void IntAttribute::setValue(const int& val)
 	notifyObservers();
 }
 
-void IntAttribute::setValueFast(const int& val)
+void IntAttribute::setValueFast(int val)
 {
 	if (val < getMin())
 		m_value = getMin();
@@ -531,7 +506,7 @@ void IntAttribute::setValueFast(const int& val)
 		m_value = val;
 }
 
-int IntAttribute::getMin()
+int IntAttribute::getMin() const
 {
 	return m_min;
 }
@@ -542,7 +517,7 @@ void IntAttribute::setMin(int val)
 	notifyObservers();
 }
 
-int IntAttribute::getMax()
+int IntAttribute::getMax() const
 {
 	return m_max;
 }
@@ -553,12 +528,12 @@ void IntAttribute::setMax(int val)
 	notifyObservers();
 }
 
-void IntAttribute::setDefaultValue(const int& defaultVal)
+void IntAttribute::setDefaultValue(int defaultVal)
 {
 	m_defaultValue = defaultVal;
 }
 
-const int& IntAttribute::getDefaultValue()
+int IntAttribute::getDefaultValue() const
 {
 	return m_defaultValue;
 }
@@ -667,16 +642,14 @@ DoubleAttribute::DoubleAttribute(const std::string& name, double val, double min
 	m_max = max;
 }
 
-DoubleAttribute::~DoubleAttribute()
-{
-}
+DoubleAttribute::~DoubleAttribute() = default;
 
-const double& DoubleAttribute::getValue()
+double DoubleAttribute::getValue() const
 {
 	return m_value;
 }
 
-void DoubleAttribute::setValue(const double& val)
+void DoubleAttribute::setValue(double val)
 {
 	if (val < getMin())
 		m_value = getMin();
@@ -687,7 +660,7 @@ void DoubleAttribute::setValue(const double& val)
 	notifyObservers();
 }
 
-void DoubleAttribute::setValueFast(const double& val)
+void DoubleAttribute::setValueFast(double val)
 {
 	if (val < getMin())
 		m_value = getMin();
@@ -698,17 +671,17 @@ void DoubleAttribute::setValueFast(const double& val)
 	
 }
 
-void DoubleAttribute::setDefaultValue(const double& defaultVal)
+void DoubleAttribute::setDefaultValue(double defaultVal)
 {
 	m_defaultValue = defaultVal;
 }
 
-const double& DoubleAttribute::getDefaultValue()
+double DoubleAttribute::getDefaultValue() const
 {
 	return m_defaultValue;
 }
 
-double DoubleAttribute::getMin()
+double DoubleAttribute::getMin() const
 {
 	return m_min;
 }
@@ -719,7 +692,7 @@ void DoubleAttribute::setMin(double val)
 	notifyObservers();
 }
 
-double DoubleAttribute::getMax()
+double DoubleAttribute::getMax() const
 {
 	return m_max;
 }
@@ -816,27 +789,25 @@ StringAttribute::StringAttribute() : SBAttribute()
 
 StringAttribute::StringAttribute(const std::string& name, std::string val) : SBAttribute(name)
 {
-	m_value = val;
+	m_value = std::move(val);
 }
 
-StringAttribute::~StringAttribute()
-{
-}
+StringAttribute::~StringAttribute() = default;
 
 const std::string& StringAttribute::getValue()
 {
 	return m_value;
 }
 
-void StringAttribute::setValue(const std::string& val)
+void StringAttribute::setValue(std::string val)
 {
-	m_value = val;
+	m_value = std::move(val);
 	notifyObservers();
 }
 
-void StringAttribute::setValueFast(const std::string& val)
+void StringAttribute::setValueFast(std::string val)
 {
-	m_value = val;
+	m_value = std::move(val);
 }
 
 void StringAttribute::setDefaultValue(const std::string& defaultVal)
@@ -858,7 +829,7 @@ std::string StringAttribute::write()
 	strstr << "else:\n";
 	strstr << "\tattr = obj.createStringAttribute(\"" << getName() << "\", ";
 	const std::string& val = getValue();
-	if (val == "")
+	if (val.empty())
 		strstr << " \"\"";
 	else
 		strstr << " \"" << val << "\"";
@@ -872,7 +843,7 @@ std::string StringAttribute::write()
 		strstr << ", False";
 	}
 	SBAttributeGroup* group = info->getGroup();
-	if (!group || group->getName() == "")
+	if (!group || group->getName().empty())
 		strstr << ", \"\"";
 	else
 		strstr << ", \"" << group->getName() << "\"";
@@ -880,7 +851,7 @@ std::string StringAttribute::write()
 	info->getReadOnly() ? strstr << ", True" : strstr << ", False";
 	info->getLocked() ? strstr << ", True" : strstr << ", False";
 	info->getHidden() ? strstr << ", True" : strstr << ", False";
-	if (info->getDescription() == "")
+	if (info->getDescription().empty())
 		strstr << ", \"\"";
 	else
 		strstr << ", \"" << info->getDescription() << "\"";
@@ -899,11 +870,9 @@ std::string StringAttribute::write()
 	strstr << "\tattr.setValue(\"" << curVal << "\")\n";
 	strstr << "\tvalidValues = StringVec()\n";
 	const std::vector<std::string>& values = getValidValues();
-	for (std::vector<std::string>::const_iterator iter = values.begin();
-		 iter != values.end();
-		 iter++)
+	for (const auto & value : values)
 	{
-		strstr << "\tvalidValues.append(\"" << (*iter) << "\")\n";
+		strstr << "\tvalidValues.append(\"" << value << "\")\n";
 	}
 	strstr << "\tattr.setValidValues(validValues)\n";
 	return strstr.str();
@@ -916,8 +885,8 @@ void StringAttribute::read()
 void StringAttribute::setValidValues(const std::vector<std::string>& values)
 {
 	m_validValues.clear();
-	for (size_t v = 0; v < values.size(); v++)
-		m_validValues.emplace_back(values[v]);
+	for (const auto & value : values)
+		m_validValues.emplace_back(value);
 }
 
 const std::vector<std::string>& StringAttribute::getValidValues()
@@ -927,9 +896,7 @@ const std::vector<std::string>& StringAttribute::getValidValues()
 
 SBAttribute* StringAttribute::copy()
 {
-	StringAttribute* a = new StringAttribute();
-	a->setName(getName());
-	a->setValue(getValue());
+	auto* a = new StringAttribute(getName(), getValue());
 	a->setDefaultValue(getDefaultValue());
 	a->setValidValues(getValidValues());
 
@@ -968,9 +935,7 @@ Vec3Attribute::Vec3Attribute(const std::string& name) : SBAttribute(name)
 {
 }
 
-Vec3Attribute::~Vec3Attribute()
-{
-}
+Vec3Attribute::~Vec3Attribute() = default;
 
 const SrVec& Vec3Attribute::getValue()
 {
@@ -1095,9 +1060,7 @@ MatrixAttribute::MatrixAttribute(const std::string& name)
 	m_value.identity();
 }
 
-MatrixAttribute::~MatrixAttribute()
-{
-}
+MatrixAttribute::~MatrixAttribute() = default;
 
 const SrMat& MatrixAttribute::getValue()
 {
@@ -1218,9 +1181,7 @@ bool MatrixAttribute::isDefaultValue()
 }
 
 
-ActionAttribute::ActionAttribute()
-{
-}
+ActionAttribute::ActionAttribute() = default;
 
 ActionAttribute::ActionAttribute(const std::string& name)
 {
@@ -1228,9 +1189,7 @@ ActionAttribute::ActionAttribute(const std::string& name)
 	m_name = name;
 }
 
-ActionAttribute::~ActionAttribute()
-{
-}
+ActionAttribute::~ActionAttribute() = default;
 
 void ActionAttribute::setValue()
 {

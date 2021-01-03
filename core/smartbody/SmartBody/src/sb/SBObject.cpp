@@ -19,21 +19,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 #include "SBObject.h"
 #include <sr/sr_vec.h>
+#include <sr/sr_mat.h>
 #include <sb/SBAttribute.h>
 #include <sb/SBAttributeManager.h>
+
+#include <utility>
 #include "SBUtilities.h"
 
 
 namespace SmartBody {
 
-bool SBObject::defaultBool = true;
-int SBObject::defaultInt = 0;
-double SBObject::defaultDouble = 0.0;
-std::string SBObject::defaultString = "";
-SrVec SBObject::defaultVec = SrVec();
-SrMat SBObject::defaultMatrix = SrMat();
 
-SBObject::SBObject() : SBSubject(), SBObserver(), m_attributeManager(std::make_unique<SBAttributeManager>())
+SBObject::SBObject() : SBSubject(), SBObserver()
 {
 }
 
@@ -137,7 +134,7 @@ void SBObject::addAttribute( std::unique_ptr<SBAttribute> attr, const std::strin
 	}
  }
 
- SBAttribute* SBObject::getAttribute(const std::string& name)
+ SBAttribute* SBObject::getAttribute(const std::string& name) const
  {
 	auto iter = m_attributeList.find(name);
 	if (iter != m_attributeList.end()) // attribute exists, remove the old attribute 
@@ -379,7 +376,7 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 
   SBAttributeManager* SBObject::getAttributeManager()
 {
-	return m_attributeManager.get();
+	return &m_attributeManager;
 }
 
   void SBObject::notify(SBSubject* subject)
@@ -387,10 +384,10 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	
   }
 
-  void SBObject::setBoolAttribute( const std::string& name, bool value )
+  void SBObject::setBoolAttribute( const std::string& name, bool value ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  BoolAttribute* battr = dynamic_cast<BoolAttribute*>(attr);
+	  auto battr = dynamic_cast<BoolAttribute*>(attr);
 	  if (battr)
 	  {
 		  battr->setValue(value);
@@ -401,10 +398,10 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	  }
   }
 
-  void SBObject::setIntAttribute( const std::string& name, int value )
+  void SBObject::setIntAttribute( const std::string& name, int value ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  IntAttribute* iattr = dynamic_cast<IntAttribute*>(attr);
+	  auto iattr = dynamic_cast<IntAttribute*>(attr);
 	  if (iattr)
 	  {
 		  iattr->setValue(value);
@@ -415,10 +412,10 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	  }
   }
 
-  void SBObject::setDoubleAttribute( const std::string& name, double value )
+  void SBObject::setDoubleAttribute( const std::string& name, double value ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  DoubleAttribute* dattr = dynamic_cast<DoubleAttribute*>(attr);
+	  auto dattr = dynamic_cast<DoubleAttribute*>(attr);
 	  if (dattr)
 	  {
 		  dattr->setValue(value);
@@ -429,10 +426,10 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	  }
   }
 
-  void SBObject::setVec3Attribute( const std::string& name, float val1, float val2, float val3 )
+  void SBObject::setVec3Attribute( const std::string& name, float val1, float val2, float val3 ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  Vec3Attribute* vattr = dynamic_cast<Vec3Attribute*>(attr);
+	  auto vattr = dynamic_cast<Vec3Attribute*>(attr);
 	  if (vattr)
 	  {
 		  vattr->setValue(SrVec(val1,val2,val3));
@@ -443,13 +440,13 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	  }
   }
 
-  void SBObject::setStringAttribute( const std::string& name, std::string value )
+  void SBObject::setStringAttribute( const std::string& name, std::string value ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  StringAttribute* sattr = dynamic_cast<StringAttribute*>(attr);
+	  auto sattr = dynamic_cast<StringAttribute*>(attr);
 	  if (sattr)
 	  {
-		  sattr->setValue(value);
+		  sattr->setValue(std::move(value));
 	  }
 	  else
 	  {
@@ -457,10 +454,10 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	  }
   }
 
-  void SBObject::setMatrixAttribute( const std::string& name, SrMat& value )
+  void SBObject::setMatrixAttribute( const std::string& name, SrMat& value ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  MatrixAttribute* mattr = dynamic_cast<MatrixAttribute*>(attr);
+	  auto* mattr = dynamic_cast<MatrixAttribute*>(attr);
 	  if (mattr)
 	  {
 		  mattr->setValue(value);
@@ -471,10 +468,10 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	  }
   }
 
-  void SBObject::setActionAttribute(const std::string& name)
+  void SBObject::setActionAttribute(const std::string& name) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  ActionAttribute* aattr = dynamic_cast<ActionAttribute*>(attr);
+	  auto* aattr = dynamic_cast<ActionAttribute*>(attr);
 	  if (aattr)
 	  {
 		  aattr->setValue();
@@ -485,69 +482,73 @@ int SBObject::getAttributeGroupPriority(const std::string& name)
 	  }
   }
 
-  const bool& SBObject::getBoolAttribute( const std::string& name )
+  bool SBObject::getBoolAttribute( const std::string& name ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  BoolAttribute* battr = dynamic_cast<BoolAttribute*>(attr);
+	  auto* battr = dynamic_cast<BoolAttribute*>(attr);
 	  if (battr)
 	  {
 		  return battr->getValue();
 	  }	  
-	  return defaultBool;
+	  return true;
   }
 
-  const int& SBObject::getIntAttribute( const std::string& name )
+  int SBObject::getIntAttribute( const std::string& name ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  IntAttribute* iattr = dynamic_cast<IntAttribute*>(attr);
+	  auto* iattr = dynamic_cast<IntAttribute*>(attr);
 	  if (iattr)
 	  {
 		  return iattr->getValue();
 	  }
-	  return defaultInt;
+	  return 0;
   }
 
-  const double& SBObject::getDoubleAttribute( const std::string& name )
+  double SBObject::getDoubleAttribute( const std::string& name ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  DoubleAttribute* dattr = dynamic_cast<DoubleAttribute*>(attr);
+	  auto* dattr = dynamic_cast<DoubleAttribute*>(attr);
 	  if (dattr)
 	  {
 		 return dattr->getValue();
 	  }
-	  return defaultDouble;
+	  return 0;
   }
 
-  const SrVec& SBObject::getVec3Attribute( const std::string& name )
+  const SrVec& SBObject::getVec3Attribute( const std::string& name ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  Vec3Attribute* vattr = dynamic_cast<Vec3Attribute*>(attr);
+	  auto* vattr = dynamic_cast<Vec3Attribute*>(attr);
 	  if (vattr)
 	  {
 		  return vattr->getValue();
 	  }
+	  static SrVec defaultVec;
+
 	  return defaultVec;
   }
 
-  const std::string& SBObject::getStringAttribute( const std::string& name )
+  const std::string& SBObject::getStringAttribute( const std::string& name ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  StringAttribute* sattr = dynamic_cast<StringAttribute*>(attr);
+	  auto* sattr = dynamic_cast<StringAttribute*>(attr);
 	  if (sattr)
 	  {
 		  return sattr->getValue();
 	  }
+	  static std::string defaultString;
 	  return defaultString;
   }
 
-  const SrMat& SBObject::getMatrixAttribute( const std::string& name )
+  const SrMat& SBObject::getMatrixAttribute( const std::string& name ) const
   {
 	  SBAttribute* attr = getAttribute(name);
-	  MatrixAttribute* mattr = dynamic_cast<MatrixAttribute*>(attr);
+	  auto* mattr = dynamic_cast<MatrixAttribute*>(attr);
 	  if (mattr)
 	  {
 		  return mattr->getValue();
 	  }
+	  static SrMat defaultMatrix;
 	  return defaultMatrix;
   }
 
@@ -584,7 +585,7 @@ void SBObject::addDependencyOnly(SBObject* object)
 {
 	if (object == nullptr)
 		return;
-	std::set<SBObject*>::iterator iter = _dependencies.find(object);
+	auto iter = _dependencies.find(object);
 	if (iter == _dependencies.end())
 		_dependencies.insert(object);
 }
@@ -603,7 +604,7 @@ void SBObject::removeDependencyOnly(SBObject* object)
 {
 	if (object == nullptr)
 		return;
-	std::set<SBObject*>::iterator iter = _dependencies.find(object);
+	auto iter = _dependencies.find(object);
 	if (iter != _dependencies.end())
 		_dependencies.erase(iter);
 }
@@ -625,7 +626,7 @@ std::set<SBObject*>& SBObject::getDependencies()
 
 void SBObject::addDependencyReverse(SBObject* object)
 {
-	std::set<SBObject*>::iterator iter = _dependencies.find(object);
+	auto iter = _dependencies.find(object);
 	if (iter == _dependencies.end())
 		_dependencies.insert(object);
 
@@ -633,7 +634,7 @@ void SBObject::addDependencyReverse(SBObject* object)
 
 void SBObject::removeDependencyReverse(SBObject* object)
 {
-	std::set<SBObject*>::iterator iter = _dependenciesReverse.find(object);
+	auto iter = _dependenciesReverse.find(object);
 	if (iter != _dependenciesReverse.end())
 		_dependenciesReverse.erase(iter);
 }
@@ -648,5 +649,5 @@ void SBObject::onDependencyRemoval(SBObject* object)
 }
 
 
-};
+}
   

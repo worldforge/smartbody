@@ -124,11 +124,11 @@ MeCtSchedulerClass* CreateSchedulerCt( const char* character_name, const char* s
 	return sched_p;
 }
 
-SbmCharacter::SbmCharacter() : SBPawn()
-{
-	SbmCharacter::initData();
-	setClassType("");
-}
+//SbmCharacter::SbmCharacter() : SBPawn()
+//{
+//	SbmCharacter::initData();
+//	setClassType("");
+//}
 
 SbmCharacter::SbmCharacter( const char* character_name, std::string type)
 :	SBPawn( character_name )
@@ -481,102 +481,102 @@ void SbmCharacter::createStandardControllers()
 		listener->OnCharacterUpdate( getName() );
 	}
 }
-
-void SbmCharacter::createMinimalControllers()
-{
-	posture_sched_p = CreateSchedulerCt( getName().c_str(), "posture" );
-	motion_sched_p = CreateSchedulerCt( getName().c_str(), "motion" );
-
-	gaze_sched_p = CreateSchedulerCt( getName().c_str(), "gaze" );
-
-	head_sched_p = CreateSchedulerCt( getName().c_str(), "head" );
-	face_ct = new MeCtFace();
-	string faceCtName( getName() );
-	faceCtName += "_faceController";
-	face_ct->setName(faceCtName);
-
-	eyelid_reg_ct_p = new MeCtEyeLidRegulator();
-	if (!_faceDefinition || !_faceDefinition->getFaceNeutral())
-	{
-		eyelid_reg_ct_p->set_use_blink_viseme( true );
-//		SmartBody::util::log("Character %s will use 'blink' viseme to control blinking.", getName().c_str());
-	}
-	else
-	{
-//		SmartBody::util::log("Character %s will use FAC 45 left and right to control blinking.", getName().c_str());
-	}
-	eyelid_reg_ct_p->init(this, true);
-	eyelid_reg_ct_p->set_upper_range( -30.0, 30.0 );
-	eyelid_reg_ct_p->set_close_angle( 30.0 );
-	ostringstream ct_name;
-	ct_name << getName() << "_eyelidController";
-	eyelid_reg_ct_p->setName( ct_name.str().c_str() );
-
-	this->saccade_ct = new MeCtSaccade(this);
-	this->saccade_ct->init(this);
-	std::string saccadeCtName = getName() + "_eyeSaccadeController";
-	this->saccade_ct->setName(saccadeCtName.c_str());
-
-
-	posture_sched_p->init(this);
-	motion_sched_p->init(this);
-
-	gaze_sched_p->init(this);
-
-	head_sched_p->init(this);
-	face_ct->init( this );
-
-	ct_tree_p->add_controller( posture_sched_p.get() );
-	//ct_tree_p->add_controller( locomotion_ct );
-	
-	ct_tree_p->add_controller( motion_sched_p.get() );
-	ct_tree_p->add_controller( gaze_sched_p.get() );
-	ct_tree_p->add_controller( saccade_ct.get() );
-	ct_tree_p->add_controller( eyelid_reg_ct_p.get() );
-	ct_tree_p->add_controller( head_sched_p.get() );
-	//ct_tree_p->add_controller( head_param_anim_ct );
-	ct_tree_p->add_controller( face_ct.get() );
-
-	// get the default attributes from the default controllers
-	
-	auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
-	for (auto & defaultController : defaultControllers)
-	{
-		auto controller = defaultController.get();
-		const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
-		std::string groupName = controller->getName();		
-		for (const auto & defaultAttribute : defaultAttributes)
-		{
-			SmartBody::SBAttribute* attribute = defaultAttribute.first;
-			int groupPriority = attribute->getAttributeInfo()->getGroup()->getPriority();
-			SmartBody::SBAttribute* attributeCopy = attribute->copy();
-			this->addAttribute(std::unique_ptr<SmartBody::SBAttribute>(attributeCopy), attribute->getAttributeInfo()->getGroup()->getName());
-			// make sure the group's priority is set properly
-			attributeCopy->getAttributeInfo()->getGroup()->setPriority(groupPriority);
-			// if the controller isn't a scheduler, then add the controller as an observer
-			MeCtScheduler2* scheduler = dynamic_cast<MeCtScheduler2*>(controller);
-			if (!scheduler)
-			{
-				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
-					attributeCopy->registerObserver(eyelid_reg_ct_p.get());
-				else if (dynamic_cast<MeCtSaccade*>(controller))
-					attributeCopy->registerObserver(saccade_ct.get());
-				else if (dynamic_cast<MeCtFace*>(controller))
-					attributeCopy->registerObserver(face_ct.get());
-				else if (dynamic_cast<MeCtParamAnimation*>(controller))
-				{
-					attributeCopy->registerObserver(controller);
-				}
-			}
-		}
-	}
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
-	for (auto & listener : listeners)
-	{
-		listener->OnCharacterUpdate( getName() );
-	}
-}
+//
+//void SbmCharacter::createMinimalControllers()
+//{
+//	posture_sched_p = CreateSchedulerCt( getName().c_str(), "posture" );
+//	motion_sched_p = CreateSchedulerCt( getName().c_str(), "motion" );
+//
+//	gaze_sched_p = CreateSchedulerCt( getName().c_str(), "gaze" );
+//
+//	head_sched_p = CreateSchedulerCt( getName().c_str(), "head" );
+//	face_ct = new MeCtFace();
+//	string faceCtName( getName() );
+//	faceCtName += "_faceController";
+//	face_ct->setName(faceCtName);
+//
+//	eyelid_reg_ct_p = new MeCtEyeLidRegulator();
+//	if (!_faceDefinition || !_faceDefinition->getFaceNeutral())
+//	{
+//		eyelid_reg_ct_p->set_use_blink_viseme( true );
+////		SmartBody::util::log("Character %s will use 'blink' viseme to control blinking.", getName().c_str());
+//	}
+//	else
+//	{
+////		SmartBody::util::log("Character %s will use FAC 45 left and right to control blinking.", getName().c_str());
+//	}
+//	eyelid_reg_ct_p->init(this, true);
+//	eyelid_reg_ct_p->set_upper_range( -30.0, 30.0 );
+//	eyelid_reg_ct_p->set_close_angle( 30.0 );
+//	ostringstream ct_name;
+//	ct_name << getName() << "_eyelidController";
+//	eyelid_reg_ct_p->setName( ct_name.str().c_str() );
+//
+//	this->saccade_ct = new MeCtSaccade(this);
+//	this->saccade_ct->init(this);
+//	std::string saccadeCtName = getName() + "_eyeSaccadeController";
+//	this->saccade_ct->setName(saccadeCtName.c_str());
+//
+//
+//	posture_sched_p->init(this);
+//	motion_sched_p->init(this);
+//
+//	gaze_sched_p->init(this);
+//
+//	head_sched_p->init(this);
+//	face_ct->init( this );
+//
+//	ct_tree_p->add_controller( posture_sched_p.get() );
+//	//ct_tree_p->add_controller( locomotion_ct );
+//
+//	ct_tree_p->add_controller( motion_sched_p.get() );
+//	ct_tree_p->add_controller( gaze_sched_p.get() );
+//	ct_tree_p->add_controller( saccade_ct.get() );
+//	ct_tree_p->add_controller( eyelid_reg_ct_p.get() );
+//	ct_tree_p->add_controller( head_sched_p.get() );
+//	//ct_tree_p->add_controller( head_param_anim_ct );
+//	ct_tree_p->add_controller( face_ct.get() );
+//
+//	// get the default attributes from the default controllers
+//
+//	auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
+//	for (auto & defaultController : defaultControllers)
+//	{
+//		auto controller = defaultController.get();
+//		const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
+//		std::string groupName = controller->getName();
+//		for (const auto & defaultAttribute : defaultAttributes)
+//		{
+//			SmartBody::SBAttribute* attribute = defaultAttribute.first;
+//			int groupPriority = attribute->getAttributeInfo()->getGroup()->getPriority();
+//			SmartBody::SBAttribute* attributeCopy = attribute->copy();
+//			this->addAttribute(std::unique_ptr<SmartBody::SBAttribute>(attributeCopy), attribute->getAttributeInfo()->getGroup()->getName());
+//			// make sure the group's priority is set properly
+//			attributeCopy->getAttributeInfo()->getGroup()->setPriority(groupPriority);
+//			// if the controller isn't a scheduler, then add the controller as an observer
+//			MeCtScheduler2* scheduler = dynamic_cast<MeCtScheduler2*>(controller);
+//			if (!scheduler)
+//			{
+//				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
+//					attributeCopy->registerObserver(eyelid_reg_ct_p.get());
+//				else if (dynamic_cast<MeCtSaccade*>(controller))
+//					attributeCopy->registerObserver(saccade_ct.get());
+//				else if (dynamic_cast<MeCtFace*>(controller))
+//					attributeCopy->registerObserver(face_ct.get());
+//				else if (dynamic_cast<MeCtParamAnimation*>(controller))
+//				{
+//					attributeCopy->registerObserver(controller);
+//				}
+//			}
+//		}
+//	}
+//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+//	for (auto & listener : listeners)
+//	{
+//		listener->OnCharacterUpdate( getName() );
+//	}
+//}
 
 
 void SbmCharacter::initData()

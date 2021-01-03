@@ -133,7 +133,7 @@ namespace SmartBody
 			.function("setSoftEyes", &SbmCharacter::setSoftEyes)
 			.function("isSoftEyes", &SbmCharacter::isSoftEyes)
 			.function("createStandardControllers", &SbmCharacter::createStandardControllers)
-			.function("createMinimalControllers", &SbmCharacter::createMinimalControllers)
+			//.function("createMinimalControllers", &SbmCharacter::createMinimalControllers)
 			.function("setNvbg", &SbmCharacter::setNvbg, emscripten::allow_raw_pointers())
 			.function("getNvbg", &SbmCharacter::getNvbg, emscripten::allow_raw_pointers())
 			.function("setMiniBrain", &SbmCharacter::setMiniBrain, emscripten::allow_raw_pointers())

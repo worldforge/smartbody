@@ -53,10 +53,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBCharacter::SBCharacter() : SbmCharacter()
-{
-	
-}
+//SBCharacter::SBCharacter() : SbmCharacter()
+//{
+//
+//}
 
 SBCharacter::SBCharacter(const std::string& name, const std::string& type) : SbmCharacter(name.c_str(), type)
 {

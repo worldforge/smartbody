@@ -40,7 +40,7 @@ class SBParserListener;
 class SBCharacter : public SbmCharacter
 {
 	public:
-		SBAPI SBCharacter();
+		//SBAPI SBCharacter();
 		SBAPI explicit SBCharacter(const std::string& name, const std::string& type = "");
 		SBAPI ~SBCharacter() override;
 

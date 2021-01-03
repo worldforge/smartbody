@@ -33,15 +33,51 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 namespace SmartBody {
 
 class SBObject;
-class SBAttributeInfo;
+class SBAttribute;
+class SBAttributeGroup;
+
+class SBAttributeInfo
+{
+public:
+	SBAPI SBAttributeInfo(SBAttribute& m_attr);
+	SBAPI ~SBAttributeInfo();
+
+	SBAPI void setPriority(int val);
+	SBAPI int getPriority() const;
+
+	SBAPI void setReadOnly(bool val);
+	SBAPI bool getReadOnly() const;
+	SBAPI void setLocked(bool val);
+	SBAPI bool getLocked() const;
+	SBAPI void setHidden(bool val);
+	SBAPI bool getHidden() const;
+	SBAPI void setGroup(SBAttributeGroup* group);
+	SBAPI SBAttributeGroup* getGroup();
+	SBAPI void setDescription(const std::string& description);
+	SBAPI std::string getDescription();
+
+	SBAPI std::string write();
+
+	SBAPI SBAttribute* getAttribute();
+
+
+protected:
+	bool m_readOnly;
+	bool m_locked;
+	int m_priority;
+	bool m_hidden;
+	SBAttribute& m_attr;
+	SBAttributeGroup* m_group;
+	std::string m_description;
+};
 
 class SBAttribute : public SBSubject
 {
 	public:
-		SBAPI SBAttribute(const std::string& name);	
+		SBAPI explicit SBAttribute(std::string name);
 		SBAPI SBAttribute();
 		SBAPI virtual ~SBAttribute();
-		SBAPI void setName(const std::string& name);
+		SBAPI void setName(std::string name);
 		SBAPI const std::string& getName() const;
 		SBAPI virtual std::string write();	
 		SBAPI virtual void read();
@@ -58,26 +94,25 @@ class SBAttribute : public SBSubject
 
 	protected:
 		std::string m_name;
-		SBAttributeInfo* m_info;
+		SBAttributeInfo m_info;
 		SBObject* m_object;
 };
 
 class SBAttributeGroup 
 {
 	public:
-		SBAPI SBAttributeGroup();
-		SBAPI SBAttributeGroup(const std::string& name);
+		SBAPI explicit SBAttributeGroup(std::string  name);
 		SBAPI ~SBAttributeGroup();
 
 		SBAPI const std::string& getName() const;
 		SBAPI void setPriority(int val);
-		SBAPI int getPriority();
+		SBAPI int getPriority() const;
 
 		SBAPI void addAttribute(SBAttribute* attr);
 		SBAPI void removeAttribute(SBAttribute* attr);
 		SBAPI std::map<std::string, SBAttribute*>& getAttributes();
 		SBAPI std::vector<std::string> getAttributeNames();
-		SBAPI SBAttribute* getAttribute(std::string name);
+		SBAPI SBAttribute* getAttribute(const std::string& name);
 
 	protected:
 		std::string m_name;
@@ -86,60 +121,24 @@ class SBAttributeGroup
 };
 
 
-class SBAttributeInfo
-{
-	public:
-		SBAPI SBAttributeInfo();
-		SBAPI ~SBAttributeInfo();
-
-		SBAPI void setPriority(int val);
-		SBAPI int getPriority();
-
-		SBAPI void setReadOnly(bool val);
-		SBAPI bool getReadOnly();
-		SBAPI void setLocked(bool val);
-		SBAPI bool getLocked();
-		SBAPI void setHidden(bool val);
-		SBAPI bool getHidden();
-		SBAPI void setGroup(SBAttributeGroup* group);
-		SBAPI SBAttributeGroup* getGroup();
-		SBAPI void setDescription(const std::string& description);
-		SBAPI std::string getDescription();
-
-		SBAPI std::string write();
-
-		SBAPI void setAttribute(SBAttribute* attr);
-		SBAPI SBAttribute* getAttribute();
-		
-
-	protected:
-		bool m_readOnly;
-		bool m_locked;
-		int m_priority;
-		bool m_hidden;
-		SBAttribute* m_attr;
-		SBAttributeGroup* m_group;
-		std::string m_description;
-};
-
 class BoolAttribute : public SBAttribute
 {
 	public:
 		SBAPI BoolAttribute();
-		SBAPI BoolAttribute(const std::string& name, bool val = true);
-		SBAPI ~BoolAttribute();
+		SBAPI explicit BoolAttribute(const std::string& name, bool val = true);
+		SBAPI ~BoolAttribute() override;
 
-		SBAPI const bool& getValue();
-		SBAPI void setValue(const bool& val);
-		SBAPI void setDefaultValue(const bool& defaultVal);
-		SBAPI const bool& getDefaultValue();
-		SBAPI void setValueFast(const bool& val);
+		SBAPI bool getValue() const;
+		SBAPI void setValue(bool val);
+		SBAPI void setDefaultValue(bool defaultVal);
+		SBAPI bool getDefaultValue() const;
+		SBAPI void setValueFast(bool val);
 
-		SBAPI virtual std::string write();
-		SBAPI virtual void read();
-		SBAPI virtual SBAttribute* copy();
-		SBAPI virtual void copyAttrValue(SBAttribute* inAttr);
-		SBAPI virtual bool isDefaultValue();
+		SBAPI std::string write() override;
+		SBAPI void read() override;
+		SBAPI SBAttribute* copy() override;
+		SBAPI void copyAttrValue(SBAttribute* inAttr) override;
+		SBAPI bool isDefaultValue() override;
 
 	private:
 		bool m_value;
@@ -154,21 +153,21 @@ class IntAttribute : public SBAttribute
 		SBAPI IntAttribute(const std::string& name, int val, int minn, int maxx);
 		SBAPI ~IntAttribute();
 
-		SBAPI const int& getValue();
-		SBAPI void setValue(const int& val);
-		SBAPI void setDefaultValue(const int& defaultVal);
-		SBAPI const int& getDefaultValue();
-		SBAPI void setValueFast(const int& val);
-		SBAPI int getMin();
-		SBAPI int getMax();
+		SBAPI int getValue() const;
+		SBAPI void setValue(int val);
+		SBAPI void setDefaultValue(int defaultVal);
+		SBAPI int getDefaultValue() const;
+		SBAPI void setValueFast(int val);
+		SBAPI int getMin() const;
+		SBAPI int getMax() const;
 		SBAPI void setMin(int val);
 		SBAPI void setMax(int val);
 		
-		SBAPI virtual std::string write();
-		SBAPI virtual void read();
-		SBAPI virtual SBAttribute* copy();
-		SBAPI virtual void copyAttrValue(SBAttribute* inAttr);
-		SBAPI virtual bool isDefaultValue();
+		SBAPI std::string write() override;
+		SBAPI void read() override;
+		SBAPI SBAttribute* copy() override;
+		SBAPI void copyAttrValue(SBAttribute* inAttr) override;
+		SBAPI bool isDefaultValue() override;
 
 	private:
 		int m_value;
@@ -185,21 +184,21 @@ class DoubleAttribute : public SBAttribute
 		SBAPI DoubleAttribute(const std::string& name, double val, double min, double max);
 		SBAPI ~DoubleAttribute();
 
-		SBAPI const double& getValue();
-		SBAPI void setValue(const double& val);
-		SBAPI void setDefaultValue(const double& defaultVal);
-		SBAPI const double& getDefaultValue();
-		SBAPI void setValueFast(const double& val);
-		SBAPI double getMin();
-		SBAPI double getMax();
+		SBAPI double getValue() const;
+		SBAPI void setValue(double val);
+		SBAPI void setDefaultValue(double defaultVal);
+		SBAPI double getDefaultValue() const;
+		SBAPI void setValueFast(double val);
+		SBAPI double getMin() const;
+		SBAPI double getMax() const;
 		SBAPI void setMin(double val);
 		SBAPI void setMax(double val);
 
-		SBAPI virtual std::string write();
-		SBAPI virtual void read();
-		SBAPI virtual SBAttribute* copy();
-		SBAPI virtual void copyAttrValue(SBAttribute* inAttr);
-		SBAPI virtual bool isDefaultValue();
+		SBAPI std::string write() override;
+		SBAPI void read() override;
+		SBAPI SBAttribute* copy() override;
+		SBAPI void copyAttrValue(SBAttribute* inAttr) override;
+		SBAPI bool isDefaultValue() override;
 
 	private:
 		double m_value;
@@ -212,22 +211,22 @@ class StringAttribute : public SBAttribute
 {
 	public:
 		SBAPI StringAttribute();
-		SBAPI StringAttribute(const std::string& name, std::string value = "");
-		SBAPI ~StringAttribute();
+		SBAPI explicit StringAttribute(const std::string& name, std::string value = "");
+		SBAPI ~StringAttribute() override;
 
 		SBAPI const std::string& getValue();
-		SBAPI void setValue(const std::string& val);
+		SBAPI void setValue(std::string val);
 		SBAPI void setDefaultValue(const std::string& defaultVal);
 		SBAPI const std::string& getDefaultValue();
 		SBAPI void setValidValues(const std::vector<std::string>& values);
 		SBAPI const std::vector<std::string>& getValidValues();
-		SBAPI void setValueFast(const std::string& val);
+		SBAPI void setValueFast(std::string val);
 
-		SBAPI virtual std::string write();
-		SBAPI virtual void read();
-		SBAPI virtual SBAttribute* copy();
-		SBAPI virtual void copyAttrValue(SBAttribute* inAttr);
-		SBAPI virtual bool isDefaultValue();
+		SBAPI std::string write() override;
+		SBAPI void read() override;
+		SBAPI SBAttribute* copy() override;
+		SBAPI void copyAttrValue(SBAttribute* inAttr) override;
+		SBAPI bool isDefaultValue() override;
 
 	private:
 		std::string m_value;

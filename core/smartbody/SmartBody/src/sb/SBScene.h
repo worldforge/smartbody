@@ -119,7 +119,7 @@ class SBScene : public SBObject
 		SBAPI static void destroyScene();
 
 		SBAPI void setScale(float val);
-		SBAPI float getScale();
+		SBAPI float getScale() const;
 
 		SBAPI bool command(const std::string& command);
 		SBAPI bool commandAt(float seconds, const std::string& command);
@@ -317,9 +317,8 @@ class SBScene : public SBObject
 		std::map<std::string, SBScript*> _scripts;
 		float _scale;
 		bool _isRemoteMode;
-		static bool _firstTime;
 
-		std::map<std::string, SmartBody::SBFaceDefinition*> _faceDefinitions;
+		std::map<std::string, std::unique_ptr<SmartBody::SBFaceDefinition>> _faceDefinitions;
 
 		std::string _mediaPath;
 		std::vector<boost::intrusive_ptr<SBController>> _defaultControllers;

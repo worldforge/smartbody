@@ -19,7 +19,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "SteerSuiteEngineDriver.h"
-
+#include "sr/sr_vec.h"
 #include <iostream>
 
 using namespace std;
