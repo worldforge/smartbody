@@ -816,7 +816,7 @@ void AttributeWindow::ActionCB(Fl_Widget *w, void *data)
 		SmartBody::ActionAttribute* aattr = dynamic_cast<SmartBody::ActionAttribute*>(attr);
 		if (aattr)
 		{
-			if (!SmartBody::SBScene::getScene()->isRemoteMode())
+			if (!Session::current->scene.isRemoteMode())
 			{
 				aattr->setValue();
 			}
@@ -867,7 +867,7 @@ void AttributeWindow::BoolCB(Fl_Widget *w, void *data)
 		SmartBody::BoolAttribute* battr = dynamic_cast<SmartBody::BoolAttribute*>(attr);
 		if (battr)
 		{
-			if (!SmartBody::SBScene::getScene()->isRemoteMode())
+			if (!Session::current->scene.isRemoteMode())
 			{
 				battr->setValue(check->value()? true : false);
 			}
@@ -941,7 +941,7 @@ void AttributeWindow::IntCB(Fl_Widget *w, void *data)
 				val = int(slider->value());
 			}
 			
-			if (!SmartBody::SBScene::getScene()->isRemoteMode())
+			if (!Session::current->scene.isRemoteMode())
 			{
 				iattr->setValue(val);
 			}
@@ -1015,7 +1015,7 @@ void AttributeWindow::DoubleCB(Fl_Widget *w, void *data)
 			{
 				val = slider->value();
 			}
-			if (!SmartBody::SBScene::getScene()->isRemoteMode())
+			if (!Session::current->scene.isRemoteMode())
 			{
 				dattr->setValue(val);
 			}
@@ -1086,7 +1086,7 @@ void AttributeWindow::StringCB(Fl_Widget *w, void *data)
 				finalValue = choiceValue;
 			}
 
-			if (!SmartBody::SBScene::getScene()->isRemoteMode())
+			if (!Session::current->scene.isRemoteMode())
 			{
 				strattr->setValue(finalValue);
 			}
@@ -1151,7 +1151,7 @@ void AttributeWindow::Vec3CB(Fl_Widget *w, void *data)
 			}
 			
 
-			if (!SmartBody::SBScene::getScene()->isRemoteMode())
+			if (!Session::current->scene.isRemoteMode())
 			{
 				vec3attr->setValue(val);
 			}

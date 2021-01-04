@@ -1716,12 +1716,11 @@ void BmlRequest::gestureRequestProcess()
 	}
 }
 
-void BML::BmlRequest::speechRequestProcess()
+void BML::BmlRequest::speechRequestProcess(float curTime)
 {
 	if (!speech_request)
 		return;
 
-	float curTime = (float)SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
 	std::vector<std::string> behList;
 	std::vector<std::string> types;
 	std::vector<float> times;
@@ -2092,7 +2091,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 
 	faceRequestProcess();
 	gestureRequestProcess();
-	speechRequestProcess();
+	speechRequestProcess((float)scene->getSimulationManager()->getTime());
 
 	// Realize behaviors
 #if USE_CUSTOM_PRUNE_POLICY

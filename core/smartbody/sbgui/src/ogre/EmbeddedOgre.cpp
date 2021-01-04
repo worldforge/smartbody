@@ -135,7 +135,7 @@ void EmbeddedOgre::resetOgreScene()
 		frameListener->m_validJointNames.clear();
 	}
 
-// 	std::vector<std::string> characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+// 	std::vector<std::string> characterNames = Session::current->scene.getCharacterNames();
 // 	for (unsigned int i=0;i<characterNames.size();i++)
 // 	{
 // 		ogreListener->OnCharacterUpdate(characterNames[i],"character");
@@ -222,12 +222,12 @@ void EmbeddedOgre::updateOgreLights()
 			ogreSceneMgr->setShadowTextureCount(shadowMapCountAttr->getValue());
 	}
 
-	const std::vector<std::string>& pawnNames =  SmartBody::SBScene::getScene()->getPawnNames();
+	const std::vector<std::string>& pawnNames =  Session::current->scene.getPawnNames();
 	for (std::vector<std::string>::const_iterator iter = pawnNames.begin();
 		iter != pawnNames.end();
 		iter++)
 	{
-		SmartBody::SBPawn* sbpawn = SmartBody::SBScene::getScene()->getPawn(*iter);
+		SmartBody::SBPawn* sbpawn = Session::current->scene.getPawn(*iter);
 		const std::string& name = sbpawn->getName();
 		if (name.find("light") == 0)
 		{
@@ -802,7 +802,7 @@ Ogre::MovableObject* EmbeddedOgre::createOgrePawn( SmartBody::SBPawn* sbPawn )
 			camera->setFarClipDistance(3000.0f); 
 		}
 		
-	SrCamera* sbCamera = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* sbCamera = Session::current->scene.getActiveCamera();
 		
 	if (!sbCamera)
 		ogreCamera = camera;
@@ -933,7 +933,7 @@ Ogre::Entity* EmbeddedOgre::createOgreCharacter( SmartBody::SBCharacter* sbChar 
 	DeformableMeshInstance* meshInstance = sbChar->dMeshInstance_p;
 	if (meshName == "") meshName = sbChar->getName();
 
-	auto charSkel = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+	auto charSkel = Session::current->scene.getSkeleton(skeletonName);
 	addSBSkeleton(charSkel);
 	addDeformableMesh(meshName, meshInstance);
 	Ogre::SkeletonPtr ogreSkel = Ogre::SkeletonManager::getSingleton().getByName(skeletonName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);

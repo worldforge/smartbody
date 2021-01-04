@@ -29,6 +29,7 @@
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBScene.h>
 #include <sb/SBCharacter.h>
+#include "Session.h"
 
 #define transitionTrace 0
 
@@ -159,7 +160,7 @@ void PAScriptEditor::updateStateInfo(Fl_Widget* widget, void* data)
 					iter->second = offset;
 				}
 			}
-			PABlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(selectedState);
+			PABlend* state = Session::current->scene.getBlendManager()->getBlend(selectedState);
 	
 			if (state->getNumMotions() > 1)
 			{
@@ -194,7 +195,7 @@ void PAScriptEditor::run(Fl_Widget* widget, void* data)
 			offset += iter1->second;
 		std::stringstream command;
 		command << "panim schedule char " << charName << " state " << stateName << " loop " << loopString <<  " playnow false additive false joint null ";
-		PABlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+		PABlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	
 		int wNumber = state->getNumMotions();
 		/*
@@ -213,7 +214,7 @@ void PAScriptEditor::changeCurrentStateWeight(Fl_Widget* widget, void* data)
 	std::string stateName = editor->currentStatePanel->value();
 	std::stringstream command;
 	command << "panim update char " << charName;
-	PABlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	PABlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	
 	if (!state)
 		return;
@@ -234,7 +235,7 @@ void PAScriptEditor::changeCurrentStateWeight(Fl_Widget* widget, void* data)
 void PAScriptEditor::initialAvailableStates()
 {
 	availableStateList->clear();
-	std::vector<std::string> blendNames = SmartBody::SBScene::getScene()->getBlendManager()->getBlendNames();
+	std::vector<std::string> blendNames = Session::current->scene.getBlendManager()->getBlendNames();
 	for (std::vector<std::string>::iterator iter = blendNames.begin();
 		 iter != blendNames.end();
 		 iter++)
@@ -271,7 +272,7 @@ void PAScriptEditor::refresh()
 void PAScriptEditor::update()
 {
 	std::string charName = paWindow->characterList->menu()[paWindow->characterList->value()].label();
-	SmartBody::SBCharacter * character = SmartBody::SBScene::getScene()->getCharacter(charName);
+	SmartBody::SBCharacter * character = Session::current->scene.getCharacter(charName);
 	if (!character)
 		return;
 	if (!character->param_animation_ct)

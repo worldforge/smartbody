@@ -7,6 +7,7 @@
 #include "ParameterVisualization.h"
 #include "Parameter3DVisualization.h"
 #include "PanimationWindow.h"
+#include "Session.h"
 
 ParameterGroup::ParameterGroup(int x, int y, int w, int h, const char* name, PABlendData* s, PanimationWindow* window, bool ex) : Fl_Group(x, y, w, h, name), blendData(s), paWindow(window), exec(ex)
 {
@@ -188,7 +189,7 @@ void ParameterGroup::updateWeight(std::vector<double>& weights)
 PABlendData* ParameterGroup::getCurrentPABlendData()
 {
 	std::string charName = paWindow->characterList->menu()[paWindow->characterList->value()].label();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(charName);
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(charName);
 	if (!character)
 		return nullptr;
 	if (!character->param_animation_ct)
@@ -199,5 +200,5 @@ PABlendData* ParameterGroup::getCurrentPABlendData()
 SmartBody::SBCharacter* ParameterGroup::getCurrentCharacter()
 {
 	std::string charName = paWindow->characterList->menu()[paWindow->characterList->value()].label();
-	return SmartBody::SBScene::getScene()->getCharacter(charName);
+	return Session::current->scene.getCharacter(charName);
 }

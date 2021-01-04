@@ -31,6 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAnimationState.h>
 #include <sb/SBAnimationTransition.h>
 #include <sb/SBAnimationStateManager.h>
+#include "Session.h"
 
 
 PATransitionEditor::PATransitionEditor(int x, int y, int w, int h, PanimationWindow* window) : Fl_Group(x, y, w, h), paWindow(window)
@@ -112,7 +113,7 @@ void PATransitionEditor::loadStates()
 	stateList2->clear();
 	stateList1->add("---");
 	stateList2->add("---");
-	std::vector<std::string> blendNames = SmartBody::SBScene::getScene()->getBlendManager()->getBlendNames();
+	std::vector<std::string> blendNames = Session::current->scene.getBlendManager()->getBlendNames();
 	for (std::vector<std::string>::iterator iter = blendNames.begin();
 		 iter != blendNames.end();
 		 iter++)
@@ -165,7 +166,7 @@ void PATransitionEditor::changeStateList1(Fl_Widget* widget, void* data)
 	editor->stateList1->value(stateValue);
 	editor->stateList2->value(stateValueP);
 
-	PABlend* state1 = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(editor->stateList1->text(stateValue));
+	PABlend* state1 = Session::current->scene.getBlendManager()->getBlend(editor->stateList1->text(stateValue));
 	
 	editor->animForTransition1->clear();
 	if (state1)
@@ -183,7 +184,7 @@ void PATransitionEditor::changeStateList2(Fl_Widget* widget, void* data)
 	int stateValue = editor->stateList2->value();
 	int stateValueP = editor->stateList1->value();
 	editor->loadStates();
-	PABlend* state2 = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(editor->stateList2->menu()[stateValue].label());
+	PABlend* state2 = Session::current->scene.getBlendManager()->getBlend(editor->stateList2->menu()[stateValue].label());
 	
 	editor->stateList2->value(stateValue);
 	editor->stateList1->value(stateValueP);
@@ -221,7 +222,7 @@ void PATransitionEditor::changeAnimForTransition(Fl_Widget* widget, void* data)
 	}
 	if (motionName1 != "")
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(motionName1);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(motionName1);
 		nle::Block* block = editor->transitionEditorNleModel->getTrack(0)->getBlock(0);
 		block->removeAllMarks();
 		block->setName(motionName1);
@@ -230,7 +231,7 @@ void PATransitionEditor::changeAnimForTransition(Fl_Widget* widget, void* data)
 	}
 	if (motionName2 != "")
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(motionName2);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(motionName2);
 		nle::Block* block = editor->transitionEditorNleModel->getTrack(1)->getBlock(0);
 		block->removeAllMarks();
 		block->setName(motionName2);
@@ -244,8 +245,8 @@ void PATransitionEditor::changeAnimForTransition(Fl_Widget* widget, void* data)
 		nle::Block* block2 = editor->transitionEditorNleModel->getTrack(1)->getBlock(0);
 		std::string stateName1 = editor->stateList1->menu()[editor->stateList1->value()].label();
 		std::string stateName2 = editor->stateList2->menu()[editor->stateList2->value()].label();
-		PABlend* fromState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName1);
-		PABlend* toState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName2);
+		PABlend* fromState = Session::current->scene.getBlendManager()->getBlend(stateName1);
+		PABlend* toState = Session::current->scene.getBlendManager()->getBlend(stateName2);
 	
 		for (int i = 0; i < fromState->getNumMotions(); i++)
 		{
@@ -368,18 +369,18 @@ void PATransitionEditor::createNewTransition(Fl_Widget* widget, void* data)
 	std::string fromStateName = editor->stateList1->menu()[editor->stateList1->value()].label();
 	std::string toStateName = editor->stateList2->menu()[editor->stateList2->value()].label();
 
-	SmartBody::SBAnimationTransition* transition = SmartBody::SBScene::getScene()->getBlendManager()->getTransition(fromStateName, toStateName);
+	SmartBody::SBAnimationTransition* transition = Session::current->scene.getBlendManager()->getTransition(fromStateName, toStateName);
 	if (transition != nullptr)
 	{
 		SmartBody::util::log("Transition %s to %s already exist.", fromStateName.c_str(), toStateName.c_str());
 		return;
 	}
-	SmartBody::SBAnimationBlend* fromState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(fromStateName);
-	SmartBody::SBAnimationBlend* toState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(toStateName);
+	SmartBody::SBAnimationBlend* fromState = Session::current->scene.getBlendManager()->getBlend(fromStateName);
+	SmartBody::SBAnimationBlend* toState = Session::current->scene.getBlendManager()->getBlend(toStateName);
 		
 	if (fromState != nullptr && toState != nullptr)
 	{
-		transition = SmartBody::SBScene::getScene()->getBlendManager()->createTransition(fromStateName, toStateName);
+		transition = Session::current->scene.getBlendManager()->createTransition(fromStateName, toStateName);
 		updateTransitionTimeMark(widget, data);
 	}
 }
@@ -408,11 +409,11 @@ void PATransitionEditor::changeTransitionList(Fl_Widget* widget, void* data)
 		return;
 	std::string fromStateName = fullName.substr(0, seperateMarkPos - 1);
 	std::string toStateName = fullName.substr(seperateMarkPos + 2, fullName.size() - 1);
-	SmartBody::SBAnimationTransition* transition = SmartBody::SBScene::getScene()->getBlendManager()->getTransition(fromStateName, toStateName);
+	SmartBody::SBAnimationTransition* transition = Session::current->scene.getBlendManager()->getTransition(fromStateName, toStateName);
 
 	block1->removeAllMarks();
 	block1->setName(transition->getSourceMotionName());
-	SmartBody::SBMotion * motion = SmartBody::SBScene::getScene()->getMotion(transition->getSourceMotionName());
+	SmartBody::SBMotion * motion = Session::current->scene.getMotion(transition->getSourceMotionName());
 	block1->setStartTime(0);
 	block1->setEndTime(motion->duration());
 	for (int i = 0; i < transition->getNumEaseOutIntervals(); i++)
@@ -422,7 +423,7 @@ void PATransitionEditor::changeTransitionList(Fl_Widget* widget, void* data)
 	}
 	block2->removeAllMarks();
 	block2->setName(transition->getDestinationMotionName());
-	motion = SmartBody::SBScene::getScene()->getMotion(transition->getDestinationMotionName());
+	motion = Session::current->scene.getMotion(transition->getDestinationMotionName());
 	block2->setStartTime(0);
 	block2->setEndTime(motion->duration());
 	editor->paWindow->addTimeMarkToBlock(block2, transition->getEaseInStart());

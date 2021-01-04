@@ -8,6 +8,7 @@
 #include "SBUtilities.h"
 #include "ParamAnimEditorWidget.h"
 #include "ParamAnimStateEditor.h"
+#include "Session.h"
 
 PAAutoFootStepsEditor::PAAutoFootStepsEditor(PABlendEditor* editor, int x, int y, int w, int h) : Fl_Window(x, y, w, h)
 {
@@ -25,11 +26,11 @@ PAAutoFootStepsEditor::PAAutoFootStepsEditor(PABlendEditor* editor, int x, int y
 	inputFloorHeight->value("0");
 	inputHeightThreshold = new Fl_Input(xDis + csx + 100, 4 * yDis, 10 * xDis, 2 * yDis, "HeightThreshold");
 	std::stringstream inputHeightSS;
-	inputHeightSS << 0.15f / SmartBody::SBScene::getScene()->getScale();
+	inputHeightSS << 0.15f / Session::current->scene.getScale();
 	inputHeightThreshold->value(inputHeightSS.str().c_str());
 	inputSpeedThreshold = new Fl_Input(xDis + csx + 100, 7 * yDis, 10 * xDis, 2 * yDis, "SpeedThreshold");
 	std::stringstream inputSpeedSS;
-	inputSpeedSS << 0.4f / SmartBody::SBScene::getScene()->getScale();
+	inputSpeedSS << 0.4f / Session::current->scene.getScale();
 	inputSpeedThreshold->value(inputSpeedSS.str().c_str());
 
 	inputSpeedDetectWindow = new Fl_Input(xDis + csx + 100, 10 * yDis, 10 * xDis, 2 * yDis, "SpeedDetectWindow");
@@ -142,7 +143,7 @@ void PAAutoFootStepsEditor::confirmEditting(Fl_Widget* widget, void* data)
 		std::vector<std::vector<double> > vecTiming;
 		vecTiming.resize(selectedJoints.size());
 
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotions[m]);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(selectedMotions[m]);
 		if (!motion)
 			continue;
 

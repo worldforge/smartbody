@@ -32,6 +32,7 @@
 #include <sb/SBAnimationState.h>
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
+#include "Session.h"
 
 PARunTimeEditor::PARunTimeEditor(int x, int y, int w, int h, PanimationWindow* window) : Fl_Group(x, y, w, h), paWindow(window)
 {
@@ -62,7 +63,7 @@ PARunTimeEditor::~PARunTimeEditor()
 void PARunTimeEditor::update()
 {
 	std::string charName = paWindow->characterList->menu()[paWindow->characterList->value()].label();
-	SmartBody::SBCharacter * character = SmartBody::SBScene::getScene()->getCharacter(charName);
+	SmartBody::SBCharacter * character = Session::current->scene.getCharacter(charName);
 	if (!character)
 		return;
 
@@ -118,7 +119,7 @@ void PARunTimeEditor::update()
 void PARunTimeEditor::updateRunTimeStates(std::string currentState)
 {
 	nextCycleStates->clear();
-	PABlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(currentState);
+	PABlend* state = Session::current->scene.getBlendManager()->getBlend(currentState);
 //	if (blendData)
 //		if (!blendData->cycle)
 //			return;
@@ -136,7 +137,7 @@ void PARunTimeEditor::updateRunTimeStates(std::string currentState)
 
 	if (currentState == PseudoIdleState)
 	{
-		std::vector<std::string> blendNames = SmartBody::SBScene::getScene()->getBlendManager()->getBlendNames();
+		std::vector<std::string> blendNames = Session::current->scene.getBlendManager()->getBlendNames();
 		for (std::vector<std::string>::iterator iter = blendNames.begin();
 			 iter != blendNames.end();
 			 iter++)
@@ -197,7 +198,7 @@ void PARunTimeEditor::initializeRunTimeEditor()
 		return;
 
 	std::string charName = paWindow->characterList->menu()[paWindow->characterList->value()].label();
-	SmartBody::SBCharacter * character = SmartBody::SBScene::getScene()->getCharacter(charName);
+	SmartBody::SBCharacter * character = Session::current->scene.getCharacter(charName);
 	if (character)
 	{
 		if (character->param_animation_ct == nullptr)
@@ -223,7 +224,7 @@ void PARunTimeEditor::updateNonCycleState(Fl_Widget* widget, void* data)
 		if (editor->availableTransitions->selected(i+1))
 			nonCycleState = editor->availableTransitions->text(i+1);
 	}
-	PABlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(nonCycleState);
+	PABlend* state = Session::current->scene.getBlendManager()->getBlend(nonCycleState);
 	
 	if (state && state->getNumParameters() > 0)
 	{
@@ -255,7 +256,7 @@ void PARunTimeEditor::updateTransitionStates(Fl_Widget* widget, void* data)
 		if (editor->nextCycleStates->selected(i+1))
 			nextState = editor->nextCycleStates->text(i+1);
 	}
-	std::vector<std::string> blendNames = SmartBody::SBScene::getScene()->getBlendManager()->getBlendNames();
+	std::vector<std::string> blendNames = Session::current->scene.getBlendManager()->getBlendNames();
 	for (std::vector<std::string>::iterator iter = blendNames.begin();
 		 iter != blendNames.end();
 		 iter++)

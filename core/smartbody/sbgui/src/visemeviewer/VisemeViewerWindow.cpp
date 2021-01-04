@@ -203,7 +203,7 @@ void VisemeViewerWindow::update()
 	if (charName == "")
 		return;
 
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(charName);
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(charName);
 	if (!character)
 		return;
 
@@ -243,7 +243,7 @@ void VisemeViewerWindow::draw()
 
 bool  VisemeViewerWindow::loadData()
 {
-	SmartBody::SBPhonemeManager* diphoneManager = SmartBody::SBScene::getScene()->getDiphoneManager();
+	SmartBody::SBPhonemeManager* diphoneManager = Session::current->scene.getDiphoneManager();
 	std::vector<std::string> commonPhonemes = diphoneManager->getCommonPhonemes();
 
 	for (int x = 0; x < 2; x++)
@@ -275,7 +275,7 @@ bool  VisemeViewerWindow::loadData()
 		curSelectedCharacter = _choiceCharacter->text(_choiceCharacter->value());
 	}
 	_choiceCharacter->clear();
-	const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& characterNames = Session::current->scene.getCharacterNames();
 	for (size_t i = 0; i < characterNames.size(); i++)
 	{
 		_choiceCharacter->add(characterNames[i].c_str());
@@ -306,11 +306,11 @@ void VisemeViewerWindow::resetViseme()
 	for (int i = 0; i < _browserViseme->size(); i++)
 	{
 		std::stringstream strstr;
-		if (SmartBody::SBScene::getScene()->isRemoteMode())
+		if (Session::current->scene.isRemoteMode())
 			strstr << "send sbm ";
 		strstr << "char " << characterName << " viseme " << _browserViseme->text(i + 1) << " " << 0.0f;		
 		
-		SmartBody::SBScene::getScene()->command(strstr.str());		
+		Session::current->scene.command(strstr.str());
 	}
 	_checkEnableScrub->value(0);
 	_sliderCurveAnimation->value(0);
@@ -323,7 +323,7 @@ SmartBody::SBCharacter* VisemeViewerWindow::getCurrentCharacter()
 	if (characterIndex >= 0)
 	{
 		const char* characterName = _choiceCharacter->menu()[_choiceCharacter->value()].label();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);	
+		SmartBody::SBCharacter* character = Session::current->scene.getCharacter(characterName);
 		return character;
 	}
 	else
@@ -360,9 +360,9 @@ SmartBody::SBDiphone* VisemeViewerWindow::getCurrentDiphone()
 	if (phoneme1 == "" || phoneme2 == "" || !getCurrentCharacter())
 		return nullptr;
 
-	const std::string& diphoneMap = SmartBody::SBScene::getScene()->getCharacter(getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
+	const std::string& diphoneMap = Session::current->scene.getCharacter(getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
 	// map the phones to their common set partner
-	SmartBody::SBPhonemeManager* diphoneManager = SmartBody::SBScene::getScene()->getDiphoneManager();
+	SmartBody::SBPhonemeManager* diphoneManager = Session::current->scene.getDiphoneManager();
 
 	SmartBody::SBDiphone* diphone = diphoneManager->getMappedDiphone(phoneme1, phoneme2, diphoneMap);
 	return diphone;
@@ -381,7 +381,7 @@ void VisemeViewerWindow::updateViseme()
 
 void VisemeViewerWindow::refreshData()
 {
-	SmartBody::SBPhonemeManager* diphoneManager = SmartBody::SBScene::getScene()->getDiphoneManager();
+	SmartBody::SBPhonemeManager* diphoneManager = Session::current->scene.getDiphoneManager();
 	SmartBody::SBDiphone* diphone = getCurrentDiphone();
 
 	if (!diphone)
@@ -402,7 +402,7 @@ void VisemeViewerWindow::refreshData()
 			phoneme1 = _browserSinglePhoneme->text(value);
 			phoneme2 = "-";
 		}
-		const std::string& diphoneMap = SmartBody::SBScene::getScene()->getCharacter(getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
+		const std::string& diphoneMap = Session::current->scene.getCharacter(getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
 		diphone = diphoneManager->createDiphone(phoneme1, phoneme2, diphoneMap);
 	}
 	else
@@ -573,11 +573,11 @@ void VisemeViewerWindow::selectViseme(const char * phoneme1, const char * phonem
 	std::transform(p1.begin(), p1.end(), p1.begin(), ::tolower);
 	std::transform(p2.begin(), p2.end(), p2.begin(), ::tolower);
 
-	const std::string& diphoneMap = SmartBody::SBScene::getScene()->getCharacter(getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
+	const std::string& diphoneMap = Session::current->scene.getCharacter(getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
 
-	SmartBody::SBDiphone* diphone = SmartBody::SBScene::getScene()->getDiphoneManager()->getMappedDiphone(p1, p2, diphoneMap);
-	SmartBody::SBDiphone* diphone1 = SmartBody::SBScene::getScene()->getDiphoneManager()->getMappedDiphone(p1, "-", diphoneMap);
-	SmartBody::SBDiphone* diphone2 = SmartBody::SBScene::getScene()->getDiphoneManager()->getMappedDiphone(p2, "-", diphoneMap);
+	SmartBody::SBDiphone* diphone = Session::current->scene.getDiphoneManager()->getMappedDiphone(p1, p2, diphoneMap);
+	SmartBody::SBDiphone* diphone1 = Session::current->scene.getDiphoneManager()->getMappedDiphone(p1, "-", diphoneMap);
+	SmartBody::SBDiphone* diphone2 = Session::current->scene.getDiphoneManager()->getMappedDiphone(p2, "-", diphoneMap);
 	
 	_browserViseme->deselect();
 	bool shouldProcess = true;
@@ -610,7 +610,7 @@ void VisemeViewerWindow::selectViseme(const char * phoneme1, const char * phonem
 	if (shouldProcess)
 	{
 		if (!diphone)
-			diphone = SmartBody::SBScene::getScene()->getDiphoneManager()->createDiphone(p1, p2, diphoneMap);
+			diphone = Session::current->scene.getDiphoneManager()->createDiphone(p1, p2, diphoneMap);
 		// need to improve the performance later
 		if (diphone1)	// compose the diphone
 		{
@@ -713,11 +713,11 @@ void VisemeViewerWindow::OnSliderSelectCB(Fl_Widget* widget, void* data)
 			}
 		}
 		std::stringstream strstr;
-		if (SmartBody::SBScene::getScene()->isRemoteMode())
+		if (Session::current->scene.isRemoteMode())
 			strstr << "send sbm ";
 		strstr << "char " << characterName << " viseme " << visemeNames[i] << " " << curveValue;
 		//SmartBody::util::log("%s", strstr.str().c_str());
-		SmartBody::SBScene::getScene()->command(strstr.str());
+		Session::current->scene.command(strstr.str());
 	}
 	viewer->_curveEditor->redraw();
 }
@@ -798,13 +798,13 @@ void VisemeViewerWindow::OnPlayCB(Fl_Widget* widget, void* data)
 			if (viewer->_browserViseme->selected(i + 1))
 			{
 				std::stringstream strstr;
-				if (SmartBody::SBScene::getScene()->isRemoteMode())
+				if (Session::current->scene.isRemoteMode())
 					strstr << "send sbm ";
 				strstr << "char " << viewer->getCurrentCharacterName() << " viseme " << viewer->_browserViseme->text(i + 1) << " curve ";
 				strstr << viewer->_curveEditor->getCurves()[i].size() << " ";
 				for (size_t j = 0; j < viewer->_curveEditor->getCurves()[i].size(); j++)
 					strstr << viewer->_curveEditor->getCurves()[i][j].x * playTime << " " << viewer->_curveEditor->getCurves()[i][j].y << " ";
-				SmartBody::SBScene::getScene()->command(strstr.str());		
+				Session::current->scene.command(strstr.str());
 			}
 		}
 	}
@@ -821,10 +821,10 @@ void VisemeViewerWindow::OnPlayDialogCB(Fl_Widget* widget, void* data)
 	if (utterance != "")
 	{
 		std::stringstream strstr;
-		if (SmartBody::SBScene::getScene()->isRemoteMode())
+		if (Session::current->scene.isRemoteMode())
 			strstr << "send sbm ";
 		strstr << "python bml.execBML('" << viewer->getCurrentCharacterName() << "', '<speech type=\"text/plain\">" << utteranceClean << "</speech>')";
-		SmartBody::SBScene::getScene()->command(strstr.str());
+		Session::current->scene.command(strstr.str());
 	}
 }
 
@@ -835,10 +835,10 @@ void VisemeViewerWindow::OnPlayAudioFileCB(Fl_Widget* widget, void* data)
 	if (fileName != "")
 	{
 		std::stringstream strstr;
-		if (SmartBody::SBScene::getScene()->isRemoteMode())
+		if (Session::current->scene.isRemoteMode())
 			strstr << "send sbm ";
 		strstr << "python bml.execBML('" << viewer->getCurrentCharacterName() << "', '<speech type=\"text/plain\" ref=\"" << fileName << "\">" << "</speech>')";
-		SmartBody::SBScene::getScene()->command(strstr.str());
+		Session::current->scene.command(strstr.str());
 	}
 	//viewer->OnCharacterRefreshCB(widget, data);
 }
@@ -857,7 +857,7 @@ void VisemeViewerWindow::loadAudioFiles()
 	_choiceXMLFile->clear();
 	// if an audio path is present, use it
 	bool useAudioPaths = true;
-	std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetStore().getAssetPaths("audio");
+	std::vector<std::string> audioPaths = Session::current->scene.getAssetStore().getAssetPaths("audio");
 	std::string relativeAudioPath = "";
 	for (size_t audioPathCounter = 0; audioPathCounter < audioPaths.size(); ++audioPathCounter)
 	{
@@ -932,7 +932,7 @@ void VisemeViewerWindow::OnXMLFileSelectCB(Fl_Widget* widget, void* data)
 	if (xmlFileIndex >= 0)
 	{
 		const char* xmlFileName = viewer->_choiceXMLFile->menu()[viewer->_choiceXMLFile->value()].label();
-		std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetStore().getAssetPaths("audio");
+		std::vector<std::string> audioPaths = Session::current->scene.getAssetStore().getAssetPaths("audio");
 		if (audioPaths.size() > 0)
 		{
 			boost::filesystem::path path(audioPaths[0]);
@@ -950,12 +950,12 @@ void VisemeViewerWindow::OnSaveCB(Fl_Widget* widget, void* data)
 {
 	VisemeViewerWindow* viewer = (VisemeViewerWindow*) data;
 
-	std::string mediaPath = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string mediaPath = Session::current->scene.getMediaPath();
 	std::string fileName = BaseWindow::chooseFile("Lip Sync File:", "Python\t*.py\n", mediaPath);
 	if (fileName == "")
 		return;
 
-	const std::string& diphoneMap = SmartBody::SBScene::getScene()->getCharacter(viewer->getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
+	const std::string& diphoneMap = Session::current->scene.getCharacter(viewer->getCurrentCharacterName())->getStringAttribute("lipSyncSetName");
 
 	// fill in
 	std::stringstream strstr;
@@ -971,7 +971,7 @@ void VisemeViewerWindow::OnSaveCB(Fl_Widget* widget, void* data)
 	strstr << "diphoneManager.deleteDiphoneSet(\"" << diphoneSetName << "\")\n";
 	strstr << "\n";
 
-	auto& diphones = SmartBody::SBScene::getScene()->getDiphoneManager()->getDiphones(diphoneSetName);
+	auto& diphones = Session::current->scene.getDiphoneManager()->getDiphones(diphoneSetName);
 	for (size_t i = 0; i < diphones.size(); i++)
 	{
 		strstr << "diphone = diphoneManager.createDiphone(\"" << diphones[i]->getFromPhonemeName() << "\", \"" << diphones[i]->getToPhonemeName() << "\", \"" << diphoneMap << "\")" << "\n";
@@ -1002,7 +1002,7 @@ void VisemeViewerWindow::OnLoadCB(Fl_Widget* widget, void* data)
 {
 	VisemeViewerWindow* viewer = (VisemeViewerWindow*) data;
 
-	std::string mediaPath = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string mediaPath = Session::current->scene.getMediaPath();
 	std::string fileName = BaseWindow::chooseFile("Lip Sync File:", "Python\t*.py\n", mediaPath);
 	if (fileName == "")
 		return;
@@ -1101,7 +1101,7 @@ void VisemeViewerWindow::OnBmlRequestCB(BML::BmlRequest* request, void* data)
 					double inputLength = atof(viewer->_imageSequenceViewer->_inputAudioLength->value());
 					if (inputLength > 0)
 						length = (float)inputLength;
-					viewer->_imageSequenceViewer->playbackSequence((float)SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), length, (float)timeDelay);
+					viewer->_imageSequenceViewer->playbackSequence((float)Session::current->scene.getSimulationManager()->getTime(), length, (float)timeDelay);
 				}
 			}
 		}
@@ -1141,8 +1141,8 @@ void VisemeViewerWindow::OnDiphoneSelectCB(Fl_Widget* widget, void* data)
 
 	// get the mapped phoneme
 	std::string mappedPhoneme[2];
-	mappedPhoneme[0] = SmartBody::SBScene::getScene()->getDiphoneManager()->getPhonemeMapping(diphones[0]);
-	mappedPhoneme[1] = SmartBody::SBScene::getScene()->getDiphoneManager()->getPhonemeMapping(diphones[1]);
+	mappedPhoneme[0] = Session::current->scene.getDiphoneManager()->getPhonemeMapping(diphones[0]);
+	mappedPhoneme[1] = Session::current->scene.getDiphoneManager()->getPhonemeMapping(diphones[1]);
 	// convert the chosen diphones to lower case
 	std::transform(mappedPhoneme[0].begin(), mappedPhoneme[0].end(), mappedPhoneme[0].begin(), ::tolower);
 	std::transform(mappedPhoneme[1].begin(), mappedPhoneme[1].end(), mappedPhoneme[1].begin(), ::tolower);
@@ -1238,7 +1238,7 @@ std::vector<data_a> sort_by_weight(std::map<std::string, int>& map)
 
 void VisemeViewerWindow::OnShowStatsCB(Fl_Widget* widget, void* data)
 {
-	std::string mediaPath = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string mediaPath = Session::current->scene.getMediaPath();
 	std::string filename = BaseWindow::chooseFile("Save Lip Sync Stats:", "TXT file\t*.txt\n", mediaPath);
 	if (filename == "")
 		return;
@@ -1264,8 +1264,8 @@ void VisemeViewerWindow::OnShowStatsCB(Fl_Widget* widget, void* data)
 	}
 
 	float instanceCountF = (float) instanceCount;
-	SmartBody::SBPhonemeManager* diphoneManager = SmartBody::SBScene::getScene()->getDiphoneManager();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(viewer->getCurrentCharacterName());
+	SmartBody::SBPhonemeManager* diphoneManager = Session::current->scene.getDiphoneManager();
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(viewer->getCurrentCharacterName());
 	std::string curDiphoneSet = character->getStringAttribute("lipSyncSetName");
 	auto& diphones = diphoneManager->getDiphones(curDiphoneSet);
 		
@@ -1376,7 +1376,7 @@ void VisemeViewerWindow::OnDumpCB(Fl_Widget* widget, void* data)
 	VisemeViewerWindow* viewer = (VisemeViewerWindow*) data;
 
 	// construct the entire list of diphones
-	SmartBody::SBPhonemeManager* diphoneManager = SmartBody::SBScene::getScene()->getDiphoneManager();
+	SmartBody::SBPhonemeManager* diphoneManager = Session::current->scene.getDiphoneManager();
 
 	std::vector<std::string> commonPhonemes = diphoneManager->getCommonPhonemes();
 	for (size_t i = 0; i < commonPhonemes.size(); i++)
@@ -1397,7 +1397,7 @@ void VisemeViewerWindow::OnDumpCB(Fl_Widget* widget, void* data)
 	}
 
 	// gather the current diphones, compare to entire list, and show missing ones
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(viewer->getCurrentCharacterName());
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(viewer->getCurrentCharacterName());
 	std::string curDiphoneSet = character->getStringAttribute("lipSyncSetName");
 	auto& diphones = diphoneManager->getDiphones(curDiphoneSet);
 
@@ -1442,8 +1442,8 @@ void VisemeViewerWindow::OnNormalizeCB(Fl_Widget* widget, void* data)
 	VisemeViewerWindow* viewer = (VisemeViewerWindow*) data;
 
 	// construct the entire list of diphones
-	SmartBody::SBPhonemeManager* diphoneManager = SmartBody::SBScene::getScene()->getDiphoneManager();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(viewer->getCurrentCharacterName());
+	SmartBody::SBPhonemeManager* diphoneManager = Session::current->scene.getDiphoneManager();
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(viewer->getCurrentCharacterName());
 	if (!character)
 		return;
 
@@ -1529,9 +1529,9 @@ void VisemeViewerWindow::OnDictionaryLoadCB(Fl_Widget* widget, void* data)
 {
 	VisemeViewerWindow* viewer = (VisemeViewerWindow*) data;
 
-	std::string file = BaseWindow::chooseFile("Dictionary File", "*.*", SmartBody::SBScene::getScene()->getMediaPath());
+	std::string file = BaseWindow::chooseFile("Dictionary File", "*.*", Session::current->scene.getMediaPath());
 
-	SmartBody::SBPhonemeManager* diphoneManager = SmartBody::SBScene::getScene()->getDiphoneManager();
+	SmartBody::SBPhonemeManager* diphoneManager = Session::current->scene.getDiphoneManager();
 	if (file != "")
 	{
 		diphoneManager->loadDictionary("English", file);
@@ -1542,7 +1542,7 @@ void VisemeViewerWindow::OnDictionaryLoadCB(Fl_Widget* widget, void* data)
 
 std::string VisemeViewerWindow::translateWordsToPhonemes(const std::string& utterance)
 {
-	SmartBody::SBPhonemeManager* diphoneManager = SmartBody::SBScene::getScene()->getDiphoneManager();
+	SmartBody::SBPhonemeManager* diphoneManager = Session::current->scene.getDiphoneManager();
 
 	std::stringstream strstr;
 
@@ -1588,7 +1588,7 @@ void VisemeViewerWindow::OnSoundFileLoadCB(Fl_Widget* widget, void* data)
 
 	std::string curFile = viewer->_inputAudioFile->value();
 
-	std::string startingDirectory = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string startingDirectory = Session::current->scene.getMediaPath();
 	if (curFile != "")
 	{
 		boost::filesystem::path p(curFile);
@@ -1610,7 +1610,7 @@ void VisemeViewerWindow::OnChangeLipSyncFolderCB(Fl_Widget* widget, void* data)
 
 	std::string curFile = viewer->_inputLipSyncFolder->value();
 
-	std::string startingDirectory = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string startingDirectory = Session::current->scene.getMediaPath();
 	if (curFile != "")
 	{
 		boost::filesystem::path p(curFile);

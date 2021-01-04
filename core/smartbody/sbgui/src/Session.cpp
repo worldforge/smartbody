@@ -83,7 +83,16 @@ Session::Session()
 	SmartBody::installDebuggerCommand(*scene.getCommandManager(), vhmMsgManager);
 	SmartBody::PythonInterface::renderScene = &renderScene;
 
-	registerControlCommands(*scene.getCommandManager(), &vhmMsgManager, &bonebusManager, bmlProcessor.getBMLProcessor(), &steerManager);
+	CommandContext commandContext {
+			scene,
+			*scene.getCommandManager(),
+			*scene.getSimulationManager(),
+			&vhmMsgManager,
+			&bonebusManager,
+			bmlProcessor.getBMLProcessor(),
+			&steerManager
+	};
+	SmartBody::registerControlCommands(commandContext);
 
 	setupPython(*this);
 

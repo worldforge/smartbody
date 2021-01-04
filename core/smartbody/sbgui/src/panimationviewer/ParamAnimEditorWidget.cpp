@@ -28,6 +28,7 @@
 #include "ParamAnimBlock.h"
 #include "ParamAnimStateEditor.h"
 #include "ParamAnimTransitionEditor.h"
+#include "Session.h"
 
 ParamAnimEditorWidget::ParamAnimEditorWidget(Fl_Group* g, int x, int y, int w, int h, const char* name) : EditorWidget(x, y, w, h, name)
 {
@@ -215,7 +216,7 @@ void ParamAnimEditorWidget::releaseMarkEvent(nle::Mark* mark)
 	if (stateEditor)
 	{
 		std::string currentStateName = stateEditor->stateList->menu()[stateEditor->stateList->value()].label();
-		SmartBody::SBAnimationBlend* currentState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(currentStateName);
+		SmartBody::SBAnimationBlend* currentState = Session::current->scene.getBlendManager()->getBlend(currentStateName);
 		if (currentState)
 		{
 			currentState->setCorrespondencePoints(trackIndex, markIndex, cMark->getStartTime());

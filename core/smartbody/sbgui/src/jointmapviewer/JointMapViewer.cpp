@@ -1450,7 +1450,7 @@ JointMapViewer::JointMapViewer(int x, int y, int w, int h, const char* name) : F
 
 // 
 // 
-// 	SmartBody::SBBehaviorSetManager* behavMgr = SmartBody::SBScene::getScene()->getBehaviorSetManager();
+// 	SmartBody::SBBehaviorSetManager* behavMgr = Session::current->scene.getBehaviorSetManager();
 // 	std::map<std::string, SmartBody::SBBehaviorSet*>& behavSets = behavMgr->getBehaviorSets();
 // 
 	
@@ -1871,7 +1871,7 @@ void JointMapViewer::ApplyMapCB(Fl_Widget* widget, void* data)
 	viewer->applyJointMap();
 	viewer->updateCharacter();
 
-// 	SmartBody::SBBehaviorSetManager* behavMgr = SmartBody::SBScene::getScene()->getBehaviorSetManager();
+// 	SmartBody::SBBehaviorSetManager* behavMgr = Session::current->scene.getBehaviorSetManager();
 // 
 // 	// run the script associated with any checked behavior sets
 // 	int numChildren = viewer->_scrollGroup->children();
@@ -1887,13 +1887,13 @@ void JointMapViewer::ApplyMapCB(Fl_Widget* widget, void* data)
 // 				{
 // 					SmartBody::util::log("Retargetting %s...", check->label());
 // 					const std::string& script = behavSet->getScript();
-// 					SmartBody::SBScene::getScene()->runScript(script.c_str());
+// 					Session::current->scene.runScript(script.c_str());
 // 					std::stringstream strstr;
 // 					strstr << "setupBehaviorSet()";
-// 					SmartBody::SBScene::getScene()->run(strstr.str());
+// 					Session::current->scene.run(strstr.str());
 // 					std::stringstream strstr2;
 // 					strstr2 << "retargetBehaviorSet('" << viewer->getCharacterName() << "', '" << viewer->getSkeletonName() << "')";
-// 					SmartBody::SBScene::getScene()->run(strstr2.str());
+// 					Session::current->scene.run(strstr2.str());
 // 				}
 // 			}
 // 		}

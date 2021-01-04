@@ -189,7 +189,7 @@ void VisemeRTCurveViewer::initFont()
 	glGenTextures(1, &textureName);
 
 #ifdef WIN32
-	std::string mediaPath = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string mediaPath = Session::current->scene.getMediaPath();
 	std::string fontPath = mediaPath + "/" +  "fonts/font.glf";
 	if (!label.Create(fontPath.c_str(), textureName))
 	{

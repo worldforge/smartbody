@@ -34,7 +34,7 @@ void PawnControl::init_font()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glGenTextures(0, &textureName);
 #ifdef WIN32
-	std::string mediaPath = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string mediaPath = Session::current->scene.getMediaPath();
 	std::string fontPath = mediaPath + "/" +  "fonts/font.glf";
 	if (!label.Create(fontPath.c_str(), 0))
 	{
@@ -76,7 +76,7 @@ void PawnControl::set_pawn_pos(SbmPawn* pawn, SrVec& pos)
 	pawn->get_world_offset(x,y,z,h,p,r);
 	//printf("h = %f, p = %f, r = %f\n",h,p,r);
 
-	if (SmartBody::SBScene::getScene()->isRemoteMode())
+	if (Session::current->scene.isRemoteMode())
 	{
 		std::stringstream strstr;
 		strstr << "sb scene.getCharacter(\"" << pawn->getName() << "\").setDoubleAttribute(\"posX\", " << pos.x<< ")";
@@ -116,7 +116,7 @@ void PawnControl::set_pawn_rot( SbmPawn* pawn, SrQuat& quat )
 	gwiz::quat_t q = gwiz::quat_t(quat.w,quat.x,quat.y,quat.z);
 	gwiz::euler_t e = gwiz::euler_t(q);
 
-	if (SmartBody::SBScene::getScene()->isRemoteMode())
+	if (Session::current->scene.isRemoteMode())
 	{
 		std::stringstream strstr;
 		strstr << "sb scene.getCharacter(\"" << pawn->getName() << "\").setDoubleAttribute(\"rotX\", " << e.h() << ")";

@@ -8,6 +8,7 @@
 #include <sb/SBMotion.h>
 #include "SBUtilities.h"
 #include "ParamAnimStateEditor.h"
+#include "Session.h"
 
 PAParameterEditor::PAParameterEditor(PABlendEditor* editor, int x, int y, int w, int h) : Fl_Window(x, y, w, h)
 {
@@ -123,7 +124,7 @@ void PAParameterEditor::confirmEditting(Fl_Widget* widget, void* data)
 	
 	for (const auto & selectedMotion : selectedMotions)
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotion);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(selectedMotion);
 		motion->connect(curCharacter->getSkeleton().get());
 		
 		// get start time and end time

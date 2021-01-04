@@ -10,6 +10,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
+#include "Session.h"
 
 ImageSequenceViewer::ImageSequenceViewer(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h, name), SBWindowListener()
 {
@@ -60,7 +61,7 @@ void ImageSequenceViewer::draw()
 
 void ImageSequenceViewer::OnSimulationUpdate()
 {
-	float curTime = (float)SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	float curTime = (float)Session::current->scene.getSimulationManager()->getTime();
 	if (curTime >= _startTime && _startTime >= 0.0 && _playbackLength > 0.0)
 	{
 		int numImages = _imageSequencePlayer->_imageSequences.size();
@@ -143,7 +144,7 @@ void ImageSequenceViewer::OnButtonOnePlay(Fl_Widget* widget, void* data)
 	double inputLength = atof(viewer->_inputAudioLength->value());
 	if (inputLength > 0)
 		length = (float)inputLength;
-	viewer->playbackSequence((float)SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), length, (float)timeDelay);
+	viewer->playbackSequence((float)Session::current->scene.getSimulationManager()->getTime(), length, (float)timeDelay);
 	viewer->_buttonPlay->deactivate();
 	viewer->_sliderSequenceIndex->deactivate();
 } 

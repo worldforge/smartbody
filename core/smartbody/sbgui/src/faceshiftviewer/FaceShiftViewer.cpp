@@ -45,7 +45,7 @@ void FaceShiftViewer::CharacterCB(Fl_Widget* widget, void* data)
 
 	int curY = faceViewer->bottomGroup->y() + 25;
 	const Fl_Menu_Item* menu = faceViewer->choiceCharacters->menu();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(menu[faceViewer->choiceCharacters->value()].label());
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(menu[faceViewer->choiceCharacters->value()].label());
 	if (character)
 	{	
 		SmartBody::SBFaceDefinition* faceDefinition = character->getFaceDefinition();

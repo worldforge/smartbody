@@ -41,6 +41,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/lexical_cast.hpp>
 
 #include "sbm/SBRenderScene.h"
+#include "Session.h"
 
 
 SBRenderer* SBRenderer::_singleton = nullptr;
@@ -69,7 +70,7 @@ void SBRenderer::destroy_singleton()
 
 void SBRenderer::drawDebugFBO()
 {
-	std::string gbufferDebug = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.gbufferDebug");
+	std::string gbufferDebug = Session::current->scene.getStringAttribute("Renderer.gbufferDebug");
 	if (gbufferDebug == "" || gbufferDebug == "none")
 		return;
 	std::shared_ptr<SbmTexture> debugTex;
@@ -109,9 +110,9 @@ void SBRenderer::drawDebugFBO()
 
 std::shared_ptr<SbmTexture> SBRenderer::getCurEnvMap(bool diffuseMap)
 {
-	std::string texName = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.envMapName");
+	std::string texName = Session::current->scene.getStringAttribute("Renderer.envMapName");
 	if (diffuseMap)
-		texName = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.envDiffuseMapName");
+		texName = Session::current->scene.getStringAttribute("Renderer.envDiffuseMapName");
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
 	auto debugTex = texManager.findTexture(texName.c_str());
 	if (!debugTex)
@@ -341,7 +342,7 @@ void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, st
 		drawFloor();
 	glUseProgram(0);
 	gbuffer.unbindFBO();
-	std::string gbufferDebug = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.gbufferDebug");
+	std::string gbufferDebug = Session::current->scene.getStringAttribute("Renderer.gbufferDebug");
 	drawSSAOPass(renderScene);
 	//drawLightPass(lights);
 	drawIBLPass(renderScene, lights);
@@ -505,7 +506,7 @@ void SBRenderer::drawLightPass(SmartBody::SBRenderScene& renderScene, std::vecto
 
 void SBRenderer::drawIBLPass(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights)
 {
-	std::string texName = SmartBody::SBScene::getScene()->getStringAttribute("Renderer.envMapName");
+	std::string texName = Session::current->scene.getStringAttribute("Renderer.envMapName");
 	SbmTextureManager& texManager = SbmTextureManager::singleton();
 	auto envMap = texManager.findTexture(texName.c_str());
 	if (!envMap) return;

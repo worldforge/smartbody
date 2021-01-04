@@ -89,7 +89,7 @@ void MonitorConnectWindow::hide()
 void MonitorConnectWindow::loadProcesses()
 {
 	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
-	SmartBody::SBScene::getScene()->setRemoteMode(true);
+	Session::current->scene.setRemoteMode(true);
 
 	SmartBody::SBDebuggerServer& s = Session::current->debuggerServer;
 	mDebuggerClient.QuerySbmProcessIds();
@@ -157,6 +157,6 @@ void MonitorConnectWindow::OnFefreshCB(Fl_Widget* widget, void* data)
 	std::string command = "vhmsgconnect " + std::string(monitorConnectWindow->_inputServerName->value());
 	//command = " " + std::string(monitorConnectWindow->_inputPort->value());
 	//command = " " + std::string(monitorConnectWindow->_inputPort->value());
-	SmartBody::SBScene::getScene()->command(command);
+	Session::current->scene.command(command);
 	monitorConnectWindow->loadProcesses();	
 }

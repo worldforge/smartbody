@@ -113,7 +113,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 	}
 	std::stringstream command;
 	SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(request->actor->getName());
-	SmartBody::SBCharacter* c = SmartBody::SBScene::getScene()->getCharacter(request->actor->getName());
+	SmartBody::SBCharacter* c = scene.getCharacter(request->actor->getName());
 	if (!steerAgent) {
 		SmartBody::util::log("Steering Agent not attached. Check initialization");
 		return BehaviorRequestPtr(new EventRequest(unique_id, localId, "", "", behav_syncs, ""));
@@ -143,7 +143,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 
 	std::string locotype = xml_parse_string(BMLDefs::ATTR_TYPE, &elem);
 	std::string steerTypeCommand = "steer type " + locotype;
-	SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) steerTypeCommand.c_str());
+	scene.getCommandManager()->execute((char*) steerTypeCommand.c_str());
 	float proximity = xml_parse_float(BMLDefs::ATTR_PROXIMITY, &elem, ppraiAgent->distThreshold);
 	ppraiAgent->distThreshold = proximity;
 	ppraiAgent->acceleration = xml_parse_float(BMLDefs::ATTR_STEERACCEL, &elem, ppraiAgent->acceleration);
@@ -200,14 +200,14 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 				} else {
 					command1 << "bml char " << c->getName() << " <sbm:states loop=\"false\" name=\"" << ppraiAgent->jumpName << "\" sbm:startnow=\"true\"/>";
 				}
-				SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) command1.str().c_str());
+				scene.getCommandManager()->execute((char*) command1.str().c_str());
 				return BehaviorRequestPtr(new EventRequest(unique_id, localId, command.str().c_str(), "", behav_syncs, ""));
 			}
 		} else
 			return BehaviorRequestPtr();
 
 		// also has to update state weight
-		//	PABlend* locoData = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(c->steeringAgent->locomotionName);
+		//	PABlend* locoData = scene.getBlendManager()->getBlend(c->steeringAgent->locomotionName);
 		//	if (locoData)
 		//		locoData->setWeight(c->steeringAgent->desiredSpeed * 100.0f, 0.0);
 	}
@@ -217,7 +217,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 	if (strcmp(brakingFactor.c_str(), "") != 0) {
 		std::stringstream command;
 		command << "steer braking " << c->getName() << " " << (float) atof(brakingFactor.c_str());
-		SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) command.str().c_str());
+		scene.getCommandManager()->execute((char*) command.str().c_str());
 	}
 
 	// for facing angle, we need to execute with some delay
@@ -242,7 +242,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 		}
 
 		// does the facing angle match a pawn?
-		SbmPawn* facingPawn = SmartBody::SBScene::getScene()->getPawn(facingAngleStr);
+		SbmPawn* facingPawn = scene.getPawn(facingAngleStr);
 		if (facingPawn) {
 			float x, y, z, h, p, r;
 			facingPawn->get_world_offset(x, y, z, h, p, r);
@@ -254,17 +254,17 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 
 		command << "steer facing " << c->getName() << " " << facingAngleVal;
 		srCmdSeq* seq = new srCmdSeq();
-		seq->insert(float(SmartBody::SBScene::getScene()->getSimulationManager()->getTime() + SmartBody::SBScene::getScene()->getSimulationManager()->getTimeDt()), command.str().c_str());
-		SmartBody::SBScene::getScene()->getCommandManager()->execute_seq(seq);
+		seq->insert(float(scene.getSimulationManager()->getTime() + scene.getSimulationManager()->getTimeDt()), command.str().c_str());
+		scene.getCommandManager()->execute_seq(seq);
 	} else {
 		std::stringstream command;
 		command << "steer facing " << c->getName() << " " << "-200"; // set to fabs() > 180 to cancel old facing value
 		srCmdSeq* seq = new srCmdSeq();
-		seq->insert(float(SmartBody::SBScene::getScene()->getSimulationManager()->getTime() + SmartBody::SBScene::getScene()->getSimulationManager()->getTimeDt()), command.str().c_str());
-		SmartBody::SBScene::getScene()->getCommandManager()->execute_seq(seq);
+		seq->insert(float(scene.getSimulationManager()->getTime() + scene.getSimulationManager()->getTimeDt()), command.str().c_str());
+		scene.getCommandManager()->execute_seq(seq);
 	}
 	std::string following = xml_parse_string(BMLDefs::ATTR_FOLLOW, &elem);
-	SmartBody::SBPawn* followingC = SmartBody::SBScene::getScene()->getPawn(following);
+	SmartBody::SBPawn* followingC = scene.getPawn(following);
 	ppraiAgent->setTargetAgent(followingC);
 
 	// parsing target
@@ -283,7 +283,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 			stepTargetMode = false;
 			stepDirection = targetString;
 		} else {
-			SbmPawn* pawn = SmartBody::SBScene::getScene()->getPawn(token);
+			SbmPawn* pawn = scene.getPawn(token);
 			if (pawn) {
 				// get the world offset x & z
 				float x, y, z, yaw, pitch, roll;
@@ -294,7 +294,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 					stepTargetZ = z;
 				} else {
 					command << "steer move " << c->getName() << " normal " << x << " 0 " << z;
-					//SmartBody::SBScene::getScene()->getCommandManager()->execute((char*)command.str().c_str());
+					//scene.getCommandManager()->execute((char*)command.str().c_str());
 				}
 			}
 		}
@@ -311,7 +311,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 		unsigned int icount = 0;
 		while (icount < tokens.size()) {
 			std::string tok1 = tokens[icount];
-			SbmPawn* pawn = SmartBody::SBScene::getScene()->getPawn(tok1);
+			SbmPawn* pawn = scene.getPawn(tok1);
 			if (pawn) // use pawn position as way point
 			{
 				float x, y, z, h, p, r;
@@ -331,7 +331,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 			}
 		}
 #endif
-		//SmartBody::SBScene::getScene()->getCommandManager()->execute((char*)command.str().c_str());
+		//scene.getCommandManager()->execute((char*)command.str().c_str());
 	}
 
 	// step mode attributes
@@ -366,7 +366,7 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 					command1 << "0 0 0 0 0 0 1";
 				if (stepDirection == "right")
 					command1 << "0 0 0 1 0 0 0";
-				SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) command1.str().c_str());
+				scene.getCommandManager()->execute((char*) command1.str().c_str());
 			}
 		}
 	}

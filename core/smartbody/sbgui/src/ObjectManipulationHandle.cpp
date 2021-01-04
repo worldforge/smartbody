@@ -19,10 +19,10 @@ ObjectManipulationHandle::~ObjectManipulationHandle() = default;
 
 void ObjectManipulationHandle::get_pawn_list(std::vector<SbmPawn*>& pawn_list)
 {
-	const std::vector<std::string>& pawnNames = SmartBody::SBScene::getScene()->getPawnNames();
+	const std::vector<std::string>& pawnNames = Session::current->scene.getPawnNames();
 	for (const auto & pawnName : pawnNames)
 	{
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+		SmartBody::SBPawn* pawn = Session::current->scene.getPawn(pawnName);
 		pawn_list.emplace_back(pawn);
 	}
 }
@@ -118,10 +118,10 @@ SbmPawn* ObjectManipulationHandle::getPickingPawn( float x, float y, SrCamera* c
 	// determine the size of the pawns relative to the size of the characters
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	float pawnSize = 0.05f / scene->getScale();
-// 	const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+// 	const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
 // 	for (size_t i = 0; i < charNames.size(); i++)
 // 	{
-// 		SmartBody::SBCharacter * character = SmartBody::SBScene::getScene()->getCharacter(charNames[i]);
+// 		SmartBody::SBCharacter * character = Session::current->scene.getCharacter(charNames[i]);
 // 		pawnSize = character->getHeight() / 30.0f;
 // 		break;
 // 	}

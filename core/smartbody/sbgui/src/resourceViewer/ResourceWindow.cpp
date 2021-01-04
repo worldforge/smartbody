@@ -306,7 +306,7 @@ int ResourceWindow::handle( int event )
 							int confirm = fl_choice(SmartBody::util::format("Are you sure you want to delete '%s'?",name).c_str(), "No", "Yes", nullptr);
 							if (confirm == 0)
 								return 0;
-							SmartBody::SBScene::getScene()->removePawn(name);
+							Session::current->scene.removePawn(name);
 							updateGUI();
 							return 1;
 						}
@@ -323,7 +323,7 @@ int ResourceWindow::handle( int event )
 							int confirm = fl_choice(SmartBody::util::format("Are you sure you want to delete '%s'?",name).c_str(), "No", "Yes", nullptr);
 							if (confirm == 0)
 								return 0;
-							SmartBody::SBScene::getScene()->removeCharacter(name);
+							Session::current->scene.removeCharacter(name);
 							updateGUI();
 							return 1;
 						}
@@ -376,15 +376,15 @@ void ResourceWindow::updateGUI()
 
 	resourceTree->sortorder(FL_TREE_SORT_ASCENDING);	
 	// update path tree	
-	updatePath(getTreeFromName("script path"), SmartBody::SBScene::getScene()->getAssetPaths("script"));	
-	updatePath(getTreeFromName("motion path"), SmartBody::SBScene::getScene()->getAssetPaths("motion"));	
-	updatePath(getTreeFromName("audio path"), SmartBody::SBScene::getScene()->getAssetPaths("audio"));	
-	updatePath(getTreeFromName("mesh path"), SmartBody::SBScene::getScene()->getAssetPaths("mesh"));	
+	updatePath(getTreeFromName("script path"), Session::current->scene.getAssetPaths("script"));
+	updatePath(getTreeFromName("motion path"), Session::current->scene.getAssetPaths("motion"));
+	updatePath(getTreeFromName("audio path"), Session::current->scene.getAssetPaths("audio"));
+	updatePath(getTreeFromName("mesh path"), Session::current->scene.getAssetPaths("mesh"));
 	
 
 	// update sequence file list
 
-	const std::vector<std::string> scriptPaths = SmartBody::SBScene::getScene()->getAssetPaths("script");
+	const std::vector<std::string> scriptPaths = Session::current->scene.getAssetPaths("script");
 	resourceTree->clear_children(getTreeFromName("scriptfiles"));
 	for (const auto & scriptPath : scriptPaths)
 	{
@@ -496,7 +496,7 @@ void ResourceWindow::updateGUI()
 	}
 
 	// update event handler list
-	SmartBody::SBEventManager* eventManager = SmartBody::SBScene::getScene()->getEventManager();
+	SmartBody::SBEventManager* eventManager = Session::current->scene.getEventManager();
 	std::map<std::string, SmartBody::SBEventHandler*>& eventMap = eventManager->getEventHandlers();
 	std::map<std::string, SmartBody::SBEventHandler*>::iterator ei;
 	resourceTree->clear_children(getTreeFromName("eventhandler"));
@@ -1011,7 +1011,7 @@ void ResourceWindow::OnSelect(const std::string& value)
 		// deselect all
 		resourceTree->select_only(nullptr);
 	}
-	SmartBody::SBObject* object = SmartBody::SBScene::getScene()->getObjectFromString(value);
+	SmartBody::SBObject* object = Session::current->scene.getObjectFromString(value);
 	if (!object)
 		return;
 

@@ -220,7 +220,7 @@ void saveDeformableMesh(const std::string& meshName, const std::string& skelName
 	auto& renderAssetManager = Session::current->renderAssetManager;
 	std::vector<std::string> moNames;
 	double scale = 1.0;
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(skelName);
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(skelName);
 	if (character)
 	{
 		SrVec scale3 = character->getVec3Attribute("deformableMeshScale");
@@ -369,7 +369,7 @@ void computeImageMeanAndStd(float* lab, unsigned char* mask, int imgSize, SrVec&
 void deformableMeshTextureReplace(const std::string& meshName, const std::string& textureName, std::string inputImageFileName)
 {
 	auto& renderAssetManager = Session::current->renderAssetManager;
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(meshName);
 	if (!mesh)
 	{
@@ -454,7 +454,7 @@ void imageColorTransfer(std::string srcImg, std::string srcMask, std::string tgt
 void addModelToMesh(std::string templateMeshName, std::string modelFile, std::string newModelName, std::string rigidBindJoint, std::string bindPoseCopySubMeshName)
 {
 	auto& renderAssetManager = Session::current->renderAssetManager;
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(templateMeshName);
 	if (!mesh)
 	{
@@ -546,7 +546,7 @@ void addModelToMesh(std::string templateMeshName, std::string modelFile, std::st
 void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, std::string shapeName, std::string submeshName)
 {
 	auto& renderAssetManager = Session::current->renderAssetManager;
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(templateMeshName);
 	if (!mesh)
 	{
@@ -646,7 +646,7 @@ void addBlendshapeToModel(std::string templateMeshName, std::string modelFile, s
 void createCustomMeshFromBlendshapes(std::string templateMeshName, std::string blendshapesDir, std::string baseMeshName, std::string hairMeshName, std::string outMeshName)
 {
 	auto& renderAssetManager = Session::current->renderAssetManager;
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 	DeformableMesh* mesh = renderAssetManager.getDeformableMesh(templateMeshName);
 	if (!mesh)
 	{

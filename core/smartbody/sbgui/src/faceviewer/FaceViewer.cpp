@@ -99,7 +99,7 @@ void FaceViewer::CharacterCB(Fl_Widget* widget, void* data)
 
 	curY += 25;
 
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(curCharacterName);
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(curCharacterName);
 	if (!character)
 	{
 		faceViewer->lastCharacterName = "";
@@ -307,7 +307,7 @@ void FaceViewer::RefreshCB(Fl_Widget* widget, void* data)
 {
 	FaceViewer* faceViewer = (FaceViewer*) data;
 	faceViewer->choiceCharacters->clear();
-	const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
 	for (size_t i = 0; i < charNames.size(); i++)
 	{
 		faceViewer->choiceCharacters->add(charNames[i].c_str());
@@ -331,7 +331,7 @@ void FaceViewer::ResetCB(Fl_Widget* widget, void* data)
 	FaceViewer* faceViewer = (FaceViewer*) data;
 
 	const Fl_Menu_Item* menu = faceViewer->choiceCharacters->menu();
-	SbmCharacter* character = SmartBody::SBScene::getScene()->getCharacter(menu[faceViewer->choiceCharacters->value()].label());
+	SbmCharacter* character = Session::current->scene.getCharacter(menu[faceViewer->choiceCharacters->value()].label());
 	if (character)
 	{
 		int numSliders = faceViewer->bottomGroup->children();
@@ -346,9 +346,9 @@ void FaceViewer::ResetCB(Fl_Widget* widget, void* data)
 
 				//std::string message = SmartBody::util::format("char %s viseme %s %f", faceViewer->choiceCharacters->menu()[faceViewer->choiceCharacters->value()].label(), name.c_str(), slider->value());
 				std::string message = SmartBody::util::format("char %s viseme clear", faceViewer->choiceCharacters->menu()[faceViewer->choiceCharacters->value()].label());
-				if (!SmartBody::SBScene::getScene()->isRemoteMode())
+				if (!Session::current->scene.isRemoteMode())
 				{
-					SmartBody::SBScene::getScene()->command(message);
+					Session::current->scene.command(message);
 				}
 				else
 				{
@@ -369,7 +369,7 @@ void FaceViewer::DefaultFaceCB(Fl_Widget* widget, void* data)
 	std::vector<float> defaultFaceValues;
 
 	const Fl_Menu_Item* menu = faceViewer->choiceCharacters->menu();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(menu[faceViewer->choiceCharacters->value()].label());
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(menu[faceViewer->choiceCharacters->value()].label());
 	if (character)
 	{
 		int numSliders = faceViewer->bottomGroup->children();
@@ -389,7 +389,7 @@ void FaceViewer::DefaultFaceCB(Fl_Widget* widget, void* data)
 		SmartBody::SBFaceDefinition* faceDefinition = character->getFaceDefinition();
 		if (faceDefinition)
 		{
-			if (!SmartBody::SBScene::getScene()->isRemoteMode())
+			if (!Session::current->scene.isRemoteMode())
 			{
 				faceDefinition->setDefaultFacePose(defaultFacePoses, defaultFaceValues);
 				character->updateDefaultFacePose();
@@ -409,13 +409,13 @@ void FaceViewer::ResetDefaultFaceCB(Fl_Widget* widget, void* data)
 	FaceViewer* faceViewer = (FaceViewer*) data;
 
 	const Fl_Menu_Item* menu = faceViewer->choiceCharacters->menu();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(menu[faceViewer->choiceCharacters->value()].label());
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(menu[faceViewer->choiceCharacters->value()].label());
 	if (character)
 	{
 		SmartBody::SBFaceDefinition* faceDefinition = character->getFaceDefinition();
 		if (faceDefinition)
 		{
-			if (!SmartBody::SBScene::getScene()->isRemoteMode())
+			if (!Session::current->scene.isRemoteMode())
 			{
 				std::vector<std::string> defaultFacePoses;
 				std::vector<float> defaultFaceValues;
@@ -442,28 +442,28 @@ void FaceViewer::FaceCB(Fl_Widget* widget, void* data)
 	std::string name = slider->label();
 #if 0
 	std::string message = SmartBody::util::format("char %s viseme %s %f", faceViewer->choiceCharacters->menu()[faceViewer->choiceCharacters->value()].label(), name.c_str(), slider->value());
-	if (!SmartBody::SBScene::getScene()->isRemoteMode())
+	if (!Session::current->scene.isRemoteMode())
 	{
-		SmartBody::SBScene::getScene()->command(message);
+		Session::current->scene.command(message);
 	}
 	else
 	{
 		std::string sendStr = "send sbm " + message;
-		SmartBody::SBScene::getScene()->command(sendStr);
+		Session::current->scene.command(sendStr);
 	}
 #else
-	std::vector<std::string> charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	std::vector<std::string> charNames = Session::current->scene.getCharacterNames();
 	for (unsigned int i=0;i<charNames.size();i++)
 	{
 		std::string message = SmartBody::util::format("char %s viseme %s %f", charNames[i].c_str(), name.c_str(), slider->value());
-		if (!SmartBody::SBScene::getScene()->isRemoteMode())
+		if (!Session::current->scene.isRemoteMode())
 		{
-			SmartBody::SBScene::getScene()->command(message);
+			Session::current->scene.command(message);
 		}
 		else
 		{
 			std::string sendStr = "send sbm " + message;
-			SmartBody::SBScene::getScene()->command(sendStr);
+			Session::current->scene.command(sendStr);
 		}
 	}
 #endif
@@ -488,28 +488,28 @@ void FaceViewer::FaceWeightCB(Fl_Widget* widget, void* data)
 
 #if 1
 	std::string message = SmartBody::util::format("char %s visemeweight %s %f", faceViewer->choiceCharacters->menu()[faceViewer->choiceCharacters->value()].label(), visemeName.c_str(), weightSlider->value());
-	if (!SmartBody::SBScene::getScene()->isRemoteMode())
+	if (!Session::current->scene.isRemoteMode())
 	{
-		SmartBody::SBScene::getScene()->command(message);
+		Session::current->scene.command(message);
 	}
 	else
 	{
 		std::string sendStr = "send sbm " + message;
-		SmartBody::SBScene::getScene()->command(sendStr);
+		Session::current->scene.command(sendStr);
 	}
 #else
-	std::vector<std::string> charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	std::vector<std::string> charNames = Session::current->scene.getCharacterNames();
 	for (unsigned int i=0;i<charNames.size();i++)
 	{
 		std::string message = SmartBody::util::format("char %s visemeweight %s %f", charNames[i].c_str(), visemeName.c_str(), weightSlider->value());
-		if (!SmartBody::SBScene::getScene()->isRemoteMode())
+		if (!Session::current->scene.isRemoteMode())
 		{
-			SmartBody::SBScene::getScene()->command(message);
+			Session::current->scene.command(message);
 		}
 		else
 		{
 			std::string sendStr = "send sbm " + message;
-			SmartBody::SBScene::getScene()->command(sendStr);
+			Session::current->scene.command(sendStr);
 		}
 	}
 #endif
@@ -529,7 +529,7 @@ void FaceViewer::updateGUI()
 	if (selectedCharacter == "")
 		return;
 
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(selectedCharacter);
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(selectedCharacter);
 	if (character)
 	{	
 		auto skeleton = character->getSkeleton();

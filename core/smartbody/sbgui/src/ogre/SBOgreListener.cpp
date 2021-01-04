@@ -35,7 +35,7 @@ void OgreListener::OnCharacterCreate( const std::string & name, const std::strin
 {
 	FLTKListener::OnCharacterCreate(name, objectClass);
 
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
+	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 	if (!pawn)
 		return;
 	// created a ogre entity only when the character is changed and valid
@@ -164,7 +164,7 @@ void OgreListener::OnCharacterCreate( const std::string & name, const std::strin
 
 void OgreListener::OnCharacterDelete( const std::string & name )
 {
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
+	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 	if (!pawn)
 		return;
 
@@ -225,7 +225,7 @@ void OgreListener::OnCharacterDelete( const std::string & name )
 
 void OgreListener::OnCharacterUpdate( const std::string & name )
 {
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
+	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 	
 	OgreListener::OnCharacterDelete(name);
 	OgreListener::OnCharacterCreate(name, "");

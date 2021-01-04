@@ -137,7 +137,7 @@ void ExportWindow::ExportAllCB( Fl_Widget* widget, void* data )
 		window->exportSceneScript(fname,aspects, false);
 		fl_alert("Saved to: %s", fname);
 	}
-	//std::string exportData = SmartBody::SBScene::getScene()->exportScene(aspects, false);
+	//std::string exportData = Session::current->scene.exportScene(aspects, false);
 	//file << exportData;
 	//file.close();
 	window->hide();

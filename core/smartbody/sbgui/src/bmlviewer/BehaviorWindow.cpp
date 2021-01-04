@@ -334,7 +334,7 @@ void BehaviorWindow::ReplayCB(Fl_Widget* widget, void* data)
 				strstr << bml;
 
 				// run that bml
-				SmartBody::SBScene::getScene()->command((char*) strstr.str().c_str());
+				Session::current->scene.command((char*) strstr.str().c_str());
 				window->updateGUI();
 				window->redraw();
 			}
@@ -402,7 +402,7 @@ void BehaviorWindow::updateBehaviors(BML::BmlRequest* request)
 	model->clear(true);
 
 	
-	double curTime = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	double curTime = Session::current->scene.getSimulationManager()->getTime();
 
 	// first, display the bml request in an intuitive way
 	RequestTrack* requestTrack = new RequestTrack();

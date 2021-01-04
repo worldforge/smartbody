@@ -27,10 +27,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBSpeechManager.h"
 #include "sbm/text_speech.h"
 
-int text_speech_commands::text_speech_func(srArgBuffer& args, SmartBody::SBBoneBusManager* boneBusManager) {
+int text_speech_commands::text_speech_func(srArgBuffer& args, SmartBody::SBBoneBusManager* boneBusManager, SmartBody::SBScene& scene) {
 	if (args.calc_num_tokens() == 1) {
 		int id = args.read_int();
-		SmartBody::SBScene::getScene()->getSpeechManager()->speech_text()->startSchedule(id);
+		scene.getSpeechManager()->speech_text()->startSchedule(id);
 	} else {
 		if (boneBusManager) {
 			int msgNumber = args.read_int();

@@ -178,7 +178,7 @@ char * MeCtGaze::key_label( const int key )	{
 
 ///////////////////////////////////////////////////////////////////////////
 
-MeCtGaze::MeCtGaze( void )	: SmartBody::SBController() {
+MeCtGaze::MeCtGaze()	: SmartBody::SBController() {
 	
 	started = 0;
 	setStart(0);
@@ -248,7 +248,7 @@ MeCtGaze::MeCtGaze( void )	: SmartBody::SBController() {
 	addDefaultAttributeDouble("gaze.limitRollBack", 10.0, "Gaze");
 }
 
-MeCtGaze::~MeCtGaze( void )	{
+MeCtGaze::~MeCtGaze()	{
 	
 	if( joint_key_map )	{
 		delete [] joint_key_map;
@@ -768,7 +768,7 @@ void MeCtGaze::inspect_skeleton_local_transform_up( SkJoint* joint_p, int depth 
 	}
 }
 
-void MeCtGaze::update_skeleton_gmat( void )	{
+void MeCtGaze::update_skeleton_gmat()	{
 
 	if( skeleton_ref_p )	{
 		SkJoint* joint_p = skeleton_ref_p->search_joint( "skullbase" );
@@ -801,7 +801,7 @@ void MeCtGaze::update_skeleton_gmat( void )	{
 }
 
 #if 0
-void MeCtGaze::load_forward_pos( void ) {
+void MeCtGaze::load_forward_pos() {
 
 	vector_t world_mid_eye_pos = 
 		joint_arr[ GAZE_JOINT_EYE_L ].world_pos.lerp( 
@@ -835,7 +835,7 @@ void MeCtGaze::load_forward_pos( void ) {
 }
 #else
 
-void MeCtGaze::load_forward_pos( void ) {
+void MeCtGaze::load_forward_pos() {
 
 #if 0
 printf( "eye: %f\n", joint_arr[ GAZE_JOINT_EYE_L ].local_pos.y() );
@@ -948,18 +948,18 @@ SkJoint* MeCtGaze::get_joint( char *joint_str, SkJoint *joint_p )	{
 	return( joint_p );
 }
 
-SkJoint* MeCtGaze::target_ref_joint( void ) {
+SkJoint* MeCtGaze::target_ref_joint() {
 //	return( target_ref_joint_p = get_joint( target_ref_joint_str, target_ref_joint_p ) );
 	return( get_joint( target_ref_joint_str, &target_ref_joint_p ) );
 }
 
-SkJoint* MeCtGaze::offset_ref_joint( void ) {
+SkJoint* MeCtGaze::offset_ref_joint() {
 //	return( offset_ref_joint_p = get_joint( offset_ref_joint_str, offset_ref_joint_p ) );
 	return( get_joint( offset_ref_joint_str, &offset_ref_joint_p ) );
 }
 #endif
 
-SkJoint* MeCtGaze::reference_joint( void )	{
+SkJoint* MeCtGaze::reference_joint()	{
 
 	if( ref_joint_str )	{
 		if( ref_joint_p == nullptr )	{
@@ -979,7 +979,7 @@ SkJoint* MeCtGaze::reference_joint( void )	{
 	return( ref_joint_p );
 }
 
-vector_t MeCtGaze::world_target_point( void )	{
+vector_t MeCtGaze::world_target_point()	{
 	
 /*
 	add point offset here:
@@ -1006,7 +1006,7 @@ vector_t MeCtGaze::world_target_point( void )	{
 	return( point_target_pos );
 }
 
-quat_t MeCtGaze::world_target_orient( void )	{
+quat_t MeCtGaze::world_target_orient()	{
 	
 /*
 	add point offset here:
@@ -1032,7 +1032,7 @@ quat_t MeCtGaze::world_target_orient( void )	{
 	return( orient_target_rot );
 }
 
-void MeCtGaze::controller_start( void )	{
+void MeCtGaze::controller_start()	{
 	
 //	SmartBody::util::log("START ON %s", this->name());
 #if ENABLE_HACK_TARGET_CIRCLE
@@ -1048,7 +1048,7 @@ void MeCtGaze::controller_start( void )	{
 #endif
 }
 
-void MeCtGaze::controller_start_evaluate( void )	{
+void MeCtGaze::controller_start_evaluate()	{
 //	SmartBody::util::log("START_EVALUTE ON %s", this->name());
 	int i;
 
@@ -1171,7 +1171,7 @@ void MeCtGaze::set_fade_out( float interval )	{
 	}
 }
 
-void MeCtGaze::setGazeSchedule(double time, GazeScheduleInfo g)
+void MeCtGaze::setGazeSchedule(double time, const GazeScheduleInfo& g)
 {
 	GazeScheduleInfo s;
 	s.hasTargetJoint = g.hasTargetJoint;
@@ -1208,12 +1208,12 @@ void MeCtGaze::set_fade_out_scheduled(float interval, double time)
 #define SMOOTH_RATE_REF (30.0f)
 #define FADE_EPSILON	(0.001f)
 
-bool MeCtGaze::update_fading( float dt )	{
+bool MeCtGaze::update_fading( double t, float dt )	{
 
-	std::map<double, FadingInfo>::iterator iter = fadingSchedules.begin();
+	auto iter = fadingSchedules.begin();
 	for (; iter != fadingSchedules.end(); ++iter)
 	{
-		if (SmartBody::SBScene::getScene()->getSimulationManager()->getTime() >= iter->first)
+		if (t >= iter->first)
 		{
 			//SmartBody::util::log("update_fading(%s): Current time %f, scheduled fading time is at %f.", this->_handle.c_str(), mcuCBHandle::singleton().time, scheduled_time);	
 			if (iter->second.fadingMode == FADING_MODE_IN)
@@ -1451,7 +1451,7 @@ bool MeCtGaze::controller_evaluate( double t, MeFrameData& frame )	{
 		}
 	}
 
-	if( update_fading( dt ) )	{
+	if( update_fading(t, dt ) )	{
 		return( TRUE );
 	}
 

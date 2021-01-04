@@ -298,7 +298,7 @@ bool OgreFrameListener::frameStarted( const FrameEvent & evt )
 		for ( size_t i = 0; i< m_pawnList.size(); i++ )
 		{
 			std::string& name = m_pawnList[i];
-			SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
+			SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 			if (!mSceneMgr->hasEntity(name))
 			{
 				continue;
@@ -322,7 +322,7 @@ bool OgreFrameListener::frameStarted( const FrameEvent & evt )
 		for ( size_t i = 0; i < m_characterList.size(); i++ )
 		{
 			std::string& name = m_characterList[i];
-			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(name);
+			SmartBody::SBCharacter* character = Session::current->scene.getCharacter(name);
 			if (!mSceneMgr->hasEntity(name))
 				continue;
 			if (!character)

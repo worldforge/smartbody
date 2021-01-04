@@ -33,6 +33,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBUtilities.h"
 #include <bml/bml.hpp>
 #include <controllers/me_controller_tree_root.hpp>
+#include "Session.h"
 
 ChannelBufferWindow::ChannelBufferWindow(int x, int y, int w, int h, const char* name) : Fl_Double_Window(w, h, name), GenericViewer(x, y, w, h), SBWindowListener()
 {
@@ -391,7 +392,7 @@ void ChannelBufferWindow::loadMotions(ChannelBufferWindow* window)
 {
 	window->motion->clear();
 	window->motion->add(window->no_motion.c_str());
-	std::vector<std::string> motionNames = SmartBody::SBScene::getScene()->getMotionNames();
+	std::vector<std::string> motionNames = Session::current->scene.getMotionNames();
 	for (size_t i = 0; i < motionNames.size(); i++)
 	{
 		const std::string & name = motionNames[i];
@@ -405,7 +406,7 @@ void ChannelBufferWindow::loadCharacters(ChannelBufferWindow* window)
 	Fl_Choice* characterChoice = window->character;
 	characterChoice->clear();
 	characterChoice->add(window->no_motion.c_str());
-	const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
 	for (size_t i = 0; i < charNames.size(); i++)
 	{
 		const std::string & charName = charNames[i];
@@ -422,7 +423,7 @@ void ChannelBufferWindow::loadControllers(Fl_Choice* controller, Fl_Choice* char
 	if(character->mvalue()== nullptr) return;
 
 	controller->clear();
-	SmartBody::SBCharacter* actor = SmartBody::SBScene::getScene()->getCharacter(character->mvalue()->label());
+	SmartBody::SBCharacter* actor = Session::current->scene.getCharacter(character->mvalue()->label());
 
 	if (!actor) return;
 
@@ -490,8 +491,8 @@ void ChannelBufferWindow::loadChannels(ChannelBufferWindow* window)
 {
 	Fl_Choice* character = window->character;
 	if(character->mvalue()== nullptr) return;
-	SmartBody::SBCharacter* actor = SmartBody::SBScene::getScene()->getCharacter(character->mvalue()->label());
-	SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(window->motion->mvalue()->label());
+	SmartBody::SBCharacter* actor = Session::current->scene.getCharacter(character->mvalue()->label());
+	SmartBody::SBMotion* motion = Session::current->scene.getMotion(window->motion->mvalue()->label());
 	if (!actor && !motion) return;
 	
 	SkChannelArray* pchannel = nullptr;
@@ -601,8 +602,8 @@ void ChannelBufferWindow::refreshMotionChannels(Fl_Widget* widget, void* data)
 		return;
 	}
 	window->mode = 2;
-	SmartBody::SBCharacter* actor = SmartBody::SBScene::getScene()->getCharacter(window->character->mvalue()->label());
-	SmartBody::SBMotion * motion = SmartBody::SBScene::getScene()->getMotion(window->motion->mvalue()->label());
+	SmartBody::SBCharacter* actor = Session::current->scene.getCharacter(window->character->mvalue()->label());
+	SmartBody::SBMotion * motion = Session::current->scene.getMotion(window->motion->mvalue()->label());
 	if (motion)
 	{
 		loadChannels(window);
@@ -696,7 +697,7 @@ void ChannelBufferWindow::refreshControllerChannels(Fl_Widget* widget, void* dat
 		refreshChannelsWidget(window);
 		return;
 	}
-	SbmCharacter* actor = SmartBody::SBScene::getScene()->getCharacter(window->character->mvalue()->label());
+	SbmCharacter* actor = Session::current->scene.getCharacter(window->character->mvalue()->label());
 	
 	for(size_t i = 0; i < window->Channel_item_list.size(); ++i)
 	{
@@ -729,9 +730,9 @@ void ChannelBufferWindow::addMonitoredChannel(Fl_Widget* widget, void* data)
 	SmartBody::SBMotion * motion = nullptr;
 	if(window->mode == 2)
 	{
-		SmartBody::SBCharacter* actor = SmartBody::SBScene::getScene()->getCharacter(window->character->mvalue()->label());
+		SmartBody::SBCharacter* actor = Session::current->scene.getCharacter(window->character->mvalue()->label());
 		std::string moName = window->motion->mvalue()->label();
-		motion = SmartBody::SBScene::getScene()->getMotion(moName);
+		motion = Session::current->scene.getMotion(moName);
 		if (motion && actor)
 		{
 			motion->connect(actor->getSkeleton().get());
@@ -902,11 +903,11 @@ void ChannelBufferWindow::update()
 			return;
 
 		SmartBody::SBCharacter* char_p = nullptr;
-		SmartBody::SBCharacter* actor = SmartBody::SBScene::getScene()->getCharacter(character->mvalue()->label());
-		const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+		SmartBody::SBCharacter* actor = Session::current->scene.getCharacter(character->mvalue()->label());
+		const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
 		for (size_t i = 0; i < charNames.size(); i++)
 		{
-			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(charNames[i]);
+			SmartBody::SBCharacter* character = Session::current->scene.getCharacter(charNames[i]);
 			const char* name = getSelectedCharacterName();
 			if( name && strcmp(character->getName().c_str(), name) == 0)
 			{

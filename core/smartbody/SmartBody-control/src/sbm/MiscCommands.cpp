@@ -104,7 +104,7 @@ int set_attribute( SbmPawn* pawn, std::string& attribute, srArgBuffer& args)
 	}
 }
 
-int pawn_set_cmd_funcx( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
+int pawn_set_cmd_funcx( srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	std::string pawn_id = args.read_token();
 	if( pawn_id.length()==0 ) {
@@ -114,7 +114,7 @@ int pawn_set_cmd_funcx( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 
 	
 
-	SbmPawn* pawn =  SmartBody::SBScene::getScene()->getPawn( pawn_id );
+	SbmPawn* pawn =  scene.getPawn( pawn_id );
 	if( pawn==nullptr ) {
 		SmartBody::util::log("ERROR: SbmPawn::set_cmd_func(..): Unknown pawn id \"%s\".", pawn_id.c_str());
 		return CMD_FAILURE;
@@ -129,7 +129,7 @@ int pawn_set_cmd_funcx( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	return  set_attribute( pawn, attribute, args);
 }
 
-int set_voice_cmd_func( SbmCharacter* character, srArgBuffer& args)
+int set_voice_cmd_func( SbmCharacter* character, srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	
 	//  Command: set character voice <speech_impl> <character id> voice <implementation-id> <voice code>
@@ -150,7 +150,7 @@ int set_voice_cmd_func( SbmCharacter* character, srArgBuffer& args)
 			SmartBody::util::log("ERROR: Expected remote voice id.");
 			return CMD_FAILURE;
 		}
-		character->set_speech_impl(SmartBody::SBScene::getScene()->getSpeechManager()->speech_rvoice() );
+		character->set_speech_impl(scene.getSpeechManager()->speech_rvoice() );
 		std::string s( voice_id );
 		character->set_voice_code( s );
 	} else if( _stricmp( impl_id, "local" )==0 ) {
@@ -160,8 +160,8 @@ int set_voice_cmd_func( SbmCharacter* character, srArgBuffer& args)
 			return CMD_FAILURE;
 		}
 		SmartBody::util::log("set local voice");
-		character->set_speech_impl( SmartBody::SBScene::getScene()->getSpeechManager()->speech_localvoice() );
-		FestivalSpeechRelayLocal* relay = SmartBody::SBScene::getScene()->getSpeechManager()->festivalRelay();
+		character->set_speech_impl( scene.getSpeechManager()->speech_localvoice() );
+		FestivalSpeechRelayLocal* relay = scene.getSpeechManager()->festivalRelay();
 		relay->setVoice(voice_id);
 		std::string s( voice_id );
 		character->set_voice_code( s );
@@ -171,7 +171,7 @@ int set_voice_cmd_func( SbmCharacter* character, srArgBuffer& args)
 			SmartBody::util::log("ERROR: Expected audiofile voice path.");
 			return CMD_FAILURE;
 		}
-		character->set_speech_impl( SmartBody::SBScene::getScene()->getSpeechManager()->speech_audiofile() );
+		character->set_speech_impl( scene.getSpeechManager()->speech_audiofile() );
 		std::string voice_path_str= "";
 		voice_path_str+=voice_path;
 		character->set_voice_code( voice_path_str );
@@ -181,7 +181,7 @@ int set_voice_cmd_func( SbmCharacter* character, srArgBuffer& args)
 			SmartBody::util::log("ERROR: Expected id.");
 			return CMD_FAILURE;
 		}
-		character->set_speech_impl(SmartBody::SBScene::getScene()->getSpeechManager()->speech_text() );
+		character->set_speech_impl(scene.getSpeechManager()->speech_text() );
 		std::string voice_path_str= "";
 		voice_path_str+=voice_path;
 		character->set_voice_code( voice_path_str );
@@ -192,7 +192,7 @@ int set_voice_cmd_func( SbmCharacter* character, srArgBuffer& args)
 	return CMD_SUCCESS;
 }
 
-int set_voicebackup_cmd_func( SbmCharacter* character, srArgBuffer& args)
+int set_voicebackup_cmd_func( SbmCharacter* character, srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	
 	//  Command: set character voice <speech_impl> <character id> voice <implementation-id> <voice code>
@@ -213,7 +213,7 @@ int set_voicebackup_cmd_func( SbmCharacter* character, srArgBuffer& args)
 			SmartBody::util::log("ERROR: Expected remote voice id.");
 			return CMD_FAILURE;
 		}
-		character->set_speech_impl_backup(SmartBody::SBScene::getScene()->getSpeechManager()->speech_rvoice() );
+		character->set_speech_impl_backup(scene.getSpeechManager()->speech_rvoice() );
 		std::string s( voice_id );
 		character->set_voice_code_backup( s );
 	} else if( _stricmp( impl_id, "local" )==0 ) {
@@ -223,8 +223,8 @@ int set_voicebackup_cmd_func( SbmCharacter* character, srArgBuffer& args)
 			return CMD_FAILURE;
 		}
 		SmartBody::util::log("set local voice");
-		character->set_speech_impl_backup(SmartBody::SBScene::getScene()->getSpeechManager()->speech_localvoice() );
-		FestivalSpeechRelayLocal* relay =SmartBody::SBScene::getScene()->getSpeechManager()->festivalRelay();
+		character->set_speech_impl_backup(scene.getSpeechManager()->speech_localvoice() );
+		FestivalSpeechRelayLocal* relay =scene.getSpeechManager()->festivalRelay();
 		relay->setVoice(voice_id);
 		std::string s( voice_id );
 		character->set_voice_code_backup( s );
@@ -234,7 +234,7 @@ int set_voicebackup_cmd_func( SbmCharacter* character, srArgBuffer& args)
 			SmartBody::util::log("ERROR: Expected audiofile voice path.");
 			return CMD_FAILURE;
 		}
-		character->set_speech_impl_backup(SmartBody::SBScene::getScene()->getSpeechManager()->speech_audiofile() );
+		character->set_speech_impl_backup(scene.getSpeechManager()->speech_audiofile() );
 		std::string voice_path_str= "";
 		voice_path_str+=voice_path;
 		character->set_voice_code_backup( voice_path_str );
@@ -244,7 +244,7 @@ int set_voicebackup_cmd_func( SbmCharacter* character, srArgBuffer& args)
 			SmartBody::util::log("ERROR: Expected id.");
 			return CMD_FAILURE;
 		}
-		character->set_speech_impl_backup(SmartBody::SBScene::getScene()->getSpeechManager()->speech_text() );
+		character->set_speech_impl_backup(scene.getSpeechManager()->speech_text() );
 		std::string voice_path_str= "";
 		voice_path_str+=voice_path;
 		character->set_voice_code_backup( voice_path_str );
@@ -260,10 +260,8 @@ int set_voicebackup_cmd_func( SbmCharacter* character, srArgBuffer& args)
 
 
 
-int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
+int pawn_cmd_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	
 
 	std::string pawn_name = args.read_token();
 	if( pawn_name.length()==0 )
@@ -282,7 +280,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	if (pawn_cmd == "init")
 	{
 		// pawn <name> init [loc <x> <y> <z>] [geom <shape name>] [color <color hex>] [size <size>]
-		SbmPawn* pawn_p =  SmartBody::SBScene::getScene()->getPawn(pawn_name);
+		SbmPawn* pawn_p =  scene.getPawn(pawn_name);
 		if( pawn_p != nullptr ) {
 			SmartBody::util::log("ERROR: Pawn \"%s\" already exists.", pawn_name.c_str());
 			return CMD_FAILURE;
@@ -334,7 +332,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 			}
 		}		
 
-		pawn_p = scene->createPawn(pawn_name );
+		pawn_p = scene.createPawn(pawn_name );
 		pawn_p->setClassType("pawn");
 		boost::intrusive_ptr<SkSkeleton> skeleton = new SmartBody::SBSkeleton();
 		std::string skel_name = pawn_name+"-skel";
@@ -363,7 +361,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 					size[i] = uniformSize;
 			}			
 			//pawn_p->initGeomObj(geom_str.c_str(),size,color_str.c_str(),file_str.c_str());
-			SmartBody::SBPhysicsManager* phyManager = SmartBody::SBScene::getScene()->getPhysicsManager();
+			SmartBody::SBPhysicsManager* phyManager = scene.getPhysicsManager();
 			phyManager->createPhysicsPawn(pawn_p->getName(),geom_str,size);
 		}
 		if (pawn_p->getGeomObject())
@@ -371,7 +369,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 			if (geom_str == "box")
 			{
 				if (type_str == "steering") {
-					auto steerService = SmartBody::SBScene::getScene()->getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
+					auto steerService = scene.getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
 					if (steerService) {
 						auto obstacleEntry = steerService->createObstacleForPawn(pawn_name);
 						if (!setRec) {
@@ -400,7 +398,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		// [BMLR] Send notification to the renderer that a pawn was created.
 		// NOTE: This is sent both for characters AND pawns
 //#ifndef SB_NO_BONEBUS
-//		SmartBody::SBScene::getScene()->getBoneBusManager()->getBoneBus().SendCreatePawn( pawn_name.c_str(), loc[ 0 ], loc[ 1 ], loc[ 2 ] );
+//		scene.getBoneBusManager()->getBoneBus().SendCreatePawn( pawn_name.c_str(), loc[ 0 ], loc[ 1 ], loc[ 2 ] );
 //#endif
 		float x,y,z,h,p,r;
 		sbpawn->get_world_offset(x,y,z,h,p,r);
@@ -408,7 +406,7 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		sbpawn->set_world_offset(loc[0],loc[1],loc[2],h,p,r);	
 		sbpawn->wo_cache_update();
 
-		std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+		std::vector<SmartBody::SBSceneListener*>& listeners = scene.getSceneListeners();
 		for (auto & listener : listeners)
 		{
 			listener->OnCharacterCreate( pawn_name, pawn_p->getClassType() );
@@ -426,8 +424,8 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 		for (auto & pawn : pawns)
 		{
 			srArgBuffer copy_args( args.peek_string() );
-			pawn_p =  SmartBody::SBScene::getScene()->getPawn( pawn );
-			int err = pawn_parse_pawn_command( pawn_p, pawn_cmd, copy_args);
+			pawn_p =  scene.getPawn( pawn );
+			int err = pawn_parse_pawn_command( pawn_p, pawn_cmd, copy_args, scene);
 			if( err != CMD_SUCCESS )
 				return( err );
 		}
@@ -435,10 +433,10 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	} 
 	else
 	{
-		pawn_p = SmartBody::SBScene::getScene()->getPawn( pawn_name.c_str() );
+		pawn_p = scene.getPawn( pawn_name.c_str() );
 		if( pawn_p ) 
 		{
-			int ret = pawn_parse_pawn_command( pawn_p, pawn_cmd, args);
+			int ret = pawn_parse_pawn_command( pawn_p, pawn_cmd, args, scene);
 			return( ret );
 		}
 		else
@@ -449,10 +447,8 @@ int pawn_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
 	}
 }
 
-int character_cmd_func( srArgBuffer& args, BML::Processor* bmlProcessor)
+int character_cmd_func( srArgBuffer& args, BML::Processor* bmlProcessor, SmartBody::SBScene& scene)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-
 	std::string char_name = args.read_token();
 	if( char_name.length()==0 ) {
 		SmartBody::util::log( "HELP: char <> <command>" );
@@ -504,23 +500,23 @@ int character_cmd_func( srArgBuffer& args, BML::Processor* bmlProcessor)
 	if( char_name == "*" ) {
 
 		all_characters = true;
-		const std::vector<std::string>& characters =  scene->getCharacterNames();
+		const std::vector<std::string>& characters =  scene.getCharacterNames();
 
 		for (const auto & citer : characters)
 		{
 			srArgBuffer copy_args( args.peek_string() );
-			character = scene->getCharacter( citer );
-			int err = character_parse_character_command( character, char_cmd, copy_args, true , bmlProcessor);
+			character = scene.getCharacter( citer );
+			int err = character_parse_character_command( character, char_cmd, copy_args, true , bmlProcessor, scene);
 			if( err != CMD_SUCCESS )
 				return( err );
 		}
 		return( CMD_SUCCESS );
 	} 
 
-	character = scene->getCharacter( char_name );
+	character = scene.getCharacter( char_name );
 	if( character ) {
 
-		int err = character_parse_character_command( character, char_cmd, args, false, bmlProcessor );
+		int err = character_parse_character_command( character, char_cmd, args, false, bmlProcessor, scene );
 		if( err != CMD_NOT_FOUND )	{
 			return( err );
 		}
@@ -550,14 +546,14 @@ int character_cmd_func( srArgBuffer& args, BML::Processor* bmlProcessor)
 			}
 			new_param->char_names.emplace_back( char_name );
 			GeneralParamMap::iterator it; 
-			if( (it = scene->getGeneralParameters().find(param_name)) != scene->getGeneralParameters().end())
+			if( (it = scene.getGeneralParameters().find(param_name)) != scene.getGeneralParameters().end())
 			{
 				it->second->char_names.emplace_back( char_name );
 				delete new_param;
 			}
 			else
 			{
-				scene->getGeneralParameters().insert(make_pair(std::string(param_name),new_param));
+				scene.getGeneralParameters().insert(make_pair(std::string(param_name),new_param));
 			}
 			return( CMD_SUCCESS );
 		}
@@ -566,11 +562,9 @@ int character_cmd_func( srArgBuffer& args, BML::Processor* bmlProcessor)
 		return( CMD_FAILURE );
 }
 
-int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
+int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
-	
 
 	std::string pawn_and_attribute = args.read_token();
 	int interval = args.read_int();
@@ -582,14 +576,14 @@ int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 
 	SbmPawn* pawn_p = nullptr;
 
-	pawn_p =  SmartBody::SBScene::getScene()->getPawn( pawn_and_attribute );
+	pawn_p =  scene.getPawn( pawn_and_attribute );
 
 	if( pawn_p != nullptr ) {
 		SmartBody::util::log("ERROR: Pawn \"%s\" already exists.", pawn_and_attribute.c_str() );
 		return CMD_FAILURE;
 	}
 
-	pawn_p = scene->createPawn( pawn_and_attribute.c_str() );
+	pawn_p = scene.createPawn( pawn_and_attribute.c_str() );
 
 	boost::intrusive_ptr<SkSkeleton> skeleton = new SmartBody::SBSkeleton();
 	std::string skel_name = pawn_and_attribute+"-skel";
@@ -599,7 +593,7 @@ int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 
 	int err = pawn_p->init( skeleton );
 
-	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+	std::vector<SmartBody::SBSceneListener*>& listeners = scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnCharacterCreate( pawn_and_attribute, "" );
@@ -621,7 +615,7 @@ int create_remote_pawn_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 }
 
 
-int character_set_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
+int character_set_cmd_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	std::string character_id = args.read_token();
 	if( character_id.length()==0 ) {
@@ -629,7 +623,7 @@ int character_set_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdM
 		return CMD_FAILURE;
 	}
 
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter( character_id );
+	SmartBody::SBCharacter* character = scene.getCharacter( character_id );
 	if( character==nullptr ) {
 		SmartBody::util::log("ERROR: SbmCharacter::set_cmd_func(..): Unknown character \"%s\" to set.", character_id.c_str());
 		return CMD_FAILURE;
@@ -643,9 +637,9 @@ int character_set_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdM
 
 	//  voice_code and voice-code are backward compatible patches
 	if( attribute=="voice" || attribute=="voice_code" || attribute=="voice-code" ) {
-		return set_voice_cmd_func( character, args );
+		return set_voice_cmd_func( character, args, scene );
 	} else if( attribute == "voicebackup") {
-		return set_voicebackup_cmd_func( character, args );
+		return set_voicebackup_cmd_func( character, args, scene );
 	} else {
 		return set_attribute( character, attribute, args );
 	}
@@ -712,13 +706,13 @@ int set_world_offset_cmd( SbmPawn* pawn, srArgBuffer& args )
 	return CMD_SUCCESS;
 }
 
-int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer& args)
+int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	
 
 	if (cmd == "remove")
 	{	
-		SmartBody::SBScene::getScene()->removePawn(pawn->getName());
+		scene.removePawn(pawn->getName());
 		return CMD_SUCCESS;
 	}
 	else if (cmd == "prune")
@@ -765,7 +759,7 @@ int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer&
 				has_geom = true;
 			} else if( option=="rec" ) {
 				setRec = true;
-				auto steerService = SmartBody::SBScene::getScene()->getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
+				auto steerService = scene.getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
 				if (steerService) {
 					auto I = steerService->getObstacles().find(pawn->getName());
 					if (I != steerService->getObstacles().end()) {
@@ -786,9 +780,9 @@ int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer&
 		if (has_geom)
 		{				
 			//initGeomObj(geom_str.c_str(),size,color_str.c_str(),file_str.c_str());
-			SmartBody::SBPhysicsManager* phyManager = SmartBody::SBScene::getScene()->getPhysicsManager();
+			SmartBody::SBPhysicsManager* phyManager = scene.getPhysicsManager();
 			phyManager->createPhysicsPawn(pawn->getName(),geom_str,size);
-			auto steerService = SmartBody::SBScene::getScene()->getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
+			auto steerService = scene.getServiceManager()->getServiceByType<SmartBody::SBSteerManager>("steering");
 			if (steerService) {
 				auto I = steerService->getObstacles().find(pawn->getName());
 				if (I != steerService->getObstacles().end()) {
@@ -850,14 +844,13 @@ int pawn_parse_pawn_command( SbmPawn* pawn, const std::string& cmd, srArgBuffer&
 	}
 }
 
-int character_parse_character_command( SbmCharacter* character, const std::string& cmd, srArgBuffer& args, bool all_characters, BML::Processor* bp)
+int character_parse_character_command( SbmCharacter* character, const std::string& cmd, srArgBuffer& args, bool all_characters, BML::Processor* bp, SmartBody::SBScene& scene)
 {
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	auto* sbChar = dynamic_cast<SmartBody::SBCharacter*>(character);
 	
 	 if ( cmd == "remove" ) {
-				SmartBody::SBScene::getScene()->removeCharacter(character->getName());
+				scene.removeCharacter(character->getName());
 				return CMD_SUCCESS;
 
 			} 
@@ -949,7 +942,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 											std::string request = requestWithName.substr(pipeLocation + 1);
 											std::stringstream strstr;
 											strstr << "bp interrupt " << charName << " " << request << " .5";
-											SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) strstr.str().c_str());
+											scene.getCommandManager()->execute((char*) strstr.str().c_str());
 											numRequestsInterrupted++;
 										}
 										else
@@ -964,7 +957,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 												std::string request = requestWithName.substr(charName.size());
 												std::stringstream strstr;
 												strstr << "bp interrupt " << character->getName() << " " << request << " .5";
-												SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) strstr.str().c_str());
+												scene.getCommandManager()->execute((char*) strstr.str().c_str());
 												numRequestsInterrupted++;
 											}
 										}
@@ -1126,7 +1119,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 								args.read_float_vect( curveInfo, num_remaining );											
 
 								//			schedule_viseme_blend_curve( viseme, mcu_p->time, 1.0f, curveInfo, numKeys, numKeyParams );
-								character->schedule_viseme_curve( viseme, SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), curveInfo, numKeys, numKeyParams, 0.0f, 0.0f );
+								character->schedule_viseme_curve( viseme, scene.getSimulationManager()->getTime(), curveInfo, numKeys, numKeyParams, 0.0f, 0.0f );
 								delete [] curveInfo;
 							}
 							else if( _stricmp( next, "trap" ) == 0 )
@@ -1140,13 +1133,13 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 									ramp_in = args.read_float();
 								if( args.calc_num_tokens() > 0 )
 									ramp_out = args.read_float();
-								character->schedule_viseme_trapezoid( viseme, SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), weight, dur, ramp_in, ramp_out );
+								character->schedule_viseme_trapezoid( viseme, scene.getSimulationManager()->getTime(), weight, dur, ramp_in, ramp_out );
 							}
 							else
 							{
 								float weight = (float)atof(next);
 								float rampin_duration = args.read_float();
-								character->schedule_viseme_blend_ramp( viseme, SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), weight, rampin_duration );
+								character->schedule_viseme_blend_ramp( viseme, scene.getSimulationManager()->getTime(), weight, rampin_duration );
 							}
 							return CMD_SUCCESS;
 						}
@@ -1274,7 +1267,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 								SmartBody::util::log( "char '%s' gaze tracks:",character->getName().c_str() );
 							}
 							
-							double curTime = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+							double curTime = scene.getSimulationManager()->getTime();
 							MeCtScheduler2::VecOfTrack track_vec = character->gaze_sched_p->tracks();
 							int n = track_vec.size();
 							for( int i = 0; i < n; i++ )	{
@@ -1327,7 +1320,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 							{
 								if (character->breathing_p)
 								{
-									return mcu_character_breathing(character->getName().c_str(), args, SmartBody::SBScene::getScene()->getCommandManager());
+									return mcu_character_breathing(character->getName().c_str(), args, scene);
 								}
 								return CMD_FAILURE;
 							}
@@ -1574,7 +1567,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 										{
 											std::string motion_name = args.read_token();
 											std::string tagName = args.read_token();
-											SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motion_name);
+											SmartBody::SBMotion* motion = scene.getAssetManager()->getMotion(motion_name);
 
 											SmartBody::SBReach* reach = sbChar->getReach();
 											//SmartBody::util::log("SbmCharacter::parse_character_command LOG: add motion name : %s ", motion_name.c_str());
@@ -1613,7 +1606,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 											int reachType = MeCtReachEngine::getReachType(tagName);//
 											if (reachType == -1)
 												reachType = MeCtReachEngine::RIGHT_ARM;
-											SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motion_name);
+											SmartBody::SBMotion* motion = scene.getAssetManager()->getMotion(motion_name);
 											//SmartBody::util::log("SbmCharacter::parse_character_command LOG: add motion name : %s ", motion_name.c_str());
 											if (motion && reach)
 											{
@@ -1673,7 +1666,7 @@ int character_parse_character_command( SbmCharacter* character, const std::strin
 												//motion->name()
 												char cmd[256];
 												sprintf(cmd,"bml char %s <body posture=\"%s\"/>", character->getName().c_str(),motion->getName().c_str());
-												SmartBody::SBScene::getScene()->getCommandManager()->execute(cmd);
+												scene.getCommandManager()->execute(cmd);
 											}			
 #endif
 											return CMD_SUCCESS;

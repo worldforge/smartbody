@@ -260,21 +260,21 @@ void FLTKOgreWindow::fltkRender()
 
 	if (_data->terrainMode == FltkViewer::ModeTerrain)
 	{
-		Heightfield* h = SmartBody::SBScene::getScene()->getHeightfield();		
+		Heightfield* h = Session::current->scene.getHeightfield();
 		if (h)
 			h->render(0);
 	}
 	else if (_data->terrainMode == FltkViewer::ModeTerrainWireframe)
 	{
-		Heightfield* h = SmartBody::SBScene::getScene()->getHeightfield();		
+		Heightfield* h = Session::current->scene.getHeightfield();
 		if (h)
 			h->render(1);
 	}		
 
 	glDisable( GL_COLOR_MATERIAL );
 	//drawAllGeometries();		
-	if( SmartBody::SBScene::getScene()->getRootGroup() )	{		
-		_data->render_action.apply ( SmartBody::SBScene::getScene()->getRootGroup() );
+	if( Session::current->scene.getRootGroup() )	{
+		_data->render_action.apply ( Session::current->scene.getRootGroup() );
 	} 
 
 	drawPawns();
@@ -389,7 +389,7 @@ void FLTKOgreWindow::fltkRender2()
 
 	if ( !visible() ) return;
 
-	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+	SrCamera* cam = Session::current->scene.getActiveCamera();
 	SbmShaderManager& ssm = SbmShaderManager::singleton();
 	SbmTextureManager& texm = SbmTextureManager::singleton();
 
@@ -512,8 +512,8 @@ void FLTKOgreWindow::fltkRender2()
 	}
 	
 
-	if( SmartBody::SBScene::getScene()->getRootGroup() )	{		
-		_data->render_action.apply ( SmartBody::SBScene::getScene()->getRootGroup() );
+	if( Session::current->scene.getRootGroup() )	{
+		_data->render_action.apply ( Session::current->scene.getRootGroup() );
 	} 
 
 	glDisable(GL_LIGHTING);
@@ -552,13 +552,13 @@ void FLTKOgreWindow::fltkRender2()
 
 	if (_data->terrainMode == FltkViewer::ModeTerrain)
 	{
-		Heightfield* h = SmartBody::SBScene::getScene()->getHeightfield();		
+		Heightfield* h = Session::current->scene.getHeightfield();
 		if (h)
 			h->render(0);
 	}
 	else if (_data->terrainMode == FltkViewer::ModeTerrainWireframe)
 	{
-		Heightfield* h = SmartBody::SBScene::getScene()->getHeightfield();
+		Heightfield* h = Session::current->scene.getHeightfield();
 		if (h)
 			h->render(1);
 	}

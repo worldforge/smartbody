@@ -23,6 +23,7 @@
 #include "bml/BMLSaccadeObject.h"
 #include "bml/BMLStateObject.h"
 #include "bml/BMLNoiseObject.h"
+#include "Session.h"
 
 #ifndef WIN32
 #define _strdup strdup
@@ -146,12 +147,12 @@ void BMLCreatorWindow::RunBMLCB(Fl_Widget* w, void *data)
 	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
 	if (!sbScene->isRemoteMode())
 	{
-		SmartBody::SBScene::getScene()->run(window->_editor->buffer()->text());
+		Session::current->scene.run(window->_editor->buffer()->text());
 	}
 	else
 	{
 		std::string sendStr = "send sbm python " + std::string(window->_editor->buffer()->text());
-		SmartBody::SBScene::getScene()->command(sendStr);
+		Session::current->scene.command(sendStr);
 	}
 }
 
@@ -162,7 +163,7 @@ void BMLCreatorWindow::RefreshCharactersCB(Fl_Widget* w, void *data)
 	window->_choiceCharacters->clear();
 	window->_choiceCharacters->add("*");
 
-	const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
 	for (const auto & charName : charNames)
 	{
 			window->_choiceCharacters->add(charName.c_str());
@@ -213,7 +214,7 @@ void BMLCreatorWindow::ResetBMLCB(Fl_Widget* w, void *data)
 	window->_choiceCharacters->clear();
 	window->_choiceCharacters->add("*");
 
-	const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
 	for (const auto & charName : charNames)
 	{
 			window->_choiceCharacters->add(charName.c_str());

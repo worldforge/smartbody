@@ -482,7 +482,7 @@ FltkViewer::FltkViewer ( int x, int y, int w, int h, const char *label )
    // register gesture event handler
 	GestureVisualizationHandler* gv = new GestureVisualizationHandler();
 	gv->setGestureData(_gestureData);
-	SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();
+	SmartBody::SBEventManager* manager = Session::current->scene.getEventManager();
 	manager->addEventHandler("bmlstatus", gv);
 
 	mode( FL_RGB | FL_DOUBLE | FL_DEPTH | FL_MULTISAMPLE);
@@ -558,7 +558,7 @@ void FltkViewer::show_menu ()
 
 void FltkViewer::OnSelect(const std::string& value)
 {
-	SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(SmartBody::SBScene::getScene()->getObjectFromString(value));
+	SmartBody::SBPawn* pawn = dynamic_cast<SmartBody::SBPawn*>(Session::current->scene.getObjectFromString(value));
 	if (!pawn)
 	{
 		// deselect a pawn if it is already selected.
@@ -625,22 +625,22 @@ void FltkViewer::menu_cmd ( MenuCmd s, const char* label  )
 		  } break;
 
 	  case CmdAsIs   : _data->rendermode = ModeAsIs;
-					   _data->render_action.restore_render_mode ( SmartBody::SBScene::getScene()->getRootGroup());
+					   _data->render_action.restore_render_mode ( Session::current->scene.getRootGroup());
 					   break;
 	  case CmdDefault : _data->rendermode = ModeDefault;
-					   _data->render_action.override_render_mode ( SmartBody::SBScene::getScene()->getRootGroup(), srRenderModeDefault );
+					   _data->render_action.override_render_mode ( Session::current->scene.getRootGroup(), srRenderModeDefault );
 					   break;
 	  case CmdSmooth : _data->rendermode = ModeSmooth;
-					   _data->render_action.override_render_mode ( SmartBody::SBScene::getScene()->getRootGroup(), srRenderModeSmooth );
+					   _data->render_action.override_render_mode ( Session::current->scene.getRootGroup(), srRenderModeSmooth );
 					   break;
 	  case CmdFlat   : _data->rendermode = ModeFlat;
-					   _data->render_action.override_render_mode ( SmartBody::SBScene::getScene()->getRootGroup(), srRenderModeFlat );
+					   _data->render_action.override_render_mode ( Session::current->scene.getRootGroup(), srRenderModeFlat );
 					   break;
 	  case CmdLines  : _data->rendermode = ModeLines;
-					   _data->render_action.override_render_mode ( SmartBody::SBScene::getScene()->getRootGroup(), srRenderModeLines );
+					   _data->render_action.override_render_mode ( Session::current->scene.getRootGroup(), srRenderModeLines );
 					   break;
 	  case CmdPoints : _data->rendermode = ModePoints;
-					   _data->render_action.override_render_mode ( SmartBody::SBScene::getScene()->getRootGroup(), srRenderModePoints );
+					   _data->render_action.override_render_mode ( Session::current->scene.getRootGroup(), srRenderModePoints );
 					   break;
 
 	  case CmdAxis : SR_SWAPB(_data->displayaxis); 
@@ -932,14 +932,14 @@ bool FltkViewer::menu_cmd_activated ( MenuCmd c )
 
 void FltkViewer::update_bbox ()
  {
-   _data->bbox_action.apply ( SmartBody::SBScene::getScene()->getRootGroup() );
+   _data->bbox_action.apply ( Session::current->scene.getRootGroup() );
    _data->scenebox->shape().init();
    _data->scenebox->shape().push_box ( _data->bbox_action.get(), true );
  }
 
 void FltkViewer::update_axis ()
  {
-   _data->bbox_action.apply ( SmartBody::SBScene::getScene()->getRootGroup() );
+   _data->bbox_action.apply ( Session::current->scene.getRootGroup() );
    SrBox b = _data->bbox_action.get();
    float len1 = SR_MAX3(b.a.x,b.a.y,b.a.z);
    float len2 = SR_MAX3(b.b.x,b.b.y,b.b.z);
@@ -957,7 +957,7 @@ void FltkViewer::view_all ()
    camera->setUpVector(SrVec::j);
    camera->setEye( 0, 0, 1.0f );
 
-   if ( SmartBody::SBScene::getScene()->getRootGroup() )
+   if ( Session::current->scene.getRootGroup() )
 	{ update_bbox ();
 	  SrBox box = _data->bbox_action.get();
 
@@ -1146,7 +1146,7 @@ void FltkViewer::init_opengl ( int w, int h )
 
    SrCamera* cam = get_camera();
    //cam.zfar = 1000000;
-   float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+   float scale = 1.f/Session::current->scene.getScale();
    
    // camera near = 0.1 m, camera far plane is 100 m
    cam->setNearPlane(0.1f*scale);
@@ -1236,12 +1236,12 @@ void FltkViewer::updateLights()
 	// if none exist, use the standard lights
 	_lights.clear();
 	int numLightsInScene = 0;
-	const std::vector<std::string>& pawnNames =  SmartBody::SBScene::getScene()->getPawnNames();
+	const std::vector<std::string>& pawnNames =  Session::current->scene.getPawnNames();
 	for (std::vector<std::string>::const_iterator iter = pawnNames.begin();
 		 iter != pawnNames.end();
 		  iter++)
 	{
-		SmartBody::SBPawn* sbpawn = SmartBody::SBScene::getScene()->getPawn(*iter);
+		SmartBody::SBPawn* sbpawn = Session::current->scene.getPawn(*iter);
 		const std::string& name = sbpawn->getName();
 		if (name.find("light") == 0)
 		{
@@ -1367,11 +1367,11 @@ void FltkViewer::updateLights()
 	}
 	//SmartBody::util::log("light size = %d\n",_lights.size());
 
-	SmartBody::SBScene::getScene()->setIntAttribute("numLightsInScene", numLightsInScene);
+	Session::current->scene.setIntAttribute("numLightsInScene", numLightsInScene);
 	//SmartBody::util::log("numLightsInScene = %d\n", numLightsInScene);
 	if (_lights.size() == 0 && 
 		numLightsInScene == 0 &&
-		SmartBody::SBScene::getScene()->getBoolAttribute("useDefaultLights"))
+		Session::current->scene.getBoolAttribute("useDefaultLights"))
 	{
 		SrVec up(0, 1, 0);
 
@@ -1560,9 +1560,9 @@ void FltkViewer::drawAllGeometries(bool shadowPass)
 	}
 	*/
 	printOglError2("drawAllGeometries()", 5);
-	if( SmartBody::SBScene::getScene()->getRootGroup() )	{	
+	if( Session::current->scene.getRootGroup() )	{
 		
-		_data->render_action.apply ( SmartBody::SBScene::getScene()->getRootGroup() );
+		_data->render_action.apply ( Session::current->scene.getRootGroup() );
 	}	
 
 	printOglError2("drawAllGeometries()", 6);
@@ -1579,7 +1579,7 @@ void FltkViewer::drawAllGeometries(bool shadowPass)
 void FltkViewer::resize(int x, int y, int w, int h)
 {
 	//SBRenderer::singleton().resize(w, h);
-	bool useDeferredRendering = SmartBody::SBScene::getScene()->getBoolAttribute("Renderer.UseDeferredRendering");
+	bool useDeferredRendering = Session::current->scene.getBoolAttribute("Renderer.UseDeferredRendering");
 	if (useDeferredRendering)
 		SBRenderer::singleton().resize(w, h);
 	else
@@ -1650,9 +1650,9 @@ void FltkViewer::drawSBRender(bool useDeferredShading)
 	glScalef(cam->getScale(), cam->getScale(), cam->getScale());
 
 	glEnable(GL_LIGHTING);
-	if (SmartBody::SBScene::getScene()->getRootGroup()) {
+	if (Session::current->scene.getRootGroup()) {
 		
-		_data->render_action.apply(SmartBody::SBScene::getScene()->getRootGroup());
+		_data->render_action.apply(Session::current->scene.getRootGroup());
 	}
 
 	drawInteraction(cam, *renderer);
@@ -1665,7 +1665,7 @@ void FltkViewer::draw()
 	if (!visible()) return;
 	printOglError2("draw()", 1);
 
-	bool useDeferredRendering = SmartBody::SBScene::getScene()->getBoolAttribute("Renderer.UseDeferredRendering");
+	bool useDeferredRendering = Session::current->scene.getBoolAttribute("Renderer.UseDeferredRendering");
 	if (useDeferredRendering)
 	{
 		drawSBRender(true);
@@ -1677,7 +1677,7 @@ void FltkViewer::draw()
 		return;
 	}
 //
-//	SrCamera* cam = SmartBody::SBScene::getScene()->getActiveCamera();
+//	SrCamera* cam = Session::current->scene.getActiveCamera();
 //	SbmShaderManager& ssm = SbmShaderManager::singleton();
 //	SbmTextureManager& texm = SbmTextureManager::singleton();
 //
@@ -1826,13 +1826,13 @@ void FltkViewer::draw()
 //	//	makeShadowMap();
 //
 //	/* // draw skeleton
-//	const std::vector<std::string> names = SmartBody::SBScene::getScene()->getCharacterNames();
+//	const std::vector<std::string> names = Session::current->scene.getCharacterNames();
 //	for (std::vector<std::string>::const_iterator iter = names.begin();
 //		 iter != names.end();
 //		 iter++)
 //	{
 //		glBegin(GL_LINES);
-//		SmartBody::SBCharacter* cur =  SmartBody::SBScene::getScene()->getCharacter(*iter);
+//		SmartBody::SBCharacter* cur =  Session::current->scene.getCharacter(*iter);
 //		auto skeleton = cur->getSkeleton();
 //		int numJoints = skeleton->getNumJoints();
 //		for (int j = 0; j < numJoints; j++)
@@ -1940,14 +1940,14 @@ void FltkViewer::drawInteraction(SrCamera* cam, SBBaseRenderer& renderer)
 	 glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
 	 if (_data->terrainMode == FltkViewer::ModeTerrain)
 	 {
-		 Heightfield* h = SmartBody::SBScene::getScene()->getHeightfield();
+		 Heightfield* h = Session::current->scene.getHeightfield();
 		 if (h) {
 			 renderer.render(*h, 0);
 		 }
 	 }
 	 else if (_data->terrainMode == FltkViewer::ModeTerrainWireframe)
 	 {
-		 Heightfield* h = SmartBody::SBScene::getScene()->getHeightfield();
+		 Heightfield* h = Session::current->scene.getHeightfield();
 		 if (h) {
 			 renderer.render(*h, 1);
 		 }
@@ -2148,9 +2148,9 @@ void FltkViewer::processDragAndDrop( std::string dndMsg, float x, float y )
 	{
 		dest.y = 10;
 		sprintf(cmdStr,"pawn defaultPawn%d init",pawnCount);
-		SmartBody::SBScene::getScene()->command(cmdStr);
+		Session::current->scene.command(cmdStr);
 		sprintf(cmdStr,"set pawn defaultPawn%d world_offset x %f y %f z %f",pawnCount,dest.x,dest.y,dest.z);
-		SmartBody::SBScene::getScene()->command(cmdStr);
+		Session::current->scene.command(cmdStr);
 		pawnCount++;
 	}	
 #endif
@@ -2161,7 +2161,7 @@ void FltkViewer::processDragAndDrop( std::string dndMsg, float x, float y )
 		if (isDir) // dropping a folder tells SmartBody to load all the assets from that folder
 		{
 			SmartBody::util::log("Loading assets from path %s", dndPath.string().c_str());
-			SmartBody::SBScene::getScene()->loadAssetsFromPath(dndPath.string());
+			Session::current->scene.loadAssetsFromPath(dndPath.string());
 			return;
 		}
 
@@ -2192,14 +2192,14 @@ void FltkViewer::processDragAndDrop( std::string dndMsg, float x, float y )
 #ifdef WIN32
 			fullPath = SmartBody::util::replace(fullPath, "\\", "/");
 #endif
-			SmartBody::SBScene::getScene()->addAssetPath("script", fullPath);
-			SmartBody::SBScene::getScene()->runScript(filebasename + fileextension);
+			Session::current->scene.addAssetPath("script", fullPath);
+			Session::current->scene.runScript(filebasename + fileextension);
 		}
 
 		// process mesh or skeleton
 		//std::cout << "path name = " << fullPath << " base name = " << filebasename << "  extension = " << fileextension << std::endl;
 		// first, load the drag-in-assets
-		SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+		SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 		//std::cout << "FULLPATHNAME = " << fullPathName << std::endl;
 		int pos = fullPathName.find("file://");
 		if (pos != std::string::npos)
@@ -2212,7 +2212,7 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 #if 0 // the code is replaced by the new asset loading mechanism, which provides cleaner handling. So there is no need to copy the files to retarget folders. 
 		if ( boost::iequals(fileextension,".skm") || boost::iequals(fileextension,".bvh") || boost::iequals(fileextension,".amc") ) // a motion extension
 		{
-			SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+			SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 			assetManager->loadAsset(fullPathName);
 			return;
 		}		
@@ -2221,7 +2221,7 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 		bool hasMesh = false;
 		bool hasSkeleton = false;
 		// copy the file over
-		std::string mediaPath = SmartBody::SBScene::getScene()->getMediaPath();
+		std::string mediaPath = Session::current->scene.getMediaPath();
 		std::string retargetDir = mediaPath + "/" + "retarget/";
 		std::string meshBaseDir = "retarget/mesh/";
 		std::string meshDir = mediaPath + "/" + meshBaseDir ;		
@@ -2521,7 +2521,7 @@ int FltkViewer::handle ( int event )
 				 SbmPawn* selectedPawn = _objManipulator.get_selected_pawn();
 				 if (selectedPawn)
 				 {
-					 std::string selectString = SmartBody::SBScene::getScene()->getStringFromObject(selectedPawn);
+					 std::string selectString = Session::current->scene.getStringFromObject(selectedPawn);
 					 SBSelectionManager::getSelectionManager()->select(selectString);
 
 					 auto* character = dynamic_cast<SmartBody::SBCharacter*> (selectedPawn);
@@ -2583,7 +2583,7 @@ int FltkViewer::handle ( int event )
 //
 //						}
 //						//command <<  xstr << " 0 " << zstr << " ";
-//						SmartBody::SBScene::getScene()->command((char*)command.str().c_str());
+//						Session::current->scene.command((char*)command.str().c_str());
 //					}
 //				}
 
@@ -2594,7 +2594,7 @@ int FltkViewer::handle ( int event )
 					dest.y = character->getHeight() / 100.0f;
 					std::stringstream command;
 					command << "steer move " << character->getName() << " normal " << dest.x << " " << dest.y << " " << dest.z;
-					SmartBody::SBScene::getScene()->command((char*)command.str().c_str());
+					Session::current->scene.command((char*)command.str().c_str());
 				}			
 			
 				
@@ -2780,17 +2780,17 @@ int FltkViewer::handle ( int event )
 					SrBox box = selectedPawn->getSkeleton()->getBoundingBox();
 					if (box.volume() < .0001)
 					{
-						double val = 1.0 / SmartBody::SBScene::getScene()->getScale() * .5;
+						double val = 1.0 / Session::current->scene.getScale() * .5;
 						box.grows((float) val, (float) val, (float) val);
 					} 
 					sceneBox.extend(box);
 				}
 				else
 				{
-					const std::vector<std::string>& pawnNames =  SmartBody::SBScene::getScene()->getPawnNames();
+					const std::vector<std::string>& pawnNames =  Session::current->scene.getPawnNames();
 					for (const auto & pawnName : pawnNames)
 					{
-						SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+						SmartBody::SBPawn* pawn = Session::current->scene.getPawn(pawnName);
 						bool visible = pawn->getBoolAttribute("visible");
 						if (!visible)
 							continue;
@@ -2801,13 +2801,13 @@ int FltkViewer::handle ( int event )
 				
 				if (sceneBox.volume() < .0001)
 				{
-					double val = 1.0 / SmartBody::SBScene::getScene()->getScale() * .5;
+					double val = 1.0 / Session::current->scene.getScale() * .5;
 					sceneBox.grows((float) val, (float) val, (float) val);
 					sceneBox.extend(sceneBox);
 				} 
 				
 				camera->view_all(sceneBox, camera->getFov());	
-				float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+				float scale = 1.f/Session::current->scene.getScale();
 				float znear = 0.01f*scale;
 				float zfar = 1000.0f*scale;
 				camera->setNearPlane(znear);
@@ -2847,7 +2847,7 @@ int FltkViewer::handle ( int event )
 		  _data->scenebox->changed(true);
 		  _data->sceneaxis->changed(true);
 		  srSaSetShapesChanged sa;
-		  sa.apply ( SmartBody::SBScene::getScene()->getRootGroup() );
+		  sa.apply ( Session::current->scene.getRootGroup() );
 		} break;
 
 	  case FL_SHOW: // Called when the window is de-iconized or when show() is called
@@ -3048,7 +3048,7 @@ std::string FltkViewer::create_pawn()
 
 	char cmd_pawn[256];
 	sprintf(cmd_pawn,"scene.createPawn(\"%s\")", pawn_name);
-	SmartBody::SBScene::getScene()->run(cmd_pawn);
+	Session::current->scene.run(cmd_pawn);
 	numPawn++;
 
 	return pawnName;
@@ -3107,7 +3107,7 @@ void FltkViewer::set_gaze_target(int itype, const char* label)
 	{
 		std::stringstream strstr;
 		strstr << "char " << actor->getName() << "gazefade out 0";
-		SmartBody::SBScene::getScene()->command((char*) strstr.str().c_str());
+		Session::current->scene.command((char*) strstr.str().c_str());
 		return;
 	}
 		
@@ -3132,7 +3132,7 @@ void FltkViewer::set_gaze_target(int itype, const char* label)
 
 		std::stringstream strstr;
 		strstr << "bml char " << actor->getName() << " <gaze target=\"" << pawn_name << "\" sbm:joint-range=\"" << gaze_type[itype] << "\"/>";
-		SmartBody::SBScene::getScene()->command((char*) strstr.str().c_str());
+		Session::current->scene.command((char*) strstr.str().c_str());
 	}
 }
 
@@ -3373,7 +3373,7 @@ int FltkViewer::handle_followrenderer_camera_manipulation ( const SrEvent &e, Sr
 int FltkViewer::handle_scene_event ( const SrEvent& e )
  {
    SrSaEvent ea(e);
-   ea.apply ( SmartBody::SBScene::getScene()->getRootGroup() );
+   ea.apply ( Session::current->scene.getRootGroup() );
    int used = ea.result();
    if ( used ) render();
    return used;
@@ -3817,7 +3817,7 @@ void FltkViewer::drawEyeLids()
 
 void FltkViewer::drawCharacterBoundingVolumes()
 {
-	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
+	SmartBody::SBCollisionManager* colManager = Session::current->scene.getCollisionManager();
 	if(!colManager->isEnable())
 		return;
 	bool singleChrCapsuleMode = colManager->getJointCollisionMode();
@@ -4490,7 +4490,7 @@ void FltkViewer::drawKinematicFootprints(int index)
 
 #if 0
 	SmartBody::SBCharacter* curChar = dynamic_cast<SmartBody::SBCharacter*>(getCurrentCharacter());
-	Heightfield* heightField = SmartBody::SBScene::getScene()->getHeightfield();	
+	Heightfield* heightField = Session::current->scene.getHeightfield();
 	if (!curChar) return;
 	SrVec faceDir = curChar->getFacingDirection();
 	float scale = curChar->getHeight()*0.1f;
@@ -4667,7 +4667,7 @@ void FltkViewer::drawJointLabels()
 	
 	glPushAttrib(GL_LIGHTING | GL_COLOR_BUFFER_BIT);
 	
-	float sceneScale = SmartBody::SBScene::getScene()->getScale();
+	float sceneScale = Session::current->scene.getScale();
 	if (sceneScale == 0.0f)
 		sceneScale = 1.0f;
 	float textSize = .01f / sceneScale * .02f;
@@ -4689,7 +4689,7 @@ void FltkViewer::drawGestures()
 		return;
 
 
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(_gestureData->currentCharacter);
+	SmartBody::SBCharacter* character = Session::current->scene.getCharacter(_gestureData->currentCharacter);
 	if (!character)
 		return;
 
@@ -4867,7 +4867,7 @@ void FltkViewer::drawLocomotion()
 				}
 			glEnd();
 
-			float scale = (float)1.0/SmartBody::SBScene::getScene()->getScale(); // if it's in meters
+			float scale = (float)1.0/Session::current->scene.getScale(); // if it's in meters
 			SmartBody::SBSteerAgent* steerAgent = Session::current->steerManager.getSteerAgent(character->getName());
 			if (steerAgent)
 			{
@@ -5648,7 +5648,7 @@ void FltkViewer::makeShadowMap()
 	SrLight& shadowLight = _lights[0]; // assume direction light
 	SrVec dir = shadowLight.position;
 	dir.normalize();
-	float sceneScale = 1.f/SmartBody::SBScene::getScene()->getScale();
+	float sceneScale = 1.f/Session::current->scene.getScale();
 	float distance = 10*sceneScale;
 	dir*= distance;
 	SrVec pos = shadowLight.position;
@@ -5890,14 +5890,14 @@ int FltkViewer::deleteSelectedObject( int ret )
 		auto* character = dynamic_cast<SmartBody::SBCharacter*>(selectedPawn);
 		if (character)
 		{
-			SmartBody::SBScene::getScene()->removeCharacter(character->getName());
+			Session::current->scene.removeCharacter(character->getName());
 			ret = 1;
 			//SmartBody::util::log("2");
 		}
 		else
 		{
 			auto* pawn = dynamic_cast<SmartBody::SBPawn*>(selectedPawn);
-			SmartBody::SBScene::getScene()->removePawn(pawn->getName());
+			Session::current->scene.removePawn(pawn->getName());
 			ret = 1;
 			//SmartBody::util::log("3");
 		}		

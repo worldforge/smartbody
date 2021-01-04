@@ -3,6 +3,7 @@
 #include <sb/SBAnimationState.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBScene.h>
+#include "Session.h"
 
 int PATransitionCreator::lastNameIndex = 0;
 
@@ -66,7 +67,7 @@ void PATransitionCreator::setInfo(bool isCreateMode, const std::string& stateNam
 	loadMotions();
 	if (!isCreateMode)
 	{
-		SmartBody::SBAnimationBlendManager* stateManager = SmartBody::SBScene::getScene()->getBlendManager();
+		SmartBody::SBAnimationBlendManager* stateManager = Session::current->scene.getBlendManager();
 		SmartBody::SBAnimationBlend* state = stateManager->getBlend(stateName);
 		if (!state)
 		{
@@ -151,7 +152,7 @@ void PATransitionCreator::removeMotion(Fl_Widget* widget, void* data)
 
 std::string PATransitionCreator::getUniqueStateName(std::string prefix)
 {
-	SmartBody::SBAnimationBlendManager* stateManager = SmartBody::SBScene::getScene()->getBlendManager();
+	SmartBody::SBAnimationBlendManager* stateManager = Session::current->scene.getBlendManager();
 	
 	std::stringstream strstr;
 
@@ -181,7 +182,7 @@ void PATransitionCreator::createState(Fl_Widget* widget, void* data)
 	std::string stateName = creator->inputStateName->value();
 
 	// make sure the name is valid
-	SmartBody::SBAnimationBlendManager* stateManager = SmartBody::SBScene::getScene()->getBlendManager();
+	SmartBody::SBAnimationBlendManager* stateManager = Session::current->scene.getBlendManager();
 	SmartBody::SBAnimationBlend* state = stateManager->getBlend(stateName);
 
 	if (creator->isCreateMode)

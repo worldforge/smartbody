@@ -1351,7 +1351,7 @@ int main( int argc, char **argv )	{
 
 		// Notify world SBM is ready to receive messages
 		srArgBuffer argBuff("");
-		mcu_vrAllCall_func(argBuff, Session::current->vhmMsgManager);
+		mcu_vrAllCall_func(argBuff, Session::current->vhmMsgManager, scene);
 
 		scene.getSimulationManager()->start();
 

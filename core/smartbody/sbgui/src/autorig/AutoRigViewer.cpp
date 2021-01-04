@@ -173,7 +173,7 @@ void AutoRigViewer::applyAutoRig( int riggingType /*= 0*/ )
 
 	SrModel& model = mesh->dMeshStatic_p[0]->shape();		
 	SrModel scaleModel = SrModel(model);
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 	bool autoRigSuccess = false;
 	SrMat worldRotation = sbPawn->get_world_offset().get_rotation(); 
 	if (!assetManager->getDeformableMesh(deformMeshName))

@@ -486,7 +486,7 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 
 	//bool isValidDeformableMesh = AutoRigToDeformableMesh(out, inModel, *sbSk, *deformMesh);
 
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 	auto& renderAssetManager = Session::current->renderAssetManager;
 	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());
@@ -590,7 +590,7 @@ bool SBAutoRigManager::buildAutoRiggingVoxels( SrModel& inModel, std::string out
 	bool isValidDeformableMesh = AutoRigToDeformableMesh(out, inModel, *sbSk, *deformMesh);
 
 
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());
 	deformMesh->skeletonName = outSkName;
@@ -639,7 +639,7 @@ bool SBAutoRigManager::buildAutoRigging( SrModel& inModel, std::string outSkName
 	deformMesh->setName(outDeformableMeshName);
 	bool isValidDeformableMesh = AutoRigToDeformableMesh(out, inModel, *sbSk, *deformMesh);
 
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = Session::current->scene.getAssetManager();
 
 	sbSk->skfilename(outSkName.c_str());
 	sbSk->setName(outSkName.c_str());

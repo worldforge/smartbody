@@ -7,6 +7,7 @@
 #include <FL/Fl_Check_Button.H>
 #include <sstream>
 #include <cstring>
+#include "Session.h"
 
 #ifndef WIN32
 #define _strdup strdup
@@ -46,7 +47,7 @@ int RetargetViewer::updateBehaviorSet()
 {
 	int widgetY = behaviorSetCurY;
 	int itemWidth = this->w() - 40 - 20;
-	SmartBody::SBBehaviorSetManager* behavMgr = SmartBody::SBScene::getScene()->getBehaviorSetManager();
+	SmartBody::SBBehaviorSetManager* behavMgr = Session::current->scene.getBehaviorSetManager();
 	std::map<std::string, SmartBody::SBBehaviorSet*>& behavSets = behavMgr->getBehaviorSets();
 	_scrollGroup->clear();
 	for (auto & behavSet : behavSets)
@@ -89,7 +90,7 @@ void RetargetViewer::RetargetCB(Fl_Widget* widget, void* data)
 {
 	RetargetViewer* viewer = (RetargetViewer*) data;
 
-	SmartBody::SBBehaviorSetManager* behavMgr = SmartBody::SBScene::getScene()->getBehaviorSetManager();
+	SmartBody::SBBehaviorSetManager* behavMgr = Session::current->scene.getBehaviorSetManager();
 
 	// run the script associated with any checked behavior sets
 	int numChildren = viewer->_scrollGroup->children();
@@ -105,13 +106,13 @@ void RetargetViewer::RetargetCB(Fl_Widget* widget, void* data)
 				{
 					SmartBody::util::log("Retargetting %s on %s ...", check->label(), viewer->getCharacterName().c_str());
 					const std::string& script = behavSet->getScript();
-					SmartBody::SBScene::getScene()->runScript(script.c_str());
+					Session::current->scene.runScript(script.c_str());
 					std::stringstream strstr;
 					strstr << "setupBehaviorSet()";
-					SmartBody::SBScene::getScene()->run(strstr.str());
+					Session::current->scene.run(strstr.str());
 					std::stringstream strstr2;
 					strstr2 << "retargetBehaviorSet('" << viewer->getCharacterName() << "')";
-					SmartBody::SBScene::getScene()->run(strstr2.str());
+					Session::current->scene.run(strstr2.str());
 				}
 			}
 		}

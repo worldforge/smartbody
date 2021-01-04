@@ -197,10 +197,10 @@ class MeCtGaze : public SmartBody::SBController	{
 		void set_target_polar( float d, float a, float r = 0.0 );        // polar-coord: direction, radial angle, roll
 
 		// target coordinate system
-		void set_target_coord_world( void );
+		void set_target_coord_world();
 		void set_target_coord_joint( char *joint_name );
 		void set_target_coord_joint( SkJoint* joint_p );
-		void set_target_coord_parent( void ); // relative to each joint's parent
+		void set_target_coord_parent(); // relative to each joint's parent
 		
 		// offset coordinate
 		void set_offset_point( float x, float y, float z );
@@ -209,10 +209,10 @@ class MeCtGaze : public SmartBody::SBController	{
 		void set_offset_polar( float d, float a, float r = 0.0 );        // polar-coord: direction, radial angle, roll
 
 		// offset coordinate system
-		void set_offset_coord_world( void );
+		void set_offset_coord_world();
 		void set_offset_coord_joint( char *joint_name );
 		void set_offset_coord_joint( SkJoint* joint_p );
-		void set_offset_coord_parent( void ); // relative to each joint's parent
+		void set_offset_coord_parent(); // relative to each joint's parent
 #else
 		
 		 // deprecate: backwards compatibility
@@ -281,7 +281,7 @@ class MeCtGaze : public SmartBody::SBController	{
 		void set_fade_in_scheduled(float interval, double time);
 		void set_fade_out_scheduled(float interval, double time);
 
-		void setGazeSchedule(double time, GazeScheduleInfo g);
+		void setGazeSchedule(double time, const GazeScheduleInfo& g);
 
 		// LIMIT: key-group rotation limit
 		void set_limit( int key, float p, float h, float r );
@@ -310,8 +310,8 @@ class MeCtGaze : public SmartBody::SBController	{
 #endif
 
 		// QUERIES: for coverage comparisons
-		int get_min_key( void ) { return( key_min ); }
-		int get_max_key( void ) { return( key_max ); }
+		int get_min_key() { return( key_min ); }
+		int get_max_key() { return( key_max ); }
 
 		float get_blend( int key ) { 
 			if( valid_key( key ) ) {
@@ -392,16 +392,16 @@ class MeCtGaze : public SmartBody::SBController	{
 		int 			key_limit_dirty;
 		int 			key_blend_dirty;
 
-		void			apply_smooth_keys( void );
-		void			apply_bias_keys( void );
+		void			apply_smooth_keys();
+		void			apply_bias_keys();
 		void			apply_limit_key( int J, int K, float weight );
-		void			apply_limit_keys( void );
-		void 			apply_blend_keys( void );
+		void			apply_limit_keys();
+		void 			apply_blend_keys();
 
 		int 			joint_count;
 		MeCtGazeJoint*	joint_arr;
 
-		bool 		update_fading( float dt );
+		bool 		update_fading( double t, float dt );
 		void		updateGazeSchedules(float dt);
 
 		void		inspect_skeleton_down( SkJoint* joint_p, int depth = 0 );
@@ -412,16 +412,16 @@ class MeCtGaze : public SmartBody::SBController	{
 		void		inspect_skeleton_local_transform_up( SkJoint* joint_p, int depth = 0 );
 //		void		inspect_skeleton_world_transform_up( SkJoint* joint_p, int depth = 0 );
 
-		void		update_skeleton_gmat( void );
-		void		load_forward_pos( void );
-		SkJoint*	reference_joint( void ); // deprecate
+		void		update_skeleton_gmat();
+		void		load_forward_pos();
+		SkJoint*	reference_joint(); // deprecate
 #if 0
 		SkJoint*	get_joint( char *joint_str, SkJoint *joint_p );
-		SkJoint*	target_ref_joint( void );
-		SkJoint*	offset_ref_joint( void );
+		SkJoint*	target_ref_joint();
+		SkJoint*	offset_ref_joint();
 #endif
-		gwiz::vector_t	world_target_point( void );
-		gwiz::quat_t	world_target_orient( void );
+		gwiz::vector_t	world_target_point();
+		gwiz::quat_t	world_target_orient();
 		
 		virtual void controller_start();
 		void controller_start_evaluate();

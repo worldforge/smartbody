@@ -26,10 +26,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 class SBBoneBusManager;
+class SBScene;
 }
 
 struct text_speech_commands {
-	static int text_speech_func(srArgBuffer& args, SmartBody::SBBoneBusManager* boneBusManager);
+	static int text_speech_func(srArgBuffer& args, SmartBody::SBBoneBusManager* boneBusManager, SmartBody::SBScene& scene);
 };
 
 

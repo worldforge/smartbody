@@ -36,6 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSimulationManager.h>
 #include <sb/SBCommandManager.h>
 #include "SBUtilities.h"
+#include "Session.h"
 
 
 PanimationWindowListener::PanimationWindowListener(PanimationWindow* window)
@@ -143,7 +144,7 @@ PanimationWindow::PanimationWindow(int x, int y, int w, int h, const char* name)
 
 PanimationWindow::~PanimationWindow()
 {
-	SmartBody::SBScene::getScene()->removeSceneListener(_listener);
+	Session::current->scene.removeSceneListener(_listener);
 	delete _listener;
 }
 
@@ -173,7 +174,7 @@ void PanimationWindow::update_viewer()
 		return;
 
 	std::string charName = characterList->menu()[characterList->value()].label();
-	SmartBody::SBCharacter * character = SmartBody::SBScene::getScene()->getCharacter(charName);
+	SmartBody::SBCharacter * character = Session::current->scene.getCharacter(charName);
 	if (!character)
 		return;
 
@@ -188,13 +189,13 @@ void PanimationWindow::show()
 {    
 	refreshUI(characterList, this);
 
-	SmartBody::SBScene::getScene()->addSceneListener(_listener);
+	Session::current->scene.addSceneListener(_listener);
     Fl_Double_Window::show();   
 }
 
 void PanimationWindow::hide()
 {    
-	SmartBody::SBScene::getScene()->removeSceneListener(_listener);
+	Session::current->scene.removeSceneListener(_listener);
     Fl_Double_Window::hide();   
 }
 
@@ -234,7 +235,7 @@ void PanimationWindow::execCmd(PanimationWindow* window, std::string cmd, double
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	
 
-	BML::SbmCommand* command = new BML::SbmCommand(cmd, (float)(SmartBody::SBScene::getScene()->getSimulationManager()->getTime() + tOffset));
+	BML::SbmCommand* command = new BML::SbmCommand(cmd, (float)(Session::current->scene.getSimulationManager()->getTime() + tOffset));
 	bool success = true;
 	srCmdSeq *seq = new srCmdSeq(); //sequence that holds the commands
 	if( command != nullptr )
@@ -253,16 +254,16 @@ void PanimationWindow::execCmd(PanimationWindow* window, std::string cmd, double
 	{
 		if (!scene->isRemoteMode())
 		{
-			if( SmartBody::SBScene::getScene()->getCommandManager()->execute_seq(seq) != CMD_SUCCESS ) 
+			if( Session::current->scene.getCommandManager()->execute_seq(seq) != CMD_SUCCESS )
 				SmartBody::util::log("ERROR: PanimationWindow::generateBML: Failed to execute sequence.");			
 		}
 		else
 		{
 			//if( mcu.execute_seq(seq) != CMD_SUCCESS ) 
 			//	SmartBody::util::log("ERROR: PanimationWindow::generateBML: Failed to execute sequence.");				
-			SmartBody::SBScene::getScene()->command((char*)cmd.c_str());
+			Session::current->scene.command((char*)cmd.c_str());
 			std::string sendStr = "send sbm " + cmd;
-			SmartBody::SBScene::getScene()->command((char*) sendStr.c_str());
+			Session::current->scene.command((char*) sendStr.c_str());
 		}		
 	}
 }
@@ -364,7 +365,7 @@ void PanimationWindow::refreshUI(Fl_Widget* widget, void* data)
 
 void PanimationWindow::loadCharacters(Fl_Choice* characterList)
 {
-	const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& characterNames = Session::current->scene.getCharacterNames();
 
 	characterList->clear();
 	for (std::vector<std::string>::const_iterator iter = characterNames.begin();

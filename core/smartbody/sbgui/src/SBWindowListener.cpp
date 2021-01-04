@@ -1,5 +1,6 @@
 #include "SBWindowListener.h"
 #include <sb/SBScene.h>
+#include "Session.h"
 
 SBWindowListener::SBWindowListener()
 {
@@ -7,7 +8,7 @@ SBWindowListener::SBWindowListener()
 
 SBWindowListener::~SBWindowListener()
 {
-	SmartBody::SBScene::getScene()->removeSceneListener(this);
+	Session::current->scene.removeSceneListener(this);
 }
 
 void SBWindowListener::OnCharacterCreate( const std::string & name, const std::string & objectClass )
@@ -52,12 +53,12 @@ void SBWindowListener::OnObjectDelete( SmartBody::SBObject* object )
 
 void SBWindowListener::windowShow()
 {
-	SmartBody::SBScene::getScene()->addSceneListener(this);
+	Session::current->scene.addSceneListener(this);
 }
 
 void SBWindowListener::windowHide()
 {
-	SmartBody::SBScene::getScene()->removeSceneListener(this);
+	Session::current->scene.removeSceneListener(this);
 }
 
 

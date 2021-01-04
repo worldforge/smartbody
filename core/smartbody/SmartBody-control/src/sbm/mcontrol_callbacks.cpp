@@ -19,12 +19,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-#ifndef __native_client__
-#ifndef SB_NO_VHMSG
-#include "vhmsg-tt.h"
-#endif
-#endif
+#include "mcontrol_callbacks.h"
 
+#include "vhmsg-tt.h"
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -54,6 +51,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/Heightfield.h>
 #include <sbm/KinectProcessor.h>
 #include <sbm/local_speech.h>
+#include "sb/SBScene.h"
 
 #include <sbm/action_unit.hpp>
 
@@ -76,7 +74,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/algorithm/string.hpp>
 #include "sb/SBCharacter.h"
-#include <sb/SBSteerManager.h>
 #include <sb/SBJointMapManager.h>
 #include <sb/SBJointMap.h>
 #include <cmath>
@@ -88,7 +85,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <gperftools/heap-profiler.h>
 #endif
 
-#include "mcontrol_callbacks.h"
 
 
 
@@ -110,7 +106,7 @@ int deprecatedMessage( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )
 
 */
 
-void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody::SBCommandManager* cmdMgr )	{
+void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody::SBCommandManager& cmdMgr )	{
 	float t;
 	char *cmd;
 	
@@ -125,7 +121,7 @@ void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody:
 			tok = args.read_token();
 			if( strcmp( tok, "inline" ) == 0 )	{
 
-				inline_seq_p = SmartBody::SBScene::getScene()->getCommandManager()->lookup_seq( name );
+				inline_seq_p = cmdMgr.lookup_seq( name );
 				delete [] cmd;
 				cmd = nullptr;
 				if( inline_seq_p == nullptr )	{
@@ -139,7 +135,7 @@ void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody:
 		if( inline_seq_p )	{
 			// iterate hierarchy
 			inline_seq_p->offset( absolute_offset );
-			mcu_preprocess_sequence( to_seq_p, inline_seq_p, SmartBody::SBScene::getScene()->getCommandManager() );
+			mcu_preprocess_sequence( to_seq_p, inline_seq_p, cmdMgr);
 		}
 		else
 		if( cmd )	{
@@ -154,19 +150,19 @@ void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody:
 	delete fr_seq_p;
 }
 
-int begin_sequence( char* name )	{
+int begin_sequence( char* name, SmartBody::SBCommandManager& cmdMgr, SmartBody::SBSimulationManager& simMgr)	{
 	
 	
 
-	srCmdSeq *seq = SmartBody::SBScene::getScene()->getCommandManager()->lookup_seq( name );
+	srCmdSeq *seq = cmdMgr.lookup_seq( name );
 	
 	if( seq )
 	{
 		srCmdSeq* copySeq = new srCmdSeq;
-		mcu_preprocess_sequence( copySeq, seq, SmartBody::SBScene::getScene()->getCommandManager() );
+		mcu_preprocess_sequence( copySeq, seq, cmdMgr);
 
-		copySeq->offset( (float)( SmartBody::SBScene::getScene()->getSimulationManager()->getTime() ) );
-		bool success = SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->addSequence(name, copySeq );
+		copySeq->offset( (float)( simMgr.getTime() ) );
+		bool success = cmdMgr.getActiveSequences()->addSequence(name, copySeq );
 
 		if( !success )
 		{
@@ -187,7 +183,7 @@ int begin_sequence( char* name )	{
 
 */
 
-int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager& cmdMgr, SmartBody::SBSimulationManager& simMgr )
 {
 	char *seqName = args.read_token();
 	char *seqCmd = args.read_token();
@@ -197,17 +193,17 @@ int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	//std::string seqStr = seq_cmd;
 	//SmartBody::util::log("mcu_sequence_func : seq_name = %s, seqStr = %s",seq_cmd, seqStr.c_str());
 	if( ( strcmp( seqCmd, "begin" ) == 0 )||( strcmp( seqCmd, EMPTY_STRING ) == 0 ) )	{
-		int ret = begin_sequence( seqName );
+		int ret = begin_sequence( seqName, cmdMgr, simMgr );
 		return ret;
 	}
 	else
 	if( strcmp( seqCmd, "at" ) == 0 )	{
 		
-		srCmdSeq* seq = SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->getSequence( seqName );
+		srCmdSeq* seq = cmdMgr.getPendingSequences()->getSequence( seqName );
 		if (!seq)
 		{
 			seq = new srCmdSeq;
-			bool success = SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->addSequence( seqName, seq );
+			bool success = cmdMgr.getPendingSequences()->addSequence( seqName, seq );
 			if( !success )
 			{
 				SmartBody::util::log( "mcu_sequence_func ERR: insert pending '%s' FAILED\n", seqName ); 
@@ -223,7 +219,7 @@ int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	else
 	if( strcmp( seqCmd, "print" ) == 0 )	{
 			
-		srCmdSeq* seq = SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->getSequence( seqName );
+		srCmdSeq* seq = cmdMgr.getPendingSequences()->getSequence( seqName );
 		if (!seq)
 		{
 			SmartBody::util::log( "mcu_sequence_func ERR: print: '%s' NOT FOUND\n", seqName ); 
@@ -233,7 +229,7 @@ int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	}
 	else
 	if( ( strcmp( seqCmd, "abort" ) == 0 )||( strcmp( seqCmd, "delete" ) == 0 ) )	{
-		int result = SmartBody::SBScene::getScene()->getCommandManager()->abortSequence( seqName );
+		int result = cmdMgr.abortSequence( seqName );
 		if( result == CMD_NOT_FOUND )	{
 			SmartBody::util::log( "mcu_sequence_func ERR: abort|delete: '%s' NOT FOUND\n", seqName ); 
 		}
@@ -263,7 +259,7 @@ int mcu_sequence_chain_func( srArgBuffer& args, SmartBody::SBCommandManager* cmd
 		return CMD_FAILURE;
 	}
 
-	return SmartBody::SBScene::getScene()->getCommandManager()->execute_seq_chain( seq_names, "ERROR: seq-chian: " );
+	return cmdMgr->execute_seq_chain( seq_names, "ERROR: seq-chian: " );
 }
 
 
@@ -310,14 +306,14 @@ std::string tokenize( std::string& str,
 	panim update char <char-name> state <weight list>
 	panim transition fromstate <state-name> tostate <state-name> <motion-name1 in first state> <2 keys for motion-name1> <motion-name2 in second state> <2 keys for motion-name2>
 **/
-double parseMotionParameters(std::string m, std::string parameter, double min, double max)
+double parseMotionParameters(SmartBody::SBAssetManager& assetManager, const std::string& m, std::string parameter, double min, double max)
 {
 	std::string skeletonName = tokenize(parameter, "|");
 	boost::intrusive_ptr<SmartBody::SBSkeleton> sk;
 	if (!parameter.empty())
 	{
 
-		sk = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonName);
+		sk = assetManager.getSkeleton(skeletonName);
 		if (!sk)
 			SmartBody::util::log("parseMotionParameters ERR: skeleton %s not found! Parameter won't be setup properly", skeletonName.c_str());
 	}
@@ -339,13 +335,13 @@ double parseMotionParameters(std::string m, std::string parameter, double min, d
 	if (parameter == "avgrooty")
 		type = 7;
 	if (!sk) return -9999;
-	MotionParameters mParam(SmartBody::SBScene::getScene()->getAssetManager()->getMotion(m), sk.get(), "base");
+	MotionParameters mParam(assetManager.getMotion(m), sk.get(), "base");
 	mParam.setFrameId(min, max);
 	return mParam.getParameter(type);
 }
 
 
-int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBScene& scene )
 {
 	std::string operation = args.read_token();
 	if (operation == "enable")
@@ -359,21 +355,21 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		std::string nextString = args.read_token();
 		if (nextString == "cycle")
 		{
-      auto* newState = new PABlend(blendName);
+			PABlend newState(blendName);
 			std::string cycle = args.read_token();
 			if (cycle == "true")
-				newState->cycle = true;
+				newState.cycle = true;
 			if (cycle == "false")
-				newState->cycle = false;
+				newState.cycle = false;
 			int numMotions = args.read_int();
 			for (int i = 0; i < numMotions; i++)
 			{
 				std::string motionName = args.read_token();
-				SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+				SmartBody::SBMotion* motion = scene.getAssetManager()->getMotion(motionName);
 
 				if (!motion)
 					return CMD_FAILURE;
-				newState->motions.emplace_back(motion);
+				newState.motions.emplace_back(motion);
 			}
 			int numKeys = args.read_int();
 			for (int i = 0; i < numMotions; i++)
@@ -382,7 +378,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 				if (numKeys == 0)
 				{
 					keysForOneMotion.emplace_back(0.0);
-					keysForOneMotion.emplace_back(newState->motions[i]->duration());
+					keysForOneMotion.emplace_back(newState.motions[i]->duration());
 				}
 				else
 				{
@@ -394,17 +390,16 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 					for (int j = 0; j < numKeys - 1; j++)
 					{
 						if (keysForOneMotion[j] > keysForOneMotion[j + 1])
-							keysForOneMotion[j + 1] += newState->motions[i]->duration();
+							keysForOneMotion[j + 1] += newState.motions[i]->duration();
 					}
 				}
-				newState->keys.emplace_back(keysForOneMotion);
+				newState.keys.emplace_back(keysForOneMotion);
 			}
-      delete newState;
-			//SmartBody::SBScene::getScene()->getBlendManager()->addBlend(newState);
+			//commandContext.scene.getBlendManager()->addBlend(newState);
 		}
 		else if (nextString == "parameter")
 		{
-			SmartBody::SBAnimationBlend* blend = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(blendName);
+			SmartBody::SBAnimationBlend* blend = scene.getBlendManager()->getBlend(blendName);
 			if (!blend) return CMD_FAILURE;
 			std::string type = args.read_token();
 			if (type == "1D") blend->setType(0);
@@ -420,7 +415,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 					std::string parameter = args.read_token();
 					int motionId = blend->getMotionId(m);
 					if (motionId < 0) return CMD_FAILURE;
-					double param = parseMotionParameters(m, parameter, blend->keys[motionId][0], blend->keys[motionId][blend->getNumKeys() - 1]);
+					double param = parseMotionParameters(*scene.getAssetManager(), m, parameter, blend->keys[motionId][0], blend->keys[motionId][blend->getNumKeys() - 1]);
 					if (param < -9000) param = atof(parameter.c_str());
 					blend->setParameter(m, param);
 				}
@@ -428,8 +423,8 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 				{
 					std::string parameterX = args.read_token();
 					std::string parameterY = args.read_token();
-					double paramX = parseMotionParameters(m, parameterX, blend->keys[blend->getMotionId(m)][0], blend->keys[blend->getMotionId(m)][blend->getNumKeys() - 1]);
-					double paramY = parseMotionParameters(m, parameterY, blend->keys[blend->getMotionId(m)][0], blend->keys[blend->getMotionId(m)][blend->getNumKeys() - 1]);
+					double paramX = parseMotionParameters(*scene.getAssetManager(), m, parameterX, blend->keys[blend->getMotionId(m)][0], blend->keys[blend->getMotionId(m)][blend->getNumKeys() - 1]);
+					double paramY = parseMotionParameters(*scene.getAssetManager(), m, parameterY, blend->keys[blend->getMotionId(m)][0], blend->keys[blend->getMotionId(m)][blend->getNumKeys() - 1]);
 					if (paramX < -9000) paramX = atof(parameterX.c_str());
 					if (paramY < -9000) paramY = atof(parameterY.c_str());
 					blend->setParameter(m, paramX, paramY);
@@ -440,7 +435,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 					for (double & pc : param)
 					{
 						std::string para = args.read_token();
-						pc = parseMotionParameters(m, para, blend->keys[blend->getMotionId(m)][0], blend->keys[blend->getMotionId(m)][blend->getNumKeys() - 1]);
+						pc = parseMotionParameters(*scene.getAssetManager(), m, para, blend->keys[blend->getMotionId(m)][0], blend->keys[blend->getMotionId(m)][blend->getNumKeys() - 1]);
 						if (pc < -9000) pc = atof(para.c_str());
 					}
 					blend->setParameter(m, param[0], param[1], param[2]);
@@ -451,7 +446,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		}
 		else if (nextString == "triangle")
 		{
-			SmartBody::SBAnimationBlend* blend = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(blendName);
+			SmartBody::SBAnimationBlend* blend = scene.getBlendManager()->getBlend(blendName);
 			if (!blend) return CMD_FAILURE;
 			int numTriangles = args.read_int();
 			for (int i = 0; i < numTriangles; i++)
@@ -464,7 +459,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		}
 		else if (nextString == "tetrahedron")
 		{ 
-			SmartBody::SBAnimationBlend* blend = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(blendName);
+			SmartBody::SBAnimationBlend* blend = scene.getBlendManager()->getBlend(blendName);
 			if (!blend) return CMD_FAILURE;
 			int numTetrahedrons = args.read_int();
 			for (int i = 0; i < numTetrahedrons; i++)
@@ -484,7 +479,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		std::string charString = args.read_token();
 		if (charString != "char")
 			return CMD_FAILURE;
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(args.read_token());
+		SmartBody::SBCharacter* character = scene.getCharacter(args.read_token());
 		if (!character)
 			return CMD_FAILURE;
 		if (!character->param_animation_ct)
@@ -499,7 +494,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			if (blendString != "state")
 				return CMD_FAILURE;
 			std::string blendName = args.read_token();
-			SmartBody::SBAnimationBlend* blend = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(blendName);
+			SmartBody::SBAnimationBlend* blend = scene.getBlendManager()->getBlend(blendName);
 			if (!blend)
 				SmartBody::util::log("Blend %s not exist, schedule Idle blend.", blendName.c_str());
 			std::string loopString = args.read_token();
@@ -537,7 +532,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			std::vector<std::string> tokens;
 			SmartBody::util::tokenize(directPlayStr, tokens);
 			bool directPlay = false;
-			if (tokens.size() > 0 && tokens[0] == "direct-play")
+			if (!tokens.empty() && tokens[0] == "direct-play")
 			{
 				directPlayStr = args.read_token();
 				std::string dplay = args.read_token();
@@ -624,10 +619,10 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	return CMD_SUCCESS;
 }
 
-int mcu_motion_player_func(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_motion_player_func(srArgBuffer& args, SmartBody::SBScene& scene )
 {
 	std::string charName = args.read_token();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(charName);
+	SmartBody::SBCharacter* character = scene.getCharacter(charName);
 	if (character)
 	{
 		if (!character->motionplayer_ct)
@@ -655,11 +650,11 @@ int mcu_motion_player_func(srArgBuffer& args, SmartBody::SBCommandManager* cmdMg
 
 /////////////////////////////////////////////////////////////
 
-int mcu_terrain_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
+int mcu_terrain_func( srArgBuffer& args, SmartBody::SBScene& scene )	{
 	
 	
 	
-	Heightfield* heightfield = SmartBody::SBScene::getScene()->getHeightfield();
+	Heightfield* heightfield = scene.getHeightfield();
 	char *terr_cmd = args.read_token();
 
 	if( strcmp( terr_cmd, "help" ) == 0 )	{
@@ -673,11 +668,11 @@ int mcu_terrain_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 	else
 	if( strcmp( terr_cmd, "load" ) == 0 )	{
 
-		Heightfield* heightfield = SmartBody::SBScene::getScene()->createHeightfield();
+		Heightfield* heightfield = scene.createHeightfield();
 		int n = args.calc_num_tokens();
 		if( n == 0 )	{
 			heightfield->load( (char*)"../../../../data/terrain/range1.e.ppm" );
-			heightfield->set_scale( 5000.0f * SmartBody::SBScene::getScene()->getScale() / 100.0f, 300.0f * SmartBody::SBScene::getScene()->getScale() / 100.0f, 5000.0f  * SmartBody::SBScene::getScene()->getScale() / 100.0f);
+			heightfield->set_scale( 5000.0f * scene.getScale() / 100.0f, 300.0f * scene.getScale() / 100.0f, 5000.0f  * scene.getScale() / 100.0f);
 			heightfield->set_auto_origin();
 		}
 		else	{
@@ -724,7 +719,7 @@ int mcu_terrain_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 	else
 	if( strcmp( terr_cmd, "delete" ) == 0 )
 	{
-		SmartBody::SBScene::getScene()->removeHeightfield();
+		scene.removeHeightfield();
 	}
 	else {
 		return( CMD_NOT_FOUND );
@@ -735,7 +730,7 @@ int mcu_terrain_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 
 /////////////////////////////////////////////////////////////
 
-void mcu_print_timer_deprecation_warning( void )	{
+void mcu_print_timer_deprecation_warning( )	{
 
 	SmartBody::util::log("WARNING: fps/lockdt feature is deprecated");
 	SmartBody::util::log("  - If you insist, be sure to set fps first, then lockdt...");
@@ -768,7 +763,7 @@ void mcu_print_timer_help( int level = 0 )	{
 	}
 }
 
-int mcu_time_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
+int mcu_time_func( srArgBuffer& args, SmartBody::SBScene& scene )	{
 	
 	char *time_cmd = args.read_token();
 
@@ -796,13 +791,13 @@ int mcu_time_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 	if( strcmp( time_cmd, "print" ) == 0 )
 	{
 		{
-			SmartBody::SBScene::getScene()->getSimulationManager()->printInfo();
+			scene.getSimulationManager()->printInfo();
 		}
 		{
 			SmartBody::util::log( "TIME:%.3f ~ DT:%.3f %.2f:FPS\n",
-				SmartBody::SBScene::getScene()->getSimulationManager()->getTime(),
-				SmartBody::SBScene::getScene()->getSimulationManager()->getTimeDt(),
-				1.0 / SmartBody::SBScene::getScene()->getSimulationManager()->getTimeDt()
+				scene.getSimulationManager()->getTime(),
+				scene.getSimulationManager()->getTimeDt(),
+				1.0 / scene.getSimulationManager()->getTimeDt()
 		);
 		}
 		return( CMD_SUCCESS );
@@ -810,16 +805,16 @@ int mcu_time_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 
 //		if( mcu.timer_p == nullptr )	{
 //		SmartBody::util::log( "mcu_time_func NOTICE: %s: TimeRegulator was NOT REGISTERED\n", time_cmd );
-//		SmartBody::SBScene::getScene()->getSimulationManager()->switch_internal_timer(); 
+//		scene.getSimulationManager()->switch_internal_timer();
 //		}
 		
 	if( strcmp( time_cmd, "reset" ) == 0 ) {
-		SmartBody::SBScene::getScene()->getSimulationManager()->reset();
+		scene.getSimulationManager()->reset();
 	}
 	else 
 	if( ( strcmp( time_cmd, "maxfps" ) == 0 ) || ( strcmp( time_cmd, "fps" ) == 0 ) )	{ // deprecate
 		mcu_print_timer_deprecation_warning();
-		SmartBody::SBScene::getScene()->getSimulationManager()->setSleepFps( args.read_float() );
+		scene.getSimulationManager()->setSleepFps( args.read_float() );
 	}
 	else
 	if( strcmp( time_cmd, "lockdt" ) == 0 )	{ // deprecate
@@ -827,62 +822,62 @@ int mcu_time_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
 		int enable = true;
 		int n = args.calc_num_tokens();
 		if( n ) enable = args.read_int();
-		SmartBody::SBScene::getScene()->getSimulationManager()->setSleepLock();
+		scene.getSimulationManager()->setSleepLock();
 	}
 	else 
 	if( strcmp( time_cmd, "speed" ) == 0 ) {
-		SmartBody::SBScene::getScene()->getSimulationManager()->setSpeed( args.read_float() );
+		scene.getSimulationManager()->setSpeed( args.read_float() );
 	}
 	else 
 	if( strcmp( time_cmd, "sleepfps" ) == 0 ) {
-		SmartBody::SBScene::getScene()->getSimulationManager()->setSleepFps( args.read_float() );
+		scene.getSimulationManager()->setSleepFps( args.read_float() );
 	}
 	else 
 	if( strcmp( time_cmd, "evalfps" ) == 0 ) {
-		SmartBody::SBScene::getScene()->getSimulationManager()->setEvalFps( args.read_float() );
+		scene.getSimulationManager()->setEvalFps( args.read_float() );
 	}
 	else
 	if( strcmp( time_cmd, "simfps" ) == 0 ) {
-		SmartBody::SBScene::getScene()->getSimulationManager()->setSimFps( args.read_float() );
+		scene.getSimulationManager()->setSimFps( args.read_float() );
 	}
 	else 
 	if( strcmp( time_cmd, "sleepdt" ) == 0 ) {
-		SmartBody::SBScene::getScene()->getSimulationManager()->setSleepDt( args.read_float() );
+		scene.getSimulationManager()->setSleepDt( args.read_float() );
 	}
 	else 
 	if( strcmp( time_cmd, "evaldt" ) == 0 ) {
-		SmartBody::SBScene::getScene()->getSimulationManager()->setEvalDt( args.read_float() );
+		scene.getSimulationManager()->setEvalDt( args.read_float() );
 	}
 	else 
 	if( strcmp( time_cmd, "simdt" ) == 0 ) {
-		SmartBody::SBScene::getScene()->getSimulationManager()->setSimDt( args.read_float() );
+		scene.getSimulationManager()->setSimDt( args.read_float() );
 	}
 	else
 	if( strcmp( time_cmd, "pause" ) == 0 )	{
-		SmartBody::SBScene::getScene()->getSimulationManager()->pause();
+		scene.getSimulationManager()->pause();
 	}
 	else 
 	if( strcmp( time_cmd, "resume" ) == 0 )	{
-		SmartBody::SBScene::getScene()->getSimulationManager()->resume();
+		scene.getSimulationManager()->resume();
 	}
 	else 
 	if( strcmp( time_cmd, "step" ) == 0 )	{
 		int n = args.calc_num_tokens();
 		if( n ) {
-			SmartBody::SBScene::getScene()->getSimulationManager()->step( args.read_int() );
+			scene.getSimulationManager()->step( args.read_int() );
 		}
 		else	{
-			SmartBody::SBScene::getScene()->getSimulationManager()->step( 1 );
+			scene.getSimulationManager()->step( 1 );
 		}
 	}
 	else 
 	if( strcmp( time_cmd, "perf" ) == 0 )	{
 		int n = args.calc_num_tokens();
 		if( n ) {
-			SmartBody::SBScene::getScene()->getSimulationManager()->set_perf( args.read_float() );
+			scene.getSimulationManager()->set_perf( args.read_float() );
 		}
 		else	{
-			SmartBody::SBScene::getScene()->getSimulationManager()->set_perf( 10.0 );
+			scene.getSimulationManager()->set_perf( 10.0 );
 		}
 	}
 	else {
@@ -1180,7 +1175,7 @@ int query_controller(
 
 */
 
-int mcu_controller_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
+int mcu_controller_func( srArgBuffer& args, SmartBody::SBScene& scene )	{
 	
 	 
 	char *ctrl_name = args.read_token();
@@ -1230,10 +1225,10 @@ int mcu_controller_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
 
 		
 		int numControllersAffected = 0;
-		const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+		const std::vector<std::string>& characterNames = scene.getCharacterNames();
 		for (const auto & characterName : characterNames)
 		{
-			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+			SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 			auto& controllerTree = character->ct_tree_p;
 			int numControllers = controllerTree->count_controllers();
 			
@@ -1497,7 +1492,7 @@ int mcu_net_func( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusManager
                                           // character_id can be used to position the sound where a character is in the world
 */
 
-int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebusManager )
+int mcu_play_sound_func( srArgBuffer& args, CommandContext commandContext )
 {
     char * remainder = args.read_remainder_raw();
     string sArgs = remainder;
@@ -1549,24 +1544,16 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebus
         if ( !absolutePath )
         {
 			std::string soundCacheDir = "../../../../..";
-			std::string soundDir = SmartBody::SBScene::getScene()->getStringAttribute("speechRelaySoundCacheDir");
+			std::string soundDir = commandContext.scene.getStringAttribute("speechRelaySoundCacheDir");
 			if (soundDir != "")
 				soundCacheDir = soundDir;
 
 			boost::filesystem::path p( soundCacheDir );
-#if (BOOST_VERSION > 104400)
 			boost::filesystem::path abs_p = boost::filesystem::absolute( p );
-#else
-			boost::filesystem::path abs_p = boost::filesystem::complete( p );
-#endif
 
 	//            char full[ _MAX_PATH ];
 	//            if ( _fullpath( full, "..\\..\\..\\..\\..", _MAX_PATH ) != nullptr )
-#if (BOOST_VERSION > 104400)
 			if ( boost::filesystem::exists( abs_p ) )
-#else
-			if ( boost::filesystem2::exists( abs_p ) )
-#endif
 			{
 				//soundFile = string( full ) + string( "/" ) + soundFile;
 				p  /= soundFile;
@@ -1578,13 +1565,13 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebus
 		// send the sound event
 		std::stringstream strstr;
 		strstr << soundFile << " " << characterName;
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
-		std::string characterObjectName = SmartBody::SBScene::getScene()->getStringFromObject(character);
+		SmartBody::SBCharacter* character = commandContext.scene.getCharacter(characterName);
+		std::string characterObjectName = commandContext.scene.getStringFromObject(character);
 		float soundDuration = 0.0f;
 
 #ifndef SB_NO_VHCL_AUDIO
 		// if internal audio is on, use the internal sound player
-        if (SmartBody::SBScene::getScene()->getBoolAttribute("internalAudio"))
+        if (commandContext.scene.getBoolAttribute("internalAudio"))
         {
           SmartBody::util::log("Play AudioFile = %s", soundFile.c_str() );
           soundDuration = AUDIO_Play( soundFile.c_str() );
@@ -1592,21 +1579,21 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebus
 		  {		  
 			std::stringstream strstr2;
 			strstr2 << "sb scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent(\"sound\", \"" << strstr.str() << " stop\", \"" << characterObjectName << "\"))";
-			SmartBody::SBScene::getScene()->commandAt(soundDuration, strstr2.str());
+			commandContext.scene.commandAt(soundDuration, strstr2.str());
 		  }
         }
         else
         {
-			if (bonebusManager) {
-				bonebusManager->getBoneBus().SendPlaySound(soundFile.c_str(), characterName.c_str());
+			if (commandContext.boneBusManager) {
+				commandContext.boneBusManager->getBoneBus().SendPlaySound(soundFile.c_str(), characterName.c_str());
 			}
         }
 
 
 #endif
 		strstr << " start " << soundDuration;
-		SmartBody::SBEvent* sbevent = SmartBody::SBScene::getScene()->getEventManager()->createEvent("sound", strstr.str(), characterObjectName);
-		SmartBody::SBScene::getScene()->getEventManager()->handleEvent(sbevent);
+		SmartBody::SBEvent* sbevent = commandContext.scene.getEventManager()->createEvent("sound", strstr.str(), characterObjectName);
+		commandContext.scene.getEventManager()->handleEvent(sbevent);
 		delete sbevent;
         return CMD_SUCCESS;
     }
@@ -1622,7 +1609,7 @@ int mcu_play_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebus
 
 */
 
-int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebusManager )
+int mcu_stop_sound_func( srArgBuffer& args, CommandContext commandContext )
 {
     char * remainder = args.read_remainder_raw();
     string sArgs = remainder;
@@ -1673,16 +1660,10 @@ int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebus
         if ( !absolutePath )
         {
 		boost::filesystem::path p( "../../../../.." );
-#if (BOOST_VERSION > 104400)
 		boost::filesystem::path abs_p = boost::filesystem::absolute( p );
-#else
-		boost::filesystem::path abs_p = boost::filesystem::complete( p );
-#endif
-#if (BOOST_VERSION > 104400)
+
         if ( boost::filesystem::exists( abs_p ) )
-#else
-        if ( boost::filesystem2::exists( abs_p ) )
-#endif
+
         {
 			p  /= soundFile;
             soundFile = abs_p.string();
@@ -1701,14 +1682,14 @@ int mcu_stop_sound_func( srArgBuffer& args, SmartBody::SBBoneBusManager* bonebus
 #endif
 
 #ifndef SB_NO_VHCL_AUDIO
-      if (SmartBody::SBScene::getScene()->getBoolAttribute("internalAudio"))
+      if (commandContext.scene.getBoolAttribute("internalAudio"))
       {
         AUDIO_Stop(soundFile.c_str());
       }
       else
       {
-      	if (bonebusManager) {
-			bonebusManager->getBoneBus().SendStopSound( soundFile.c_str() );
+      	if (commandContext.boneBusManager) {
+			commandContext.boneBusManager->getBoneBus().SendStopSound( soundFile.c_str() );
 		}
       }
 #endif
@@ -1802,7 +1783,7 @@ int mcu_commapi_func( srArgBuffer& args, SmartBody::SBBoneBusManager& bonebusMan
       Kills the sbm process
 */
 
-int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
+int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBScene& scene, SmartBody::SBVHMsgManager& vhmsgManager )
 {
     char * command = args.read_token();
 	
@@ -1811,7 +1792,7 @@ int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhms
 		_stricmp( command, "sbm" ) == 0 ||
         _stricmp( command, "all" ) == 0 )
     {
-		SmartBody::SBScene::getScene()->getSimulationManager()->stop();
+		scene.getSimulationManager()->stop();
 		std::stringstream strstr;
 		strstr << "vrProcEnd " << command;
 		vhmsgManager.send( strstr.str().c_str() );
@@ -1825,7 +1806,7 @@ int mcu_vrKillComponent_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhms
      In response to this message, send out vrComponent to indicate that this component is running
 */
 
-int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
+int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager, SmartBody::SBScene& scene )
 {
 	
 	
@@ -1833,10 +1814,10 @@ int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManag
  
     // EDF - For our reply, we're going to send one vrComponent 
     //       message for each agent loaded
-	const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& characterNames = scene.getCharacterNames();
     for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
         string message = "sbm ";
 		message += character->getName();
         vhmsgManager.send2( "vrComponent", message.c_str() );
@@ -1849,7 +1830,7 @@ int mcu_vrAllCall_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManag
  * vrPerception kinect/gavam ...
  * vrPerception pml-nvbg <pml>
  */
-int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
+int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBScene& scene, SmartBody::SBVHMsgManager& vhmsgManager )
 {
 	char * command = args.read_token();
 		
@@ -1920,11 +1901,11 @@ int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgMa
 				//log message before sending it
 				//SmartBody::util::log(messg);
 				//sending temp mesg just to make sure it works 
-				//SmartBody::SBScene::getScene()->getVHMsgManager()->send("test", messg);
+				//commandContext.scene.getVHMsgManager()->send("test", messg);
 				//send the receiver message to orient the skullbase of brad as per the user's head orientation as detected by Gavam
 				vhmsgManager.send2("sbm", messg);
 				//after sending the message, send a test message as confirmation
-				//SmartBody::SBScene::getScene()->getVHMsgManager()->send("testconfirmed", messg);
+				//commandContext.scene.getVHMsgManager()->send("testconfirmed", messg);
 			}
 		}
 
@@ -1941,10 +1922,10 @@ int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgMa
 		// all characters should be receiving the perception message
 		
 
-		const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+		const std::vector<std::string>& characterNames = scene.getCharacterNames();
 		for (const auto & characterName : characterNames)
 		{
-			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+			SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 	
 			SmartBody::Nvbg* nvbg = character->getNvbg();
 			if (!nvbg)
@@ -1971,11 +1952,11 @@ int mcu_vrPerception_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgMa
  * Callback function for vrBCFeedback message
  * vrBCFeedback <feedback agent name> <xml>
  */
-int mcu_vrBCFeedback_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_vrBCFeedback_func( srArgBuffer& args, SmartBody::SBScene& scene )
 {
 	std::string cName = args.read_token();
 	std::string xml = args.read_remainder_raw();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(cName);
+	SmartBody::SBCharacter* character = scene.getCharacter(cName);
 	if (character)
 	{
 		SmartBody::Nvbg* nvbg = character->getNvbg();
@@ -2005,7 +1986,7 @@ int mcu_vrBCFeedback_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMg
  * vrSpeech finish-speaking id
  * This message goes into NVBG
  */
-int mcu_vrSpeech_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_vrSpeech_func( srArgBuffer& args, SmartBody::SBScene& scene )
 {
 	
 	std::string status = args.read_token();
@@ -2013,10 +1994,10 @@ int mcu_vrSpeech_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	std::string speaker = args.read_token();
 
 	// all characters should be receiving the perception message
-	const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& characterNames = scene.getCharacterNames();
 	for (const auto & characterName : characterNames)
 	{
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		SmartBody::Nvbg* nvbg = character->getNvbg();
 		if (!nvbg)
 			continue;
@@ -2035,7 +2016,7 @@ int mcu_vrSpeech_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
 /////////////////////////////////////////////////////////////
 
-int mcu_syncpolicy_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_syncpolicy_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
     int num = args.calc_num_tokens();
 
@@ -2044,11 +2025,11 @@ int mcu_syncpolicy_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
         string command = args.read_token();
 		if (command == "delay")
 		{
-			SmartBody::SBScene::getScene()->setBoolAttribute("delaySpeechIfNeeded", true);
+			scene.setBoolAttribute("delaySpeechIfNeeded", true);
 		}
 		else if (command == "nodelay")
 		{
-		SmartBody::SBScene::getScene()->setBoolAttribute("delaySpeechIfNeeded", false);
+		scene.setBoolAttribute("delaySpeechIfNeeded", false);
 		}
 		else
 		{
@@ -2060,7 +2041,7 @@ int mcu_syncpolicy_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
     }
 	else
 	{
-		if (SmartBody::SBScene::getScene()->getBoolAttribute("delaySpeechIfNeeded"))
+		if (scene.getBoolAttribute("delaySpeechIfNeeded"))
 		{
 			SmartBody::util::log("Behavior policy is 'delay'. Behaviors will be offset to a future time to make sure that all behaviors are executed in full.");
 		}
@@ -2079,7 +2060,7 @@ int mcu_syncpolicy_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr 
 // 3. If frame number exist, this will output which channels are affected 
 // check motion/skeleton <character name> <motion name> [frame number]
 // frame number is optional
-int mcu_check_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_check_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	char* operation = args.read_token();
 	char* charName = args.read_token();
@@ -2099,8 +2080,8 @@ int mcu_check_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		return CMD_FAILURE;
 	}
 
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(charName);
-	SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+	SmartBody::SBCharacter* character = scene.getCharacter(charName);
+	SmartBody::SBMotion* motion = scene.getAssetManager()->getMotion(motionName);
 	if (!motion)
 	{
 		SmartBody::util::log("mcu_check_func ERR: Motion %s NOT EXIST!", motionName);
@@ -2259,27 +2240,25 @@ int mcu_check_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 }
 
 
-int mcu_python_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_python_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	std::string command = args.read_remainder_raw();
-	bool val = SmartBody::SBScene::getScene()->run(command.c_str());
+	bool val = scene.run(command);
 	if (val)
 		return CMD_SUCCESS;
 	else
 		return CMD_FAILURE;
 }
 
-int mcu_pythonscript_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_pythonscript_func( srArgBuffer& args, SmartBody::SBScene& scene )
 {
 	std::string scriptName = args.read_token();	
-	return SmartBody::SBScene::getScene()->runScript(scriptName.c_str());
+	return scene.runScript(scriptName);
 }
 
 
-int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
+int mcu_steer_func( srArgBuffer& args, SmartBody::SBScene& scene, SmartBody::SBSteerManager& steerManager )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	
 	std::string command = args.read_token();
 	if (command == "help")
 	{
@@ -2315,7 +2294,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 		}
 		if (steerManager.getEngineDriver()->isInitialized())
 		{
-			SbmCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+			SbmCharacter* character = scene.getCharacter(characterName);
 			if (character)
 			{
 				SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
@@ -2383,14 +2362,14 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	else if (command == "proximity")
 	{
 		std::string characterName = args.read_token();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		if (character)
 		{
 			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
 			PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 			if (steerAgent)
 			{
-				ppraiAgent->distThreshold = (float)args.read_double() / scene->getScale();
+				ppraiAgent->distThreshold = (float)args.read_double() / scene.getScale();
 				return CMD_SUCCESS;
 			}
 			else
@@ -2403,7 +2382,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	else if (command == "fastinitial")
 	{
 		std::string characterName = args.read_token();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		if (character)
 		{
 			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
@@ -2419,7 +2398,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	else if (command == "speed")
 	{
 		std::string characterName = args.read_token();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		if (character)
 		{
 			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
@@ -2434,7 +2413,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	else if (command == "stateprefix")
 	{
 		std::string characterName = args.read_token();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		if (character)
 		{
 			character->statePrefix = args.read_token();
@@ -2446,7 +2425,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	else if (command == "type")
 	{
 		std::string characterName = args.read_token();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		if (character)
 		{
 			std::string type = args.read_token();
@@ -2510,7 +2489,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	else if (command == "facing")
 	{
 		std::string characterName = args.read_token();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		if (character)
 		{
 			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
@@ -2522,7 +2501,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	else if (command == "braking")
 	{
 		std::string characterName = args.read_token();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		if (character)
 		{
 			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
@@ -2538,7 +2517,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	else if (command == "test")
 	{
 		std::string characterName = args.read_token();
-		SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 		if (character)
 		{
 			SmartBody::SBSteerAgent* steerAgent = steerManager.getSteerAgent(character->getName());
@@ -2550,7 +2529,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBSteerManager& steerManager )
 	return CMD_FAILURE;
 }
 
-int syncpoint_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int syncpoint_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	std::string motionStr = args.read_token();
 
@@ -2560,7 +2539,7 @@ int syncpoint_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		SmartBody::util::log("Usage: syncpoint <motion> <start> <ready> <strokestart> <stroke> <strokeend> <relax> <end>");
 	}
 
-	SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionStr);	
+	SmartBody::SBMotion* motion = scene.getAssetManager()->getMotion(motionStr);	
 	if (motion)
 	{
 		int num = args.calc_num_tokens();
@@ -2640,7 +2619,7 @@ int stopheapprofile_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr
 // 
 // p.s. 
 // currently position is for global and rotation is for local
-int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	//SmartBody::util::log("in data receiver function");
 	std::string operation = args.read_token();
@@ -2649,12 +2628,11 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 	if (operation == "skeleton")
 	{		
 		std::string skelName = args.read_token();
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		const std::vector<std::string>& characterNames = scene->getCharacterNames();
+		const std::vector<std::string>& characterNames = scene.getCharacterNames();
 		std::vector<SmartBody::SBCharacter*> controlledCharacters;
 		for (const auto & characterName : characterNames)
 		{
-			SmartBody::SBCharacter* character = scene->getCharacter(characterName);
+			SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 			std::string receiverName = character->getStringAttribute("receiverName");
 			if (receiverName == skelName || character->getName() == skelName)
 			{
@@ -2682,7 +2660,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			std::string jName;
 			if (emitterName == "kinect" ||
 				emitterName == "kinect2")
-				jName = scene->getKinectProcessor()->getSBJointName(args.read_int());
+				jName = scene.getKinectProcessor()->getSBJointName(args.read_int());
 			else
 				jName = args.read_token();
 			float x = args.read_float();
@@ -2697,7 +2675,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 				float scaledZ = z * characterScale;
 				SrVec vec(scaledX, scaledY, scaledZ);
 				SrVec outVec;
-				scene->getKinectProcessor()->processRetargetPosition(character->getSkeleton()->getName(),vec, outVec);
+				scene.getKinectProcessor()->processRetargetPosition(character->getSkeleton()->getName(),vec, outVec);
 				
 				if (emitterName == "kinect" ||
 					emitterName == "kinect2")
@@ -2717,7 +2695,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			std::string jName;
 			if (emitterName == "kinect"||
 				emitterName == "kinect2")
-				jName = scene->getKinectProcessor()->getSBJointName(args.read_int());
+				jName = scene.getKinectProcessor()->getSBJointName(args.read_int());
 			else
 				jName = args.read_token();
 
@@ -2736,7 +2714,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			std::string jName;
 			if (emitterName == "kinect" ||
 				emitterName == "kinect2")
-				jName = scene->getKinectProcessor()->getSBJointName(args.read_int());
+				jName = scene.getKinectProcessor()->getSBJointName(args.read_int());
 			else
 				jName = args.read_token();
 
@@ -2750,7 +2728,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			std::string jName;
 			if (emitterName == "kinect" ||
 				emitterName == "kinect2")
-				jName = scene->getKinectProcessor()->getSBJointName(args.read_int());
+				jName = scene.getKinectProcessor()->getSBJointName(args.read_int());
 			else
 				jName = args.read_token();
 
@@ -2786,19 +2764,19 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 					quats[i].x *= -1.0f;					
 				}
 				//KinectProcessor::processGlobalRotation(quats);
-				scene->getKinectProcessor()->filterRotation(quats);
+				scene.getKinectProcessor()->filterRotation(quats);
 				std::vector<SrQuat> retargetQuats;
-				SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();				
+				SmartBody::SBRetargetManager* retargetManager = scene.getRetargetManager();
 				for (auto character : controlledCharacters)
 				{
-						scene->getKinectProcessor()->processRetargetRotation(character->getSkeleton()->getName(),quats, retargetQuats);
+						scene.getKinectProcessor()->processRetargetRotation(character->getSkeleton()->getName(),quats, retargetQuats);
 					if (retargetQuats.size() >= 25)
 					{
 						for (int i = 0; i < 25; i++)
 						{
 							if (fabs(retargetQuats[i].w) > .0001)
 							{
-								const std::string& mappedJointName = scene->getKinectProcessor()->getSBJointName(i);
+								const std::string& mappedJointName = scene.getKinectProcessor()->getSBJointName(i);
 								if (mappedJointName != "")
 									character->datareceiver_ct->setLocalRotation(mappedJointName, retargetQuats[i]);
 							}
@@ -2812,7 +2790,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			if (emitterName == "kinect" ||
 				emitterName == "kinect2")
 			{
-				SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+				SmartBody::SBAssetManager* assetManager = scene.getAssetManager();
 				auto kinectSk = assetManager->getSkeleton("kinect.sk");
 				int numRemainTokens = args.calc_num_tokens();
 				if (numRemainTokens < 25*7)
@@ -2839,7 +2817,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 					trans.emplace_back(tran);
 				}
 				if (!kinectSk)
-					scene->getKinectProcessor()->initKinectSkeleton(trans, quats);
+					scene.getKinectProcessor()->initKinectSkeleton(trans, quats);
 			}
 		}
 		
@@ -2847,9 +2825,9 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBCommandManager*
 	return CMD_SUCCESS;
 }
 
-int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr) //Celso: Summer 2008
+int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBScene& scene) //Celso: Summer 2008
 {
-	SmartBody::SBCharacter* char_p = SmartBody::SBScene::getScene()->getCharacter( name );
+	SmartBody::SBCharacter* char_p = scene.getCharacter( name );
 	if( !char_p )	
 	{
 		SmartBody::util::log( "mcu_character_breathing ERR: Character '%s' NOT FOUND\n", name ); 
@@ -2920,7 +2898,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBC
 	else if( strcmp( breathing_cmd, "motion" ) == 0 )	
 	{
 		char* name = args.read_token();
-		SmartBody::SBMotion* sbmotion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(name);
+		SmartBody::SBMotion* sbmotion = scene.getAssetManager()->getMotion(name);
 		
 		if( sbmotion == nullptr ) {
 			printf( "Breathing motion '%s' NOT FOUND in motion map\n", name ); 
@@ -3051,7 +3029,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBC
 }
 
 
-int mcu_vrExpress_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int mcu_vrExpress_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	if (args.calc_num_tokens() < 4)
 	{
@@ -3064,7 +3042,7 @@ int mcu_vrExpress_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	std::string xml = args.read_remainder_raw();
 
 	// get the NVBG process for the character, if available
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(actor);
+	SmartBody::SBCharacter* character = scene.getCharacter(actor);
 	if (!character)
 		return CMD_SUCCESS;
 
@@ -3081,7 +3059,7 @@ int mcu_vrExpress_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	return CMD_SUCCESS;
 }
 
-int mcu_vhmsg_connect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
+int mcu_vhmsg_connect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager)
 {
 	char* vhmsgServerVar = getenv( "VHMSG_SERVER" );
 	char* vhmsgPortVar = getenv("VHMSG_PORT");
@@ -3161,15 +3139,15 @@ int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhm
 
 //void mcu_vhmsg_callback( const char *op, const char *args, void * user_data )
 //{
-//	if (SmartBody::SBScene::getScene()->isRemoteMode())
+//	if (commandContext.scene.isRemoteMode())
 //	{
-//		SmartBody::SBScene::getScene()->getDebuggerClient()->ProcessVHMsgs(op, args);
+//		commandContext.scene.getDebuggerClient()->ProcessVHMsgs(op, args);
 //		return;
 //	}
 //	else
-//		SmartBody::SBScene::getScene()->getDebuggerServer()->ProcessVHMsgs(op, args);
+//		commandContext.scene.getDebuggerServer()->ProcessVHMsgs(op, args);
 //
-//	switch(SmartBody::SBScene::getScene()->getCommandManager()->execute( op, (char *)args ) ) {
+//	switch(cmdMgr->execute( op, (char *)args ) ) {
 //        case CMD_NOT_FOUND:
 //            SmartBody::util::log("SmartBody error: command NOT FOUND: '%s' + '%s'", op, args );
 //            break;
@@ -3179,10 +3157,10 @@ int mcu_vhmsg_disconnect_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhm
 //    }
 //}
 
-int mcuFestivalRemoteSpeechCmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
+int mcuFestivalRemoteSpeechCmd_func( srArgBuffer& args, SmartBody::SBScene& scene)
 {
 	//FestivalSpeechRelayLocal* speechRelay = mcu.festivalRelay();
-	SpeechRelayLocal* speechRelay = SmartBody::SBScene::getScene()->getSpeechManager()->cereprocRelay();
+	SpeechRelayLocal* speechRelay = scene.getSpeechManager()->cereprocRelay();
 	if (!speechRelay) return 0;
 	const char* message = args.read_remainder_raw();
 	speechRelay->processSpeechMessage(message);
@@ -3191,7 +3169,7 @@ int mcuFestivalRemoteSpeechCmd_func( srArgBuffer& args, SmartBody::SBCommandMana
 }
 
 
-int vhmsglog_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
+int vhmsglog_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager)
 {
 
 	if (args.calc_num_tokens() == 0)
@@ -3244,10 +3222,10 @@ int vhmsglog_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager )
 
 }
 
-int mcu_echo_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )
+int mcu_echo_func( srArgBuffer& args, SmartBody::SBSimulationManager& simMgr)
 {
 	std::stringstream timeStr;
-	timeStr << SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	timeStr << simMgr.getTime();
 	std::string echoStr = args.read_remainder_raw();
 	int pos = echoStr.find("$time");
 	if (pos != std::string::npos)
@@ -3257,15 +3235,15 @@ int mcu_echo_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )
 	return( CMD_SUCCESS );
 }
 
-int sb_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr )
+int sb_main_func( srArgBuffer & args, SmartBody::SBScene& scene)
 {
    
    const char * token = args.read_token();
    if ( strcmp( token, "id" ) == 0 )
    {  // Process specific
       token = args.read_token(); // Process id
-	  const char * process_id = SmartBody::SBScene::getScene()->getProcessId().c_str();
-      if( ( SmartBody::SBScene::getScene()->getProcessId() == "" )         // If process id unassigned
+	  const char * process_id = scene.getProcessId().c_str();
+      if( ( scene.getProcessId() == "" )         // If process id unassigned
          || strcmp( token, process_id ) !=0 ) // or doesn't match
          return CMD_SUCCESS;                  // Ignore.
       token = args.read_token(); // Sub-command
@@ -3276,7 +3254,7 @@ int sb_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr )
    strstr << token;
    if (args_raw)
 	   strstr << " " << args_raw;
-   bool resultOk = SmartBody::SBScene::getScene()->run( strstr.str().c_str() );
+   bool resultOk = scene.run( strstr.str().c_str() );
    if (resultOk)
    {
 	   return CMD_SUCCESS;
@@ -3289,14 +3267,14 @@ int sb_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr )
 
 }
 
-int sbm_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr )
+int sbm_main_func( srArgBuffer & args, CommandContext commandContext)
 {
    const char * token = args.read_token();
    if ( strcmp( token, "id" ) == 0 )
    {  // Process specific
       token = args.read_token(); // Process id
-      const char * process_id = SmartBody::SBScene::getScene()->getProcessId().c_str();
-      if( ( SmartBody::SBScene::getScene()->getProcessId() == "" )         // If process id unassigned
+      const char * process_id = commandContext.scene.getProcessId().c_str();
+      if( ( commandContext.scene.getProcessId().empty() )         // If process id unassigned
          || strcmp( token, process_id ) !=0 ) // or doesn't match
          return CMD_SUCCESS;                  // Ignore.
       token = args.read_token(); // Sub-command
@@ -3304,7 +3282,7 @@ int sbm_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr )
 
    const char * args_raw = args.read_remainder_raw();
    srArgBuffer arg_buf( args_raw );
-   int result = SmartBody::SBScene::getScene()->getCommandManager()->execute( token, arg_buf );
+   int result = commandContext.commandManager.execute( token, arg_buf );
    switch( result )
    {
       case CMD_NOT_FOUND:
@@ -3322,17 +3300,16 @@ int sbm_main_func( srArgBuffer & args, SmartBody::SBCommandManager* cmdMgr )
    return CMD_SUCCESS;
 }
 
-int sbm_vhmsg_send_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager  )
+int sbm_vhmsg_send_func( srArgBuffer& args, SmartBody::SBVHMsgManager& vhmsgManager)
 {
 	char* cmdName = args.read_token();
 	char* cmdArgs = args.read_remainder_raw();
 	return vhmsgManager.send2( cmdName, cmdArgs );
 }
 
-int mcu_triggerevent_func(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr)
+int mcu_triggerevent_func(srArgBuffer& args, SmartBody::SBScene& scene)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBEventManager* eventManager = scene->getEventManager();
+	SmartBody::SBEventManager* eventManager = scene.getEventManager();
 
 	char* eventName = args.read_token();
 	char* eventParameters = args.read_remainder_raw();
@@ -3340,7 +3317,7 @@ int mcu_triggerevent_func(srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr
 	eventManager->handleEvent(e);
 	delete e;
 
-	SmartBody::util::log("TRIGGERING EVENT %s %s AT TIME %f", eventName, eventParameters, scene->getSimulationManager()->getTime());
+	SmartBody::util::log("TRIGGERING EVENT %s %s AT TIME %f", eventName, eventParameters, scene.getSimulationManager()->getTime());
 	return CMD_SUCCESS;
 }
 

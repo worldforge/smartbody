@@ -14,6 +14,7 @@
 #include <sbm/sbm_deformable_mesh.h>
 #include <sbm/GPU/SbmTexture.h>
 #include <sb/SBEvent.h>
+#include "Session.h"
 
 AttributeEditor::AttributeEditor(int x, int y, int w, int h, const char* name) : Fl_Group(x, y, w, h, name), SmartBody::SBObserver(), SBWindowListener(), SelectionListener()
 {
@@ -102,7 +103,7 @@ void AttributeEditor::draw()
 	// make sure the object still exists
 	if (_currentSelection != "")
 	{
-		SmartBody::SBObject* object = SmartBody::SBScene::getScene()->getObjectFromString(_currentSelection);
+		SmartBody::SBObject* object = Session::current->scene.getObjectFromString(_currentSelection);
 		if (!object)
 		{
 			OnSelect("");

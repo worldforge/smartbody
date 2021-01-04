@@ -59,7 +59,7 @@ void FLTKListener::OnCharacterCreate( const std::string & name, const std::strin
 void FLTKListener::OnCharacterDelete( const std::string & name )
 {
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
+	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 	if (!pawn)
 		return;
 
@@ -131,7 +131,7 @@ void FLTKListener::OnCharacterDelete( const std::string & name )
 void FLTKListener::OnCharacterUpdate( const std::string & name)
 {
 //	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-//	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
+//	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 //	if (!pawn)
 //		return;
 //
@@ -362,7 +362,7 @@ void FLTKListener::notify(SmartBody::SBSubject* subject)
 //								std::string shapeChannel = (*iter)->getValue();
 //								if (shapeChannel == "Neutral")
 //								{
-//									DeformableMesh* neutralMesh = SmartBody::SBScene::getScene()->getAssetManager()->getDeformableMesh(shapeName);
+//									DeformableMesh* neutralMesh = Session::current->scene.getAssetManager()->getDeformableMesh(shapeName);
 //									SrSnModel* staticModel = neutralMesh->dMeshStatic_p[0];
 //									SrModel& s = staticModel->shape();
 //									std::string blendShapeMapName = (const char*) s.name;
@@ -407,7 +407,7 @@ void FLTKListener::notify(SmartBody::SBSubject* subject)
 //											continue;
 //										if (blendshapeIter !=  mesh->blendShapeMap.end())
 //											(*shapeIter).second[count] = shapeName;
-//										DeformableMesh* shapeModel = SmartBody::SBScene::getScene()->getAssetManager()->getDeformableMesh(shapeName);
+//										DeformableMesh* shapeModel = Session::current->scene.getAssetManager()->getDeformableMesh(shapeName);
 //
 //										if (shapeModel)
 //										{

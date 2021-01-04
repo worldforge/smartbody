@@ -30,7 +30,7 @@ MotionEditorWindow::MotionEditorWindow(int x, int y, int w, int h, const char* l
 		_browserMotionList->callback(OnBrowserMotionList, this);
 
 
-      if (SmartBody::SBScene::getScene()->isRemoteMode())
+      if (Session::current->scene.isRemoteMode())
       {
          _buttonQueryAnims = new Fl_Button(320, 140, 80, 20, "Query Anims");
 		   _buttonQueryAnims->callback(OnButtonQueryAnims, this);
@@ -230,8 +230,8 @@ void MotionEditorWindow::show()
 	// For some weird reason, when you inserting to FLTK Choice, the size is one more than its real size
 	if (_choiceCharacterList && _choiceGazeTargetList)
 	{
-		if ((_choiceCharacterList->size() - 1) != (SmartBody::SBScene::getScene()->getNumCharacters() + 1) 
-			|| (_choiceGazeTargetList->size() - 1) != (SmartBody::SBScene::getScene()->getNumPawns() + SmartBody::SBScene::getScene()->getNumCharacters()))
+		if ((_choiceCharacterList->size() - 1) != (Session::current->scene.getNumCharacters() + 1)
+			|| (_choiceGazeTargetList->size() - 1) != (Session::current->scene.getNumPawns() + Session::current->scene.getNumCharacters()))
 		{
 			reloadCharactersAndPawns();
 		}
@@ -286,7 +286,7 @@ void MotionEditorWindow::loadCharacters()
 {
 	_choiceCharacterList->clear();
 	_choiceGazeTargetList->clear();
-	const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+	const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
    _choiceCharacterList->add("*");
    if (_selectedCharacter == "")
 	   _choiceCharacterList->value(0);
@@ -300,7 +300,7 @@ void MotionEditorWindow::loadCharacters()
 			_choiceGazeTargetList->value(i + 1);
 	}
 
-	const std::vector<std::string>& pawnNames = SmartBody::SBScene::getScene()->getPawnNames();
+	const std::vector<std::string>& pawnNames = Session::current->scene.getPawnNames();
 	for (size_t i = 0; i < pawnNames.size(); ++i)
 	{
 		_choiceGazeTargetList->add(pawnNames[i].c_str());
@@ -312,13 +312,13 @@ void MotionEditorWindow::loadCharacters()
 //SmartBody::SBCharacter* MotionEditorWindow::getCurrentCharacter()
 //{
 	//std::string curCharName = _choiceCharacterList->text();
-	//return SmartBody::SBScene::getScene()->getCharacter(curCharName);
+	//return Session::current->scene.getCharacter(curCharName);
 //}
 
 void MotionEditorWindow::loadMotions()
 {
 	_browserMotionList->clear();
-	const std::vector<std::string>& motionNames = SmartBody::SBScene::getScene()->getMotionNames();
+	const std::vector<std::string>& motionNames = Session::current->scene.getMotionNames();
 	for (size_t i = 0; i < motionNames.size(); ++i)
 	{
 		_browserMotionList->add(motionNames[i].c_str());
@@ -328,7 +328,7 @@ void MotionEditorWindow::loadMotions()
 
 	// load the joint maps
 	_choiceJointMapList->clear();
-	std::vector<std::string> jointMapNames = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMapNames();
+	std::vector<std::string> jointMapNames = Session::current->scene.getJointMapManager()->getJointMapNames();
 	int i = 0;
 	for (std::vector<std::string>::iterator iter = jointMapNames.begin();
 		 iter != jointMapNames.end();
@@ -346,7 +346,7 @@ void MotionEditorWindow::loadMotions(const std::string& filterString)
    // force it to lower
    std::string filter = filterString;
    std::transform(filterString.begin(), filterString.end(), filter.begin(), ::tolower);
-   const std::vector<std::string>& motionNames = SmartBody::SBScene::getScene()->getMotionNames();
+   const std::vector<std::string>& motionNames = Session::current->scene.getMotionNames();
 	for (size_t i = 0; i < motionNames.size(); ++i)
 	{
       // case insensitive comparison
@@ -382,7 +382,7 @@ void MotionEditorWindow::OnButtonRefresh(Fl_Widget* widget, void* data)
 void MotionEditorWindow::OnButtonSaveMotion(Fl_Widget* widget, void* data)
 {
 	MotionEditorWindow* editor = (MotionEditorWindow*) data;
-	SmartBody::SBMotion* motion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(editor->_selectedMotion));
+	SmartBody::SBMotion* motion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(editor->_selectedMotion));
 	if (!motion)
 		return;
 
@@ -411,7 +411,7 @@ void MotionEditorWindow::OnBrowserMotionList(Fl_Widget* widget, void* data)
 	editor->updateSyncPointsUI();
 	editor->updateMetaDataUI();
 
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(editor->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(editor->_selectedMotion));
 	if (!curMotion)
 	{
 		editor->_checkButtonPlayMotion->deactivate();
@@ -537,7 +537,7 @@ void MotionEditorWindow::PlayAnimation(const std::string& characterName, const s
       ss << "send sb " << "bml.execBML(\'" << characterName << "\', \'" << bml << "\')";
       std::string sendStr = ss.str();
       SmartBody::util::log("%s", sendStr.c_str());
-		SmartBody::SBScene::getScene()->command(sendStr);
+		Session::current->scene.command(sendStr);
 	}
 }
 
@@ -558,7 +558,7 @@ void MotionEditorWindow::GazeAt(const std::string& characterName, const std::str
       ss << "send sb " << "bml.execBML(\'" << characterName << "\', \'" << bml << "\')";
       std::string sendStr = ss.str();
       SmartBody::util::log("%s", sendStr.c_str());
-		SmartBody::SBScene::getScene()->command(sendStr);
+		Session::current->scene.command(sendStr);
    }
 }
 
@@ -568,7 +568,7 @@ void MotionEditorWindow::StopGaze(const std::string& characterName)
    SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
    if (!sbScene->isRemoteMode())
 	{
-      SmartBody::SBScene::getScene()->command(cmd);
+      Session::current->scene.command(cmd);
 	}
 	else
 	{
@@ -576,14 +576,14 @@ void MotionEditorWindow::StopGaze(const std::string& characterName)
       ss << "send sb scene.command(\'" << cmd <<"\')";
       std::string sendStr = ss.str();
       SmartBody::util::log("%s", sendStr.c_str());
-		SmartBody::SBScene::getScene()->command(sendStr);
+		Session::current->scene.command(sendStr);
 	}
 }
 
 void MotionEditorWindow::OnCheckButtonPlayMotion(Fl_Widget* widget, void* data)
 {
 	MotionEditorWindow* editor = (MotionEditorWindow*) data;
-	SmartBody::SBCharacter* curChar = dynamic_cast<SmartBody::SBCharacter*>(SmartBody::SBScene::getScene()->getCharacter(editor->_selectedCharacter));
+	SmartBody::SBCharacter* curChar = dynamic_cast<SmartBody::SBCharacter*>(Session::current->scene.getCharacter(editor->_selectedCharacter));
 	if (!curChar)
 	{
 		if (editor->_selectedCharacter != "*")
@@ -592,20 +592,20 @@ void MotionEditorWindow::OnCheckButtonPlayMotion(Fl_Widget* widget, void* data)
 
 	editor->_isScrubbing = editor->_checkButtonPlayMotion->value() == 1;
 
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(editor->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(editor->_selectedMotion));
 	if (!curMotion)	
 	{
-		const std::vector<std::string>& charNames = SmartBody::SBScene::getScene()->getCharacterNames();
+		const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
 		std::stringstream ss;
 		for (size_t i = 0; i < charNames.size(); ++i)
 		{
 			ss.str("");
-			if (SmartBody::SBScene::getScene()->isRemoteMode())
+			if (Session::current->scene.isRemoteMode())
 			{
 				ss << "send sbm ";
 			}
 			ss << "motionplayer " << charNames[i] << " off";
-			SmartBody::SBScene::getScene()->command(ss.str());
+			Session::current->scene.command(ss.str());
 		}
 		return;
 	}
@@ -613,7 +613,7 @@ void MotionEditorWindow::OnCheckButtonPlayMotion(Fl_Widget* widget, void* data)
 	// determine the set of characters that are affected
 	std::vector<std::string> names;
 	if (editor->_selectedCharacter == "*")
-		names = SmartBody::SBScene::getScene()->getCharacterNames();
+		names = Session::current->scene.getCharacterNames();
 	else
 		names.emplace_back(editor->_selectedCharacter);
 
@@ -626,19 +626,19 @@ void MotionEditorWindow::OnCheckButtonPlayMotion(Fl_Widget* widget, void* data)
 		for (size_t c = 0; c < names.size(); c++)
 		{
 			std::stringstream ss;
-			if (SmartBody::SBScene::getScene()->isRemoteMode())
+			if (Session::current->scene.isRemoteMode())
 			{
 				ss << "send sbm ";
 			}
 			ss << "motionplayer " << names[c] << " on";		
-			SmartBody::SBScene::getScene()->command(ss.str());
+			Session::current->scene.command(ss.str());
 			ss.str("");
-			if (SmartBody::SBScene::getScene()->isRemoteMode())
+			if (Session::current->scene.isRemoteMode())
 			{
 				ss << "send sbm ";
 			}
 			ss << "motionplayer " << names[c] << " " << curMotion->getName() << " " << frameNumber;
-			SmartBody::SBScene::getScene()->command(ss.str());
+			Session::current->scene.command(ss.str());
 		}
 
 	}
@@ -648,12 +648,12 @@ void MotionEditorWindow::OnCheckButtonPlayMotion(Fl_Widget* widget, void* data)
 		for (size_t c = 0; c < names.size(); c++)
 		{
 			std::stringstream ss;
-			if (SmartBody::SBScene::getScene()->isRemoteMode())
+			if (Session::current->scene.isRemoteMode())
 			{
 				ss << "send sbm ";
 			}
 			ss << "motionplayer " <<  names[c] << " off";
-			SmartBody::SBScene::getScene()->command(ss.str());
+			Session::current->scene.command(ss.str());
 		}
 		editor->_sliderMotionFrame->value(0);
 		editor->_outputMotionFrameNumber->value("0");
@@ -664,14 +664,14 @@ void MotionEditorWindow::OnSliderMotionFrame(Fl_Widget* widget, void* data)
 {
 	MotionEditorWindow* editor = (MotionEditorWindow*) data;
 	
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(editor->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(editor->_selectedMotion));
 	if (!curMotion)
 		return;
 	
 	std::vector<std::string> names;
 	if (editor->_selectedCharacter == "*")
 	{
-		names = SmartBody::SBScene::getScene()->getCharacterNames();
+		names = Session::current->scene.getCharacterNames();
 	}
 	else
 	{
@@ -690,7 +690,7 @@ void MotionEditorWindow::OnSliderMotionFrame(Fl_Widget* widget, void* data)
 			ss << "send sbm ";
 		}
 		ss << "motionplayer " << names[c] << " " << curMotion->getName() << " " << frameNumber;
-		SmartBody::SBScene::getScene()->command(ss.str());
+		Session::current->scene.command(ss.str());
 	}
 	std::stringstream ss1;
 	ss1 << frameNumber;
@@ -703,7 +703,7 @@ void MotionEditorWindow::OnSliderMotionFrame(Fl_Widget* widget, void* data)
 void MotionEditorWindow::OnButtonPlayMotionFolder(Fl_Widget* widget, void* data)
 {
 	MotionEditorWindow* editor = (MotionEditorWindow*) data;
-	SmartBody::SBCharacter* curChar = dynamic_cast<SmartBody::SBCharacter*>(SmartBody::SBScene::getScene()->getCharacter(editor->_selectedCharacter));
+	SmartBody::SBCharacter* curChar = dynamic_cast<SmartBody::SBCharacter*>(Session::current->scene.getCharacter(editor->_selectedCharacter));
 	if (!curChar)
 		return;
 
@@ -748,7 +748,7 @@ void MotionEditorWindow::OnButtonPlayMotionFolder(Fl_Widget* widget, void* data)
 
 void MotionEditorWindow::updateSyncPointsUI()
 {
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(this->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(this->_selectedMotion));
 	if (!curMotion)
 	{
 		_sliderStart->range(0, 1);
@@ -789,7 +789,7 @@ void MotionEditorWindow::updateSyncPointsUI()
 
 void MotionEditorWindow::updateMotionSyncPoints(const std::string& type)
 {
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(this->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(this->_selectedMotion));
 	if (!curMotion)
 		return;
 	curMotion->validateSyncPoint(type);
@@ -799,7 +799,7 @@ void MotionEditorWindow::updateMotionSyncPoints(const std::string& type)
 void MotionEditorWindow::OnSliderSyncPoints(Fl_Widget* widget, void* data)
 {
 	MotionEditorWindow* editor = (MotionEditorWindow*) data;
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(editor->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(editor->_selectedMotion));
 	if (!curMotion)
 		return;
 
@@ -846,7 +846,7 @@ void MotionEditorWindow::OnSliderSyncPoints(Fl_Widget* widget, void* data)
 void MotionEditorWindow::OnButtonGetSyncPoints(Fl_Widget* widget, void* data)
 {
 	MotionEditorWindow* editor = (MotionEditorWindow*) data;
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(editor->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(editor->_selectedMotion));
 	if (!curMotion)
 		return;
 	const std::string& type = widget->tooltip();
@@ -885,7 +885,7 @@ void MotionEditorWindow::OnButtonGetSyncPoints(Fl_Widget* widget, void* data)
 
 void MotionEditorWindow::updateMetaDataUI()
 {
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(this->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(this->_selectedMotion));
 	if (!curMotion)
 	{
 		_browserMetaNames->clear();
@@ -910,7 +910,7 @@ void MotionEditorWindow::updateMetaDataUI()
 
 void MotionEditorWindow::addMotionMetaData(const std::string& name, const std::string& value)
 {
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(this->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(this->_selectedMotion));
 	if (!curMotion)
 		return;
 
@@ -948,7 +948,7 @@ void MotionEditorWindow::OnButtonDeleteMetaEntry(Fl_Widget* widget, void* data)
 	MotionEditorWindow* editor = (MotionEditorWindow*) data;
 	if (editor->_browserMetaNames->value() <= 0)
 		return;
-	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(SmartBody::SBScene::getScene()->getMotion(editor->_selectedMotion));
+	SmartBody::SBMotion* curMotion = dynamic_cast<SmartBody::SBMotion*>(Session::current->scene.getMotion(editor->_selectedMotion));
 	if (!curMotion)
 		return;
 	const std::string& name = editor->_browserMetaNames->text(editor->_browserMetaNames->value());
@@ -1014,7 +1014,7 @@ void MotionEditorWindow::OnButtonJointMap(Fl_Widget* widget, void* data)
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
-	SmartBody::SBJointMap* jointMap = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMap(editor->_selectedJointMap);
+	SmartBody::SBJointMap* jointMap = Session::current->scene.getJointMapManager()->getJointMap(editor->_selectedJointMap);
 	if (!jointMap)
 	{
 		fl_alert("No joint map named %s.", editor->_selectedJointMap.c_str());

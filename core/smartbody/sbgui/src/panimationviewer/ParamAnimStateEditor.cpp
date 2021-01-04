@@ -193,7 +193,7 @@ void PABlendEditor::loadStates()
 	stateList->clear();
 	stateList->add("---");
 	// states may have names that conflict with FLTK's parsing, such as a '@'
-	std::vector<std::string> blendNames = SmartBody::SBScene::getScene()->getBlendManager()->getBlendNames();
+	std::vector<std::string> blendNames = Session::current->scene.getBlendManager()->getBlendNames();
 	for (std::vector<std::string>::iterator iter = blendNames.begin();
 		 iter != blendNames.end();
 		 iter++)
@@ -221,7 +221,7 @@ void PABlendEditor::updateStateTimeMarkEditor(Fl_Widget* widget, void* data, boo
 			{
 				ParamAnimTrack* newTrack = new ParamAnimTrack();
 				newTrack->setName(motionName.c_str());
-				SmartBody::SBMotion * motion = SmartBody::SBScene::getScene()->getMotion(motionName);
+				SmartBody::SBMotion * motion = Session::current->scene.getMotion(motionName);
 				ParamAnimBlock* block = new ParamAnimBlock();
 				block->setName(motionName.c_str());
 				block->setStartTime(0);
@@ -289,7 +289,7 @@ void PABlendEditor::changeStateList(Fl_Widget* widget, void* data)
 	editor->stateList->value(curValue);
 	editor->stateEditorNleModel->removeAllTracks();
 	std::string currentStateName = editor->stateList->menu()[editor->stateList->value()].label();
-	PABlend* currentState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(currentStateName);
+	PABlend* currentState = Session::current->scene.getBlendManager()->getBlend(currentStateName);
 	
 	if (currentState)
 	{
@@ -559,7 +559,7 @@ void PABlendEditor::addStateTimeMark(Fl_Widget* widget, void* data)
 	// determine where to add the time marks
 	std::string stateName = editor->stateList->text();
 
-	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	if (!state)
 		return;
 	std::vector<double> localTimes = editor->stateTimeMarkWidget->getLocalTimes();
@@ -601,7 +601,7 @@ void PABlendEditor::removeStateTimeMark(Fl_Widget* widget, void* data)
 	// determine where to add the time marks
 	std::string stateName = editor->stateList->text();
 
-	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	if (!state)
 		return;
 
@@ -646,7 +646,7 @@ void PABlendEditor::snapTimeMark(Fl_Widget* widget, void* data)
 	// determine where to add the time marks
 	std::string stateName = editor->stateList->text();
 
-	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	if (!state)
 		return;
 
@@ -696,7 +696,7 @@ void PABlendEditor::snapStartTimeMark(Fl_Widget* widget, void* data)
 
 	std::string stateName = editor->stateList->text();
 
-	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	if (!state)
 		return;
 
@@ -746,7 +746,7 @@ void PABlendEditor::snapEndTimeMark(Fl_Widget* widget, void* data)
 
 	std::string stateName = editor->stateList->text();
 
-	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	if (!state)
 		return;
 
@@ -777,7 +777,7 @@ void PABlendEditor::snapEndTimeMark(Fl_Widget* widget, void* data)
 		// get the local times
 		std::vector<double> localTimes = editor->stateTimeMarkWidget->getLocalTimes();
 		// get the end time of the motion
-		double endTime = SmartBody::SBScene::getScene()->getMotion(state->getMotion(motionIndex))->duration();
+		double endTime = Session::current->scene.getMotion(state->getMotion(motionIndex))->duration();
 		state->setCorrespondencePoints(motionIndex, keyIndex, endTime);
 		editor->updateCorrespondenceMarks(state);
 
@@ -798,7 +798,7 @@ void PABlendEditor::snapSliderTimeMark(Fl_Widget* widget, void* data)
 
 	std::string stateName = editor->stateList->text();
 
-	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	if (!state)
 		return;
 
@@ -849,7 +849,7 @@ void PABlendEditor::alignLeft(Fl_Widget* widget, void* data)
 	const std::vector<std::string>& selectedMotions = editor->getSelectedMotions();
 	for (size_t i = 0; i < selectedMotions.size(); i++)
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotions[i]);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(selectedMotions[i]);
 		if (motion)
 			motion->alignToBegin(1);
 	}
@@ -863,7 +863,7 @@ void PABlendEditor::alignRight(Fl_Widget* widget, void* data)
 	const std::vector<std::string>& selectedMotions = editor->getSelectedMotions();
 	for (size_t i = 0; i < selectedMotions.size(); i++)
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotions[i]);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(selectedMotions[i]);
 		if (motion)
 			motion->alignToEnd(1);
 	}
@@ -877,7 +877,7 @@ void PABlendEditor::alignRecover(Fl_Widget* widget, void* data)
 	const std::vector<std::string>& selectedMotions = editor->getSelectedMotions();
 	for (size_t i = 0; i < selectedMotions.size(); i++)
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotions[i]);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(selectedMotions[i]);
 		if (motion)
 			motion->recoverAlign();
 	}
@@ -991,7 +991,7 @@ std::vector<std::string> PABlendEditor::getSelectedMotions()
 PABlend* PABlendEditor::getCurrentState()
 {
 	std::string stateName = stateList->text();
-	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	return state;
 }
 
@@ -1000,14 +1000,14 @@ void PABlendEditor::save(Fl_Widget* widget, void* data)
 {
 	PABlendEditor* editor = (PABlendEditor*) data;
 
-	std::string mediaPath = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string mediaPath = Session::current->scene.getMediaPath();
 	std::string stateFileName = BaseWindow::chooseFile("Blend File:", "Python\t*.py\n", mediaPath);
 	if (stateFileName == "")
 		return;
 
 	std::string stateName = editor->stateList->text();
 
-	SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* state = Session::current->scene.getBlendManager()->getBlend(stateName);
 	SmartBody::SBAnimationBlend0D* state0D = dynamic_cast<SmartBody::SBAnimationBlend0D*>(state);
 	SmartBody::SBAnimationBlend1D* state1D = dynamic_cast<SmartBody::SBAnimationBlend1D*>(state);
 	SmartBody::SBAnimationBlend2D* state2D = dynamic_cast<SmartBody::SBAnimationBlend2D*>(state);
@@ -1196,7 +1196,7 @@ void PABlendEditor::selectStateAnimations(Fl_Widget* widget, void* data)
 	if (!stateText)
 		return;
 
-	PABlend* currentState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateText);
+	PABlend* currentState = Session::current->scene.getBlendManager()->getBlend(stateText);
 	
 	if (!currentState)
 		return;
@@ -1232,7 +1232,7 @@ void PABlendEditor::selectStateAnimations(Fl_Widget* widget, void* data)
 	if (selectedMotions.size() == 1)
 	{
 		editor->buttonPlay->activate();
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotions[0]);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(selectedMotions[0]);
 		if (motion)
 		{
 			int index = currentState->getMotionId(motion->getName());
@@ -1401,7 +1401,7 @@ void PABlendEditor::addShape(Fl_Widget* widget, void* data)
 {
 	PABlendEditor* editor = (PABlendEditor*) data;
 	const char* stateText = editor->stateList->text();
-	PABlend* currentState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateText);
+	PABlend* currentState = Session::current->scene.getBlendManager()->getBlend(stateText);
 	
 	if (!currentState)
 		return;
@@ -1432,7 +1432,7 @@ void PABlendEditor::removeShape(Fl_Widget* widget, void* data)
 {
 	PABlendEditor* editor = (PABlendEditor*) data;
 	const char* stateText = editor->stateList->text();
-	PABlend* currentState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateText);
+	PABlend* currentState = Session::current->scene.getBlendManager()->getBlend(stateText);
 	
 	if (!currentState)
 		return;
@@ -1553,7 +1553,7 @@ void PABlendEditor::scrub(Fl_Widget* widget, void* data)
 	{
 		std::string currentStateName = editor->stateList->menu()[editor->stateList->value()].label();
 
-		PABlend* currentState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(currentStateName);
+		PABlend* currentState = Session::current->scene.getBlendManager()->getBlend(currentStateName);
 	
 		int lastMotionIndex = currentState->getMotionId(editor->lastSelectedMotion);
 		double curTime = editor->sliderScrub->value();
@@ -1573,14 +1573,14 @@ void PABlendEditor::scrub(Fl_Widget* widget, void* data)
 		blendData.timeManager->getParallelTimes(localTime, times);
 		editor->stateTimeMarkWidget->setLocalTimes(times);
 
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotions[0]);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(selectedMotions[0]);
 		double time = editor->sliderScrub->value();
 		double delta = motion->duration() / double(motion->frames() - 1);
 		int frameNumber = int(time / delta);
 		std::string charName = editor->paWindow->characterList->menu()[editor->paWindow->characterList->value()].label();
 		std::stringstream command;
 		command << "motionplayer " << charName << " " << selectedMotions[0] << " " << frameNumber;
-		SmartBody::SBScene::getScene()->command(command.str());
+		Session::current->scene.command(command.str());
 		editor->stateTimeMarkWidget->redraw();
 	}
 	
@@ -1593,7 +1593,7 @@ void PABlendEditor::updateMotionPlayer(double t)
 
 	if (selectedMotions.size() == 1)
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(selectedMotions[0]);
+		SmartBody::SBMotion* motion = Session::current->scene.getMotion(selectedMotions[0]);
 		if (!motion)
 			return;
 
@@ -1604,7 +1604,7 @@ void PABlendEditor::updateMotionPlayer(double t)
 		std::string charName = paWindow->characterList->menu()[paWindow->characterList->value()].label();
 		std::stringstream command;
 		command << "motionplayer " << charName << " " << selectedMotions[0] << " " << frameIndex;
-		SmartBody::SBScene::getScene()->command(command.str());
+		Session::current->scene.command(command.str());
 	}
 }
 
@@ -1636,7 +1636,7 @@ void PABlendEditor::playmotion(Fl_Widget* widget, void* data)
 		command << "motionplayer " << charName << " off";
 		editor->stateTimeMarkWidget->setShowScrubLine(false);
 	}
-	SmartBody::SBScene::getScene()->command(command.str());
+	Session::current->scene.command(command.str());
 }
 
 

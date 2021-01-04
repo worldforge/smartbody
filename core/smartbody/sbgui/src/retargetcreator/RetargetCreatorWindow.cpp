@@ -9,6 +9,7 @@
 #include <FL/Fl_Device.H>
 #include <FL/fl_draw.H>
 #include <FL/Fl_File_Chooser.H>
+#include "Session.h"
 
 const std::string defaultAssetDir = "../../../../data/";
 
@@ -27,7 +28,7 @@ RetargetCreatorWindow::RetargetCreatorWindow(int x, int y, int w, int h, const c
 	_buttonDirChoose->callback(OnDirChooseCB, this);
 	_curOutputDir    = new Fl_Input(480, 80, 250, 25);
 
-	std::string mediaPath = SmartBody::SBScene::getScene()->getMediaPath();
+	std::string mediaPath = Session::current->scene.getMediaPath();
 	std::string outputPath = mediaPath + "/" +  "sbm-common/common-sk/retargetMotion/";
 	_curOutputDir->value(outputPath.c_str());
 	//_curOutputDir->deactivate();
@@ -111,7 +112,7 @@ void RetargetCreatorWindow::OnDirChooseCB( Fl_Widget* widget, void* data )
 void RetargetCreatorWindow::OnAssetDirChooseCB( Fl_Widget* widget, void* data )
 {
 	RetargetCreatorWindow* viewer = (RetargetCreatorWindow*) data;
-	const char* assetDir = fl_dir_chooser("Add Asset Dir", SmartBody::SBScene::getScene()->getMediaPath().c_str(), 1);
+	const char* assetDir = fl_dir_chooser("Add Asset Dir", Session::current->scene.getMediaPath().c_str(), 1);
 	if (!assetDir)
 		return;
 	//viewer->_curAssetDir->value(assetDir);
@@ -195,7 +196,7 @@ void RetargetCreatorWindow::loadSkeletons()
 {	
 	_choiceSrcSkeleton->clear();
 	_choiceTgtSkeleton->clear();
-	const std::vector<std::string>& skeletonNames = SmartBody::SBScene::getScene()->getSkeletonNames();
+	const std::vector<std::string>& skeletonNames = Session::current->scene.getSkeletonNames();
 	for (unsigned int i=0;i<skeletonNames.size();i++)
 	{
 		std::string skelName = skeletonNames[i];
@@ -212,7 +213,7 @@ void RetargetCreatorWindow::loadSkeletons()
 void RetargetCreatorWindow::loadMotions()
 {
 	_browserMotion->clear();
-	const std::vector<std::string>& motionNames = SmartBody::SBScene::getScene()->getMotionNames();
+	const std::vector<std::string>& motionNames = Session::current->scene.getMotionNames();
 	for (unsigned int i=0;i<motionNames.size();i++)
 	{
 		std::string moName = motionNames[i];

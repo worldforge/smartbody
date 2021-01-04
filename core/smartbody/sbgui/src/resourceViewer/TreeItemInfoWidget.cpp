@@ -145,14 +145,14 @@ void SkeletonItemInfoWidget::updateWidget()
 {
 	skeletonTree->clear_children(skeletonTree->root());
 
-	SmartBody::SBCharacter* sbmChar = SmartBody::SBScene::getScene()->getCharacter(charName);
+	SmartBody::SBCharacter* sbmChar = Session::current->scene.getCharacter(charName);
 	if (sbmChar)
 	{
 		itemSkeleton = sbmChar->getSkeleton();
 	}
 	else
 	{
-		auto skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+		auto skeleton = Session::current->scene.getSkeleton(skeletonName);
 		if (!skeleton)
 			return; // skeleton is lost, no update
 
@@ -301,7 +301,7 @@ void MotionItemInfoWidget::updateWidget()
 {
 	channelBrowser->clear();
 
-	SmartBody::SBMotion * motion = SmartBody::SBScene::getScene()->getMotion(motionName);
+	SmartBody::SBMotion * motion = Session::current->scene.getMotion(motionName);
 	if (!motion)
 		return;
 	frameSlider->bounds(1, motion->frames());
@@ -343,7 +343,7 @@ void MotionItemInfoWidget::sliderCallBack( Fl_Widget* widget, void* data )
 
 void MotionItemInfoWidget::updateChannelAttributes()
 {
-	SmartBody::SBMotion * motion = SmartBody::SBScene::getScene()->getMotion(motionName);
+	SmartBody::SBMotion * motion = Session::current->scene.getMotion(motionName);
 	if (!motion)
 		return;
 	SkChannelArray& channels = motion->channels();
@@ -420,7 +420,7 @@ void PathItemInfoWidget::addDirectory( const char* dirName )
 
 	std::string paraType = "";//getTypeParameter(itemType);
 
-	SmartBody::SBScene::getScene()->addAssetPath(paraType, relativePath);
+	Session::current->scene.addAssetPath(paraType, relativePath);
 	updateWidget();
 	observer->notify(nullptr);
 
@@ -502,7 +502,7 @@ void SeqItemInfoWidget::runSeqCallback( Fl_Widget* widget, void* data )
 		std::string seqCmd = "seq ";
 		seqCmd += seqName;
 		SmartBody::util::log("seq cmd = %s\n", seqCmd.c_str());
-		SmartBody::SBScene::getScene()->command(seqCmd);
+		Session::current->scene.command(seqCmd);
 	}
 }
 
@@ -555,7 +555,7 @@ EventItemInfoWidget::EventItemInfoWidget( int x, int y, int w, int h, const char
 	eventInfoObject->createStringAttribute("Action","",true,"Basic",20,false,false,false,"?");
 	updateWidget();
 
-	SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();
+	SmartBody::SBEventManager* manager = Session::current->scene.getEventManager();
 	std::map<std::string, SmartBody::SBEventHandler*>& eventMap = manager->getEventHandlers();		
 	eventInfoObject->registerObserver(this);
 	this->begin();
@@ -573,7 +573,7 @@ EventItemInfoWidget::EventItemInfoWidget( int x, int y, int w, int h, const char
 
 void EventItemInfoWidget::updateWidget()
 {	
-	SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();
+	SmartBody::SBEventManager* manager = Session::current->scene.getEventManager();
 	std::map<std::string, SmartBody::SBEventHandler*>& eventMap = manager->getEventHandlers();	
 	std::map<std::string, SmartBody::SBEventHandler*>::iterator mi = eventMap.find(eventName);
 	if (mi != eventMap.end())
@@ -590,7 +590,7 @@ void EventItemInfoWidget::updateWidget()
 
 void EventItemInfoWidget::notify( SmartBody::SBSubject* subject )
 {
-	SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();
+	SmartBody::SBEventManager* manager = Session::current->scene.getEventManager();
 	std::map<std::string, SmartBody::SBEventHandler*>& eventMap = manager->getEventHandlers();
 	std::map<std::string, SmartBody::SBEventHandler*>::iterator mi = eventMap.find(eventName);
 	if (mi != eventMap.end())
@@ -619,7 +619,7 @@ void EventItemInfoWidget::addNewEvent()
 	if (eventType != "" && eventAction != "")
 	{
 		std::string eventCmd = "registerevent " + eventType + " " + "\"" + eventAction + "\"";	
-		SmartBody::SBScene::getScene()->command(eventCmd);
+		Session::current->scene.command(eventCmd);
 	}
 }
 
@@ -630,7 +630,7 @@ void EventItemInfoWidget::removeEvent()
 	if (eventType != "" && eventAction != "")
 	{
 		std::string eventCmd = "unregisterevent " + eventType;
-		SmartBody::SBScene::getScene()->command(eventCmd);
+		Session::current->scene.command(eventCmd);
 		//SmartBody::util::log("Remove Event %s",eventType.c_str());
 	}
 }
@@ -647,7 +647,7 @@ PawnItemInfoWidget::PawnItemInfoWidget( int x, int y, int w, int h, const char* 
 	//	pawnInfoObject->registerObserver(observerWindow);
 	
 	this->begin();
-		SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+		SmartBody::SBPawn* pawn = Session::current->scene.getPawn(pawnName);
 		if (pawn)
 			pawn->registerObserver(this);
 		attrWindow = new AttributeWindow(pawn,x,y,w,h,name);
@@ -659,14 +659,14 @@ PawnItemInfoWidget::PawnItemInfoWidget( int x, int y, int w, int h, const char* 
 
 PawnItemInfoWidget::~PawnItemInfoWidget()
 {
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(pawnName);
 	if (pawn)
 		pawn->unregisterObserver(this);
 }
 
 void PawnItemInfoWidget::updateWidget()
 {
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(pawnName);
 	if (!pawn) return;
 	float x, y, z, h, p, r;
 	pawn->get_world_offset(x,y,z,h,p,r);
@@ -683,7 +683,7 @@ void PawnItemInfoWidget::updateWidget()
 
 void PawnItemInfoWidget::notify( SmartBody::SBSubject* subject )
 {
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnName);
+	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(pawnName);
 	if (!pawn) return;
 
 	TreeInfoObject* infoObject = dynamic_cast<TreeInfoObject*>(subject);
@@ -814,7 +814,7 @@ AnimationBlendInfoWidget::AnimationBlendInfoWidget( SmartBody::SBAnimationBlend*
 
 void AnimationBlendInfoWidget::updateWidget()
 {
-	SmartBody::SBAnimationBlendManager* blendManager = SmartBody::SBScene::getScene()->getBlendManager();
+	SmartBody::SBAnimationBlendManager* blendManager = Session::current->scene.getBlendManager();
 	SmartBody::SBAnimationBlend* animBlend = blendManager->getBlend(blendName);
 	if (!animBlend)
 		return;
@@ -853,7 +853,7 @@ BlendTransitionInfoWidget::BlendTransitionInfoWidget( SmartBody::SBAnimationTran
 
 void BlendTransitionInfoWidget::updateWidget()
 {
-	SmartBody::SBAnimationBlendManager* blendManager = SmartBody::SBScene::getScene()->getBlendManager();
+	SmartBody::SBAnimationBlendManager* blendManager = Session::current->scene.getBlendManager();
 	SmartBody::SBAnimationTransition* blendTransition = blendManager->getTransitionByName(transitionName);
 	if (!blendTransition)
 		return;

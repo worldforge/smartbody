@@ -42,7 +42,7 @@ void CharacterCreatorWindow::CreateCB(Fl_Widget* w, void* data)
 		return;
 	}
 
-	SmartBody::SBCharacter* existingChar = SmartBody::SBScene::getScene()->getCharacter(creator->inputName->value());
+	SmartBody::SBCharacter* existingChar = Session::current->scene.getCharacter(creator->inputName->value());
 	if (existingChar)
 	{
 		fl_alert("Character name already exists.");
@@ -56,17 +56,17 @@ void CharacterCreatorWindow::CreateCB(Fl_Widget* w, void* data)
 	}
 	std::string skel = creator->choiceSkeletons->menu()[creator->choiceSkeletons->value()].label();
 	
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->createCharacter(creator->inputName->value(), "");
+	SmartBody::SBCharacter* character = Session::current->scene.createCharacter(creator->inputName->value(), "");
 	if (!character)
 	{
 		fl_alert("Character named '%s' could not be created.", creator->inputName->value());
 		return;
 	}
-	auto skeleton = SmartBody::SBScene::getScene()->createSkeleton(skel);
+	auto skeleton = Session::current->scene.createSkeleton(skel);
 	if (!skeleton)
 	{
 		fl_alert("Character named '%s' could not be created. Problem creating skeleton '%s'.", creator->inputName->value(), skel.c_str());
-		SmartBody::SBScene::getScene()->removeCharacter(character->getName());
+		Session::current->scene.removeCharacter(character->getName());
 		return;
 	}
 	character->setSkeleton(skeleton);
