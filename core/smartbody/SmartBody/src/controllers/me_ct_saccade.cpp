@@ -417,7 +417,7 @@ bool MeCtSaccade::controller_evaluate(double t, MeFrameData& frame)
 	if (_character->getStringAttribute("saccadePolicy") == "stopinutterance")
 	{
 
-		if (!SmartBody::SBScene::getScene()->getSpeechBehaviourProvider() || !SmartBody::SBScene::getScene()->getSpeechBehaviourProvider()->hasSpeechBehavior(*_character))
+		if (SmartBody::SBScene::getScene()->getSpeechBehaviourProvider() && SmartBody::SBScene::getScene()->getSpeechBehaviourProvider()->hasSpeechBehavior(*_character))
 		{
 			_validByPolicy = false;
 			reset(t);

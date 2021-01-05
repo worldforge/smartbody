@@ -328,9 +328,7 @@ void SbmCharacter::createStandardControllers()
 	eyelid_reg_ct_p->init(this, true);
 	eyelid_reg_ct_p->set_upper_range( -30.0, 30.0 );
 	eyelid_reg_ct_p->set_close_angle( 30.0 );
-	ostringstream ct_name;
-	ct_name << getName() << "_eyelidController";
-	eyelid_reg_ct_p->setName( ct_name.str() );
+	eyelid_reg_ct_p->setName( getName() + "_eyelidController" );
 
 	this->saccade_ct = new MeCtSaccade(this);
 	this->saccade_ct->init(this);
