@@ -1219,6 +1219,7 @@ SmartBody::SBFaceDefinition* SBScene::createFaceDefinition(const std::string& na
 		for (auto& _sceneListener : this->_sceneListeners) {
 			_sceneListener->OnObjectCreate(result.first->second.get());
 		}
+		return result.first->second.get();
 	}
 
 	return nullptr;
