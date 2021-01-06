@@ -38,7 +38,7 @@ def createRetargetInstance(srcSkelName, tgtSkelName):
     retarget = retargetManager.getRetarget(srcSkelName, tgtSkelName)
     if retarget == None:
         retarget = retargetManager.createRetarget(srcSkelName, tgtSkelName)
-        retarget.initRetarget(endJoints, relativeJoints)
+        retarget.initRetarget(scene.getAssetManager(), endJoints, relativeJoints)
 
 
 # Add asset paths

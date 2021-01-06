@@ -142,8 +142,6 @@ protected:
 	 */
 	virtual int setup();
 
-	void initData();
-
 
 public:
 	MeCtChannelWriter* get_world_offset_writer_p()	{return world_offset_writer_p.get();}

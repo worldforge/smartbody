@@ -47,12 +47,12 @@ void MeCtContainer::Context::add_controller( MeController* child ) {
 
 	if( _container && _container->active() ) {
 		child->remap();
-		child->start(SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+		child->start(child->getScene()->getSimulationManager()->getTime());
 	}
 }
 
 void MeCtContainer::Context::remove_controller( MeController* child ) {
-	child->stop(SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+	child->stop(child->getScene()->getSimulationManager()->getTime());
 	if( _container && _container->remove_child( child ) )
 		MeControllerContext::remove_controller( child );
 }
@@ -97,7 +97,7 @@ void MeCtContainer::controller_start() {
 			// Temporary variable to inspect during debugging
 			const std::string& child_type = child->controller_type();
 
-			child->start(SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+			child->start(getScene()->getSimulationManager()->getTime());
 		}
 	}
 }
@@ -107,7 +107,7 @@ void MeCtContainer::controller_stop() {
 	for( unsigned int i=0; i<child_count; ++i ) {
 		MeController* child = this->child( i );
 		if( child )
-			child->stop(SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+			child->stop(getScene()->getSimulationManager()->getTime());
 	}
 }
 

@@ -35,9 +35,6 @@ const double timeThreshold = 0.05;
 
 #define NEW_EULER 1
 
-PATimeManager::PATimeManager()
-{
-}
 
 PATimeManager::PATimeManager(PABlendData* data)
 {
@@ -212,7 +209,7 @@ void PATimeManager::checkEvents()
 			// localTime is the parameterized time, determine the local time of the event
 			if (localTimes[motionIndex] >= event.first->getTime())
 			{
-				SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();
+				SmartBody::SBEventManager* manager = blendData->_controller->getScene()->getEventManager();
 
 				SmartBody::SBMotionEvent motionEventInstance;
 				motionEventInstance.setType(event.first->getType());
@@ -220,7 +217,7 @@ void PATimeManager::checkEvents()
 				MeCtParamAnimation* controller = blendData->getController();
 				if (controller)
 				{
-					std::string sourceStr = SmartBody::SBScene::getScene()->getStringFromObject(controller->getPawn());
+					std::string sourceStr = blendData->_controller->getScene()->getStringFromObject(controller->getPawn());
 					motionEventInstance.setSource(sourceStr);
 				}
 
@@ -490,7 +487,7 @@ SrMat PAMotions::getBaseMatFromBuffer(SrBuffer<float>& buffer)
 	mat.set(14, buffer[baseBuffId.z]);
 
 	/* this breaks the locomotion
-	if (SmartBody::SBScene::getScene()->getBoolAttribute("blendFix"))
+	if (getScene()->getBoolAttribute("blendFix"))
 	{
 		mat = SrMat();
 	}
@@ -1009,7 +1006,7 @@ PABlendData::PABlendData(MeCtParamAnimation* controller, const std::string& stat
 	directPlay = dplay;
 	playSpeed = 1.f;
 	retarget = nullptr;
-	SmartBody::SBAnimationBlend* s = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* s = controller->getScene()->getBlendManager()->getBlend(stateName);
 	state = s;
 	if (state)
 	{
@@ -1061,21 +1058,16 @@ PABlendData::PABlendData(MeCtParamAnimation* controller, PABlend* s, std::vector
 
 PABlendData::~PABlendData()
 {
-	if (timeManager)
-		delete timeManager;
-	timeManager = nullptr;
-	if (interpolator)
-		delete interpolator;
-	interpolator = nullptr;
-	if (woManager)
-		delete woManager;
+	delete timeManager;
+	delete interpolator;
+	delete woManager;
 	woManager = nullptr;
 }
 
 
-bool PABlendData::getTrajPosition( std::string effectorName, float time, SrVec& outPos )
+bool PABlendData::getTrajPosition( const std::string& effectorName, float time, SrVec& outPos )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = _controller->getScene();
 	outPos = SrVec(0,0,0);	
 	for (unsigned int i=0;i<weights.size();i++)
 	{
@@ -1090,7 +1082,7 @@ bool PABlendData::getTrajPosition( std::string effectorName, float time, SrVec& 
 	return true;
 }
 
-MeCtParamAnimation* PABlendData::getController()
+MeCtParamAnimation* PABlendData::getController() const
 {
 	return _controller;
 }

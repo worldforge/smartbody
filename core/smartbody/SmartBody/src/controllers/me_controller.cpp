@@ -28,6 +28,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_default_prune_policy.hpp>
 #include <controllers/me_controller_tree_root.hpp>
 #include <sb/sbm_pawn.hpp>
+#include <utility>
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include <sb/SBPawn.h>
@@ -612,7 +613,7 @@ void MeController::saveMotionRecord( const std::string &recordname )
 	
 	// load the motion
 	SrInput recordInput = SrInput((const char*)(stringOutput));
-	SmartBody::SBMotion* sbMotion = SmartBody::SBScene::getScene()->createMotion(recordname);
+	SmartBody::SBMotion* sbMotion = getScene()->createMotion(recordname);
 	if (sbMotion == nullptr)
 	{
 		SmartBody::util::log("Recorded motion %s is already existing!", recordname.c_str());
@@ -801,7 +802,7 @@ const std::string& MeController::handle() const
 
 void MeController::handle( std::string handle )
 {
-	_handle = handle;
+	_handle = std::move(handle);
 }
 
 bool MeController::isEnabled() const
@@ -822,11 +823,11 @@ void MeController::updateDefaultVariables(SbmPawn* pawn)
 	//	return;	
 	if (pawn)
 	{		
-		for (unsigned int i=0;i<_defaultAttributes.size();i++)
+		for (auto & _defaultAttribute : _defaultAttributes)
 		{
-			SmartBody::SBAttribute* dattr = _defaultAttributes[i].first;
+			SmartBody::SBAttribute* dattr = _defaultAttribute.first;
 			SmartBody::SBAttribute* pawnDefaultAttr = pawn->getAttribute(dattr->getName());
-			VariablePointer& varPtr = _defaultAttributes[i].second;
+			VariablePointer& varPtr = _defaultAttribute.second;
 			varPtr.updateVariableFromAttribute(pawnDefaultAttr);
 		}
 		_initialized = true;

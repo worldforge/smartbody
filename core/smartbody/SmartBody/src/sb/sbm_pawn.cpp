@@ -69,40 +69,26 @@ SkChannelArray SbmPawn::WORLD_OFFSET_CHANNELS_P;
 SbmPawn::SbmPawn(SmartBody::SBScene& scene, const char * name ) 
 : SmartBody::SBObject(),
 SmartBody::SBSceneOwned(scene),
+_skeleton(new SmartBody::SBSkeleton()),
+blendMeshGroup(new SrSnGroup()),
 ct_tree_p( MeControllerTreeRoot::create() ),
-world_offset_writer_p( nullptr ),
+world_offset_writer_p( new MeCtChannelWriter() ),
 wo_cache_timestamp( -std::numeric_limits<float>::max() )
 {
 	SmartBody::SBObject::setName( name );
-	ct_tree_p->setPawn(this);
-
-	_skeleton = new SmartBody::SBSkeleton();
-
-	SbmPawn::initData();
-
-	blendMeshGroup = new SrSnGroup();
-	blendMeshGroup->add(new SrSnMatrix, 0);
-}
-
-void SbmPawn::initData()
-{
-	_skeleton = new SmartBody::SBSkeleton();
-	ct_tree_p = MeControllerTreeRoot::create();
-	world_offset_writer_p = new MeCtChannelWriter();
 	std::string controllerName = this->getName();
 	controllerName += "_worldOffsetWriter";
 	world_offset_writer_p->setName( controllerName );
-	wo_cache_timestamp = -std::numeric_limits<float>::max(); 
-	//colObj_p = nullptr;
-	//phyObj_p = nullptr;
-	// world_offset_writer_p, applies external inputs to the skeleton,
-	//   and therefore needs to evaluate before other controllers
+	world_offset_writer_p->setPawn((SmartBody::SBPawn*)this);
+
+	ct_tree_p->setPawn(this);
 	ct_tree_p->add_controller( world_offset_writer_p.get() );
-	
+
+
 	collisionObjName = this->getName();
 	collisionObjName += "_BV"; // bounding volume
 
-	SmartBody::SBCollisionManager* colManager = _scene.getCollisionManager();	
+	SmartBody::SBCollisionManager* colManager = _scene.getCollisionManager();
 	SBGeomObject* geomObj = colManager->createCollisionObject(collisionObjName,"null",SrVec());
 	geomObj->attachToObj(this);
 
@@ -112,6 +98,8 @@ void SbmPawn::initData()
 	wo_cache.h = 0;
 	wo_cache.p = 0;
 	wo_cache.r = 0;
+
+	blendMeshGroup->add(new SrSnMatrix, 0);
 }
 
 const boost::intrusive_ptr<SkSkeleton>& SbmPawn::getSkeleton() const
@@ -153,7 +141,7 @@ int SbmPawn::init( boost::intrusive_ptr<SkSkeleton> new_skeleton_p ) {
 	if( _skeleton ) {
 		ct_tree_p->remove_skeleton( _skeleton->getName() );
 	}
-	_skeleton = new_skeleton_p;
+	_skeleton = std::move(new_skeleton_p);
 	if( _skeleton ) {
 		if( init_skeleton()!=CMD_SUCCESS ) {
 			return CMD_FAILURE; 

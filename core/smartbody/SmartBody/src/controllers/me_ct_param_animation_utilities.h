@@ -50,8 +50,7 @@ class MeCtParamAnimation;
 class PATimeManager
 {
 	public:
-		PATimeManager();
-		PATimeManager(PABlendData* data);
+		explicit PATimeManager(PABlendData* data);
 		~PATimeManager();
 
 		int getNumKeys();
@@ -103,7 +102,7 @@ class PAMotions
 
 	public:
 		PAMotions();
-		PAMotions(PABlendData* data);
+		explicit PAMotions(PABlendData* data);
 		~PAMotions();
 
 		int getNumMotions();
@@ -133,7 +132,7 @@ class PAWoManager : public PAMotions
 		SrMat currentBaseTransformMat;
 	public:
 		PAWoManager();
-		PAWoManager(PABlendData* data);
+		explicit PAWoManager(PABlendData* data);
 		~PAWoManager();
 
 		void apply(std::vector<double>& times, std::vector<double>& timeDiffs, SrBuffer<float>& buffer, bool directOverride = false);
@@ -150,7 +149,7 @@ class PAInterpolator : public PAMotions
 {
 	public:
 		PAInterpolator();
-		PAInterpolator(PABlendData* data);
+		explicit PAInterpolator(PABlendData* data);
 		~PAInterpolator();
 
 		std::vector<std::string> joints;	// joints to be blended, if this is defined which means partial, world offset would be ignored
@@ -174,7 +173,6 @@ class PABlendData
 		enum ScheduleMode { Now, Queued };
 
 	public:
-		SBAPI PABlendData(MeCtParamAnimation* controller);
 		SBAPI PABlendData(MeCtParamAnimation* controller, const std::string& stateName, std::vector<double>& w, BlendMode blend = Overwrite, WrapMode wrap = Loop, ScheduleMode schedule = Queued, double blendOffset = 0.0, double blendTrim = 0.0, bool dplay = false);
 		SBAPI PABlendData(MeCtParamAnimation* controller, PABlend* state, std::vector<double>& w, BlendMode blend = Overwrite, WrapMode wrap = Loop, ScheduleMode schedule = Queued, double blendOffset = 0.0, double blendTrim = 0.0, bool dplay = false);
 		SBAPI ~PABlendData();
@@ -188,8 +186,8 @@ class PABlendData
 
 		bool isPartialBlending();
 		bool isZeroDState();
-		SBAPI bool getTrajPosition(std::string effectorName, float time, SrVec& outPos);
-		MeCtParamAnimation* getController();
+		SBAPI bool getTrajPosition(const std::string& effectorName, float time, SrVec& outPos);
+		MeCtParamAnimation* getController() const;
 		std::vector<double> weights;
 
 		PATimeManager* timeManager;

@@ -63,8 +63,8 @@ public:
 	SrVec getSupportPosNormalize(float normalizeTime, int idx);
 	SrVec getStanceSupportPos(int idx);	
 	float getTransitionWeight(float motionTime, int& phase);
-	float getNormalizedCycleTime(float motionTime);
-	float getNormalizedFlightTime(float motionTime);
+	float getNormalizedCycleTime(float motionTime) const;
+	float getNormalizedFlightTime(float motionTime) const;
 };
 
 
@@ -83,7 +83,7 @@ public:
 	LocomotionAnalyzer();
 	~LocomotionAnalyzer();
 	std::string getMotionName();
-	void initLegCycles(const std::string& name, SmartBody::SBAnimationBlend* locoBlend, KeyTagMap& keyTag, SmartBody::SBSkeleton* skelCopy);
+	void initLegCycles(SmartBody::SBScene& scene, const std::string& name, SmartBody::SBAnimationBlend* locoBlend, KeyTagMap& keyTag, SmartBody::SBSkeleton* skelCopy);
 	LocomotionLegCycle* getLegCycle(int iLeg, float motionTime);	
 	LocomotionLegCycle* getLegCycleByIndex(int iLeg, int cycleIdx);
 protected:
@@ -93,7 +93,8 @@ protected:
 
 class MotionAnalysis
 {
-protected:		
+protected:
+	SmartBody::SBScene& _scene;
 	std::vector<std::string> motionNames;
 	MeCtCCDIK             ikCCD;	
 	std::vector<LegInfo*>  legInfos;
@@ -102,9 +103,9 @@ protected:
 	boost::intrusive_ptr<SmartBody::SBSkeleton> skelCopy;
 	float skelBaseHeight;	
 public:
-	MotionAnalysis();
+	MotionAnalysis(SmartBody::SBScene& scene);
 	~MotionAnalysis();
-	void init(std::string skeletonName, std::string baseJoint, SmartBody::SBAnimationBlend* locomotionBlend, const std::vector<std::string>& motions, std::string motionPrefix);
+	void init(const std::string& skeletonName, const std::string& baseJoint, SmartBody::SBAnimationBlend* locomotionBlend, const std::vector<std::string>& motions, const std::string& motionPrefix);
 	void initLegInfos();
 	void applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCharacter* sbChar, std::vector<double>& weights, PATimeManager* timeManager, SrMat worldOffsetMat, SrVec velocity, float angSpeed, BodyMotionFrame& inputFrame, BodyMotionFrame& outFrame);
 protected:

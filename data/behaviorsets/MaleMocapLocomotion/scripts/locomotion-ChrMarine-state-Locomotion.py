@@ -281,7 +281,7 @@ for i in range(0, len(motions)):
             statemarineLocomotion.addEvent(motionName, s1, 'footstep', str(leg) + '-1', False)
             statemarineLocomotion.addEvent(motionName, s2, 'footstep', str(leg) + '-2', False)
 
-statemarineLocomotion.buildMotionAnalysis("ChrBackovic.sk", "base", motions, '');
+statemarineLocomotion.buildMotionAnalysis(scene, "ChrBackovic.sk", "base", motions, '');
 
 skeleton = scene.getSkeleton("ChrBackovic.sk")
 joint = skeleton.getJointByName("base")

@@ -62,23 +62,9 @@ MeCtSaccade::MeCtSaccade(SbmCharacter* c) : SmartBody::SBController()
 	_intercept = 0.025f;				// unit: sec
 	_slope = 0.0024f;					// unit: sec/degree
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::string seedStr = scene->getStringAttribute("randomseed");
-	if (seedStr == "")
-	{
-		srand((unsigned int)time(0));
-	}
-	else
-	{
-		unsigned int seed = atoi(seedStr.c_str());
-		srand(seed);
-	}
 }
 
-MeCtSaccade::~MeCtSaccade()
-{
-	_character = nullptr;
-}
+MeCtSaccade::~MeCtSaccade() = default;
 
 /*
 	Saccade parameters per mode (Reference: Eye Alive)
@@ -161,7 +147,7 @@ void MeCtSaccade::spawnOnce(float dir, float amplitude, float dur)
 	_lastFixedRotation = _rotation;
 	_fixedRotation = SrQuat(_axis, _magnitude * (float)M_PI / 180.0f);
 
-	_time = (float) SmartBody::SBScene::getScene()->getSimulationManager()->getTime();;
+	_time = (float) getScene()->getSimulationManager()->getTime();;
 }
 
 void MeCtSaccade::reset(double t)
@@ -212,7 +198,7 @@ void MeCtSaccade::processing(double t, MeFrameData& frame)
         if (_idL < 0 || _idR < 0)
             return;
 	float time = float(t);
-	float dt = (float) SmartBody::SBScene::getScene()->getSimulationManager()->getTimeDt();;
+	float dt = (float) getScene()->getSimulationManager()->getTimeDt();;
 	if (_time == -1.0f)
 		return;
 
@@ -417,7 +403,7 @@ bool MeCtSaccade::controller_evaluate(double t, MeFrameData& frame)
 	if (_character->getStringAttribute("saccadePolicy") == "stopinutterance")
 	{
 
-		if (SmartBody::SBScene::getScene()->getSpeechBehaviourProvider() && SmartBody::SBScene::getScene()->getSpeechBehaviourProvider()->hasSpeechBehavior(*_character))
+		if (getScene()->getSpeechBehaviourProvider() && getScene()->getSpeechBehaviourProvider()->hasSpeechBehavior(*_character))
 		{
 			_validByPolicy = false;
 			reset(t);

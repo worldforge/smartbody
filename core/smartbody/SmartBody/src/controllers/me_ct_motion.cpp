@@ -324,7 +324,7 @@ bool MeCtMotion::controller_evaluate ( double t, MeFrameData& frame ) {
 	SmartBody::SBMotion* sbMotion = dynamic_cast<SmartBody::SBMotion*>(_motion);
 	if (_character)
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();		
+		SmartBody::SBScene* scene = getScene();
 		if (sbMotion)
 			retarget = scene->getRetargetManager()->getRetarget(sbMotion->getMotionSkeletonName(),_character->getSkeleton()->getName());	
 		if (retarget)
@@ -536,7 +536,7 @@ void MeCtMotion::checkMotionEvents(double time)
 		{
 			if (time >= motionEvent->getTime())
 			{
-				SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();
+				SmartBody::SBEventManager* manager = getScene()->getEventManager();
 				SmartBody::SBMotionEvent motionEventInstance;
 				motionEventInstance.setType(motionEvent->getType());
 				motionEventInstance.setParameters(motionEvent->getParameters());
@@ -544,7 +544,7 @@ void MeCtMotion::checkMotionEvents(double time)
 				SmartBody::SBPawn* pawn = this->getPawn();
 				if (pawn)
 				{
-					std::string pawnStr = SmartBody::SBScene::getScene()->getStringFromObject(pawn);
+					std::string pawnStr = getScene()->getStringFromObject(pawn);
 					motionEventInstance.setSource(pawnStr);
 				}
 

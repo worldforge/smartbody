@@ -91,20 +91,20 @@ class MeCtParamAnimation : public MeCtContainer
 				:	MeCtContainer::Context( container, context )
 			{}
 
-			const std::string& context_type() const {	return CONTEXT_TYPE; }
-			void child_channels_updated( MeController* child );
+			const std::string& context_type() const override {	return CONTEXT_TYPE; }
+			void child_channels_updated( MeController* child ) override;
 		};
 
 	public:
 		MeCtParamAnimation();
 		MeCtParamAnimation(SbmCharacter* c, MeCtChannelWriter* wo);
-		~MeCtParamAnimation();
+		~MeCtParamAnimation() override;
 
-		virtual void controller_map_updated();
-		virtual SkChannelArray& controller_channels();
-		virtual double controller_duration();
-		virtual const std::string& controller_type() const {return CONTROLLER_TYPE;}
-		virtual bool controller_evaluate( double t, MeFrameData& frame );
+		void controller_map_updated() override;
+		SkChannelArray& controller_channels() override;
+		double controller_duration() override;
+		const std::string& controller_type() const override {return CONTROLLER_TYPE;}
+		bool controller_evaluate( double t, MeFrameData& frame ) override;
 
 		void setBaseJointName(const std::string& name);
 		SBAPI const std::string& getBaseJointName();

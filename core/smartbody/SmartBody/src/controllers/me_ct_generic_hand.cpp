@@ -124,12 +124,12 @@ MeCtGenericHand::MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk
 	_character = c;
 
 	// initialize the final motion
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	//SmartBody::SBAssetManager* assetManager = c->_scene.getAssetManager();
 	//_finalMotion = assetManager->createMotion("finalMotion");
 	
 	// load the databsae motions for body and hand
-	_bodyDatabase = SmartBody::SBScene::getScene()->getMotion("brad_body_motion.skm");
-	//_handDatabase = SmartBody::SBScene::getScene()->getMotion("brad_hand_motion.skm");
+	_bodyDatabase = c->_scene.getMotion("brad_body_motion.skm");
+	//_handDatabase = getScene()->getMotion("brad_hand_motion.skm");
 
 	// try sbhandsynthesis here
 	_handSynthesis = new SmartBody::SBHandSynthesis(_sk, _channels);
@@ -272,7 +272,7 @@ void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame)
 
 	SmartBody::SBRetarget* retarget = nullptr;
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();		
+		SmartBody::SBScene* scene = getScene();
 		retarget = scene->getRetargetManager()->getRetarget(_bodyMotion->getMotionSkeletonName(),_character->getSkeleton()->getName());	
 		
 	}
@@ -385,7 +385,7 @@ void MeCtGenericHand::notify(SBSubject* subject)
 				return;
 			}
 			int numLevels = _character->getIntAttribute("hand.levels");
-			SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(motionName);
+			SmartBody::SBMotion* motion = getScene()->getMotion(motionName);
 			if (!motion)
 			{
 				SmartBody::util::log("No motion named %s available. Cannot initialize hand controller.", motionName.c_str());

@@ -114,7 +114,7 @@ void MeCtNewLocomotion::setup()
 	}
 	if(!SameMotion)
 	{
-		dataCycle  = SmartBody::SBScene::getScene()->getMotion(character->getStringAttribute("walkCycle"));
+		dataCycle  = getScene()->getMotion(character->getStringAttribute("walkCycle"));
 		if (!dataCycle)
 		return;
 		dataCycle->setName(character->getStringAttribute("walkCycle"));
@@ -433,7 +433,7 @@ void MeCtNewLocomotion::updateChannelBuffer(SrBuffer<float>& buffer, std::vector
 
 void MeCtNewLocomotion::updateChannelBuffer(SrBuffer<float>& buffer, float t)
 {
-	SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();
+	SmartBody::SBRetargetManager* retargetManager = getScene()->getRetargetManager();
 	SmartBody::SBRetarget* retarget =retargetManager->getRetarget(smoothCycle->getMotionSkeletonName(),character->getSkeleton()->getName());
 	smoothCycle->connect(sk.get());
 	smoothCycle->apply(t);//,SkMotion::Linear, 0, retarget);
@@ -493,10 +493,10 @@ bool MeCtNewLocomotion::addEffectorJointPair( const char* effectorName, const ch
 
 	std::string str = effectorName;
 
-	ConstraintMap::iterator ci = jEffectorMap.find(str);
+	auto ci = jEffectorMap.find(str);
 	if (ci != jEffectorMap.end())
 	{
-		EffectorConstantConstraint* cons = dynamic_cast<EffectorConstantConstraint*>((*ci).second);
+		auto* cons = dynamic_cast<EffectorConstantConstraint*>((*ci).second.get());
 		cons->rootName = rootName;
 		cons->targetPos = pos;
 		cons->targetRot = rot;
@@ -505,12 +505,12 @@ bool MeCtNewLocomotion::addEffectorJointPair( const char* effectorName, const ch
 	else // add effector-joint pair
 	{
 		// initialize constraint
-		EffectorConstantConstraint* cons = new EffectorConstantConstraint();
+		auto cons = std::make_unique<EffectorConstantConstraint>();
 		cons->efffectorName = effectorName;
 		cons->rootName = rootName;
 		cons->targetPos = pos;
 		cons->targetRot = rot;
-		jEffectorMap[str] = cons;
+		jEffectorMap[str] = std::move(cons);
 	}
 	return true;
 }
@@ -525,12 +525,12 @@ void MeCtNewLocomotion::controller_start()
 	RightFading.controlRestart();
 }
 
-void MeCtNewLocomotion::addPawn(SrVec& pos, std::string name)
+void MeCtNewLocomotion::addPawn(SrVec& pos, const std::string& name)
 {
-	SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(name);
+	SmartBody::SBPawn* pawn = getScene()->getPawn(name);
 	float maxerror = 0.30f;
 	if(pawn == nullptr)
-		pawn = SmartBody::SBScene::getScene()->createPawn(name);
+		pawn = getScene()->createPawn(name);
 	pawn->setStringAttribute("collisionShape","sphere");
 	pawn->setVec3Attribute("collisionShapeScale",0.025f,0.025f,0.025f);
 	if(errorSum/maxerror<1.0f )
@@ -621,13 +621,13 @@ void MeCtNewLocomotion::updateWorldOffset(SrBuffer<float>& buffer, SrQuat& rot, 
 
 void  MeCtNewLocomotion::notify(SmartBody::SBSubject* subject)
 {
-	SmartBody::SBAttribute* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
 	if (attribute)
 	{
 		const std::string& name = attribute->getName();
 		bool check_attributes=false;
-		for(unsigned int i = 0; i< attributes_names.size(); i++)
-			if (name == attributes_names[i])
+		for(auto & attributes_name : attributes_names)
+			if (name == attributes_name)
 				check_attributes=true;
 		if(check_attributes)
 			setup();

@@ -79,7 +79,7 @@ SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& na
 	addBlendToGraph(name);
 	_blends.emplace_back(blend);
 
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnObjectCreate(blend);
@@ -95,7 +95,7 @@ SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& na
 	addBlendToGraph(name);
 	_blends.emplace_back(blend);
 	
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnObjectCreate(blend);
@@ -111,7 +111,7 @@ SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& na
 	addBlendToGraph(name);
 	_blends.emplace_back(blend);
 
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnObjectCreate(blend);
@@ -128,7 +128,7 @@ SBAnimationBlend3D* SBAnimationBlendManager::createBlend3D(const std::string& na
 	addBlendToGraph(name);
 	_blends.emplace_back(blend);
 
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnObjectCreate(blend);
@@ -138,12 +138,12 @@ SBAnimationBlend3D* SBAnimationBlendManager::createBlend3D(const std::string& na
 
 SBMotionBlendBase* SBAnimationBlendManager::createMotionBlendBase( const std::string& name, const std::string& skelName, int dimension )
 {
-	SBMotionBlendBase* blend = new SBMotionBlendBase(name,skelName, dimension);
+	SBMotionBlendBase* blend = new SBMotionBlendBase(_scene, name,skelName, dimension);
 	
 	//	addBlendToGraph(name);
 	_blends.emplace_back(blend);
 
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnObjectCreate(blend);
@@ -172,7 +172,7 @@ SBAnimationTransition* SBAnimationBlendManager::createTransition(const std::stri
 
 	_transitions.emplace_back(transition);
 
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnObjectCreate(transition);
@@ -270,7 +270,7 @@ std::vector<std::string> SBAnimationBlendManager::getTransitionNames()
 
 std::string SBAnimationBlendManager::getCurrentBlend(const std::string& characterName)
 {
-	SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+	SBCharacter* character = _scene.getCharacter(characterName);
 	if (!character)
 		return "";
 
@@ -286,7 +286,7 @@ std::string SBAnimationBlendManager::getCurrentBlend(const std::string& characte
 SrVec SBAnimationBlendManager::getCurrentBlendParameters(const std::string& characterName)
 {
 	SrVec params;
-	SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+	SBCharacter* character = _scene.getCharacter(characterName);
 	if (!character)
 		return params;
 
@@ -326,7 +326,7 @@ SrVec SBAnimationBlendManager::getCurrentBlendParameters(const std::string& char
 
 bool SBAnimationBlendManager::isBlendScheduled(const std::string& characterName, const std::string& stateName)
 {
-	SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+	SBCharacter* character = _scene.getCharacter(characterName);
 	if (!character)
 		return false;
 

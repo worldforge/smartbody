@@ -66,7 +66,7 @@ void MeCtFace::clear( void )	{
 void MeCtFace::customizeMotion(const std::string& motionName, double startTime)
 {
 	_motionStartTime = startTime;
-	_customized_motion = (SkMotion*)SmartBody::SBScene::getScene()->getMotion(motionName);
+	_customized_motion = (SkMotion*)getScene()->getMotion(motionName);
 
 	SkChannelArray& mChannels = _customized_motion->channels();
 	int size = mChannels.size();

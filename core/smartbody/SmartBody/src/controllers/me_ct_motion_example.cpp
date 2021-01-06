@@ -1,8 +1,4 @@
-#include <assert.h>
-#include <sstream>
 #include <algorithm>
-#include <time.h>
-#include <boost/foreach.hpp>
 #include <sr/sr_euler.h>
 #include "controllers/me_ct_motion_example.hpp"
 #include "controllers/me_ct_motion_parameter.h"
@@ -22,14 +18,9 @@
 
 using namespace boost;
 
-BodyMotionFrame& BodyMotionFrame::operator=( const BodyMotionFrame& rhs )
-{
-	jointQuat = rhs.jointQuat;
-	rootPos   = rhs.rootPos;
-	return *this;
-}
+BodyMotionFrame& BodyMotionFrame::operator=( const BodyMotionFrame& rhs ) = default;
 
-void BodyMotionFrame::setMotionPose( float time, SmartBody::SBSkeleton* skel, const vector<SmartBody::SBJoint*>& affectedJoints,SmartBody::SBMotion* motion, bool retarget)
+void BodyMotionFrame::setMotionPose(SmartBody::SBScene& scene, float time, SmartBody::SBSkeleton* skel, const vector<SmartBody::SBJoint*>& affectedJoints,SmartBody::SBMotion* motion, bool retarget)
 {
 	SkJoint* rootJoint = affectedJoints[0];
 	motion->connect(skel);	
@@ -42,7 +33,7 @@ void BodyMotionFrame::setMotionPose( float time, SmartBody::SBSkeleton* skel, co
 	SmartBody::SBRetarget* sbRetarget = nullptr;
 	if (retarget)
 	{
-		SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();
+		SmartBody::SBRetargetManager* retargetManager = scene.getRetargetManager();
 		sbRetarget = retargetManager->getRetarget(motion->getMotionSkeletonName(),skel->getName());		
 	}
 	for (unsigned int i=0;i<affectedJoints.size();i++)
@@ -68,18 +59,12 @@ void BodyMotionInterface::getMotionParameter( dVector& outPara )
 /************************************************************************/
 /* BodyMotion                                                           */
 /************************************************************************/
-BodyMotion::BodyMotion()
+BodyMotion::BodyMotion(SmartBody::SBScene& scene)
+: _scene(scene), motion(nullptr)
 {
-	motion = nullptr;
-	timeWarp = nullptr;
 }
 
-BodyMotion::~BodyMotion()
-{
-	if (timeWarp)
-		delete timeWarp;
-	timeWarp = nullptr;
-}
+BodyMotion::~BodyMotion() = default;
 
 double BodyMotion::getRefDeltaTime( float u, float dt )
 {
@@ -92,13 +77,12 @@ double BodyMotion::motionPercent( float time )
 	return timeWarp->invTimeWarp(rt)/timeWarp->refTimeLength();
 }
 
-void BodyMotion::updateRootOffset(SmartBody::SBSkeleton* skel, SmartBody::SBJoint* rootJoint)
+void BodyMotion::updateRootOffset(SmartBody::SBScene& scene, SmartBody::SBSkeleton* skel, SmartBody::SBJoint* rootJoint)
 {	
 	SmartBody::SBRetarget* retarget = nullptr;
 	if (skel->getName() != motion->getMotionSkeletonName()) // set retarget ?
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SmartBody::SBRetargetManager* retargetManager = scene->getRetargetManager();
+		SmartBody::SBRetargetManager* retargetManager = scene.getRetargetManager();
 		retarget = retargetManager->getRetarget(motion->getMotionSkeletonName(),skel->getName());
 	}
 	motion->connect(skel);		
@@ -171,8 +155,7 @@ double BodyMotion::getMotionFrame( float time, SmartBody::SBSkeleton* skel, cons
 	SmartBody::SBRetarget* retarget = nullptr;
 	if (skel->getName() != motion->getMotionSkeletonName()) // set retarget ?
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SmartBody::SBRetargetManager* retargetManager = scene->getRetargetManager();
+		SmartBody::SBRetargetManager* retargetManager = _scene.getRetargetManager();
 		retarget = retargetManager->getRetarget(motion->getMotionSkeletonName(),skel->getName());
 	}
 	

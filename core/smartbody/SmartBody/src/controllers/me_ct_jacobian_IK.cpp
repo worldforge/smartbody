@@ -144,17 +144,17 @@ void MeCtIKTreeScenario::updateValidNodes()
 {
 	std::set<MeCtIKTreeNode*> validSet;
 	ConstraintMap::iterator ci;
-	for (unsigned int i=0;i<ikTreeNodes.size();i++)
-		ikTreeNodes[i]->validNodeIdx = -1;
+	for (auto & ikTreeNode : ikTreeNodes)
+		ikTreeNode->validNodeIdx = -1;
 
 	for (ci = ikPosEffectors->begin(); ci != ikPosEffectors->end(); ci++)
 	{
-		EffectorConstraint* cons = ci->second;		
+		EffectorConstraint* cons = ci->second.get();
 		updateEndEffectorValidNodes(cons, validSet);
 	}			
 	for (ci = ikRotEffectors->begin(); ci != ikRotEffectors->end(); ci++)
 	{
-		EffectorConstraint* cons = ci->second;
+		EffectorConstraint* cons = ci->second.get();
 		updateEndEffectorValidNodes(cons, validSet);
 	}	
 
@@ -497,7 +497,7 @@ void MeCtJacobianIK::computeJacobianReduce(MeCtIKTreeScenario* s)
  	//for (unsigned int i=0;i<s->ikPosEffectors.size();i++)
 	for (ci = s->ikPosEffectors->begin(); ci != s->ikPosEffectors->end(); ci++)
 	{
-		EffectorConstraint* cons = ci->second;
+		EffectorConstraint* cons = ci->second.get();
 		MeCtIKTreeNode* endNode = s->findIKTreeNode(cons->efffectorName.c_str());
 		if (!endNode)
 			continue;
@@ -593,7 +593,7 @@ void MeCtJacobianIK::computeJacobianReduce(MeCtIKTreeScenario* s)
 	//for (unsigned int i=0;i<s->ikRotEffectors.size();i++)
 	for (ci = s->ikRotEffectors->begin(); ci != s->ikRotEffectors->end(); ci++)
 	{
-		EffectorConstraint* cons = ci->second;
+		EffectorConstraint* cons = ci->second.get();
 		MeCtIKTreeNode* endNode = s->findIKTreeNode(cons->efffectorName.c_str());
 		SrMat& endMat = endNode->gmat;	
 		//SrMat consMat; cons->getRotConstraint().get_mat(consMat);
@@ -769,13 +769,12 @@ void MeCtJacobianIK::computeJacobian(MeCtIKTreeScenario* s)
 	dS.resize(s->ikPosEffectors->size()*3 + s->ikRotEffectors->size()*3);
 	
 	
-	ConstraintMap::iterator ci;
 	int posCount = 0;
 	// fill in entries for positional constraint
  	//for (unsigned int i=0;i<s->ikPosEffectors.size();i++)
-	for (ci = s->ikPosEffectors->begin(); ci != s->ikPosEffectors->end(); ci++)
+	for (auto ci = s->ikPosEffectors->begin(); ci != s->ikPosEffectors->end(); ci++)
 	{
-		EffectorConstraint* cons = ci->second;
+		EffectorConstraint* cons = ci->second.get();
 		MeCtIKTreeNode* endNode = s->findIKTreeNode(cons->efffectorName.c_str());
 		const SrMat& endMat = endNode->gmat;
 		SrVec endPos = endMat.get_translation();
@@ -846,9 +845,9 @@ void MeCtJacobianIK::computeJacobian(MeCtIKTreeScenario* s)
 	int rotCount = 0;
 	
 	//for (unsigned int i=0;i<s->ikRotEffectors.size();i++)
-	for (ci = s->ikRotEffectors->begin(); ci != s->ikRotEffectors->end(); ci++)
+	for (auto ci = s->ikRotEffectors->begin(); ci != s->ikRotEffectors->end(); ci++)
 	{
-		EffectorConstraint* cons = ci->second;
+		EffectorConstraint* cons = ci->second.get();
 		MeCtIKTreeNode* endNode = s->findIKTreeNode(cons->efffectorName.c_str());
 		const SrMat& endMat = endNode->gmat;	
 		SrVec targetRot;

@@ -296,7 +296,6 @@ class SBScene : public SBObject
 		std::unique_ptr<SBProfiler> _profiler;
 		std::unique_ptr<SBAnimationBlendManager> _blendManager;
 		std::unique_ptr<SBReachManager> _reachManager;
-//		std::unique_ptr<SBSteerManager> _steerManager;
 		std::unique_ptr<SBRealtimeManager> _realtimeManager;
 		std::unique_ptr<SBServiceManager> _serviceManager;
 		std::unique_ptr<SBGestureMapManager> _gestureMapManager;

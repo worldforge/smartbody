@@ -119,9 +119,7 @@ SBPawn::SBPawn(SmartBody::SBScene& scene, const char* name) : SbmPawn(scene, nam
 	hprEndTime = 0.f;
 }
 
-SBPawn::~SBPawn()
-{
-}
+SBPawn::~SBPawn() = default;
 
 void SBPawn::setName(const std::string& name)
 {

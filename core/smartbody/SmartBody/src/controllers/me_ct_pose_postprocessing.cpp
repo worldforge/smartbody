@@ -1,9 +1,6 @@
 #include "controllers/me_ct_pose_postprocessing.hpp"
-#include <assert.h>
 #include <boost/foreach.hpp>
 #include <utility>
-#include <sr/sr_timer.h>
-#include "gwiz_math.h"
 using namespace gwiz;
 
 std::string MeCtPosePostProcessing::CONTROLLER_TYPE = "PostProcessing";
@@ -27,7 +24,7 @@ void MeCtPosePostProcessing::updatePoseConstraint()
 		if (posConstraint.find(consName) == posConstraint.end())
 		{
 			cons = new EffectorConstantConstraint();
-			posConstraint[consName] = cons;
+			posConstraint[consName].reset(cons);
 			cons->efffectorName = consName;
 			cons->rootName = trajRecord->refJointName;
 			if (consName[0] == 'l')
@@ -37,7 +34,7 @@ void MeCtPosePostProcessing::updatePoseConstraint()
 		}	
 		else
 		{
-			cons = dynamic_cast<EffectorConstantConstraint*>(posConstraint[consName]);
+			cons = dynamic_cast<EffectorConstantConstraint*>(posConstraint[consName].get());
 		}		
 		cons->targetPos = trajRecord->jointTrajGlobalPos;
  		if (!trajRecord->isEnable)
@@ -70,7 +67,7 @@ bool MeCtPosePostProcessing::controller_evaluate( double t, MeFrameData& frame )
 	prev_time = (float)t;	
 
 	std::vector<std::string> consNames = _sbChar->getJointConstraintNames();
-	if (consNames.size() == 0) // if the character doesn't have any constraints, don't solve IK
+	if (consNames.empty()) // if the character doesn't have any constraints, don't solve IK
 		return true;
 
 
@@ -81,7 +78,7 @@ bool MeCtPosePostProcessing::controller_evaluate( double t, MeFrameData& frame )
 	//SmartBody::util::log("Counter = %d",counter);
 	for (ci = posConstraint.begin(); ci != posConstraint.end(); ci++)
 	{
-		EffectorConstraint* cons = ci->second;//posConstraint[i];
+		auto& cons = ci->second;//posConstraint[i];
 		MeCtIKTreeNode* node = ik_scenario.findIKTreeNode(cons->efffectorName.c_str());
 		if (node)
 			node->targetPos = cons->getPosConstraint();				

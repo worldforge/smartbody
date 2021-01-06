@@ -30,24 +30,24 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBMotionBlendBase::SBMotionBlendBase()
+//SBMotionBlendBase::SBMotionBlendBase()
+//{
+//	_isFinalized = false;
+//	parameterDim = 3;
+//	_dimension = "3D";
+//	blendEngine = nullptr;
+//	interpType = "KNN";
+//	blendType = "";
+//}
+
+SBMotionBlendBase::SBMotionBlendBase(SBScene& scene, const std::string& name, const std::string& skelName, int dimension) : SBAnimationBlend(name), SBSceneOwned(scene)
 {
 	_isFinalized = false;
 	parameterDim = 3;	
 	_dimension = "3D";
-	blendEngine = nullptr;
-	interpType = "KNN";
-	blendType = "";
-}
-
-SBMotionBlendBase::SBMotionBlendBase(const std::string& name, const std::string& skelName, int dimension) : SBAnimationBlend(name)
-{
-	_isFinalized = false;
-	parameterDim = 3;	
-	_dimension = "3D";
 	interpType = "KNN";
 
-	auto sbSkel = SBScene::getScene()->getSkeleton(skelName);
+	auto sbSkel = scene.getSkeleton(skelName);
 	if (sbSkel)
 	{
 		skeletonName = skelName;
@@ -158,7 +158,7 @@ void SBMotionBlendBase::buildBlendBase( const std::string& motionParameter, cons
 	blendEngine->init(motionParameter);	
 	SmartBody::util::log("num motions = %d, motion parameter = %s, interpolator type = %s",motions.size(), motionParameter.c_str(), interpolatorType.c_str());
 	interpType = interpolatorType;	
-	blendEngine->updateMotionExamples(motions, interpolatorType);	
+	blendEngine->updateMotionExamples(_scene, motions, interpolatorType);
 	// update all motion parameters
 	for (auto motion : motions)
 	{

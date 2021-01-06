@@ -243,11 +243,11 @@ bool MeCtExampleBodyReach::updateLocomotion()
 		cmd = "bml char " + charName + " <locomotion target=\"" + boost::lexical_cast<std::string>(steerTarget.x) + " " + 
 			boost::lexical_cast<std::string>(steerTarget.z) + "\"/>";//+ "\" facing=\"" + boost::lexical_cast<std::string>(facing) +"\"/>";//"\" proximity=\"" +  boost::lexical_cast<std::string>(rd->characterHeight*0.8f*0.01f) +"\"/>";
 		//rd->curHandAction->sendReachEvent(cmd);			
-		SmartBody::SBScene::getScene()->getCommandManager()->execute(const_cast<char*>(cmd.c_str()));
+		getScene()->getCommandManager()->execute(const_cast<char*>(cmd.c_str()));
 		isMoving = true;
 		//currentReachData->startReach = false;
 		startReach = false;		
-		SmartBody::SBEventManager* eventManager = SmartBody::SBScene::getScene()->getEventManager();
+		SmartBody::SBEventManager* eventManager = getScene()->getEventManager();
 		eventManager->addEventHandler("locomotion",this);
 		return false;
 	}
@@ -425,7 +425,7 @@ bool MeCtExampleBodyReach::controller_evaluate( double t, MeFrameData& frame )
 	// blending the input frame with ikFrame based on current fading
 	bool finishFadeOut = updateFading(dt);
 	
-	SmartBody::SBCharacter* curCharacter = dynamic_cast<SmartBody::SBCharacter*>(currentReachEngine->getCharacter());
+	auto* curCharacter = dynamic_cast<SmartBody::SBCharacter*>(currentReachEngine->getCharacter());
 	if (currentReachEngine->getCurrentState()->curStateName() != "Idle" || currentReachData->startReach )
 	{		
 		//SmartBody::util::log("update reach");
@@ -472,7 +472,7 @@ bool MeCtExampleBodyReach::controller_evaluate( double t, MeFrameData& frame )
 		si != handConstraint.end();
 		si++)
 	{	
-		EffectorJointConstraint* cons = dynamic_cast<EffectorJointConstraint*>(si->second);//rotConstraint[i];
+		auto cons = dynamic_cast<EffectorJointConstraint*>(si->second.get());//rotConstraint[i];
 		SrMat gmat = currentReachEngine->getMotionParameter()->getMotionFrameJoint(outMotionFrame,cons->efffectorName.c_str())->gmat();
 		SrVec targetPos = gmat.get_translation();
 		SrQuat targetRot = SrQuat(gmat.get_rotation());		
@@ -492,10 +492,9 @@ void MeCtExampleBodyReach::init(SmartBody::SBPawn* pawn)
 	for (int i=0;i<3;i++)
 		_channels.add(rootNode->joint->getMappedJointName(), (SkChannel::Type)(SkChannel::XPos+i));
 	affectedJoints.clear();
-	for (unsigned int i=0;i<nodeList.size();i++)
+	for (auto node : nodeList)
 	{
-		MeCtIKTreeNode* node = nodeList[i];
-		SkJoint* joint = node->joint;
+			SkJoint* joint = node->joint;
 		SkJointQuat* skQuat = joint->quat();				
 		affectedJoints.emplace_back(joint);
 		_channels.add(joint->getMappedJointName(), SkChannel::Quat);		
@@ -526,10 +525,9 @@ void MeCtExampleBodyReach::updateChannelBuffer( MeFrameData& frame, BodyMotionFr
 	if (motionFrame.jointQuat.size() != affectedJoints.size())
 		motionFrame.jointQuat.resize(affectedJoints.size());
 
-	for (unsigned int i=0;i<motionFrame.jointQuat.size();i++)
+	for (auto & quat : motionFrame.jointQuat)
 	{
-		SrQuat& quat = motionFrame.jointQuat[i];		
-		int index = frame.toBufferIndex(_toContextCh[count++]);		
+			int index = frame.toBufferIndex(_toContextCh[count++]);
 		//printf("buffer index = %d\n",index);		
 		if (index == -1)
 		{
@@ -599,7 +597,7 @@ void MeCtExampleBodyReach::notify(SBSubject* subject)
 SBAPI void MeCtExampleBodyReach::executeAction( SmartBody::SBEvent* event )
 {
 	locomotionReachTarget = true;
-	SmartBody::SBEventManager* eventManager = SmartBody::SBScene::getScene()->getEventManager();
+	SmartBody::SBEventManager* eventManager = getScene()->getEventManager();
 	eventManager->removeEventHandler("locomotion");
 }
 
@@ -633,7 +631,7 @@ void MeCtExampleBodyReach::setReach( SmartBody::SBReach* reach )
 		currentReachEngine = reachEngineMap[defaultReachType];
 		currentReachData = currentReachEngine->getReachData();
 	}	
-	else if (reachEngineMap.size() > 0)
+	else if (!reachEngineMap.empty())
 	{
 		currentReachEngine = reachEngineMap[MeCtReachEngine::RIGHT_ARM];
 		currentReachData = currentReachEngine->getReachData();

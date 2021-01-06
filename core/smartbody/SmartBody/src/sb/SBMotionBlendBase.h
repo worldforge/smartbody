@@ -27,11 +27,11 @@ class MeCtBlendEngine;
 
 namespace SmartBody {
 
-	class SBMotionBlendBase : public SBAnimationBlend
+	class SBMotionBlendBase : public SBAnimationBlend, public SBSceneOwned
 	{
 		public:		
-			SBAPI SBMotionBlendBase();
-			SBAPI SBMotionBlendBase(const std::string& name, const std::string& skelName, int dimension);
+			//SBAPI SBMotionBlendBase();
+			SBAPI SBMotionBlendBase(SBScene& scene, const std::string& name, const std::string& skelName, int dimension);
 			SBAPI ~SBMotionBlendBase();			
 
 			

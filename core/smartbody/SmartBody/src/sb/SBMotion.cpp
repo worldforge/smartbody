@@ -1063,7 +1063,7 @@ void SBMotion::removeMotionChannelsByEndJoints(std::string skelName, std::vector
 	this->removeMotionChannels(removeJoints);
 }
 
-SBMotion* SBMotion::retarget( std::string name, std::string srcSkeletonName, std::string dstSkeletonName, std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints, std::map<std::string, SrVec>& offsetJointMap)
+SBMotion* SBMotion::retarget( const std::string& name, std::string srcSkeletonName, std::string dstSkeletonName, std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints, std::map<std::string, SrVec>& offsetJointMap)
 {
 	 
 	auto srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(srcSkeletonName);
@@ -1102,7 +1102,7 @@ SBMotion* SBMotion::retarget( std::string name, std::string srcSkeletonName, std
 		}
 		else
 			motionName = name;
-		sbmotion->setName(motionName.c_str());
+		sbmotion->setName(motionName);
 		//mcu.motion_map.insert(std::pair<std::string, SkMotion*>(motionName, motion));
 		if (SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
 			return sbmotion;
@@ -1124,10 +1124,10 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 	interSk.invalidate_global_matrices();
 	interSk.update_global_matrices();
 
-	SmartBody::SBJoint* rootJoint = dynamic_cast<SBJoint*>(interSk.root());
+	auto* rootJoint = dynamic_cast<SBJoint*>(interSk.root());
 	if (interSk.getJointByMappedName("base"))
 		rootJoint = interSk.getJointByMappedName("base");
-	SmartBody::SBMotion* constraintMotion = dynamic_cast<SBMotion*>(targetMotion->copyMotion()); // copy the motion first	
+	auto* constraintMotion = dynamic_cast<SBMotion*>(targetMotion->copyMotion()); // copy the motion first
 	MeCtIKTreeScenario ikScenario;
 	std::vector<std::string> stopJoints;
 	ikScenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);	
@@ -1144,7 +1144,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 	for (unsigned int i=0;i<endJoints.size();i++)
 	{
 		std::string jname = endJoints[i];
-		std::string jrootName = "";
+		std::string jrootName;
 		if (endJointRoots.size() > i)
 			jrootName = endJointRoots[i];
 
@@ -1152,7 +1152,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 		SBJoint* tgtJoint = interSk.getJointByName(jname);
 		if (srcJoint && tgtJoint) // a valid effector
 		{
-			EffectorConstantConstraint* constraint = new EffectorConstantConstraint();
+			auto constraint = std::make_unique<EffectorConstantConstraint>();
 			constraint->efffectorName = jname;
 			//SBJoint* pjoint = dynamic_cast<SBJoint*>(tgtJoint->getParent()->getParent()->getParent());			
 			if (interSk.getJointByName(jrootName))
@@ -1166,7 +1166,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 					pjoint = pjoint->getParent();
 				constraint->rootName = pjoint->jointName();
 			}			
-			consMap[jname] = constraint;
+			consMap[jname] = std::move(constraint);
 		}
 	}
 
@@ -1214,7 +1214,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 		  mi != consMap.end();
 		  mi++)
 	{
-		auto* con = dynamic_cast<EffectorConstantConstraint*>(mi->second);
+		auto* con = dynamic_cast<EffectorConstantConstraint*>(mi->second.get());
 		SBJoint* srcJoint = tempSrcSk.getJointByName(con->efffectorName);
 		SBJoint* tgtJoint = interSk.getJointByName(con->efffectorName);
 		if (tgtJoint)
@@ -1259,7 +1259,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 			  mi != consMap.end();
 			  mi++)
 		{
-			EffectorConstantConstraint* con = dynamic_cast<EffectorConstantConstraint*>(mi->second);
+			EffectorConstantConstraint* con = dynamic_cast<EffectorConstantConstraint*>(mi->second.get());
 			SBJoint* srcJoint = tempSrcSk.getJointByName(con->efffectorName);
 			if (srcJoint)
 			{
@@ -1355,13 +1355,13 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 			SBJoint* conJoint = skel->getJointByName(rec.jointNames[k]);
 			if (conJoint)
 			{
-				EffectorConstantConstraint* constraint = new EffectorConstantConstraint();
+				auto constraint = std::make_unique<EffectorConstantConstraint>();
 				constraint->efffectorName = rec.jointNames[k];
 				constraint->targetPos = rec.posVec[k];
-				SBJoint* pjoint = dynamic_cast<SBJoint*>(conJoint->getParent()->getParent()->getParent());
+				auto* pjoint = dynamic_cast<SBJoint*>(conJoint->getParent()->getParent()->getParent());
 				constraint->rootName = pjoint->jointName();
 				//SmartBody::util::log("effector = %s, root = %s, target pos = %f %f %f",rec.jointNames[k].c_str(),constraint->rootName.c_str(), rec.posVec[k][0],rec.posVec[k][1],rec.posVec[k][2]);
-				cons[rec.jointNames[k]] = constraint;
+				cons[rec.jointNames[k]] = std::move(constraint);
 			}				
 		}
 		int curFrame = -1;

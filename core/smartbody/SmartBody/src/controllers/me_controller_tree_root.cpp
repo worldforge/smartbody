@@ -144,16 +144,6 @@ struct Evaluate_Func {
 	}
 };
 
-// Since std::mem_fun( &MeController::remap ) doesn't seem to work with controller_ptr
-struct RemapAndActivate_Func {
-	void operator() ( controller_ptr& ct ){
-		ct->remap();
-		if( !ct->active() ) {
-			ct->start(SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
-		}
-	}
-};
-
 
 ///////////////////////////////////////////////////////////////////////////
 //  MeControllerTreeRootImpl
@@ -193,13 +183,13 @@ public:
 
 	// Constructor
 	MeControllerTreeRootImpl()
-	:	_skeletonName(""),
-		_skeleton(nullptr),
+	:	_skeleton(nullptr),
 		_state(VALID),
 		_channels_cur(0),
 		_controllers(),
 		_frame_data(this),  // Ignore this warning... no member access
-		_logger( nullptr )
+		_logger( nullptr ),
+		_pawn(nullptr)
 	{
 		// Make sure the ChannelArray members are zeroed out
 		_channels[0].init();
@@ -207,7 +197,7 @@ public:
 	}
 
 	// Destructor
-	~MeControllerTreeRootImpl() {
+	~MeControllerTreeRootImpl() override {
 		/*
 		vector< controller_ptr >::iterator ct_iter = _controllers.begin();
 		vector< controller_ptr >::iterator ct_end = _controllers.end();
@@ -225,7 +215,7 @@ public:
 
 
 	// Implement MeControllerContext
-    SkChannelArray& channels() {
+    SkChannelArray& channels() override {
 #if 0
 		if( _state!=State::VALID ) 
 			SmartBody::util::log("ERROR: MeControllerTreeRoot::channels() called while invalid");
@@ -311,12 +301,12 @@ public:
 		//	remove_skeleton( _skeleton->getName() );
 	}
 
-	SbmPawn* getPawn()
+	SbmPawn* getPawn() override
 	{
 		return _pawn;
 	}
 
-	void setPawn(SbmPawn* pawn)
+	void setPawn(SbmPawn* pawn) override
 	{
 		_pawn = pawn;
 	}
@@ -326,7 +316,7 @@ public:
 	 *  Inserts controller at position, or end if position > countChildren()
 	 */
     void add_controller( MeController* ct,
-                        unsigned int position = 99999 )
+                        unsigned int position = 99999 ) override
 	{
 		SR_ASSERT( _state!=REMAPPING );  // simple lock
 		// Check bounds
@@ -340,14 +330,14 @@ public:
 
 		if( _state==VALID ) {
 			ct->remap();
-			ct->start(SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+			ct->start(getPawn()->_scene.getSimulationManager()->getTime());
 		}
 	}
 
 	/**
 	 *	Removes a controller from the controller tree.
 	 */
-	void remove_controller( MeController* ct )
+	void remove_controller( MeController* ct ) override
 	{	
 		auto iterPos = _controllers.end();
 		for (auto  iter = _controllers.begin();
@@ -366,7 +356,7 @@ public:
 		MeControllerContext::remove_controller( ct );
 	}
 
-	MeController* findControllerByHandle(const std::string& handle)
+	MeController* findControllerByHandle(const std::string& handle) override
 	{
 		for (auto & _controller : _controllers)
 		{
@@ -376,7 +366,7 @@ public:
 			}
 			else
 			{
-				MeCtContainer* container = dynamic_cast<MeCtContainer*>(_controller);
+				auto* container = dynamic_cast<MeCtContainer*>(_controller);
 				if (container)
 				{
 					MeController* controller = container->findControllerByHandle(handle);
@@ -391,21 +381,21 @@ public:
 	/**
 	 *  Returns count of controllers in the tree.
 	 */
-    unsigned int count_controllers() 
+    unsigned int count_controllers() override
     { return ( _controllers.size() ); }
 
     /**
 	 *  Returns a pointer to a controller currently in the tree.
 	 */
-    MeController* controller( unsigned int n ) 
+    MeController* controller( unsigned int n ) override
     { return (n<_controllers.size())? _controllers[n]: nullptr; }
 
 	/**
 	 *  Evaluates all the controllers.
 	 */
-	void evaluate( double time ) {
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SmartBody::SBProfiler* profiler = scene->getProfiler();
+	void evaluate( double time ) override {
+		auto& scene = getPawn()->_scene;
+		SmartBody::SBProfiler* profiler = scene.getProfiler();
 
 		SR_ASSERT( _state!=REMAPPING );  // simple lock
 		if( _state==INVALID ) {
@@ -426,7 +416,7 @@ public:
 		//          Evaluate_Func( time, _frame_data ) );
 		for (auto & _controller : _controllers)
 		{
-			profiler->mark_time("controllers", 1, _controller->getName().c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+			profiler->mark_time("controllers", 1, _controller->getName().c_str(), scene.getSimulationManager()->getTime());
 			_controller->evaluate(time,_frame_data);
 			profiler->mark("controllers");
 		}
@@ -438,14 +428,14 @@ public:
 	/**
 	 *  Returns the most recent frame count.
 	 */
-	unsigned int getFrameCount() {
+	unsigned int getFrameCount() override {
 		return _frame_data._count_cur;
 	}
 
 	/**
 	 *  Returns the MeFrameData of the last frame evaluated.
 	 */
-	MeFrameData& getLastFrame() {
+	MeFrameData& getLastFrame() override {
 		return _frame_data;
 	}
 
@@ -475,7 +465,7 @@ public:
 	 *  A better solution is to build a controller or controller context capable 
 	 *  of copying the data directly into the scene graph.
 	 */
-	void applyBufferToAllSkeletons() {
+	void applyBufferToAllSkeletons() override {
 		SR_ASSERT( _state!=REMAPPING );
 		if( _skeleton ) {
 			if( _state==INVALID )
@@ -591,10 +581,14 @@ private:
 		_frame_data.remapBuffers( cur, prev );
 		prev.init();  // clear old channel references
 
-		RemapAndActivate_Func remapAndActivate;
-		for_each( _controllers.begin(), 
-		          _controllers.end(),
-		          remapAndActivate );
+		auto time = _pawn->_scene.getSimulationManager()->getTime();
+
+		for (auto& ct : _controllers) {
+			ct->remap();
+			if( !ct->active() ) {
+				ct->start(time);
+			}
+		}
 
 		_state = VALID;
 	}

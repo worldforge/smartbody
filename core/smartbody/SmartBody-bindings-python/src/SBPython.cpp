@@ -557,7 +557,7 @@ BOOST_PYTHON_MODULE (SmartBody) {
 			.def("getPawn", &SBController::getPawn, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Attaches the attached pawn to the controller.")
 			.def("setPawn", &SBController::setPawn, "Attaches the pawn to the controller.");
 
-	boost::python::class_<MeCtNewLocomotion, boost::python::bases<SBController, SBObject> >("SBNewLocomotion")
+	boost::python::class_<MeCtNewLocomotion, boost::python::bases<SBController, SBObject>, boost::noncopyable >("SBNewLocomotion", boost::python::no_init)
 			.def(boost::python::init<>())
 			.def("reset", &MeCtNewLocomotion::reset, "Resets.")
 			.def("setDesiredHeading", &MeCtNewLocomotion::setDesiredHeading, "Sets the desired heading")

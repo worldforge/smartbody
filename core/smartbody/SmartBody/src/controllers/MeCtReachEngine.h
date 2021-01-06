@@ -38,7 +38,7 @@ protected:
 	vector<InterpolationExample*>* resampleData;
 	vector<SmartBody::SBJoint*>      affectedJoints; // list of joints that are affected by motion interpolation & IK. 
 	// set to the full skeleton by default ( excluding fingers & face bones ).
-	std::map<std::string,ReachStateInterface*> stateTable;
+	std::map<std::string,std::unique_ptr<ReachStateInterface>> stateTable;
 	std::map<HandActionState,ReachHandAction*> handActionTable;
 	ReachStateInterface*  curReachState;	
 
@@ -59,7 +59,7 @@ protected:
 
 	MeCtJacobianIK        ik;
 	MeCtCCDIK             ikCCD;	
-	ReachStateData*       reachData;	
+	std::unique_ptr<ReachStateData>       reachData;
 public:
 	vector<SrVec>         examplePts,resamplePts;
 	HandActionState       curHandActionState;
@@ -69,14 +69,14 @@ public:
 	MeCtIKTreeScenario    ikScenario, ikCCDScenario;
 
 public:
-	MeCtReachEngine(SbmCharacter* sbmChar, boost::intrusive_ptr<SmartBody::SBSkeleton> sk);
+	MeCtReachEngine(SbmCharacter* sbmChar, const boost::intrusive_ptr<SmartBody::SBSkeleton>& sk);
 	virtual ~MeCtReachEngine();
 	bool isValid() const { return valid; }
-	std::string     getReachTypeTag();
-	int             getReachTypeID();
+	std::string     getReachTypeTag() const;
+	int             getReachTypeID() const;
 	ReachStateInterface* getCurrentState() { return curReachState; }
 	SbmCharacter*   getCharacter() { return character; }
-	ReachStateData* getReachData() { return reachData; }
+	ReachStateData* getReachData() { return reachData.get(); }
 	MotionParameter* getMotionParameter() { return motionParameter; }
 	BodyMotionFrame& outputMotion() { return ikMotionFrame; }
 	IKTreeNodeList& ikTreeNodes() { return ikScenario.ikTreeNodes; }

@@ -29,7 +29,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 /************************************************************************/
 /* Effector State                                                       */
 /************************************************************************/
-EffectorState::EffectorState()
+EffectorState::EffectorState(SmartBody::SBScene& scene)
+: _scene(scene)
 {
 	//attachedPawn = nullptr;
 	attachedPawnName = "";
@@ -38,8 +39,8 @@ EffectorState::EffectorState()
 SmartBody::SBPawn* EffectorState::getAttachedPawn()
 {
 	
-	SmartBody::SBPawn* attachedPawn =  SmartBody::SBScene::getScene()->getPawn(attachedPawnName);
-	if (attachedPawnName != "" && !attachedPawn) // the pawn is no longer exist...
+	SmartBody::SBPawn* attachedPawn =  _scene.getPawn(attachedPawnName);
+	if (!attachedPawnName.empty() && !attachedPawn) // the pawn is no longer exist...
 	{
 		attachedPawnName = "";
 	}
@@ -130,7 +131,7 @@ bool ReachTarget::targetIsJoint()
 
 SmartBody::SBPawn* ReachTarget::getTargetPawn()
 {
-	SmartBody::SBPawn* targetPawn = SmartBody::SBScene::getScene()->getPawn(targetPawnName);
+	SmartBody::SBPawn* targetPawn = _scene.getPawn(targetPawnName);
 	if (targetPawnName != "" && !targetPawn) // the pawn is no longer exist...
 	{
 		targetPawnName = "";
@@ -156,7 +157,8 @@ SRT ReachTarget::getGrabTargetState( SRT& naturalState, float offset )
 	return st;
 }
 
-ReachTarget::ReachTarget()
+ReachTarget::ReachTarget(SmartBody::SBScene& scene)
+: _scene(scene)
 {
 	targetPawnName ="";
 	targetJoint = nullptr;
@@ -212,17 +214,17 @@ void ReachHandAction::sendReachEvent(const std::string& etype, const std::string
 	motionEvent->setType(eventType);			
 	motionEvent->setParameters(cmd);
 	motionEvent->setSource(source);
-	SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();		
+	SmartBody::SBEventManager* manager = getScene()->getEventManager();
 	manager->handleEvent(motionEvent);
 	delete motionEvent;
 	
 #else
-	std::string eventType = etype;		
+	const std::string& eventType = etype;
 	SmartBody::SBMotionEvent motionEvent;
 	motionEvent.setType(eventType);			
 	motionEvent.setParameters(cmd);
 	motionEvent.setSource(source);
-	SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();		
+	SmartBody::SBEventManager* manager = _scene.getEventManager();
 	manager->handleEvent(&motionEvent);
 #endif
 
@@ -415,7 +417,7 @@ void ReachHandAction::putDownAttachedPawn( ReachStateData* rd )
 		cmd = cmd + ": " + estate.attachedPawnName;
 	rd->curHandAction->sendReachEvent("reachNotifier",cmd, charName);
 
-	std::string targetName = "";	
+	std::string targetName;
 	if (attachedPawn)
 		targetName = attachedPawn->getName();
 	SmartBody::util::log("   pawn released: %s",targetName.c_str());
@@ -625,8 +627,10 @@ void ReachHandPointAction::reachPreCompleteAction( ReachStateData* rd )
 /* Reach State Data                                                     */
 /************************************************************************/
 
-ReachStateData::ReachStateData()
-{
+ReachStateData::ReachStateData(SmartBody::SBScene& scene)
+		: _scene(scene),
+		  effectorState(scene),
+		  reachTarget(scene) {
 	curTime = 0.f;
 	curRefTime = 0.f;
 	stateTime = 0.f;
@@ -760,8 +764,7 @@ void ReachStateInterface::updateReachToTarget( ReachStateData* rd )
 	
 	if (rd->curHandAction->getType() == MeCtReachEngine::POINT_AT_OBJECT)
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SmartBody::SBCharacter* sbChar = scene->getCharacter(rd->charName);
+		SmartBody::SBCharacter* sbChar = rd->_scene.getCharacter(rd->charName);
 		
 		SrVec sbCenter = rd->shoulderPosition;//(rd->gmat.get_translation()+rd->centerOffset);
 		SrVec newTargetDir = ts.tran - sbCenter;

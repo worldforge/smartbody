@@ -82,7 +82,7 @@ class MeCtMotion : public SmartBody::SBController, public FadingControl
     MeCtMotion ();
 
     /*! Destructor is public but pay attention to the use of ref()/unref() */
-   virtual ~MeCtMotion ();
+   ~MeCtMotion () override;
 
     /*! Set the motion to be used. A valid motion must be set using
         this method before calling any other method.
@@ -137,7 +137,7 @@ class MeCtMotion : public SmartBody::SBController, public FadingControl
 
     /*! This method will return the fixed total duration time that the controller
         will take, or will return -1 if the controller is looped */
-    virtual double controller_duration ();
+    double controller_duration () override;
 
 	/*! Gets the offset from the start of the motion. */
 	virtual double offset () { return _offset; }
@@ -177,12 +177,12 @@ class MeCtMotion : public SmartBody::SBController, public FadingControl
 	void map_floats();
 
 	// callbacks for the base class
-	virtual void controller_map_updated();
-	virtual void controller_start();
-	virtual void controller_stop();
-	virtual bool controller_evaluate ( double t, MeFrameData& frame );
-    virtual SkChannelArray& controller_channels ();
-    virtual const std::string& controller_type () const;
+	void controller_map_updated() override;
+	void controller_start() override;
+	void controller_stop() override;
+	bool controller_evaluate ( double t, MeFrameData& frame ) override;
+    SkChannelArray& controller_channels () override;
+    const std::string& controller_type () const override;
 };
 
 //======================================= EOF =====================================

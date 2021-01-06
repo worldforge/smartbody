@@ -3,11 +3,13 @@
 
 namespace SmartBody {
 	class SBPawn;
+	class SBScene;
 }
 
 class ReachTarget
 {
 public:
+	SmartBody::SBScene& _scene;
 	SRT      targetState;
 	SRT      paraTargetState;
 	//SbmPawn* targetPawn;
@@ -15,8 +17,8 @@ public:
 	SkJoint* targetJoint;
 	bool     useTargetPawn, useTargetJoint;
 public:
-	ReachTarget();
-	~ReachTarget() {}
+	explicit ReachTarget(SmartBody::SBScene& scene);
+	~ReachTarget() = default;
 	ReachTarget& operator= (const ReachTarget& rt);
 	bool targetIsPawn();
 	bool targetHasGeometry();
@@ -28,12 +30,13 @@ public:
 	SRT getParaTargetState(); // the return state is based on target's state
 	SRT getGrabTargetState(SRT& naturalState, float offset = 0.f); 
 	SmartBody::SBPawn* getTargetPawn();
-	std::string getTargetPawnName() { return targetPawnName; }
+	std::string getTargetPawnName() const { return targetPawnName; }
 };
 
 class EffectorState 
 {
 public:
+	SmartBody::SBScene& _scene;
 	std::string  effectorName;
 	SRT startTargetState, curBlendState; 
 	SRT curIKTargetState, ikTargetState;
@@ -45,16 +48,17 @@ public:
 	std::string attachedPawnName;
 	SrMat    attachMat;
 public:
-	EffectorState();
-	~EffectorState() {}
+	explicit EffectorState(SmartBody::SBScene& scene);
+	~EffectorState() = default;
 	SmartBody::SBPawn* getAttachedPawn();
 	void setAttachedPawn(ReachStateData* rd);
 	void removeAttachedPawn(ReachStateData* rd);	
 };
 
-class ReachHandAction // dafault hand behavior for "Touch"
+struct ReachHandAction // dafault hand behavior for "Touch"
 {
-public:	
+	explicit ReachHandAction(SmartBody::SBScene& scene): _scene(scene) {}
+	SmartBody::SBScene& _scene;
 	virtual void reachPreCompleteAction(ReachStateData* rd) ;
 	virtual void reachCompleteAction(ReachStateData* rd) ;	
 	virtual void reachPreReturnAction(ReachStateData* rd);
@@ -66,53 +70,53 @@ public:
 	
 
 	void sendReachEvent(const std::string& etype, const std::string& cmd, const std::string& source, float time = 0.0);
-public:
 	void pickUpAttachedPawn(ReachStateData* rd);
 	void putDownAttachedPawn(ReachStateData* rd);
 	virtual int getType();
-protected:
 	std::string generateGrabCmd(const std::string& charName, const std::string& targetName, const std::string& grabState, int type, float grabSpeed);
 	std::string generateAttachCmd(const std::string& charName, const std::string& targetName, int type, float grabSpeed);
 };
 
-class ReachHandPickUpAction : public ReachHandAction 
+struct ReachHandPickUpAction : public ReachHandAction
 {
-public:		
-	virtual void reachCompleteAction(ReachStateData* rd);		
-	virtual void reachNewTargetAction(ReachStateData* rd);
-	virtual void reachPreReturnAction(ReachStateData* rd) {} ;
-	virtual void reachReturnAction(ReachStateData* rd); // do nothing when return
-	virtual void reachPostCompleteAction(ReachStateData* rd); 
-	virtual int getType();
+	explicit ReachHandPickUpAction(SmartBody::SBScene& scene): ReachHandAction(scene) {}
+
+	void reachCompleteAction(ReachStateData* rd) override;
+	void reachNewTargetAction(ReachStateData* rd) override;
+	void reachPreReturnAction(ReachStateData* rd) override {} ;
+	void reachReturnAction(ReachStateData* rd) override; // do nothing when return
+	void reachPostCompleteAction(ReachStateData* rd) override;
+	int getType() override;
 };
 
-class ReachHandPutDownAction : public ReachHandAction
+struct ReachHandPutDownAction : public ReachHandAction
 {
-public:	
-	virtual void reachPreCompleteAction(ReachStateData* rd) {}; // do nothing when moving toward target
-	virtual void reachCompleteAction(ReachStateData* rd);
-	virtual void reachPreReturnAction(ReachStateData* rd);
-	virtual void reachReturnAction(ReachStateData* rd);	
-	virtual SRT getHandTargetStateOffset(ReachStateData* rd, SRT& naturalState);
-	virtual int getType();
+	explicit ReachHandPutDownAction(SmartBody::SBScene& scene): ReachHandAction(scene) {}
+	void reachPreCompleteAction(ReachStateData* rd) override {}; // do nothing when moving toward target
+	void reachCompleteAction(ReachStateData* rd) override;
+	void reachPreReturnAction(ReachStateData* rd) override;
+	void reachReturnAction(ReachStateData* rd) override;
+	SRT getHandTargetStateOffset(ReachStateData* rd, SRT& naturalState) override;
+	int getType() override;
 };
 
-class ReachHandPointAction : public ReachHandAction // dafault hand behavior for "Touch"
+struct ReachHandPointAction : public ReachHandAction // dafault hand behavior for "Touch"
 {
-public:	
-	virtual void reachPreCompleteAction(ReachStateData* rd);
-	virtual void reachCompleteAction(ReachStateData* rd) {};	
-	virtual void reachPreReturnAction(ReachStateData* rd) {};
-	virtual void reachNewTargetAction(ReachStateData* rd) {};
-	virtual void reachPostCompleteAction(ReachStateData* rd) {};
-	virtual SRT getHandTargetStateOffset(ReachStateData* rd, SRT& naturalState);
-	virtual bool isPickingUpNewPawn(ReachStateData* rd);
-	virtual int getType();
+	explicit ReachHandPointAction(SmartBody::SBScene& scene): ReachHandAction(scene) {}
+	void reachPreCompleteAction(ReachStateData* rd) override;
+	void reachCompleteAction(ReachStateData* rd) override {};
+	void reachPreReturnAction(ReachStateData* rd) override {};
+	void reachNewTargetAction(ReachStateData* rd) override {};
+	void reachPostCompleteAction(ReachStateData* rd) override {};
+	SRT getHandTargetStateOffset(ReachStateData* rd, SRT& naturalState) override;
+	bool isPickingUpNewPawn(ReachStateData* rd) override;
+	int getType() override;
 };
 
 class ReachStateData
 {
-public:	
+public:
+	SmartBody::SBScene& _scene;
 	std::string     charName; // character name
 	int             reachType;
 	float           curTime, dt;
@@ -155,7 +159,7 @@ public:
 	float grabSpeed;
 	float reachRegion;
 public:	
-	ReachStateData();
+	explicit ReachStateData(SmartBody::SBScene& scene);
 	~ReachStateData();
 	void updateReachState(const SrMat& worldOffset, BodyMotionFrame& motionFrame); // update corresponding parameters according to current body frame
 	void updateBlendWeight(SrVec paraPos);
@@ -170,7 +174,7 @@ public:
 class ReachStateInterface
 {	
 public:
-	virtual ~ReachStateInterface() {}
+	virtual ~ReachStateInterface() = default;
 	virtual void update(ReachStateData* rd) = 0;
 	virtual void updateEffectorTargetState(ReachStateData* rd) = 0;	
 	virtual float curStatePercentTime(ReachStateData* rd, float refTime)  { return 0.f; };

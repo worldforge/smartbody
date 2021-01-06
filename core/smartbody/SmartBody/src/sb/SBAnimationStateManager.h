@@ -70,7 +70,7 @@ class SBAnimationBlendManager : public SBSceneOwned
 		SBAPI std::vector<std::string> getTransitionNames();
 		SBAPI std::vector<std::string> getTransitionBlends(const std::string& source);
 
-		SBAPI static std::string getCurrentBlend(const std::string& characterName);
+		SBAPI std::string getCurrentBlend(const std::string& characterName);
 		SBAPI SrVec getCurrentBlendParameters(const std::string& characterName);
 		SBAPI std::vector<std::string> getAutoBlendTransitions(const std::string& characterName, const std::string& targetBlend);
 		SBAPI bool isBlendScheduled(const std::string& characterName, const std::string& blendName);

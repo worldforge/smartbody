@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 /************************************************************************/
 
 
-float LocomotionLegCycle::getNormalizedFlightTime( float motionTime )
+float LocomotionLegCycle::getNormalizedFlightTime( float motionTime ) const
 {
 	float normalizedTime = getNormalizedCycleTime(motionTime);
 	if (normalizedTime < normalizedLiftTime) return 0.f;
@@ -35,7 +35,7 @@ float LocomotionLegCycle::getNormalizedFlightTime( float motionTime )
 	return (normalizedTime-normalizedLiftTime)/(normalizedLandTime-normalizedLiftTime);
 }
 
-float LocomotionLegCycle::getNormalizedCycleTime( float motionTime )
+float LocomotionLegCycle::getNormalizedCycleTime( float motionTime ) const
 {
 	float warpMotionTime = motionTime;
 	if (cycleStartTime > cycleEndTime && motionTime < cycleEndTime) // loop back to beginning
@@ -137,14 +137,14 @@ LocomotionLegCycle* LocomotionAnalyzer::getLegCycle( int iLeg, float motionTime 
 	return nullptr;
 }
 
-void LocomotionAnalyzer::initLegCycles( const std::string& name, SmartBody::SBAnimationBlend* locoBlend, KeyTagMap& keyTagMap, SmartBody::SBSkeleton* skelCopy )
+void LocomotionAnalyzer::initLegCycles(SmartBody::SBScene& scene, const std::string& name, SmartBody::SBAnimationBlend* locoBlend, KeyTagMap& keyTagMap, SmartBody::SBSkeleton* skelCopy )
 {
 	KeyTagMap::iterator mi;
 	//startTime = (float)locoBlend->getMotionKey(name, 0);
 	//endTime = (float)locoBlend->getMotionKey(name, locoBlend->getNumKeys()-1);
 	int nSample = 50;
     motionName = name;
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = scene.getAssetManager();
 	SmartBody::SBMotion* sbMotion = assetManager->getMotion(motionName);
 	startTime = 0.f;
 	endTime = (float)sbMotion->getDuration();
@@ -252,7 +252,7 @@ std::string LocomotionAnalyzer::getMotionName()
 /* Motion Analysis                                                      */
 /************************************************************************/
 
-MotionAnalysis::MotionAnalysis() = default;
+MotionAnalysis::MotionAnalysis(SmartBody::SBScene& scene): _scene(scene) {}
 
 MotionAnalysis::~MotionAnalysis()
 {
@@ -278,10 +278,9 @@ MotionAnalysis::~MotionAnalysis()
 
 }
 
-void MotionAnalysis::init(std::string skeletonName, std::string baseJoint, SmartBody::SBAnimationBlend* locomotionBlend, const std::vector<std::string>& motions, std::string motionPrefix )
+void MotionAnalysis::init(const std::string& skeletonName, const std::string& baseJoint, SmartBody::SBAnimationBlend* locomotionBlend, const std::vector<std::string>& motions, const std::string& motionPrefix )
 {		
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	auto sbSkel = scene->getSkeleton(skeletonName);
+	auto sbSkel = _scene.getSkeleton(skeletonName);
 	skelCopy = new SmartBody::SBSkeleton(*sbSkel);
 	initLegInfos();
 	int numMotions = motions.size();	
@@ -291,7 +290,7 @@ void MotionAnalysis::init(std::string skeletonName, std::string baseJoint, Smart
 		KeyTagMap& keyTagMap = *locomotionBlend->getKeyTagMap(motionPrefix+motionName);
 		LocomotionAnalyzer* analyzer = new LocomotionAnalyzer();
 		analyzer->legInfos = legInfos;
-		analyzer->initLegCycles(motionName,locomotionBlend,keyTagMap,skelCopy.get());
+		analyzer->initLegCycles(_scene, motionName,locomotionBlend,keyTagMap,skelCopy.get());
 		locoAnalyzers.emplace_back(analyzer);
 	}	
 
@@ -328,15 +327,15 @@ void MotionAnalysis::initLegInfos()
 
 	for (int i=0;i<2;i++)
 	{
-		EffectorConstantConstraint* lFoot = new EffectorConstantConstraint();
+		auto lFoot = std::make_unique<EffectorConstantConstraint>();
 		lFoot->efffectorName = lFootName[i];
 		lFoot->rootName = "";
-		lLeg->ikConstraint[lFoot->efffectorName] = lFoot;
+		lLeg->ikConstraint[lFoot->efffectorName] = std::move(lFoot);
 
-		EffectorConstantConstraint* rFoot = new EffectorConstantConstraint();
+		auto rFoot = std::make_unique<EffectorConstantConstraint>();
 		rFoot->efffectorName = rFootName[i];
 		rFoot->rootName = "";
-		rLeg->ikConstraint[rFoot->efffectorName] = rFoot;
+		rLeg->ikConstraint[rFoot->efffectorName] = std::move(rFoot);
 
 		legStates[i].curSupportPos.resize(2);
 		legStates[i].globalSupportPos.resize(2);
@@ -347,7 +346,7 @@ void MotionAnalysis::initLegInfos()
 
 float MotionAnalysis::getTerrainYOffset( LegCycleState& state, float flightTime )
 {
-	Heightfield* heightField = SmartBody::SBScene::getScene()->getHeightfield();	
+	Heightfield* heightField = _scene.getHeightfield();
 	if (!heightField) return 0.f;
 	
 	SrVec startPt = state.curStep, endPt = state.nextStep;
@@ -380,8 +379,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 	std::string baseName = "base";	
 	MeCtIKTreeNode* rootNode = ikScenario.findIKTreeNode(baseName.c_str());
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	auto srcSk = assetManager->getSkeleton(skelCopy->getName());
 	auto tgtSk = assetManager->getSkeleton(charSk->getName());
 	SmartBody::SBJoint* srcBase = srcSk->getJointByName(baseName);
@@ -477,7 +475,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 // 		}
 	}
 
-	Heightfield* heightField = SmartBody::SBScene::getScene()->getHeightfield();	
+	Heightfield* heightField = _scene.getHeightfield();
 	SrVec vUp = SrVec(0,1,0);
 	SrVec rotCenter = cross(vUp,velocity)/(angSpeed*(float)M_PI/180.f); // rotation center in character local frame
 	for (unsigned int k=0;k<legStates.size();k++)
@@ -507,7 +505,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		if (heightField && sbChar->getBoolAttribute("terrainWalk"))
 		{
 			float tnormal[3];
-			nextStepFootPos.y = SmartBody::SBScene::getScene()->queryTerrain(nextStepFootPos.x, nextStepFootPos.z, tnormal);
+			nextStepFootPos.y = sbChar->_scene.queryTerrain(nextStepFootPos.x, nextStepFootPos.z, tnormal);
 		}
 		else
 			nextStepFootPos.y = 0.f;
@@ -553,8 +551,8 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 	// get the height offset 
  // use height field
 	
-	heightField = SmartBody::SBScene::getScene()->getHeightfield();	
-//	SmartBody::SBNavigationMesh* navMesh = SmartBody::SBScene::getScene()->getNavigationMesh();
+	heightField = _scene.getHeightfield();
+//	SmartBody::SBNavigationMesh* navMesh = getScene()->getNavigationMesh();
 	if (heightField)
 	{
 		float tnormal[3];
@@ -564,7 +562,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		float maxHeight = -1e30f;	
 		if (heightField && sbChar->getBoolAttribute("terrainWalk"))
 		{
-			//terrainHeight = SmartBody::SBScene::getScene()->queryTerrain(x, z, tnormal);
+			//terrainHeight = getScene()->queryTerrain(x, z, tnormal);
 			for (auto & legState : legStates)
 			{
 
@@ -573,7 +571,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 				for (unsigned int m=0;m<legState.curSupportPos.size();m++)
 				{
 					SrVec supPos = legState.globalSupportPos[m];
-					float height = SmartBody::SBScene::getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
+					float height = _scene.queryTerrain(supPos.x, supPos.z, tnormal);
 					float supHeightOffset = (height + tgtBaseHeight) - gmatBase.get_translation().y; 
 					legState.globalSupportPos[m].y += supHeightOffset + footOffset;
 					if (minHeight > height)
@@ -587,7 +585,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 				for (unsigned int m=0;m<legState.curSupportPos.size();m++)
 				{				
 					SrVec supPos = legState.globalSupportPos[m];
-					float height = SmartBody::SBScene::getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
+					float height = getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
 					if (minHeight > height)
 						minHeight = height;
 					if (maxHeight < height)
@@ -614,13 +612,13 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 //		SrVec searchSize = SrVec(sbChar->getHeight()*0.3f, sbChar->getHeight(), sbChar->getHeight()*0.3f);
 //		if (navMesh && sbChar->getBoolAttribute("terrainWalk"))
 //		{
-//			//terrainHeight = SmartBody::SBScene::getScene()->queryTerrain(x, z, tnormal);
+//			//terrainHeight = getScene()->queryTerrain(x, z, tnormal);
 //			for (auto & legState : legStates)
 //			{
 //					for (unsigned int m=0;m<legState.curSupportPos.size();m++)
 //				{
 //					SrVec supPos = legState.globalSupportPos[m];
-//					//float height = SmartBody::SBScene::getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
+//					//float height = getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
 //					float height = navMesh->queryFloorHeight(supPos,searchSize);
 //					float supHeightOffset = (height + tgtBaseHeight) - gmatBase.get_translation().y;
 //					legState.globalSupportPos[m].y += supHeightOffset + footOffset;
@@ -643,7 +641,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		ConstraintMap::iterator mi;
 		for (unsigned int k=0;k<leg->supportJoints.size();k++)
 		{			
-			EffectorConstantConstraint* foot = dynamic_cast<EffectorConstantConstraint*>(constraint[leg->supportJoints[k]]);
+			auto* foot = dynamic_cast<EffectorConstantConstraint*>(constraint[leg->supportJoints[k]].get());
 			foot->targetPos = legState.globalSupportPos[k];
 		}		
 		ikScenario.ikPosEffectors = &constraint;

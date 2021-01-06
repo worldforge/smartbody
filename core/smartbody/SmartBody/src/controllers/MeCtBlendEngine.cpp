@@ -96,9 +96,9 @@ void MeCtBlendEngine::getMotionParameter( const std::string& motion, dVector& ou
 }
 
 
-void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotion*>& inMotionSet, std::string interpolatorType )
+void MeCtBlendEngine::updateMotionExamples(SmartBody::SBScene& scene, const std::vector<SmartBody::SBMotion*>& inMotionSet, std::string interpolatorType )
 {
-	if (inMotionSet.size() == 0)
+	if (inMotionSet.empty())
 		return;
 
 	// set world offset to zero	
@@ -119,7 +119,7 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 	SmartBody::SBJoint* rootJoint = affectedJoints[0];
 	for (auto i : inMotionSet)
 	{		
-		SmartBody::SBMotion* motion = dynamic_cast<SmartBody::SBMotion*>(i);
+		auto* motion = dynamic_cast<SmartBody::SBMotion*>(i);
 		if (!motion)
 			continue;
 		if (std::find(motionData.begin(), motionData.end(), motion) != motionData.end())
@@ -128,12 +128,12 @@ void MeCtBlendEngine::updateMotionExamples( const std::vector<SmartBody::SBMotio
 			refMotion = motion;
 
 		motionData.emplace_back(motion);
-		MotionExample* ex = new MotionExample();
+		MotionExample* ex = new MotionExample(scene);
 		ex->motion = motion;		
-		ex->timeWarp = new SimpleTimeWarp(refMotion->duration(),motion->duration());
+		ex->timeWarp = std::make_unique<SimpleTimeWarp>(refMotion->duration(),motion->duration());
 		ex->motionParameterFunc = motionParameter;
 		ex->motionProfile = new MotionProfile(motion);
-		ex->updateRootOffset(skeletonCopy.get(),rootJoint);
+		ex->updateRootOffset(scene, skeletonCopy.get(),rootJoint);
 #if 0
 		ex->motionProfile->buildVelocityProfile(0.f,motion->duration()*0.999f,0.005f);
 		ex->motionProfile->buildInterpolationProfile(0.f,(float)motion->time_stroke_emphasis(),0.005f);

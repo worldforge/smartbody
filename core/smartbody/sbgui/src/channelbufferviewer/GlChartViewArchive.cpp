@@ -151,17 +151,6 @@ void GlChartViewSeries::SetColorOnBufferIndex()
 
 void GlChartViewSeries::SetColorOnBufferIndex(int index)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::string seedStr = scene->getStringAttribute("randomseed");
-	if (seedStr == "")
-	{
-		srand((unsigned int)time(0));
-	}
-	else
-	{
-		unsigned int seed = atoi(seedStr.c_str());
-		srand(seed);
-	}
 	while(true)
 	{
 		color_x.x = (float)rand()/(float)RAND_MAX;

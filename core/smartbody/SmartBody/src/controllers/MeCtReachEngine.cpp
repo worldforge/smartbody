@@ -26,7 +26,7 @@ const std::string rFootName[] = {"r_forefoot", "r_ankle" };
 
 std::string MeCtReachEngine::ReachTypeTag[REACH_TYPE_SIZE] = { "Right", "Left", "RightJump", "LeftJump" };
 
-MeCtReachEngine::MeCtReachEngine( SbmCharacter* sbmChar, boost::intrusive_ptr<SmartBody::SBSkeleton> sk)
+MeCtReachEngine::MeCtReachEngine( SbmCharacter* sbmChar, const boost::intrusive_ptr<SmartBody::SBSkeleton>& sk)
 {
 	character = sbmChar;
 	skeletonCopy = new SmartBody::SBSkeleton(*sk);
@@ -46,25 +46,10 @@ MeCtReachEngine::MeCtReachEngine( SbmCharacter* sbmChar, boost::intrusive_ptr<Sm
 	interpMotion = nullptr;
 	motionParameter = nullptr;
 	curReachState = nullptr;
-	reachData = nullptr;
 }
 
 MeCtReachEngine::~MeCtReachEngine( )
 {
-	for (auto & iter : rightFootConstraint)
-	{
-		delete iter.second;
-	}	
-	for (auto & iter : leftFootConstraint)
-	{
-		delete iter.second;
-	}
-	for (auto & iter : stateTable)
-	{
-		delete iter.second;
-	}
-
-		delete reachData;
 
 //	if (dataInterpolator)
 //		delete dataInterpolator;
@@ -85,7 +70,7 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
 	ikScenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);
 	ikCCDScenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);	
 
-	EffectorConstantConstraint* cons = new EffectorConstantConstraint();
+	auto cons = std::make_unique<EffectorConstantConstraint>();
 	cons->efffectorName = reachEndEffector->getMappedJointName().c_str();
 
 	std::vector<std::string> consJointList;
@@ -139,35 +124,36 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
 	SrQuat offsetQuat = SrQuat(effectorUp,SrVec(0,1,0));
 	SrMat offsetMat; offsetQuat.get_mat(offsetMat);
 	
- 	for (unsigned int i=0;i<consJointList.size();i++)
+ 	for (auto & i : consJointList)
  	{		
-		consRootName = preFix + consJointList[i];
+		consRootName = preFix + i;
 		if (skeletonCopy->search_joint(consRootName.c_str()) != nullptr)
 			break;
  	}
 	
 	cons->rootName = consRootName;
-	reachPosConstraint[cons->efffectorName] = cons;
+ 	auto name = cons->efffectorName;
+	reachPosConstraint[name] = std::move(cons);
 	// if there is a child	
 	if (reachEndEffector->num_children() > 0 && reachEndEffector->child(0))
 	{
-		EffectorConstantConstraint* rotCons = new EffectorConstantConstraint();				
-		rotCons->efffectorName = reachEndEffector->getMappedJointName().c_str();
+		auto rotCons = std::make_unique<EffectorConstantConstraint>();
+		rotCons->efffectorName = reachEndEffector->getMappedJointName();
 		rotCons->rootName = consRootName;
-		reachRotConstraint[cons->efffectorName] = rotCons;
+		reachRotConstraint[name] = std::move(rotCons);
 	}	
 	// setup foot constraint
 	for (int i=0;i<2;i++)
 	{
-		EffectorConstantConstraint* lFoot = new EffectorConstantConstraint();
+		auto lFoot = std::make_unique<EffectorConstantConstraint>();
 		lFoot->efffectorName = lFootName[i];
 		lFoot->rootName = "";
-		leftFootConstraint[lFoot->efffectorName] = lFoot;
+		leftFootConstraint[lFoot->efffectorName] = std::move(lFoot);
 
-		EffectorConstantConstraint* rFoot = new EffectorConstantConstraint();
+		auto rFoot = std::make_unique<EffectorConstantConstraint>();
 		rFoot->efffectorName = rFootName[i];
 		rFoot->rootName = "";
-		rightFootConstraint[rFoot->efffectorName] = rFoot;
+		rightFootConstraint[rFoot->efffectorName] = std::move(rFoot);
 	}	
 
 	ikScenario.ikPosEffectors = &reachPosConstraint;
@@ -179,10 +165,9 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
 	ikMotionFrame.jointQuat.resize(nodeList.size());
 
 	affectedJoints.clear();	
-	for (unsigned int i=0;i<nodeList.size();i++)
+	for (auto node : nodeList)
 	{
-		MeCtIKTreeNode* node = nodeList[i];
-		SmartBody::SBJoint* joint = skeletonCopy->getJointByName(node->getNodeName());		
+			SmartBody::SBJoint* joint = skeletonCopy->getJointByName(node->getNodeName());
 		SkJointQuat* skQuat = joint->quat();		
 		affectedJoints.emplace_back(joint);
 	}		
@@ -203,7 +188,7 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
 	std::string rootName = ikScenario.ikTreeRoot->joint->parent()->jointName();
 	SrVec initRootPosition = skeletonRef->getJointByName(rootName)->gmat().get_translation();
 
-	reachData = new ReachStateData();
+	reachData = std::make_unique<ReachStateData>(character->_scene);
 	reachData->characterHeight = characterHeight;		
 	reachData->charName = character->getName();
 	reachData->centerOffset = (curCharacter->getBoundingBox().getMaximum()*0.7f+curCharacter->getBoundingBox().getMinimum()*0.3f) - initRootPosition;
@@ -221,18 +206,18 @@ void MeCtReachEngine::init(int rtype, SmartBody::SBJoint* effectorJoint)
 	estate.gmatZero = copyEffector->gmatZero()*offsetMat;//copyEffector->gmatZero()*offsetMat;
 
 
-	stateTable["Idle"] = new ReachStateIdle();
-	stateTable["Start"] = new ReachStateStart();
+	stateTable["Idle"] = std::make_unique<ReachStateIdle>();
+	stateTable["Start"] = std::make_unique<ReachStateStart>();
 	//stateTable["Move"] = new ReachStateMove();
-	stateTable["Complete"] = new ReachStateComplete();
-	stateTable["NewTarget"] = new ReachStateNewTarget();
-	stateTable["PreReturn"] = new ReachStatePreReturn();
-	stateTable["Return"] = new ReachStateReturn();
+	stateTable["Complete"] = std::make_unique<ReachStateComplete>();
+	stateTable["NewTarget"] = std::make_unique<ReachStateNewTarget>();
+	stateTable["PreReturn"] = std::make_unique<ReachStatePreReturn>();
+	stateTable["Return"] = std::make_unique<ReachStateReturn>();
 
-	handActionTable[PICK_UP_OBJECT] = new ReachHandPickUpAction();
-	handActionTable[TOUCH_OBJECT] = new ReachHandAction(); // default hand action
-	handActionTable[PUT_DOWN_OBJECT] = new ReachHandPutDownAction();
-	handActionTable[POINT_AT_OBJECT] = new ReachHandPointAction();
+	handActionTable[PICK_UP_OBJECT] = new ReachHandPickUpAction(character->_scene);
+	handActionTable[TOUCH_OBJECT] = new ReachHandAction(character->_scene); // default hand action
+	handActionTable[PUT_DOWN_OBJECT] = new ReachHandPutDownAction(character->_scene);
+	handActionTable[POINT_AT_OBJECT] = new ReachHandPointAction(character->_scene);
 
 	curReachState = getState("Idle");
 }
@@ -274,9 +259,9 @@ void MeCtReachEngine::updateMotionExamples( const MotionDataSet& inMotionSet, st
 			refMotion = motion;
 
 		motionData.insert(tagMotion);
-		MotionExample* ex = new MotionExample();
+		auto* ex = new MotionExample(character->_scene);
 		ex->motion = motion;		
-		ex->timeWarp = new SimpleTimeWarp(refMotion->duration(),motion->duration());
+		ex->timeWarp = std::make_unique<SimpleTimeWarp>(refMotion->duration(),motion->duration());
 		ex->motionParameterFunc = motionParameter;
 		ex->motionProfile = new MotionProfile(motion);
 		//ex->updateRootOffset(skeletonCopy,rootJoint);
@@ -355,7 +340,7 @@ bool MeCtReachEngine::hasEffectorRotConstraint( ReachStateData* rd )
 
 void MeCtReachEngine::solveIK( ReachStateData* rd, BodyMotionFrame& outFrame )
 {	
-	BodyMotionFrame& refFrame = motionData.size() != 0 ? rd->currentRefFrame : inputMotionFrame;
+	BodyMotionFrame& refFrame = !motionData.empty() ? rd->currentRefFrame : inputMotionFrame;
 	if (!ikInit)
 	{			
 		ikScenario.setTreeNodeQuat(refFrame.jointQuat,QUAT_INIT);
@@ -364,7 +349,7 @@ void MeCtReachEngine::solveIK( ReachStateData* rd, BodyMotionFrame& outFrame )
 	}		
 	EffectorState& estate = rd->effectorState;
 
-	EffectorConstantConstraint* cons = dynamic_cast<EffectorConstantConstraint*>(reachPosConstraint[reachEndEffector->getMappedJointName().c_str()]);
+	auto cons = dynamic_cast<EffectorConstantConstraint*>(reachPosConstraint[reachEndEffector->getMappedJointName()].get());
 	cons->targetPos = estate.curIKTargetState.tran;	
 	//SmartBody::util::log("constraint position = %f %f %f",cons->targetPos[0],cons->targetPos[1], cons->targetPos[2]);
 	
@@ -384,7 +369,7 @@ void MeCtReachEngine::solveIK( ReachStateData* rd, BodyMotionFrame& outFrame )
 
 	
 	{
-		EffectorConstantConstraint* cons = dynamic_cast<EffectorConstantConstraint*>(reachRotConstraint[reachEndEffector->getMappedJointName().c_str()]);		
+		auto cons = dynamic_cast<EffectorConstantConstraint*>(reachRotConstraint[reachEndEffector->getMappedJointName().c_str()].get());
 		if (!cons)
 			return;		
 		cons->targetRot = estate.curIKTargetState.rot;//ikRotTrajectory;//ikRotTarget;//motionParameter->getMotionFrameJoint(interpMotionFrame,reachEndEffector->name().get_string())->gmat();//ikRotTarget;	
@@ -432,9 +417,9 @@ void MeCtReachEngine::solveIK( ReachStateData* rd, BodyMotionFrame& outFrame )
 		{
 			for (int i=0;i<2;i++)
 			{			
-				EffectorConstantConstraint* lfoot = dynamic_cast<EffectorConstantConstraint*>(leftFootConstraint[lFootName[i]]);
+				auto* lfoot = dynamic_cast<EffectorConstantConstraint*>(leftFootConstraint[lFootName[i]].get());
 				lfoot->targetPos = motionParameter->getMotionFrameJoint(inputMotionFrame,lFootName[i].c_str())->gmat().get_translation();
-				EffectorConstantConstraint* rfoot = dynamic_cast<EffectorConstantConstraint*>(rightFootConstraint[rFootName[i]]);
+				auto* rfoot = dynamic_cast<EffectorConstantConstraint*>(rightFootConstraint[rFootName[i]].get());
 				rfoot->targetPos = motionParameter->getMotionFrameJoint(inputMotionFrame,rFootName[i].c_str())->gmat().get_translation();				
 			} 			
 			ikScenario.ikPosEffectors = &leftFootConstraint;
@@ -458,13 +443,17 @@ void MeCtReachEngine::updateSkeletonCopy()
 
 ReachStateInterface* MeCtReachEngine::getState( const std::string& stateName )
 {
-	return stateTable[stateName];
+	auto I = stateTable.find(stateName);
+	if (I != stateTable.end()) {
+		return I->second.get();
+	}
+	return nullptr;
 }
 
 SmartBody::SBJoint* MeCtReachEngine::findRootJoint( SmartBody::SBSkeleton* sk )
 {
 
-	SmartBody::SBJoint* rootJoint = dynamic_cast<SmartBody::SBJoint*>(sk->root()->child(0)); // skip world offset
+	auto* rootJoint = dynamic_cast<SmartBody::SBJoint*>(sk->root()->child(0)); // skip world offset
 // 	if (sk->search_joint("base"))
 // 	{
 // 		rootJoint = sk->search_joint("base");
@@ -572,11 +561,11 @@ void MeCtReachEngine::updateReach(float t, float dt, BodyMotionFrame& inputFrame
 		reachData->locomotionComplete = (curCharacter->_reachTarget && !curCharacter->_lastReachStatus);		
 	}
 	
-	//reachData->hasSteering = (SmartBody::SBScene::getScene()->getSteerManager()->isInitialized());
+	//reachData->hasSteering = (getScene()->getSteerManager()->isInitialized());
 
-	curReachState->updateEffectorTargetState(reachData);		
-	curReachState->update(reachData);	
-	ReachStateInterface* nextState = getState(curReachState->nextState(reachData));
+	curReachState->updateEffectorTargetState(reachData.get());
+	curReachState->update(reachData.get());
+	ReachStateInterface* nextState = getState(curReachState->nextState(reachData.get()));
 	if (nextState != curReachState)
 	{
 		//SmartBody::util::log("engine type = %s,  cur State = %s\n",this->getReachTypeTag().c_str(), nextState->curStateName().c_str());
@@ -590,7 +579,7 @@ void MeCtReachEngine::updateReach(float t, float dt, BodyMotionFrame& inputFrame
 	ikMaxOffset = ikDefaultVelocity*3.f*dt;	
  	if (footIKFix)
  	{
- 		solveIK(reachData,ikMotionFrame);	
+ 		solveIK(reachData.get(),ikMotionFrame);
  	}
  	else
 	{
@@ -607,29 +596,29 @@ bool MeCtReachEngine::addHandConstraint( SmartBody::SBJoint* targetJoint, const 
 		return false;
 
 	std::string str = effectorName;		
-	ConstraintMap::iterator ci = handConstraint.find(str);
+	auto ci = handConstraint.find(str);
 	if (ci != handConstraint.end())
 	{		
-		EffectorJointConstraint* cons = dynamic_cast<EffectorJointConstraint*>((*ci).second);
+		auto* cons = dynamic_cast<EffectorJointConstraint*>((*ci).second.get());
 		cons->targetJoint = targetJoint;
 	}
 	else // add effector-joint pair
 	{
 		// initialize constraint
-		EffectorJointConstraint* cons = new EffectorJointConstraint();		
+		auto cons = std::make_unique<EffectorJointConstraint>();
 		cons->efffectorName = effectorName;
 		cons->targetJoint = targetJoint;
-		handConstraint[str] = cons;		
+		handConstraint[str] = std::move(cons);
 	}
 	return true;
 }
 
-std::string MeCtReachEngine::getReachTypeTag()
+std::string MeCtReachEngine::getReachTypeTag() const
 {
 	return ReachTypeTag[reachType];
 }
 
-int MeCtReachEngine::getReachTypeID()
+int MeCtReachEngine::getReachTypeID() const
 {
 	return reachType;
 }

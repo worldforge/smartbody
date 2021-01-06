@@ -197,13 +197,10 @@ gwiz::quat_t MeCtCCDIK::swingTwist2Quat( gwiz::vector_t& sw )
 void MeCtCCDIK::sortConstraint( ConstraintMap* conMap, VecOfConstraintPtr& sortConList )
 {
 	StrIntList sortList;
-	ConstraintMap::iterator vi = conMap->begin();
-	for (vi  = conMap->begin();
-		vi != conMap->end();
-		vi++)
+	for (auto & vi : *conMap)
 	{
 		//conList.emplace_back(vi->second);
-		EffectorConstraint* con = vi->second;
+		auto& con = vi.second;
 		MeCtIKTreeNode* node = ikScenario->findIKTreeNode(con->efffectorName.c_str());		
 		StrIntPair sip;
 		sip.first = con->efffectorName;
@@ -214,11 +211,11 @@ void MeCtCCDIK::sortConstraint( ConstraintMap* conMap, VecOfConstraintPtr& sortC
 
 	sortConList.clear();
 
-	for (unsigned int i=0;i<sortList.size();i++)
+	for (auto & i : sortList)
 	{
-		std::string key = sortList[i].first;
-		EffectorConstraint* con = (*conMap)[key];
-		sortConList.emplace_back(con);
+		std::string key = i.first;
+		auto& con = (*conMap)[key];
+		sortConList.emplace_back(con.get());
 	}
 }
 

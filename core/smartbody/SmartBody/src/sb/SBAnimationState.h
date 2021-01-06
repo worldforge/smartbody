@@ -54,7 +54,7 @@ class SBAnimationBlend : public PABlend
 		SBAPI void removeCorrespondencePoints(int index);
 		SBAPI void addKeyTagValue(const std::string& motionName, int iType, const std::string& tagName, double value);	
 		SBAPI KeyTagMap* getKeyTagMap(const std::string& motionName);
-		SBAPI void buildMotionAnalysis(const std::string& skeletonName, const std::string& baseName, const std::vector<std::string>& motions, std::string motionPrefix);
+		SBAPI void buildMotionAnalysis(SmartBody::SBScene& scene, const std::string& skeletonName, const std::string& baseName, const std::vector<std::string>& motions, std::string motionPrefix);
 		SBAPI MotionAnalysis* getMotionAnalysis();
 
 		SBAPI virtual int getNumMotions();

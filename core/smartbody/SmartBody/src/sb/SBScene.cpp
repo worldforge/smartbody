@@ -212,6 +212,9 @@ SBScene::SBScene(const CoreServicesProvider& coreServicesProvider) :
 	_heightField = nullptr;
 	_navigationMesh = nullptr;
 
+	//TODO: don't init process shared random pool in this class
+	srand((unsigned int)time(nullptr));
+
 	// Create default settings
 	createDefaultControllers();
 	
@@ -582,6 +585,18 @@ void SBScene::notify( SBSubject* subject )
 	if (doubleAttr && doubleAttr->getName() == "scale")
 	{
 		setScale((float) doubleAttr->getValue());
+		return;
+	}
+
+	//TODO: Do not alter process shared random features in the scene.
+	auto stringAttr = dynamic_cast<StringAttribute*>(subject);
+	if (stringAttr && stringAttr->getName() == "randomseed")
+	{
+		if (!stringAttr->getValue().empty())
+		{
+			unsigned int seed = std::stol(stringAttr->getValue());
+			srand(seed);
+		}
 		return;
 	}
 }

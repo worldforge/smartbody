@@ -1,7 +1,6 @@
 #include "controllers/me_ct_constraint.hpp"
-#include <assert.h>
+#include <cassert>
 #include <boost/foreach.hpp>
-#include <sr/sr_timer.h>
 #include "gwiz_math.h"
 using namespace gwiz;
 
@@ -394,7 +393,7 @@ bool MeCtConstraint::addEffectorJointPair( SmartBody::SBJoint* targetJoint, cons
 	{
 		//jEffectorList[idx].targetJoint = targetJoint;	
 		//EffectorJointConstraint& cons = jEffectorList[idx];
-		EffectorJointConstraint* cons = dynamic_cast<EffectorJointConstraint*>((*ci).second);
+		EffectorJointConstraint* cons = dynamic_cast<EffectorJointConstraint*>((*ci).second.get());
 		cons->targetJoint = targetJoint;
 		cons->rootName = rootName;//effectorRootName;
 		cons->posOffset = posOffset;
@@ -404,14 +403,14 @@ bool MeCtConstraint::addEffectorJointPair( SmartBody::SBJoint* targetJoint, cons
 	else // add effector-joint pair
 	{
 		// initialize constraint
-		EffectorJointConstraint* cons = new EffectorJointConstraint();
+		auto cons = std::make_unique<EffectorJointConstraint>();
 		//constraint.node = node;
 		cons->efffectorName = effectorName;
 		cons->targetJoint = targetJoint;
 		cons->rootName = rootName;//effectorRootName;
 		cons->posOffset = posOffset;
 		cons->rotOffset = rotOffset;
-		jEffectorMap[str] = cons;
+		jEffectorMap[str] = std::move(cons);
 		//effectorList.emplace_back(effectorName);
 		//jEffectorList.emplace_back(cons);
 	}

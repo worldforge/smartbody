@@ -23,16 +23,15 @@ typedef std::vector<InterpWeight> VecOfInterpWeight;
 /* Motion Interface                                                     */
 /************************************************************************/
 
-class BodyMotionFrame
+struct BodyMotionFrame
 {
-public:
-	SrVec       rootPos;	
+	SrVec       rootPos;
 	VecOfSrQuat jointQuat;
 
-	BodyMotionFrame() {};
-	virtual ~BodyMotionFrame() {};
+	BodyMotionFrame() = default;;
+	virtual ~BodyMotionFrame() = default;;
 	BodyMotionFrame& operator=(const BodyMotionFrame& rhs);
-	void setMotionPose(float time, SmartBody::SBSkeleton* skel, const vector<SmartBody::SBJoint*>& affectedJoints, SmartBody::SBMotion* motion, bool retarget = false);
+	void setMotionPose(SmartBody::SBScene& scene, float time, SmartBody::SBSkeleton* skel, const vector<SmartBody::SBJoint*>& affectedJoints, SmartBody::SBMotion* motion, bool retarget = false);
 };
 
 class BodyMotionInterface
@@ -42,7 +41,7 @@ public:
 	MotionParameter* motionParameterFunc;
 	MotionProfile*   motionProfile;
 public:
-	virtual ~BodyMotionInterface() {}
+	virtual ~BodyMotionInterface() = default;
 public:	
 	virtual void getMotionParameter(dVector& outPara);	
 	virtual double getMotionFrame(float time, SmartBody::SBSkeleton* skel, const vector<SmartBody::SBJoint*>& affectedJoints, BodyMotionFrame& outMotionFrame) = 0;
@@ -58,22 +57,23 @@ public:
 class BodyMotion : public BodyMotionInterface
 {
 public:
+	SmartBody::SBScene& _scene;
 	SmartBody::SBMotion* motion;
-	MotionTimeWarpFunc* timeWarp; // time warp function for the motion
+	std::unique_ptr<MotionTimeWarpFunc> timeWarp; // time warp function for the motion
 	SrVec rootOffset;
 	SrQuat quatP;
 public:
-	BodyMotion();
-	virtual ~BodyMotion();
-	virtual double strokeEmphasisTime();
-	virtual double getMotionFrame(float time, SmartBody::SBSkeleton* skel, const vector<SmartBody::SBJoint*>& affectedJoints, BodyMotionFrame& outMotionFrame);
-	virtual SrVec getMotionBaseTranslation(float time, const std::string& baseName);
-	virtual SrQuat getMotionBaseRotation(float time, const std::string& baseName);
-	virtual double motionDuration(DurationType durType);	
-	virtual double motionPercent(float time);
-	virtual double getRefDeltaTime(float u, float dt);	
+	BodyMotion(SmartBody::SBScene& scene);
+	~BodyMotion() override;
+	double strokeEmphasisTime() override;
+	double getMotionFrame(float time, SmartBody::SBSkeleton* skel, const vector<SmartBody::SBJoint*>& affectedJoints, BodyMotionFrame& outMotionFrame) override;
+	SrVec getMotionBaseTranslation(float time, const std::string& baseName) override;
+	SrQuat getMotionBaseRotation(float time, const std::string& baseName) override;
+	double motionDuration(DurationType durType) override;
+	double motionPercent(float time) override;
+	double getRefDeltaTime(float u, float dt) override;
 
-	void updateRootOffset(SmartBody::SBSkeleton* skel, SmartBody::SBJoint* rootJoint);
+	void updateRootOffset(SmartBody::SBScene& scene, SmartBody::SBSkeleton* skel, SmartBody::SBJoint* rootJoint);
 };
 
 /************************************************************************/
@@ -134,9 +134,9 @@ public:
 class MotionExample : public InterpolationExample, public BodyMotion
 {
 public:	
-	MotionExample() {}
-	virtual ~MotionExample() {}	
-	virtual void getExampleParameter(dVector& outPara);		
+	MotionExample(SmartBody::SBScene& scene): BodyMotion(scene) {}
+	~MotionExample() override {}
+	void getExampleParameter(dVector& outPara) override;
 };
 
 /************************************************************************/

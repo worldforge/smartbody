@@ -1379,9 +1379,9 @@ std::string SBAnimationBlend::saveToString()
 		// create the triangles
 		strstr << "\n";
 		std::vector<TriangleInfo>& triangleInfo = state->getTriangles();
-		for (size_t t = 0; t < triangleInfo.size(); t++)
+		for (auto & t : triangleInfo)
 		{
-			strstr << stateNameVariable << ".addTriangle(\"" << triangleInfo[t].motion1 << "\", \"" <<  triangleInfo[t].motion2 << "\", \"" <<  triangleInfo[t].motion3 << "\")\n"; 
+			strstr << stateNameVariable << ".addTriangle(\"" << t.motion1 << "\", \"" <<  t.motion2 << "\", \"" <<  t.motion3 << "\")\n";
 		}
 	}
 	if (state3D)
@@ -1389,9 +1389,9 @@ std::string SBAnimationBlend::saveToString()
 		// create the tetrahedrons
 		strstr << "\n";
 		std::vector<TetrahedronInfo>& tetrahedronInfo = state->getTetrahedrons();
-		for (size_t t = 0; t < tetrahedronInfo.size(); t++)
+		for (auto & t : tetrahedronInfo)
 		{
-			strstr << stateNameVariable << ".addTetrahedron(\"" << tetrahedronInfo[t].motion1 << "\", \"" <<  tetrahedronInfo[t].motion2 << "\", \"" <<  tetrahedronInfo[t].motion3 << "\", \"" <<  tetrahedronInfo[t].motion4 << "\")\n"; 
+			strstr << stateNameVariable << ".addTetrahedron(\"" << t.motion1 << "\", \"" <<  t.motion2 << "\", \"" <<  t.motion3 << "\", \"" <<  t.motion4 << "\")\n";
 		}
 	}
 	return strstr.str();
@@ -1407,7 +1407,7 @@ SkMotion* SBAnimationBlend::getSkMotion( const std::string& motionName )
 	}
 	// not found!
 	SmartBody::util::log("Error: SBAnimationBlend::getSkMotion(): %s doesn't exist", motionName.c_str());
-	return 0;
+	return nullptr;
 }
 
 void SBAnimationBlend::addKeyTagValue( const std::string& motionName, int iType, const std::string& tagName, double value )
@@ -1438,9 +1438,9 @@ MotionAnalysis* SBAnimationBlend::getMotionAnalysis()
 	return motionAnalysis.get();
 }
 
-void SBAnimationBlend::buildMotionAnalysis( const std::string& skeletonName, const std::string& baseName, const std::vector<std::string>& motions, std::string motionPrefix )
+void SBAnimationBlend::buildMotionAnalysis(SmartBody::SBScene& scene, const std::string& skeletonName, const std::string& baseName, const std::vector<std::string>& motions, std::string motionPrefix )
 {
-	motionAnalysis = std::make_unique<MotionAnalysis>();
+	motionAnalysis = std::make_unique<MotionAnalysis>(scene);
 	motionAnalysis->init(skeletonName,baseName, this, motions, motionPrefix);	
 }
 

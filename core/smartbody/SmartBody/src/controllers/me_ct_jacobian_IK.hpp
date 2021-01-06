@@ -53,7 +53,7 @@ public:
 	SrMat           gmatZero;
 public:
 	EffectorConstraint() { constraintWeight = 1.f; }
-	virtual ~EffectorConstraint() {}	
+	virtual ~EffectorConstraint() = default;
 	virtual SrVec getPosConstraint() = 0;
 	virtual SrQuat getRotConstraint() = 0;
 };
@@ -64,14 +64,14 @@ public:
 	SrQuat          targetRot;
 	SrVec           targetPos;	
 public:
-	EffectorConstantConstraint() {}
-	virtual ~EffectorConstantConstraint() {}
+	EffectorConstantConstraint() = default;
+	~EffectorConstantConstraint() override = default;
 	EffectorConstantConstraint& operator=(const EffectorConstantConstraint& rhs);
-	virtual SrVec getPosConstraint() { return targetPos; }
-	virtual SrQuat getRotConstraint()  { return targetRot; }
+	SrVec getPosConstraint() override { return targetPos; }
+	SrQuat getRotConstraint() override  { return targetRot; }
 };
 
-typedef std::map<std::string,EffectorConstraint*> ConstraintMap;
+typedef std::map<std::string,std::unique_ptr<EffectorConstraint>> ConstraintMap;
 typedef std::vector<EffectorConstraint*> VecOfConstraintPtr;
 
 class MeCtIKTreeScenario

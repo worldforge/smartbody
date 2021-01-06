@@ -70,10 +70,10 @@ public:
 	float                 jointSpeed;
 
 public:
-	MeCtHand(boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SmartBody::SBJoint* wrist);
+	MeCtHand(const boost::intrusive_ptr<SmartBody::SBSkeleton>& sk, SmartBody::SBJoint* wrist);
 	~MeCtHand() override;
 
-	void init(std::string grabType, const MotionDataSet& reachPose, const MotionDataSet& grabPose, const MotionDataSet& releasePose, const MotionDataSet& pointPose);
+	void init(const std::string& grabType, const MotionDataSet& reachPose, const MotionDataSet& grabPose, const MotionDataSet& releasePose, const MotionDataSet& pointPose);
 
 public:
 	void controller_map_updated() override;
@@ -88,7 +88,7 @@ public:
 	void setGrabState(GrabState state);
 	void setGrabTargetObject(SbmPawn* targetObj);
 	bool isFingerChainLocked();
-	void attachPawnTarget(SbmPawn* pawn, std::string jointName);
+	void attachPawnTarget(SbmPawn* pawn, const std::string& jointName);
 	void releasePawn();
 	void updateAttachedPawn();
 protected:
@@ -96,7 +96,7 @@ protected:
 	void pawnAttachImpl();
 	void updateChannelBuffer(MeFrameData& frame, BodyMotionFrame& handMotionFrame, bool bRead = false);
 	void getPinchFrame(BodyMotionFrame& pinchFrame, SrVec& wristOffset);
-	FingerID findFingerID(const char* jointName);
+	static FingerID findFingerID(const char* jointName);
 	void updateFingerChains( BodyMotionFrame& targetMotionFrame, float maxAngDelta);
 	BodyMotionFrame& findTargetFrame(GrabState state);	
 	SbmPawn* getAttachedPawn();

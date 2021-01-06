@@ -102,7 +102,7 @@ class MeCtNewLocomotion : public SmartBody::SBController
 		void  reset(bool resetPos=false);
 		void  loopMotion(float def, float speed);
 	private:
-		void  addPawn(SrVec& pos, std::string name);
+		void  addPawn(SrVec& pos, const std::string& name);
 		float legDistance(bool Leftleg);
 		bool  capsule_collision(SrVec  mp1, SrVec mp2, SrVec np1, SrVec np2);
 		void  check_collision();
