@@ -34,49 +34,49 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 namespace SmartBody {
+//
+//SBPawn::SBPawn() : SbmPawn()
+//{
+//	setAttributeGroupPriority("transform", 80);
+//	setAttributeGroupPriority("Display", 100);
+//	setAttributeGroupPriority("Physics", 300);
+//
+//	createBoolAttribute("visible", true, true, "Display", 5, false, false, false, "");
+//	_posX = createDoubleAttribute("posX", 0.0, true, "transform", 10, false, false, false, "X position");
+//	_posY = createDoubleAttribute("posY", 0.0, true, "transform", 20, false, false, false, "Y position");
+//	_posZ = createDoubleAttribute("posZ", 0.0, true, "transform", 30, false, false, false, "Z position");
+//	_rotX = createDoubleAttribute("rotX", 0.0, true, "transform", 40, false, false, false, "X rotation");
+//	_rotY = createDoubleAttribute("rotY", 0.0, true, "transform", 50, false, false, false, "Y rotation");
+//	_rotZ = createDoubleAttribute("rotZ", 0.0, true, "transform", 60, false, false, false, "Z rotation");
+//	
+//	createVec3Attribute("meshScale", 1.0, 1.0f, 1.0f, true, "Display", 410, false, false, false, "Scale of geometry/mesh");
+//	createStringAttribute("mesh", "", true, "Display", 405, false, false, false, "Geometry/mesh");
+//	// since this is a pawn, show static mesh by default
+//	createBoolAttribute("showStaticMesh", true, true, "Display", 415, false, false, false, "Whether the object is visible.");
+//	createBoolAttribute("blendTexturesWithLighting", true, true, "Display", 405, false, false, false, "Whether the object is visible.");
+//	createVec3Attribute("meshTranslate", 0.0, 0.0, 0.0, true, "Display", 420, false, false, false, "Mesh translation offset");
+//	createVec3Attribute("meshRotation", 0.0, 0.0, 0.0, true, "Display", 430, false, false, false,  "Mesh rotation offset");
+//	createActionAttribute("createPhysics", true, "Physics", 300, false, false, false, "Initializes the pawn as a physics object.");
+//	createBoolAttribute("enablePhysics", false, true, "Physics", 310, false, false, false, "Enables or disables physics for this pawn.");
+//	std::vector<std::string> shapes;
+//	shapes.emplace_back("null");
+//	shapes.emplace_back("sphere");
+//	shapes.emplace_back("box");
+//	shapes.emplace_back("capsule");
+//	SmartBody::StringAttribute* shapeAttr = createStringAttribute("collisionShape", "null", true, "Physics", 350, false, false, false, "Initializes the pawn as a physics object.");
+//	shapeAttr->setValidValues(shapes);
+//	SrVec defaultScale(1.0f, 1.0f, 1.0f);
+//	createVec3Attribute("collisionShapeScale", defaultScale[0], defaultScale[1], defaultScale[2], true, "Physics", 360, false, false, false, "Scaling of physics-based shape.");
+//	createBoolAttribute("showCollisionShape", true, true, "Physics", 370, false, false, false, "Whether the collision shape is visible.");
+//	smoothTargetHPR = false;
+//	smoothTargetPos = false;
+//	posStartTime = 0.f;
+//	posEndTime = 0.f;
+//	hprStartTime = 0.f;
+//	hprEndTime = 0.f;	
+//}
 
-SBPawn::SBPawn() : SbmPawn()
-{
-	setAttributeGroupPriority("transform", 80);
-	setAttributeGroupPriority("Display", 100);
-	setAttributeGroupPriority("Physics", 300);
-
-	createBoolAttribute("visible", true, true, "Display", 5, false, false, false, "");
-	_posX = createDoubleAttribute("posX", 0.0, true, "transform", 10, false, false, false, "X position");
-	_posY = createDoubleAttribute("posY", 0.0, true, "transform", 20, false, false, false, "Y position");
-	_posZ = createDoubleAttribute("posZ", 0.0, true, "transform", 30, false, false, false, "Z position");
-	_rotX = createDoubleAttribute("rotX", 0.0, true, "transform", 40, false, false, false, "X rotation");
-	_rotY = createDoubleAttribute("rotY", 0.0, true, "transform", 50, false, false, false, "Y rotation");
-	_rotZ = createDoubleAttribute("rotZ", 0.0, true, "transform", 60, false, false, false, "Z rotation");
-	
-	createVec3Attribute("meshScale", 1.0, 1.0f, 1.0f, true, "Display", 410, false, false, false, "Scale of geometry/mesh");
-	createStringAttribute("mesh", "", true, "Display", 405, false, false, false, "Geometry/mesh");
-	// since this is a pawn, show static mesh by default
-	createBoolAttribute("showStaticMesh", true, true, "Display", 415, false, false, false, "Whether the object is visible.");
-	createBoolAttribute("blendTexturesWithLighting", true, true, "Display", 405, false, false, false, "Whether the object is visible.");
-	createVec3Attribute("meshTranslate", 0.0, 0.0, 0.0, true, "Display", 420, false, false, false, "Mesh translation offset");
-	createVec3Attribute("meshRotation", 0.0, 0.0, 0.0, true, "Display", 430, false, false, false,  "Mesh rotation offset");
-	createActionAttribute("createPhysics", true, "Physics", 300, false, false, false, "Initializes the pawn as a physics object.");
-	createBoolAttribute("enablePhysics", false, true, "Physics", 310, false, false, false, "Enables or disables physics for this pawn.");
-	std::vector<std::string> shapes;
-	shapes.emplace_back("null");
-	shapes.emplace_back("sphere");
-	shapes.emplace_back("box");
-	shapes.emplace_back("capsule");
-	SmartBody::StringAttribute* shapeAttr = createStringAttribute("collisionShape", "null", true, "Physics", 350, false, false, false, "Initializes the pawn as a physics object.");
-	shapeAttr->setValidValues(shapes);
-	SrVec defaultScale(1.0f, 1.0f, 1.0f);
-	createVec3Attribute("collisionShapeScale", defaultScale[0], defaultScale[1], defaultScale[2], true, "Physics", 360, false, false, false, "Scaling of physics-based shape.");
-	createBoolAttribute("showCollisionShape", true, true, "Physics", 370, false, false, false, "Whether the collision shape is visible.");
-	smoothTargetHPR = false;
-	smoothTargetPos = false;
-	posStartTime = 0.f;
-	posEndTime = 0.f;
-	hprStartTime = 0.f;
-	hprEndTime = 0.f;	
-}
-
-SBPawn::SBPawn(const char* name) : SbmPawn(name)
+SBPawn::SBPawn(SmartBody::SBScene& scene, const char* name) : SbmPawn(scene, name)
 {
 	setAttributeGroupPriority("transform", 80);
 	setAttributeGroupPriority("Display", 100);
@@ -128,7 +128,7 @@ void SBPawn::setName(const std::string& name)
 	std::string oldName = getName();
 
 	SBObject::setName(name);
-	SmartBody::SBScene::getScene()->updatePawnNames();
+	_scene.updatePawnNames();
 }
 
 boost::intrusive_ptr<SmartBody::SBSkeleton> SBPawn::getSkeleton() const
@@ -147,7 +147,7 @@ void SBPawn::setSkeleton(boost::intrusive_ptr<SmartBody::SBSkeleton> skel)
 	}
 
 	// make sure that this skeleton isn't one of the skeleton templates
-	if (SmartBody::SBScene::getScene()->getSkeleton(skel->getName()) == skel)
+	if (_scene.getSkeleton(skel->getName()) == skel)
 	{
 		SmartBody::util::log("Skeleton is a template. Make a copy of this skeleton (scene.createSkeleton()) first.");
 		return;
@@ -227,7 +227,7 @@ void SBPawn::setPositionSmooth( const SrVec& pos, float smoothTime )
 {
 	initialPos = getPosition(); // start position
 	targetPos  = pos;
-	posStartTime = (float) SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	posStartTime = (float) _scene.getSimulationManager()->getTime();
 	posEndTime = posStartTime + smoothTime;
 	smoothTargetPos = true;
 }
@@ -236,7 +236,7 @@ void SBPawn::setHPRSmooth( const SrVec& hpr, float smoothTime )
 {
 	initialHPR = getHPR(); // start position
 	targetHPR  = hpr;
-	hprStartTime = (float) SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	hprStartTime = (float) _scene.getSimulationManager()->getTime();
 	hprEndTime = hprStartTime + smoothTime;
 	smoothTargetHPR = true;
 }
@@ -348,7 +348,7 @@ void SBPawn::notify(SBSubject* subject)
 //			SmartBody::util::log("collisionShape = %s",shapeName.c_str());
 			if (shapeName != geomObject->geomType())
 			{
-				SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
+				SBCollisionManager* colManager = _scene.getCollisionManager();
 				SrVec size = getVec3Attribute("collisionShapeScale");
 				SBGeomObject* obj = colManager->createCollisionObject(collisionObjName,shapeName,size);
 				if (obj) 
@@ -386,7 +386,7 @@ void SBPawn::notify(SBSubject* subject)
 		}
 		else if (attribute->getName() == "createPhysics")
 		{
-			SmartBody::SBPhysicsManager* manager = SmartBody::SBScene::getScene()->getPhysicsManager();
+			SmartBody::SBPhysicsManager* manager = _scene.getPhysicsManager();
 			manager->createPhysicsPawn(this->getName(), this->getStringAttribute("collisionShape"), this->getVec3Attribute("collisionShapeScale"));
 			SmartBody::BoolAttribute* physicsAttr = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 			//setPhysicsSim(physicsAttr->getValue());
@@ -596,7 +596,7 @@ void SBPawn::createMeshFromCollisionSurface(std::string name, SrVec color)
 //
 //
 //
-//	SmartBody::SBScene::getScene()->getAssetManager()->addDeformableMesh(name, mesh);
+//	_scene.getAssetManager()->addDeformableMesh(name, mesh);
 //
 }
 

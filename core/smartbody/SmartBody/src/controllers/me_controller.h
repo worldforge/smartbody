@@ -37,6 +37,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBAttribute.h>
 #include <sb/DefaultAttributeTable.h>
 #include <controllers/me_controller_context.hpp>
+#include "sb/SBSceneOwned.h"
 
 
 // Predeclare class because of circular reference:
@@ -368,6 +369,8 @@ public :
 	virtual const std::string& controller_type () const = 0;
 
     SBAPI void notify(SmartBody::SBSubject* subject) override;
+
+    SmartBody::SBScene* getScene();
 
 	friend class MeControllerContext;
 };

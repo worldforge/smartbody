@@ -33,7 +33,7 @@ class SBPhysicsSim;
 class SBPhysicsManager : public SBService
 {		
 	public:
-		SBAPI explicit SBPhysicsManager(std::unique_ptr<SBPhysicsSim> physicsSim);
+		SBAPI explicit SBPhysicsManager(SBScene& scene, std::unique_ptr<SBPhysicsSim> physicsSim);
 		SBAPI ~SBPhysicsManager();
 
 		SBAPI void setEnable(bool enable) override;

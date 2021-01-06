@@ -32,8 +32,8 @@ class SBPhysicsSim;
 class SBPawn : public SbmPawn
 {
 	public:
-		SBAPI SBPawn();
-		SBAPI explicit SBPawn( const char* name );
+		//SBAPI SBPawn();
+		SBAPI explicit SBPawn(SmartBody::SBScene& scene, const char* name );
 		SBAPI ~SBPawn() override;
 
 		SBAPI void setName(const std::string& name) override;

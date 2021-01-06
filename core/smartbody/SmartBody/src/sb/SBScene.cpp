@@ -93,18 +93,15 @@ SBScene* SBScene::_scene = nullptr;
 std::map<std::string, std::string> SBScene::_systemParameters;
 
 
-class ForwardLogListener : public SmartBody::util::Listener
+class ForwardLogListener : public SmartBody::util::Listener, public SBSceneOwned
 {
     public:
-		ForwardLogListener() = default;
+		explicit ForwardLogListener(SBScene& scene) : SBSceneOwned(scene) {}
 		~ForwardLogListener() override = default;
 
         void OnMessage( const std::string & message ) override
 		{
-			SBScene* scene = SmartBody::SBScene::getScene();
-			if (!scene)
-				return;
-			std::vector<SBSceneListener*>& listeners = scene->getSceneListeners();
+			std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 			for (auto & listener : listeners)
 			{
 				listener->OnLogMessage(message);
@@ -113,59 +110,48 @@ class ForwardLogListener : public SmartBody::util::Listener
 };
 
 
-SBScene::SBScene(CoreServices coreServices) :
+SBScene::SBScene(const CoreServicesProvider& coreServicesProvider) :
 		SBObject(),
 		_assetStore(std::make_unique<SBAssetStore>(*this)),
-		_coreServices(std::move(coreServices)),
-		_sim(std::make_unique<SBSimulationManager>()),
-		_profiler(std::make_unique<SBProfiler>()),
-		_blendManager(std::make_unique<SBAnimationBlendManager>()),
-		_reachManager(std::make_unique<SBReachManager>()),
+		_coreServices(std::move(coreServicesProvider(*this))),
+		_sim(std::make_unique<SBSimulationManager>(*this)),
+		_profiler(std::make_unique<SBProfiler>(*this)),
+		_blendManager(std::make_unique<SBAnimationBlendManager>(*this)),
+		_reachManager(std::make_unique<SBReachManager>(*this)),
 		//_steerManager(std::make_unique<SBSteerManager>(*this)),
-		_realtimeManager(std::make_unique<SBRealtimeManager>()),
+		_realtimeManager(std::make_unique<SBRealtimeManager>(*this)),
 		_serviceManager(std::make_unique<SBServiceManager>()),
-		_gestureMapManager(std::make_unique<SBGestureMapManager>()),
-		_jointMapManager(std::make_unique<SBJointMapManager>()),
-		_phonemeManager(std::make_unique<SBPhonemeManager>()),
+		_gestureMapManager(std::make_unique<SBGestureMapManager>(*this)),
+		_jointMapManager(std::make_unique<SBJointMapManager>(*this)),
+		_phonemeManager(std::make_unique<SBPhonemeManager>(*this)),
 		_behaviorSetManager(std::make_unique<SBBehaviorSetManager>()),
 		_retargetManager(std::make_unique<SBRetargetManager>()),
-		_eventManager(std::make_unique<SBEventManager>()),
-		_assetManager(std::make_unique<SBAssetManager>(*_assetStore)),
+		_eventManager(std::make_unique<SBEventManager>(*this)),
+		_assetManager(std::make_unique<SBAssetManager>(*this, *_assetStore)),
 		_speechManager(std::make_unique<SBSpeechManager>()),
-		_commandManager(std::make_unique<SBCommandManager>()),
-		_motionGraphManager(std::make_unique<SBMotionGraphManager>()),
+		_commandManager(std::make_unique<SBCommandManager>(*this)),
+		_motionGraphManager(std::make_unique<SBMotionGraphManager>(*this)),
 		_handConfigManager(std::make_unique<SBHandConfigurationManager>()),
 		_parser(std::make_unique<SBParser>()),
-		_forwardLogListener(std::make_unique<ForwardLogListener>()),
+		_scale(1.f),
+		_isRemoteMode(false),
+		_forwardLogListener(std::make_unique<ForwardLogListener>(*this)),
 		_stdLogListener(std::make_unique<SmartBody::util::StdoutListener>()),
-		_vhMsgProvider(nullptr)
+		_kinectProcessor(std::make_unique<KinectProcessor>(*this)),
+		_vhMsgProvider(nullptr),
+		_speechBehaviourProvider(nullptr)
 		{
 	_scene = this;
-	_processId = "";
-	_lastScriptDirectory = "";
 
 	createDefaultControllers();
 
-	_sceneListeners.clear();
-
-
-
-	//_scale = .01f; // default scale is centimeters
-	_scale = 1.f;
 
 	// add the services
-	//_serviceManager->addService(_steerManager.get());
 	_serviceManager->addService(_coreServices.physicsManager.get());
 	_serviceManager->addService(_coreServices.collisionManager.get());
 	_serviceManager->addService(_realtimeManager.get());
 	_serviceManager->addService(_phonemeManager.get());
 	_serviceManager->addService(_profiler.get());
-	//_serviceManager->addService(_debuggerServer);
-
-
-	//_debuggerClient = new SBDebuggerClient();
-	//_debuggerUtility = new SBDebuggerUtility();
-	_isRemoteMode = false;
 
     createBoolAttribute("bmlstatus", false, true, "", 5, false, false, false, "Use BML status feedback events.");
 	createBoolAttribute("useNewBMLParsing",false,true,"",10,false,false,false,"Use new BML parsing scheme.");
@@ -225,7 +211,6 @@ SBScene::SBScene(CoreServices coreServices) :
 
 	_heightField = nullptr;
 	_navigationMesh = nullptr;
-	_kinectProcessor = new KinectProcessor();
 
 	// Create default settings
 	createDefaultControllers();
@@ -299,7 +284,6 @@ SBScene::~SBScene()
 	removeAllAssetPaths("audio");
 
 
-	delete _kinectProcessor;
 
 	delete _heightField;
 
@@ -469,7 +453,7 @@ void SBScene::update()
 			if (brain)
 			{
 				auto* sbchar = dynamic_cast<SmartBody::SBCharacter*>(char_p);
-				brain->update(sbchar, getSimulationManager()->getTime(), getSimulationManager()->getTimeDt());
+				brain->update(*this, sbchar, getSimulationManager()->getTime(), getSimulationManager()->getTimeDt());
 			}
 
 			// scene update moved to renderer
@@ -690,7 +674,7 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 			SmartBody::util::log( "Register character: character_map.insert(..) '%s' FAILED\n", charName.c_str() );
 			return nullptr;
 		}
-		auto* character = new SBCharacter(charName, metaInfo);
+		auto* character = new SBCharacter(*this, charName, metaInfo);
 		_pawnMap.insert(std::pair<std::string, SbmPawn*>(character->getName(), character));
 		_pawnNames.emplace_back(character->getName());
 		_characterMap.insert(std::pair<std::string, SbmCharacter*>(character->getName(), character));
@@ -737,7 +721,7 @@ SBPawn* SBScene::createPawn(const std::string& pawnName)
 	}
 	else
 	{
-		auto* pawn = new SBPawn(pawnName.c_str());
+		auto* pawn = new SBPawn(*this, pawnName.c_str());
 		boost::intrusive_ptr<SBSkeleton> skeleton(new SBSkeleton());
 		pawn->setSkeleton(skeleton);
 		//SkJoint* joint = skeleton->add_joint(SkJoint::TypeQuat);
@@ -1710,7 +1694,7 @@ float SBScene::queryTerrain( float x, float z, float *normal_p )
 
 KinectProcessor* SBScene::getKinectProcessor()
 {
-	return _kinectProcessor;
+	return _kinectProcessor.get();
 }
 
 std::map<std::string, GeneralParam*>& SBScene::getGeneralParameters()

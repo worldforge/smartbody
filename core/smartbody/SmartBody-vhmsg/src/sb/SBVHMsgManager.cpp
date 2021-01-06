@@ -32,10 +32,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "vhmsg-tt.h"
 
 
-class VHMsgLogger : public SmartBody::util::Listener
+struct VHMsgLogger : public SmartBody::util::Listener
 {
-	public:
-		VHMsgLogger() : SmartBody::util::Listener()
+
+	SmartBody::SBScene& _scene;
+		explicit VHMsgLogger(SmartBody::SBScene& scene) : SmartBody::util::Listener(), _scene(scene)
 		{
 		}
         
@@ -43,13 +44,13 @@ class VHMsgLogger : public SmartBody::util::Listener
 
         void OnMessage( const std::string & message ) override
 		{
-			SmartBody::SBScene::getScene()->sendVHMsg2("sbmlog", message);
+			_scene.sendVHMsg2("sbmlog", message);
 		}
 };
 
 namespace SmartBody {
 
-SBVHMsgManager::SBVHMsgManager() : SBService()
+SBVHMsgManager::SBVHMsgManager(SBScene& scene) : SBService(scene)
 {
 	createBoolAttribute("showMessages", false, true, "Basic", 60, false, false, false, "Dumps any registered vhmsgs to the console.");
 
@@ -107,7 +108,7 @@ void SBVHMsgManager::setEnable(bool val)
 bool SBVHMsgManager::isEnable()
 {
 	// if it's remote mode, vhmsg should be enabled no matter what
-	if (SmartBody::SBScene::getScene()->isRemoteMode())
+	if (_scene.isRemoteMode())
 		return true;
 	
 	return SBService::isEnable();
@@ -187,11 +188,11 @@ int SBVHMsgManager::send2( const char *op, const char* message )
 	else
 	{
 		// append to command queue if header token has callback function
-		if( SmartBody::SBScene::getScene()->getCommandManager()->hasCommand( op ) ) {
+		if( _scene.getCommandManager()->hasCommand( op ) ) {
 			// Append to command queue
 			std::ostringstream command;
 			command << op << " " << message;
-			SmartBody::SBScene::getScene()->getCommandManager()->execute_later( command.str().c_str() );
+			_scene.getCommandManager()->execute_later( command.str().c_str() );
 		}
 	}
 
@@ -215,9 +216,9 @@ int SBVHMsgManager::send( const char* message )
 		// append to command queue if header token has callback function
 		srArgBuffer tokenizer( message );
 		char* token = tokenizer.read_token();
-		if( SmartBody::SBScene::getScene()->getCommandManager()->hasCommand( token ) ) {
+		if( _scene.getCommandManager()->hasCommand( token ) ) {
 			// Append to command queue
-			SmartBody::SBScene::getScene()->getCommandManager()->execute_later( message );
+			_scene.getCommandManager()->execute_later( message );
 		}
 	}
 
@@ -274,18 +275,18 @@ void SBVHMsgManager::vhmsgCallback( const char *op, const char *args, void * use
 	if (vhmsgManager->getBoolAttribute("showMessages"))
 		SmartBody::util::log("[%s] %s", op, args);
 	//FIXME: expose the callback so that the debugger can listen to it
-//	if (SmartBody::SBScene::getScene()->isRemoteMode())
+//	if (_scene.isRemoteMode())
 //	{
-//		SmartBody::SBScene::getScene()->getDebuggerClient()->ProcessVHMsgs(op, args);
+//		_scene.getDebuggerClient()->ProcessVHMsgs(op, args);
 //		return;
 //	}
 //	else
 //	{
-//		SmartBody::SBScene::getScene()->getDebuggerServer()->ProcessVHMsgs(op, args);
+//		_scene.getDebuggerServer()->ProcessVHMsgs(op, args);
 //	}
 
 	//SmartBody::util::log("Get VHMSG , op = %s, args = %s", op, args);
-	switch( SmartBody::SBScene::getScene()->getCommandManager()->execute( op, (char *)args ) )
+	switch( vhmsgManager->_scene.getCommandManager()->execute( op, (char *)args ) )
 	{
         case CMD_NOT_FOUND:
             SmartBody::util::log("SmartBody error: command NOT FOUND: '%s' + '%s'", op, args );
@@ -300,7 +301,7 @@ void SBVHMsgManager::setEnableLogging(bool val)
 {
 	if (val)
 	{
-		_logListener = new VHMsgLogger();
+		_logListener = new VHMsgLogger(_scene);
 		SmartBody::util::g_log.AddListener(_logListener);
 	}
 }

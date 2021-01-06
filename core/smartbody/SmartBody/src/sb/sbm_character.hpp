@@ -149,8 +149,8 @@ protected:
 public:
 	//  Methods
 	//SbmCharacter();
-	explicit SbmCharacter( const char * char_name );
-	SbmCharacter( const char* character_name, std::string type);
+	explicit SbmCharacter(SmartBody::SBScene& scene, const char * char_name );
+	SbmCharacter(SmartBody::SBScene& scene, const char* character_name, std::string type);
 	~SbmCharacter() override;
 	
 	int init( boost::intrusive_ptr<SkSkeleton> skeleton_p,

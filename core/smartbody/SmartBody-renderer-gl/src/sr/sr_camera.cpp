@@ -42,10 +42,10 @@ const int SrFrustum::INSIDE = 3;
 
 //=================================== SrCamera ===================================
 
-SrCamera::SrCamera (SmartBody::SBRenderScene& renderScene) : SBPawn(),
-_renderScene(renderScene),
-															 smoothTargetCam(false)
- {
+SrCamera::SrCamera(SmartBody::SBRenderScene& renderScene)
+		: SBPawn(renderScene.mScene, "camera"),
+		  _renderScene(renderScene),
+		  smoothTargetCam(false) {
 	setAttributeGroupPriority("Camera", 50);
 	createDoubleAttribute("centerX", 0.0, true, "Camera", 200, false, false, false, "");
 	createDoubleAttribute("centerY", 0.0, true, "Camera", 210, false, false, false, "");
@@ -468,8 +468,7 @@ void SrCamera::print()
 void SrCamera::reset()
 {
 	init();
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	float scale = 1.f/SmartBody::SBScene::getScene()->getScale();
+	float scale = 1.f/_renderScene.mScene.getScale();
 	setEye(0, 1.66f*scale, 1.85f*scale);
 	setCenter(0, 0.92f*scale, 0);
 	float znear = 0.01f*scale;
@@ -649,7 +648,7 @@ SBAPI void SrCamera::setCameraParameterSmooth( std::string camName, float smooth
 		return;
 	}
 
-	camStartTime = (float) SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	camStartTime = (float) _renderScene.mScene.getSimulationManager()->getTime();
 	camEndTime = camStartTime + smoothTime;
 
 	initialEye = eye;

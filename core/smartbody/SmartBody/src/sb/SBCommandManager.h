@@ -26,6 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/sr_cmd_seq.h>
 
 #include <functional>
+#include "SBSceneOwned.h"
 
 
 class SequenceManager
@@ -51,11 +52,11 @@ class SequenceManager
 
 namespace SmartBody {
 
-class SBCommandManager : public SBObject
+class SBCommandManager : public SBObject, public SBSceneOwned
 {
 	public:
 		typedef std::function<int(srArgBuffer&)> Callback;
-		SBAPI SBCommandManager();
+		SBAPI explicit SBCommandManager(SBScene& scene);
 		SBAPI ~SBCommandManager();
 
 		SBAPI void registerCallbacks();

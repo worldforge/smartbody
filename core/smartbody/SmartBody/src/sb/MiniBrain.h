@@ -41,6 +41,7 @@ struct ObjectData
 };
 
 class SBCharacter;
+class SBScene;
 
 class MiniBrain
 {
@@ -48,7 +49,7 @@ class MiniBrain
 		MiniBrain();
 		virtual ~MiniBrain();
 
-		virtual void update(SBCharacter* character, double time, double dt);
+		virtual void update(SBScene& scene, SBCharacter* character, double time, double dt);
 
 	protected:
 		std::map<std::string, ObjectData> _data;

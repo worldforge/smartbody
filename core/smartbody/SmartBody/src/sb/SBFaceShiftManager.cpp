@@ -47,7 +47,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBFaceShiftManager::SBFaceShiftManager() : SBService()
+SBFaceShiftManager::SBFaceShiftManager(SBScene& scene) : SBService(scene)
 {
 	setEnable(false);
 	setName("FaceShift");

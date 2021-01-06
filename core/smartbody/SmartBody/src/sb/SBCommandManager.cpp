@@ -146,7 +146,7 @@ namespace SmartBody {
 
 
 
-SBCommandManager::SBCommandManager()
+SBCommandManager::SBCommandManager(SBScene& scene) : SBSceneOwned(scene)
 {
 	registerCallbacks();
 }

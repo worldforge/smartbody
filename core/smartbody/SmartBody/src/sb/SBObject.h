@@ -38,6 +38,7 @@ class SrVec;
 
 namespace SmartBody {
 
+class SBScene;
 class SBAttribute;
 class ActionAttribute;
 class BoolAttribute;
@@ -135,6 +136,6 @@ class SBObject : public SBObserver, public SBSubject, public boost::noncopyable
 
 };
 
-};
+}
 
 #endif

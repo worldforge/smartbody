@@ -20,25 +20,21 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBParser.h"
 #define _USE_MATH_DEFINES
-#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <math.h>
 #include <parser/GotIter.h>
-#include <parser/Wrd.h>
 #include <parser/InputTree.h>
 #include <parser/Bchart.h>
 #include <parser/ECArgs.h>
 #include <parser/MeChart.h>
 #include <parser/extraMain.h>
 #include <parser/AnsHeap.h>
-#include <parser/UnitRules.h>
 #include <parser/Params.h>
 #include <parser/TimeIt.h>
 #include <parser/ewDciTokStrm.h>
 #include <parser/Link.h>
-#include <parser/InputTree.h>
 
 #include <sb/SBParseNode.h>
 #include "SBUtilities.h"

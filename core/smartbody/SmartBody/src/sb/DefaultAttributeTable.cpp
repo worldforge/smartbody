@@ -21,23 +21,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "DefaultAttributeTable.h"
 #include "SBUtilities.h"
 
-DefaultAttributeTable::DefaultAttributeTable(void)
-{
-}
+DefaultAttributeTable::DefaultAttributeTable() = default;
 
-DefaultAttributeTable::~DefaultAttributeTable(void)
+DefaultAttributeTable::~DefaultAttributeTable()
 {
-	for (size_t i = 0; i < _defaultAttributes.size(); i++)
+	for (auto & pair : _defaultAttributes)
 	{
-		std::pair<SmartBody::SBAttribute*, VariablePointer>& pair = _defaultAttributes[i];
-		delete pair.first;
+			delete pair.first;
 	}
 
-	for (std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.begin();
-		iter != _defaultGroups.end();
-		iter++)
+	for (auto & _defaultGroup : _defaultGroups)
 	{
-		delete iter->second;
+		delete _defaultGroup.second;
 	}
 
 	std::map<std::string, SmartBody::SBAttributeGroup*> _defaultGroups;
@@ -47,7 +42,7 @@ DefaultAttributeTable::~DefaultAttributeTable(void)
 void DefaultAttributeTable::setDefaultAttributeGroupPriority(const std::string& groupName, int priority)
 {
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(groupName);
+	auto iter = _defaultGroups.find(groupName);
 	if (iter == _defaultGroups.end())
 	{
 		curGroup = new SmartBody::SBAttributeGroup(groupName);
@@ -63,7 +58,7 @@ void DefaultAttributeTable::setDefaultAttributeGroupPriority(const std::string& 
 int DefaultAttributeTable::setDefaultAttributeGroupPriority(const std::string& groupName)
 {
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(groupName);
+	auto iter = _defaultGroups.find(groupName);
 	if (iter == _defaultGroups.end())
 	{
 		SmartBody::util::log("No default attribute group named '%s' found.", groupName.c_str());
@@ -78,12 +73,12 @@ int DefaultAttributeTable::setDefaultAttributeGroupPriority(const std::string& g
 
 void DefaultAttributeTable::addDefaultAttributeDouble( const std::string& name, double defaultValue, const std::string& attributeGroup, double* varPtr )
 {
-	SmartBody::DoubleAttribute* hf = new SmartBody::DoubleAttribute(name);
+	auto* hf = new SmartBody::DoubleAttribute(name);
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
+	auto iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
 		curGroup = new SmartBody::SBAttributeGroup(attributeGroup);

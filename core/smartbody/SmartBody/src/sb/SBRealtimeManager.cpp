@@ -33,7 +33,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBRealtimeManager::SBRealtimeManager() : SBService()
+SBRealtimeManager::SBRealtimeManager(SBScene& scene) : SBService(scene)
 {
 	setEnable(false);
 	setName("Realtime");

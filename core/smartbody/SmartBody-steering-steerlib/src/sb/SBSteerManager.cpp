@@ -35,7 +35,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 namespace SmartBody {
 
 SBSteerManager::SBSteerManager(SBScene& scene)
-		: SBService(),
+		: SBService(scene),
 		  _scene(scene),
 		  _driver(std::make_unique<SteerSuiteEngineDriver>()),
 		  _maxUpdateFrequency(1)
@@ -580,7 +580,7 @@ bool SBSteerManager::checkExamples(SBSteerAgent& steerAgent)
 	int numMissing = 0;
 	for (auto & standardRequiredState : standardRequiredStates)
 	{
-		SmartBody::SBAnimationBlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(standardRequiredState);
+		SmartBody::SBAnimationBlend* state = _scene.getBlendManager()->getBlend(standardRequiredState);
 		if (!state)
 		{
 			numMissing++;
@@ -607,7 +607,7 @@ bool SBSteerManager::checkExamples(SBSteerAgent& steerAgent)
 	int numMissing1 = 0;
 	for (auto & minimalRequiredState : minimalRequiredStates)
 	{
-		auto state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(minimalRequiredState);
+		auto state = _scene.getBlendManager()->getBlend(minimalRequiredState);
 		if (!state)
 		{
 			numMissing1++;

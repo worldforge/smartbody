@@ -29,8 +29,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBProfiler::SBProfiler()
-: profiler_p(std::make_unique<TimeIntervalProfiler>())
+SBProfiler::SBProfiler(SBScene& scene)
+: SBService(scene), profiler_p(std::make_unique<TimeIntervalProfiler>())
 {
 	setName("Profiler");
 
@@ -179,8 +179,9 @@ void SBProfiler::notify( SBSubject* subject )
 	}
 }
 
-SBSimulationManager::SBSimulationManager()
-: _simStarted(false),
+SBSimulationManager::SBSimulationManager(SBScene& scene)
+: SBSceneOwned(scene),
+  _simStarted(false),
   _simPlaying(false),
   _simStopped(false),
   time(0.0),
@@ -297,7 +298,7 @@ void SBSimulationManager::reset()
 void SBSimulationManager::start()
 {
 	// run the start scripts
-	std::map<std::string, SBScript*>& scripts = SmartBody::SBScene::getScene()->getScripts();
+	std::map<std::string, SBScript*>& scripts = _scene.getScripts();
 	for (auto & script : scripts)
 	{
 		script.second->start();
@@ -317,7 +318,7 @@ void SBSimulationManager::start()
 void SBSimulationManager::stop()
 {
 	// run the stop scripts
-	std::map<std::string, SBScript*>& scripts = SmartBody::SBScene::getScene()->getScripts();
+	std::map<std::string, SBScript*>& scripts = _scene.getScripts();
 	for (auto & script : scripts)
 	{
 		script.second->stop();

@@ -58,7 +58,8 @@ namespace SmartBody {
 //
 //}
 
-SBCharacter::SBCharacter(const std::string& name, const std::string& type) : SbmCharacter(name.c_str(), type)
+SBCharacter::SBCharacter(SmartBody::SBScene& scene, const std::string& name, const std::string& type)
+: SbmCharacter(scene, name.c_str(), type)
 {
 	setAttributeGroupPriority("Gestures", 80);
 	setAttributeGroupPriority("Display", 110);
@@ -244,8 +245,7 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 	// since this is a character, show the deformable mesh by default
 	setBoolAttribute("showStaticMesh",false);
 
-	frameDataMarshalFriendly = nullptr;
-	frameDataMarshalFriendly = new SBM_CharacterFrameDataMarshalFriendly();
+	frameDataMarshalFriendly = std::make_unique<SBM_CharacterFrameDataMarshalFriendly>();
 	InitFrameDataMarshalFriendly();
 	
 	SmartBody::StringAttribute* textureAttribute = createStringAttribute("texturesType", "static", true, "Display", 210, false, false, false, "How to display textures");
@@ -262,12 +262,7 @@ SBCharacter::SBCharacter(const std::string& name, const std::string& type) : Sbm
 }
 
 
-SBAPI SBCharacter::~SBCharacter()
-{
-	//FreeFrameDataMarshalFriendly();
-	delete frameDataMarshalFriendly;
-	frameDataMarshalFriendly = nullptr;
-}
+SBAPI SBCharacter::~SBCharacter() = default;
 
 
 void SBCharacter::startMotionRecord( double frameRate )
@@ -309,7 +304,7 @@ void SBCharacter::setName(const std::string& name)
 {
 	SBPawn::setName(name);
 
-	SmartBody::SBScene::getScene()->updateCharacterNames();
+	_scene.updateCharacterNames();
 
 }
 
@@ -440,19 +435,19 @@ void SBCharacter::setVoice(const std::string& type)
 	}
 	else if (type == "remote")
 	{
-		set_speech_impl(SmartBody::SBScene::getScene()->getSpeechManager()->speech_rvoice());
+		set_speech_impl(_scene.getSpeechManager()->speech_rvoice());
 	}
 	else if (type == "audiofile")
 	{
-		set_speech_impl(SmartBody::SBScene::getScene()->getSpeechManager()->speech_audiofile());
+		set_speech_impl(_scene.getSpeechManager()->speech_audiofile());
 	}
 	else if (type == "text")
 	{
-		set_speech_impl(SmartBody::SBScene::getScene()->getSpeechManager()->speech_text());
+		set_speech_impl(_scene.getSpeechManager()->speech_text());
 	}
 	else if (type == "local")
 	{
-		set_speech_impl(SmartBody::SBScene::getScene()->getSpeechManager()->speech_localvoice());
+		set_speech_impl(_scene.getSpeechManager()->speech_localvoice());
 	}
 	else
 	{
@@ -510,19 +505,19 @@ void SBCharacter::setVoiceBackup(const std::string& type)
 	}
 	else if (type == "remote")
 	{
-		set_speech_impl_backup(SmartBody::SBScene::getScene()->getSpeechManager()->speech_rvoice());
+		set_speech_impl_backup(_scene.getSpeechManager()->speech_rvoice());
 	}
 	else if (type == "audiofile")
 	{
-		set_speech_impl_backup(SmartBody::SBScene::getScene()->getSpeechManager()->speech_audiofile());
+		set_speech_impl_backup(_scene.getSpeechManager()->speech_audiofile());
 	}
 	else if (type == "text")
 	{
-		set_speech_impl_backup(SmartBody::SBScene::getScene()->getSpeechManager()->speech_text());
+		set_speech_impl_backup(_scene.getSpeechManager()->speech_text());
 	}
 	else if (type == "local")
 	{
-		set_speech_impl_backup(SmartBody::SBScene::getScene()->getSpeechManager()->speech_localvoice());
+		set_speech_impl_backup(_scene.getSpeechManager()->speech_localvoice());
 	}
 	else
 	{
@@ -579,7 +574,7 @@ SBBehavior* SBCharacter::getBehavior(int num)
 //	_curBehaviors.clear();
 //
 //	// speech
-//	BML::MapOfBmlRequest bmlRequestMap = SmartBody::SBScene::getScene()->getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
+//	BML::MapOfBmlRequest bmlRequestMap = _scene.getBmlProcessor()->getBMLProcessor()->getBMLRequestMap();
 //	for (auto & iter : bmlRequestMap)
 //	{
 //		std::string requestName = iter.first;
@@ -616,7 +611,7 @@ SBBehavior* SBCharacter::getBehavior(int num)
 //	}
 //
 //	// locomotion
-//	SmartBody::SBSteerManager* manager = SmartBody::SBScene::getScene()->getSteerManager();
+//	SmartBody::SBSteerManager* manager = _scene.getSteerManager();
 //	SmartBody::SBSteerAgent* steerAgent = manager->getSteerAgent(this->getName());
 //	if (steerAgent)
 //	{
@@ -731,7 +726,7 @@ void SBCharacter::notify(SBSubject* subject)
 		}
 		else if (attribute->getName() == "createPhysics")
 		{
-			SmartBody::SBPhysicsManager* manager = SmartBody::SBScene::getScene()->getPhysicsManager();
+			SmartBody::SBPhysicsManager* manager = _scene.getPhysicsManager();
 			manager->createPhysicsCharacter(this->getName());
 			return;
 		}
@@ -940,7 +935,7 @@ void SBCharacter::interruptFace(double seconds)
 		if (visemeExists)
 		{
 			tracksToRemove.emplace_back(track);
-			//this->schedule_viseme_trapezoid(controllerName.c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), 0, 0, float(seconds), float(seconds));
+			//this->schedule_viseme_trapezoid(controllerName.c_str(), _scene.getSimulationManager()->getTime(), 0, 0, float(seconds), float(seconds));
 			//this->pruneControllers();
 		}
 		else
@@ -949,7 +944,7 @@ void SBCharacter::interruptFace(double seconds)
 			if (au)
 			{
 				tracksToRemove.emplace_back(track);
-				//this->schedule_viseme_trapezoid(controllerName.c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), 0, 0, float(seconds), float(seconds));
+				//this->schedule_viseme_trapezoid(controllerName.c_str(), _scene.getSimulationManager()->getTime(), 0, 0, float(seconds), float(seconds));
 				//this->pruneControllers();
 			}
 		}
@@ -964,7 +959,7 @@ void SBCharacter::interruptFace(double seconds)
 
 	for (unsigned int x = 0; x < poses.size(); x++)
 	{
-		this->schedule_viseme_trapezoid( poses[x].c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), values[x], 9999999.9f, 0, 0 );
+		this->schedule_viseme_trapezoid( poses[x].c_str(), _scene.getSimulationManager()->getTime(), values[x], 9999999.9f, 0, 0 );
 	}
 }
 
@@ -1078,7 +1073,7 @@ void SBCharacter::setDeformableMeshName(const std::string& meshName)
 
 SBAPI void SBCharacter::setMotionGraph( const std::string& moGraphName )
 {
-	SBMotionGraphManager* mographManager = SmartBody::SBScene::getScene()->getMotionGraphManager();
+	SBMotionGraphManager* mographManager = _scene.getMotionGraphManager();
 	SBMotionGraph* mograph = mographManager->getMotionGraph(moGraphName);
 	if (mograph)
 		_curMotionGraph = mograph;

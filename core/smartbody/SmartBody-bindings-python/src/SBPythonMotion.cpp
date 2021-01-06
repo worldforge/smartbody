@@ -198,7 +198,7 @@ void pythonFuncsMotion()
 		.def("getMotionEdge", &SBMotionGraph::getMotionEdge, boost::python::return_value_policy<boost::python::reference_existing_object>(), "get the motion edge based on its name.")
 		.def("buildAutomaticMotionGraph", &SBMotionGraph::buildAutomaticMotionGraph, "build the motion graph automatically from a set of motions.")
 		;
-	boost::python::class_<SBMotionGraphManager>("SBMotionGraphManager")
+	boost::python::class_<SBMotionGraphManager, boost::noncopyable>("SBMotionGraphManager", boost::python::no_init)
 		.def("createMotionGraph", &SBMotionGraphManager::createMotionGraph, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Create a motion graph.")
 		.def("getMotionGraph", &SBMotionGraphManager::getMotionGraph, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Get the motion graph based on its name.")
 		.def("getMotionGraphNames", &SBMotionGraphManager::getMotionGraphNames, "Get the names of all motion graphs.")

@@ -54,7 +54,7 @@ std::map<std::string, SBBehaviorSet*>& SBBehaviorSetManager::getBehaviorSets()
 
 SBBehaviorSet* SBBehaviorSetManager::getBehaviorSet(const std::string& name)
 {
-	std::map<std::string, SBBehaviorSet*>::iterator iter = _behaviorSets.find(name);
+	auto iter = _behaviorSets.find(name);
 	if (iter == _behaviorSets.end())
 		return nullptr;
 	return (*iter).second;
@@ -62,7 +62,7 @@ SBBehaviorSet* SBBehaviorSetManager::getBehaviorSet(const std::string& name)
 
 void SBBehaviorSetManager::addBehaviorSet(const std::string& name, SBBehaviorSet* set)
 {
-	std::map<std::string, SBBehaviorSet*>::iterator iter = _behaviorSets.find(name);
+	auto iter = _behaviorSets.find(name);
 	if (iter != _behaviorSets.end())
 	{
 		delete (*iter).second;
@@ -73,7 +73,7 @@ void SBBehaviorSetManager::addBehaviorSet(const std::string& name, SBBehaviorSet
 
 void SBBehaviorSetManager::removeBehaviorSet(const std::string& name)
 {
-	std::map<std::string, SBBehaviorSet*>::iterator iter = _behaviorSets.find(name);
+	auto iter = _behaviorSets.find(name);
 	if (iter != _behaviorSets.end())
 	{
 		delete (*iter).second;
@@ -85,11 +85,9 @@ void SBBehaviorSetManager::removeBehaviorSet(const std::string& name)
 
 void SBBehaviorSetManager::removeAllBehaviorSets()
 {
-	for (std::map<std::string, SBBehaviorSet*>::iterator iter = _behaviorSets.begin();
-		 iter != _behaviorSets.end();
-		 iter++)
+	for (auto & _behaviorSet : _behaviorSets)
 	{
-		delete (*iter).second;
+		delete _behaviorSet.second;
 	}
 	_behaviorSets.clear();
 

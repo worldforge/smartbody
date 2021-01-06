@@ -26,6 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <utility>
 #include <sb/SBObject.h>
+#include "SBSceneOwned.h"
 
 namespace SmartBody {
 
@@ -77,10 +78,10 @@ class SBBasicHandler : public SBEventHandler
 		SBAPI void notify(SBSubject* subject);
 };
 
-class SBEventManager
+class SBEventManager : public SBSceneOwned
 {
 	public:
-		SBAPI SBEventManager();
+		SBAPI explicit SBEventManager(SBScene& scene);
 		SBAPI ~SBEventManager();
 
 		SBAPI void handleEvent(SBEvent* e);

@@ -26,16 +26,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBService::SBService() : SBObject()
+SBService::SBService(SBScene& scene) : SBObject(), SBSceneOwned(scene), _enabled(false)
 {
-	_enabled = false;
-
 	createBoolAttribute("enable", false, true, "basic", 5, false, false, false, "Enables or disables the service.");
 }
 
-SBService::~SBService()
-{
-}
+SBService::~SBService() = default;
 
 void SBService::setEnable(bool val)
 {
@@ -49,12 +45,12 @@ bool SBService::isEnable()
 
 void SBService::notify(SBSubject* subject)
 {
-	SBAttribute* attribute = dynamic_cast<SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SBAttribute*>(subject);
 	if (attribute)
 	{
 		if (attribute->getName() == "enable")
 		{
-			BoolAttribute* enableAttr = dynamic_cast<BoolAttribute*>(attribute);
+			auto* enableAttr = dynamic_cast<BoolAttribute*>(attribute);
 			if (enableAttr)
 			{
 				setEnable(enableAttr->getValue());

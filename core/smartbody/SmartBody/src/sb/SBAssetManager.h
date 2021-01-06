@@ -7,6 +7,7 @@
 #include <sb/SBAssetHandler.h>
 #include "SBAssetStore.h"
 #include "sr/sr_shared_ptr.hpp"
+#include "SBSceneOwned.h"
 
 class srPathList;
 class SbmTexture;
@@ -16,10 +17,10 @@ namespace SmartBody {
 class SBSkeleton;
 class SBMotion;
 
-class SBAssetManager : public SBObject, public SBAssetsProcessor
+class SBAssetManager : public SBObject, public SBAssetsProcessor, public SBSceneOwned
 {
 	public:
-		SBAPI explicit SBAssetManager(SBAssetStore& store);
+		SBAPI explicit SBAssetManager(SBScene& scene, SBAssetStore& store);
 		SBAPI ~SBAssetManager();
 
 		SBAPI void removeAllAssets();

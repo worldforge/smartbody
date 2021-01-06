@@ -26,10 +26,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <list>
 #include <map>
 #include <sr/sr_quat.h>
-class KinectProcessor
+#include <sb/SBSceneOwned.h>
+
+class KinectProcessor : public SmartBody::SBSceneOwned
 {
 	public:
-		KinectProcessor();
+		KinectProcessor(SmartBody::SBScene& scene);
 		~KinectProcessor();
 		int getNumBones();
 		const char* getSBJointName(int i);

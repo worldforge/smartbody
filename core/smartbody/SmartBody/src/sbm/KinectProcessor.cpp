@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBRetarget.h>
 #include "SBUtilities.h"
 
-KinectProcessor::KinectProcessor()
+KinectProcessor::KinectProcessor(SmartBody::SBScene& scene) : SmartBody::SBSceneOwned(scene)
 {
 	//Note: everything is based on below assumptions
 	//20 to 25 bones, using kinect sdk standard, the joint order is also kinect sdk order as following
@@ -197,7 +197,7 @@ void KinectProcessor::initKinectSkeleton(std::vector<SrVec>& gPos, std::vector<S
 		if (jname == "base")
 			kinectSk->root(sbJoint);
 	}		
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	assetManager->addSkeleton(std::move(kinectSk));
 }
 
@@ -298,7 +298,7 @@ void KinectProcessor::processGlobalRotation(std::vector<SrQuat>& quats)
 void KinectProcessor::processRetargetPosition( std::string targetSkelName, SrVec& inPos, SrVec& outPos )
 {
 	std::string kinectSkName = "kinect.sk";
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	auto kinectSk = assetManager->getSkeleton(kinectSkName);
 	if (!kinectSk)
 	{
@@ -306,7 +306,7 @@ void KinectProcessor::processRetargetPosition( std::string targetSkelName, SrVec
 		return;
 	}
 
-	SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();
+	SmartBody::SBRetargetManager* retargetManager = _scene.getRetargetManager();
 	SmartBody::SBRetarget* retarget = retargetManager->getRetarget(kinectSkName, targetSkelName);
 
 	
@@ -333,7 +333,7 @@ void KinectProcessor::processRetargetPosition( std::string targetSkelName, SrVec
 		relativeJoints.emplace_back("l_sternoclavicular");
 		relativeJoints.emplace_back("r_acromioclavicular");
 		relativeJoints.emplace_back("l_acromioclavicular");
-		retarget->initRetarget(endJoints,relativeJoints);
+		retarget->initRetarget(*_scene.getAssetManager(), endJoints,relativeJoints);
 	}
 
 	for (int k=0;k<3;k++)
@@ -345,7 +345,7 @@ void KinectProcessor::processRetargetPosition( std::string targetSkelName, SrVec
 void KinectProcessor::processRetargetRotation(std::string targetSkelName, std::vector<SrQuat>& quats, std::vector<SrQuat>& outQuat )
 {	
 	std::string kinectSkName = "kinect.sk";
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	auto kinectSk = assetManager->getSkeleton(kinectSkName);
 	if (!kinectSk)
 	{
@@ -353,7 +353,7 @@ void KinectProcessor::processRetargetRotation(std::string targetSkelName, std::v
 		return;
 	}
 
-	SmartBody::SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();
+	SmartBody::SBRetargetManager* retargetManager = _scene.getRetargetManager();
 	SmartBody::SBRetarget* retarget = retargetManager->getRetarget(kinectSkName, targetSkelName);
 	
 	if (!assetManager->getSkeleton(targetSkelName))
@@ -379,7 +379,7 @@ void KinectProcessor::processRetargetRotation(std::string targetSkelName, std::v
 		relativeJoints.emplace_back("l_sternoclavicular");
 		relativeJoints.emplace_back("r_acromioclavicular");
 		relativeJoints.emplace_back("l_acromioclavicular");
-		retarget->initRetarget(endJoints,relativeJoints);
+		retarget->initRetarget(*_scene.getAssetManager(), endJoints,relativeJoints);
 	}	
 
 	//quats[0] = quats[1];

@@ -31,13 +31,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBAnimationBlendManager::SBAnimationBlendManager()
+SBAnimationBlendManager::SBAnimationBlendManager(SBScene& scene) : SBSceneOwned(scene)
 {
 }
 
-SBAnimationBlendManager::~SBAnimationBlendManager()
-{
-}
+SBAnimationBlendManager::~SBAnimationBlendManager() = default;
 
 std::vector<std::string> SBAnimationBlendManager::getAutoBlendTransitions( const std::string& characterName, const std::string& targetBlend )
 {
@@ -82,9 +80,9 @@ SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& na
 	_blends.emplace_back(blend);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		listeners[l]->OnObjectCreate(blend);
+		listener->OnObjectCreate(blend);
 	}
 	return blend;
 }
@@ -98,9 +96,9 @@ SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& na
 	_blends.emplace_back(blend);
 	
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		listeners[l]->OnObjectCreate(blend);
+		listener->OnObjectCreate(blend);
 	}
 	return blend;
 }
@@ -114,9 +112,9 @@ SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& na
 	_blends.emplace_back(blend);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		listeners[l]->OnObjectCreate(blend);
+		listener->OnObjectCreate(blend);
 	}
 
 	return blend;
@@ -131,9 +129,9 @@ SBAnimationBlend3D* SBAnimationBlendManager::createBlend3D(const std::string& na
 	_blends.emplace_back(blend);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		listeners[l]->OnObjectCreate(blend);
+		listener->OnObjectCreate(blend);
 	}
 	return blend;
 }
@@ -146,9 +144,9 @@ SBMotionBlendBase* SBAnimationBlendManager::createMotionBlendBase( const std::st
 	_blends.emplace_back(blend);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		listeners[l]->OnObjectCreate(blend);
+		listener->OnObjectCreate(blend);
 	}
 	return blend;
 }
@@ -175,21 +173,19 @@ SBAnimationTransition* SBAnimationBlendManager::createTransition(const std::stri
 	_transitions.emplace_back(transition);
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		listeners[l]->OnObjectCreate(transition);
+		listener->OnObjectCreate(transition);
 	}
 	return transition;
 }
 
 SBAnimationBlend* SBAnimationBlendManager::getBlend(const std::string& name)
 {
-	for (std::vector<SBAnimationBlend*>::iterator iter = _blends.begin();
-		 iter != _blends.end();
-		 iter++)
+	for (auto & _blend : _blends)
 	{
-		if ((*iter)->stateName == name)
-			return (*iter);
+		if (_blend->stateName == name)
+			return _blend;
 	}
 	return nullptr;
 }
@@ -202,9 +198,9 @@ int SBAnimationBlendManager::getNumBlends()
 std::vector<std::string> SBAnimationBlendManager::getBlendNames()
 {
 	std::vector<std::string> states;
-	for (size_t i = 0; i < _blends.size(); i++)
+	for (auto & _blend : _blends)
 	{
-		states.emplace_back(_blends[i]->stateName);
+		states.emplace_back(_blend->stateName);
 	}
 	return states;
 }
@@ -213,10 +209,10 @@ std::vector<std::string> SBAnimationBlendManager::getTransitionBlends(const std:
 {
 	std::vector<std::string> blends;
 	
-	for (size_t i = 0; i < _transitions.size(); i++)
+	for (auto & _transition : _transitions)
 	{
-		if (_transitions[i]->getSourceBlend()->stateName == source)
-			blends.emplace_back(_transitions[i]->getDestinationBlend()->stateName);
+		if (_transition->getSourceBlend()->stateName == source)
+			blends.emplace_back(_transition->getDestinationBlend()->stateName);
 	}
 
 	return blends;
@@ -224,11 +220,11 @@ std::vector<std::string> SBAnimationBlendManager::getTransitionBlends(const std:
 
 SBAnimationTransition* SBAnimationBlendManager::getTransition(const std::string& source, const std::string& dest)
 {
-	for (size_t i = 0; i < _transitions.size(); i++)
+	for (auto & _transition : _transitions)
 	{
-		if (_transitions[i]->getSourceBlend()->stateName == source &&
-			_transitions[i]->getDestinationBlend()->stateName == dest)
-			return _transitions[i];
+		if (_transition->getSourceBlend()->stateName == source &&
+			_transition->getDestinationBlend()->stateName == dest)
+			return _transition;
 	}
 
 	return nullptr;
@@ -236,10 +232,10 @@ SBAnimationTransition* SBAnimationBlendManager::getTransition(const std::string&
 
 SBAnimationTransition* SBAnimationBlendManager::getTransitionByName( const std::string& transitionName )
 {
-	for (size_t i = 0; i < _transitions.size(); i++)
+	for (auto & _transition : _transitions)
 	{
-		if (_transitions[i]->getTransitionName() == transitionName)
-			return _transitions[i];
+		if (_transition->getTransitionName() == transitionName)
+			return _transition;
 	}
 
 	return nullptr;
@@ -265,9 +261,9 @@ int SBAnimationBlendManager::getNumTransitions()
 std::vector<std::string> SBAnimationBlendManager::getTransitionNames()
 {
 	std::vector<string> transitionNames;
-	for (size_t i = 0; i < _transitions.size(); i++)
+	for (auto & _transition : _transitions)
 	{
-		transitionNames.emplace_back( _transitions[i]->getTransitionName() );
+		transitionNames.emplace_back( _transition->getTransitionName() );
 	}
 	return transitionNames;
 }
@@ -345,9 +341,9 @@ void SBAnimationBlendManager::removeAllBlends()
 	// remove the transitions, too
 	removeAllTransitions();
 
-	for (size_t i = 0; i < _blends.size(); i++)
+	for (auto & _blend : _blends)
 	{
-		delete _blends[i];
+		delete _blend;
 	}
 	_blends.clear();
 
@@ -357,9 +353,9 @@ void SBAnimationBlendManager::removeAllBlends()
 
 void SBAnimationBlendManager::removeAllTransitions()
 {
-	for (size_t i = 0; i < _transitions.size(); i++)
+	for (auto & _transition : _transitions)
 	{
-		delete _transitions[i];
+		delete _transition;
 	}
 	_transitions.clear();
 }

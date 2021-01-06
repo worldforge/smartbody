@@ -52,11 +52,15 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 Session* Session::current = nullptr;
 
 Session::Session()
-		: scene(SmartBody::SBScene::CoreServices{std::make_unique<SmartBody::SBPhysicsManager>(std::make_unique<ODEPhysicsSim>()),
-												 std::make_unique<SmartBody::SBCollisionManager>(std::make_unique<ODECollisionSpace>())}),
+		: scene([](SmartBody::SBScene& newScene) {
+	return SmartBody::SBScene::CoreServices{std::make_unique<SmartBody::SBPhysicsManager>(newScene, std::make_unique<ODEPhysicsSim>()),
+											std::make_unique<SmartBody::SBCollisionManager>(newScene, std::make_unique<ODECollisionSpace>())};
+}),
 		  renderAssetManager(scene, scene.getAssetStore()),
 		  renderScene(scene, renderAssetManager),
 		  debuggerServer(renderScene, [this](std::ostream& ss, bool remoteSetup) { SmartBody::save(renderScene, &steerManager, ss, true); }),
+		  vhmMsgManager(scene),
+		  bonebusManager(scene),
 		  bmlProcessor(scene),
 		  steerManager(scene),
 		  steeringBml(std::make_unique<SmartBody::SteeringBml>(*bmlProcessor.getBMLProcessor(), steerManager)) {
@@ -83,7 +87,7 @@ Session::Session()
 	SmartBody::installDebuggerCommand(*scene.getCommandManager(), vhmMsgManager);
 	SmartBody::PythonInterface::renderScene = &renderScene;
 
-	CommandContext commandContext {
+	CommandContext commandContext{
 			scene,
 			*scene.getCommandManager(),
 			*scene.getSimulationManager(),

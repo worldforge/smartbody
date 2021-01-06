@@ -26,13 +26,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBGestureMapManager::SBGestureMapManager()
+SBGestureMapManager::SBGestureMapManager(SBScene& scene) : SBSceneOwned(scene)
 {
 }
 
 SBGestureMapManager::~SBGestureMapManager()
 {
-	std::map<std::string, SBGestureMap*>::iterator iter = _gestureMaps.begin();
+	auto iter = _gestureMaps.begin();
 	for (; iter != _gestureMaps.end(); iter++)
 	{
 		delete iter->second;
@@ -40,39 +40,37 @@ SBGestureMapManager::~SBGestureMapManager()
 	_gestureMaps.clear();
 }
 
-SBGestureMap* SBGestureMapManager::createGestureMap(std::string gestureName)
+SBGestureMap* SBGestureMapManager::createGestureMap(const std::string& gestureName)
 {
-	
-	SBScene* scene = SmartBody::SBScene::getScene();
 
-	std::map<std::string, SBGestureMap*>::iterator iter = _gestureMaps.find(gestureName);
+	auto iter = _gestureMaps.find(gestureName);
 	if (iter != _gestureMaps.end())
 	{
 		delete iter->second;
 		_gestureMaps.erase(iter);
 	}
 	
-	SBGestureMap* map = new SBGestureMap(gestureName);
+	auto* map = new SBGestureMap(gestureName);
 	_gestureMaps.insert(std::make_pair(gestureName, map));
 
 	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-	for (size_t l = 0; l < listeners.size(); l++)
+	for (auto & listener : listeners)
 	{
-		listeners[l]->OnObjectCreate(map);
+		listener->OnObjectCreate(map);
 	}
 
 	return map;
 }
 
-void SBGestureMapManager::removeGestureMap(std::string gestureName)
+void SBGestureMapManager::removeGestureMap(const std::string& gestureName)
 {
-	std::map<std::string, SBGestureMap*>::iterator iter = _gestureMaps.find(gestureName);
+	auto iter = _gestureMaps.find(gestureName);
 	if (iter != _gestureMaps.end())
 	{
 		std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-		for (size_t l = 0; l < listeners.size(); l++)
+		for (auto & listener : listeners)
 		{
-			listeners[l]->OnObjectDelete((*iter).second);
+			listener->OnObjectDelete((*iter).second);
 		}
 
 		delete iter->second;
@@ -90,11 +88,9 @@ int SBGestureMapManager::getNumGestureMaps()
 std::vector<std::string> SBGestureMapManager::getGestureMapNames()
 {
 	std::vector<std::string> gestureMapNames;
-	for (std::map<std::string, SBGestureMap*>::iterator iter = _gestureMaps.begin();
-		 iter != _gestureMaps.end();
-		 iter++)
+	for (auto & _gestureMap : _gestureMaps)
 	{
-		gestureMapNames.emplace_back((*iter).first);
+		gestureMapNames.emplace_back(_gestureMap.first);
 	}
 
 	return gestureMapNames;
@@ -102,9 +98,9 @@ std::vector<std::string> SBGestureMapManager::getGestureMapNames()
 
 
 
-SBGestureMap* SBGestureMapManager::getGestureMap(std::string gestureName)
+SBGestureMap* SBGestureMapManager::getGestureMap(const std::string& gestureName)
 {
-	std::map<std::string, SBGestureMap*>::iterator iter = _gestureMaps.find(gestureName);
+	auto iter = _gestureMaps.find(gestureName);
 	if (iter != _gestureMaps.end())
 	{
 		return (*iter).second;

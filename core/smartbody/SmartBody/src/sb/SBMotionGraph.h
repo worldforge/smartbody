@@ -26,6 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBRetarget.h>
 #include <sbm/SteerPath.h>
 #include "controllers/me_ct_ublas.hpp"
+#include "SBSceneOwned.h"
 
 class MotionTimeWarpFunc;
 
@@ -232,10 +233,10 @@ namespace SmartBody {
 		float traverseGraph(SteerPath& curPath, MotionGraphTraverse& curGraphTraverse, MotionGraphTraverse& bestTraverse, std::map<std::string, MotionNodeCache>& deltaTransformMap, float timeThreshold, float& bestTraverseError);
 	};
 
-	class SBMotionGraphManager
+	class SBMotionGraphManager : public SBSceneOwned
 	{
 	public:
-		SBAPI SBMotionGraphManager();
+		SBAPI explicit SBMotionGraphManager(SBScene& scene);
 		SBAPI ~SBMotionGraphManager();	
 
 		SBAPI SBMotionGraph* createMotionGraph(const std::string& moGraphName);

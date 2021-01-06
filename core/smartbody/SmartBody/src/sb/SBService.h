@@ -23,22 +23,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sb/SBObject.h>
-#ifdef __native_client__
-#include <sb/SBCharacter.h>
-#endif
+#include "sb/SBSceneOwned.h"
 namespace SmartBody {
 
 class SBSubject;
 class SBPawn;
 
-#ifndef __native_client__
 class SBCharacter;
-#endif
+class SBScene;
 
-class SBService : public SBObject
+class SBService : public SBObject, public SBSceneOwned
 {
 	public:
-		SBAPI SBService();
+		SBAPI explicit SBService(SBScene& scene);
 		SBAPI ~SBService();
 
 		SBAPI virtual void setEnable(bool val);

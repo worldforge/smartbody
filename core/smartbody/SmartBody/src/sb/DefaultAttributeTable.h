@@ -45,8 +45,8 @@ protected:
 	std::vector<AttributeVarPair> _defaultAttributes;	
 	std::map<std::string, SmartBody::SBAttributeGroup*> _defaultGroups;
 public:
-	DefaultAttributeTable(void);
-	~DefaultAttributeTable(void);
+	DefaultAttributeTable();
+	~DefaultAttributeTable();
 
 	void setDefaultAttributeGroupPriority(const std::string& groupName, int priority);
 	int setDefaultAttributeGroupPriority(const std::string& groupName);

@@ -41,10 +41,9 @@ struct RealTimePhoneme {
 class SBPhonemeManager : public SBService
 {
 	public:
-		SBAPI SBPhonemeManager();
+		SBAPI SBPhonemeManager(SBScene& scene);
 		SBAPI ~SBPhonemeManager();
 
-		SBAPI virtual void setEnable(bool val);
 		SBAPI void setPhonemesRealtime(const std::string& character, const std::string& phoneme);
 		SBAPI void clearPhonemesRealtime(const std::string& character, const std::string& phoneme);
 		SBAPI std::vector<std::string> getPhonemesRealtime(const std::string& character, int amount);

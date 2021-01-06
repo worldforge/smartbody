@@ -40,7 +40,7 @@ class SBBoneBusManager : public SmartBody::SBService
 		SBCharacter* character;
 	};
 
-		SBAPI SBBoneBusManager();
+		SBAPI explicit SBBoneBusManager(SBScene& scene);
 		SBAPI ~SBBoneBusManager();
 
 		SBAPI void setEnable(bool val) override;

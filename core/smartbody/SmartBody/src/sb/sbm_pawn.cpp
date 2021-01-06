@@ -55,18 +55,20 @@ const char* SbmPawn::WORLD_OFFSET_JOINT_NAME = "world_offset";
 SkChannelArray SbmPawn::WORLD_OFFSET_CHANNELS_P;
 
 
-SbmPawn::SbmPawn() : SBObject()
-{
-	_skeleton = nullptr;
-	SbmPawn::initData();
-
-	std::string validName =  SmartBody::SBScene::getScene()->getValidName("object");
-	setName(validName);	
-	SbmPawn::initData();
-}
+//SbmPawn::SbmPawn() : SBObject()
+//{
+//	_skeleton = nullptr;
+//	SbmPawn::initData();
+//
+//	std::string validName =  _scene.getValidName("object");
+//	setName(validName);	
+//	SbmPawn::initData();
+//}
 
 // Constructor
-SbmPawn::SbmPawn( const char * name ) : SmartBody::SBObject(),
+SbmPawn::SbmPawn(SmartBody::SBScene& scene, const char * name ) 
+: SmartBody::SBObject(),
+SmartBody::SBSceneOwned(scene),
 ct_tree_p( MeControllerTreeRoot::create() ),
 world_offset_writer_p( nullptr ),
 wo_cache_timestamp( -std::numeric_limits<float>::max() )
@@ -100,7 +102,7 @@ void SbmPawn::initData()
 	collisionObjName = this->getName();
 	collisionObjName += "_BV"; // bounding volume
 
-	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();	
+	SmartBody::SBCollisionManager* colManager = _scene.getCollisionManager();	
 	SBGeomObject* geomObj = colManager->createCollisionObject(collisionObjName,"null",SrVec());
 	geomObj->attachToObj(this);
 
@@ -347,7 +349,7 @@ SbmPawn::~SbmPawn()
 {
 	ct_tree_p->clear();  // Because controllers within reference back to tree root context
 
-	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
+	SmartBody::SBCollisionManager* colManager = _scene.getCollisionManager();
 	colManager->removeCollisionObject(collisionObjName);
 }
 
@@ -363,7 +365,7 @@ const SkJoint* SbmPawn::get_joint( const char* joint_name ) const {
 
 void SbmPawn::get_world_offset( float& x, float& y, float& z,
 							   float& yaw, float& pitch, float& roll ) {
-								   if( SmartBody::SBScene::getScene()->getSimulationManager()->getTime() != wo_cache_timestamp )
+								   if( _scene.getSimulationManager()->getTime() != wo_cache_timestamp )
 									   wo_cache_update();
 
 								   x = wo_cache.x;
@@ -419,7 +421,7 @@ void SbmPawn::set_world_offset( float x, float y, float z,
 	wo_cache.h = yaw;
 	wo_cache.p = pitch;
 	wo_cache.r = roll;
-	wo_cache_timestamp = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	wo_cache_timestamp = _scene.getSimulationManager()->getTime();
 
 	gwiz::quat_t q = gwiz::euler_t(pitch,yaw,roll);
 	float data[7] = { x, y, z, (float)q.w(), (float)q.x(), (float)q.y(), (float)q.z() };
@@ -508,7 +510,7 @@ const std::string& SbmPawn::getGeomObjectName()
 SBGeomObject* SbmPawn::getGeomObject()
 {	
 	//return _collisionObject;
-	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
+	SmartBody::SBCollisionManager* colManager = _scene.getCollisionManager();
 	SBGeomObject* geomObj = colManager->getCollisionObject(collisionObjName);
 	return geomObj;
 } 

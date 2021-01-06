@@ -27,6 +27,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sr/sr_vec.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/labeled_graph.hpp>
+#include "SBSceneOwned.h"
+
 #undef INTMAX_C
 #undef UINTMAX_C
 
@@ -44,10 +46,10 @@ class SBAnimationTransition;
 typedef boost::property<boost::vertex_name_t,std::string> StateVertexProperty;
 typedef boost::labeled_graph<boost::adjacency_list<boost::listS,boost::listS, boost::directedS, StateVertexProperty>,std::string> BoostGraph;
 
-class SBAnimationBlendManager
+class SBAnimationBlendManager : public SBSceneOwned
 {
 	public:
-		SBAPI SBAnimationBlendManager();
+		SBAPI explicit SBAnimationBlendManager(SBScene& scene);
 		SBAPI ~SBAnimationBlendManager();
 
 		SBAPI SBAnimationBlend0D* createBlend0D(const std::string& name);
@@ -68,7 +70,7 @@ class SBAnimationBlendManager
 		SBAPI std::vector<std::string> getTransitionNames();
 		SBAPI std::vector<std::string> getTransitionBlends(const std::string& source);
 
-		SBAPI std::string getCurrentBlend(const std::string& characterName);
+		SBAPI static std::string getCurrentBlend(const std::string& characterName);
 		SBAPI SrVec getCurrentBlendParameters(const std::string& characterName);
 		SBAPI std::vector<std::string> getAutoBlendTransitions(const std::string& characterName, const std::string& targetBlend);
 		SBAPI bool isBlendScheduled(const std::string& characterName, const std::string& blendName);

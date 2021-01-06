@@ -32,7 +32,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <controllers/me_ct_param_animation_utilities.h>
 #include <controllers/me_ct_jacobian_IK.hpp>
 #include <sr/sr_random.h>
-//#include "SOIL/SOIL.h"
 
 namespace SmartBody {
 
@@ -2026,15 +2025,12 @@ SBMotionNode* SBMotionTransitionEdge::getTgtNode()
 /************************************************************************/
 /* SBMotionGraph Manager                                                */
 /************************************************************************/
-SBAPI SBMotionGraphManager::SBMotionGraphManager()
+SBAPI SBMotionGraphManager::SBMotionGraphManager(SBScene& scene) : SBSceneOwned(scene)
 {
 
 }
 
-SBAPI SBMotionGraphManager::~SBMotionGraphManager()
-{
-
-}
+SBAPI SBMotionGraphManager::~SBMotionGraphManager() = default;
 
 SBAPI SBMotionGraph* SBMotionGraphManager::createMotionGraph( const std::string& moGraphName )
 {

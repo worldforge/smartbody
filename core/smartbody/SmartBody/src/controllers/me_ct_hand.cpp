@@ -1,12 +1,8 @@
 #include "controllers/me_ct_hand.hpp"
 #include <sb/SBScene.h>
-#include <assert.h>
-#include <sstream>
 #include <algorithm>
-#include <time.h>
-#include <boost/foreach.hpp>
+#include <ctime>
 #include <sb/sbm_character.hpp>
-#include <utility>
 #include <sb/SBReach.h>
 
 #include "controllers/MeCtReachEngine.h"
@@ -33,9 +29,9 @@ void FingerChain::init( MeCtIKTreeNode* figTip )
 
 void FingerChain::unlockChain()
 {
-	for (unsigned int i=0;i<fingerNodes.size();i++)
+	for (auto & fingerNode : fingerNodes)
 	{
-		fingerNodes[i]->lock = false;
+		fingerNode->lock = false;
 	}	
 }
 
@@ -43,9 +39,9 @@ void FingerChain::unlockChain()
 void FingerChain::getLineSeg( std::vector<SrVec>& lineSeg )
 {
 	lineSeg.clear();
-	for (unsigned int i=0;i<fingerNodes.size();i++)
+	for (auto & fingerNode : fingerNodes)
 	{
-		lineSeg.emplace_back(fingerNodes[i]->gmat.get_translation());
+		lineSeg.emplace_back(fingerNode->gmat.get_translation());
 	}
 }
 
@@ -77,7 +73,7 @@ void FingerChain::testCollision( SBGeomObject* colObj )
 
 std::string MeCtHand::CONTROLLER_TYPE = "Hand";
 
-MeCtHand::MeCtHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SmartBody::SBJoint* wrist)
+MeCtHand::MeCtHand(boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SmartBody::SBJoint* wrist)
 {		
 	skeletonRef  = sk;
 	// work on the copy of skeleton to avoid problems

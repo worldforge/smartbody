@@ -48,8 +48,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBAssetManager::SBAssetManager(SBAssetStore& store)
+SBAssetManager::SBAssetManager(SBScene& scene, SBAssetStore& store)
 :
+SBSceneOwned(scene),
 _store(store),
 uniqueSkeletonId(0),
 _motionCounter(0),

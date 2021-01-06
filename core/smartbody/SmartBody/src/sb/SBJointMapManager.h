@@ -25,15 +25,17 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 #include <map>
+#include "SBScene.h"
+#include "SBSceneOwned.h"
 
 namespace SmartBody {
 
 class SBJointMap;
 
-class SBJointMapManager 
+class SBJointMapManager : public SBSceneOwned
 {
 	public:
-		SBAPI SBJointMapManager();
+		SBAPI explicit SBJointMapManager(SBScene& scene);
 		SBAPI ~SBJointMapManager();
 	
 		SBAPI SmartBody::SBJointMap* createJointMap(const std::string& name);

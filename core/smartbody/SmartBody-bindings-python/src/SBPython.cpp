@@ -632,7 +632,7 @@ BOOST_PYTHON_MODULE (SmartBody) {
 			.def("getInterpolatorType", &SBReach::getInterpolatorType, boost::python::return_value_policy<boost::python::return_by_value>(), "Gets the interpolation type used building the reach engine")
 			.def("isPawnAttached", &SBReach::isPawnAttached, boost::python::return_value_policy<boost::python::return_by_value>(), "Return True is the pawn is currently attached to the character's hand.");
 
-	boost::python::class_<SBReachManager>("SBReachManager")
+	boost::python::class_<SBReachManager, boost::noncopyable>("SBReachManager", boost::python::no_init)
 			.def("createReach", &SBReachManager::createReach, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a reach engine for a character.")
 			.def("createReachWithTag", &SBReachManager::createReachWithTag, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a reach engine for a character with specified tag.")
 			.def("removeReach", &SBReachManager::removeReach, "Removes a reach engine for a character")
@@ -656,13 +656,13 @@ BOOST_PYTHON_MODULE (SmartBody) {
 			.def("getNumMappings", &SBGestureMap::getNumMappings, "Return a number of entries inside the map.")
 			.def("validate", &SBGestureMap::validate, "Gives feedback about gestures in the gesture map; reports missing idle poses or motions.");
 
-	boost::python::class_<SBGestureMapManager>("SBGestureMapManager")
+	boost::python::class_<SBGestureMapManager, boost::noncopyable>("SBGestureMapManager", boost::python::no_init)
 			.def("createGestureMap", &SBGestureMapManager::createGestureMap, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a gesture map for a character.")
 			.def("removeGestureMap", &SBGestureMapManager::removeGestureMap, "Remove a gesture map for a character given character name.")
 			.def("getNumGestureMaps", &SBGestureMapManager::getNumGestureMaps, "Return number of gesture maps in the scene.")
 			.def("getGestureMap", &SBGestureMapManager::getGestureMap, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Return gesture map given character name.");
 
-	boost::python::class_<SBHandConfigurationManager>("SBHandConfigurationManager")
+	boost::python::class_<SBHandConfigurationManager, boost::noncopyable>("SBHandConfigurationManager", boost::python::no_init)
 			.def("createHandConfiguration", &SBHandConfigurationManager::createHandConfiguration, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Create a hand configuration.")
 			.def("removeHandConfiguration", &SBHandConfigurationManager::removeHandConfiguration, "Remove a hand configuration")
 			.def("getNumHandConfiguration", &SBHandConfigurationManager::getNumHandConfigurations, "Get the number of hand configuration")
@@ -691,7 +691,7 @@ BOOST_PYTHON_MODULE (SmartBody) {
 			.def("getMappedMotions", &SBJointMap::getMappedMotions, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of the motions that have been mapped by this joint map.")
 			.def("getMappedSkeletons", &SBJointMap::getMappedSkeletons, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of the skeletons that have been mapped by this joint map.");
 
-	boost::python::class_<SBJointMapManager>("SBJointMapManager")
+	boost::python::class_<SBJointMapManager, boost::noncopyable>("SBJointMapManager", boost::python::no_init)
 			.def("getJointMap", &SBJointMapManager::getJointMap, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the joint map associated with a given name.")
 			.def("createJointMap", &SBJointMapManager::createJointMap, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a joint map with a given name. Returns null is the map already exists.")
 			.def("getJointMapNames", &SBJointMapManager::getJointMapNames, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the names of all joint maps.")
@@ -707,7 +707,7 @@ BOOST_PYTHON_MODULE (SmartBody) {
 			.def("getSource", &SBEvent::getSource, "Returns the event source object string.")
 			.def("setSource", &SBEvent::setSource, "Set the event source object string.");
 
-	boost::python::class_<SBEventManager>("SBEventManager")
+	boost::python::class_<SBEventManager, boost::noncopyable>("SBEventManager", boost::python::no_init)
 			.def("handleEvent", &SBEventManager::handleEvent, "Processes an event by the appropriate event handler.")
 			.def("handleEventRemove", &SBEventManager::handleEventRemove, "Processes an event by the appropriate event handler then remove the event.")
 			.def("addEventHandler", &SBEventManager::addEventHandler, "Returns the event type.")

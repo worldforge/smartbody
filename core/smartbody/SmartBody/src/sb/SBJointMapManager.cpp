@@ -24,16 +24,15 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBScene.h>
 #include <sb/SBSceneListener.h>
 #include "SBUtilities.h"
+#include "SBSceneOwned.h"
 
 namespace SmartBody {
 
-SBJointMapManager::SBJointMapManager()
+SBJointMapManager::SBJointMapManager(SBScene& scene) : SBSceneOwned(scene)
 {
 }
 
-SBJointMapManager::~SBJointMapManager()
-{
-}
+SBJointMapManager::~SBJointMapManager() = default;
 
 SmartBody::SBJointMap* SBJointMapManager::getJointMap(const std::string& name)
 {

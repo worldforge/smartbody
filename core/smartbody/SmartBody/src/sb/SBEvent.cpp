@@ -121,7 +121,7 @@ void SBBasicHandler::notify(SBSubject* subject)
 
 
 
-SBEventManager::SBEventManager() = default;
+SBEventManager::SBEventManager(SBScene& scene): SBSceneOwned(scene) { }
 
 SBEventManager::~SBEventManager()
 {
@@ -137,7 +137,7 @@ void SBEventManager::handleEvent(SBEvent* e)
 	std::string type = e->getType();
 	std::string params = e->getParameters();
 
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnEvent(type, params);

@@ -130,16 +130,16 @@ MeCtSchedulerClass* CreateSchedulerCt( const char* character_name, const char* s
 //	setClassType("");
 //}
 
-SbmCharacter::SbmCharacter( const char* character_name, std::string type)
-:	SBPawn( character_name )
+SbmCharacter::SbmCharacter(SmartBody::SBScene& scene, const char* character_name, std::string type)
+:	SBPawn(scene, character_name )
 {
 	SbmCharacter::initData();
 	setClassType(type);
 }
 
 //  Constructor
-SbmCharacter::SbmCharacter( const char* character_name )
-:	SBPawn( character_name ),
+SbmCharacter::SbmCharacter(SmartBody::SBScene& scene, const char* character_name )
+:	SBPawn(scene, character_name ),
 
 posture_sched_p( CreateSchedulerCt( character_name, "posture" ) ),
 motion_sched_p( CreateSchedulerCt( character_name, "motion" ) ),
@@ -429,7 +429,7 @@ void SbmCharacter::createStandardControllers()
 
 	// get the default attributes from the default controllers
 	
-	auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
+	auto& defaultControllers = _scene.getDefaultControllers();
 	for (auto & defaultController : defaultControllers)
 	{
 		auto controller = defaultController.get();
@@ -537,7 +537,7 @@ void SbmCharacter::createStandardControllers()
 //
 //	// get the default attributes from the default controllers
 //
-//	auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
+//	auto& defaultControllers = _scene.getDefaultControllers();
 //	for (auto & defaultController : defaultControllers)
 //	{
 //		auto controller = defaultController.get();
@@ -869,7 +869,7 @@ int SbmCharacter::init(boost::intrusive_ptr<SkSkeleton> new_skeleton_p,
 
 
 	// get the default attributes from the default controllers
-	const auto& defaultControllers = SmartBody::SBScene::getScene()->getDefaultControllers();
+	const auto& defaultControllers = _scene.getDefaultControllers();
 	for (const auto& entry : defaultControllers)
 	{
 		auto controller = entry.get();
@@ -1485,7 +1485,7 @@ int SbmCharacter::prune_controller_tree( )
 	if (!getBoolAttribute("controllerPruning"))
 		return 0;
 
-	double time = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();  // current time
+	double time = _scene.getSimulationManager()->getTime();  // current time
 
 	if( LOG_PRUNE_CMD_TIME || LOG_CONTROLLER_TREE_PRUNING )
 	{
@@ -2212,7 +2212,7 @@ void SbmCharacter::updateFaceDefinition()
 
 	for (unsigned int x = 0; x < poses.size(); x++)
 	{
-		this->schedule_viseme_trapezoid( poses[x].c_str(), SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), values[x], 9999999.9f, .25, .25 );
+		this->schedule_viseme_trapezoid( poses[x].c_str(), _scene.getSimulationManager()->getTime(), values[x], 9999999.9f, .25, .25 );
 	}
 
 }
@@ -2303,7 +2303,7 @@ void SbmCharacter::addVisemeChannel(std::string visemeName, std::string motionNa
 
 	if (motionName != "")
 	{
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+		SmartBody::SBMotion* motion = _scene.getAssetManager()->getMotion(motionName);
 		if (motion)
 		{
 			addVisemeChannel(visemeName, motion);
@@ -2338,7 +2338,7 @@ void SbmCharacter::addBlendShapeChannels(std::vector<std::string>& shapeNames)
 	if (getFaceDefinition() == nullptr)
 	{
 		SmartBody::util::log("Current character %s doesn't have a face definition, create a default one to support blend shape", this->getName().c_str());
-		SmartBody::SBFaceDefinition* defaultFaceDef = SmartBody::SBScene::getScene()->createFaceDefinition("default");
+		SmartBody::SBFaceDefinition* defaultFaceDef = _scene.createFaceDefinition("default");
 		defaultFaceDef->setFaceNeutral("");
 		this->setFaceDefinition(defaultFaceDef);
 	}
@@ -2378,7 +2378,7 @@ void SbmCharacter::addBlendShapeChannel(std::string bShapeName)
 	if (getFaceDefinition() == nullptr)
 	{
 		SmartBody::util::log("Current character %s doesn't have a face definition, create a default one to support blend shape", this->getName().c_str());
-		SmartBody::SBFaceDefinition* defaultFaceDef = SmartBody::SBScene::getScene()->createFaceDefinition("default");
+		SmartBody::SBFaceDefinition* defaultFaceDef = _scene.createFaceDefinition("default");
 		defaultFaceDef->setFaceNeutral("");
 		this->setFaceDefinition(defaultFaceDef);
 	}

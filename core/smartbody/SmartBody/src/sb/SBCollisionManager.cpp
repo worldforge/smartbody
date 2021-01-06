@@ -32,8 +32,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBCollisionManager::SBCollisionManager(std::unique_ptr<SBCollisionSpace> collisionSpace)
-: _collisionSpace(std::move(collisionSpace))
+SBCollisionManager::SBCollisionManager(SBScene& scene, std::unique_ptr<SBCollisionSpace> collisionSpace)
+: SBService(scene), _collisionSpace(std::move(collisionSpace))
 {
 	setName("collision");
 
@@ -219,7 +219,7 @@ void SBCollisionManager::afterUpdate(double time)
 	int curIteration = 0;
 	bool needMoreIterations = true;	
 
-	SBEventManager* eventManager = SmartBody::SBScene::getScene()->getEventManager();	
+	SBEventManager* eventManager = _scene.getEventManager();	
 
 	const std::string& collisionResMethod = getStringAttribute("collisionResolutionType");	
 

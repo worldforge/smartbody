@@ -1,5 +1,5 @@
 /*************************************************************
-Copyright (C) 2017 University of Southern California
+Copyright (C) 2021 Erik Ogenvik <erik@ogenvik.org>
 
 This file is part of Smartbody.
 
@@ -18,34 +18,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#ifndef _SBGESTUREMAPMANAGER_H_
-#define _SBGESTUREMAPMANAGER_H_
-
-#include <sb/SBTypes.h>
-#include <string>
-#include <map>
-#include <vector>
-#include "SBSceneOwned.h"
+#ifndef _SBSCENEOWNED_H_
+#define _SBSCENEOWNED_H_
 
 namespace SmartBody {
+class SBScene;
 
-class SBGestureMap;
+struct SBSceneOwned {
+	explicit SBSceneOwned(SBScene& scene): _scene(scene) {}
+	SBScene& _scene;
 
-class SBGestureMapManager : public SBSceneOwned
-{
-	public:
-		SBAPI explicit SBGestureMapManager(SBScene& scene);
-		SBAPI ~SBGestureMapManager();
-
-		SBAPI SBGestureMap* createGestureMap(const std::string& gestureName);
-		SBAPI void removeGestureMap(const std::string& gestureName);
-		SBAPI int getNumGestureMaps();
-		SBAPI std::vector<std::string> getGestureMapNames();
-		SBAPI SBGestureMap* getGestureMap(const std::string& gestureName);
-
-	protected:
-		std::map<std::string, SBGestureMap*> _gestureMaps;
 };
 
 }
+
 #endif

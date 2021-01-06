@@ -40,7 +40,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBPhonemeManager::SBPhonemeManager()
+SBPhonemeManager::SBPhonemeManager(SBScene& scene) : SBService(scene)
 {
 	setName("PhonemeManager");
 
@@ -450,11 +450,6 @@ int SBPhonemeManager::getNumDictionaryWords(const std::string& language)
 	}
 }
 
-void SBPhonemeManager::setEnable(bool val)
-{
-	SBService::setEnable(val);
-}
-
 std::vector<std::string> SBPhonemeManager::getPhonemesRealtime(const std::string& character, int amount)
 {
 	std::vector<std::string> phonemes;
@@ -561,7 +556,7 @@ void SBPhonemeManager::setPhonemesRealtime(const std::string& character, const s
 	}
 	RealTimePhoneme rtp;
 	rtp.phoneme = phoneme;
-	rtp.time = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	rtp.time = _scene.getSimulationManager()->getTime();
 	(*iter).second.emplace_back(rtp);
 	SmartBody::util::log("Got phoneme %s at time %f",  rtp.phoneme.c_str(), rtp.time);
 }
@@ -699,7 +694,7 @@ void SBPhonemeManager::saveLipSyncAnimation(const std::string characterName, con
 		return;
 	}
 
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+	SmartBody::SBCharacter* character = _scene.getCharacter(characterName);
 	if (!character)
 	{
 		SmartBody::util::log("Could not find character with name '%s'. No output file named '%s' written.", characterName.c_str(), outputFile.c_str());
@@ -904,12 +899,12 @@ std::map<std::string, std::vector<float> > SBPhonemeManager::generateCurvesGiven
 																						   bool thirdpass,
 																						   bool fourthpass,
 																						   std::vector<SmartBody::VisemeData*>& debugVisemeCurves) {
-	SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+	SBCharacter* character = _scene.getCharacter(characterName);
 	std::map<std::string, std::vector<float> > finalCurves;
 	if (!character)
 		return finalCurves;
 
-	SmartBody::SBPhonemeManager* phonemeManager = SmartBody::SBScene::getScene()->getDiphoneManager();
+	SmartBody::SBPhonemeManager* phonemeManager = _scene.getDiphoneManager();
 
 	// map the visemes to the common set
 	for (auto v : *visemes) {
@@ -933,14 +928,14 @@ std::map<std::string, std::vector<float> > SBPhonemeManager::generateCurvesGiven
 		curViseme = (*visemes)[i];
 		visemeTimeMarkers.emplace_back(curViseme->time());
 		if (prevViseme != nullptr) {
-			SBDiphone* diphone = SmartBody::SBScene::getScene()->getDiphoneManager()->getDiphone(prevViseme->id(), curViseme->id(), diphoneMap);
+			SBDiphone* diphone = _scene.getDiphoneManager()->getDiphone(prevViseme->id(), curViseme->id(), diphoneMap);
 			if (!diphone) {
 				consecutiveUnfoundCurves++;
 				if (consecutiveUnfoundCurves > 1) {
 					// check for single phoneme between pauses, such as "_ A _"
 					if (strcmp(curViseme->id(), "_") == 0 &&
 						strcmp((*visemes)[i - 2]->id(), "_") == 0) {
-						diphone = SmartBody::SBScene::getScene()->getDiphoneManager()->getDiphone(prevViseme->id(), prevViseme->id(), diphoneMap);
+						diphone = _scene.getDiphoneManager()->getDiphone(prevViseme->id(), prevViseme->id(), diphoneMap);
 						consecutiveUnfoundCurves = 0;
 					}
 				}

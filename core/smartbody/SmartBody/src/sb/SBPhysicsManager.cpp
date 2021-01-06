@@ -42,8 +42,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBPhysicsManager::SBPhysicsManager(std::unique_ptr<SBPhysicsSim> physicsSim)
-		: _physicsSim(std::move(physicsSim)) {
+SBPhysicsManager::SBPhysicsManager(SBScene& scene, std::unique_ptr<SBPhysicsSim> physicsSim)
+		: SBService(scene), _physicsSim(std::move(physicsSim)) {
 	if (_physicsSim) {
 		_physicsSim->initSimulation();
 	}
@@ -75,7 +75,7 @@ void SBPhysicsManager::setEnable(bool enable) {
 	if (_physicsSim) {
 		if (enable) {
 			// ...
-			physicsTime = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+			physicsTime = _scene.getSimulationManager()->getTime();
 		} else {
 			// ...
 		}
@@ -114,16 +114,16 @@ void SBPhysicsManager::update(double time) {
 		}
 
 		// update character
-		const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+		const std::vector<std::string>& characterNames = _scene.getCharacterNames();
 		for (const auto& characterName : characterNames) {
-			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+			SmartBody::SBCharacter* character = _scene.getCharacter(characterName);
 			//character->updateJointPhyObjs(isEnable());
 			updatePhysicsCharacter(character->getName());
 		}
 
-		const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
+		const std::vector<std::string>& pawns = _scene.getPawnNames();
 		for (const auto& pawnIter : pawns) {
-			SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
+			SBPawn* pawn = _scene.getPawn(pawnIter);
 			updatePhysicsPawn(pawn->getName());
 		}
 	}
@@ -312,7 +312,7 @@ void SBPhysicsManager::updatePhysicsCharacter(const std::string& charName) {
 			bool kinematicRoot = (jointName == "base" || jointName == "JtPelvis") && phyChar->getBoolAttribute("kinematicRoot");
 #if USE_PHYSICS_CHARACTER
 			bool constraintObj = false;
-			SBPawn* constraintPawn = SmartBody::SBScene::getScene()->getPawn(phyObj->getStringAttribute("constraintTarget"));
+			SBPawn* constraintPawn = _scene.getPawn(phyObj->getStringAttribute("constraintTarget"));
 			if (charPhySim && constraintPawn && phyObj->getBoolAttribute("constraint")) {
 				phyObj->enablePhysicsSim(false);
 				phyObj->setRefTransform(phyObj->getGlobalTransform()); // save previous transform

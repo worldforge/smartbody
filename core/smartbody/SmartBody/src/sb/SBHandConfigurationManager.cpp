@@ -41,7 +41,6 @@ SBAPI SBHandConfigurationManager::~SBHandConfigurationManager()
 
 SBAPI SBHandConfiguration* SBHandConfigurationManager::createHandConfiguration(std::string configName)
 {
-	SBScene* scene = SmartBody::SBScene::getScene();
 
 	std::map<std::string, SBHandConfiguration*>::iterator iter = _configMap.find(configName);
 	if (iter != _configMap.end())

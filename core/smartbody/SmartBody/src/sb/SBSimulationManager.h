@@ -33,7 +33,7 @@ namespace SmartBody {
 class SBProfiler : public SBService
 {
 	public:
-		SBAPI SBProfiler();
+		SBAPI explicit SBProfiler(SBScene& scene);
 		SBAPI ~SBProfiler();
 
 		SBAPI void setEnable(bool val) override;
@@ -57,10 +57,10 @@ class SBProfiler : public SBService
 
 
 
-class SBSimulationManager : public SBObject
+class SBSimulationManager : public SBObject, public SBSceneOwned
 {
 	public:
-		SBAPI SBSimulationManager();
+		SBAPI explicit SBSimulationManager(SBScene& scene);
 		SBAPI ~SBSimulationManager();
 
 		SBAPI bool isStarted();

@@ -89,6 +89,8 @@ class SBScene : public SBObject
 			std::unique_ptr<SBCollisionManager> collisionManager;
 		};
 
+		typedef std::function<CoreServices(SBScene&)> CoreServicesProvider;
+
 		struct VHMsgProvider {
 			virtual int send2(const char *op, const char* message) = 0;
 			virtual int send(const char* message) = 0;
@@ -101,7 +103,7 @@ class SBScene : public SBObject
 
 
 
-		SBAPI explicit SBScene(CoreServices coreServices);
+		SBAPI explicit SBScene(const CoreServicesProvider& coreServicesProvider);
 		SBAPI ~SBScene();
 
 		SBAPI void setProcessId(const std::string& id);
@@ -338,7 +340,7 @@ class SBScene : public SBObject
 		std::unique_ptr<SmartBody::util::StdoutListener> _stdLogListener;
 
 
-		KinectProcessor* _kinectProcessor;
+		std::unique_ptr<KinectProcessor> _kinectProcessor;
 		Heightfield* _heightField;
 		SBNavigationMesh* _navigationMesh;
 		std::map<std::string, GeneralParam*> _generalParams;

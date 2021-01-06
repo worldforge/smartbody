@@ -27,6 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBColObject.h>
 #include <sb/SBPhysicsSim.h>
 #include <sb/SBObject.h>
+#include "sb/SBSceneOwned.h"
 #include "sr/sr_shared_ptr.hpp"
 #include <map>
 #include <boost/noncopyable.hpp>
@@ -41,7 +42,7 @@ class MeControllerTreeRoot;
 
 #define SBM_PAWN_USE_WORLD_OFFSET_WRITER	(1)
 
-class SbmPawn : public SmartBody::SBObject, public SBTransformObjInterface {
+class SbmPawn : public SmartBody::SBObject, public SBTransformObjInterface, public SmartBody::SBSceneOwned {
 public:
 	//  Public Constants
 	static const char* WORLD_OFFSET_JOINT_NAME;
@@ -74,8 +75,8 @@ public:  // TODO - properly encapsulate / privatize the following
 
 public:	
 	//  Public Methods
-	SBAPI SbmPawn();
-	SBAPI explicit SbmPawn( const char* name );
+//	SBAPI SbmPawn();
+	SBAPI explicit SbmPawn(SmartBody::SBScene& scene, const char* name );
 	SBAPI virtual ~SbmPawn();
 
 	SBAPI virtual void copy(SbmPawn* orignalPawn);

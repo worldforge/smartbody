@@ -24,15 +24,16 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBTypes.h>
 #include <string>
 #include <map>
+#include "SBSceneOwned.h"
 
 namespace SmartBody {
 
 class SBReach;
 
-class SBReachManager
+class SBReachManager : public SBSceneOwned
 {
 	public:
-		SBAPI SBReachManager();
+		SBAPI explicit SBReachManager(SBScene& scene);
 		SBAPI ~SBReachManager();
 
 		SBAPI SBReach* createReach(std::string characterName);

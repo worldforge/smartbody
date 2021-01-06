@@ -41,7 +41,7 @@ class SBCharacter : public SbmCharacter
 {
 	public:
 		//SBAPI SBCharacter();
-		SBAPI explicit SBCharacter(const std::string& name, const std::string& type = "");
+		SBAPI explicit SBCharacter(SmartBody::SBScene& scene, const std::string& name, const std::string& type = "");
 		SBAPI ~SBCharacter() override;
 
 		SBAPI const std::string& getName() const override;
@@ -150,7 +150,7 @@ class SBCharacter : public SbmCharacter
 		std::map<std::string, TrajectoryRecord*> jointTrajMap;
 		float jointTrajBlendWeight;
 		bool useJointConstraint;
-		SBM_CharacterFrameDataMarshalFriendly * frameDataMarshalFriendly;
+		std::unique_ptr<SBM_CharacterFrameDataMarshalFriendly> frameDataMarshalFriendly;
 
 		bool _useBlendFaceTextures;
 		SBParserListener* _parserListener;

@@ -33,7 +33,7 @@ namespace SmartBody {
 class SBCollisionManager : public SBService
 {
 	public:
-		SBAPI explicit SBCollisionManager(std::unique_ptr<SBCollisionSpace> collisionSpace);
+		SBAPI explicit SBCollisionManager(SBScene& scene, std::unique_ptr<SBCollisionSpace> collisionSpace);
 		SBAPI ~SBCollisionManager();
 
 		SBAPI void setEnable(bool enable) override;

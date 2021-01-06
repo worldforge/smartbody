@@ -45,7 +45,7 @@ using std::vector;
 namespace SmartBody {
 
 SBDebuggerServer::SBDebuggerServer(SBRenderScene& renderScene, std::function<void(std::ostream&, bool)> exportFn)
-		: SBService(),
+		: SBService(renderScene.mScene),
 		  m_renderScene(renderScene),
 		  m_sbmFriendlyName("sb"),
 		  m_connectResult(false),
@@ -525,7 +525,7 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 
 void SBDebuggerServer::afterUpdate(double time)
 {
-	if (!SmartBody::SBScene::getScene()->isRemoteMode())
+	if (!_scene.isRemoteMode())
 		Update();
 
 	auto camera = m_renderScene.getActiveCamera();

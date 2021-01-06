@@ -38,7 +38,7 @@ namespace SmartBody {
 class SBVHMsgManager : public SBService, public SBScene::VHMsgProvider
 {
 	public:
-		SBAPI SBVHMsgManager();
+		SBAPI explicit SBVHMsgManager(SBScene& scene);
 		SBAPI ~SBVHMsgManager();
 
 		SBAPI void setEnable(bool val) override;

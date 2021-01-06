@@ -35,14 +35,12 @@ MiniBrain::MiniBrain()
 	_cacheLimit = 5;
 }
 
-MiniBrain::~MiniBrain()
-{
-}
+MiniBrain::~MiniBrain() = default;
 
 
 int minibrainCounter = 0;
 
-void MiniBrain::update(SBCharacter* character, double time, double dt)
+void MiniBrain::update(SBScene& scene, SBCharacter* character, double time, double dt)
 {
 	
 	if (minibrainCounter < 300)
@@ -63,15 +61,13 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 		SrVec zfacing(0, 0, 1);
 		myFacing = zfacing * quat;
 	}
-	const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
-	for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
-		pawnIter != pawns.end();
-		pawnIter++)
+	const std::vector<std::string>& pawns = scene.getPawnNames();
+	for (const auto & pawnIter : pawns)
 	{
-		SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn((*pawnIter));
+		SBPawn* pawn = scene.getPawn(pawnIter);
 
 		// determine the velocity of the object
-		std::map<std::string, ObjectData>::iterator piter = _data.find(pawn->getName());
+		auto piter = _data.find(pawn->getName());
 		if (piter != _data.end())
 		{
 			ObjectData& data = (*piter).second;
@@ -100,11 +96,9 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 				data.cachePositions.pop_front();
 			data.cachePositions.emplace_back(curPosition);
 			SrVec temp;
-			for (	std::list<SrVec>::iterator iter = data.cachePositions.begin();
-					iter != data.cachePositions.end();
-					iter++)
+			for (auto & cachePosition : data.cachePositions)
 			{
-				temp += (*iter);
+				temp += cachePosition;
 			}
 			data.position = temp / float(data.cachePositions.size());
 
@@ -148,15 +142,13 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 	std::string fastestObject = "";
 	float fastest = -1;
 	ObjectData* fastestData = nullptr;
-	for (std::map<std::string, ObjectData>::iterator piter = _data.begin();
-		 piter != _data.end();
-		 piter++)
+	for (auto & piter : _data)
 	{
-		std::string pawnName = (*piter).first;
+		std::string pawnName = piter.first;
 		if (pawnName == character->getName())
 			continue;
 		// calculate the relative positon and relative velocity
-		ObjectData& data = (*piter).second;
+		ObjectData& data = piter.second;
 		data.relativePosition = myPosition - data.position;
 		data.relativeVelocity = myVelocity - data.velocity;
 		float size = data.relativeVelocity.len();
@@ -179,12 +171,10 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 	Nvbg* nvbg = character->getNvbg();
 	if (nvbg) // if an NVBG instance is running, send this information there
 	{
-		for (std::map<std::string, ObjectData>::iterator piter = _data.begin();
-			 piter != _data.end();
-			 piter++)
+		for (auto & piter : _data)
 		{
-			const std::string& pawnName = (*piter).first;
-			ObjectData& data = (*piter).second;
+			const std::string& pawnName = piter.first;
+			ObjectData& data = piter.second;
 			nvbg->objectEvent(character->getName(), pawnName, data.isAnimate, myPosition, myVelocity, data.position, data.velocity, data.relativePosition, data.relativeVelocity);
 		}
 	}
@@ -196,7 +186,7 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 		float characterHeight = character->getHeight();
 		if (fastest > characterHeight / 10.0)
 		{
-			SbmPawn* gazeTarget =  SmartBody::SBScene::getScene()->getPawn(fastestObject);
+			SbmPawn* gazeTarget =  scene.getPawn(fastestObject);
 			if (!gazeTarget)
 				return;
 
@@ -224,7 +214,7 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 			std::stringstream strstr;
 			strstr << "bml char " << character->getName() << " <gaze target=\"" << fastestObject << "\" sbm:joint-range=\"EYES NECK\"/>" << std::endl;
 			fastestData->startGazeTime = time;
-			SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) strstr.str().c_str());
+			scene.getCommandManager()->execute((char*) strstr.str().c_str());
 			return;
 		}
 
@@ -237,11 +227,11 @@ void MiniBrain::update(SBCharacter* character, double time, double dt)
 				std::stringstream strstr;
 				strstr << "char " << character->getName() << " gazefade out .5" << std::endl;
 				data.startGazeTime = -1;
-				SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) strstr.str().c_str());
+				scene.getCommandManager()->execute((char*) strstr.str().c_str());
 
 				std::stringstream strstr2;
 				strstr2 << "char " << character->getName() << " prune" << std::endl;
-				SmartBody::SBScene::getScene()->getCommandManager()->execute_later((char*) strstr2.str().c_str(), 3 + float(rand() % 100) * .01f);
+				scene.getCommandManager()->execute_later((char*) strstr2.str().c_str(), 3 + float(rand() % 100) * .01f);
 
 
 			}

@@ -46,9 +46,8 @@ using namespace std;
 int MeController::instance_count = 0;
 
 
-MeController::MeController () 
-:	SBObject(),
-	_active( false ),
+MeController::MeController ()
+:	_active( false ),
 	_indt( 0.0f ),
 	_outdt( 0.0f ),
 	_emphasist( -1.0f ),
@@ -56,6 +55,7 @@ MeController::MeController ()
 	_prune_policy( new MeDefaultPrunePolicy() ),
 	_context( nullptr ),
  	_record_output( nullptr ), // for recording poses and motions of immediate local results
+	_record_dt(0),
 	_startTime(-1),
 	_stopTime(-1),
 	_initialized(false),
@@ -854,6 +854,14 @@ void MeController::notify(SmartBody::SBSubject* subject)
 	}
 
 }
+
+SmartBody::SBScene* MeController::getScene() {
+	if (_pawn) {
+		return &_pawn->_scene;
+	}
+	return nullptr;
+}
+
 
 
 //============================ End of File ============================

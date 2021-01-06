@@ -48,7 +48,7 @@ namespace SmartBody {
 class SBRealtimeManager : public SBService
 {
 	public:
-		SBAPI SBRealtimeManager();
+		SBAPI explicit SBRealtimeManager(SBScene& scene);
 		SBAPI ~SBRealtimeManager();
 
 		SBAPI void setEnable(bool val) override;

@@ -22,7 +22,7 @@ public:
 	bool            isLock;
 public:
 	FingerChain() { isLock = false; fingerTip = nullptr; fingerTarget = SrVec(); }
-	~FingerChain() {}
+	~FingerChain() = default;
 	void init(MeCtIKTreeNode* figTip);	
 	void unlockChain();
 	void getLineSeg(std::vector<SrVec>& lineSeg);
@@ -71,20 +71,20 @@ public:
 
 public:
 	MeCtHand(boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SmartBody::SBJoint* wrist);
-	~MeCtHand();
+	~MeCtHand() override;
 
 	void init(std::string grabType, const MotionDataSet& reachPose, const MotionDataSet& grabPose, const MotionDataSet& releasePose, const MotionDataSet& pointPose);
 
 public:
-	virtual void controller_map_updated();
-	virtual void controller_start();	
-	virtual bool controller_evaluate( double t, MeFrameData& frame );
+	void controller_map_updated() override;
+	void controller_start() override;
+	bool controller_evaluate( double t, MeFrameData& frame ) override;
 
-	virtual SkChannelArray& controller_channels()	{ return( _channels ); }
-	virtual double controller_duration()			{ return( (double)_duration ); }
+	SkChannelArray& controller_channels() override	{ return( _channels ); }
+	double controller_duration() override			{ return( (double)_duration ); }
 	void set_duration(float duration) { _duration = duration; }
-	virtual const std::string& controller_type() const		{ return( CONTROLLER_TYPE ); }
-	int  getGrabType() { return grabType; }
+	const std::string& controller_type() const override		{ return( CONTROLLER_TYPE ); }
+	int  getGrabType() const { return grabType; }
 	void setGrabState(GrabState state);
 	void setGrabTargetObject(SbmPawn* targetObj);
 	bool isFingerChainLocked();

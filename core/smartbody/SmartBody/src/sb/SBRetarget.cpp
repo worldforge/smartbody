@@ -21,7 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBRetarget.h"
 #include <sb/SBSkeleton.h>
 #include <sb/SBJoint.h>
-#include <sb/SBScene.h>
+#include <sb/SBAssetManager.h>
 #include <sk/sk_motion.h>
 #include <sb/SBMotion.h>
 #include <queue>
@@ -42,11 +42,10 @@ SBAPI SBRetarget::SBRetarget(std::string srcName, std::string tgtName)
 
 SBAPI SBRetarget::~SBRetarget() = default;
 
-bool SBRetarget::initRetarget( std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints )
+bool SBRetarget::initRetarget(SBAssetManager& assetManager, std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	auto targetSk = scene->getSkeleton(tgtSkName);
-	auto sourceSk = scene->getSkeleton(srcSkName);	
+	auto targetSk = assetManager.getSkeleton(tgtSkName);
+	auto sourceSk = assetManager.getSkeleton(srcSkName);
 	if (!targetSk || !sourceSk) return false;
 	
 	SmartBody::SBSkeleton interSk(*targetSk); // copy for an intermediate skeleton
@@ -328,10 +327,10 @@ SBAPI void SBRetarget::addJointRotOffset( std::string jointName, SrQuat& inQuat 
 	jointRotOffsetMap[jointName] = inQuat;
 }
 
-void SBRetarget::computeJointLengthRatio( std::string jointName, std::string refJointName )
+void SBRetarget::computeJointLengthRatio(SBAssetManager& assetManager, std::string jointName, std::string refJointName )
 {
-	auto srcSkel = SmartBody::SBScene::getScene()->getSkeleton(srcSkName);
-	auto tgtSkel = SmartBody::SBScene::getScene()->getSkeleton(tgtSkName);
+	auto srcSkel = assetManager.getSkeleton(srcSkName);
+	auto tgtSkel = assetManager.getSkeleton(tgtSkName);
 	if (!srcSkel || !tgtSkel)
 		return; 
 	SmartBody::SBJoint* srcJoint = srcSkel->getJointByName(jointName);

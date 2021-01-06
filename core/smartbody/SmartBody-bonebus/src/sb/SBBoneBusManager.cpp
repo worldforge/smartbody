@@ -30,7 +30,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBBoneBusManager::SBBoneBusManager()
+SBBoneBusManager::SBBoneBusManager(SBScene& scene) : SmartBody::SBService(scene)
 {
 	setName("BoneBus");
 	_host = "";
@@ -112,7 +112,7 @@ void SBBoneBusManager::beforeUpdate(double time)
 	std::vector<std::string> commands = _boneBus.GetCommand();
 	for (auto & command : commands)
 	{
-		SmartBody::SBScene::getScene()->command( (char *)command.c_str() );
+		_scene.command( (char *)command.c_str() );
 	}
 }
 
@@ -264,7 +264,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 
 		const SrQuat& q = j->quat()->value();
 
-		character->AddBoneRotation( j->extName().c_str(), q.w, q.x, q.y, q.z, SmartBody::SBScene::getScene()->getSimulationManager()->getTime() );
+		character->AddBoneRotation( j->extName().c_str(), q.w, q.x, q.y, q.z, _scene.getSimulationManager()->getTime() );
 
 		//printf( "%s %f %f %f %f\n", (const char *)j->name(), q.w, q.x, q.y, q.z );
 	}
@@ -292,7 +292,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 		//these coordinates are meant to mimic the setpositionbyname coordinates you give to move the character
 		//so if you wanted to move a joint on the face in the x direction you'd do whatever you did to move the actor
 		//itself further in the x position.
-		character->AddBonePosition( j->extName().c_str(), posx, posy, posz, SmartBody::SBScene::getScene()->getSimulationManager()->getTime() );
+		character->AddBonePosition( j->extName().c_str(), posx, posy, posz, _scene.getSimulationManager()->getTime() );
 	}
 
 	character->EndSendBonePositions();
@@ -303,7 +303,7 @@ void SBBoneBusManager::NetworkSendSkeleton( bonebus::BoneBusCharacter * characte
 		for (size_t i = 0; i < otherJoints.size(); i++)
 		{
 			auto& joint = joints[otherJoints[i]];
-			character->AddGeneralParameters(i, 1, joint->pos()->value( 0 ), i, SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+			character->AddGeneralParameters(i, 1, joint->pos()->value( 0 ), i, _scene.getSimulationManager()->getTime());
 
 		}
 		character->EndSendGeneralParameters();

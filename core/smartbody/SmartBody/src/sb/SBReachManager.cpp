@@ -26,13 +26,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBReachManager::SBReachManager()
+SBReachManager::SBReachManager(SBScene& scene) : SBSceneOwned(scene)
 {
 }
 
 SBReachManager::~SBReachManager()
-{
-}
+= default;
 
 
 SBAPI SBReach* SBReachManager::createReachWithTag( std::string characterName, std::string reachTag )

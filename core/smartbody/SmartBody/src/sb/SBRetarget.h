@@ -31,6 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
+class SBAssetManager;
 typedef std::pair<SrQuat,SrQuat> QuatPair;
 typedef std::pair<std::string,std::string> StringPair;
 class TrajectoryRecord;
@@ -41,7 +42,7 @@ class SBRetarget
 		SBAPI SBRetarget();
 		SBAPI SBRetarget(std::string srcName, std::string tgtName);		
 		SBAPI ~SBRetarget();	
-		SBAPI bool initRetarget(std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints);
+		SBAPI bool initRetarget(SBAssetManager& assetManager, std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints);
 		SBAPI SrQuat applyRetargetJointRotation(const std::string& jointName, SrQuat& inQuat);
 		SBAPI SrQuat applyRetargetJointRotationInverse(const std::string& jointName, SrQuat& inQuat);
 		SBAPI float  applyRetargetJointTranslation(std::string jointName, float inPos);		
@@ -53,7 +54,7 @@ class SBRetarget
 		SBAPI float getHeightRatio();
 		SBAPI void addJointRotOffset(std::string jointName, SrQuat& inQuat);
 	protected:
-		void computeJointLengthRatio(std::string jointName, std::string refJointName);
+		void computeJointLengthRatio(SBAssetManager& assetManager, std::string jointName, std::string refJointName);
 	protected:
 		std::string srcSkName;
 		std::string tgtSkName;

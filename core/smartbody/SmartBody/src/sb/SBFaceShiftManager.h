@@ -35,7 +35,7 @@ namespace SmartBody {
 class SBFaceShiftManager : public SBService
 {
 	public:
-		SBAPI SBFaceShiftManager();
+		SBAPI SBFaceShiftManager(SBScene& scene);
 		SBAPI ~SBFaceShiftManager();
 
 		SBAPI virtual void setEnable(bool val);
@@ -70,7 +70,7 @@ namespace SmartBody {
 	class SBFaceShiftManager : public SBService
 	{
 	public:
-		SBAPI SBFaceShiftManager() {}
+		SBAPI SBFaceShiftManager(SBScene& scene) : SBService(scene) {}
 		SBAPI ~SBFaceShiftManager() {}
 
 		SBAPI virtual void setEnable(bool val) {}
