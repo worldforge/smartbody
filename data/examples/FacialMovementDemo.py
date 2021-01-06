@@ -6,7 +6,7 @@ print("|--------------------------------------------|")
 
 # Add asset paths
 scene.addAssetPath('mesh', 'mesh')
-scene.addAssetPath('motion', 'ChrMaarten')
+scene.addAssetPath('motion', 'ChrBrad')
 scene.addAssetPath('script', 'scripts')
 scene.loadAssets()
 
@@ -71,7 +71,7 @@ brad.setFaceDefinition(bradFace)
 brad.createStandardControllers()
 # DeformableMesh
 brad.setVec3Attribute('deformableMeshScale', .01, .01, .01)
-brad.setStringAttribute('deformableMesh', 'ChrMaarten.dae')
+brad.setStringAttribute('deformableMesh', 'ChrBrad.dae')
 
 # Turn on GPU deformable geometry
 brad.setStringAttribute("displayType", "GPUmesh")
@@ -99,6 +99,7 @@ class FacialMovementDemo(SBScript):
 
 # List of expressions
 expressionList = ['sad', 'shock', 'angry', 'happy', 'fear']
+#expressionList = ['close_eyes']
 chrName = 'ChrBrad'
 curFace = 0
 faceAmt = len(expressionList)
@@ -131,6 +132,9 @@ def nextFace():
         bml.execBML(chrName, '<face type="facs" au="1_left" amount="0.6"/><face type="facs" au="1_right" amount="0.6"/> + \
 							  <face type="facs" au="5" amount="0.7"/><face type="facs" au="26" amount="0.25"/> + \
 							  <face type="facs" au="38" amount="1"/>')
+    if expression == 'close_eyes':
+        print('Playing close_eyes')
+        bml.execBML(chrName, '<face type="facs" au="45_left" amount="1"/><face type="facs" au="45_right" amount="1"/>')
     # Increment index, reset when hit max
     curFace = curFace + 1
     if curFace >= faceAmt:
