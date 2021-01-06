@@ -426,54 +426,8 @@ void SbmCharacter::createStandardControllers()
 	ct_tree_p->add_controller(overlayMotion_sched_p.get());
 	ct_tree_p->add_controller( record_ct.get() );
 	
-
-	// get the default attributes from the default controllers
 	
-	auto& defaultControllers = _scene.getDefaultControllers();
-	for (auto & defaultController : defaultControllers)
-	{
-		auto controller = defaultController.get();
-		const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
-		std::string groupName = controller->getName();		
-		for (const auto & defaultAttribute : defaultAttributes)
-		{
-			SmartBody::SBAttribute* attribute = defaultAttribute.first;
-			int groupPriority = attribute->getAttributeInfo()->getGroup()->getPriority();
-			SmartBody::SBAttribute* attributeCopy = attribute->copy();
-			this->addAttribute(std::unique_ptr<SmartBody::SBAttribute>(attributeCopy), attribute->getAttributeInfo()->getGroup()->getName());
-			// make sure the group's priority is set properly
-			attributeCopy->getAttributeInfo()->getGroup()->setPriority(groupPriority);
-			// if the controller isn't a scheduler, then add the controller as an observer
-			auto* scheduler = dynamic_cast<MeCtScheduler2*>(controller);
-			if (!scheduler)
-			{
-				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
-					attributeCopy->registerObserver(eyelid_reg_ct_p.get());
-				else if (dynamic_cast<MeCtBreathing*>(controller))
-					attributeCopy->registerObserver(breathing_p.get());
-				else if (dynamic_cast<MeCtSaccade*>(controller))
-					attributeCopy->registerObserver(saccade_ct.get());
-				else if (dynamic_cast<MeCtFace*>(controller))
-					attributeCopy->registerObserver(face_ct.get());
-				else if (dynamic_cast<MeCtParamAnimation*>(controller))
-				{
-					attributeCopy->registerObserver(controller);
-					//attributeCopy->registerObserver(head_param_anim_ct);
-					//attributeCopy->registerObserver(param_animation_ct);
-				}
-				//else if (dynamic_cast<MeCtLocomotion*>(controller))
-					//attributeCopy->registerObserver(locomotion_ct);
-				else if (dynamic_cast<MeCtBasicLocomotion*>(controller))
-					attributeCopy->registerObserver(basic_locomotion_ct.get());
-				else if (dynamic_cast<MeCtNewLocomotion*>(controller))
-					attributeCopy->registerObserver(new_locomotion_ct.get());
-				else if (dynamic_cast<MeCtGenericHand*>(controller))
-					attributeCopy->registerObserver(generic_hand_ct.get());
-			}
-		}
-	}
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+	std::vector<SmartBody::SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnCharacterUpdate( getName() );
@@ -569,7 +523,7 @@ void SbmCharacter::createStandardControllers()
 //		}
 //	}
 //	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-//	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+//	std::vector<SmartBody::SBSceneListener*>& listeners = _scene.getSceneListeners();
 //	for (auto & listener : listeners)
 //	{
 //		listener->OnCharacterUpdate( getName() );
@@ -856,58 +810,13 @@ int SbmCharacter::init(boost::intrusive_ptr<SkSkeleton> new_skeleton_p,
 	//scene_p->init( _skeleton );
 
 	SmartBody::SBCharacter* sbcharacter = dynamic_cast<SmartBody::SBCharacter*>(this);
-
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-
-	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+	
+	std::vector<SmartBody::SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnCharacterCreate( getName(), classType );
 	}
 
-	//buildJointPhyObjs();
-
-
-	// get the default attributes from the default controllers
-	const auto& defaultControllers = _scene.getDefaultControllers();
-	for (const auto& entry : defaultControllers)
-	{
-		auto controller = entry.get();
-			const std::vector<AttributeVarPair>& defaultAttributes = controller->getDefaultAttributes();
-		std::string groupName = controller->getName();		
-		for (const auto & defaultAttribute : defaultAttributes)
-		{
-			SmartBody::SBAttribute* attribute = defaultAttribute.first;
-			SmartBody::SBAttribute* attributeCopy = attribute->copy();
-			this->addAttribute(std::unique_ptr<SmartBody::SBAttribute>(attributeCopy));
-			// if the controller isn't a scheduler, then add the controller as an observer
-			auto* scheduler = dynamic_cast<MeCtScheduler2*>(controller);
-			if (!scheduler)
-			{
-				if (dynamic_cast<MeCtEyeLidRegulator*>(controller))
-					attributeCopy->registerObserver(eyelid_reg_ct_p.get());
-				else if (dynamic_cast<MeCtBreathing*>(controller))
-					attributeCopy->registerObserver(breathing_p.get());
-				else if (dynamic_cast<MeCtSaccade*>(controller))
-					attributeCopy->registerObserver(saccade_ct.get());
-				else if (dynamic_cast<MeCtFace*>(controller))
-					attributeCopy->registerObserver(face_ct.get());
-				else if (dynamic_cast<MeCtParamAnimation*>(controller))
-				{
-					attributeCopy->registerObserver(controller);
-					//attributeCopy->registerObserver(param_animation_ct);
-					//attributeCopy->registerObserver(head_param_anim_ct);
-				}
-				else if (dynamic_cast<MeCtBasicLocomotion*>(controller))
-					attributeCopy->registerObserver(basic_locomotion_ct.get());
-				else if (dynamic_cast<MeCtNewLocomotion*>(controller))
-					attributeCopy->registerObserver(new_locomotion_ct.get());
-				else if (dynamic_cast<MeCtGenericHand*>(controller))
-					attributeCopy->registerObserver(generic_hand_ct.get());
-			}
-
-		}
-	}
 
 	return( CMD_SUCCESS ); 
 }
@@ -970,8 +879,7 @@ int SbmCharacter::init_skeleton() {
 	// Rebuild the active channels to include new joints
 	_skeleton->make_active_channels();
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+	std::vector<SmartBody::SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnCharacterUpdate( getName() );
@@ -1854,8 +1762,7 @@ void SbmCharacter::schedule_viseme_blend_ramp(
 void SbmCharacter::forward_visemes( double curTime )
 {
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+	std::vector<SmartBody::SBSceneListener*>& listeners = _scene.getSceneListeners();
 	
 	if( !listeners.empty() )
 	{
@@ -1894,7 +1801,7 @@ void SbmCharacter::forward_parameters( double curTime )
 #endif
 
 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::SBSceneListener *listener_p = scene->getCharacterListener();
+	SmartBody::SBSceneListener *listener_p = _scene.getCharacterListener();
 
 	if( listener_p )
 	{

@@ -143,9 +143,6 @@ SBScene::SBScene(const CoreServicesProvider& coreServicesProvider) :
 		{
 	_scene = this;
 
-	createDefaultControllers();
-
-
 	// add the services
 	_serviceManager->addService(_coreServices.physicsManager.get());
 	_serviceManager->addService(_coreServices.collisionManager.get());
@@ -215,9 +212,6 @@ SBScene::SBScene(const CoreServicesProvider& coreServicesProvider) :
 	//TODO: don't init process shared random pool in this class
 	srand((unsigned int)time(nullptr));
 
-	// Create default settings
-	createDefaultControllers();
-	
 	/*
 	SmartBody::SBSceneListener* listener = getCharacterListener();
 	//_scene = SmartBody::SBScene::getScene();
@@ -278,8 +272,6 @@ SBScene::~SBScene()
 	removePendingCommands();
 
 	clearAttributes();
-
-	removeDefaultControllers();
 
 	removeAllAssetPaths("script");
 	removeAllAssetPaths("motion");
@@ -1420,30 +1412,6 @@ std::vector<std::string> SBScene::getSystemParameterNames()
 	}
 
 	return names;
-}
-
-std::vector<boost::intrusive_ptr<SBController>>& SBScene::getDefaultControllers()
-{
-	return _defaultControllers;
-}
-
-void SBScene::createDefaultControllers()
-{
-	 _defaultControllers.emplace_back(new MeCtEyeLidRegulator());
-	 _defaultControllers.emplace_back(new MeCtSaccade(nullptr));
-	 std::map<int, MeCtReachEngine*> reachMap;
-	 _defaultControllers.emplace_back(new MeCtExampleBodyReach(nullptr));
-	 _defaultControllers.emplace_back(new MeCtBreathing());
-	 _defaultControllers.emplace_back(new MeCtGaze());
-	 _defaultControllers.emplace_back(new MeCtNewLocomotion());
-	 _defaultControllers.emplace_back(new MeCtGenericHand());
-	 _defaultControllers.emplace_back(new RealTimeLipSyncController());
-
-}
-
-void SBScene::removeDefaultControllers()
-{
-	 _defaultControllers.clear();
 }
 
 std::vector<std::string> SBScene::getAssetPaths(const std::string& type)

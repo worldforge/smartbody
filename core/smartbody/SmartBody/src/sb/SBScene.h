@@ -259,8 +259,6 @@ class SBScene : public SBObject
 		SBAPI KinectProcessor* getKinectProcessor();
 		SBAPI std::map<std::string, GeneralParam*>& getGeneralParameters();
 
-		SBAPI std::vector<boost::intrusive_ptr<SBController>>& getDefaultControllers();
-
 		/**
 		 * Registers a provider which allows lookup of object through the "prefix/suffix" notation.
 		 */
@@ -285,9 +283,6 @@ class SBScene : public SBObject
 	};
 
 	protected:
-
-		void createDefaultControllers();
-		void removeDefaultControllers();
 
 		std::unique_ptr<SBAssetStore> _assetStore;
 		CoreServices _coreServices;
@@ -322,8 +317,7 @@ class SBScene : public SBObject
 		std::map<std::string, std::unique_ptr<SmartBody::SBFaceDefinition>> _faceDefinitions;
 
 		std::string _mediaPath;
-		std::vector<boost::intrusive_ptr<SBController>> _defaultControllers;
-		
+
 		std::string _processId;
 		static SBScene* _scene;
 		static std::map<std::string, std::string> _systemParameters;
