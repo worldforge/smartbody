@@ -751,7 +751,7 @@ void BaseWindow::LoadCB(Fl_Widget* widget, void* data)
 	auto* window = (BaseWindow*) data;
 	std::string mediaPath = SmartBody::SBScene::getSystemParameter("mediapath");
 
-	std::string file = window->chooseFile("Load File:", "Python\t*.py\n", mediaPath);
+	std::string file = window->chooseFile("Load File:", "Python\t*.py\n", mediaPath + "/examples");
 	if (file.empty())
 		return;
 
