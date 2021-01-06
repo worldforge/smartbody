@@ -4,7 +4,7 @@ print("|--------------------------------------------|")
 
 # Add asset paths
 scene.addAssetPath('mesh', 'mesh')
-scene.addAssetPath('motion', 'ChrMaarten')
+scene.addAssetPath('motion', 'ChrBrad')
 scene.addAssetPath('motion', 'ChrRachel')
 scene.addAssetPath('motion', 'Sinbad')
 scene.addAssetPath('script', 'behaviorsets')
@@ -50,7 +50,7 @@ chr0D.setSkeleton(chr0DSkeleton)
 chr0D.setPosition(SrVec(-2.25, 0, 0))
 chr0D.createStandardControllers()
 chr0D.setVec3Attribute('deformableMeshScale', .01, .01, .01)
-chr0D.setStringAttribute('deformableMesh', 'ChrMaarten.dae')
+chr0D.setStringAttribute('deformableMesh', 'ChrBrad.dae')
 createRetargetInstance('test_utah.sk', 'ChrBrad.dae')
 bml.execBML('chr0D', '<body posture="ChrUtah_Idle001"/>')
 # chr1D

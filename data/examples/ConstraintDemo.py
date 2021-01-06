@@ -7,7 +7,7 @@ import math
 scene.setScale(1.0)
 # Add asset paths
 scene.addAssetPath('mesh', 'mesh')
-scene.addAssetPath('motion', 'ChrMaarten')
+scene.addAssetPath('motion', 'ChrBrad')
 scene.addAssetPath("script", "behaviorsets")
 scene.addAssetPath('script', 'scripts')
 scene.loadAssets()
@@ -43,7 +43,7 @@ for i in range(4):
     brad.createStandardControllers()
     # Set deformable mesh
     brad.setVec3Attribute('deformableMeshScale', .01, .01, .01)
-    brad.setStringAttribute('deformableMesh', 'ChrMaarten.dae')
+    brad.setStringAttribute('deformableMesh', 'ChrBrad.dae')
     # Play idle animation
     bml.execBML(baseName, '<body posture="ChrBrad@Idle01"/>')
     # Retarget character

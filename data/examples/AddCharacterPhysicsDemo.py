@@ -4,7 +4,7 @@ print("|--------------------------------------------|")
 
 # Add asset paths
 scene.addAssetPath('mesh', 'mesh')
-scene.addAssetPath('motion', 'ChrMaarten')
+scene.addAssetPath('motion', 'ChrBrad')
 scene.addAssetPath('motion', 'sbm-common/common-sk')
 scene.addAssetPath("script", "behaviorsets")
 scene.addAssetPath('script', 'scripts')
@@ -102,7 +102,7 @@ phyManager.getPhysicsCharacter('ChrBrad').setBoolAttribute('usePD', True)
 # phyManager.getPhysicsCharacter('ChrBrad').setBoolAttribute('enable', True)
 # Deformable mesh
 brad.setVec3Attribute('deformableMeshScale', .01, .01, .01)
-brad.setStringAttribute('deformableMesh', 'ChrMaarten.dae')
+brad.setStringAttribute('deformableMesh', 'ChrBrad.dae')
 
 # Lip syncing diphone setup
 # brad.setStringAttribute('lipSyncSetName', 'default')

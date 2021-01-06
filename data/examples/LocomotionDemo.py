@@ -7,7 +7,7 @@ print("|--------------------------------------------|")
 
 # Add asset paths
 scene.addAssetPath('mesh', 'mesh')
-scene.addAssetPath('motion', 'ChrMaarten')
+scene.addAssetPath('motion', 'ChrBrad')
 scene.addAssetPath("script", "behaviorsets")
 scene.addAssetPath('script', 'scripts')
 scene.loadAssets()
@@ -61,7 +61,7 @@ for i in range(amount):
     brad.createStandardControllers()
     # Set deformable mesh
     brad.setVec3Attribute('deformableMeshScale', .01, .01, .01)
-    brad.setStringAttribute('deformableMesh', 'ChrMaarten.dae')
+    brad.setStringAttribute('deformableMesh', 'ChrBrad.dae')
     # Retarget character
     if i == 0:
         scene.run('BehaviorSetMaleLocomotion.py')
