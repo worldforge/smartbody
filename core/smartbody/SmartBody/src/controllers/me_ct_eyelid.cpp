@@ -22,7 +22,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 using namespace gwiz;
 
 #include "controllers/me_ct_eyelid.h"
-#include <sb/sbm_pawn.hpp>
 #include <sb/SBCharacter.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBJoint.h>
@@ -34,7 +33,7 @@ std::string MeCtEyeLidRegulator::type_name = "EyeLidRegulator";
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void MeCtEyeLidRegulator::LidSet::print( void )	{
+void MeCtEyeLidRegulator::LidSet::print( )	{
 
 	if( dirty_bit ) {
 		update();
@@ -248,9 +247,7 @@ MeCtEyeLidRegulator::MeCtEyeLidRegulator( )	{
 
 }
 
-MeCtEyeLidRegulator::~MeCtEyeLidRegulator( void )	{
-
-}
+MeCtEyeLidRegulator::~MeCtEyeLidRegulator( )	= default;
 
 void MeCtEyeLidRegulator::init(SmartBody::SBPawn* pawn,  bool tracking_pitch)	{
 
@@ -495,11 +492,11 @@ bool MeCtEyeLidRegulator::controller_evaluate( double t, MeFrameData& frame ) {
 
 	if (get_use_blink_viseme()) {
 		int U_au_blink_idx = _context->channels().search("blink", SkChannel::XPos );
-		int U_au_blink_buff_idx = _context->toBufferIndex( U_au_blink_idx );
-		if( U_au_blink_idx >= 0 )	{
-			fbuffer[ U_au_blink_buff_idx ] = UL_value;
+		int U_au_blink_buff_idx = _context->toBufferIndex(U_au_blink_idx);
+		if (U_au_blink_idx >= 0) {
+			fbuffer[U_au_blink_buff_idx] = UL_value;
+			applied = true;
 		}
-		applied = true;
 	}
 
 	/*
@@ -514,7 +511,7 @@ bool MeCtEyeLidRegulator::controller_evaluate( double t, MeFrameData& frame ) {
 	}
 	*/
 
-	if( applied == false ) {
+	if(!applied) {
 		if( UL_value != 0.0f ) {
 			int UL_au_blink_idx =  _context->channels().search("au_45_left", SkChannel::XPos );
 			int UL_au_blink_buff_idx = _context->toBufferIndex( UL_au_blink_idx );
