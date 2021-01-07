@@ -45,6 +45,7 @@ void MeControllerContext::add_controller( MeController* ct ) {
 		ct->_context->remove_controller( ct );
 	}
 	ct->_context = this;
+	ct->_context->child_channels_updated( ct );
 	// No ref().  Contexts refs controllers, not vice versa.
 	// Having both would create circle references
 	ct->context_updated();

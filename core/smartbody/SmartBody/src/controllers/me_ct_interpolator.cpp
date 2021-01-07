@@ -35,8 +35,8 @@ void MeCtInterpolator::Context::child_channels_updated( MeController* child )
 {
 }
 
-MeCtInterpolator::MeCtInterpolator(boost::intrusive_ptr<MeController> c1, boost::intrusive_ptr<MeController> c2, double time, double w, bool l, std::string controllerName)
-: MeCtContainer(new MeCtInterpolator::Context(this)), child1(std::move(c1)), child2(std::move(c2))
+MeCtInterpolator::MeCtInterpolator(SmartBody::SBPawn& pawn, boost::intrusive_ptr<MeController> c1, boost::intrusive_ptr<MeController> c2, double time, double w, bool l, std::string controllerName)
+: MeCtContainer(pawn, new MeCtInterpolator::Context(this)), child1(std::move(c1)), child2(std::move(c2))
 {
 	// controller initialization
 	if (child1)

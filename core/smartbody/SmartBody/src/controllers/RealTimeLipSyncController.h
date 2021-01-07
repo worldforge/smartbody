@@ -8,15 +8,12 @@
 class RealTimeLipSyncController : public SmartBody::SBController
 {
 	public:
-		RealTimeLipSyncController(SmartBody::SBCharacter* character);
-		RealTimeLipSyncController();
-		~RealTimeLipSyncController();
+		explicit RealTimeLipSyncController(SmartBody::SBPawn& pawn);
+		~RealTimeLipSyncController() override;
 
-		void init(SmartBody::SBPawn* pawn);
+		bool controller_evaluate ( double t, MeFrameData& frame ) override;
 
-		virtual bool controller_evaluate ( double t, MeFrameData& frame );
-
-		virtual void notify(SmartBody::SBSubject* subject);
+		void notify(SmartBody::SBSubject* subject) override;
 
 	protected:
 		void updateLipSyncChannels();

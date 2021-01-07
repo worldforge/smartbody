@@ -84,6 +84,7 @@ private :
 	*
 	* Each layer maintains a breathing cycle for a certain number of cycles.
 	* The topmost layer defines the character animation.
+	 * TODO: fix memory handling
 	*/
 	list<BreathLayer*> _breath_layers;
 	/**
@@ -91,6 +92,7 @@ private :
 	*
 	* This breath cycle is loaded by default in the stack for an infinite
 	* number of cycles.
+	 * TODO: fix memory handling
 	*/
 	LinearBreathCycle* _default_breath_cycle;
 	
@@ -200,17 +202,16 @@ public :
 	/** 
 	* \brief Constructor 
 	*/
-	MeCtBreathing ();
+	MeCtBreathing (SmartBody::SBPawn& pawn);
 	/** 
 	* \brief Destructor 
 	*
 	* It's public but pay attention to the use of ref()/unref().
 	*/
-	virtual ~MeCtBreathing ();
+	~MeCtBreathing () override;
 
 
-	void init(SmartBody::SBPawn* pawn);
-	/** 
+	/**
 	* \brief Initializes the controller
 	*
 	* \param[in] motion The initial breathing motion

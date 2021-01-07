@@ -53,13 +53,13 @@ void MeCtLocomotionAnalysis::set_ct_pawn(MeCtLocomotionPawn* controller)
 	_ct_locomotion_pawn = controller;
 	if (walking_skeleton)
 		walking_skeleton->unref();
-	walking_skeleton = _ct_locomotion_pawn->walking_skeleton;
+	walking_skeleton = _ct_locomotion_pawn.walking_skeleton;
 	if (walking_skeleton)
 		walking_skeleton->ref();
 
 	if (standing_skeleton)
 		standing_skeleton->unref();
-	standing_skeleton = _ct_locomotion_pawn->standing_skeleton;
+	standing_skeleton = _ct_locomotion_pawn.standing_skeleton;
 	if (standing_skeleton)
 		standing_skeleton->ref();
 }

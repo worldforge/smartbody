@@ -27,19 +27,23 @@ std::string MeCtCurveWriter::TYPE = "MeCtCurveWriter";
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void MeCtCurveWriter::init(						   
-	SmartBody::SBPawn* pawn,
-	SkChannelArray& channels,
-	int left_bound , 
-	int right_bound, 
-	bool at_least_once
-)	{
-	
+
+MeCtCurveWriter::MeCtCurveWriter( SmartBody::SBPawn& pawn,
+								  SkChannelArray& channels,
+								  int left_bound ,
+								  int right_bound,
+								  bool at_least_once )
+: SmartBody::SBController(pawn)	{
+		curve_arr = nullptr;
+		num_curves = 0;
+		write_once_arr = nullptr;
+		tail_bound_mode = 0;
+
 	_channels.init();
 	_channels.merge( channels );
 //	_channels.compress();
 	_channels.rebuild_hash_table();
-	
+
 	num_curves = _channels.floats();
 	curve_arr = new srLinearCurve[ num_curves ];
 	write_once_arr = new bool[ num_curves ];
@@ -49,7 +53,7 @@ void MeCtCurveWriter::init(
 		write_once_arr[ i ] = at_least_once;
 	}
 	tail_bound_mode = right_bound;
-	
+
 	const int size = _channels.size();
 	_local_ch_to_buffer.size( size );	// ends up being a 1 to 1 mapping...
 	int index = 0;
@@ -61,9 +65,8 @@ void MeCtCurveWriter::init(
 		}
 		index += chan_size;
 	}
-
-	MeController::init (pawn);
 }
+
 
 bool MeCtCurveWriter::controller_evaluate( double time, MeFrameData& frame )	{
 

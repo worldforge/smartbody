@@ -469,7 +469,7 @@ void MeCtLocomotion::init_skeleton(SkSkeleton* standing, SkSkeleton* walking)
 	initialized = true;
 }
 
-const std::string& MeCtLocomotion::controller_type( void )	const {
+const std::string& MeCtLocomotion::controller_type()	const {
 
 	return TYPE;
 }

@@ -33,23 +33,80 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 std::string MeCtFace::type_name = "Face";
 
-MeCtFace::MeCtFace( void )	{
+MeCtFace::MeCtFace(SbmCharacter& pawn) :
+		SmartBody::SBController(pawn),
+		_duration(-1.0),
+		_base_pose_p(nullptr),
+		_skeleton_ref_p(nullptr),
+		_useVisemeClamping(true),
 
-   _duration = -1.0;
-   _base_pose_p = nullptr;
-   _skeleton_ref_p = nullptr;
-   _useVisemeClamping = true;
+		_customized_motion(nullptr),
+		_motionStartTime(-1),
+		_character(pawn) {
 
-   _customized_motion = nullptr;
-   _motionStartTime = -1;
+
+	SmartBody::SBFaceDefinition* faceDefinition = _character.getFaceDefinition();
+	if (!faceDefinition || !faceDefinition->getFaceNeutral())
+		return;
+
+	int numAUs = faceDefinition->getNumAUs();
+	for (int a = 0; a < numAUs; a++) {
+		int auNum = faceDefinition->getAUNum(a);
+		std::stringstream id;
+		id << auNum;
+		ActionUnit* au = faceDefinition->getAU(auNum);
+		if (au->is_left()) {
+			add_key(au->getLeftName().c_str(), au->left);
+		}
+		if (au->is_right()) {
+			add_key(au->getRightName().c_str(), au->right);
+		}
+		if (au->is_bilateral()) {
+			add_key(au->getBilateralName().c_str(), au->left);
+		}
+	}
+
+	// add the visemes
+	int numVisemes = faceDefinition->getNumVisemes();
+	for (int v = 0; v < numVisemes; v++) {
+		std::string visemeName = faceDefinition->getVisemeName(v);
+		SkMotion* motion = faceDefinition->getVisemeMotion(visemeName);
+		if (motion)
+			add_key(visemeName.c_str(), motion);
+	}
+
+	SkMotion* faceNeutral = faceDefinition->getFaceNeutral();
+	if (faceNeutral) {
+		_base_pose_p = faceNeutral;
+		_base_pose_p->move_keytimes(0.0); // make sure motion starts at 0
+		_channels.setJointMapName(_base_pose_p->channels().getJointMapName());
+
+		SkChannelArray& mchan_arr = _base_pose_p->channels();
+		int size = mchan_arr.size();
+		_include_chan_flag.size(size);
+		for (int i = 0; i < size; i++) {
+			_include_chan_flag[i] = true;
+			_channels.add(mchan_arr.name(i), mchan_arr.type(i));
+		}
+
+		finish_adding();
+
+#define DEFAULT_REMOVE_EYEBALLS 1
+#if DEFAULT_REMOVE_EYEBALLS
+		remove_joint("eyeball_left");
+		remove_joint("eyeball_right");
+#endif
+
+	}
+
 }
 
-MeCtFace::~MeCtFace( void )	{
+MeCtFace::~MeCtFace()	{
 	
 	clear();
 }
 
-void MeCtFace::clear( void )	{
+void MeCtFace::clear()	{
 	
    _duration = -1.0;
    _skeleton_ref_p = nullptr;
@@ -86,72 +143,7 @@ void MeCtFace::customizeMotion(const std::string& motionName, double startTime)
 	}	
 }
 
-void MeCtFace::init (SmartBody::SBPawn* pawn) {
-	
-	clear();
-	MeController::init(nullptr);
 
-	SbmCharacter* sbmCharacter = dynamic_cast<SbmCharacter*>(pawn);
-	_character = dynamic_cast<SmartBody::SBCharacter*>(pawn);
-	SmartBody::SBFaceDefinition* faceDefinition = sbmCharacter->getFaceDefinition();
-	if (!faceDefinition || !faceDefinition->getFaceNeutral())
-		return;
-
-	int numAUs = faceDefinition->getNumAUs();
-	for (int a = 0; a < numAUs; a++)
-	{
-		int auNum = faceDefinition->getAUNum(a);
-		std::stringstream id;
-		id << auNum;
-		ActionUnit* au = faceDefinition->getAU(auNum);
-		if( au->is_left() )
-		{
-			add_key(au->getLeftName().c_str(), au->left);
-		}
-		if( au->is_right() )
-		{
-			add_key(au->getRightName().c_str(), au->right);
-		}
-		if( au->is_bilateral() )
-		{
-			add_key(au->getBilateralName().c_str(), au->left);
-		}
-	}
-
-	// add the visemes
-	int numVisemes = faceDefinition->getNumVisemes();
-	for (int v = 0; v < numVisemes; v++)
-	{
-		std::string visemeName = faceDefinition->getVisemeName(v);
-		SkMotion* motion = faceDefinition->getVisemeMotion(visemeName);
-		if( motion )
-			add_key( visemeName.c_str(), motion );
-	}
-	
-	SkMotion* faceNeutral = faceDefinition->getFaceNeutral();
-	if ( faceNeutral )	{
-		_base_pose_p = faceNeutral;
-		_base_pose_p->move_keytimes( 0.0 ); // make sure motion starts at 0
-		_channels.setJointMapName(_base_pose_p->channels().getJointMapName());
-
-		SkChannelArray& mchan_arr = _base_pose_p->channels();
-		int size = mchan_arr.size();
-		_include_chan_flag.size( size );
-		for( int i = 0; i < size; i++ )	{
-			_include_chan_flag[ i ] = 1;
-			_channels.add( mchan_arr.name( i ), mchan_arr.type( i ) );
-		}
-		
-		finish_adding();
-
-#define DEFAULT_REMOVE_EYEBALLS 1
-#if DEFAULT_REMOVE_EYEBALLS
-		remove_joint( "eyeball_left" );
-		remove_joint( "eyeball_right" );
-#endif
-
-	}
-}
 
 void MeCtFace::remove_joint( const char *joint_name ) {
 	int found = 0;
@@ -164,7 +156,7 @@ void MeCtFace::remove_joint( const char *joint_name ) {
 				if( mchan_arr.mappedName( i ) == joint_name ) {
 //					SmartBody::util::log( "MeCtFace::remove_joint: exclude[ %d ]: '%s:%s'\n", 
 //						i, mchan_arr.name( i ).get_string(), SkChannel::type_name( mchan_arr.type( i ) ) );
-					_include_chan_flag[ i ] = 0;
+					_include_chan_flag[ i ] = false;
 					found = 1;
 				}
 			}
@@ -220,7 +212,7 @@ void MeCtFace::add_key( const char *weight_key, SkMotion* key_pose_p ) {
 	_channels.add( weight_key, SkChannel::XPos );
 }
 
-void MeCtFace::finish_adding( void )	{
+void MeCtFace::finish_adding()	{
 	if( _context ) {
 		_context->child_channels_updated( this );
 	}
@@ -271,7 +263,7 @@ void MeCtFace::finish_adding( void )	{
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void MeCtFace::context_updated( void ) {
+void MeCtFace::context_updated() {
 
 #if 0
 	if( _context ) {
@@ -286,7 +278,7 @@ void MeCtFace::context_updated( void ) {
 #endif
 }
 
-void MeCtFace::controller_map_updated( void ) {
+void MeCtFace::controller_map_updated() {
 
 	if( _base_pose_p ) {
 		// Map motion channel index to context float buffer index
@@ -318,15 +310,15 @@ void MeCtFace::controller_map_updated( void ) {
 			}
 		} 
 		else {
-			for (size_t x = 0; x < _bChan_to_buff.size(); x++)
-				_bChan_to_buff[x] = -1;
-			for (size_t x = 0; x < _kChan_to_buff.size(); x++)
-				_kChan_to_buff[x] = -1;
+			for (int & x : _bChan_to_buff)
+				x = -1;
+			for (int & x : _kChan_to_buff)
+				x = -1;
 		}
 	}
 }
 
-void MeCtFace::controller_start( void )	{
+void MeCtFace::controller_start()	{
 
 }
 
@@ -570,22 +562,22 @@ bool MeCtFace::controller_evaluate( double t, MeFrameData& frame ) {
 	return continuing;
 }
 
-SkChannelArray& MeCtFace::controller_channels( void )	{
+SkChannelArray& MeCtFace::controller_channels()	{
 	return( _channels );
 }
 
-double MeCtFace::controller_duration( void ) {
+double MeCtFace::controller_duration() {
 	return( _duration );
 }
 
-const std::string& MeCtFace::controller_type( void ) const	{
+const std::string& MeCtFace::controller_type() const	{
 	return( type_name );
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 
 #if 0
-void check_quat_morph( void )	{
+void check_quat_morph()	{
 	
 	// test formula: 
 	//	quat_t result_q = ( ( key_q * -base_q ) * key_weight ) * accum_q;

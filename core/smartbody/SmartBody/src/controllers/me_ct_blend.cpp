@@ -181,9 +181,9 @@ bool MeCtBlend::FrameData::isChannelUpdated( unsigned int n ) const {
 
 ///////////////////////////////////////////////////////////////////////////
 //  MeCtBlend
-MeCtBlend::MeCtBlend( const boost::intrusive_ptr<MeController>& child )
+MeCtBlend::MeCtBlend(SmartBody::SBPawn& pawn, const boost::intrusive_ptr<MeController>& child )
  // Ignore Warnings about this: No writes, just passing a reference
-:	MeCtUnary( boost::intrusive_ptr<MeCtBlend::Context>(new MeCtBlend::Context(this)), child ),
+:	MeCtUnary(pawn, boost::intrusive_ptr<MeCtBlend::Context>(new MeCtBlend::Context(this)), child ),
 	_sub_blend_context( dynamic_cast<MeCtBlend::Context*>( _sub_context.get() ) )
 {
 
@@ -194,7 +194,7 @@ MeCtBlend::MeCtBlend( const boost::intrusive_ptr<MeController>& child )
 
 MeCtBlend::~MeCtBlend() = default;
 
-void MeCtBlend::init( const boost::intrusive_ptr<MeController>& new_child, SmartBody::SBPawn* pawn ) {
+void MeCtBlend::init( const boost::intrusive_ptr<MeController>& new_child ) {
 	const auto& old_child = child();
 	if( new_child!=old_child ) {
 		if( old_child )
@@ -203,7 +203,6 @@ void MeCtBlend::init( const boost::intrusive_ptr<MeController>& new_child, Smart
 		if( new_child )
 			_sub_blend_context->add_controller( new_child.get() );
 
-		MeController::init(pawn);
 	}
 }
 

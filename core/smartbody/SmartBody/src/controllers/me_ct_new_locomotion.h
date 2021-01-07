@@ -64,20 +64,19 @@ class MeCtNewLocomotion : public SmartBody::SBController
 			CONSTRAINT_ROT,
 			NUM_OF_CONSTRAINT
 		};
-		MeCtNewLocomotion();
-		~MeCtNewLocomotion();
-		void init(SbmCharacter* sbChar);
-		bool addEffectorJointPair(const char* effectorName, const char* effectorRootName, const SrVec& pos , const SrQuat& rot , 
+		explicit MeCtNewLocomotion(SbmCharacter& pawn);
+		~MeCtNewLocomotion() override;
+		bool addEffectorJointPair(const char* effectorName, const char* effectorRootName, const SrVec& pos , const SrQuat& rot ,
 								  ConstraintType cType, ConstraintMap& posCons, ConstraintMap& rotCons);
-		virtual void controller_map_updated();
-		virtual void controller_start();	
+		void controller_map_updated() override;
+		void controller_start() override;
 		
-		virtual bool controller_evaluate(double t, MeFrameData& frame);		
-		virtual SkChannelArray& controller_channels()	{return(_channels);}
-		virtual double controller_duration()			{return -1;}
-		virtual const std::string& controller_type() const		{return(_type_name);}
+		bool controller_evaluate(double t, MeFrameData& frame) override;
+		SkChannelArray& controller_channels() override	{return(_channels);}
+		double controller_duration() override			{return -1;}
+		const std::string& controller_type() const override		{return(_type_name);}
 
-		virtual void setup();
+		void setup();
 		
 	protected:
 		MeCtJacobianIK       ik;
@@ -89,15 +88,15 @@ class MeCtNewLocomotion : public SmartBody::SBController
 	public:
 		static std::string _type_name;
 		void  setScootSpd(float v) {scootSpd = v;}
-		float getScootSpd() {return scootSpd;}
+		float getScootSpd() const {return scootSpd;}
 		void  setMovingSpd(float v) {movingSpd = v;}
-		float getMovingSpd() {return movingSpd;}
+		float getMovingSpd() const {return movingSpd;}
 		void  setTurningSpd(float v) {turningSpd = v;}
-		float getTurningSpd() {return turningSpd;}
+		float getTurningSpd() const {return turningSpd;}
 		void  setValid(bool v) {_valid = v;}
 		void  setDesiredHeading(float v) {desiredHeading = v;}
-		float getDesiredHeading() {return desiredHeading;}
-		void  notify(SmartBody::SBSubject* subject);
+		float getDesiredHeading() const {return desiredHeading;}
+		void  notify(SmartBody::SBSubject* subject) override;
 		void  play(float t, bool useTemp=false);
 		void  reset(bool resetPos=false);
 		void  loopMotion(float def, float speed);
@@ -119,7 +118,7 @@ class MeCtNewLocomotion : public SmartBody::SBController
 		float walkSpeedGain;
 		float motionSpeed;
 		SkChannelArray _channels;
-		SbmCharacter* character;
+		SbmCharacter& character;
 		float _lastTime, _prevTime;
 		float desiredHeading, motionTime;
 		double ikDamp;
@@ -131,7 +130,7 @@ class MeCtNewLocomotion : public SmartBody::SBController
 		SrBuffer<float>* BufferRef;
 		std::vector<int> rplant;
 		std::vector<int> lplant;
-		float d(SrQuat a, SrQuat b){
+		static float d(const SrQuat& a, const SrQuat& b){
 			float v = a.w*b.w+a.x*b.x+a.y*b.y+a.z*b.z;
 			return 1.0f - v*v;
 		}

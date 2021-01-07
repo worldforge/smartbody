@@ -29,18 +29,23 @@ using namespace gwiz;
 
 std::string MeCtTether::type_name = "Tether";
 
-MeCtTether::MeCtTether( void )	{
+MeCtTether::MeCtTether(SmartBody::SBPawn& pawn, char *channel_name) :SmartBody::SBController(pawn)	{
 
    _duration = -1.0;
    _skeleton_ref_p = nullptr;
+
+	_channels.add( channel_name, SkChannel::XPos );
+	_channels.add( channel_name, SkChannel::YPos );
+	_channels.add( channel_name, SkChannel::ZPos );
+	_channels.add( channel_name, SkChannel::Quat );
 }
 
-MeCtTether::~MeCtTether( void )	{
+MeCtTether::~MeCtTether()	{
 	
 	clear();
 }
 
-void MeCtTether::clear( void )	{
+void MeCtTether::clear()	{
 	
    _duration = -1.0;
    _skeleton_ref_p = nullptr;
@@ -49,18 +54,6 @@ void MeCtTether::clear( void )	{
 		free( source_ref_joint_str );
 		source_ref_joint_str = nullptr;
 	}
-}
-
-void MeCtTether::init(SmartBody::SBPawn* pawn,  char *channel_name) {
-	
-	clear();
-
-	_channels.add( channel_name, SkChannel::XPos );
-	_channels.add( channel_name, SkChannel::YPos );
-	_channels.add( channel_name, SkChannel::ZPos );
-	_channels.add( channel_name, SkChannel::Quat );
-	
-	MeController::init(pawn);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +115,7 @@ SkJoint* MeCtTether::get_joint( char *joint_str, SkJoint *joint_p )	{
 	return( joint_p );
 }
 
-SkJoint* MeCtTether::source_ref_joint( void ) {
+SkJoint* MeCtTether::source_ref_joint() {
 
 	return( source_ref_joint_p = get_joint( source_ref_joint_str, source_ref_joint_p ) );
 }
@@ -174,13 +167,13 @@ MeCtTether::joint_state_t MeCtTether::calc_channel_state( MeCtTether::joint_stat
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void MeCtTether::context_updated( void ) {
+void MeCtTether::context_updated() {
 }
 
-void MeCtTether::controller_map_updated( void ) {
+void MeCtTether::controller_map_updated() {
 }
 
-void MeCtTether::controller_start( void )	{
+void MeCtTether::controller_start()	{
 
 	if( _context->channels().size() > 0 )	{
 		_skeleton_ref_p = _context->channels().skeleton();
@@ -234,15 +227,15 @@ bool MeCtTether::controller_evaluate( double t, MeFrameData& frame ) {
 	return continuing;
 }
 
-SkChannelArray& MeCtTether::controller_channels( void )	{
+SkChannelArray& MeCtTether::controller_channels()	{
 	return( _channels );
 }
 
-double MeCtTether::controller_duration( void ) {
+double MeCtTether::controller_duration() {
 	return( _duration );
 }
 
-const std::string& MeCtTether::controller_type( void )	const {
+const std::string& MeCtTether::controller_type()	const {
 	return( type_name );
 }
 

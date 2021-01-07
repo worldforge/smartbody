@@ -259,7 +259,7 @@ SmartBody::util::log( "--\n" );
 
 //////////////////////////////////////////////////////////////////////////
 
-void test_forward_ray( void )	{
+void test_forward_ray()	{
 
 #if 0
 	vector_t X( 0.0, 4.0, 2.0 ); // heading-only case

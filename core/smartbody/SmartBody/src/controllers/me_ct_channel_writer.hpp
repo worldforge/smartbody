@@ -53,14 +53,10 @@ protected:
 
 public:
 	/** Constructor */
-	MeCtChannelWriter();
+	MeCtChannelWriter(SmartBody::SBPawn& pawn, SkChannelArray& channels, bool continuous);
 
-	const std::string& controller_type() const;
+	const std::string& controller_type() const override;
 
-	/**
-	 *  Initializes the controller with a set of channels to write.
-	 */
-	void init(SmartBody::SBPawn* pawn, SkChannelArray& channels, bool continuous );
 
 	/**
 	 *  Copies data into the current data buffer.
@@ -74,25 +70,25 @@ public:
 	 *  It is up to the caller to make sure the length of data is
 	 *  at least this->controller_channels().floats().
 	 */
-	void set_data( float data[] );
+	void set_data( const float data[] );
 
 	SrBuffer<float>& get_data();
 
 	/**
 	 *  Implements MeController::controller_channels().
 	 */
-	SkChannelArray& controller_channels();
+	SkChannelArray& controller_channels() override;
 
 	/**
 	 *  Implements MeController::controller_duration()
 	 *  Returns -1, undefined duration.
 	 */
-	double controller_duration();
+	double controller_duration() override;
 
 	/**
 	 *  Implements MeController::controller_evaluate(..).
 	 */
-	bool controller_evaluate( double time, MeFrameData& frame );
+	bool controller_evaluate( double time, MeFrameData& frame ) override;
 };
 
 

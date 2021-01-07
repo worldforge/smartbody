@@ -31,7 +31,7 @@ using namespace gwiz;
 
 std::string MeCtStepTurn::type_name = "StepTurn";
 
-MeCtStepTurn::MeCtStepTurn( void )	{
+MeCtStepTurn::MeCtStepTurn()	{
 
    _left_motion = nullptr;
    _right_motion = nullptr;
@@ -49,7 +49,7 @@ MeCtStepTurn::MeCtStepTurn( void )	{
    dirty_action_bit = 0;
 }
 
-MeCtStepTurn::~MeCtStepTurn( void )	{
+MeCtStepTurn::~MeCtStepTurn()	{
 
 	if( interim_pose_buff_p )	{
 		delete [] interim_pose_buff_p;
@@ -204,7 +204,7 @@ float MeCtStepTurn::calc_raw_turn_angle( SkMotion* mot_p, char *joint_name )	{
 	return( 0.0 );
 }
 
-void MeCtStepTurn::capture_world_offset_state( void )	{
+void MeCtStepTurn::capture_world_offset_state()	{
 	
 	if( _context )	{
 		if( _context->channels().size() > 0 )	{
@@ -245,7 +245,7 @@ void MeCtStepTurn::capture_world_offset_state( void )	{
 	SmartBody::util::log( "MeCtStepTurn::capture_world_offset_state ERR: context is nullptr\n" );
 }
 
-void MeCtStepTurn::update_action_params( void )	{
+void MeCtStepTurn::update_action_params()	{
 	
 	if( heading_mode == HEADING_WORLD )	{
 		euler_t w_e = world_offset_rot;
@@ -311,7 +311,7 @@ void MeCtStepTurn::set_heading_world( float h )	{
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void MeCtStepTurn::context_updated( void ) {
+void MeCtStepTurn::context_updated() {
 
 #if 0
 	if( _context ) {
@@ -326,7 +326,7 @@ void MeCtStepTurn::context_updated( void ) {
 #endif
 }
 	
-void MeCtStepTurn::controller_map_updated( void ) {
+void MeCtStepTurn::controller_map_updated() {
 
 	// Map motion channel index to context float buffer index
 	SkChannelArray& mChannels = _motion->channels();
@@ -371,7 +371,7 @@ void MeCtStepTurn::controller_map_updated( void ) {
 	}
 }
 
-void MeCtStepTurn::controller_start( void )	{
+void MeCtStepTurn::controller_start()	{
 
 	capture_world_offset_state();
 	update_action_params();
@@ -507,11 +507,11 @@ bool MeCtStepTurn::controller_evaluate( double t, MeFrameData& frame ) {
 	return continuing;
 }
 
-SkChannelArray& MeCtStepTurn::controller_channels( void )	{
+SkChannelArray& MeCtStepTurn::controller_channels()	{
 	return _channels;
 }
 
-double MeCtStepTurn::controller_duration( void ) {
+double MeCtStepTurn::controller_duration() {
 
 // THIS IS CALLED PRIOR TO controller_start().
 #if 0
@@ -525,7 +525,7 @@ double MeCtStepTurn::controller_duration( void ) {
 #endif
 }
 
-const std::string& MeCtStepTurn::controller_type( void ) const	{
+const std::string& MeCtStepTurn::controller_type() const	{
 	return type_name;
 }
 

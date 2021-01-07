@@ -25,7 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 std::string MeCtBasicLocomotion::_type_name = "BasicLocomotion";
 
-MeCtBasicLocomotion::MeCtBasicLocomotion(SbmCharacter* c) :  SmartBody::SBController(),
+MeCtBasicLocomotion::MeCtBasicLocomotion(SbmCharacter* c) :  SmartBody::SBController(*c),
 															 character(c)
 {
 	scootSpd = 0.0f;	//	unit: centermeter/sec
@@ -37,11 +37,6 @@ MeCtBasicLocomotion::MeCtBasicLocomotion(SbmCharacter* c) :  SmartBody::SBContro
 
 MeCtBasicLocomotion::~MeCtBasicLocomotion() = default;
 
-void MeCtBasicLocomotion::init(SmartBody::SBPawn* pawn)
-{
-	_lastTime = -1.0;
-	MeController::init(pawn);
-}
 
 bool MeCtBasicLocomotion::controller_evaluate(double t, MeFrameData& frame)
 {

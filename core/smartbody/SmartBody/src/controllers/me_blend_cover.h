@@ -29,10 +29,10 @@ class MeBlendCoverMap	{
 	
 	public:
 	
-		MeBlendCoverMap( void ) {}
-		~MeBlendCoverMap( void ) {}
+		MeBlendCoverMap() {}
+		~MeBlendCoverMap() {}
 
-		void clear( void )	{
+		void clear()	{
 			blend_map.expunge();
 		}
 

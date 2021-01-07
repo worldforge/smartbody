@@ -5,7 +5,7 @@
 
 std::string MeCtNoiseController::CONTROLLER_TYPE = "NoiseController";
 
-MeCtNoiseController::MeCtNoiseController(SbmCharacter* character) : SmartBody::SBController()
+MeCtNoiseController::MeCtNoiseController(SbmCharacter* character) : SmartBody::SBController(*character)
 {
 	_character = character;
 	_valid = true;
@@ -21,9 +21,7 @@ MeCtNoiseController::MeCtNoiseController(SbmCharacter* character) : SmartBody::S
 	_fadeType = 0;	// fade type: 0 - no fade, 1 - fade in, 2 - fade out
 }
 
-MeCtNoiseController::~MeCtNoiseController()
-{
-}
+MeCtNoiseController::~MeCtNoiseController() = default;
 
 void MeCtNoiseController::setValid(bool v)
 {
@@ -43,10 +41,9 @@ void MeCtNoiseController::setValid(bool v)
 void MeCtNoiseController::setJointNoise( std::vector<std::string>& jointNames, float scale, float frequency )
 {
 	perlinMap.clear();
-	for (unsigned int i=0;i<jointNames.size();i++)
+	for (auto jname : jointNames)
 	{
-		std::string jname = jointNames[i];
-		SmartBody::SBJoint* joint = _character->getSkeleton()->getJointByName(jname);
+			SmartBody::SBJoint* joint = _character->getSkeleton()->getJointByName(jname);
 		if (joint) // joint actually exist 
 		{
 			perlinMap[jname] = Perlin();

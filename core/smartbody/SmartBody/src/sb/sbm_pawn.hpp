@@ -51,6 +51,8 @@ private:
 	//  Private Constants
 	static SkChannelArray WORLD_OFFSET_CHANNELS_P;
 
+	static SkChannelArray& getWorldOffsetChannels();
+
 protected:
 	//  Private Data
 	struct {
@@ -122,11 +124,6 @@ public:
 	SBAPI void notify(SBSubject* subject) override;
 
 protected:
-	/*!
-	 *  Initializes the static variable WORLD_OFFSET_CHANNELS_P.
-	 *  TODO: When is this deleted?
-	 */
-	static void init_world_offset_channels();
 
 	/*!
 	 *   Modify skeleton, if necessary.

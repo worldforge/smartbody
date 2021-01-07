@@ -48,15 +48,13 @@ class MeCtTether : public SmartBody::SBController	{
 		static std::string type_name;
 
 		/*! Constructor */
-		MeCtTether( void );
+		MeCtTether(SmartBody::SBPawn& pawn, char *channel_name);
 
 		/*! Destructor is public but pay attention to the use of ref()/unref() */
-		virtual ~MeCtTether( void );
+		~MeCtTether() override;
 		
-		void clear( void );
+		void clear();
 
-		void init(SmartBody::SBPawn* pawn,  char *channel_name );
-		
 		// will work with or without a source joint (otherwise world coord offset)
 		void set_source_joint( char *joint_name );
 		void set_source_joint( SkJoint* joint_p );
@@ -69,7 +67,7 @@ class MeCtTether : public SmartBody::SBController	{
 	private:
 
 		SkJoint*		get_joint( char *joint_str, SkJoint *joint_p );
-		SkJoint*		source_ref_joint( void );
+		SkJoint*		source_ref_joint();
 		joint_state_t	capture_joint_state( SkJoint *joint_p );
 		joint_state_t	calc_channel_state( MeCtTether::joint_state_t source );
 
@@ -80,13 +78,13 @@ class MeCtTether : public SmartBody::SBController	{
 		gwiz::quat_t		offset_rot;
 
 		// callbacks for the base class
-		virtual void context_updated( void );
-		virtual void controller_map_updated();
-		virtual void controller_start();
-		virtual bool controller_evaluate ( double t, MeFrameData& frame );
-		virtual SkChannelArray& controller_channels ();
-		virtual double controller_duration ();
-		virtual const std::string& controller_type () const;
+		void context_updated() override;
+		void controller_map_updated() override;
+		void controller_start() override;
+		bool controller_evaluate ( double t, MeFrameData& frame ) override;
+		SkChannelArray& controller_channels () override;
+		double controller_duration () override;
+		const std::string& controller_type () const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////

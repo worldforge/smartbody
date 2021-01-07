@@ -313,7 +313,7 @@ std::string BmlRequest::buildUniqueBehaviorId( const string& tagStr,
 bool BmlRequest::hasExistingBehaviorId( const std::wstring& id ) {
 	bool result = false;
 	if( !id.empty() ) {
-		MapOfBehaviorRequest::iterator pos = idToBehavior.find( id );
+		auto pos = idToBehavior.find( id );
 		result = ( pos != idToBehavior.end() );
 	}
 
@@ -323,8 +323,8 @@ bool BmlRequest::hasExistingBehaviorId( const std::wstring& id ) {
 void BmlRequest::importNamedSyncPoints( BehaviorSyncPoints& behav_syncs, const std::wstring& id, const std::wstring& logging_label ) {
 	// Import BehaviorSyncPoints
 	SetOfWstring names = behav_syncs.get_sync_names();
-	SetOfWstring::iterator it  = names.begin();
-	SetOfWstring::iterator end = names.end();
+	auto it  = names.begin();
+	auto end = names.end();
 	for( ; it!=end ; ++it ) {
 		wstring name = *it;
 		SyncPointPtr sync( behav_syncs.find( name )->sync() );
@@ -349,8 +349,8 @@ BehaviorSpan BmlRequest::getBehaviorSpan() {
 			span.unionWith( speechSpan );
 		}
 
-		VecOfBehaviorRequest::iterator behav_it = behaviors.begin();
-		VecOfBehaviorRequest::iterator behav_end = behaviors.end();
+		auto behav_it = behaviors.begin();
+		auto behav_end = behaviors.end();
 		for( ; behav_it != behav_end; ++behav_it ) {
 			BehaviorRequestPtr behav = *behav_it;
 			BehaviorSpan span2 = behav->getBehaviorSpan();
@@ -362,7 +362,7 @@ BehaviorSpan BmlRequest::getBehaviorSpan() {
 }
 
 
-const bool ascendingTime(VisemeRequest* a, VisemeRequest* b)
+bool ascendingTime(VisemeRequest* a, VisemeRequest* b)
 {
 	return (a->behav_syncs.sync_start()->time() < b->behav_syncs.sync_start()->time());
 }
@@ -375,9 +375,9 @@ void BmlRequest::faceRequestProcess()
 	double proximity = actor->getDoubleAttribute("gestureRequest.coarticulateFaceProximity");
 
 	std::vector<VisemeRequest*> visemes;
-	for (VecOfBehaviorRequest::iterator i = behaviors.begin(); i != behaviors.end(); ++i)
+	for (auto & i : behaviors)
 	{
-		BehaviorRequest* behavior = (*i).get();
+		BehaviorRequest* behavior = i.get();
 		VisemeRequest* viseme = dynamic_cast<VisemeRequest*> (behavior);
 		if (viseme)
 		{
@@ -1509,7 +1509,7 @@ void BmlRequest::gestureRequestProcess()
 			{
 				if (useGestureLog)
 					SmartBody::util::log("gestureRequestProcess: after calculating the closest gesture, changing from %s to %s", sbMotion->getName().c_str(), closestMotion->getName().c_str());
-				motion_ct->init(const_cast<SbmCharacter*>(actor), closestMotion, 0.0, 1.0);
+				motion_ct->init(closestMotion, 0.0, 1.0);
 			}
 			if (fabs(minSpeedDiffL) < actor->getDoubleAttribute("gestureRequest.gestureSpeedThreshold") && 
 				fabs(minSpeedDiffR) < actor->getDoubleAttribute("gestureRequest.gestureSpeedThreshold"))
@@ -2926,11 +2926,11 @@ void GestureRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene* sc
 			if (isInLocomotion)
 			{
 				std::vector<std::string> jointNames = sbCharacter->getSkeleton()->getUpperBodyJointNames();
-				motion_ct->init( const_cast<SbmCharacter*>(request->actor), holdM, jointNames);
+				motion_ct->init( holdM, jointNames);
 			}
 			else
 			{
-				motion_ct->init(const_cast<SbmCharacter*>(request->actor), holdM, 0.0, 1.0);
+				motion_ct->init(holdM, 0.0, 1.0);
 			}
 		}
 	}
@@ -3144,10 +3144,10 @@ ParameterizedAnimationRequest::ParameterizedAnimationRequest( boost::intrusive_p
 //  NodRequest
 NodRequest::NodRequest( const std::string& unique_id, const std::string& local, NodType type, float repeats, float frequency, float extent, float smooth, SbmCharacter* actor,
 			            const BehaviorSyncPoints& syncs_in )
-:	MeControllerRequest( unique_id, local, new MeCtSimpleNod(), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
+:	MeControllerRequest( unique_id, local, new MeCtSimpleNod(*actor), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
     type(type), repeats(repeats), frequency(frequency), extent(extent), smooth(smooth), axis(-1), warp(-1), period(-1), accel(-1), pitch(-1), decay(-1)
 {
-    MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct.get();
+    auto* nod = (MeCtSimpleNod*)anim_ct.get();
 	BehaviorSchedulerConstantSpeedPtr scheduler = buildSchedulerForController( nod );
 	set_scheduler( scheduler );
 
@@ -3186,7 +3186,7 @@ NodRequest::NodRequest( const std::string& unique_id, const std::string& local, 
 #define DFL_TOSS_REF_DEG    30.f
 	
 	SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(actor);
-    nod->init(character);
+    //nod->init(character);
     //  TODO: Set a controller name
     switch( type ) {
         case VERTICAL:
@@ -3208,7 +3208,7 @@ NodRequest::NodRequest( const std::string& unique_id, const std::string& local, 
 
 NodRequest::NodRequest( const std::string& unique_id, const std::string& local, NodType type, int axis, float period, float extent, float smooth, float warp, float accel, SbmCharacter* actor,
 					   const BehaviorSyncPoints& syncs_in )
-: MeControllerRequest( unique_id, local, new MeCtSimpleNod(), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
+: MeControllerRequest( unique_id, local, new MeCtSimpleNod(*actor), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
     type(type), repeats(1.0f), frequency(1.0f), extent(extent), smooth(smooth), axis(axis), period(period), warp(warp), accel(accel), pitch(-1), decay(-1)
 {
 	MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct.get();
@@ -3238,14 +3238,14 @@ NodRequest::NodRequest( const std::string& unique_id, const std::string& local, 
     else if( extent < -1 )
         extent = -1;
 
-    nod->init(actor);
+//    nod->init(actor);
 	nod->set_wiggle(axis, (float)endTime, extent*DFL_NOD_BOBBLE_REF_DEG, period, warp, accel, smooth);
 
 }
 
 NodRequest::NodRequest( const std::string& unique_id, const std::string& local, NodType type, int axis, float period, float extent, float smooth, float warp, float accel, float pitch, float decay, SbmCharacter* actor,
 					   const BehaviorSyncPoints& syncs_in )
-: MeControllerRequest( unique_id, local, new MeCtSimpleNod(), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
+: MeControllerRequest( unique_id, local, new MeCtSimpleNod(*actor), actor->head_sched_p, syncs_in, MeControllerRequest::MANUAL ),
     type(type), repeats(1.0f), frequency(1.0f), extent(extent), smooth(smooth), axis(axis), period(period), warp(warp), accel(accel), pitch(pitch), decay(decay)
 {
 	MeCtSimpleNod* nod = (MeCtSimpleNod*)anim_ct.get();
@@ -3275,7 +3275,7 @@ NodRequest::NodRequest( const std::string& unique_id, const std::string& local, 
     else if( extent < -1 )
         extent = -1;
 
-    nod->init(actor);
+//    nod->init(actor);
 	nod->set_waggle(axis, (float)endTime, extent*DFL_NOD_BOBBLE_REF_DEG, period, pitch, warp, accel, decay, smooth);
 }
 
@@ -3327,7 +3327,7 @@ GazeRequest::GazeRequest(   float interval, int mode, const std::string& unique_
 :	MeControllerRequest( unique_id, localId, gaze, std::move(schedule_ct), behav_syncs ),
     gazeFadeInterval(interval),
 	gazeFadeMode(mode),
-	gazeSchedule(g),
+	gazeSchedule(std::move(g)),
 	hasGazeSchedule(hasSchedule)
 {
 }

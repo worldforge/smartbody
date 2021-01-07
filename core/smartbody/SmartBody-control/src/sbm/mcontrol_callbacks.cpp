@@ -637,7 +637,7 @@ int mcu_motion_player_func(srArgBuffer& args, SmartBody::SBScene& scene )
 		{			
 			double frameNumber = args.read_double();
 			//SmartBody::util::log("before motionplayer_ct->init(), next = %s, frameNumber = %f", next.c_str(), frameNumber);
-			character->motionplayer_ct->init(character,next, frameNumber);
+			character->motionplayer_ct->init(next, frameNumber);
 			//SmartBody::util::log("after motionplayer_ct->init()");
 		}
 		return CMD_SUCCESS;

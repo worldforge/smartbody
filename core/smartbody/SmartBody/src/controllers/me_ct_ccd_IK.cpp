@@ -1,13 +1,13 @@
 #include "controllers/me_ct_ccd_IK.hpp"
 #include <algorithm>
 
-MeCtCCDIK::MeCtCCDIK( void )
+MeCtCCDIK::MeCtCCDIK()
 {
 	ikScenario = nullptr;
 
 }
 
-MeCtCCDIK::~MeCtCCDIK( void )
+MeCtCCDIK::~MeCtCCDIK()
 {
 
 }

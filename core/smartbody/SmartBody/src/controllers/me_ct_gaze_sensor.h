@@ -45,7 +45,7 @@ class MeCtGazeSensor	{
 			STATUS_ERROR
 		};
 
-		MeCtGazeSensor( void )	{
+		MeCtGazeSensor()	{
 			threshold = 0.0;
 			timeout = 0.0;
 			id = -1;
@@ -53,7 +53,7 @@ class MeCtGazeSensor	{
 			callback_fn = nullptr;
 			pending = false;
 		}
-		~MeCtGazeSensor( void );
+		~MeCtGazeSensor();
 		
 		void init( 
 			MeCtGaze* gaze_ref_p,
@@ -83,7 +83,7 @@ class MeCtGazeSensor	{
 			callback_fn = callback_p;
 		}
 
-		virtual void controller_start( void ) {
+		virtual void controller_start() {
 			pending = true;
 		}
 		virtual bool controller_evaluate( double t, MeFrameData& frame )	{

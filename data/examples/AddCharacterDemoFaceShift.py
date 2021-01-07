@@ -182,7 +182,7 @@ bml.execBML('ChrBrad', '<saccade mode="listen"/>')
 
 # create a controller
 class MyController(PythonController):
-    def init(self, pawn):
+    def __init__(self):
         # indicate which channels are going to be affected by this controller
         self.addChannel("au_1_left", "XPos")
         self.addChannel("au_1_right", "XPos")

@@ -9,7 +9,7 @@
 
 namespace BML
 {
-	BML::BehaviorRequestPtr parse_bml_gesture( DOMElement* elem, const std::string& unique_id, BML::BehaviorSyncPoints& behav_syncs, bool required, BML::BmlRequestPtr request, SmartBody::SBScene* scene );
+	BML::BehaviorRequestPtr parse_bml_gesture( DOMElement* elem, const std::string& unique_id, BML::BehaviorSyncPoints& behav_syncs, bool required, const BML::BmlRequestPtr& request, SmartBody::SBScene* scene );
 };
 
 #endif

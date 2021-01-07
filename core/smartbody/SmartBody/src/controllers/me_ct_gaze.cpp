@@ -178,7 +178,7 @@ char * MeCtGaze::key_label( const int key )	{
 
 ///////////////////////////////////////////////////////////////////////////
 
-MeCtGaze::MeCtGaze()	: SmartBody::SBController() {
+MeCtGaze::MeCtGaze(SmartBody::SBPawn& pawn, int key_fr, int key_to)	: SmartBody::SBController(pawn) {
 	
 	started = 0;
 	setStart(0);
@@ -246,6 +246,8 @@ MeCtGaze::MeCtGaze()	: SmartBody::SBController() {
 	addDefaultAttributeDouble("gaze.limitPitchDownBack", 15.0, "Gaze");
 	addDefaultAttributeDouble("gaze.limitHeadingBack", 30.0, "Gaze");
 	addDefaultAttributeDouble("gaze.limitRollBack", 10.0, "Gaze");
+
+	init(key_fr, key_to );
 }
 
 MeCtGaze::~MeCtGaze()	{
@@ -280,7 +282,7 @@ MeCtGaze::~MeCtGaze()	{
 	}
 }
 
-void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
+void MeCtGaze::init(int key_fr, int key_to )
 {
 	int i;
 	
@@ -345,7 +347,7 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 	if (key_to == GAZE_KEY_EYES)
 	{
 		// no eye ball joints, select neck instead
-		if (!pawn->get_joint(joint_label(GAZE_JOINT_EYE_R)) && !pawn->get_joint(joint_label(GAZE_JOINT_EYE_L)))
+		if (!_pawn.get_joint(joint_label(GAZE_JOINT_EYE_R)) && !_pawn.get_joint(joint_label(GAZE_JOINT_EYE_L)))
 			joint_to = GAZE_JOINT_SKULL;
 	}
 
@@ -365,10 +367,10 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 	initialEyeSpeed = DEFAULT_SPEED_EYES;
 	initialNeckSpeed = DEFAULT_SPEED_HEAD;
 
-	if (pawn->getAttribute("gaze.speedEyes") != nullptr)
-		initialEyeSpeed = (float) pawn->getDoubleAttribute("gaze.speedEyes");
-	if (pawn->getAttribute("gaze.speedNeck") != nullptr)
-		initialNeckSpeed = (float) pawn->getDoubleAttribute("gaze.speedNeck");
+	if (_pawn.getAttribute("gaze.speedEyes") != nullptr)
+		initialEyeSpeed = (float) _pawn.getDoubleAttribute("gaze.speedEyes");
+	if (_pawn.getAttribute("gaze.speedNeck") != nullptr)
+		initialNeckSpeed = (float) _pawn.getDoubleAttribute("gaze.speedNeck");
 
 	set_speed( initialNeckSpeed, initialEyeSpeed );
 
@@ -383,20 +385,20 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 	*/
 	float limitPitchUp, limitPitchDown, limitHeading, limitRoll;
 
-	if (pawn->getAttribute("gaze.limitPitchUpBack") != nullptr)
-		limitPitchUp = (float) pawn->getDoubleAttribute("gaze.limitPitchUpBack");
+	if (_pawn.getAttribute("gaze.limitPitchUpBack") != nullptr)
+		limitPitchUp = (float) _pawn.getDoubleAttribute("gaze.limitPitchUpBack");
 	else
 		limitPitchUp = DEFAULT_LIMIT_PITCH_UP[GAZE_KEY_BACK];
-	if (pawn->getAttribute("gaze.limitPitchDownBack") != nullptr)
-		limitPitchDown = (float) pawn->getDoubleAttribute("gaze.limitPitchDownBack");
+	if (_pawn.getAttribute("gaze.limitPitchDownBack") != nullptr)
+		limitPitchDown = (float) _pawn.getDoubleAttribute("gaze.limitPitchDownBack");
 	else
 		limitPitchDown = DEFAULT_LIMIT_PITCH_DOWN[GAZE_KEY_BACK];
-	if (pawn->getAttribute("gaze.limitHeadingBack") != nullptr)
-		limitHeading = (float) pawn->getDoubleAttribute("gaze.limitHeadingBack");
+	if (_pawn.getAttribute("gaze.limitHeadingBack") != nullptr)
+		limitHeading = (float) _pawn.getDoubleAttribute("gaze.limitHeadingBack");
 	else
 		limitHeading = DEFAULT_LIMIT_HEADING[GAZE_KEY_BACK];
-	if (pawn->getAttribute("gaze.limitRollBack") != nullptr)
-		limitRoll = (float) pawn->getDoubleAttribute("gaze.limitRollBack");
+	if (_pawn.getAttribute("gaze.limitRollBack") != nullptr)
+		limitRoll = (float) _pawn.getDoubleAttribute("gaze.limitRollBack");
 	else
 		limitRoll = DEFAULT_LIMIT_ROLL[GAZE_KEY_BACK];
 
@@ -406,20 +408,20 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 								limitRoll);
 
 	
-	if (pawn->getAttribute("gaze.limitPitchUpChest") != nullptr)
-		limitPitchUp = (float) pawn->getDoubleAttribute("gaze.limitPitchUpChest");
+	if (_pawn.getAttribute("gaze.limitPitchUpChest") != nullptr)
+		limitPitchUp = (float) _pawn.getDoubleAttribute("gaze.limitPitchUpChest");
 	else
 		limitPitchUp = DEFAULT_LIMIT_PITCH_UP[GAZE_KEY_CHEST];
-	if (pawn->getAttribute("gaze.limitPitchDownChest") != nullptr)
-		limitPitchDown = (float) pawn->getDoubleAttribute("gaze.limitPitchDownChest");
+	if (_pawn.getAttribute("gaze.limitPitchDownChest") != nullptr)
+		limitPitchDown = (float) _pawn.getDoubleAttribute("gaze.limitPitchDownChest");
 	else
 		limitPitchDown = DEFAULT_LIMIT_PITCH_DOWN[GAZE_KEY_CHEST];
-	if (pawn->getAttribute("gaze.limitHeadingChest") != nullptr)
-		limitHeading = (float) pawn->getDoubleAttribute("gaze.limitHeadingChest");
+	if (_pawn.getAttribute("gaze.limitHeadingChest") != nullptr)
+		limitHeading = (float) _pawn.getDoubleAttribute("gaze.limitHeadingChest");
 	else
 		limitHeading = DEFAULT_LIMIT_HEADING[GAZE_KEY_CHEST];
-	if (pawn->getAttribute("gaze.limitRollChest") != nullptr)
-		limitRoll = (float) pawn->getDoubleAttribute("gaze.limitRollChest");
+	if (_pawn.getAttribute("gaze.limitRollChest") != nullptr)
+		limitRoll = (float) _pawn.getDoubleAttribute("gaze.limitRollChest");
 	else
 		limitRoll = DEFAULT_LIMIT_ROLL[GAZE_KEY_CHEST];
 
@@ -430,20 +432,20 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 
 	
 
-	if (pawn->getAttribute("gaze.limitPitchUpNeck") != nullptr)
-		limitPitchUp = (float) pawn->getDoubleAttribute("gaze.limitPitchUpNeck");
+	if (_pawn.getAttribute("gaze.limitPitchUpNeck") != nullptr)
+		limitPitchUp = (float) _pawn.getDoubleAttribute("gaze.limitPitchUpNeck");
 	else
 		limitPitchUp = DEFAULT_LIMIT_PITCH_UP[GAZE_KEY_NECK];
-	if (pawn->getAttribute("gaze.limitPitchDownNeck") != nullptr)
-		limitPitchDown = (float) pawn->getDoubleAttribute("gaze.limitPitchDownNeck");
+	if (_pawn.getAttribute("gaze.limitPitchDownNeck") != nullptr)
+		limitPitchDown = (float) _pawn.getDoubleAttribute("gaze.limitPitchDownNeck");
 	else
 		limitPitchDown = DEFAULT_LIMIT_PITCH_DOWN[GAZE_KEY_NECK];
-	if (pawn->getAttribute("gaze.limitHeadingNeck") != nullptr)
-		limitHeading = (float) pawn->getDoubleAttribute("gaze.limitHeadingNeck");
+	if (_pawn.getAttribute("gaze.limitHeadingNeck") != nullptr)
+		limitHeading = (float) _pawn.getDoubleAttribute("gaze.limitHeadingNeck");
 	else
 		limitHeading = DEFAULT_LIMIT_HEADING[GAZE_KEY_NECK];
-	if (pawn->getAttribute("gaze.limitRollNeck") != nullptr)
-		limitRoll = (float) pawn->getDoubleAttribute("gaze.limitRollNeck");
+	if (_pawn.getAttribute("gaze.limitRollNeck") != nullptr)
+		limitRoll = (float) _pawn.getDoubleAttribute("gaze.limitRollNeck");
 	else
 		limitRoll = DEFAULT_LIMIT_ROLL[GAZE_KEY_NECK];
 
@@ -461,20 +463,20 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 #endif
 
 	
-	if (pawn->getAttribute("gaze.limitPitchUpEyes") != nullptr)
-		limitPitchUp = (float) pawn->getDoubleAttribute("gaze.limitPitchUpEyes");
+	if (_pawn.getAttribute("gaze.limitPitchUpEyes") != nullptr)
+		limitPitchUp = (float) _pawn.getDoubleAttribute("gaze.limitPitchUpEyes");
 	else
 		limitPitchUp = DEFAULT_LIMIT_PITCH_UP[GAZE_KEY_EYES];
-	if (pawn->getAttribute("gaze.limitPitchDownEyes") != nullptr)
-		limitPitchDown = (float) pawn->getDoubleAttribute("gaze.limitPitchDownEyes");
+	if (_pawn.getAttribute("gaze.limitPitchDownEyes") != nullptr)
+		limitPitchDown = (float) _pawn.getDoubleAttribute("gaze.limitPitchDownEyes");
 	else
 		limitPitchDown = DEFAULT_LIMIT_PITCH_DOWN[GAZE_KEY_EYES];
-	if (pawn->getAttribute("gaze.limitHeadingEyes") != nullptr)
-		limitHeading = (float) pawn->getDoubleAttribute("gaze.limitHeadingEyes");
+	if (_pawn.getAttribute("gaze.limitHeadingEyes") != nullptr)
+		limitHeading = (float) _pawn.getDoubleAttribute("gaze.limitHeadingEyes");
 	else
 		limitHeading = DEFAULT_LIMIT_HEADING[GAZE_KEY_EYES];
-	if (pawn->getAttribute("gaze.limitRollEyes") != nullptr)
-		limitRoll = (float) pawn->getDoubleAttribute("gaze.limitRollEyes");
+	if (_pawn.getAttribute("gaze.limitRollEyes") != nullptr)
+		limitRoll = (float) _pawn.getDoubleAttribute("gaze.limitRollEyes");
 	else
 		limitRoll = DEFAULT_LIMIT_ROLL[GAZE_KEY_EYES];
 
@@ -487,8 +489,6 @@ void MeCtGaze::init(SmartBody::SBPawn* pawn, int key_fr, int key_to )
 		set_bias( i, 0.0f, 0.0f, 0.0f );
 		set_blend( i, 1.0f );
 	}
-
-	MeController::init(pawn);
 
 #if TEST_SENSOR
 	sensor_p = new MeCtGazeSensor;
@@ -1344,7 +1344,7 @@ void MeCtGaze::updateGazeSchedules( float dt )
 						}
 						else
 						{
-							SmartBody::SBJoint* sbjoint = dynamic_cast<SmartBody::SBJoint*>(pawn->getSkeleton()->getJointByMappedName(joint));
+							SmartBody::SBJoint* sbjoint = dynamic_cast<SmartBody::SBJoint*>(_pawn.getSkeleton()->getJointByMappedName(joint));
 							if (!sbjoint)
 							{
 								SmartBody::util::log("Gaze cannot be switched to %s/%s - joint does not exist.", s.targetJoint.c_str(), joint.c_str());
@@ -1372,10 +1372,10 @@ void MeCtGaze::updateGazeSchedules( float dt )
 						}
 						else
 						{
-							SmartBody::SBJoint* sbjoint = dynamic_cast<SmartBody::SBJoint*>(pawn->getSkeleton()->getJointByMappedName("eyeball_left"));
+							SmartBody::SBJoint* sbjoint = dynamic_cast<SmartBody::SBJoint*>(_pawn.getSkeleton()->getJointByMappedName("eyeball_left"));
 							if (!sbjoint)
 							{
-								sbjoint = dynamic_cast<SmartBody::SBJoint*>(pawn->getSkeleton()->getJointByMappedName(SbmPawn::WORLD_OFFSET_JOINT_NAME));
+								sbjoint = dynamic_cast<SmartBody::SBJoint*>(_pawn.getSkeleton()->getJointByMappedName(SbmPawn::WORLD_OFFSET_JOINT_NAME));
 								if (!sbjoint)
 								{
 									SmartBody::util::log("Target character does not have joint named left_eyeball or %s, cannot switch gaze.", SbmPawn::WORLD_OFFSET_JOINT_NAME);

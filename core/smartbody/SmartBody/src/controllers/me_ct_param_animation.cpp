@@ -61,15 +61,15 @@ void MeCtParamAnimation::Context::child_channels_updated( MeController* child )
 {
 }
 
-MeCtParamAnimation::MeCtParamAnimation() : MeCtContainer(new MeCtParamAnimation::Context(this))
-{
-	character = nullptr;
-	woWriter = nullptr;
-	smoothAngVel = 0.f;
-	smoothVel = SrVec();
-}
+//MeCtParamAnimation::MeCtParamAnimation() : MeCtContainer(new MeCtParamAnimation::Context(this))
+//{
+//	character = nullptr;
+//	woWriter = nullptr;
+//	smoothAngVel = 0.f;
+//	smoothVel = SrVec();
+//}
 
-MeCtParamAnimation::MeCtParamAnimation(SbmCharacter* c, MeCtChannelWriter* wo) : MeCtContainer(new MeCtParamAnimation::Context(this)), woWriter(wo)
+MeCtParamAnimation::MeCtParamAnimation(SbmCharacter* c, MeCtChannelWriter* wo) : MeCtContainer(*c, new MeCtParamAnimation::Context(this)), woWriter(wo)
 {
 	character = dynamic_cast<SmartBody::SBCharacter*>(c);
 	baseJointName = "base";

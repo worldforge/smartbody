@@ -88,7 +88,7 @@ void MeCtLocomotionNavigator::update(SrBuffer<float>* buffer)
 	
 }
 
-const char* MeCtLocomotionNavigator::controller_type( void )	
+const char* MeCtLocomotionNavigator::controller_type()
 {
 	return TYPE;
 }

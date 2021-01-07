@@ -63,36 +63,36 @@ typedef std::vector<std::pair<int,float> > CostList;
 
 std::string MeCtGenericHand::_controller_type = "GenericHand";
 
-MeCtGenericHand::MeCtGenericHand() : SmartBody::SBController()
-{
-	_valid = false;
-	_lastTime = 0.0;
-	_motionTime = 0.0;
-	_handMotion = nullptr;
-	_bodyMotion = nullptr;
-	_handDatabase = nullptr;
-	_bodyDatabase = nullptr;
-	_finalMotion = nullptr;
-	currentSegment = 0;
-	_maxLevels = 100;
-	_k = 5;
-	_sk = nullptr;
-	
-	_enableHand = true;
-	_enableBody = true;
+//MeCtGenericHand::MeCtGenericHand() : SmartBody::SBController()
+//{
+//	_valid = false;
+//	_lastTime = 0.0;
+//	_motionTime = 0.0;
+//	_handMotion = nullptr;
+//	_bodyMotion = nullptr;
+//	_handDatabase = nullptr;
+//	_bodyDatabase = nullptr;
+//	_finalMotion = nullptr;
+//	currentSegment = 0;
+//	_maxLevels = 100;
+//	_k = 5;
+//	_sk = nullptr;
+//
+//	_enableHand = true;
+//	_enableBody = true;
+//
+//	// hand attributes
+//	setDefaultAttributeGroupPriority("Hand", 800);
+//	addDefaultAttributeBool("hand.enableHand", true, "Hand");
+//	addDefaultAttributeBool("hand.enableBody", true, "Hand");
+//	addDefaultAttributeBool("hand.debug", false, "Hand");
+//	addDefaultAttributeString("hand.motionName", "", "Hand");
+//	addDefaultAttributeString("hand.config", "", "Hand");
+//	addDefaultAttributeInt("hand.levels", -1, "Hand");
+//	addDefaultAttributeBool("hand.useRandom", false, "Hand");
+//}
 
-	// hand attributes
-	setDefaultAttributeGroupPriority("Hand", 800);
-	addDefaultAttributeBool("hand.enableHand", true, "Hand");
-	addDefaultAttributeBool("hand.enableBody", true, "Hand");
-	addDefaultAttributeBool("hand.debug", false, "Hand");
-	addDefaultAttributeString("hand.motionName", "", "Hand");
-	addDefaultAttributeString("hand.config", "", "Hand");
-	addDefaultAttributeInt("hand.levels", -1, "Hand");
-	addDefaultAttributeBool("hand.useRandom", false, "Hand");
-}
-
-MeCtGenericHand::MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton, SbmCharacter* c) : SmartBody::SBController()
+MeCtGenericHand::MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton, SbmCharacter* c) : SmartBody::SBController(*c)
 {	
 	_valid = false;
 	_lastTime = 0.0;
@@ -109,6 +109,16 @@ MeCtGenericHand::MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk
 
 	_enableHand = true;
 	_enableBody = true;
+
+	// hand attributes
+	setDefaultAttributeGroupPriority("Hand", 800);
+	addDefaultAttributeBool("hand.enableHand", true, "Hand");
+	addDefaultAttributeBool("hand.enableBody", true, "Hand");
+	addDefaultAttributeBool("hand.debug", false, "Hand");
+	addDefaultAttributeString("hand.motionName", "", "Hand");
+	addDefaultAttributeString("hand.config", "", "Hand");
+	addDefaultAttributeInt("hand.levels", -1, "Hand");
+	addDefaultAttributeBool("hand.useRandom", false, "Hand");
 
 //	SmartBody::util::log("Trying to initalize hand controller here");
 
@@ -132,7 +142,7 @@ MeCtGenericHand::MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk
 	//_handDatabase = getScene()->getMotion("brad_hand_motion.skm");
 
 	// try sbhandsynthesis here
-	_handSynthesis = new SmartBody::SBHandSynthesis(_sk, _channels);
+	_handSynthesis = std::make_unique<SmartBody::SBHandSynthesis>(_sk, _channels);
 
 	// fill the end joints vector 
 	_endJointsRt.emplace_back(_handSynthesis->getRightDb()->getJointName());

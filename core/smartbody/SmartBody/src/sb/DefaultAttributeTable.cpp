@@ -99,12 +99,12 @@ void DefaultAttributeTable::addDefaultAttributeDouble( const std::string& name, 
 
 void DefaultAttributeTable::addDefaultAttributeFloat( const std::string& name, float defaultValue, const std::string& attributeGroup, float* varPtr )
 {
-	SmartBody::DoubleAttribute* hf = new SmartBody::DoubleAttribute(name);
+	auto* hf = new SmartBody::DoubleAttribute(name);
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
+	auto iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
 		curGroup = new SmartBody::SBAttributeGroup(attributeGroup);
@@ -117,7 +117,7 @@ void DefaultAttributeTable::addDefaultAttributeFloat( const std::string& name, f
 
 	hf->getAttributeInfo()->setGroup(curGroup);
 
-	VariablePointer var;
+	VariablePointer var{};
 	var.varType = VariablePointer::TYPE_FLOAT;
 	var.varPtr  = varPtr;
 	_defaultAttributes.emplace_back(AttributeVarPair(hf,var));
@@ -125,12 +125,12 @@ void DefaultAttributeTable::addDefaultAttributeFloat( const std::string& name, f
 
 void DefaultAttributeTable::addDefaultAttributeInt( const std::string& name, int defaultValue, const std::string& attributeGroup, int* varPtr )
 {
-	SmartBody::IntAttribute* hf = new SmartBody::IntAttribute(name);
+	auto* hf = new SmartBody::IntAttribute(name);
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
+	auto iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
 		curGroup = new SmartBody::SBAttributeGroup(attributeGroup);
@@ -151,12 +151,12 @@ void DefaultAttributeTable::addDefaultAttributeInt( const std::string& name, int
 
 void DefaultAttributeTable::addDefaultAttributeBool( const std::string& name, bool defaultValue, const std::string& attributeGroup, bool* varPtr )
 {
-	SmartBody::BoolAttribute* hf = new SmartBody::BoolAttribute(name);
+	auto* hf = new SmartBody::BoolAttribute(name);
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
+	auto iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
 		curGroup = new SmartBody::SBAttributeGroup(attributeGroup);
@@ -177,12 +177,12 @@ void DefaultAttributeTable::addDefaultAttributeBool( const std::string& name, bo
 
 void DefaultAttributeTable::addDefaultAttributeString( const std::string& name, const std::string& defaultValue, const std::string& attributeGroup, std::string* varPtr )
 {
-	SmartBody::StringAttribute* hf = new SmartBody::StringAttribute(name);
+	auto* hf = new SmartBody::StringAttribute(name);
 	hf->setDefaultValue(defaultValue);
 	hf->setValue(defaultValue);
 
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
+	auto iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
 		curGroup = new SmartBody::SBAttributeGroup(attributeGroup);
@@ -208,7 +208,7 @@ void DefaultAttributeTable::addDefaultAttributeVec3( const std::string& name, Sr
 	hf->setValue(defaultValue);
 
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
+	auto iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
 		curGroup = new SmartBody::SBAttributeGroup(attributeGroup);
@@ -234,7 +234,7 @@ void DefaultAttributeTable::addDefaultAttributeMatrix( const std::string& name, 
 	hf->setValue(defaultValue);
 
 	SmartBody::SBAttributeGroup* curGroup = nullptr;
-	std::map<std::string, SmartBody::SBAttributeGroup*>::iterator iter = _defaultGroups.find(attributeGroup);
+	auto iter = _defaultGroups.find(attributeGroup);
 	if (iter == _defaultGroups.end())
 	{
 		curGroup = new SmartBody::SBAttributeGroup(attributeGroup);

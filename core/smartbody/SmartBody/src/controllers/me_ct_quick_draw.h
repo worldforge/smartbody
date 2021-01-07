@@ -183,7 +183,7 @@ class MeCtQuickDraw : public SmartBody::SBController	{
 		
 		// Track-dur: if less than 0.0, track indefinitely
 		void set_track_duration( float dur ) { track_dur = dur; }
-		void set_reholster( void ) { set_track_duration( 0.0 ); }
+		void set_reholster() { set_track_duration( 0.0 ); }
 		
 		/*! Set the play mode, default is linear */
 		void play_mode ( SkMotion::InterpType it ) { _play_mode=it; }
@@ -211,13 +211,13 @@ class MeCtQuickDraw : public SmartBody::SBController	{
 		gwiz::quat_t rotation_to_target( gwiz::vector_t l_forward_dir, gwiz::vector_t w_target_pos, joint_state_t* state_p );
 
 		SkJoint*	find_joint( char *joint_str, SkJoint **joint_pp );
-		SkJoint*	target_ref_joint( void );
-		gwiz::vector_t	world_target_point( void );
+		SkJoint*	target_ref_joint();
+		gwiz::vector_t	world_target_point();
 		
-		void reset_blend( void );
+		void reset_blend();
 		
 		// callbacks for the base class
-		virtual void context_updated( void );
+		virtual void context_updated();
 		virtual void controller_start();
 		virtual void controller_map_updated();
 		virtual bool controller_evaluate ( double t, MeFrameData& frame );

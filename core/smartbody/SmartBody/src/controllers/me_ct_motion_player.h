@@ -46,10 +46,10 @@ public:
 	};
 
 public:
-	explicit MeCtMotionPlayer(SbmCharacter* c);
+	explicit MeCtMotionPlayer(SmartBody::SBCharacter& c, const std::string& name, double n);
 	~MeCtMotionPlayer() override;
 
-	void init(SmartBody::SBPawn* pawn, const std::string& name, double n);
+	void init(const std::string& name, double n);
 
 	void setFrameNum(double n);
 	double getFrameNum() const;
@@ -67,7 +67,7 @@ public:
 	bool controller_evaluate( double t, MeFrameData& frame ) override;
 
 private:
-	SbmCharacter*					character;
+	SmartBody::SBCharacter&					character;
 	boost::intrusive_ptr<MeController>					controller;
 	SkChannelArray					channels;
 

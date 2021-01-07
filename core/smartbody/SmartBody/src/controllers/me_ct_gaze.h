@@ -115,6 +115,8 @@ class MeCtGaze : public SmartBody::SBController	{
 		MeCtGazeSensor* sensor_p;
 #endif
 
+	void init(int key_fr, int key_to );
+
 	public:
 		struct GazeScheduleInfo
 		{
@@ -172,19 +174,17 @@ class MeCtGaze : public SmartBody::SBController	{
 		static const float DEFAULT_SMOOTHING_EYEBALL;
 
 		static int joint_index( const char *label );
-		static char * joint_label( const int index );
+		static char * joint_label( int index );
 
 		static int key_index( const char *label );
-		static char * key_label( const int key );
+		static char * key_label( int key );
 
 		static int valid_key( int key ) { return( ( key >= 0 )&&( key < NUM_GAZE_KEYS ) ); }
 		static std::string CONTROLLER_TYPE;
 
-		MeCtGaze();
-		virtual ~MeCtGaze();
+		MeCtGaze(SmartBody::SBPawn& pawn, int key_fr = GAZE_KEY_EYES, int key_to = GAZE_KEY_LUMBAR);
+		~MeCtGaze() override;
 		
-		void init(SmartBody::SBPawn* pawn)	{ init( pawn, GAZE_KEY_EYES, GAZE_KEY_LUMBAR ); }
-		void init(SmartBody::SBPawn* pawn, int key_fr, int key_to );
 //		void init( int key_fr, int key_to, int priority_key = GAZE_JOINT_EYE_L );
 		void set_task_priority( int key ); // which joint to attempt to satisfy target task
 

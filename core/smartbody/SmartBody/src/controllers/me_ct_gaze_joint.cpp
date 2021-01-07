@@ -30,7 +30,7 @@ using namespace gwiz;
 
 ///////////////////////////////////////////////////////////////////////////
 
-MeCtGazeJoint::MeCtGazeJoint( void )	{
+MeCtGazeJoint::MeCtGazeJoint()	{
 	
 	id = -1;
 	active = 0;
@@ -60,7 +60,7 @@ void MeCtGazeJoint::init( SkJoint* j_p )	{
 	joint_p = j_p;
 }
 
-void MeCtGazeJoint::start( void )	{
+void MeCtGazeJoint::start()	{
 
 	capture_joint_state();
 	prev_local_rot = local_rot;
@@ -105,7 +105,7 @@ quat_t MeCtGazeJoint::evaluate( float dt, quat_t target_rot, quat_t off_rot, flo
 	return( Q );
 }
 
-void MeCtGazeJoint::capture_joint_state( void ) {
+void MeCtGazeJoint::capture_joint_state() {
 	SrMat sr_M;
 	gwiz::matrix_t M, PM,WM, PZ;
 	int i, j;

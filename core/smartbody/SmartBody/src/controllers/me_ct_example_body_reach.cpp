@@ -18,11 +18,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#include <assert.h>
-#include <sstream>
-#include <algorithm>
-#include <time.h>
-#include <boost/foreach.hpp>
+
 #include <boost/lexical_cast.hpp>
 #include <sr/sr_timer.h>
 
@@ -36,7 +32,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "me_ct_barycentric_interpolation.h"
 
 #include "MeCtBodyReachState.h"
-#include <controllers/me_ct_example_body_reach.hpp>
 #include <controllers/me_ct_pose_postprocessing.hpp>
 
 using namespace boost;
@@ -48,7 +43,7 @@ using namespace boost;
 
 std::string MeCtExampleBodyReach::CONTROLLER_TYPE = "BodyReach";
 
-MeCtExampleBodyReach::MeCtExampleBodyReach( SmartBody::SBReach* reach)  : SmartBody::SBController()
+MeCtExampleBodyReach::MeCtExampleBodyReach( SmartBody::SBReach* reach)  : SmartBody::SBController(*reach->getCharacter())
 {
 	currentReachData = nullptr;
 	currentReachEngine = nullptr;
@@ -75,6 +70,21 @@ MeCtExampleBodyReach::MeCtExampleBodyReach( SmartBody::SBReach* reach)  : SmartB
 
 
 	setReach(reach);
+
+	IKTreeNodeList& nodeList = currentReachEngine->ikTreeNodes();
+	MeCtIKTreeNode* rootNode = nodeList[0];
+	for (int i=0;i<3;i++)
+		_channels.add(rootNode->joint->getMappedJointName(), (SkChannel::Type)(SkChannel::XPos+i));
+	affectedJoints.clear();
+	for (auto node : nodeList)
+	{
+		SkJoint* joint = node->joint;
+		SkJointQuat* skQuat = joint->quat();
+		affectedJoints.emplace_back(joint);
+		_channels.add(joint->getMappedJointName(), SkChannel::Quat);
+	}
+	blendWeight = currentReachEngine->fadingWeight;
+	//SmartBody::util::log("init blend weight = %f\n",blendWeight);
 }
 
 MeCtExampleBodyReach::~MeCtExampleBodyReach( )
@@ -483,25 +493,6 @@ bool MeCtExampleBodyReach::controller_evaluate( double t, MeFrameData& frame )
 	}
 	updateChannelBuffer(frame,outMotionFrame);
 	return true;
-}
-
-void MeCtExampleBodyReach::init(SmartBody::SBPawn* pawn)
-{	
-	IKTreeNodeList& nodeList = currentReachEngine->ikTreeNodes();
-	MeCtIKTreeNode* rootNode = nodeList[0];
-	for (int i=0;i<3;i++)
-		_channels.add(rootNode->joint->getMappedJointName(), (SkChannel::Type)(SkChannel::XPos+i));
-	affectedJoints.clear();
-	for (auto node : nodeList)
-	{
-			SkJoint* joint = node->joint;
-		SkJointQuat* skQuat = joint->quat();				
-		affectedJoints.emplace_back(joint);
-		_channels.add(joint->getMappedJointName(), SkChannel::Quat);		
-	}		
-	blendWeight = currentReachEngine->fadingWeight;
-	//SmartBody::util::log("init blend weight = %f\n",blendWeight);	
-	MeController::init(pawn);	
 }
 
 void MeCtExampleBodyReach::updateChannelBuffer( MeFrameData& frame, BodyMotionFrame& motionFrame, bool bRead /*= false*/ )

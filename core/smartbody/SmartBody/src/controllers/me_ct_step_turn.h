@@ -122,9 +122,9 @@ class MeCtStepTurn : public SmartBody::SBController	{
 		float turn_time_scale;
 		
 		SkMotion* build_mirror_motion( SkMotion* ref_motion_p );
-		void capture_world_offset_state( void );
+		void capture_world_offset_state();
 		float calc_raw_turn_angle( SkMotion* mot_p, char *joint_name );
-		void update_action_params( void );
+		void update_action_params();
 
 	public:
 		static std::string type_name;
@@ -165,7 +165,7 @@ class MeCtStepTurn : public SmartBody::SBController	{
 	private:
 
 		// callbacks for the base class
-		virtual void context_updated( void );
+		virtual void context_updated();
 		virtual void controller_start();
 		virtual void controller_map_updated();
 		virtual bool controller_evaluate ( double t, MeFrameData& frame );

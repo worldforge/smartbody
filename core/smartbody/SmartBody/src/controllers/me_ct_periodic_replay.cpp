@@ -33,8 +33,8 @@
 
 std::string MeCtPeriodicReplay::CONTROLLER_TYPE = "MeCtPeriodicReplay";
 
-MeCtPeriodicReplay::MeCtPeriodicReplay( MeController* child )
-:	MeCtUnary( new MeCtUnary::Context(this), child ),
+MeCtPeriodicReplay::MeCtPeriodicReplay(SmartBody::SBPawn& pawn, MeController* child )
+:	MeCtUnary(pawn, new MeCtUnary::Context(this), child ),
 	period( 0 ),
 	period_offset( 0 ),
 	child_time_offset( 0 )

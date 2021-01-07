@@ -841,14 +841,13 @@ int test_bone_pos_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	}
 
 	
-	MeCtChannelWriter* boneWriter= new MeCtChannelWriter();
-	boneWriter->init(character, _channels, true);
+	auto* boneWriter= new MeCtChannelWriter(*character, _channels, true);
 	//quat_t q = euler_t(50,50,50);
 	float data[3] = { (float)args.read_double(), (float)args.read_double(), (float)args.read_double() };
 	//cout<<endl<<"here's the data "<<endl<<data[0]<<" "<<data[1]<<" "<<data[2]<<endl;
 	boneWriter->set_data( data );
 
-	character->posture_sched_p->create_track( 0, 0, boneWriter );
+	character->posture_sched_p->create_track( nullptr, nullptr, boneWriter );
 
 	return (CMD_SUCCESS);
 }

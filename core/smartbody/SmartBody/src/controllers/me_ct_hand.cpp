@@ -73,7 +73,8 @@ void FingerChain::testCollision( SBGeomObject* colObj )
 
 std::string MeCtHand::CONTROLLER_TYPE = "Hand";
 
-MeCtHand::MeCtHand(const boost::intrusive_ptr<SmartBody::SBSkeleton>& sk, SmartBody::SBJoint* wrist)
+MeCtHand::MeCtHand(SmartBody::SBPawn& pawn, const boost::intrusive_ptr<SmartBody::SBSkeleton>& sk, SmartBody::SBJoint* wrist)
+ : MeController(pawn)
 {		
 	skeletonRef  = sk;
 	// work on the copy of skeleton to avoid problems

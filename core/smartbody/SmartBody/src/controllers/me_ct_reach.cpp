@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "me_ct_reach.hpp"
 #include "me_ct_IK_scenario.hpp"
-#include <assert.h>
+#include <cassert>
 
 std::string MeCtReach::CONTROLLER_TYPE = "Reach";
 const float PI_CONST = 3.14159265358979323846f;
@@ -77,12 +77,8 @@ const MeCtIKJointLimit limb_joint_limit_l[] = {
 
 #endif
 
-MeCtReach::MeCtReach( ) 
-{
-	MeCtReach(nullptr);
-}
 
-MeCtReach::MeCtReach( SkSkeleton* skeleton ) 
+MeCtReach::MeCtReach(SmartBody::SBPawn& pawn, SkSkeleton* skeleton ) : SmartBody::SBController(pawn)
 {
 	reach_mode = TARGET_POS;
 	target_pos = SrVec(0.f,150.f,0.f);
@@ -92,13 +88,37 @@ MeCtReach::MeCtReach( SkSkeleton* skeleton )
 	prev_time = -1.0;
 	//_duration = 10.0;
 
-	reach_arm = REACH_RIGHT_ARM;	
+	reach_arm = REACH_RIGHT_ARM;
+
+	joint_name.size(NUM_LIMBS);
+	joint_limit.size(NUM_LIMBS);
+	limb_length = 0.f;
+
+	for (int i=0;i<NUM_LIMBS;i++)
+	{
+		if (reach_arm == REACH_RIGHT_ARM)
+		{
+			joint_name[i] = limb_chain_r[i];
+			joint_limit[i] = limb_joint_limit_r[i];
+		}
+		else if (reach_arm == REACH_LEFT_ARM)
+		{
+			joint_name[i] = limb_chain_l[i];
+			joint_limit[i] = limb_joint_limit_l[i];
+		}
+		// feng : add both the left & right arms in the channel buffers
+		// I am not sure why, but this avoids popping when adding the second arm
+		_channels.add(limb_chain_r[i], SkChannel::Quat);
+		_channels.add(limb_chain_l[i], SkChannel::Quat);
+	}
+
+	limb.init(_skeleton);
+	limb.buildJointChain(joint_name,joint_limit);
+	limb_length = limb.computeLimbLength();
+	root_joint_ref = limb.joint_chain[0];
 }
 
-MeCtReach::~MeCtReach(void)
-{
-	
-}
+MeCtReach::~MeCtReach() = default;
 
 SrVec MeCtReach::get_reach_target()
 {
@@ -133,38 +153,6 @@ void MeCtReach::set_target_joint(SkJoint* target_joint)
 	{
 		reach_mode = TARGET_POS;
 	}
-}
-
-void MeCtReach::init(SmartBody::SBPawn* pawn)
-{
-	assert(_skeleton);
-	joint_name.size(NUM_LIMBS);	
-	joint_limit.size(NUM_LIMBS);
-	limb_length = 0.f;
-
-	for (int i=0;i<NUM_LIMBS;i++)
-	{	
-		if (reach_arm == REACH_RIGHT_ARM)
-		{
-			joint_name[i] = limb_chain_r[i];
-			joint_limit[i] = limb_joint_limit_r[i];				
-		}
-		else if (reach_arm == REACH_LEFT_ARM)
-		{
-			joint_name[i] = limb_chain_l[i];
-			joint_limit[i] = limb_joint_limit_l[i];
-		}						
-		// feng : add both the left & right arms in the channel buffers
-		// I am not sure why, but this avoids popping when adding the second arm
-		_channels.add(limb_chain_r[i], SkChannel::Quat);	
-		_channels.add(limb_chain_l[i], SkChannel::Quat);
-	}		
-
-	limb.init(_skeleton);
-	limb.buildJointChain(joint_name,joint_limit);
-	limb_length = limb.computeLimbLength();
-	root_joint_ref = limb.joint_chain[0];
-	MeController::init(pawn);
 }
 
 void MeCtReach::controller_map_updated() 

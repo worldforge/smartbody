@@ -604,9 +604,9 @@ BehaviorRequestPtr BML::Processor::parse_bml_body( DOMElement* elem, std::string
 			SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(pose_id);
 			if (motion)
 			{
-				MeCtMotion* motionCt = new MeCtMotion();
+				auto* motionCt = new MeCtMotion(*static_cast<SmartBody::SBCharacter*>(request->actor));
 				motionCt->setName( motion->getName() );  // TODO: include BML act and behavior ids
-				motionCt->init(const_cast<SbmCharacter*>(request->actor), motion );
+				motionCt->init(motion );
 				motionCt->loop( true );
 
 				if (!request->actor->posture_sched_p)

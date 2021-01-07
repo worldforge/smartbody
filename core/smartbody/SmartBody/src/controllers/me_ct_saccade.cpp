@@ -38,7 +38,7 @@ std::string eyeballL = "eyeball_left";
 std::string eyeballR = "eyeball_right";
 
 
-MeCtSaccade::MeCtSaccade(SbmCharacter* c) : SmartBody::SBController()
+MeCtSaccade::MeCtSaccade(SbmCharacter* c) : SmartBody::SBController(*c)
 {
 	_character = c;
 

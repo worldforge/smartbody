@@ -28,9 +28,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 std::string MeCtBreathing::type_name = "Breathing";
 
-MeCtBreathing::MeCtBreathing () : SmartBody::SBController()
+MeCtBreathing::MeCtBreathing (SmartBody::SBPawn& pawn) : SmartBody::SBController(pawn)
 {
-	_motion = 0;
+	_motion = nullptr;
 	_last_apply_frame = 0;
 
 	_local_time_offset = 0;
@@ -63,20 +63,12 @@ MeCtBreathing::MeCtBreathing () : SmartBody::SBController()
 
 MeCtBreathing::~MeCtBreathing ()
 {
-	for (std::list<BreathLayer*>::iterator iter = _breath_layers.begin();
-		iter != _breath_layers.end();
-		iter++)
+	for (auto & _breath_layer : _breath_layers)
 	{
-		delete (*iter);
+		delete _breath_layer;
 	}
 	
 	delete _default_breath_cycle;
-
-}
-
-void MeCtBreathing::init(SmartBody::SBPawn* pawn)
-{
-	MeController::init(pawn);
 
 }
 
@@ -193,7 +185,7 @@ void MeCtBreathing::immediate_pop_breath_layer()
 	BreathLayer* layer = current_breath_layer();
 	if(layer->cycle != _default_breath_cycle)
 		delete layer->cycle;
-	delete layer;
+
 	_breath_layers.pop_front();
 }
 void MeCtBreathing::immediate_breaths_per_minute(float bpm)
@@ -210,7 +202,6 @@ void MeCtBreathing::immediate_motion(SkMotion* motion)
 		if( motion == _motion ) {
 			// Minimal init()
 			_last_apply_frame = 0;
-			MeController::init (nullptr);
 			return;
 		}
 		// else new motion
@@ -220,8 +211,6 @@ void MeCtBreathing::immediate_motion(SkMotion* motion)
 	_last_apply_frame = 0;
 
 	_motion->move_keytimes ( 0 ); // make sure motion starts at 0
-
-	MeController::init (nullptr);
 
 	if( _context ) {
 		// Notify _context of channel change.

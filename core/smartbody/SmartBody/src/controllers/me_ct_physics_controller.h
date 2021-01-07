@@ -19,18 +19,16 @@ class MeCtPhysicsController : public SmartBody::SBController
 		boost::intrusive_ptr<SmartBody::SBSkeleton>     _skeletonCopy;
 		bool			_valid;	
 	public:
-		MeCtPhysicsController(SbmCharacter* character);
-		~MeCtPhysicsController();
+		explicit MeCtPhysicsController(SbmCharacter* character);
+		~MeCtPhysicsController() override;
 
-		bool getValid()						{return _valid;}
+		bool getValid() const						{return _valid;}
 		void setValid(bool v)				{_valid = v;}		
-	protected:
-		void getJointChannelValues(const std::string& jointName, MeFrameData& frame, SrQuat& outQuat, SrVec& outPos);
 	private:
-		virtual bool controller_evaluate(double t, MeFrameData& frame);
-		virtual SkChannelArray& controller_channels()	{ return(_channels); }
-		virtual double controller_duration()			{ return((double)_duration); }
-		virtual const std::string& controller_type() const		{ return(CONTROLLER_TYPE); }			
+		bool controller_evaluate(double t, MeFrameData& frame) override;
+		SkChannelArray& controller_channels() override	{ return(_channels); }
+		double controller_duration() override			{ return((double)_duration); }
+		const std::string& controller_type() const override		{ return(CONTROLLER_TYPE); }
 };
 
 #endif

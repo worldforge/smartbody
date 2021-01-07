@@ -340,7 +340,6 @@ void SBCharacter::addController(int index, SBController* controller)
 		}
 	}
 	// make sure the controller doesn't already exist in the tree
-	controller->init(this);
 	ct_tree_p->add_controller(controller, index);
 }
 

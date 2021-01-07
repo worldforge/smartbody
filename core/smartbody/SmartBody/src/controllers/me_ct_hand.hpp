@@ -70,7 +70,7 @@ public:
 	float                 jointSpeed;
 
 public:
-	MeCtHand(const boost::intrusive_ptr<SmartBody::SBSkeleton>& sk, SmartBody::SBJoint* wrist);
+	MeCtHand(SmartBody::SBPawn& pawn, const boost::intrusive_ptr<SmartBody::SBSkeleton>& sk, SmartBody::SBJoint* wrist);
 	~MeCtHand() override;
 
 	void init(const std::string& grabType, const MotionDataSet& reachPose, const MotionDataSet& grabPose, const MotionDataSet& releasePose, const MotionDataSet& pointPose);

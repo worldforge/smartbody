@@ -64,7 +64,7 @@ class MeCtFace : public SmartBody::SBController	{
 		srHashMap <SkMotion>	_key_pose_map;
 		
 		SkSkeleton* 	    _skeleton_ref_p;
-		SmartBody::SBCharacter* _character;
+		SbmCharacter& _character;
 
 		SrBuffer<bool>			_include_chan_flag; // key channels to exclude from calculation
 		std::map<std::string, std::vector<int> > _visemeChannelMap;
@@ -79,33 +79,32 @@ class MeCtFace : public SmartBody::SBController	{
 		static std::string type_name;
 
 		/*! Constructor */
-		MeCtFace( void );
+		explicit MeCtFace(SbmCharacter& pawn);
 
 		/*! Destructor is public but pay attention to the use of ref()/unref() */
-		virtual ~MeCtFace( void );
+		~MeCtFace() override;
 		
-		void clear( void );
+		void clear();
 
 		void customizeMotion(const std::string& motionName, double startTime);
 		
-		virtual void init (SmartBody::SBPawn* pawn);
 		void remove_joint( const char *joint_name );
 		void remove_channel( const char *joint_name, SkChannel::Type ch_type );
 		void add_key( const char *weight_key, SkMotion* key_pose_p );
-		void finish_adding( void );
+		void finish_adding();
 
-		virtual double controller_duration ();
+		double controller_duration () override;
 
 	private:
 		bool updateMotion(double t, MeFrameData& frame);
 
 		// callbacks for the base class
-		virtual void context_updated( void );
-		virtual void controller_start();
-		virtual void controller_map_updated();
-		virtual bool controller_evaluate ( double t, MeFrameData& frame );
-		virtual SkChannelArray& controller_channels ();
-		virtual const std::string& controller_type () const;
+		void context_updated() override;
+		void controller_start() override;
+		void controller_map_updated() override;
+		bool controller_evaluate ( double t, MeFrameData& frame ) override;
+		SkChannelArray& controller_channels () override;
+		const std::string& controller_type () const override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////

@@ -34,7 +34,7 @@ using namespace gwiz;
 
 std::string MeCtQuickDraw::type_name = "QuickDraw";
 
-MeCtQuickDraw::MeCtQuickDraw( void )	{
+MeCtQuickDraw::MeCtQuickDraw()	{
 
 	_gundraw_motion = nullptr;
 	_holster_motion = nullptr;
@@ -71,7 +71,7 @@ MeCtQuickDraw::MeCtQuickDraw( void )	{
 	draw_mode = DRAW_DISABLED;
 }
 
-MeCtQuickDraw::~MeCtQuickDraw( void )	{
+MeCtQuickDraw::~MeCtQuickDraw()	{
 
 	if( interim_pose_buff_p )	{
 		delete [] interim_pose_buff_p;
@@ -182,7 +182,7 @@ void MeCtQuickDraw::init( SbmPawn* pawn, SkMotion* mot_p, SkMotion* mot2_p ) {
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void MeCtQuickDraw::reset_blend( void ) {
+void MeCtQuickDraw::reset_blend() {
 
 /*
 	NOTE:
@@ -360,13 +360,13 @@ SkJoint* MeCtQuickDraw::find_joint( char *joint_str, SkJoint **joint_pp )	{
 	return( *joint_pp );
 }
 
-SkJoint* MeCtQuickDraw::target_ref_joint( void ) {
+SkJoint* MeCtQuickDraw::target_ref_joint() {
 //	return( target_ref_joint_p = find_joint( target_ref_joint_str, target_ref_joint_p ) );
 	return( find_joint( target_ref_joint_str, &target_ref_joint_p ) );
 }
 
 
-vector_t MeCtQuickDraw::world_target_point( void )	{
+vector_t MeCtQuickDraw::world_target_point()	{
 	
 	SkJoint* joint_p = target_ref_joint();
 	if( joint_p )	{
@@ -390,7 +390,7 @@ vector_t MeCtQuickDraw::world_target_point( void )	{
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void MeCtQuickDraw::context_updated( void ) {
+void MeCtQuickDraw::context_updated() {
 
 #if 0
 	if( _context ) {
@@ -405,7 +405,7 @@ void MeCtQuickDraw::context_updated( void ) {
 #endif
 }
 
-void MeCtQuickDraw::controller_map_updated( void ) {
+void MeCtQuickDraw::controller_map_updated() {
 
 	SkChannelArray& motion_channels = _gundraw_motion->channels();
 	const int n_chan = motion_channels.size();
@@ -427,7 +427,7 @@ void MeCtQuickDraw::controller_map_updated( void ) {
 	}
 }
 
-void MeCtQuickDraw::controller_start( void )	{
+void MeCtQuickDraw::controller_start()	{
 
 	if( _context->channels().size() > 0 )	{
 		skeleton_ref_p = _context->channels().skeleton();
@@ -801,12 +801,12 @@ else	{
 	return continuing;
 }
 
-SkChannelArray& MeCtQuickDraw::controller_channels( void )	{
+SkChannelArray& MeCtQuickDraw::controller_channels()	{
 
 	return( _gundraw_motion->channels() );
 }
 
-double MeCtQuickDraw::controller_duration( void ) {
+double MeCtQuickDraw::controller_duration() {
 
 // THIS GETS CALLED PRIOR TO controller_start().
 #if 0
@@ -818,7 +818,7 @@ double MeCtQuickDraw::controller_duration( void ) {
 	return( -1.0 );
 }
 
-const std::string& MeCtQuickDraw::controller_type( void ) const	{
+const std::string& MeCtQuickDraw::controller_type() const	{
 
 	return type_name;
 }

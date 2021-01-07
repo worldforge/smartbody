@@ -32,8 +32,9 @@ std::string MeCtAdshrEnvelope::CONTROLLER_TYPE = "MeCtAdshrEnvelope";
 
 
 
-MeCtAdshrEnvelope::MeCtAdshrEnvelope()
-:	_base_level( 0.0 ),
+MeCtAdshrEnvelope::MeCtAdshrEnvelope(SmartBody::SBPawn& pawn)
+:	SmartBody::SBController(pawn),
+	_base_level( 0.0 ),
 	_amplitude( 1.0 ),
 	_attack( 1.0 ),
 	_decay( 0.0 ),

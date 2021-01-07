@@ -6,7 +6,7 @@ using namespace gwiz;
 std::string MeCtPosePostProcessing::CONTROLLER_TYPE = "PostProcessing";
 
 
-MeCtPosePostProcessing::MeCtPosePostProcessing(boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton ) : MeCtConstraint(std::move(skeleton))
+MeCtPosePostProcessing::MeCtPosePostProcessing(SmartBody::SBCharacter& pawn, boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton ) : MeCtConstraint(pawn, std::move(skeleton))
 {
 	firstIKSolve = true;			
 }

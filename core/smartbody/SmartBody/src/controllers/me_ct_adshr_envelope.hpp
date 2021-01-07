@@ -54,7 +54,7 @@ protected:
 
 public:
 	/** Constructor */
-	MeCtAdshrEnvelope();
+	MeCtAdshrEnvelope(SmartBody::SBPawn& pawn);
 
 	const std::string& controller_type() const;
 

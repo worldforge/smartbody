@@ -58,15 +58,15 @@ protected:
 	SkChannelArray	      _channels;
 
 public:	
-	MeCtMotionBlend(std::map<int,MeCtBlendEngine*>& blendMap);
-	virtual ~MeCtMotionBlend(void);		
-	virtual void controller_map_updated();
-	virtual void controller_start();	
-	virtual bool controller_evaluate( double t, MeFrameData& frame );
+	MeCtMotionBlend(SmartBody::SBPawn& pawn, std::map<int,MeCtBlendEngine*>& blendMap);
+	~MeCtMotionBlend() override;
+	void controller_map_updated() override;
+	void controller_start() override;
+	bool controller_evaluate( double t, MeFrameData& frame ) override;
 
-	virtual SkChannelArray& controller_channels()	{ return( _channels ); }
-	virtual double controller_duration()			{ return( (double)_duration ); }	
-	virtual const std::string& controller_type() const		{ return( CONTROLLER_TYPE ); }
+	SkChannelArray& controller_channels() override	{ return( _channels ); }
+	double controller_duration() override			{ return( (double)_duration ); }
+	const std::string& controller_type() const override		{ return( CONTROLLER_TYPE ); }
 
 	MeCtBlendEngine* getBlendEngine() const { return currentBlendEngine; }	
 	void set_duration(float duration) { _duration = duration; }
@@ -75,8 +75,7 @@ public:
 	void setParameterTargetJoint(SkJoint* targetJoint);
 	void setParameterTargetPos(SrVec& targetPos);
 	void setParameterVector(dVector& para);
-	void init(SmartBody::SBPawn* pawn);
-protected:			
+protected:
 	void updateChannelBuffer(MeFrameData& frame, BodyMotionFrame& motionFrame, bool bRead = false);		
 };
 

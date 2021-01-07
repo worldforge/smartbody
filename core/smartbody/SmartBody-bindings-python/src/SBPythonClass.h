@@ -121,7 +121,7 @@ void quitSbm();
 void reset();
 void printLog(const std::string& message);
 
-SBController* createController(std::string controllerType, std::string controllerName);
+SBController* createController(SmartBody::SBCharacter& character, const std::string& controllerType, const std::string& controllerName);
 
 SrCamera* getCamera();
 
@@ -134,9 +134,8 @@ class PythonController :  public SBController
 {
 public:
 	std::string controllerType;
-	PythonController() : SBController() { controllerType = "python";}
+	explicit PythonController(SmartBody::SBPawn& pawn) : SBController(pawn) { controllerType = "python";}
 	void start() override {};
-	void init(SmartBody::SBPawn* pawn) override { SBController::init(pawn); };
 	virtual void evaluate() {};
 	void stop() override {};
 

@@ -204,7 +204,7 @@ quat_t rotation_ray_to_target_point_SG(
 }
 
 #if ENABLE_FORWARD_RAY_TEST
-void test_forward_ray( void )	{
+void test_forward_ray()	{
 
 #if 0
 	vector_t X( 0.0, 4.0, 2.0 ); // heading-only case
@@ -262,7 +262,7 @@ void test_forward_ray( void )	{
 
 ///////////////////////////////////////////////////////////////////////////
 
-MeCtSimpleGazeJoint::MeCtSimpleGazeJoint( void )	{
+MeCtSimpleGazeJoint::MeCtSimpleGazeJoint()	{
 	
 	limit = 180.0;
 	weight = 1.0;
@@ -285,7 +285,7 @@ void MeCtSimpleGazeJoint::init( SkJoint* j_p )	{
 	joint_p = j_p;
 }
 
-void MeCtSimpleGazeJoint::begin( void )	{
+void MeCtSimpleGazeJoint::begin()	{
 
 	capture_joint_state();
 	prev_local_rot = local_rot;
@@ -319,7 +319,7 @@ quat_t MeCtSimpleGazeJoint::evaluate( float dt, quat_t target_rot, quat_t off_ro
 	return( Q );
 }
 
-void MeCtSimpleGazeJoint::capture_joint_state( void ) {
+void MeCtSimpleGazeJoint::capture_joint_state() {
 	SrMat sr_M;
 	gwiz::matrix_t M;
 	int i, j;
@@ -576,7 +576,7 @@ quat_t MeCtSimpleGazeJoint::constrain( float dt, quat_t task_rot )	{
 
 std::string MeCtSimpleGaze::type_name = "SimpleGaze";
 
-MeCtSimpleGaze::MeCtSimpleGaze( void )	{
+MeCtSimpleGaze::MeCtSimpleGaze(SmartBody::SBPawn& pawn):SmartBody::SBController(pawn)	{
 	
 	start = 0;
 	prev_time = 0.0;
@@ -591,38 +591,32 @@ MeCtSimpleGaze::MeCtSimpleGaze( void )	{
 	priority_joint = GAZE_JOINT_EYE_L;
 	
 	joint_count = 0;
-	joint_arr = nullptr;
-}
 
-MeCtSimpleGaze::~MeCtSimpleGaze( void )	{
+	char joint_labels[ NUM_GAZE_JOINTS ][ MAX_JOINT_LABEL_LEN ] = {
+			"spine1",
+			"spine2",
+			"spine3",
+			"spine4",
+			"spine5",
+			"skullbase",
+			"eyeball_left",
+			"eyeball_right"
+	};
+	int i;
+
+	joint_count = NUM_GAZE_JOINTS;
+	joint_arr.resize(joint_count);
+
+	for( i = 0; i < joint_count; i++ )	{
+		_channels.add( joint_labels[ i ] , SkChannel::Quat );
+	}}
+
+MeCtSimpleGaze::~MeCtSimpleGaze()	{
 	
 	if( ref_joint_str ) {
 		free( ref_joint_str );
 		ref_joint_str = nullptr;
 	}
-}
-
-void MeCtSimpleGaze::init(SmartBody::SBPawn* pawn )	{
-	char joint_labels[ NUM_GAZE_JOINTS ][ MAX_JOINT_LABEL_LEN ] = {
-		"spine1",
-		"spine2",
-		"spine3",
-		"spine4",
-		"spine5",
-		"skullbase",
-		"eyeball_left",
-		"eyeball_right"
-	};
-	int i;
-	
-	joint_count = NUM_GAZE_JOINTS;
-	joint_arr = new MeCtSimpleGazeJoint[ joint_count ];
-
-	for( i = 0; i < joint_count; i++ )	{
-		_channels.add( joint_labels[ i ] , SkChannel::Quat );
-	}
-
-	MeController::init(pawn);
 }
 
 void MeCtSimpleGaze::set_target_joint( float x, float y, float z, SkJoint* joint_p )	{
@@ -792,7 +786,7 @@ void MeCtSimpleGaze::inspect_skeleton_world_transform( SkJoint* joint_p, int dep
 	}
 }
 
-void MeCtSimpleGaze::update_skeleton_gmat( void )	{
+void MeCtSimpleGaze::update_skeleton_gmat()	{
 
 	if( skeleton_ref_p )	{
 		SkJoint* skull_joint_p = skeleton_ref_p->search_joint( "skullbase" );
@@ -809,7 +803,7 @@ void MeCtSimpleGaze::update_skeleton_gmat( void )	{
 	}
 }
 
-SkJoint* MeCtSimpleGaze::reference_joint( void )	{
+SkJoint* MeCtSimpleGaze::reference_joint()	{
 
 	if( ref_joint_str )	{
 		if( ref_joint_p == nullptr )	{
@@ -829,7 +823,7 @@ SkJoint* MeCtSimpleGaze::reference_joint( void )	{
 	return( ref_joint_p );
 }
 
-vector_t MeCtSimpleGaze::world_target_point( void )	{
+vector_t MeCtSimpleGaze::world_target_point()	{
 	
 	SkJoint* joint_p = reference_joint();
 	if( joint_p )	{
@@ -851,7 +845,7 @@ vector_t MeCtSimpleGaze::world_target_point( void )	{
 	return( point_target_pos );
 }
 
-quat_t MeCtSimpleGaze::world_target_orient( void )	{
+quat_t MeCtSimpleGaze::world_target_orient()	{
 	
 	SkJoint* joint_p = reference_joint();
 	if( joint_p )	{
@@ -872,7 +866,7 @@ quat_t MeCtSimpleGaze::world_target_orient( void )	{
 	return( orient_target_rot );
 }
 
-void MeCtSimpleGaze::controller_start( void )	{
+void MeCtSimpleGaze::controller_start()	{
 	int i;
 	
 	start = 1;

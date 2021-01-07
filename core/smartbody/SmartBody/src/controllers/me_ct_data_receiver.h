@@ -23,7 +23,7 @@ class MeCtDataReceiver : public SmartBody::SBController
 		std::map<std::string, SrVec>	_localPosMap;			// local position
 
 	public:
-		explicit MeCtDataReceiver(boost::intrusive_ptr<SkSkeleton> skel);
+		explicit MeCtDataReceiver(SmartBody::SBPawn& pawn, boost::intrusive_ptr<SkSkeleton> skel);
 		~MeCtDataReceiver() override;
 
 		bool getValid()						{return _valid;}

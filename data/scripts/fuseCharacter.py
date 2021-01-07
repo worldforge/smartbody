@@ -1,6 +1,6 @@
 class FuseController(PythonController):
 
-    def init(self, pawn):
+    def __init__(self):
 
         # setup rig nodes
         print("Setting up face rig...")

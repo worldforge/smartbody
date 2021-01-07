@@ -1,10 +1,6 @@
 
 #include "SBPythonClass.h"
-#include "controllers/me_ct_reach.hpp"
 
-#include <sb/sbm_character.hpp>
-#include <sk/sk_skeleton.h>
-#include <sk/sk_joint.h>
 #include <sbm/sbm_test_cmds.hpp>
 #include <sb/SBScene.h>
 #include <sb/SBSimulationManager.h>
@@ -35,7 +31,7 @@ SrViewer* getViewer()
 
 
 
-std::string PyLogger::strBuffer = "";
+std::string PyLogger::strBuffer;
 
 void pythonExit()
 {
@@ -55,7 +51,7 @@ void reset()
 void printLog(const std::string& message)
 {
 	string s = message;
-	if (message.size() > 0)
+	if (!message.empty())
 		if (s[s.size() - 1] == '\n')
 			s.erase(s.length() - 1);
 	if (s.length() > 0)
@@ -64,35 +60,35 @@ void printLog(const std::string& message)
 
 
 
-SBController* createController(std::string controllerType, std::string controllerName)
+SBController* createController(SmartBody::SBCharacter& character, const std::string& controllerType, const std::string& controllerName)
 {
 	SBController* controller = nullptr;
 
 	if (controllerType == "schedule")
 	{
-		controller = new MeCtScheduler2();
+		controller = new MeCtScheduler2(character);
 		
 	}
 	else if (controllerType == "gaze")
 	{
-		controller = new MeCtGaze();
+		controller = new MeCtGaze(character);
 	}
 	else if (controllerType == "eyelid")
 	{
-		controller = new MeCtEyeLidRegulator();
+		controller = new MeCtEyeLidRegulator(character);
 	}
 	else if (controllerType == "face")
 	{
-		controller = new MeCtFace();
+		controller = new MeCtFace(character);
 	}
-	else if (controllerType == "paramanimation")
-	{
-		controller = new MeCtParamAnimation();
-	}
-	else if (controllerType == "curvewriter")
-	{
-		controller = new MeCtCurveWriter();
-	}
+//	else if (controllerType == "paramanimation")
+//	{
+//		controller = new MeCtParamAnimation(character);
+//	}
+//	else if (controllerType == "curvewriter")
+//	{
+//		controller = new MeCtCurveWriter(character);
+//	}
 
 	if (controller)
 		controller->setName(controllerName);

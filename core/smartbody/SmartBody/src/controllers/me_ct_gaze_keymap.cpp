@@ -114,7 +114,7 @@ void MeCtGaze::set_smooth( float back_sm, float neck_sm, float eyes_sm )	{
 	key_smooth_dirty = 1;
 }
 
-void MeCtGaze::apply_smooth_keys( void )	{
+void MeCtGaze::apply_smooth_keys()	{
 	
 	if( key_smooth_dirty )	{
 
@@ -300,7 +300,7 @@ void MeCtGaze::set_bias_roll( float e_r, float h_r, float c_r, float t_r, float 
 }
 #endif
 
-void MeCtGaze::apply_bias_keys( void ) {
+void MeCtGaze::apply_bias_keys() {
 
 	if( key_bias_dirty )   {
 
@@ -382,7 +382,7 @@ void MeCtGaze::apply_limit_key( int J, int K, float weight )	{
 		joint_key_arr[ K ].limit_r * weight;
 }
 
-void MeCtGaze::apply_limit_keys( void )	{
+void MeCtGaze::apply_limit_keys()	{
 	
 	if( key_limit_dirty )	{
 		apply_limit_key( GAZE_JOINT_SPINE1, GAZE_KEY_BACK, 0.5f );
@@ -453,7 +453,7 @@ void MeCtGaze::set_blend( int key1, int key2, float w1, float w2 )	{
 	}
 }
 
-void MeCtGaze::apply_blend_keys( void )	{
+void MeCtGaze::apply_blend_keys()	{
 	
 	if( key_blend_dirty )	{
 

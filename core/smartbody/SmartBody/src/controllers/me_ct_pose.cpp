@@ -31,14 +31,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 std::string MeCtPose::type_name = "Pose";
 
-MeCtPose::MeCtPose () :
+MeCtPose::MeCtPose (SmartBody::SBPawn& pawn) : SmartBody::SBController(pawn),
    _duration( -1.0f ),
    _posture_name(nullptr)
 {}
 
-MeCtPose::~MeCtPose() {}
+MeCtPose::~MeCtPose() = default;
 
-void MeCtPose::init_channel_map( void )	{
+void MeCtPose::init_channel_map()	{
 	
 	const int size = _channels.size();
 	_toBuff.size( size );
@@ -51,84 +51,84 @@ void MeCtPose::init_channel_map( void )	{
 	if( _context )
 		_context->child_channels_updated( this );
 }
-
-void MeCtPose::init (SmartBody::SBPawn* pawn, const SkChannelArray& ca )
-{
-	// use copy operator to get channels:
-	_channels = ca;
-
-	// init base class:
-	MeController::init (pawn);
-
-	// init _buffer (copied from old controller API's init()
-	_buffer.size( controller_channels().floats() );
-	_buffer.setall( 0 );
-
-	init_channel_map();
-}
-
-void MeCtPose::init(SmartBody::SBPawn* pawn, const SkPosture& p )
-{
-	// use copy operator to get a copy of the channels:
-	_channels = *(p.const_channels());
-
-	// init base class:
-	MeController::init (pawn);
-
-	// init _buffer (copied from old controller API's init()
-	_buffer.size( controller_channels().floats() );
-	_buffer.setall( 0 );
-
-	// copy to buffer the values of the posture:
-	_buffer = p.values;
-
-	_posture_name = p.name();
-
-	init_channel_map();
-}
-
-void MeCtPose::init (SmartBody::SBPawn* pawn, SkMotion* m, float t )
-{
-	// use copy operator to get a copy of the channels:
-	_channels = m->channels();
-
-	// init base class:
-	MeController::init (pawn);
-
-	// init _buffer (copied from old controller API's init()
-	_buffer.size( controller_channels().floats() );
-	_buffer.setall( 0 );
-
-	// connect the motion to the buffer and apply it:
-	m->connect ( &_buffer[0] );
-	m->apply ( t );
-
-	// disconnect the motion:
-	m->disconnect();
-
-	init_channel_map();
-}
-
-void MeCtPose::init(SmartBody::SBPawn* pawn, MeCtPose* other ) {
-	clone_parameters( other );
-
-	// use copy operator to get a copy of the channels:
-	_channels = other->_channels;
-
-	// init base class:
-	MeController::init (pawn);
-	_buffer.size( controller_channels().floats() );
-	_buffer.setall( 0 );
-
-	_buffer = other->_buffer;
-	//SrBuffer<float>& other_buffer = other->buffer();
-	//SrBuffer<float>& buffer = this->buffer() = other->buffer();
-
-	_duration = other->_duration;
-	_posture_name = other->_posture_name;
-
-	init_channel_map();
-}
+//
+//void MeCtPose::init (SmartBody::SBPawn* pawn, const SkChannelArray& ca )
+//{
+//	// use copy operator to get channels:
+//	_channels = ca;
+//
+//	// init base class:
+//	MeController::init (pawn);
+//
+//	// init _buffer (copied from old controller API's init()
+//	_buffer.size( controller_channels().floats() );
+//	_buffer.setall( 0 );
+//
+//	init_channel_map();
+//}
+//
+//void MeCtPose::init(SmartBody::SBPawn* pawn, const SkPosture& p )
+//{
+//	// use copy operator to get a copy of the channels:
+//	_channels = *(p.const_channels());
+//
+//	// init base class:
+//	MeController::init (pawn);
+//
+//	// init _buffer (copied from old controller API's init()
+//	_buffer.size( controller_channels().floats() );
+//	_buffer.setall( 0 );
+//
+//	// copy to buffer the values of the posture:
+//	_buffer = p.values;
+//
+//	_posture_name = p.name();
+//
+//	init_channel_map();
+//}
+//
+//void MeCtPose::init (SmartBody::SBPawn* pawn, SkMotion* m, float t )
+//{
+//	// use copy operator to get a copy of the channels:
+//	_channels = m->channels();
+//
+//	// init base class:
+//	MeController::init (pawn);
+//
+//	// init _buffer (copied from old controller API's init()
+//	_buffer.size( controller_channels().floats() );
+//	_buffer.setall( 0 );
+//
+//	// connect the motion to the buffer and apply it:
+//	m->connect ( &_buffer[0] );
+//	m->apply ( t );
+//
+//	// disconnect the motion:
+//	m->disconnect();
+//
+//	init_channel_map();
+//}
+//
+//void MeCtPose::init(SmartBody::SBPawn* pawn, MeCtPose* other ) {
+//	clone_parameters( other );
+//
+//	// use copy operator to get a copy of the channels:
+//	_channels = other->_channels;
+//
+//	// init base class:
+//	MeController::init (pawn);
+//	_buffer.size( controller_channels().floats() );
+//	_buffer.setall( 0 );
+//
+//	_buffer = other->_buffer;
+//	//SrBuffer<float>& other_buffer = other->buffer();
+//	//SrBuffer<float>& buffer = this->buffer() = other->buffer();
+//
+//	_duration = other->_duration;
+//	_posture_name = other->_posture_name;
+//
+//	init_channel_map();
+//}
 
 void MeCtPose::output ( SrOutput& out )
  {
@@ -144,36 +144,36 @@ void MeCtPose::output ( SrOutput& out )
    // end
    out << "end\n";
  }
-
-bool MeCtPose::input ( SrInput& inp, const SrHashTable<SkPosture*>& postures )
- {
-   MeController::input ( inp );
-
-   // init with defaults:
-   SrString pname ( getName().c_str() );
-
-   // read:
-   while ( !inp.finished() )
-    { inp.get_token();
-      SrString& s = inp.last_token();
-      if ( s=="pose" )
-       { inp.get_token();
-         pname = inp.last_token();
-       }
-      else if ( s=="end" )
-       { break;
-       }
-    }
-   
-   SkPosture* p = postures.lookup( pname );
-   if( p )
-    { init( nullptr, *p );
-      return true;
-    }
-   else
-    { return false;
-    }
- }
+//
+//bool MeCtPose::input ( SrInput& inp, const SrHashTable<SkPosture*>& postures )
+// {
+//   MeController::input ( inp );
+//
+//   // init with defaults:
+//   SrString pname ( getName().c_str() );
+//
+//   // read:
+//   while ( !inp.finished() )
+//    { inp.get_token();
+//      SrString& s = inp.last_token();
+//      if ( s=="pose" )
+//       { inp.get_token();
+//         pname = inp.last_token();
+//       }
+//      else if ( s=="end" )
+//       { break;
+//       }
+//    }
+//
+//   SkPosture* p = postures.lookup( pname );
+//   if( p )
+//    { init( nullptr, *p );
+//      return true;
+//    }
+//   else
+//    { return false;
+//    }
+// }
 
 //----- virtuals -----
 

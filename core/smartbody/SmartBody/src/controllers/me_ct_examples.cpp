@@ -25,7 +25,6 @@ using namespace gwiz;
 
 #include "sbm/sbm_constants.h"
 #include "SBUtilities.h"
-#include "sbm/BMLDefs.h"
 #include "sb/SBPawn.h"
 #include "sb/SBSkeleton.h"
 
@@ -41,31 +40,26 @@ std::string MeCtHeadOrient::_type_name = "HeadOrient";
 
 enum HeadBehaviorType { HEAD_NOD, HEAD_SHAKE, HEAD_TOSS, HEAD_ORIENT, HEAD_WIGGLE, HEAD_WAGGLE, HEAD_PARAMETERIZED };
 
-MeCtHeadOrient::MeCtHeadOrient( )	{
+MeCtHeadOrient::MeCtHeadOrient(SmartBody::SBPawn& pawn ) :SmartBody::SBController(pawn)	{
 
 	_duration = -1.0;
 	_pitch_deg = 0.0;
 	_heading_deg = 0.0;
 	_roll_deg = 0.0;
-}
 
-MeCtHeadOrient::~MeCtHeadOrient( )	= default;
-
-void MeCtHeadOrient::init(SmartBody::SBPawn* pawn)
-{
 	char joint_labels[ 3 ][ MAX_JOINT_LABEL_LEN ] = {
-		"spine4",
-		"spine5",
-		"skullbase"
+			"spine4",
+			"spine5",
+			"skullbase"
 	};
 	int i;
 
 	for( i = 0; i < 3; i++ )	{
 		_channels.add( joint_labels[ i ], SkChannel::Quat );
 	}
-
-	MeController::init(pawn);
 }
+
+MeCtHeadOrient::~MeCtHeadOrient( )	= default;
 
 void MeCtHeadOrient::set_orient( float dur, float p, float h, float r )	{
 
@@ -145,28 +139,24 @@ TILTING JOINTS: { "spine4", "spine5", "skullbase" }
 
 std::string MeCtSimpleTilt::_type_name = "SimpleTilt";
 
-MeCtSimpleTilt::MeCtSimpleTilt( )	{
+MeCtSimpleTilt::MeCtSimpleTilt(SmartBody::SBPawn& pawn ) : SmartBody::SBController(pawn)	{
 
 	_duration = -1.0;
 	_angle_deg = 0.0;
-}
-
-MeCtSimpleTilt::~MeCtSimpleTilt( )	= default;
-
-void MeCtSimpleTilt::init(SmartBody::SBPawn* pawn)	{
 	char joint_labels[ 3 ][ MAX_JOINT_LABEL_LEN ] = {
-		"spine4",
-		"spine5",
-		"skullbase"
+			"spine4",
+			"spine5",
+			"skullbase"
 	};
 	int i;
 
 	for( i = 0; i < 3; i++ )	{
 		_channels.add( joint_labels[ i ], SkChannel::Quat );
 	}
-
-	MeController::init(pawn);
 }
+
+MeCtSimpleTilt::~MeCtSimpleTilt( )	= default;
+
 
 void MeCtSimpleTilt::set_tilt( float dur, float angle_deg )	{
 
@@ -243,26 +233,21 @@ NODDING JOINTS: { "spine4", "spine5", "skullbase" }
 
 std::string MeCtSimpleNod::_type_name = "SimpleNod";
 
-MeCtSimpleNod::MeCtSimpleNod( void )	{
+MeCtSimpleNod::MeCtSimpleNod(SmartBody::SBPawn& pawn) :SmartBody::SBController(pawn)	{
 
 	_duration = -1.0;
 	_magnitude = 0.0;
 	_repetitions = 0.0;
 	_movementType = HEAD_NOD;
-}
 
-MeCtSimpleNod::~MeCtSimpleNod( void )	{}
-
-void MeCtSimpleNod::init(SmartBody::SBPawn* pawn)
-{
 	char joint_labels[ 3 ][ MAX_JOINT_LABEL_LEN ] = {
-		"spine4",
-		"spine5",
-		"skullbase"
+			"spine4",
+			"spine5",
+			"skullbase"
 	};
 	int i;
 
-	SkChannelArray& characterChannels = pawn->getSkeleton()->channels();
+	SkChannelArray& characterChannels = pawn.getSkeleton()->channels();
 	for( i = 0; i < 3; i++ )
 	{
 		if (characterChannels.doesChannelExist(joint_labels[ i ], SkChannel::Type::Quat))
@@ -270,9 +255,9 @@ void MeCtSimpleNod::init(SmartBody::SBPawn* pawn)
 	}
 
 	_first_eval = true;
-
-	MeController::init(pawn);
 }
+
+MeCtSimpleNod::~MeCtSimpleNod()	= default;
 
 void MeCtSimpleNod::set_nod( float dur, float mag, float rep, int movementType, float smooth )	{
 
@@ -284,17 +269,17 @@ void MeCtSimpleNod::set_nod( float dur, float mag, float rep, int movementType, 
 	_smooth = smooth;
 }
 
-bool MeCtSimpleNod::isNod()
+bool MeCtSimpleNod::isNod() const
 {
 	return (_movementType == HEAD_NOD && _mode == NOD_SIMPLE);
 }
 
-bool MeCtSimpleNod::isShake()
+bool MeCtSimpleNod::isShake() const
 {
 	return (_movementType == HEAD_SHAKE && _mode == NOD_SIMPLE);
 }
 
-bool MeCtSimpleNod::isTilt()
+bool MeCtSimpleNod::isTilt() const
 {
 	return (_movementType == HEAD_TOSS && _mode == NOD_SIMPLE);
 }

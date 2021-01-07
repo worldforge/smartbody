@@ -209,10 +209,10 @@ void MeCtScheduler2::Track::remap() {
 
 std::string MeCtScheduler2::type_name = "MeCtScheduler2";
 
-MeCtScheduler2::MeCtScheduler2 ()
-:	_self( this, null_deleter() ), // See: http://www.boost.org/doc/libs/1_38_0/libs/smart_ptr/sp_techniques.html#weak_without_shared
-	MeCtContainer( new MeCtScheduler2::Context( this ) ),   // Ignore Warning: No writes, just passing a reference
-	_sub_sched_context( dynamic_cast<MeCtScheduler2::Context*>( _sub_context.get()) )
+MeCtScheduler2::MeCtScheduler2 (SmartBody::SBPawn& pawn)
+:	MeCtContainer( pawn, new MeCtScheduler2::Context( this ) ),   // Ignore Warning: No writes, just passing a reference
+	 _self( this, null_deleter() ), // See: http://www.boost.org/doc/libs/1_38_0/libs/smart_ptr/sp_techniques.html#weak_without_shared
+	 _sub_sched_context( dynamic_cast<MeCtScheduler2::Context*>( _sub_context.get()) )
 {
 }
 
@@ -278,8 +278,8 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::schedule(
 	int numKeys,
 	int numKeyParams
 ){	
-	auto* timingCt   = new MeCtTimeShiftWarp( ct );
-	auto*         blendingCt = new MeCtBlend( timingCt );
+	auto* timingCt   = new MeCtTimeShiftWarp(_pawn, ct );
+	auto*         blendingCt = new MeCtBlend(_pawn, timingCt );
 
 	const char* ct_name = ct->getName().c_str();
 
@@ -318,8 +318,8 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct, double tin,
 	bool dur_defined = (ct_dur >= 0);
 	//double tout = tin + dur;  // Only used if duration is defined.  See below.
 
-	auto* timingCt   = new MeCtTimeShiftWarp( ct );
-	auto*         blendingCt = new MeCtBlend( timingCt );
+	auto* timingCt   = new MeCtTimeShiftWarp(_pawn, ct );
+	auto*         blendingCt = new MeCtBlend(_pawn, timingCt );
 
 	const char* ct_name = ct->getName().c_str();
 
@@ -440,8 +440,8 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct, ScheduleDat
 	bool dur_defined = (ct_dur >= 0);
 	//double tout = tin + dur;  // Only used if duration is defined.  See below.
 
-	auto* timingCt   = new MeCtTimeShiftWarp( ct );
-	auto*         blendingCt = new MeCtBlend( timingCt );
+	auto* timingCt   = new MeCtTimeShiftWarp(_pawn, ct );
+	auto*         blendingCt = new MeCtBlend(_pawn, timingCt );
 
 	const char* ct_name = ct->getName().c_str();
 
@@ -619,20 +619,18 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct1, MeControll
 	double relaxAt  = scheduleData.readyAt;
 	double endAt    = scheduleData.endAt;
 
-	double now = getScene()->getSimulationManager()->getTime();;
-
 	// if any of the sync points begin before the current time, 
 	// then offset the motion accordingly
 
 	double indt  = readyAt - startAt;
 	double outdt = endAt - relaxAt;
 
-	auto* interpolator = new MeCtInterpolator(ct1, ct2, getScene()->getSimulationManager()->getTime(), double(value), loop);
+	auto* interpolator = new MeCtInterpolator(_pawn, ct1, ct2, getScene()->getSimulationManager()->getTime(), double(value), loop);
 	double ct_dur = interpolator->controller_duration();
 	bool dur_defined = (ct_dur >= 0);
 
-	auto* timingCt   = new MeCtTimeShiftWarp( interpolator );
-	auto*         blendingCt = new MeCtBlend( timingCt );
+	auto* timingCt   = new MeCtTimeShiftWarp(_pawn, interpolator );
+	auto*         blendingCt = new MeCtBlend(_pawn, timingCt );
 
 	srLinearCurve& blend_curve = blendingCt->get_curve();
 	if( indt>0 ) {
@@ -817,11 +815,6 @@ MeCtScheduler2::VecOfTrack MeCtScheduler2::tracks() {
 
 
 //----- virtuals -----
-
-void MeCtScheduler2::controller_init ()
-{
-   clear();
-}
 
 void MeCtScheduler2::controller_map_updated() {
 	// Clear previous data

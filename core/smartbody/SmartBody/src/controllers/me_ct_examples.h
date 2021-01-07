@@ -39,10 +39,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 class MeCtHeadOrient : public SmartBody::SBController	{
 	
 	public:
-		MeCtHeadOrient();
-		virtual ~MeCtHeadOrient();
+		explicit MeCtHeadOrient(SmartBody::SBPawn& pawn);
+		~MeCtHeadOrient() override;
 		
-		void init(SmartBody::SBPawn* pawn);
 		void set_orient( float dur, float p, float h, float r );
 		
 
@@ -50,11 +49,11 @@ class MeCtHeadOrient : public SmartBody::SBController	{
 		static std::string _type_name;
 
 	private:
-		virtual void controller_start();
-		virtual bool controller_evaluate( double t, MeFrameData& frame );
+		void controller_start() override;
+		bool controller_evaluate( double t, MeFrameData& frame ) override;
 		
-		virtual SkChannelArray& controller_channels() 	{ return( _channels ); }
-		virtual double controller_duration()			{ return( (double)_duration ); }
+		SkChannelArray& controller_channels() override 	{ return( _channels ); }
+		double controller_duration() override			{ return( (double)_duration ); }
 		virtual const std::string& controller_type()			{ return( _type_name ); }
 		
 		SkChannelArray _channels;
@@ -70,10 +69,9 @@ class MeCtHeadOrient : public SmartBody::SBController	{
 class MeCtSimpleTilt : public SmartBody::SBController	{
 	
 	public:
-		MeCtSimpleTilt();
+		MeCtSimpleTilt(SmartBody::SBPawn& pawn);
 		~MeCtSimpleTilt() override;
 		
-		void init(SmartBody::SBPawn* pawn) override;
 		void set_tilt( float dur, float angle_deg );
 		
 		// Following must be public for comparisons
@@ -109,16 +107,15 @@ class MeCtSimpleNod : public SmartBody::SBController	{
 			NOD_WAGGLE
 		};
 
-		MeCtSimpleNod();
-		virtual ~MeCtSimpleNod();
+		explicit MeCtSimpleNod(SmartBody::SBPawn& pawn);
+		~MeCtSimpleNod() override;
 		
-		void init(SmartBody::SBPawn* pawn);
 		void set_nod( float dur, float mag, float rep, int movementType, float smooth = 0.5 );
 //		void set_nod( int axis, float dur, float mag, float rep, float smooth = 0.5 );
 
-		bool isNod();
-		bool isShake();
-		bool isTilt();
+		bool isNod() const;
+		bool isShake() const;
+		bool isTilt() const;
 		
 		void set_wiggle( 
 			int axis,			// sbm:axis // not supported yet
@@ -171,8 +168,8 @@ class MeCtSimpleNod : public SmartBody::SBController	{
 		static std::string _type_name;
 
 	private:
-		float calc_wiggle_curve( float t, float warp, float accel_pow );
-		float calc_waggle_curve( float t, float length, float pitch, float warp, float accel_pow, float decay_pow );
+		static float calc_wiggle_curve( float t, float warp, float accel_pow );
+		static float calc_waggle_curve( float t, float length, float pitch, float warp, float accel_pow, float decay_pow );
 	
 		virtual void controller_start();
 		virtual bool controller_evaluate( double t, MeFrameData& frame );

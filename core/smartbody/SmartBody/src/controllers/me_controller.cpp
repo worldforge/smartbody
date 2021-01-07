@@ -19,7 +19,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include <iostream>
-#include <sstream>
 
 #include <controllers/me_controller.h>
 #include <sr/sr_quat.h>
@@ -47,7 +46,7 @@ using namespace std;
 int MeController::instance_count = 0;
 
 
-MeController::MeController ()
+MeController::MeController (SmartBody::SBPawn& pawn)
 :	_active( false ),
 	_indt( 0.0f ),
 	_outdt( 0.0f ),
@@ -60,10 +59,10 @@ MeController::MeController ()
 	_startTime(-1),
 	_stopTime(-1),
 	_initialized(false),
-	_enable(true)
+	_enable(true),
+	_pawn(pawn)
 	//_handle("")
 {
-	setName("");
 	_instance_id = instance_count;
 	instance_count ++;
 	_invocation_count = -1;
@@ -75,11 +74,13 @@ MeController::MeController ()
 	_buffer_changes_toggle = false;
 	_buffer_changes_toggle_reset = true;
 	_record_duration = 0.0;
-	_pawn = nullptr;
 	_curFrame = nullptr;
 
 	SBObject::createBoolAttribute("enable", true, true, "Basic", 220, false, false, false, "whether to evaluate this controller");
 	SBObject::createStringAttribute("handle", "", true, "Basic", 220, false, false, false, "handle for this controller");
+
+	updateDefaultVariables(&pawn);
+
 }
 
 MeController::~MeController () {
@@ -132,16 +133,13 @@ void MeController::remove_all_children() {
 	}
 }
 
-void MeController::init (SmartBody::SBPawn* pawn) {
-	_pawn = pawn;
-	_active = false;
-	controller_init ();
-
-	if( _context )
-		_context->child_channels_updated( this );
-
-	updateDefaultVariables(pawn);	
-}
+//void MeController::init (SmartBody::SBPawn* pawn) {
+//	_active = false;
+//
+//	if( _context )
+//		_context->child_channels_updated( this );
+//
+//}
 
 MePrunePolicy* MeController::prune_policy () {
 	return _prune_policy.get();
@@ -547,7 +545,7 @@ void MeController::saveMotionRecord( const std::string &recordname )
 		fileOutput = std::make_unique<SrOutput>( filename.c_str(), "w" );
 		_record_output = std::make_unique<SrOutput>(stringOutput);
 
-		auto skeleton_p = _pawn->getSkeleton();
+		auto skeleton_p = _pawn.getSkeleton();
 
 		if( skeleton_p == nullptr )	{
 			SmartBody::util::log("MeController::record_write NOTICE: SkSkeleton not available");
@@ -579,7 +577,7 @@ void MeController::saveMotionRecord( const std::string &recordname )
 		*_record_output << "SkMotion\n\n";
 		*_record_output << "name \"" << recordname.c_str() << "\"\n\n";
 
-		SkChannelArray& channels = _pawn->getSkeleton()->channels();
+		SkChannelArray& channels = _pawn.getSkeleton()->channels();
 		*_record_output << channels << srnl;
 		*_record_output << "frames " << (int)_frames.size() << srnl;	
 
@@ -638,7 +636,7 @@ void MeController::cont_record( double time, MeFrameData& frame )	{
 
 	if( _record_mode == RECORD_BVH_MOTION )	{
 
-		auto skeleton_p = _pawn->getSkeleton();
+		auto skeleton_p = _pawn.getSkeleton();
 		/*
 		if( _context->channels().size() > 0 )	{
 			skeleton_p = _context->channels().skeleton();
@@ -664,7 +662,7 @@ void MeController::cont_record( double time, MeFrameData& frame )	{
 		frame_data_os << "kt " << time << " fr ";
 
 		//SkChannelArray& channels =_context->channels();
-		SkChannelArray& channels = _pawn->getSkeleton()->channels();
+		SkChannelArray& channels = _pawn.getSkeleton()->channels();
 		int num_channels = channels.size();
 		SrBuffer<float>& buff = frame.buffer();
 
@@ -857,10 +855,7 @@ void MeController::notify(SmartBody::SBSubject* subject)
 }
 
 SmartBody::SBScene* MeController::getScene() {
-	if (_pawn) {
-		return &_pawn->_scene;
-	}
-	return nullptr;
+	return &_pawn._scene;
 }
 
 

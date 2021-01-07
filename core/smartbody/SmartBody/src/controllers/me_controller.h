@@ -124,16 +124,16 @@ protected :
 	bool		_buffer_changes_toggle_reset;	// flag to initialize the buffer_changes
 	bool		_enable;						// determines if this controller does not get evaluated. 	
 	std::string	_handle;
-	SmartBody::SBPawn* _pawn;
 	MeFrameData* _curFrame;
 
 protected :
     /*! Constructor */
-    MeController ();
+    explicit MeController(SmartBody::SBPawn& pawn);
 
 	void clone_parameters( MeController* other );
 
 public :
+	SmartBody::SBPawn& _pawn;
     /*! Destructor is public but pay attention to the use of ref()/unref() */
     ~MeController () override;
 
@@ -234,7 +234,7 @@ public :
         Both controller_init() and controller_channels() are called here.
         The convention is that, if there is another init method in the derived
         class, the derived class will be responsible for calling MeController::init() */
-    SBAPI virtual void init (SmartBody::SBPawn* pawn);
+//    SBAPI virtual void init (SmartBody::SBPawn* pawn);
 
 
 	/*! Returns the controller's prune policy, if set.  Otherwise, nullptr. */
@@ -303,7 +303,7 @@ public :
 	bool print_bvh_motion( SkJoint* joint_p, int depth, FRAME& frame_data );
 	void load_bvh_joint_hmap( );
 
-//	bool init_record( void );
+//	bool init_record();
 	void cont_record( double time, MeFrameData& frame );
 	void stop_record( );
 
@@ -321,10 +321,7 @@ public :
     void input ( SrInput& i );
 
    protected :
-	/*! This method is called at initialization time. The controller should 
-        initialize itself, and get ready to start. */
-	virtual void controller_init () {}  // No-op default
-    
+
 	/*!  Called immediately after a context has been set.
 	 */
 	virtual void context_updated() {}

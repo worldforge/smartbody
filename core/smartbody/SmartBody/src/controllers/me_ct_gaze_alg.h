@@ -42,7 +42,7 @@ gwiz::quat_t rotation_ray_to_target_point(
 	int heading_only = false
 );
 
-void test_forward_ray( void );
+void test_forward_ray();
 
 //////////////////////////////////////////////////////////////////////////
 #endif

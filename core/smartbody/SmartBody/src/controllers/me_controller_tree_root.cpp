@@ -174,7 +174,7 @@ protected:
 	boost::intrusive_ptr<MeEvaluationLogger> _logger;
 	set<string>         _logged_joints;
 	set<int>            _logged_channel_indices;
-	SbmPawn*			_pawn;
+	SbmPawn&			_pawn;
 
 
 public:
@@ -182,14 +182,14 @@ public:
     // Public Methods
 
 	// Constructor
-	MeControllerTreeRootImpl()
+	MeControllerTreeRootImpl(SbmPawn& pawn)
 	:	_skeleton(nullptr),
 		_state(VALID),
 		_channels_cur(0),
 		_controllers(),
 		_frame_data(this),  // Ignore this warning... no member access
 		_logger( nullptr ),
-		_pawn(nullptr)
+		_pawn(pawn)
 	{
 		// Make sure the ChannelArray members are zeroed out
 		_channels[0].init();
@@ -303,12 +303,7 @@ public:
 
 	SbmPawn* getPawn() override
 	{
-		return _pawn;
-	}
-
-	void setPawn(SbmPawn* pawn) override
-	{
-		_pawn = pawn;
+		return &_pawn;
 	}
 
 
@@ -581,7 +576,7 @@ private:
 		_frame_data.remapBuffers( cur, prev );
 		prev.init();  // clear old channel references
 
-		auto time = _pawn->_scene.getSimulationManager()->getTime();
+		auto time = _pawn._scene.getSimulationManager()->getTime();
 
 		for (auto& ct : _controllers) {
 			ct->remap();
@@ -705,6 +700,6 @@ void TreeRootFrameData::remapBuffers( SkChannelArray& cur, SkChannelArray& prev 
 
 ///////////////////////////////////////////////////////////////////////////
 //  MeControllerTreeRoot
-MeControllerTreeRoot* MeControllerTreeRoot::create() {
-	return new MeControllerTreeRootImpl();
+MeControllerTreeRoot* MeControllerTreeRoot::create(SbmPawn& pawn) {
+	return new MeControllerTreeRootImpl(pawn);
 }

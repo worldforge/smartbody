@@ -89,8 +89,8 @@ retargetBehaviorSet('test')
 
 class MyController(PythonController):
 
-    def init(self, pawn):
-        setName("FuseShapes")
+    def __init__(self):
+        self.setName("FuseShapes")
         # setup rig nodes
         print("Setting up face rig...")
         # set ja/li parameters to .5

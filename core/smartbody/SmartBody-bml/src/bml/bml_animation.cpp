@@ -23,14 +23,12 @@
 
 
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include "bml_animation.hpp"
 #include "controllers/me_ct_scheduler2.h"
 
 #include "bml_xml_consts.hpp"
-#include <sb/SBSkeleton.h>
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include <sb/SBAssetManager.h>
@@ -67,7 +65,7 @@ BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::s
 	xml_utils::xml_translate(&overlayType, overlayTypeID);
 
 	
-	if( animName != 0 && *animName != 0 )	{
+	if( animName != nullptr && *animName != 0 )	{
 
 		// Look up motion
 		string asciiName( xml_utils::asciiString( animName ) );
@@ -86,7 +84,7 @@ BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::s
 */
 			double twarp = xml_utils::xml_parse_double( BMLDefs::ATTR_SPEED, elem, 1.0 );
 			
-			boost::intrusive_ptr<MeCtMotion> motionCt(new MeCtMotion());
+			boost::intrusive_ptr<MeCtMotion> motionCt(new MeCtMotion(*(SmartBody::SBCharacter*)request->actor));
 
 			if (additive == "true")
 			{
@@ -104,7 +102,7 @@ BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::s
 			ostringstream name;
 			name << unique_id << ' ' << motion->getName();
 			motionCt->setName( name.str() );  // TODO: include BML act and behavior ids
-			motionCt->init( const_cast<SbmCharacter*>(request->actor), motion, 0.0, 1.0 / twarp );
+			motionCt->init(motion, 0.0, 1.0 / twarp );
 			if (overlayType == "true")
 			{
 				BehaviorRequestPtr behavPtr(new MotionRequest(unique_id, localId, motionCt, request->actor->overlayMotion_sched_p, behav_syncs));

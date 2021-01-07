@@ -27,27 +27,22 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBController::SBController() : MeController()
+SBController::SBController(SmartBody::SBPawn& pawn) : MeController(pawn)
 {
 	controllerType = "SBController";
 	this->setName("controller");
 }
 
-SBController::SBController(const SBController& controller)
+SBController::SBController(const SBController& controller) : MeController(controller._pawn)
 {
 	// ?
 }
 
 SBController::~SBController() = default;
 
-void SBController::setPawn(SBPawn* pawn)
-{
-	_pawn = pawn;
-}
-
 SBPawn* SBController::getPawn()
 {
-	return _pawn;
+	return &_pawn;
 }
 
 void SBController::addChannel(std::string channelName, std::string type)
@@ -202,8 +197,6 @@ void SBController::getJointChannelValues( const std::string& jointName, MeFrameD
 
 double SBController::getChannelValue(const std::string& channelName)
 {
-	if (!_pawn)
-		return 0.0;
 
 	if (!_curFrame)
 		return 0.0;
@@ -216,8 +209,6 @@ double SBController::getChannelValue(const std::string& channelName)
 
 SrVec SBController::getChannelPos(const std::string& channelName)
 {
-	if (!_pawn)
-		return SrVec();
 
 	if (!_curFrame)
 		return SrVec();
@@ -230,8 +221,6 @@ SrVec SBController::getChannelPos(const std::string& channelName)
 
 SrQuat SBController::getChannelQuat(const std::string& channelName)
 {
-	if (!_pawn)
-		return SrQuat();
 
 	if (!_curFrame)
 		return SrQuat();
@@ -244,8 +233,6 @@ SrQuat SBController::getChannelQuat(const std::string& channelName)
 
 void SBController::setChannelValue(const std::string& channelName, double val)
 {
-	if (!_pawn)
-		return;
 
 	if (!_curFrame)
 		return;
@@ -265,8 +252,7 @@ void SBController::setChannelValue(const std::string& channelName, double val)
 
 void SBController::setChannelPos(const std::string& channelName, SrVec pos)
 {
-	if (!_pawn)
-		return;	
+
 	if (!_curFrame)
 		return;
 
@@ -277,8 +263,7 @@ void SBController::setChannelPos(const std::string& channelName, SrVec pos)
 
 void SBController::setChannelQuat(const std::string& channelName, SrQuat quat)
 {
-	if (!_pawn)
-		return;
+
 	if (!_curFrame)
 		return;
 
@@ -289,12 +274,11 @@ void SBController::setChannelQuat(const std::string& channelName, SrQuat quat)
 
 SBAPI void SBController::setChannelQuatGlobal( const std::string& channelName, SrQuat quat )
 {
-	if (!_pawn)
-		return;
+
 	if (!_curFrame)
 		return;
 
-	SmartBody::SBJoint* joint = _pawn->getSkeleton()->getJointByMappedName(channelName);
+	SmartBody::SBJoint* joint = _pawn.getSkeleton()->getJointByMappedName(channelName);
 	if (!joint)
 		return;
 
@@ -307,12 +291,11 @@ SBAPI void SBController::setChannelQuatGlobal( const std::string& channelName, S
 SrQuat SBController::convertChannelQuatGlobal(const std::string& channelName, SrQuat quat)
 {
   SrQuat temp = quat;
-  if (!_pawn)
-    return temp;
+
   if (!_curFrame)
     return temp;
   
-  SmartBody::SBJoint* joint = _pawn->getSkeleton()->getJointByMappedName(channelName);
+  SmartBody::SBJoint* joint = _pawn.getSkeleton()->getJointByMappedName(channelName);
   if (!joint)
     return temp;
   

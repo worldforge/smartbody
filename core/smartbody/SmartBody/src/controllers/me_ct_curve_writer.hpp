@@ -31,30 +31,18 @@ class MeCtCurveWriter : public SmartBody::SBController {
 
 		static std::string TYPE;
 
-		MeCtCurveWriter( void )	{
-			curve_arr = nullptr;
-			num_curves = 0;
-			write_once_arr = nullptr;
-			tail_bound_mode = 0;
-		}
-		~MeCtCurveWriter( void )	{
-			if( curve_arr ) {
+		MeCtCurveWriter( SmartBody::SBPawn& pawn,
+						 SkChannelArray& channels,
+						 int left_bound = srLinearCurve::CROP,
+						 int right_bound = srLinearCurve::CROP,
+						 bool at_least_once = true );
+
+		~MeCtCurveWriter( ) override	{
 				delete [] curve_arr;
-				curve_arr = nullptr;
-			}
-			if( write_once_arr ) {
 				delete [] write_once_arr;
-				write_once_arr = nullptr;
-			}
+
 		}
-	
-		void init( 
-			SmartBody::SBPawn* pawn,
-			SkChannelArray& channels,
-			int left_bound = srLinearCurve::CROP, 
-			int right_bound = srLinearCurve::CROP, 
-			bool at_least_once = true 
-		);
+
 		
 		void insert_key( int curve_index, double t, double v )	{
 			if( curve_index < 0 ) return;

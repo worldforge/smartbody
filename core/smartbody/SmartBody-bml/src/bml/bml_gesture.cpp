@@ -21,7 +21,6 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include "bml_gesture.hpp"
@@ -34,13 +33,11 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBRetargetManager.h>
 #include <sb/SBRetarget.h>
 #include <sb/SBBehavior.h>
-#include <sb/SBSkeleton.h>
 #include <sb/SBMotion.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBAnimationState.h>
 #include <controllers/me_ct_motion.h>
 #include <controllers/me_ct_scheduler2.h>
-#include <sb/SBMotion.h>
 #include "SBUtilities.h"
 
 using namespace std;
@@ -53,7 +50,7 @@ using namespace xml_utils;
  *	- you can specify joints, scale, frequency for perlin noise added to gesture holding period. premise is no idle animation is specified.
  */
 
-BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) 
+BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, const BmlRequestPtr& request, SmartBody::SBScene* scene )
 {
 	const XMLCh* animName = elem->getAttribute( BMLDefs::ATTR_NAME );
 	const XMLCh* id = elem->getAttribute(BMLDefs::ATTR_ID);
@@ -102,17 +99,17 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 
 	std::string emotion = xml_utils::xml_parse_string(BMLDefs::ATTR_EMOTION, elem, "");
 
-	SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(request->actor);
-	std::string gestureMapName = "";
+	auto* character = dynamic_cast<SmartBody::SBCharacter*>(request->actor);
+	std::string gestureMapName;
 	std::string mapNameLower = SmartBody::util::toLower(emotion);
 	// capitalize the first letter 
-	if (mapNameLower.size() > 0)
+	if (!mapNameLower.empty())
 		mapNameLower[0] = toupper(mapNameLower[0]);
 	std::string finalGestureMapName = "gestureMap" + mapNameLower;
 	gestureMapName = character->getStringAttribute(finalGestureMapName);
 
 	std::vector<std::string> animationList;
-	if (animationName == "")	// If you have assigned the animation name, do not look for the map
+	if (animationName.empty())	// If you have assigned the animation name, do not look for the map
 	{
 		SmartBody::SBGestureMap* gestureMap = SmartBody::SBScene::getScene()->getGestureMapManager()->getGestureMap(gestureMapName);
 		if (!gestureMap)
@@ -163,13 +160,13 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		animationName = gestureMap->getGestureByInfo(lexeme, type, mode, style, posture, request->actor->getStringAttribute("gesturePolicy"), useIndex, appliedIndex);
 			
 		std::string str = request->actor->getStringAttribute("gestureRequest.lastGestureRandom");
-		if (str != "")
+		if (!str.empty())
 			str += "|";
 		str += std::to_string(appliedIndex);
 		request->actor->setStringAttribute("gestureRequest.lastGestureRandom", str);
 
 		animationList = gestureMap->getGestureListByInfo(lexeme, type, mode, style, posture);
-		if (animationName == "")
+		if (animationName.empty())
 		{
 			SmartBody::util::log("Could not find animation for: %s %s %s %s %s", lexeme.c_str(), type.c_str(), mode.c_str(), style.c_str(), posture.c_str());
 			return BehaviorRequestPtr();
@@ -180,7 +177,7 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		}
 	}
 
-	if (animationName == "")
+	if (animationName.empty())
 	{
 		SmartBody::util::log("WARNING: BML::parse_bml_gesture(): invalid animation name");
 		return BehaviorRequestPtr();
@@ -273,13 +270,13 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 			// don't perform any specialized gesture handling, simply play the mapped animation
 
 			double twarp = 1.0;
-			MeCtMotion* motionCt = new MeCtMotion();
+			MeCtMotion* motionCt = new MeCtMotion(*(SmartBody::SBCharacter*)request->actor);
 
 			// Name controller with behavior unique_id
 			ostringstream name;
 			name << unique_id << ' ' << motion->getName();
 			motionCt->setName(name.str().c_str());  // TODO: include BML act and behavior ids
-			motionCt->init(const_cast<SbmCharacter*>(request->actor), motion, 0.0, 1.0 / twarp);
+			motionCt->init(motion, 0.0, 1.0 / twarp);
 			// remove all syncs except for stroke to prevent gesture scaling
 			if (behav_syncs.sync_stroke()->sync())
 			{
@@ -382,7 +379,7 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 
 
 		SmartBody::SBMotion* mForCt = motion;
-		MeCtMotion* motionCt = new MeCtMotion();
+		auto* motionCt = new MeCtMotion(*(SmartBody::SBCharacter*)request->actor);
 		if (isAdditive)
 		{
 			mForCt = motion->getOffset();
@@ -394,7 +391,7 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		// Name controller with behavior unique_id
 		ostringstream name;
 		name << unique_id << ' ' << motion->getName();
-		motionCt->setName(name.str().c_str());  // TODO: include BML act and behavior ids
+		motionCt->setName(name.str());  // TODO: include BML act and behavior ids
 		
 		// pre stroke hold
 		float prestrokehold = (float)xml_utils::xml_parse_double(BMLDefs::ATTR_PRESTROKE_HOLD, elem, -1.0);
@@ -455,11 +452,11 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		if (isInLocomotion)
 		{
 			std::vector<std::string> jointNames = sbCharacter->getSkeleton()->getUpperBodyJointNames();
-			motionCt->init( const_cast<SbmCharacter*>(request->actor), mForCt, jointNames);
+			motionCt->init(mForCt, jointNames);
 		}
 		else
 		{
-			motionCt->init( const_cast<SbmCharacter*>(request->actor), mForCt, 0.0, 1.0);
+			motionCt->init(mForCt, 0.0, 1.0);
 		}
 
 		int priority = xml_utils::xml_parse_int(BMLDefs::ATTR_PRIORITY, elem, 0);

@@ -33,7 +33,7 @@ using namespace std;
 std::string MeCtAnkleLilt::type_name= "AnkleLilt";
 
 
-MeCtAnkleLilt::MeCtAnkleLilt( void ) { 
+MeCtAnkleLilt::MeCtAnkleLilt() {
 		 _duration=0;
 		 _magnitude=0;
 		 _angle_offset = 0;

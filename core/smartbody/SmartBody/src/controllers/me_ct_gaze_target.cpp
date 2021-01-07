@@ -63,7 +63,7 @@ void MeCtGaze::set_target_polar( float d, float a, float r = 0.0 )	{
 }
 
 // target coordinate system
-void MeCtGaze::set_target_coord_world( void )	{
+void MeCtGaze::set_target_coord_world()	{
 
 	if( target_ref_joint_str ) free( target_ref_joint_str );
 	target_ref_joint_str = nullptr;
@@ -114,7 +114,7 @@ void MeCtGaze::set_offset_polar( float d, float a, float r = 0.0 )	{
 }
 
 // offset coordinate system
-void MeCtGaze::set_offset_coord_world( void )	{
+void MeCtGaze::set_offset_coord_world()	{
 
 	if( offset_ref_joint_str ) free( offset_ref_joint_str );
 	offset_ref_joint_str = nullptr;
@@ -138,7 +138,7 @@ void MeCtGaze::set_offset_coord_joint( SkJoint* joint_p )	{
 	offset_coord = OFFSET_JOINT_LOCAL;
 }
 
-void MeCtGaze::set_offset_coord_parent( void )	{
+void MeCtGaze::set_offset_coord_parent()	{
 
 	if( offset_ref_joint_str ) free( offset_ref_joint_str );
 	offset_ref_joint_str = nullptr;

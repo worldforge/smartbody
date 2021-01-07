@@ -536,8 +536,7 @@ BOOST_PYTHON_MODULE (SmartBody) {
 	pythonFuncsMotion();
 
 
-	boost::python::class_<SBController, boost::python::bases<SBObject> >("SBController")
-			.def(boost::python::init<>())
+	boost::python::class_<SBController, boost::python::bases<SBObject> >("SBController", boost::python::no_init)
 			.def("addChannel", &SBController::addChannel, "Adds a channel to this controller's context.")
 			.def("getType", &SBController::getType, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the type for this controller.")
 			.def("setIgnore", &SBController::setIgnore, "Ignore this controller when evaluating controller tree.")
@@ -555,28 +554,28 @@ BOOST_PYTHON_MODULE (SmartBody) {
 			.def("convertChannelQuatGlobal", &SBController::convertChannelQuatGlobal, boost::python::return_value_policy<boost::python::return_by_value>(), "convert the channel's rotation value.")
 			.def("getCharacterName", &SBController::getCharacterName, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the controlling character's name.")
 			.def("getPawn", &SBController::getPawn, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Attaches the attached pawn to the controller.")
-			.def("setPawn", &SBController::setPawn, "Attaches the pawn to the controller.");
+			//.def("setPawn", &SBController::setPawn, "Attaches the pawn to the controller.")
+			;
 
 	boost::python::class_<MeCtNewLocomotion, boost::python::bases<SBController, SBObject>, boost::noncopyable >("SBNewLocomotion", boost::python::no_init)
-			.def(boost::python::init<>())
 			.def("reset", &MeCtNewLocomotion::reset, "Resets.")
 			.def("setDesiredHeading", &MeCtNewLocomotion::setDesiredHeading, "Sets the desired heading")
 			.def("loopMotion", &MeCtNewLocomotion::loopMotion, "Checks a loop");
 
-	boost::python::class_<MeCtScheduler2, boost::python::bases<SBController> >("SchedulerController")
+	boost::python::class_<MeCtScheduler2, boost::python::bases<SBController> >("SchedulerController", boost::python::no_init)
 			.def("getNumTracks", &MeCtScheduler2::count_children, "Returns the number of children/tracks.");
 
-	boost::python::class_<MeCtMotion, boost::python::bases<SBController> >("MotionController")
+	boost::python::class_<MeCtMotion, boost::python::bases<SBController> >("MotionController", boost::python::no_init)
 		//	.def("getMotion", &MeCtMotion::motion, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the motion associated with this motion controller.")
 			;
 
-	boost::python::class_<MeCtEyeLid, boost::python::bases<SBController> >("EyelidController");
+	boost::python::class_<MeCtEyeLid, boost::python::bases<SBController> >("EyelidController", boost::python::no_init);
 
-	boost::python::class_<MeCtGaze, boost::python::bases<SBController> >("GazeController");
+	boost::python::class_<MeCtGaze, boost::python::bases<SBController> >("GazeController", boost::python::no_init);
 
 	//boost::python::class_<MeCtReach, boost::python::bases<SBController> > ("ReachController")	;
 
-	boost::python::class_<MeCtCurveWriter, boost::python::bases<SBController> >("CurveWriterController");
+	boost::python::class_<MeCtCurveWriter, boost::python::bases<SBController> >("CurveWriterController", boost::python::no_init);
 
 
 	pythonFuncsSkeleton();
@@ -765,10 +764,9 @@ BOOST_PYTHON_MODULE (SmartBody) {
 	boost::python::class_<SBEventHandlerWrap, boost::noncopyable>("SBEventHandler")
 			.def("executeAction", &SBEventHandler::executeAction, &SBEventHandlerWrap::default_executeAction, "Execute the event handler.");
 
-	boost::python::class_<PythonControllerWrap, boost::noncopyable, boost::python::bases<SBController, SBObject>, boost::shared_ptr<PythonControllerWrap> >("PythonController")
+	boost::python::class_<PythonControllerWrap, boost::noncopyable, boost::python::bases<SBController, SBObject>, boost::shared_ptr<PythonControllerWrap> >("PythonController", boost::python::no_init)
 			.def("start", &PythonController::start, &PythonControllerWrap::default_start, "start.")
 			.def("stop", &PythonController::stop, &PythonControllerWrap::default_stop, "stop.")
-			.def("init", &PythonController::init, &PythonControllerWrap::default_init, "init.")
 			.def("evaluate", &PythonController::evaluate, &PythonControllerWrap::default_evaluate, "evaluate.");
 
 	boost::python::class_<TransitionRuleWrap, boost::noncopyable>("TransitionRule")

@@ -29,26 +29,25 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 class MeCtBasicLocomotion : public SmartBody::SBController
 {
 	public:
-		MeCtBasicLocomotion(SbmCharacter* c);
-		~MeCtBasicLocomotion();
-		void init(SmartBody::SBPawn* pawn);
-		
-		virtual bool controller_evaluate(double t, MeFrameData& frame);		
-		virtual SkChannelArray& controller_channels()	{return(_channels);}
-		virtual double controller_duration()			{return -1;}
-		virtual const std::string& controller_type() const		{return(_type_name);}
+		explicit MeCtBasicLocomotion(SbmCharacter* c);
+		~MeCtBasicLocomotion() override;
+
+		bool controller_evaluate(double t, MeFrameData& frame) override;
+		SkChannelArray& controller_channels() override	{return(_channels);}
+		double controller_duration() override			{return -1;}
+		const std::string& controller_type() const override		{return(_type_name);}
 		
 	public:
 		static std::string _type_name;
 		void setScootSpd(float v) {scootSpd = v;}
-		float getScootSpd() {return scootSpd;}
+		float getScootSpd() const {return scootSpd;}
 		void setMovingSpd(float v) {movingSpd = v;}
-		float getMovingSpd() {return movingSpd;}
+		float getMovingSpd() const {return movingSpd;}
 		void setTurningSpd(float v) {turningSpd = v;}
-		float getTurningSpd() {return turningSpd;}
+		float getTurningSpd() const {return turningSpd;}
 		void setValid(bool v) {_valid = v;}
 		void setDesiredHeading(float v) {desiredHeading = v;}
-		float getDesiredHeading() {return desiredHeading;}
+		float getDesiredHeading() const {return desiredHeading;}
 
 	protected:
 		void updateWorldOffset(MeFrameData& frame, SrQuat& rot, SrVec& pos);

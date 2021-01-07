@@ -223,7 +223,7 @@ public:
 	//  Public Methods
 
     /*! Constructor */
-    MeCtScheduler2();
+    explicit MeCtScheduler2(SmartBody::SBPawn& pawn);
 
     /*! Destructor is public but pay attention to the use of ref()/unref() */
     ~MeCtScheduler2() override;
@@ -391,8 +391,6 @@ protected:
 	//! Implements MeCtContainer::remove_child(..)
 	bool remove_child( MeController* child ) override;
 
-	// callbacks for the base class
-    void controller_init() override;
     bool controller_evaluate( double t, MeFrameData& frame ) override;
     SkChannelArray& controller_channels() override;
     double controller_duration() override;

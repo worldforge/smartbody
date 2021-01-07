@@ -33,18 +33,17 @@ class SBControllerModifier;
 class SBController : public MeController
 {
 	public:
-		SBAPI SBController();
+		SBAPI explicit SBController(SmartBody::SBPawn& pawn);
 		SBAPI SBController(const SBController& controller);
 		SBAPI ~SBController() override;
 
 		SBAPI const std::string& getType();
 
-		SBAPI SBController* getParent();			// how to get parent?
-		SBAPI SBController* getChild(int index);
-		SBAPI int getNumChildren();
+//		SBAPI SBController* getParent();			// how to get parent?
+//		SBAPI SBController* getChild(int index);
+//		SBAPI int getNumChildren();
 		SBAPI void addChannel(std::string channelName, std::string type);
 
-		SBAPI void setPawn(SBPawn* pawn);
 		SBAPI SBPawn* getPawn();
 		SBAPI const std::string& getCharacterName();
 
@@ -53,15 +52,15 @@ class SBController : public MeController
 		SBAPI void setDebug(bool val);
 		SBAPI bool isDebug();
 
-		SBAPI void printInfo();
-		SBAPI void startRecordSkm(int maxFrame);
-		SBAPI void startRecordBvh(int maxFrame);
-		SBAPI void writeRecord(std::string prefix);
-		SBAPI void stopRecord();
-		SBAPI void clearRecord();
+//		SBAPI void printInfo();
+//		SBAPI void startRecordSkm(int maxFrame);
+//		SBAPI void startRecordBvh(int maxFrame);
+//		SBAPI void writeRecord(std::string prefix);
+//		SBAPI void stopRecord();
+//		SBAPI void clearRecord();
 		SBAPI double getDuration();
 
-		SBAPI void setTiming(float indt, float outdt, float empht);
+//		SBAPI void setTiming(float indt, float outdt, float empht);
 
 		SBAPI void getJointChannelValues(const std::string& jointName, MeFrameData& frame, SrMat& outMat);
 		SBAPI void getJointChannelValues(const std::string& jointName, MeFrameData& frame, SrQuat& outQuat, SrVec& outPos);

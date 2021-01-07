@@ -122,7 +122,7 @@ public:
 	*
 	* \param[in] cycle The breathing cycle
 	*/
-	BreathLayer(BreathCycle* cycle)
+	explicit BreathLayer(BreathCycle* cycle)
 	{
 		this->cycle = cycle;
 		this->cycles_remaining = -1;

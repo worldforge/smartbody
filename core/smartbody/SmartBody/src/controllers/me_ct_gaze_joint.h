@@ -55,7 +55,7 @@ class MeCtGazeJoint	{
 		float 	smooth;
 		
 		void init( SkJoint* j_p );
-		void start( void );
+		void start();
 		
 		gwiz::vector_t	forward_pos;
 		gwiz::vector_t	forward_ref; // default forward direction
@@ -88,7 +88,7 @@ class MeCtGazeJoint	{
 		gwiz::quat_t	evaluate( float dt, gwiz::quat_t target_rot, gwiz::quat_t off_rot, float scale_factor = 1.0 );
 		
 	private:
-		void	capture_joint_state( void );
+		void	capture_joint_state();
 		gwiz::quat_t	rotation_to_target( gwiz::vector_t target_pos );
 		gwiz::quat_t	rotation_to_target( gwiz::quat_t target_rot );
 		

@@ -36,7 +36,7 @@ class MeCtEyeLidRegulator : public SmartBody::SBController	{
 	
 		public:
 		
-			LidSet( void ) {
+			LidSet( ) {
 				dirty_bit = true;
 				base_angle = 0.0f;
 				full_angle = 0.0f;
@@ -49,9 +49,9 @@ class MeCtEyeLidRegulator : public SmartBody::SBController	{
 				close_sweep = 0.0f;
 				eye_pitch = 0.0f;
 			}
-			~LidSet( void ) {}
+			~LidSet(  ) = default;
 
-			void print( void );
+			void print( );
 
 			// specify normalized range in degrees
 			void set_range( float fr, float to );
@@ -73,7 +73,7 @@ class MeCtEyeLidRegulator : public SmartBody::SBController	{
 			float get_mapped_weight( float in_weight );
 
 		private:
-			void update( void );
+			void update( );
 			bool  dirty_bit;
 			float base_angle;
 			float full_angle;
@@ -89,18 +89,18 @@ class MeCtEyeLidRegulator : public SmartBody::SBController	{
 
 	public:
 	
-		void test( void );
+		void test();
 
 		static std::string type_name;
 
-		MeCtEyeLidRegulator( void );
-		~MeCtEyeLidRegulator( void );
+		explicit MeCtEyeLidRegulator(SmartBody::SBPawn& pawn);
+		~MeCtEyeLidRegulator() override;
 		
-		void init(SmartBody::SBPawn* pawn,  bool tracking_pitch = false);
+		void init(bool tracking_pitch = false);
 
-		void print( void );
+		void print();
 
-		bool get_eyeball_tracking( void ) { return( pitch_tracking ); }
+		bool get_eyeball_tracking() { return( pitch_tracking ); }
 		void set_eyeball_tracking( bool enable )	{
 			pitch_tracking = enable;
 			if (!pitch_tracking) {
@@ -157,7 +157,7 @@ class MeCtEyeLidRegulator : public SmartBody::SBController	{
 			lower_lid_smooth = lower;
 		}
 
-		void blink_now( void ) { new_blink = true; }
+		void blink_now() { new_blink = true; }
 
 		float get_upper_left( bool *changed_p = nullptr ) {
 			if( changed_p ) {
@@ -242,7 +242,7 @@ class MeCtEyeLidRegulator : public SmartBody::SBController	{
 		
 		SkChannelArray		_channels;
 
-		virtual void context_updated( void );
+		virtual void context_updated();
 		virtual void controller_map_updated();
 		virtual void controller_start();
 		virtual bool controller_evaluate ( double t, MeFrameData& frame );
@@ -286,10 +286,10 @@ class MeCtEyeLid : public SmartBody::SBController	{
 		static std::string type_name;
 
 		/*! Constructor */
-		MeCtEyeLid( void );
+		MeCtEyeLid(SmartBody::SBPawn& pawn );
 
 		/*! Destructor is public but pay attention to the use of ref()/unref() */
-		virtual ~MeCtEyeLid( void );
+		~MeCtEyeLid( ) override;
 		void init(SmartBody::SBPawn* pawn, bool tracking_pitch);
 		
 		void set_weight( float lo, float up )	{
@@ -337,7 +337,7 @@ class MeCtEyeLid : public SmartBody::SBController	{
 			float lid_range[ 2 ]
 		);
 			
-		virtual void context_updated( void );
+		virtual void context_updated();
 		virtual void controller_map_updated();
 		virtual void controller_start();
 		virtual bool controller_evaluate ( double t, MeFrameData& frame );

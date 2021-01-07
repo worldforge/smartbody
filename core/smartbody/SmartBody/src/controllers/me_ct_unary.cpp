@@ -61,12 +61,12 @@ void MeCtUnary::Context::child_channels_updated( MeController* child ) {
 
 std::string MeCtUnary::CONTROLLER_TYPE = "MeCtUnary";
 
-MeCtUnary::MeCtUnary(
+MeCtUnary::MeCtUnary(SmartBody::SBPawn& pawn,
 	const boost::intrusive_ptr<MeCtUnary::Context>& sub_context,
 	const boost::intrusive_ptr<MeController>& child,
 	bool copy_channels
 )
-:	MeCtContainer( sub_context ),
+:	MeCtContainer( pawn, sub_context ),
 	_child( child ),
 	_copy_child_channels( copy_channels )
 {

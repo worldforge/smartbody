@@ -89,15 +89,15 @@ class MeCtSaccade : public SmartBody::SBController
 		float			_slope;
 
 	public:
-		MeCtSaccade(SbmCharacter* sbChar);
-		~MeCtSaccade();
+		explicit MeCtSaccade(SbmCharacter* sbChar);
+		~MeCtSaccade() override;
 
 		// set and get
-		bool getValid()						{return _valid;}
+		bool getValid() const						{return _valid;}
 		void setValid(bool v)				{_valid = v;}
 		void setBehaviorMode(BehaviorMode m);
 		MeCtSaccade::BehaviorMode getBehaviorMode();
-		bool getUseModel()					{return _useModel;}
+		bool getUseModel() const					{return _useModel;}
 		void setUseModel(bool v)			{_useModel = v;}
 		void spawnOnce(float dir, float amplitude, float dur);
 
@@ -122,10 +122,10 @@ class MeCtSaccade : public SmartBody::SBController
 
 		void initAttributes();
 		void initSaccade(MeFrameData& frame);
-		virtual bool controller_evaluate(double t, MeFrameData& frame);
-		virtual SkChannelArray& controller_channels()	{ return(_channels); }
-		virtual double controller_duration()			{ return((double)_duration); }
-		virtual const std::string& controller_type() const		{ return(CONTROLLER_TYPE); }
+		bool controller_evaluate(double t, MeFrameData& frame) override;
+		SkChannelArray& controller_channels() override	{ return(_channels); }
+		double controller_duration() override			{ return((double)_duration); }
+		const std::string& controller_type() const override		{ return(CONTROLLER_TYPE); }
 };
 
 #endif

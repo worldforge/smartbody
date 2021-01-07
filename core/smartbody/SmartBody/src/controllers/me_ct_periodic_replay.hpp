@@ -44,7 +44,7 @@ protected:
 	
 
 public:
-	explicit MeCtPeriodicReplay( MeController* child = nullptr );
+	explicit MeCtPeriodicReplay(SmartBody::SBPawn& pawn, MeController* child = nullptr );
 	// virtual ~MeCtTimeShiftWarp(); // Default destructor call ~MeCtUnary to delete child
 
 	void init( double period );

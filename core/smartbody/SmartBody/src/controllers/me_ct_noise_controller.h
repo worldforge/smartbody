@@ -28,10 +28,10 @@ class MeCtNoiseController : public SmartBody::SBController
 		std::map<std::string, Perlin> perlinMap;
 		float perlinScale, perlinFrequency, perlinDuration;
 	public:
-		MeCtNoiseController(SbmCharacter* character);
-		~MeCtNoiseController();
+		explicit MeCtNoiseController(SbmCharacter* character);
+		~MeCtNoiseController() override;
 
-		bool getValid()						{return _valid;}
+		bool getValid() const						{return _valid;}
 		void setValid(bool v);
 		void setFadeInInterval(double v)		{_fadeInInterval = v;}
 		void setFadeOutInterval(double v)		{_fadeOutInterval = v;}
@@ -39,10 +39,10 @@ class MeCtNoiseController : public SmartBody::SBController
 	protected:
 		float getNormalizeTime(float t, float offset);
 	private:
-		virtual bool controller_evaluate(double t, MeFrameData& frame);
-		virtual SkChannelArray& controller_channels()	{ return(_channels); }
-		virtual double controller_duration()			{ return((double)_duration); }
-		virtual const std::string& controller_type() const		{ return(CONTROLLER_TYPE); }			
+		bool controller_evaluate(double t, MeFrameData& frame) override;
+		SkChannelArray& controller_channels() override	{ return(_channels); }
+		double controller_duration() override			{ return((double)_duration); }
+		const std::string& controller_type() const override		{ return(CONTROLLER_TYPE); }
 };
 
 #endif

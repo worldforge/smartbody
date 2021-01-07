@@ -57,7 +57,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////
     // Public Methods
-	static MeControllerTreeRoot* create();
+	static MeControllerTreeRoot* create(SbmPawn& pawn);
 
 	const std::string& context_type() const override
 	{	return CONTEXT_TYPE; }
@@ -155,7 +155,6 @@ public:
 
 
 	virtual SbmPawn* getPawn() = 0;
-	virtual void setPawn(SbmPawn* pawn) = 0;
 };
 
 

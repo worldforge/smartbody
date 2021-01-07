@@ -61,7 +61,7 @@ class MeCtMotion : public SmartBody::SBController, public FadingControl
 	std::queue<SmartBody::SBMotionEvent*> _events;
 	std::vector<std::string>	_joints;	// Joints that motion data would be applied to. Empty means applying all.
 	int					 _lastCycle;
-	SmartBody::SBCharacter* _character;
+	SmartBody::SBCharacter& _character;
 	double motionTime;
 	bool				_isAdditive;
 	bool				_useOffset;
@@ -79,7 +79,7 @@ class MeCtMotion : public SmartBody::SBController, public FadingControl
 
    public :
     /*! Constructor */
-    MeCtMotion ();
+    MeCtMotion (SmartBody::SBCharacter& pawn);
 
     /*! Destructor is public but pay attention to the use of ref()/unref() */
    ~MeCtMotion () override;
@@ -90,9 +90,9 @@ class MeCtMotion : public SmartBody::SBController, public FadingControl
         (SkMotion derives SrSharedClass and has ref/unref methods)
         The keytimes of m are translated to ensure start from zero. 
         MeController::init() is automatically called. */
-    void init (SmartBody::SBPawn* pawn, SkMotion* m_p );
-    void init (SmartBody::SBPawn* pawn, SkMotion* m_p, double time_offset, double time_scale );
-	void init (SmartBody::SBPawn* pawn, SkMotion* m_p, std::vector<std::string>& joints);
+    void init (SkMotion* m_p );
+    void init (SkMotion* m_p, double time_offset, double time_scale );
+	void init (SkMotion* m_p, std::vector<std::string>& joints);
 
 	/*! Initialize a controller by cloning another */
 //	void init ( MeCtMotion* other );

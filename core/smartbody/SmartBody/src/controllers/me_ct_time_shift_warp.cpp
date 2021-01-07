@@ -29,8 +29,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 std::string MeCtTimeShiftWarp::CONTROLLER_TYPE = "MeCtTimeShiftWarp";
 
 
-MeCtTimeShiftWarp::MeCtTimeShiftWarp( MeController* child )
-:	MeCtUnary( new MeCtUnary::Context(this), child )
+MeCtTimeShiftWarp::MeCtTimeShiftWarp(SmartBody::SBPawn& pawn, MeController* child )
+:	MeCtUnary(pawn,  new MeCtUnary::Context(this), child )
 {
 	if( child ) {
 		_sub_context->add_controller( child );

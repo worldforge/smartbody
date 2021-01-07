@@ -39,9 +39,8 @@ public:
 	enum ReachArm { REACH_LEFT_ARM = 1, REACH_RIGHT_ARM };
 
 public:	
-	MeCtReach();
-	MeCtReach(SkSkeleton* skeleton);
-	~MeCtReach(void);
+	MeCtReach(SmartBody::SBPawn& pawn, SkSkeleton* skeleton);
+	~MeCtReach() override;
 
 protected:
 	ReachMode            reach_mode;
@@ -61,17 +60,15 @@ protected:
 
 
 public:	
-	void set_target_pos(SrVec& target_pos);
-	void set_target_joint(SkJoint* target_joint);	
+	void set_target_joint(SkJoint* target_joint);
 
-	void init(SmartBody::SBPawn* pawn);
-	virtual void controller_map_updated();
-	virtual void controller_start();	
-	virtual bool controller_evaluate( double t, MeFrameData& frame );
-	virtual SkChannelArray& controller_channels()	{ return( _channels ); }
-	virtual double controller_duration()			{ return( (double)_duration ); }
+	void controller_map_updated() override;
+	void controller_start() override;
+	bool controller_evaluate( double t, MeFrameData& frame ) override;
+	SkChannelArray& controller_channels() override	{ return( _channels ); }
+	double controller_duration() override			{ return( (double)_duration ); }
 	void set_duration(float duration) { _duration = duration; }
-	virtual const std::string& controller_type() const		{ return( CONTROLLER_TYPE ); }
+	const std::string& controller_type() const override		{ return( CONTROLLER_TYPE ); }
 
 	void setReachArm(MeCtReach::ReachArm val) { reach_arm = val; }
 	MeCtReach::ReachArm getReachArm() { return reach_arm; }

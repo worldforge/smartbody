@@ -54,6 +54,17 @@ inline bool parse_float_or_error( float& var, const char* str, const string& var
 const char* SbmPawn::WORLD_OFFSET_JOINT_NAME = "world_offset";
 SkChannelArray SbmPawn::WORLD_OFFSET_CHANNELS_P;
 
+SkChannelArray& SbmPawn::getWorldOffsetChannels() {
+	if( WORLD_OFFSET_CHANNELS_P.size()==0 ) {
+		std::string world_offset_joint_name( WORLD_OFFSET_JOINT_NAME );
+		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::XPos );
+		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::YPos );
+		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::ZPos );
+		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::Quat );
+	}
+	return WORLD_OFFSET_CHANNELS_P;
+}
+
 
 //SbmPawn::SbmPawn() : SBObject()
 //{
@@ -71,17 +82,16 @@ SbmPawn::SbmPawn(SmartBody::SBScene& scene, const char * name )
 SmartBody::SBSceneOwned(scene),
 _skeleton(new SmartBody::SBSkeleton()),
 blendMeshGroup(new SrSnGroup()),
-ct_tree_p( MeControllerTreeRoot::create() ),
-world_offset_writer_p( new MeCtChannelWriter() ),
+ct_tree_p( MeControllerTreeRoot::create(*this) ),
+//TODO: remove the need for this hideous cast
+world_offset_writer_p( new MeCtChannelWriter(*(SmartBody::SBPawn*)this, getWorldOffsetChannels(), true)),
 wo_cache_timestamp( -std::numeric_limits<float>::max() )
 {
 	SmartBody::SBObject::setName( name );
 	std::string controllerName = this->getName();
 	controllerName += "_worldOffsetWriter";
 	world_offset_writer_p->setName( controllerName );
-	world_offset_writer_p->setPawn((SmartBody::SBPawn*)this);
 
-	ct_tree_p->setPawn(this);
 	ct_tree_p->add_controller( world_offset_writer_p.get() );
 
 
@@ -191,16 +201,6 @@ int SbmPawn::setup() {
 	_skeleton->compress();
 	_skeleton->make_active_channels();
 
-	if( WORLD_OFFSET_CHANNELS_P.size()==0 ) {
-		std::string world_offset_joint_name( WORLD_OFFSET_JOINT_NAME );
-		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::XPos );
-		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::YPos );
-		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::ZPos );
-		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::Quat );
-	}
-	auto* sbpawn = dynamic_cast<SmartBody::SBPawn*>(this);
-	world_offset_writer_p->init(sbpawn, WORLD_OFFSET_CHANNELS_P, true );
-
 	wo_cache.x = 0;
 	wo_cache.y = 0;
 	wo_cache.z = 0;
@@ -237,10 +237,6 @@ int SbmPawn::init_skeleton() {
 	world_offset_pos->limits( SkVecLimits::Z, false );
 	world_offset_joint->quat()->activate();
 	_skeleton->compress();
-
-	init_world_offset_channels();
-	auto* sbpawn = dynamic_cast<SmartBody::SBPawn*>(this);
-	world_offset_writer_p->init(sbpawn, WORLD_OFFSET_CHANNELS_P, true );
 
 	wo_cache.x = 0;
 	wo_cache.y = 0;
@@ -280,17 +276,6 @@ void SbmPawn::reset_all_channels()
 				sr_fbuff[ buffIndex ] = 0.0f;
 			}
 		}
-	}
-}
-
-void SbmPawn::init_world_offset_channels()
-{
-	if( WORLD_OFFSET_CHANNELS_P.size()==0 ) {
-		std::string world_offset_joint_name = WORLD_OFFSET_JOINT_NAME;
-		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::XPos );
-		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::YPos );
-		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::ZPos );
-		WORLD_OFFSET_CHANNELS_P.add( world_offset_joint_name, SkChannel::Quat );
 	}
 }
 

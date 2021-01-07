@@ -37,7 +37,7 @@ class MeCtPosePostProcessing : public MeCtConstraint
 private:
 	static std::string CONTROLLER_TYPE;
 public:	
-	explicit MeCtPosePostProcessing(boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton);
+	explicit MeCtPosePostProcessing(SmartBody::SBCharacter& pawn, boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton);
 	~MeCtPosePostProcessing() override;
 	bool controller_evaluate( double t, MeFrameData& frame ) override;
 protected:

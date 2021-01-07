@@ -122,9 +122,9 @@ BehaviorRequestPtr BML::parse_bml_grab( DOMElement* elem, const std::string& uni
 	//SmartBody::util::log("grabSpeed = %f",grabVelocity);
 	if (!handCt)
 	{
-		handCt = new MeCtHand(sbSkel, wristJoint);		
+		handCt = new MeCtHand(*request->actor, sbSkel, wristJoint);
 		handCt->handle(handle);
-		SmartBody::SBCharacter* chr = dynamic_cast<SmartBody::SBCharacter*>(request->actor);
+		auto* chr = dynamic_cast<SmartBody::SBCharacter*>(request->actor);
 		if (chr->getReach())
 		{
 			SmartBody::SBReach* reach = chr->getReach();

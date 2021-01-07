@@ -6,7 +6,7 @@
 std::string MeCtMotionGraph::CONTROLLER_TYPE = "MotionGraph";
 
 
-MeCtMotionGraph::MeCtMotionGraph( SmartBody::SBCharacter* character )
+MeCtMotionGraph::MeCtMotionGraph( SmartBody::SBCharacter* character ) : SmartBody::SBController(*character)
 {	
 	motionState = nullptr;
 	sbChar = character;
@@ -14,10 +14,7 @@ MeCtMotionGraph::MeCtMotionGraph( SmartBody::SBCharacter* character )
 
 }
 
-MeCtMotionGraph::~MeCtMotionGraph(void)
-{
-	
-}
+MeCtMotionGraph::~MeCtMotionGraph() = default;
 
 
 SmartBody::SBMotionNodeState* MeCtMotionGraph::getMotionNodeState()

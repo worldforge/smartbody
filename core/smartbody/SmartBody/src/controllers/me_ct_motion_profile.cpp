@@ -36,7 +36,7 @@ MotionProfile::MotionProfile( SkMotion* m )
 	motion = m;
 }
 
-MotionProfile::~MotionProfile( void )
+MotionProfile::~MotionProfile()
 {
 
 }

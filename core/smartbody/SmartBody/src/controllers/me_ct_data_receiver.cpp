@@ -6,7 +6,7 @@
 
 std::string MeCtDataReceiver::CONTROLLER_TYPE = "DataReceiver";
 
-MeCtDataReceiver::MeCtDataReceiver(boost::intrusive_ptr<SkSkeleton> skel) : SmartBody::SBController()
+MeCtDataReceiver::MeCtDataReceiver(SmartBody::SBPawn& pawn, boost::intrusive_ptr<SkSkeleton> skel) : SmartBody::SBController(pawn)
 {
 	_skeleton = std::move(skel);
 

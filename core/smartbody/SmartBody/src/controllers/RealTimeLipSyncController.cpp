@@ -7,15 +7,21 @@
 #include "sbm/sbm_speech.hpp"
 #include <vector>
 
-RealTimeLipSyncController::RealTimeLipSyncController(SmartBody::SBCharacter* c) : SmartBody::SBController()
+RealTimeLipSyncController::RealTimeLipSyncController(SmartBody::SBPawn& pawn) : SmartBody::SBController(pawn)
 {
-	_pawn = c;
 	setup();
-}
 
-RealTimeLipSyncController::RealTimeLipSyncController() : SmartBody::SBController()
-{
-	setup();
+	_lastPhonemeTime = 0.0;
+	_lastPhoneme = "";
+
+	SmartBody::SBAttribute* attribute = _pawn.getAttribute("lipsyncSetName");
+	if (!attribute)
+		return;
+	// make sure that the channel list is updated if the set is updated
+	attribute->registerObserver(this);
+
+	// determine the channels to be used for lip syncing
+	const std::string& lipSyncSetName = _pawn.getStringAttribute("lipsyncSetName");
 }
 
 void RealTimeLipSyncController::setup()
@@ -35,10 +41,8 @@ void RealTimeLipSyncController::setup()
 
 void RealTimeLipSyncController::updateLipSyncChannels()
 {
-	if (!_pawn)
-		return;
 
-	SmartBody::StringAttribute* attribute = dynamic_cast<SmartBody::StringAttribute*>(_pawn->getAttribute("lipsyncSetName"));
+	SmartBody::StringAttribute* attribute = dynamic_cast<SmartBody::StringAttribute*>(_pawn.getAttribute("lipsyncSetName"));
 	if (attribute)
 	{
 		const std::string& value = attribute->getValue();
@@ -57,30 +61,11 @@ void RealTimeLipSyncController::updateLipSyncChannels()
 
 RealTimeLipSyncController::~RealTimeLipSyncController() = default;
 
-void RealTimeLipSyncController::init(SmartBody::SBPawn* pawn)
-{
-	MeController::init(pawn);
-
-	_lastPhonemeTime = 0.0;
-	_lastPhoneme = "";
-
-	SmartBody::SBAttribute* attribute = _pawn->getAttribute("lipsyncSetName");
-	if (!attribute)
-		return;
-	// make sure that the channel list is updated if the set is updated
-	attribute->registerObserver(this);
-
-	// determine the channels to be used for lip syncing
-	const std::string& lipSyncSetName = _pawn->getStringAttribute("lipsyncSetName");
-
-}
 
 bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& frame )
 {
-	if (!_pawn)
-		return false;
 
-	if (!_pawn->getBoolAttribute("lipsync.useRealTimeLipSync"))
+	if (!_pawn.getBoolAttribute("lipsync.useRealTimeLipSync"))
 		return false;
 
 	// _currentPhonemes and _currentPhonemeTimings contain a list phonemes that are
@@ -89,12 +74,12 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 	// the algorithm converts the phonemes+timings into animation curves
 
 	// get the offset between the actual phoneme timings and when it will be played on the character
-	double timeDelay = _pawn->getDoubleAttribute("lipsync.realTimeLipSyncDelay");
+	double timeDelay = _pawn.getDoubleAttribute("lipsync.realTimeLipSyncDelay");
 
 	// remove any curves that are no longer valid
 	if (!_currentCurves.empty())
 	{
-		if (_pawn->getBoolAttribute("lipsync.useRealTimeCurveCleanup"))
+		if (_pawn.getBoolAttribute("lipsync.useRealTimeCurveCleanup"))
 		{
 			bool removeCurves = true;
 			while (removeCurves)
@@ -173,7 +158,7 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 			{
 				this->setChannelValue(curCurveName, val);
 			}
-			if (_pawn->getBoolAttribute("lipsync.useRealTimeDebug"))
+			if (_pawn.getBoolAttribute("lipsync.useRealTimeDebug"))
 				SmartBody::util::log("%s %f", curCurveName.c_str(), val);
 			finishedVisemes.insert(curCurveName);
 			startIter++;
@@ -183,11 +168,11 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 	
 	SmartBody::SBPhonemeManager* phonemeManager = getScene()->getDiphoneManager();
 
-	const std::string& realTimeLipSyncName = _pawn->getStringAttribute("lipsync.realTimeLipSyncName");
+	const std::string& realTimeLipSyncName = _pawn.getStringAttribute("lipsync.realTimeLipSyncName");
 
-	const std::string& lipSyncSetName = _pawn->getStringAttribute("lipSyncSetName");
+	const std::string& lipSyncSetName = _pawn.getStringAttribute("lipSyncSetName");
 	bool hasRealtimePhonemes = true;
-	double maxCoarticulationTime = _pawn->getDoubleAttribute("lipsync.realTimeLipSyncMaxCoarticulationTime");
+	double maxCoarticulationTime = _pawn.getDoubleAttribute("lipsync.realTimeLipSyncMaxCoarticulationTime");
 	// eliminate any phonemes that exceed the maximum coarticulation time
 	phonemeManager->removePhonemesRealtimeByTime(realTimeLipSyncName, t - maxCoarticulationTime);
 
@@ -238,17 +223,17 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 
 		_lastPhonemeTime = t;
 		// obtain a set of curves from the phoneme manager based on the two phonemes
-		bool pass3 = _pawn->getBoolAttribute("lipsync.usePass3");
-		bool pass4 = _pawn->getBoolAttribute("lipsync.usePass4");
-		bool pass5 = _pawn->getBoolAttribute("lipsync.usePass5");
+		bool pass3 = _pawn.getBoolAttribute("lipsync.usePass3");
+		bool pass4 = _pawn.getBoolAttribute("lipsync.usePass4");
+		bool pass5 = _pawn.getBoolAttribute("lipsync.usePass5");
 
 		std::vector<SmartBody::VisemeData*> debugVisemeCurves;
-		std::map<std::string, std::vector<float> > lipSyncCurves = getScene()->getDiphoneManager()->generateCurvesGivenDiphoneSet(&visemes, lipSyncSetName, _pawn->getName(), pass3, pass4, pass5, debugVisemeCurves);
+		std::map<std::string, std::vector<float> > lipSyncCurves = getScene()->getDiphoneManager()->generateCurvesGivenDiphoneSet(&visemes, lipSyncSetName, _pawn.getName(), pass3, pass4, pass5, debugVisemeCurves);
 
 		// smooth the curves
 		for (auto & lipSyncCurve : lipSyncCurves)
 		{
-			smoothCurve(lipSyncCurve.second,  _pawn->getDoubleAttribute("lipSyncSmoothWindow"));
+			smoothCurve(lipSyncCurve.second,  _pawn.getDoubleAttribute("lipSyncSmoothWindow"));
 		}
 
 		for (auto & lipSyncCurve : lipSyncCurves)

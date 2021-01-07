@@ -53,7 +53,6 @@ public:
 protected:
 	//////////////////////////////////////////////////////////
 	//  Private Methods
-	void controller_init();
 	void context_updated();
 	void controller_start();
 	void controller_stop();

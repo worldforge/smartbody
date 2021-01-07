@@ -65,7 +65,7 @@ protected:
 	FadingControlMode fadeMode;
 public:
 	FadingControl();
-	virtual ~FadingControl() {}	
+	virtual ~FadingControl() = default;
 	SBAPI void setFadeIn(float interval);
 	SBAPI void setFadeOut(float interval);
 	bool updateFading(float dt);
@@ -91,8 +91,8 @@ public:
 	};
 
 public:	
-	MeCtConstraint(boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton);
-	~MeCtConstraint();
+	MeCtConstraint(SmartBody::SBCharacter& pawn, boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton);
+	~MeCtConstraint() override;
 
 protected:	
 	MeCtJacobianIK       ik;
@@ -108,15 +108,15 @@ protected:
 public:	
 	double          ikDamp;
 public:			
-	void init (SmartBody::SBCharacter* pawn, const char* rootName);
+	void init (const char* rootName);
 	bool addEffectorJointPair(SmartBody::SBJoint* targetJoint, const char* effectorName, const char* effectorRootName, const SrVec& posOffset , const SrQuat& rotOffset , ConstraintType cType = CONSTRAINT_POS);
-	virtual void controller_map_updated();
-	virtual void controller_start();	
-	virtual bool controller_evaluate( double t, MeFrameData& frame );
-	virtual SkChannelArray& controller_channels()	{ return( _channels ); }
-	virtual double controller_duration()			{ return( (double)_duration ); }
+	void controller_map_updated() override;
+	void controller_start() override;
+	bool controller_evaluate( double t, MeFrameData& frame ) override;
+	SkChannelArray& controller_channels() override	{ return( _channels ); }
+	double controller_duration() override			{ return( (double)_duration ); }
 	void set_duration(float duration) { _duration = duration; }
-	virtual const std::string& controller_type() const		{ return( CONTROLLER_TYPE ); }
+	const std::string& controller_type() const override		{ return( CONTROLLER_TYPE ); }
 
 protected:	
 	void  updateChannelBuffer(MeFrameData& frame, std::vector<SrQuat>& quatList, bool bRead = false);

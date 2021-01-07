@@ -35,12 +35,12 @@ class MeCtMotionGraph : public SmartBody::SBController, public FadingControl
 private:
 	static std::string CONTROLLER_TYPE;
 public:	
-	MeCtMotionGraph(SmartBody::SBCharacter* character);
-	~MeCtMotionGraph(void);
+	explicit MeCtMotionGraph(SmartBody::SBCharacter* character);
+	~MeCtMotionGraph() override;
 	SmartBody::SBMotionNodeState* getMotionNodeState();
-	virtual void controller_map_updated();
-	virtual void controller_start();	
-	virtual bool controller_evaluate( double t, MeFrameData& frame );	
+	void controller_map_updated() override;
+	void controller_start() override;
+	bool controller_evaluate( double t, MeFrameData& frame ) override;
 	void updateWO(const SrMat& curWO, const SrMat& deltaWO, MeFrameData& frame);
 protected:	
 	SmartBody::SBCharacter* sbChar;

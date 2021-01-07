@@ -55,7 +55,7 @@ public:
 
 public:
 	// constructor
-	explicit MeCtInterpolator(boost::intrusive_ptr<MeController> child1 = nullptr, boost::intrusive_ptr<MeController> child2 = nullptr, double time = 0.0, double w = 0.0, bool loop = false, std::string controllerName = "");
+	explicit MeCtInterpolator(SmartBody::SBPawn& pawn, boost::intrusive_ptr<MeController> child1 = nullptr, boost::intrusive_ptr<MeController> child2 = nullptr, double time = 0.0, double w = 0.0, bool loop = false, std::string controllerName = "");
 	~MeCtInterpolator() override;
 
 	// child accessor

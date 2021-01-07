@@ -113,7 +113,7 @@ float MeCtEyeLidRegulator::LidSet::get_pitch()
 	return eye_pitch;
 }
 
-void MeCtEyeLidRegulator::LidSet::update( void )	{
+void MeCtEyeLidRegulator::LidSet::update()	{
 
 	open_angle = base_angle * ( 1.0f - lid_tight ) + eye_pitch;
 	tight_sweep = open_angle - base_angle;
@@ -132,7 +132,7 @@ float MeCtEyeLidRegulator::LidSet::get_mapped_weight( float in_weight )	{
 	return( weight );
 }
 
-void MeCtEyeLidRegulator::test( void )	{
+void MeCtEyeLidRegulator::test()	{
 	int i;
 
 	LidSet lid;
@@ -222,8 +222,7 @@ void MeCtEyeLidRegulator::test( void )	{
 
 //////////////////////////////////////////////////////////////////////////////////
 
-MeCtEyeLidRegulator::MeCtEyeLidRegulator( )	{
-	set_use_blink_viseme(false);
+MeCtEyeLidRegulator::MeCtEyeLidRegulator(SmartBody::SBPawn& pawn): SmartBody::SBController(pawn)	{
 	upper_lid_smooth = 0.9f;
 	lower_lid_smooth = 0.9f;
 	blinkTime = .25;
@@ -245,11 +244,13 @@ MeCtEyeLidRegulator::MeCtEyeLidRegulator( )	{
 	addDefaultAttributeFloat("eyelid.closeAngle", 30.0f, "Eyelids");
 	addDefaultAttributeFloat("eyelid.blinkTime", .25f, "Eyelids");
 
+	set_use_blink_viseme(false);
+
 }
 
 MeCtEyeLidRegulator::~MeCtEyeLidRegulator( )	= default;
 
-void MeCtEyeLidRegulator::init(SmartBody::SBPawn* pawn,  bool tracking_pitch)	{
+void MeCtEyeLidRegulator::init( bool tracking_pitch)	{
 
 	_channels.add( "eyeball_left", SkChannel::Quat );
 	_channels.add( "eyeball_right", SkChannel::Quat );
@@ -262,10 +263,8 @@ void MeCtEyeLidRegulator::init(SmartBody::SBPawn* pawn,  bool tracking_pitch)	{
 		_channels.add( "blink", SkChannel::XPos );
 	}
 
-	MeController::init(pawn);
 
-
-	SmartBody::SBCharacter* c = dynamic_cast<SmartBody::SBCharacter*> (pawn);
+	auto* c = dynamic_cast<SmartBody::SBCharacter*> (&_pawn);
 	if (c)
 	{
 		auto skel = c->getSkeleton();
@@ -282,11 +281,11 @@ void MeCtEyeLidRegulator::init(SmartBody::SBPawn* pawn,  bool tracking_pitch)	{
 	}
 
 
-	float upperMin = (float) pawn->getDoubleAttribute("eyelid.rangeUpperMin");
-	float upperMax = (float) pawn->getDoubleAttribute("eyelid.rangeUpperMax");
+	float upperMin = (float) _pawn.getDoubleAttribute("eyelid.rangeUpperMin");
+	float upperMax = (float) _pawn.getDoubleAttribute("eyelid.rangeUpperMax");
 	set_upper_range( upperMin, upperMax );
 	set_lower_range( 20.0f, 20.0f ); // non existent...
-	float closeAngle = (float) pawn->getDoubleAttribute("eyelid.closeAngle");
+	float closeAngle = (float) _pawn.getDoubleAttribute("eyelid.closeAngle");
 	set_close_angle( closeAngle );
 	
 	curve.insert( 0.0, 0.0 );
@@ -294,20 +293,20 @@ void MeCtEyeLidRegulator::init(SmartBody::SBPawn* pawn,  bool tracking_pitch)	{
 	curve.insert(blinkTime * .666f, .33 );
 	curve.insert(blinkTime, 0.0 );
 	
-	bool usePitchTracking = pawn->getBoolAttribute("eyelid.softeyes");
+	bool usePitchTracking = _pawn.getBoolAttribute("eyelid.softeyes");
 	pitch_tracking = usePitchTracking;
 	
 	prev_time = -1.0f;
 	
-	hard_upper_tighten = (float) pawn->getDoubleAttribute("eyelid.tightWeightUpper");
+	hard_upper_tighten = (float) _pawn.getDoubleAttribute("eyelid.tightWeightUpper");
 	hard_lower_tighten = 0.0f;
 	soft_upper_tighten = 0.0f;
 	soft_lower_tighten = 0.0f;
 	
 	new_blink = false;
 	
-	blink_period_min = (float) pawn->getDoubleAttribute("eyelid.blinkPeriodMin");
-	blink_period_max = (float) pawn->getDoubleAttribute("eyelid.blinkPeriodMax");
+	blink_period_min = (float) _pawn.getDoubleAttribute("eyelid.blinkPeriodMin");
+	blink_period_max = (float) _pawn.getDoubleAttribute("eyelid.blinkPeriodMax");
 	if (blink_period_min == 0.0)
 		blink_period_min = 4.0f;
 	if (blink_period_max == 0.0)
@@ -325,7 +324,7 @@ void MeCtEyeLidRegulator::init(SmartBody::SBPawn* pawn,  bool tracking_pitch)	{
 	UR_value = 0.0f;
 	LR_value = 0.0f;
 
-	float upperDelay = (float) pawn->getDoubleAttribute("eyelid.delayUpper");
+	float upperDelay = (float) _pawn.getDoubleAttribute("eyelid.delayUpper");
 	upper_lid_delay = upperDelay;
 	lower_lid_delay = .3f;
 
@@ -333,7 +332,7 @@ void MeCtEyeLidRegulator::init(SmartBody::SBPawn* pawn,  bool tracking_pitch)	{
 //	test();
 }
 
-void MeCtEyeLidRegulator::print( void )	{
+void MeCtEyeLidRegulator::print()	{
 
 	UL_set.print();
 //	UR_set.print();
@@ -360,13 +359,13 @@ float MeCtEyeLidRegulator::granular( float in, float min, float max, int grains 
 	return( (float)i * diff / (float)grains );
 }
 
-void MeCtEyeLidRegulator::context_updated( void ) {
+void MeCtEyeLidRegulator::context_updated() {
 }
 
-void MeCtEyeLidRegulator::controller_map_updated( void ) {
+void MeCtEyeLidRegulator::controller_map_updated() {
 }
 
-void MeCtEyeLidRegulator::controller_start( void )	{
+void MeCtEyeLidRegulator::controller_start()	{
 }
 
 bool MeCtEyeLidRegulator::controller_evaluate( double t, MeFrameData& frame ) {
@@ -549,26 +548,28 @@ bool MeCtEyeLidRegulator::controller_evaluate( double t, MeFrameData& frame ) {
 	return( true );
 }
 
-SkChannelArray& MeCtEyeLidRegulator::controller_channels( void )	{
+SkChannelArray& MeCtEyeLidRegulator::controller_channels()	{
 	return( _channels );
 }
 
-double MeCtEyeLidRegulator::controller_duration( void ) {
+double MeCtEyeLidRegulator::controller_duration() {
 	return( -1.0 );
 }
 
-const std::string& MeCtEyeLidRegulator::controller_type( void )	const {
+const std::string& MeCtEyeLidRegulator::controller_type()	const {
 	return( type_name );
 }
 
 void MeCtEyeLidRegulator::set_use_blink_viseme(bool val)
 {
 	use_blink_viseme = val;
-	if (this->_pawn)
-	{
-		SmartBody::BoolAttribute* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(_pawn->getAttribute("eyelid.useBlinkViseme"));
+
+	//TODO: this doesn't seem to do anything as the attribute is installed on the controller, and not the pawn.
+	SmartBody::BoolAttribute* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(_pawn.getAttribute("eyelid.useBlinkViseme"));
+	if (boolAttribute) {
 		boolAttribute->setValueFast(val);
 	}
+
 		
 }
 
@@ -722,7 +723,7 @@ static bool G_debug = false;
 
 std::string MeCtEyeLid::type_name = "EyeLid";
 
-MeCtEyeLid::MeCtEyeLid( void )	{
+MeCtEyeLid::MeCtEyeLid(SmartBody::SBPawn& pawn) : SmartBody::SBController(pawn)	{
 
 	precision = 0.0001f; // ought to be enough, as long as you are not modeling in miles...
 	
@@ -732,8 +733,7 @@ MeCtEyeLid::MeCtEyeLid( void )	{
 	set_eye_pitch_range( DFL_EYEBALL_ROT_LIMIT_DN, DFL_EYEBALL_ROT_LIMIT_UP );
 }
 
-MeCtEyeLid::~MeCtEyeLid( void )	{
-}
+MeCtEyeLid::~MeCtEyeLid() = default;
 
 float MeCtEyeLid::calc_lid_correction( 
 	float in_eye_p, float eye_range[ 2 ],
@@ -790,19 +790,18 @@ void MeCtEyeLid::init(SmartBody::SBPawn* pawn, bool tracking_pitch)
 	_channels.add( "lower_eyelid_left", SkChannel::YPos );
 	_channels.add( "lower_eyelid_right", SkChannel::YPos );
 
-	MeController::init(pawn);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-void MeCtEyeLid::context_updated( void ) {
+void MeCtEyeLid::context_updated() {
 }
 
-void MeCtEyeLid::controller_map_updated( void ) {
+void MeCtEyeLid::controller_map_updated() {
 
 }
 
-void MeCtEyeLid::controller_start( void )	{
+void MeCtEyeLid::controller_start()	{
 
 //	if( _context->channels().size() > 0 )	{
 //		_skeleton_ref_p = _context->channels().skeleton();
@@ -979,15 +978,15 @@ bool MeCtEyeLid::controller_evaluate( double t, MeFrameData& frame ) {
 	return true;
 }
 
-SkChannelArray& MeCtEyeLid::controller_channels( void )	{
+SkChannelArray& MeCtEyeLid::controller_channels()	{
 	return( _channels );
 }
 
-double MeCtEyeLid::controller_duration( void ) {
+double MeCtEyeLid::controller_duration() {
 	return( -1.0 );
 }
 
-const std::string& MeCtEyeLid::controller_type( void )	const {
+const std::string& MeCtEyeLid::controller_type()	const {
 	return( type_name );
 }
 

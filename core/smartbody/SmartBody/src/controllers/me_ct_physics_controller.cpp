@@ -9,7 +9,7 @@
 
 std::string MeCtPhysicsController::CONTROLLER_TYPE = "PhysicsController";
 
-MeCtPhysicsController::MeCtPhysicsController(SbmCharacter* character) : SmartBody::SBController()
+MeCtPhysicsController::MeCtPhysicsController(SbmCharacter* character) : SmartBody::SBController(*character)
 {
 	_character = character;
 	_skeletonCopy = new SmartBody::SBSkeleton(*_character->getSkeleton());
@@ -20,35 +20,6 @@ MeCtPhysicsController::MeCtPhysicsController(SbmCharacter* character) : SmartBod
 
 MeCtPhysicsController::~MeCtPhysicsController() = default;
 
-
-void MeCtPhysicsController::getJointChannelValues( const std::string& jointName, MeFrameData& frame, SrQuat& outQuat, SrVec& outPos )
-{
-	bool hasRotation = true;
-	int channelId = _context->channels().search(jointName, SkChannel::Quat);
-	if (channelId < 0)	hasRotation = false;
-	int bufferId = frame.toBufferIndex(channelId);
-	if (bufferId < 0)	hasRotation = false;	
-
-	bool hasTranslation = true;
-	int positionChannelID = _context->channels().search(jointName, SkChannel::XPos);
-	if (positionChannelID < 0) hasTranslation = false;
-	int posBufferID = frame.toBufferIndex(positionChannelID);
-	if (posBufferID < 0) hasTranslation = false;		
-	// input reference pose
-	if (hasRotation)
-	{
-		outQuat.w = frame.buffer()[bufferId + 0];
-		outQuat.x = frame.buffer()[bufferId + 1];
-		outQuat.y = frame.buffer()[bufferId + 2];
-		outQuat.z = frame.buffer()[bufferId + 3];
-	}
-	if (hasTranslation)
-	{
-		outPos.x = frame.buffer()[posBufferID + 0];
-		outPos.y = frame.buffer()[posBufferID + 1];
-		outPos.z = frame.buffer()[posBufferID + 2];				
-	}
-}
 
 bool MeCtPhysicsController::controller_evaluate(double t, MeFrameData& frame)
 {
@@ -284,10 +255,9 @@ bool MeCtPhysicsController::controller_evaluate(double t, MeFrameData& frame)
 		}
 
 		_skeletonCopy->update_global_matrices();
-		for (unsigned int i=0;i<jointObjList.size();i++)
+		for (auto obj : jointObjList)
 		{
-			SmartBody::SbmJointObj* obj = jointObjList[i];
-			SmartBody::SBPhysicsJoint* phyJoint = obj->getPhyJoint();
+				SmartBody::SBPhysicsJoint* phyJoint = obj->getPhyJoint();
 			SmartBody::SBJoint* sbJoint = phyJoint->getSBJoint();
 			SmartBody::SBJoint* joint = nullptr;
 			if (sbJoint)

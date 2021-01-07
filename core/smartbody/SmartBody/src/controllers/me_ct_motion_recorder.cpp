@@ -25,7 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 std::string MeCtMotionRecorder::CONTROLLER_TYPE = "MeCtMotionRecorder";
 
-MeCtMotionRecorder::MeCtMotionRecorder(SmartBody::SBCharacter* c) : SmartBody::SBController(), character(c)
+MeCtMotionRecorder::MeCtMotionRecorder(SmartBody::SBCharacter* c) : SmartBody::SBController(*c), character(c)
 {	
 	prevTime = -1.0;
 	startTime = -1.0;
@@ -33,20 +33,16 @@ MeCtMotionRecorder::MeCtMotionRecorder(SmartBody::SBCharacter* c) : SmartBody::S
 	_record_max_frames = -1;
 	recordDt = 0.03;
 	recordStart = false;
-	init(character);		
 }
 
-MeCtMotionRecorder::~MeCtMotionRecorder()
-{
-	
-}
+MeCtMotionRecorder::~MeCtMotionRecorder() = default;
 
 void MeCtMotionRecorder::startRecording( double frameRate )
 {
 	// make sure that all the channels are available for recording
 	SmartBody::SBScene* scene = getScene();
-	//auto skel = scene->getSkeleton(_pawn->getSkeleton()->getName());
-	auto skel = _pawn->getSkeleton();
+	//auto skel = scene->getSkeleton(_pawn.getSkeleton()->getName());
+	auto skel = _pawn.getSkeleton();
 	if (!skel) 
 		return;
 
@@ -113,12 +109,7 @@ void MeCtMotionRecorder::writeRecording(const std::string& motionName, const std
 	{
 		SmartBody::util::log("Exported file format %s not supported, export to skm instead", type.c_str());
 	}
-	saveMotionRecord(motionName.c_str());
-}
-
-void MeCtMotionRecorder::init(SmartBody::SBPawn* pawn)
-{
-	MeController::init(pawn);	
+	saveMotionRecord(motionName);
 }
 
 void MeCtMotionRecorder::setJointChannelPos( const std::string& jointName, MeFrameData& frame, SrVec& outPos )

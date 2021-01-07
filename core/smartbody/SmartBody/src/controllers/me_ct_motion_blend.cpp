@@ -36,7 +36,7 @@ std::string MeCtMotionBlend::CONTROLLER_TYPE = "Blend";
 /* Motion Blending Controller                                           */
 /************************************************************************/
 
-MeCtMotionBlend::MeCtMotionBlend( std::map<int,MeCtBlendEngine*>& blendMap )  : SmartBody::SBController()
+MeCtMotionBlend::MeCtMotionBlend(SmartBody::SBPawn& pawn, std::map<int,MeCtBlendEngine*>& blendMap )  : SmartBody::SBController(pawn)
 {
 	
 	currentBlendEngine = nullptr;
@@ -45,7 +45,20 @@ MeCtMotionBlend::MeCtMotionBlend( std::map<int,MeCtBlendEngine*>& blendMap )  : 
 	
 
 	blendEngineMap = blendMap;
-	ReachEngineMap::iterator mi;	
+
+	if (!blendEngineMap.empty()) {
+		currentBlendEngine = blendEngineMap.begin()->second;
+		IKTreeNodeList& nodeList = currentBlendEngine->ikTreeNodes();
+		MeCtIKTreeNode* rootNode = nodeList[0];
+		for (int i = 0; i < 3; i++)
+			_channels.add(rootNode->joint->jointName(), (SkChannel::Type) (SkChannel::XPos + i));
+		affectedJoints.clear();
+		for (auto node : nodeList) {
+			SkJoint* joint = node->joint;
+			affectedJoints.emplace_back(joint);
+			_channels.add(joint->jointName(), SkChannel::Quat);
+		}
+	}
 }
 
 MeCtMotionBlend::~MeCtMotionBlend( ) = default;
@@ -94,22 +107,6 @@ bool MeCtMotionBlend::controller_evaluate( double t, MeFrameData& frame )
 	updateChannelBuffer(frame,outMotionFrame);
 	
 	return true;
-}
-
-void MeCtMotionBlend::init(SmartBody::SBPawn* pawn)
-{	
-	IKTreeNodeList& nodeList = currentBlendEngine->ikTreeNodes();
-	MeCtIKTreeNode* rootNode = nodeList[0];
-	for (int i=0;i<3;i++)
-		_channels.add(rootNode->joint->jointName(), (SkChannel::Type)(SkChannel::XPos+i));
-	affectedJoints.clear();
-	for (auto node : nodeList)
-	{
-			SkJoint* joint = node->joint;
-		affectedJoints.emplace_back(joint);
-		_channels.add(joint->jointName(), SkChannel::Quat);		
-	}			
-	MeController::init(pawn);	
 }
 
 void MeCtMotionBlend::updateChannelBuffer( MeFrameData& frame, BodyMotionFrame& motionFrame, bool bRead /*= false*/ )

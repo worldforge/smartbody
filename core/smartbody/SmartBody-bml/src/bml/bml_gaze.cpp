@@ -634,9 +634,8 @@ BehaviorRequestPtr BML::parse_bml_gaze( DOMElement* elem, const std::string& uni
 	bool usesHandle = true;
 	if (!gaze_ct) {
 		usesHandle = false;
-		gaze_ct = new MeCtGaze();
+		gaze_ct = new MeCtGaze(*static_cast<SbmCharacter*>(request->actor), low_key_index, high_key_index);
 		gaze_ct->handle(handle);
-		gaze_ct->init(const_cast<SbmCharacter*>(request->actor), low_key_index, high_key_index );
 		gaze_ct->set_task_priority( priority_key_index );
 	}
 

@@ -35,9 +35,8 @@ class MeCtGenericHand : public SmartBody::SBController
 {
 	public:
 		// constructor, destructor and init functions
-		MeCtGenericHand( );
 		MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk, SbmCharacter* c);
-		~MeCtGenericHand();
+		~MeCtGenericHand() override;
 		void init(SmartBody::SBMotion* motion , int num_levels);
 
 		// this function is run per frame to update the data
@@ -125,7 +124,7 @@ class MeCtGenericHand : public SmartBody::SBController
 		HandState _state;
 
 		// this is the new class
-		SmartBody::SBHandSynthesis* _handSynthesis;
+		std::unique_ptr<SmartBody::SBHandSynthesis> _handSynthesis;
 
 		// end joints vector 
 		std::vector<std::string> _endJointsRt, _endJointsLt, _endJoints;

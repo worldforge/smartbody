@@ -61,8 +61,9 @@ void MeCtContainer::Context::remove_controller( MeController* child ) {
 // MeCtContainer
 
 // Public Methods
-MeCtContainer::MeCtContainer( boost::intrusive_ptr<MeCtContainer::Context> sub_context )
-:	_sub_context( std::move(sub_context) )
+MeCtContainer::MeCtContainer(SmartBody::SBPawn& pawn, boost::intrusive_ptr<MeCtContainer::Context> sub_context )
+: SmartBody::SBController(pawn),
+	_sub_context( std::move(sub_context) )
 {
 }
 

@@ -111,9 +111,9 @@ bool parse_float_or_error( float& var, const char* str, const string& var_name )
 /////////////////////////////////////////////////////////////
 //  Method Definitions
 
-MeCtSchedulerClass* CreateSchedulerCt( const char* character_name, const char* sched_type_name ) {
+boost::intrusive_ptr<MeCtSchedulerClass> CreateSchedulerCt( SmartBody::SBPawn& pawn, const char* character_name, const char* sched_type_name ) {
 
-	MeCtSchedulerClass* sched_p = new MeCtSchedulerClass();
+	MeCtSchedulerClass* sched_p = new MeCtSchedulerClass(pawn);
 	sched_p->active_when_empty( true );
 	string sched_name( character_name );
 	//sched_name += "'s ";
@@ -141,27 +141,27 @@ SbmCharacter::SbmCharacter(SmartBody::SBScene& scene, const char* character_name
 SbmCharacter::SbmCharacter(SmartBody::SBScene& scene, const char* character_name )
 :	SBPawn(scene, character_name ),
 
-posture_sched_p( CreateSchedulerCt( character_name, "posture" ) ),
-motion_sched_p( CreateSchedulerCt( character_name, "motion" ) ),
+posture_sched_p( CreateSchedulerCt(*this, character_name, "posture" ) ),
+motion_sched_p( CreateSchedulerCt(*this, character_name, "motion" ) ),
 breathing_p( ),
-gaze_sched_p( CreateSchedulerCt( character_name, "gaze" ) ),
+gaze_sched_p( CreateSchedulerCt(*this, character_name, "gaze" ) ),
 eyelid_reg_ct_p( nullptr ),
 #ifdef USE_REACH
-constraint_sched_p( CreateSchedulerCt( character_name, "constraint" ) ),
-reach_sched_p( CreateSchedulerCt( character_name, "reach" ) ),
-grab_sched_p( CreateSchedulerCt( character_name, "grab" ) ),
+constraint_sched_p( CreateSchedulerCt(*this, character_name, "constraint" ) ),
+reach_sched_p( CreateSchedulerCt(*this, character_name, "reach" ) ),
+grab_sched_p( CreateSchedulerCt(*this, character_name, "grab" ) ),
 #else
 reach_sched_p( nullptr ),
 #endif
-head_sched_p( CreateSchedulerCt( character_name, "head" ) ),
-param_sched_p( CreateSchedulerCt( character_name, "param" ) ),
+head_sched_p( CreateSchedulerCt(*this, character_name, "head" ) ),
+param_sched_p( CreateSchedulerCt(*this, character_name, "param" ) ),
 param_animation_ct( nullptr ),
 param_animation_ct_layer1(nullptr),
 param_animation_ct_layer2(nullptr),
 motiongraph_ct(nullptr),
 head_param_anim_ct( nullptr ),
 face_ct( nullptr ),
-eyelid_ct( new MeCtEyeLid() ),
+eyelid_ct( new MeCtEyeLid(*this) ),
 motionplayer_ct( nullptr ),
 noise_ct(nullptr),
 record_ct(nullptr),
@@ -170,7 +170,7 @@ generic_hand_ct(nullptr),
 new_locomotion_ct(nullptr),
 face_neutral( nullptr ),
 realTimeLipSyncCt(nullptr),
-overlayMotion_sched_p(CreateSchedulerCt(character_name, "overlay") ),
+overlayMotion_sched_p(CreateSchedulerCt(*this,character_name, "overlay") ),
 _soft_eyes_enabled( ENABLE_EYELID_CORRECTIVE_CT )
 {
 	
@@ -206,9 +206,9 @@ void SbmCharacter::copy( SbmCharacter* origChar )
 
 void SbmCharacter::createStandardControllers()
 {
-	posture_sched_p = CreateSchedulerCt( getName().c_str(), "posture" );
-	motion_sched_p = CreateSchedulerCt( getName().c_str(), "motion" );
-	overlayMotion_sched_p = CreateSchedulerCt(getName().c_str(), "overlay");
+	posture_sched_p = CreateSchedulerCt(*this, getName().c_str(), "posture" );
+	motion_sched_p = CreateSchedulerCt(*this, getName().c_str(), "motion" );
+	overlayMotion_sched_p = CreateSchedulerCt(*this,getName().c_str(), "overlay");
 	// procedural locomotion
 	// removed 10/27/12 AS
 	/*this->locomotion_ct =  new MeCtLocomotionClass();
@@ -222,17 +222,14 @@ void SbmCharacter::createStandardControllers()
 	this->param_animation_ct = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName = getName() + "_paramAnimationController";
 	this->param_animation_ct->setName(paramAnimationName);
-	this->param_animation_ct->init(this);
 
 	this->param_animation_ct_layer1 = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName1 = getName() + "_paramAnimationController_Layer1";
 	this->param_animation_ct_layer1->setName(paramAnimationName1);
-	this->param_animation_ct_layer1->init(this);
 
 	this->param_animation_ct_layer2 = new MeCtParamAnimation(this, world_offset_writer_p.get());
 	std::string paramAnimationName2 = getName() + "_paramAnimationController_Layer2";
 	this->param_animation_ct_layer2->setName(paramAnimationName2);
-	this->param_animation_ct_layer2->init(this);
 
 	// basic locomotion
 	this->basic_locomotion_ct = new MeCtBasicLocomotion(this);
@@ -242,10 +239,9 @@ void SbmCharacter::createStandardControllers()
 
 	// new locomotion
 #if USE_NEW_LOCOMOTION
-	this->new_locomotion_ct = new MeCtNewLocomotion();
+	this->new_locomotion_ct = new MeCtNewLocomotion(*this);
 	std::string nLocoName = getName() + "_newLocomotionController";
 	this->new_locomotion_ct->setName(nLocoName);
-	this->new_locomotion_ct->init(this);
 #endif
 	
 	// Added by Adil
@@ -274,15 +270,15 @@ void SbmCharacter::createStandardControllers()
 		effector = sbSkel->getJointByMappedName("r_wrist");
 
 
-	constraint_sched_p = CreateSchedulerCt( getName().c_str(), "constraint" );
-	reach_sched_p = CreateSchedulerCt( getName().c_str(), "reach" );
-	grab_sched_p = CreateSchedulerCt( getName().c_str(), "grab" );
-	param_sched_p = CreateSchedulerCt( getName().c_str(), "param" );
+	constraint_sched_p = CreateSchedulerCt(*this, getName().c_str(), "constraint" );
+	reach_sched_p = CreateSchedulerCt(*this, getName().c_str(), "reach" );
+	grab_sched_p = CreateSchedulerCt(*this, getName().c_str(), "grab" );
+	param_sched_p = CreateSchedulerCt(*this, getName().c_str(), "param" );
 #if !defined(EMSCRIPTEN)
-	postprocess_ct = new MeCtPosePostProcessing(sbSkel);
+	postprocess_ct = new MeCtPosePostProcessing(*sbChar, sbSkel);
 	postprocess_ct->setName(getName() + "_postprocessController");
 #endif
-	breathing_p = new MeCtBreathing();
+	breathing_p = new MeCtBreathing(*this);
 	breathing_p->setName(getName() + "_breathingController");
 	// add two channels for blendshape-based breathing
 	//auto sbSkel = dynamic_cast<SmartBody::SBSkeleton*>(getSkeleton());
@@ -307,15 +303,15 @@ void SbmCharacter::createStandardControllers()
 		rootJoint->addChild(breathingJointY);
 	}
 
-	gaze_sched_p = CreateSchedulerCt( getName().c_str(), "gaze" );
+	gaze_sched_p = CreateSchedulerCt(*this, getName().c_str(), "gaze" );
 
-	head_sched_p = CreateSchedulerCt( getName().c_str(), "head" );
-	face_ct = new MeCtFace();
+	head_sched_p = CreateSchedulerCt(*this, getName().c_str(), "head" );
+	face_ct = new MeCtFace(*this);
 	string faceCtName( getName() );
 	faceCtName += "_faceController";
 	face_ct->setName(faceCtName);
 
-	eyelid_reg_ct_p = new MeCtEyeLidRegulator();
+	eyelid_reg_ct_p = new MeCtEyeLidRegulator(*this);
 	if (!_faceDefinition || !_faceDefinition->getFaceNeutral())
 	{
 		eyelid_reg_ct_p->set_use_blink_viseme( true );
@@ -325,24 +321,24 @@ void SbmCharacter::createStandardControllers()
 	{
 //		SmartBody::util::log("Character %s will use FAC 45 left and right to control blinking.", getName().c_str());
 	}
-	eyelid_reg_ct_p->init(this, true);
+	eyelid_reg_ct_p->init(true);
 	eyelid_reg_ct_p->set_upper_range( -30.0, 30.0 );
 	eyelid_reg_ct_p->set_close_angle( 30.0 );
 	eyelid_reg_ct_p->setName( getName() + "_eyelidController" );
 
 	this->saccade_ct = new MeCtSaccade(this);
-	this->saccade_ct->init(this);
 	std::string saccadeCtName = getName() + "_eyeSaccadeController";
 	this->saccade_ct->setName(saccadeCtName);
 
 	// motion player
-	motionplayer_ct = new MeCtMotionPlayer(this);
+	//TODO: get rid of this cast
+	motionplayer_ct = new MeCtMotionPlayer(*(SmartBody::SBCharacter*)this, "", 0);
 	std::string mpName = getName();
 	mpName += "_motionPlayer";
 	motionplayer_ct->setName(mpName);
 	motionplayer_ct->setActive(false);
 
-	this->datareceiver_ct = new MeCtDataReceiver(this->_skeleton);
+	this->datareceiver_ct = new MeCtDataReceiver(*this, this->_skeleton);
 	std::string datareceiverCtName = getName() + "_dataReceiverController";
 	this->datareceiver_ct->setName(datareceiverCtName);
 
@@ -363,30 +359,14 @@ void SbmCharacter::createStandardControllers()
 	std::string recordCtName = getName() + "_recorderController";
 	this->record_ct->setName(recordCtName);
 
-	this->realTimeLipSyncCt = new RealTimeLipSyncController();
+	this->realTimeLipSyncCt = new RealTimeLipSyncController(*this);
 	std::string realTimeLipSyncName = getName() + "_realTimeLipSyncController";
 	this->realTimeLipSyncCt->setName(realTimeLipSyncName);
 
-	posture_sched_p->init(this);
-	motion_sched_p->init(this);
-	param_sched_p->init(this);
-	overlayMotion_sched_p->init(this);
 
 #if !defined(EMSCRIPTEN)
-	postprocess_ct->init(dynamic_cast<SmartBody::SBCharacter*>(this),"base");
+	postprocess_ct->init("base");
 #endif
-	//locomotion_ct->init(this);
-	breathing_p->init(this);
-	gaze_sched_p->init(this);
-
-	reach_sched_p->init(this);
-	grab_sched_p->init(this);
-	constraint_sched_p->init(this);
-
-	head_sched_p->init(this);
-	face_ct->init( this );
-
-	realTimeLipSyncCt->init(this);
 
 	ct_tree_p->add_controller( posture_sched_p.get() );
 	//ct_tree_p->add_controller( locomotion_ct );
@@ -1570,9 +1550,8 @@ void SbmCharacter::schedule_viseme_curve(
 				SkChannelArray channels;
 				channels.add( visemeName, SkChannel::XPos );
 
-				MeCtCurveWriter* ct_p = new MeCtCurveWriter();
+				MeCtCurveWriter* ct_p = new MeCtCurveWriter(*this, channels); // CROP, CROP, true
 				ct_p->setName( ct_name.str() );
-				ct_p->init(this, channels ); // CROP, CROP, true
 
 				if (num_keys <= 2)
 				{
@@ -1665,8 +1644,8 @@ void SbmCharacter::schedule_viseme_blend_curve(
 		iter = viseme_name_patch.find(viseme);
 		if (iter != viseme_name_patch.end())
 		{
-			for (size_t nCount = 0; nCount < iter->second.size(); nCount++)
-				visemeNames.emplace_back(iter->second[nCount]);
+			for (auto & nCount : iter->second)
+				visemeNames.emplace_back(nCount);
 		}
 		else
 			visemeNames.emplace_back(viseme);
@@ -1702,28 +1681,27 @@ void SbmCharacter::schedule_viseme_blend_curve(
 			}
 		}
 
-		for( size_t nCount = 0; nCount < visemeNames.size(); nCount++ )
+		for(auto & visemeName : visemeNames)
 		{
 			if( num_keys > 0 )
 			{
 				float timeDelay = this->get_viseme_time_delay();
 
 				ostringstream ct_name;
-				ct_name << visemeNames[nCount];
+				ct_name << visemeName;
 
 				if (faceDefinition)
 				{
-					if (faceDefinition->hasViseme(visemeNames[nCount]))
+					if (faceDefinition->hasViseme(visemeName))
 					{
-						visemeWeight = faceDefinition->getVisemeWeight(visemeNames[nCount]);
+						visemeWeight = faceDefinition->getVisemeWeight(visemeName);
 					}
 				}
 				SkChannelArray channels;
-				channels.add( visemeNames[nCount], SkChannel::XPos );
+				channels.add( visemeName, SkChannel::XPos );
 
-				MeCtChannelWriter* ct_p = new MeCtChannelWriter();
-				ct_p->setName( ct_name.str().c_str() );
-				ct_p->init(this, channels, true );
+				auto ct_p = new MeCtChannelWriter(*this, channels, true);
+				ct_p->setName( ct_name.str() );
 				SrBuffer<float> value;
 				value.size( 1 );
 				value[ 0 ] = weight * visemeWeight;
@@ -2104,13 +2082,6 @@ void SbmCharacter::updateFaceDefinition()
 	viseme_history_arr.resize(viseme_channel_count);
 	for( int i=0; i<viseme_channel_count; i++ ) {
 		viseme_history_arr[ i ] = -1.0;
-	}
-
-	
-	// make sure that the face controller has been updated
-	if (face_ct)
-	{
-		face_ct->init( this );
 	}
 
 	// get any default face poses and set them

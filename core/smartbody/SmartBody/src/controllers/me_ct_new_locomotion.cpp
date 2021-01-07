@@ -32,7 +32,8 @@
 
 std::string MeCtNewLocomotion::_type_name = "NewLocomotion";
 
-MeCtNewLocomotion::MeCtNewLocomotion() :  SmartBody::SBController()
+MeCtNewLocomotion::MeCtNewLocomotion(SbmCharacter& pawn) :  SmartBody::SBController(pawn)
+, character(pawn)
 {
 	scootSpd = 0.0f;	//	unit: centermeter/sec
 	movingSpd = 0.0f;	//	unit: centermeter/sec
@@ -68,15 +69,7 @@ MeCtNewLocomotion::MeCtNewLocomotion() :  SmartBody::SBController()
 	addDefaultAttributeString("footPlantRight", "", "EnhancedLocomotion");
 	addDefaultAttributeString("footPlantLeft", "", "EnhancedLocomotion");
 	addDefaultAttributeBool("startsWithRight", true, "EnhancedLocomotion");
-}
 
-MeCtNewLocomotion::~MeCtNewLocomotion()
-{
-}
-
-void MeCtNewLocomotion::init(SbmCharacter* sbChar)
-{
-	character = sbChar;
 
 	attributes_names.emplace_back("walkCycle");
 	attributes_names.emplace_back("walkSkeleton");
@@ -91,9 +84,9 @@ void MeCtNewLocomotion::init(SbmCharacter* sbChar)
 	attributes_names.emplace_back("footPlantRight");
 	attributes_names.emplace_back("footPlantLeft");
 	attributes_names.emplace_back("startsWithRight");
-	for(unsigned int i = 0; i< attributes_names.size(); i++)
+	for(auto & attributes_name : attributes_names)
 	{
-		SmartBody::SBAttribute* a = character->getAttribute(attributes_names[i]);
+		SmartBody::SBAttribute* a = character.getAttribute(attributes_name);
 		if (a)
 			a->registerObserver(this);
 	}
@@ -101,48 +94,51 @@ void MeCtNewLocomotion::init(SbmCharacter* sbChar)
 	setup();
 }
 
+MeCtNewLocomotion::~MeCtNewLocomotion() = default;
+
+
 void MeCtNewLocomotion::setup()
 {
-	if (character->getStringAttribute("walkCycle").empty() || character->getStringAttribute("walkSkeleton").empty() || 
-		character->getStringAttribute("footPlantRight").empty() || character->getStringAttribute("footPlantLeft").empty() )
+	if (character.getStringAttribute("walkCycle").empty() || character.getStringAttribute("walkSkeleton").empty() || 
+		character.getStringAttribute("footPlantRight").empty() || character.getStringAttribute("footPlantLeft").empty() )
 		return;
 
 	bool SameMotion=false;
 	if(dataCycle)//If there is a motion, check if is the same one
 	{	
-		SameMotion = dataCycle->getName() == character->getStringAttribute("walkCycle");
+		SameMotion = dataCycle->getName() == character.getStringAttribute("walkCycle");
 	}
 	if(!SameMotion)
 	{
-		dataCycle  = getScene()->getMotion(character->getStringAttribute("walkCycle"));
+		dataCycle  = getScene()->getMotion(character.getStringAttribute("walkCycle"));
 		if (!dataCycle)
 		return;
-		dataCycle->setName(character->getStringAttribute("walkCycle"));
+		dataCycle->setName(character.getStringAttribute("walkCycle"));
 	}
 	if (!dataCycle)
 		return;
-	hipjoint = character->getStringAttribute("CenterHipJoint");
-	lend = character->getStringAttribute("LEndEffectorJoint");
-	rend = character->getStringAttribute("REndEffectorJoint");
-	fadein  = (float)character->getDoubleAttribute("FadeIn");
-	fadeout = (float)character->getDoubleAttribute("FadeOut");
+	hipjoint = character.getStringAttribute("CenterHipJoint");
+	lend = character.getStringAttribute("LEndEffectorJoint");
+	rend = character.getStringAttribute("REndEffectorJoint");
+	fadein  = (float)character.getDoubleAttribute("FadeIn");
+	fadeout = (float)character.getDoubleAttribute("FadeOut");
 
-	std::string skeletonName = character->getStringAttribute("walkSkeleton");
+	std::string skeletonName = character.getStringAttribute("walkSkeleton");
 	dataCycle->setMotionSkeletonName(skeletonName);
 
-	sk = new SmartBody::SBSkeleton(*character->getSkeleton());
+	sk = new SmartBody::SBSkeleton(*character.getSkeleton());
 
 	if (!sk)
 		return;
 
 	bool isNewWalkScale = false;
-	float scale = (float) character->getDoubleAttribute("walkScale");
+	float scale = (float) character.getDoubleAttribute("walkScale");
 	if (fabs(walkScale - scale) > .0001)
 		isNewWalkScale = true;
 	walkScale = scale;
 
 	bool isNewWalkSpeedGain = false;
-	float speedGain = (float) character->getDoubleAttribute("walkSpeedGain");
+	float speedGain = (float) character.getDoubleAttribute("walkSpeedGain");
 	if (fabs(walkSpeedGain - speedGain) > .0001)
 		isNewWalkSpeedGain = true;
 	walkSpeedGain = speedGain;
@@ -150,10 +146,10 @@ void MeCtNewLocomotion::setup()
 
 	if(!SameMotion)
 	{
-		if(!character->getBoolAttribute("startsWithRight"))
+		if(!character.getBoolAttribute("startsWithRight"))
 		{
 			dataCycle = dataCycle->mirror("", skeletonName);
-			dataCycle->setName(character->getStringAttribute("walkCycle"));
+			dataCycle->setName(character.getStringAttribute("walkCycle"));
 			dataCycle->setMotionSkeletonName(skeletonName);
 		}
 		smoothCycle = dataCycle->smoothCycle("", 0.5f);
@@ -171,7 +167,7 @@ void MeCtNewLocomotion::setup()
 	if(!SameMotion)
 	{
 		_lastTime = -1.0;
-		SmartBody::SBJoint* rootJoint = character->getSkeleton()->getJointByName(hipjoint);
+		SmartBody::SBJoint* rootJoint = character.getSkeleton()->getJointByName(hipjoint);
 		ik_scenario.ikTreeNodes.clear();
 		std::vector<std::string> stopJoints;
 		stopJoints.emplace_back(lend);
@@ -179,13 +175,12 @@ void MeCtNewLocomotion::setup()
 		stopJoints.emplace_back("spine1");
 		ik_scenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);	
 
-		double ikReachRegion = character->getHeight()*0.02f;		
+		double ikReachRegion = character.getHeight()*0.02f;		
 		ikDamp = ikReachRegion*ikReachRegion*14.0;
-		MeController::init(character);
 		ik.dampJ = ikDamp;
 		ik.refDampRatio = 0.01;
 
-		std::string rightPlants = character->getStringAttribute("footPlantRight");
+		std::string rightPlants = character.getStringAttribute("footPlantRight");
 		std::vector<std::string> rPlantVector;
 		SmartBody::util::tokenize(rightPlants, rPlantVector, ",");
 		rplant.clear();
@@ -195,7 +190,7 @@ void MeCtNewLocomotion::setup()
 			rplant[p] = atoi(rPlantVector[p].c_str());
 		}
 
-		std::string leftPlants = character->getStringAttribute("footPlantLeft");
+		std::string leftPlants = character.getStringAttribute("footPlantLeft");
 		std::vector<std::string> lPlantVector;
 		SmartBody::util::tokenize(leftPlants, lPlantVector, ",");
 		lplant.clear();
@@ -213,7 +208,7 @@ bool MeCtNewLocomotion::controller_evaluate(double t, MeFrameData& frame)
 	if (!smoothCycle)
 		return true;
 	BufferRef=&(frame.buffer());
-	if (character && _valid)
+	if (_valid)
 	{
 		play((float)t);
 	}
@@ -222,7 +217,7 @@ bool MeCtNewLocomotion::controller_evaluate(double t, MeFrameData& frame)
 
 float MeCtNewLocomotion::legDistance(bool Leftleg)
 {
-	auto sk2 = character->getSkeleton();
+	auto sk2 = character.getSkeleton();
 	sk2->update_global_matrices();
 	std::string jointName;
 	jointName = (Leftleg)? "l_hip" : "r_hip";
@@ -253,7 +248,7 @@ void MeCtNewLocomotion::loopMotion(float def, float speed)
 	}
 	printOnce=false;
 	float x, y, z, yaw, pitch, roll;		
- 	character->get_world_offset(x, y, z, yaw, pitch, roll); 
+ 	character.get_world_offset(x, y, z, yaw, pitch, roll); 
 	SrVec pos(x,y,z);
 	addPawn(pos,pawnname);
 	reset(true);
@@ -279,7 +274,7 @@ void MeCtNewLocomotion::play(float t, bool useTemp)
 		startTime = t;
 	motionTime = fmod(t-startTime, smoothCycle->duration());
 	float x, y, z, yaw, pitch, roll;		
- 	character->get_world_offset(x, y, z, yaw, pitch, roll); 
+ 	character.get_world_offset(x, y, z, yaw, pitch, roll); 
  	yaw = desiredHeading;
  	float movingDist = motionSpd * dt;
  	x += movingDist * sin(yaw * (float)M_PI / 180.0f);
@@ -311,11 +306,11 @@ void MeCtNewLocomotion::play(float t, bool useTemp)
 	updateConstraints(motionTime/(float)smoothCycle->getFrameRate());
 		
 	ik_scenario.setTreeNodeQuat(tempQuatList,QUAT_REF);	
-	character->getSkeleton()->update_global_matrices();
-	ik_scenario.ikGlobalMat = character->getSkeleton()->getJointByName(hipjoint)->gmat();
+	character.getSkeleton()->update_global_matrices();
+	ik_scenario.ikGlobalMat = character.getSkeleton()->getJointByName(hipjoint)->gmat();
 	
 	for (int i=0;i<3;i++)
-		ik_scenario.ikTreeRootPos[i] = character->getSkeleton()->getJointByName(hipjoint)->pos()->value(i);
+		ik_scenario.ikTreeRootPos[i] = character.getSkeleton()->getJointByName(hipjoint)->pos()->value(i);
 	//*/Character pose
 	ik.setDt(LeftFading.dt);
 	if (LeftFading.fadeMode == Fading::FADING_MODE_IN)
@@ -381,7 +376,7 @@ void MeCtNewLocomotion::play(float t, bool useTemp)
 	//*/
 	updateChannelBuffer(*BufferRef,tempQuatList);//Read from tempQuatList->Write on Buffer
 	updateWorldOffset(*BufferRef, woQuat, woPos);	
-	character->set_world_offset(x, y, z, yaw, pitch, roll); 
+	character.set_world_offset(x, y, z, yaw, pitch, roll); 
 	RightFading.prev_time=LeftFading.prev_time = t;
 	if(_analysis)
 	{
@@ -434,7 +429,7 @@ void MeCtNewLocomotion::updateChannelBuffer(SrBuffer<float>& buffer, std::vector
 void MeCtNewLocomotion::updateChannelBuffer(SrBuffer<float>& buffer, float t)
 {
 	SmartBody::SBRetargetManager* retargetManager = getScene()->getRetargetManager();
-	SmartBody::SBRetarget* retarget =retargetManager->getRetarget(smoothCycle->getMotionSkeletonName(),character->getSkeleton()->getName());
+	SmartBody::SBRetarget* retarget =retargetManager->getRetarget(smoothCycle->getMotionSkeletonName(),character.getSkeleton()->getName());
 	smoothCycle->connect(sk.get());
 	smoothCycle->apply(t);//,SkMotion::Linear, 0, retarget);
 	for(int i = 0; i < sk->getNumJoints(); i++)
@@ -561,7 +556,7 @@ void MeCtNewLocomotion::updateConstraints(float t)
 	else if(((t > rplant[2] && t < rplant[3] )|| (t > rplant[0] && t < rplant[1]))
           && RightFading.fadeMode == Fading::FADING_MODE_OFF)
 	{	
-		auto sk2 = character->getSkeleton();
+		auto sk2 = character.getSkeleton();
 		sk2->update_global_matrices();
 		SmartBody::SBJoint* rootJoint = sk2->getJointByName(hipjoint);
 		ik_scenario.ikGlobalMat = rootJoint->parent()->gmat();		
@@ -583,7 +578,7 @@ void MeCtNewLocomotion::updateConstraints(float t)
 	}
 	else if(t > lplant[0] && t < lplant[1] && LeftFading.fadeMode == Fading::FADING_MODE_OFF)
 	{		
-		auto sk2 = character->getSkeleton();
+		auto sk2 = character.getSkeleton();
 		sk2->update_global_matrices();
 		SmartBody::SBJoint* rootJoint = sk2->getJointByName(hipjoint);
 		ik_scenario.ikGlobalMat = rootJoint->parent()->gmat();		
@@ -654,7 +649,7 @@ void MeCtNewLocomotion::reset(bool resetPos)
 	RightFading.controlRestart();
 	if(resetPos)
 	{
-		character->set_world_offset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		character.set_world_offset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		setDesiredHeading(0.0f);
 	}
 }

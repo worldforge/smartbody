@@ -147,13 +147,13 @@ protected:
 
 public:
 	/** Constructor */
-	explicit MeCtBlend( const boost::intrusive_ptr<MeController>& child = nullptr );
+	explicit MeCtBlend(SmartBody::SBPawn& pawn, const boost::intrusive_ptr<MeController>& child = nullptr );
 
 	/** Destructor */
 	~MeCtBlend() override;
 
 	/** Initialize the Blend controller with the given child controller.  */
-	void init( const boost::intrusive_ptr<MeController>& child, SmartBody::SBPawn* pawn );
+	void init( const boost::intrusive_ptr<MeController>& child);
 
 	//virtual void set_child( MeController* child );  // Use init( child )
 

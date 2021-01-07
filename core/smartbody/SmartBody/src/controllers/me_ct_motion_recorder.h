@@ -31,18 +31,17 @@ public:
 	static std::string CONTROLLER_TYPE;
 	
 public:
-	MeCtMotionRecorder(SmartBody::SBCharacter* c);
-	~MeCtMotionRecorder();
+	explicit MeCtMotionRecorder(SmartBody::SBCharacter* c);
+	~MeCtMotionRecorder() override;
 
 	void startRecording(double frameRate);
 	void stopRecording(const std::string& motionName, const std::string& type);
 	void writeRecording(const std::string& motionName, const std::string& type);
-	void init(SmartBody::SBPawn* pawn);
-	virtual void controller_map_updated();
-    virtual SkChannelArray& controller_channels();
-    virtual double controller_duration();
-	virtual const std::string& controller_type() const {return CONTROLLER_TYPE;}
-	virtual bool controller_evaluate( double t, MeFrameData& frame );
+	void controller_map_updated() override;
+    SkChannelArray& controller_channels() override;
+    double controller_duration() override;
+	const std::string& controller_type() const override {return CONTROLLER_TYPE;}
+	bool controller_evaluate( double t, MeFrameData& frame ) override;
 
 protected:
 	SkJoint* findRootJoint( SmartBody::SBSkeleton* skel );

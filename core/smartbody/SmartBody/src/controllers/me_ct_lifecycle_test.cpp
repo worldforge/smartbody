@@ -66,15 +66,10 @@ size_t MeCtLifecycleTest::count_children() {
 	return MeCtUnary::count_children();
 }
 
-void MeCtLifecycleTest::controller_init() {
-	print_method_entry( "controller_init()" );
-}
-
 void MeCtLifecycleTest::context_updated() {
 	print_method_entry( "context_updated()" );
 	// << "Context is "<< context_str << endl;
 
-	MeCtUnary::controller_init();
 	update_timing_from_child();
 }
 

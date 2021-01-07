@@ -40,7 +40,7 @@ class MeCtSimpleGazeJoint	{
 
 	public:
 		MeCtSimpleGazeJoint();
-		virtual ~MeCtSimpleGazeJoint() {}
+		virtual ~MeCtSimpleGazeJoint() = default;
 
 		float limit;
 		float weight;
@@ -49,7 +49,7 @@ class MeCtSimpleGazeJoint	{
 		float smooth;
 		
 		void init( SkJoint* j_p );
-		void begin( void );
+		void begin();
 		
 		gwiz::vector_t	forward_pos;
 		gwiz::vector_t	forward_ref; // default forward direction
@@ -69,7 +69,7 @@ class MeCtSimpleGazeJoint	{
 		gwiz::quat_t	evaluate( float dt, gwiz::quat_t target_rot, gwiz::quat_t off_rot, float scale_factor = 1.0 );
 		
 	private:
-		void	capture_joint_state( void );
+		void	capture_joint_state();
 		gwiz::quat_t	rotation_to_target( gwiz::vector_t target_pos );
 		gwiz::quat_t	rotation_to_target( gwiz::quat_t target_rot );
 		
@@ -90,10 +90,8 @@ class MeCtSimpleGaze : public SmartBody::SBController	{
 	public:
 		static std::string type_name;
 
-		MeCtSimpleGaze();
-		virtual ~MeCtSimpleGaze();
-		
-		void init(SmartBody::SBPawn* pawn );
+		explicit MeCtSimpleGaze(SmartBody::SBPawn& pawn);
+		~MeCtSimpleGaze() override;
 
 		void set_target_joint( float x, float y, float z, SkJoint* ref_joint_p = nullptr );
 		void set_target( float x, float y, float z, char *ref_joint_name = nullptr ); // world-coord if nullptr
@@ -131,22 +129,22 @@ class MeCtSimpleGaze : public SmartBody::SBController	{
 		gwiz::quat_t  		offset_rot;
 
 		int 			joint_count;   
-		MeCtSimpleGazeJoint*	joint_arr;
+		std::vector<MeCtSimpleGazeJoint>	joint_arr;
 
 		void		inspect_skeleton( SkJoint* joint_p, int depth = 0 );
 		void		inspect_skeleton_local_transform( SkJoint* joint_p, int depth = 0 );
 		void		inspect_skeleton_world_transform( SkJoint* joint_p, int depth = 0 );
 
-		void		update_skeleton_gmat( void );
-		SkJoint*	reference_joint( void );
-		gwiz::vector_t	world_target_point( void );
-		gwiz::quat_t		world_target_orient( void );
+		void		update_skeleton_gmat();
+		SkJoint*	reference_joint();
+		gwiz::vector_t	world_target_point();
+		gwiz::quat_t		world_target_orient();
 		
-		virtual void controller_start();
-		virtual bool controller_evaluate( double t, MeFrameData& frame );
-		virtual SkChannelArray& controller_channels()	{ return( _channels ); }
-		virtual double controller_duration()			{ return( (double)_duration ); }
-		virtual const std::string& controller_type() const		{ return( type_name ); }
+		void controller_start() override;
+		bool controller_evaluate( double t, MeFrameData& frame ) override;
+		SkChannelArray& controller_channels() override	{ return( _channels ); }
+		double controller_duration() override			{ return( (double)_duration ); }
+		const std::string& controller_type() const override		{ return( type_name ); }
 };
 
 ///////////////////////////////////////////////////////////////////////////

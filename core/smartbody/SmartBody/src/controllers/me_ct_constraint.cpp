@@ -1,6 +1,7 @@
 #include "controllers/me_ct_constraint.hpp"
 #include <cassert>
 #include <boost/foreach.hpp>
+#include <utility>
 #include "gwiz_math.h"
 using namespace gwiz;
 
@@ -142,9 +143,11 @@ void FadingControl::updateDt( float curTime )
 }
 
 
-MeCtConstraint::MeCtConstraint( boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton )  : FadingControl()
+MeCtConstraint::MeCtConstraint(SmartBody::SBCharacter& pawn, boost::intrusive_ptr<SmartBody::SBSkeleton> skeleton )  :
+SmartBody::SBController(pawn), FadingControl(),
+_sbChar(&pawn)
 {
-	_skeleton = skeleton;
+	_skeleton = std::move(skeleton);
 	prev_time = -1.0;	
 	_duration = -1.0f;
 }
@@ -226,7 +229,7 @@ void MeCtConstraint::updateChannelBuffer(MeFrameData& frame, std::vector<SrQuat>
 }
 
 
-void MeCtConstraint::init(SmartBody::SBCharacter* sbChar, const char* rootJointName)
+void MeCtConstraint::init(const char* rootJointName)
 {
 	assert(_skeleton);	
 	// root is "world_offset", so we use root->child to get the base joint.
@@ -234,7 +237,6 @@ void MeCtConstraint::init(SmartBody::SBCharacter* sbChar, const char* rootJointN
 	if (!rootJoint)
 		rootJoint = dynamic_cast<SmartBody::SBJoint*>(_skeleton->root()->child(0)); // use base joint by default
 
-	_sbChar = sbChar;
 	std::vector<std::string> stopJoints;
 	ik_scenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);
 	ik_scenario.ikPosEffectors = &posConstraint;
@@ -243,15 +245,14 @@ void MeCtConstraint::init(SmartBody::SBCharacter* sbChar, const char* rootJointN
 	const IKTreeNodeList& nodeList = ik_scenario.ikTreeNodes;		
 // 	for (int i=0;i<3;i++)
 // 		_channels.add(rootJoint->name().get_string(), (SkChannel::Type)(SkChannel::XPos+i));
-	for (unsigned int i=0;i<nodeList.size();i++)
+	for (auto i : nodeList)
 	{
-		SkJoint* joint = nodeList[i]->joint;
+		SkJoint* joint = i->joint;
 		_channels.add(joint->getMappedJointName(), SkChannel::Quat);	
 	}	
 
 	double ikReachRegion = _sbChar->getHeight()*0.02f;		
 	ikDamp        = ikReachRegion*ikReachRegion*14.0;
-	MeController::init(sbChar);
 }
 
 void MeCtConstraint::controller_map_updated() 

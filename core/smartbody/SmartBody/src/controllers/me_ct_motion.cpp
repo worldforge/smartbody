@@ -35,9 +35,10 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 
 std::string MeCtMotion::type_name = "Motion";
 
-MeCtMotion::MeCtMotion ()
+MeCtMotion::MeCtMotion (SmartBody::SBCharacter& pawn) : SmartBody::SBController(pawn)
+ , _character(pawn)
  {
-   _motion = 0;
+   _motion = nullptr;
    _play_mode = SkMotion::Linear;
 //   _duration = 0;
    _twarp = _maxtwarp = _mintwarp = 1.0f;
@@ -53,17 +54,14 @@ MeCtMotion::MeCtMotion ()
    _isGesture = true;
  }
 
-MeCtMotion::~MeCtMotion ()
- {
- }
+MeCtMotion::~MeCtMotion () = default;
 
-void MeCtMotion::init(SmartBody::SBPawn* pawn, SkMotion* m_p, double time_offset, double time_scale)	{
+void MeCtMotion::init(SkMotion* m_p, double time_offset, double time_scale)	{
 
 	if ( _motion ) {
 		if( m_p == _motion ) {
 			// Minimal init()
 			_last_apply_frame = 0;
-			MeController::init (pawn);
 			return;
 		}
 		// else new motion
@@ -72,12 +70,9 @@ void MeCtMotion::init(SmartBody::SBPawn* pawn, SkMotion* m_p, double time_offset
 	_motion = m_p;
 	_last_apply_frame = 0;
 
-	_character = dynamic_cast<SmartBody::SBCharacter*>(pawn);
-
 	_motion->move_keytimes ( 0 ); // make sure motion starts at 0
 //	_duration = _motion->duration() / _twarp;
 
-	MeController::init (pawn);
 	//SmartBody::util::log("before if (_context)");
 	if( _context ) {
 		// Notify _context of channel change.
@@ -103,18 +98,18 @@ void MeCtMotion::init(SmartBody::SBPawn* pawn, SkMotion* m_p, double time_offset
 	_lastCycle = -1;
 	loadMotionEvents();
 
-	// intialize hand controller 
-	//_character->generic_hand_ct->init(_motion);
+	// intialize hand controller
+	//_character.generic_hand_ct->init(_motion);
 }
 
-void MeCtMotion::init (SmartBody::SBPawn* pawn, SkMotion* m_p ) {
-	init(pawn, m_p, 0.0, 1.0 );
+void MeCtMotion::init (SkMotion* m_p ) {
+	init(m_p, 0.0, 1.0 );
 }
 
-void MeCtMotion::init(SmartBody::SBPawn* pawn, SkMotion* m_p, std::vector<std::string>& joints)
+void MeCtMotion::init(SkMotion* m_p, std::vector<std::string>& joints)
 {
 	_joints = joints;
-	init(pawn, m_p, 0.0, 1.0);
+	init(m_p, 0.0, 1.0);
 }
 
 void MeCtMotion::offset ( double amount )
@@ -220,7 +215,7 @@ bool MeCtMotion::input ( SrInput& inp, const SrHashTable<SkMotion*>& motions ) {
    
 	SkMotion* m = motions.lookup ( mname );
 	if ( m ) {
-		init ( nullptr, m );
+		init ( m );
 		return true;
 	} else {
 		return false;
@@ -254,9 +249,9 @@ void MeCtMotion::controller_map_updated() {
 		}
 		else
 		{
-			for (size_t i = 0; i < _joints.size(); ++i)
+			for (auto & _joint : _joints)
 			{
-				int motionChannelId = mChannels.search(_joints[i], SkChannel::Quat);
+				int motionChannelId = mChannels.search(_joint, SkChannel::Quat);
 				if (motionChannelId >= 0)
 				{
 					int chanIndex = cChannels.search(mChannels.name(motionChannelId), mChannels.type(motionChannelId));
@@ -321,16 +316,14 @@ bool MeCtMotion::controller_evaluate ( double t, MeFrameData& frame ) {
 		continuing = motionTime <= dur;
 	}	
 	SmartBody::SBRetarget* retarget = nullptr;
-	SmartBody::SBMotion* sbMotion = dynamic_cast<SmartBody::SBMotion*>(_motion);
-	if (_character)
-	{
+	auto* sbMotion = dynamic_cast<SmartBody::SBMotion*>(_motion);
 		SmartBody::SBScene* scene = getScene();
 		if (sbMotion)
-			retarget = scene->getRetargetManager()->getRetarget(sbMotion->getMotionSkeletonName(),_character->getSkeleton()->getName());	
+			retarget = scene->getRetargetManager()->getRetarget(sbMotion->getMotionSkeletonName(),_character.getSkeleton()->getName());	
 		if (retarget)
 		{
-			SrVec leftSholderRot = _character->getVec3Attribute("leftShoulderOffset");
-			SrVec rightSholderRot = _character->getVec3Attribute("rightShoulderOffset");
+			SrVec leftSholderRot = _character.getVec3Attribute("leftShoulderOffset");
+			SrVec rightSholderRot = _character.getVec3Attribute("rightShoulderOffset");
 			SrQuat lShlderQuat(leftSholderRot);
 			SrQuat rShlderQuat(rightSholderRot);
 			retarget->addJointRotOffset("l_shoulder",lShlderQuat);
@@ -346,14 +339,14 @@ bool MeCtMotion::controller_evaluate ( double t, MeFrameData& frame ) {
 
 			for (size_t j = 0; j < jointNames.size(); j++)
 			{
-				SrVec rot = _character->getVec3Attribute("retargetOffset." + jointNames[j]);
+				SrVec rot = _character.getVec3Attribute("retargetOffset." + jointNames[j]);
 				SrQuat quat(rot);
 				retarget->addJointRotOffset(jointNames[j], quat);
 			}
 		*/
 
 		}
-	}
+
 
 	// whether use offset
 	if (_useOffset)
@@ -432,23 +425,23 @@ bool MeCtMotion::controller_evaluate ( double t, MeFrameData& frame ) {
 	if (retarget && sbMotion)
 	{
 		bool hasCharacterTraj = false;
-		std::vector<std::string> jointConsNames = _character->getJointConstraintNames();
-		SmartBody::SBJoint* baseJoint = _character->getSkeleton()->getJointByMappedName("base");
+		std::vector<std::string> jointConsNames = _character.getJointConstraintNames();
+		SmartBody::SBJoint* baseJoint = _character.getSkeleton()->getJointByMappedName("base");
 		SrMat baseGmat;
 		if (baseJoint)
 			baseGmat = baseJoint->gmat();		
-		for (unsigned int i=0;i<jointConsNames.size();i++)
+		for (auto & jointConsName : jointConsNames)
 		{
-			SmartBody::TrajectoryRecord* trajRecord = _character->getJointTrajectoryConstraint(jointConsNames[i]);
+			SmartBody::TrajectoryRecord* trajRecord = _character.getJointTrajectoryConstraint(jointConsName);
 			if (!trajRecord)
 				continue;
 			
-			SmartBody::SBJoint* refJoint = _character->getSkeleton()->getJointByName(trajRecord->refJointName);
+			SmartBody::SBJoint* refJoint = _character.getSkeleton()->getJointByName(trajRecord->refJointName);
 			if (!refJoint)
 				continue;			
 
 			SrVec trajOffset;
-			bool hasTraj = sbMotion->getTrajPosition(jointConsNames[i], adjMotionTime,trajOffset);
+			bool hasTraj = sbMotion->getTrajPosition(jointConsName, adjMotionTime,trajOffset);
 			if (!hasTraj)
 			{	
 				trajRecord->isEnable = false;
@@ -462,13 +455,13 @@ bool MeCtMotion::controller_evaluate ( double t, MeFrameData& frame ) {
 		}
 		if (hasCharacterTraj)
 		{
-			_character->setJointTrajBlendWeight(1.0f);
-			_character->setUseJointConstraint(true);
+			_character.setJointTrajBlendWeight(1.0f);
+			_character.setUseJointConstraint(true);
 		}
 		else
 		{
-			_character->setJointTrajBlendWeight(0.f);
-			_character->setUseJointConstraint(false);
+			_character.setJointTrajBlendWeight(0.f);
+			_character.setUseJointConstraint(false);
 		}
 	}
 #endif

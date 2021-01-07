@@ -94,7 +94,10 @@ protected:
 	 *  the local context probably doesn't exist when the superclass constructor
 	 *  is called.
 	 */
-	explicit MeCtUnary( const boost::intrusive_ptr<MeCtUnary::Context>& sub_context, const boost::intrusive_ptr<MeController>& child = nullptr, bool _copy_child_channels = true );
+	explicit MeCtUnary(SmartBody::SBPawn& pawn,
+					const boost::intrusive_ptr<MeCtUnary::Context>& sub_context,
+					const boost::intrusive_ptr<MeController>& child = nullptr,
+					bool _copy_child_channels = true );
 
 public:
 	//////////////////////////////////////////////////////////

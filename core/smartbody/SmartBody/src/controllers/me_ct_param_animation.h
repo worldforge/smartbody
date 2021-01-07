@@ -87,7 +87,7 @@ class MeCtParamAnimation : public MeCtContainer
 		protected:
 			static std::string CONTEXT_TYPE;
 		public:
-			Context( MeCtParamAnimation* container, MeControllerContext* context = nullptr )
+			explicit Context( MeCtParamAnimation* container, MeControllerContext* context = nullptr )
 				:	MeCtContainer::Context( container, context )
 			{}
 
@@ -96,7 +96,7 @@ class MeCtParamAnimation : public MeCtContainer
 		};
 
 	public:
-		MeCtParamAnimation();
+//		MeCtParamAnimation();
 		MeCtParamAnimation(SbmCharacter* c, MeCtChannelWriter* wo);
 		~MeCtParamAnimation() override;
 

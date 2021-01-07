@@ -21,7 +21,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <controllers/me_ct_channel_writer.hpp>
 
-#include <cstdlib>
 #include <sstream>
 #include <sb/SBPawn.h>
 
@@ -30,16 +29,10 @@ std::string MeCtChannelWriter::TYPE = "MeCtChannelWriter";
 
 
 
-MeCtChannelWriter::MeCtChannelWriter()
-:	_continuous( false ),
+MeCtChannelWriter::MeCtChannelWriter(SmartBody::SBPawn& pawn, SkChannelArray& channels, bool continuous)
+:	SmartBody::SBController(pawn),
+	_continuous( false ),
 	_write_next( false )
-{}
-
-const std::string& MeCtChannelWriter::controller_type() const {
-	return MeCtChannelWriter::TYPE;
-}
-
-void MeCtChannelWriter::init(SmartBody::SBPawn* pawn, SkChannelArray& channels, bool continuous)
 {
 	_channels.init();
 	_channels.merge( channels );
@@ -60,8 +53,12 @@ void MeCtChannelWriter::init(SmartBody::SBPawn* pawn, SkChannelArray& channels, 
 	_continuous = continuous;
 	_write_next = false;  // Don't write until the data is set
 
-	MeController::init (pawn);
 }
+
+const std::string& MeCtChannelWriter::controller_type() const {
+	return MeCtChannelWriter::TYPE;
+}
+
 
 bool MeCtChannelWriter::set_data( SrBuffer<float> data ) {
 	const int size = data.size();
@@ -75,7 +72,7 @@ bool MeCtChannelWriter::set_data( SrBuffer<float> data ) {
 	return true;
 }
 
-void MeCtChannelWriter::set_data( float data[] ) {
+void MeCtChannelWriter::set_data( const float data[] ) {
 	const int size = _data.size();
 	for( int i=0; i<size; ++i )  // slow approach
 		_data[i] = data[i];

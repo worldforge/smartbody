@@ -75,7 +75,7 @@ protected:
 
 	//////////////////////////////////////////////////////////
 	//  Private Methods
-	explicit MeCtContainer( boost::intrusive_ptr<MeCtContainer::Context> sub_context );
+	explicit MeCtContainer(SmartBody::SBPawn& pawn, boost::intrusive_ptr<MeCtContainer::Context> sub_context );
 
 
 	/** Destructor removes all children before deletion */

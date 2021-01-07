@@ -45,26 +45,26 @@ class MeCtPose : public SmartBody::SBController
 
    public :
     /*! Constructor */
-    MeCtPose ();
+    explicit MeCtPose (SmartBody::SBPawn& pawn);
 
     /*! Destructor is public but pay attention to the use of ref()/unref() */
-   virtual ~MeCtPose ();
+   ~MeCtPose () override;
 
-	void init_channel_map( void );
+	void init_channel_map();
 
-    /*! Defines the channels to be used and fill the rest posture with zeros */
-    void init (SmartBody::SBPawn* pawn,  const SkChannelArray& ca);
-
-    /*! Defines the channels and the values from the given posture p */
-    void init (SmartBody::SBPawn* pawn, const SkPosture& p );
-
-    /*! Defines the channels as those declared in the given motion, and set the
-        MeCtPose posture from the motion at time t. After this call, motion m
-        will be disconnected to any previous connection in the motion. */
-    void init (SmartBody::SBPawn* pawn, SkMotion* m, float t );
-
-	/*! Initialize a controller by cloning another */
-	void init(SmartBody::SBPawn* pawn, MeCtPose* other);
+//    /*! Defines the channels to be used and fill the rest posture with zeros */
+//    void init (SmartBody::SBPawn* pawn,  const SkChannelArray& ca);
+//
+//    /*! Defines the channels and the values from the given posture p */
+//    void init (SmartBody::SBPawn* pawn, const SkPosture& p );
+//
+//    /*! Defines the channels as those declared in the given motion, and set the
+//        MeCtPose posture from the motion at time t. After this call, motion m
+//        will be disconnected to any previous connection in the motion. */
+//    void init (SmartBody::SBPawn* pawn, SkMotion* m, float t );
+//
+//	/*! Initialize a controller by cloning another */
+//	void init(SmartBody::SBPawn* pawn, MeCtPose* other);
 
     /*! Sets the name of the SkPosture used to initialize this pose controller. */
     void posture_name ( const char* posture_name ) { _posture_name = posture_name; }
@@ -80,7 +80,7 @@ class MeCtPose : public SmartBody::SBController
     void duration ( float d ) { _duration = d; }
     
     /*! Retrieves the duration, which can be -1. */
-    float duration () { return _duration; }
+    float duration () const { return _duration; }
 
     /*! Output data */
     void output ( SrOutput& out );
@@ -92,10 +92,10 @@ class MeCtPose : public SmartBody::SBController
 
    private : // callbacks for the base class
 
-    virtual bool controller_evaluate ( double t, MeFrameData& frame );
-    virtual SkChannelArray& controller_channels ();
-    virtual double controller_duration ();
-    virtual const std::string& controller_type () const;
+    bool controller_evaluate ( double t, MeFrameData& frame ) override;
+    SkChannelArray& controller_channels () override;
+    double controller_duration () override;
+    const std::string& controller_type () const override;
  };
 
 //======================================= EOF =====================================
