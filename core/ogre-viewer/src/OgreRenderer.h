@@ -43,7 +43,7 @@ class OgreRenderer : public ExampleApplication
 	
 	protected:
 		// ExampleApplication callbacks
-		void destroyScene(void);
+		void destroyScene();
 		void createDefaultScene(std::string meshName);
 		void createScene();
 		void createFrameListener();

@@ -1,11 +1,11 @@
 #include "TreeInfoObject.h"
 #include <sb/SBAttribute.h>
 
-TreeInfoObject::TreeInfoObject(void)
+TreeInfoObject::TreeInfoObject()
 {
 }
 
-TreeInfoObject::~TreeInfoObject(void)
+TreeInfoObject::~TreeInfoObject()
 {
 }
 

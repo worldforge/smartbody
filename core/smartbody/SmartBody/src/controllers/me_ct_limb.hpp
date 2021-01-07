@@ -17,8 +17,8 @@ public:
 	vector<int>      buf_index;
 	vector<SrQuat>   joint_quat; // temp buffer for joint quats from previous frame
 public:
-	MeCtLimb(void);
-	~MeCtLimb(void);
+	MeCtLimb();
+	~MeCtLimb();
 
 	SkJoint* getChainRoot();
 	SkJoint* getChainEndEffector();

@@ -61,11 +61,11 @@ class srSplineCurve {
 				:	ctrl_key( p, v ) {
 					next_p = nullptr;
 				}
-				~Key( void )	{}
+				~Key()	{}
 				
 				void print( int i = -1 ) ;
 				void next( Key *set_p ) { next_p = set_p; }
-				Key *next( void ) { return( next_p ); }
+				Key *next() { return( next_p ); }
 
 			private:
 				Key *next_p;
@@ -73,17 +73,17 @@ class srSplineCurve {
 		class Node : public gwiz::tempordinal_key	{
 
 			public:
-				Node( void ) {
+				Node() {
 					next_p = nullptr;
 					ref_key_p = nullptr;
 				}
-				~Node( void )	{}
+				~Node()	{}
 				
 				void print( int i = -1 );
 				void next( Node *set_p ) { next_p = set_p; }
-				Node *next( void ) { return( next_p ); }
+				Node *next() { return( next_p ); }
 				void keyref( Key *set_ref_p ) { ref_key_p = set_ref_p; }
-				Key *keyref( void ) { return( ref_key_p ); }
+				Key *keyref() { return( ref_key_p ); }
 
 			private:
 				Node *next_p;
@@ -101,10 +101,10 @@ class srSplineCurve {
 		Key *curr_query_key_p;
 		Node *curr_query_node_p;
 
-		void null( void )	{
+		void null()	{
 			init();
 		}
-		void init( void )	{
+		void init()	{
 
 			key_count = 0;
 			node_count = 0;
@@ -133,15 +133,15 @@ class srSplineCurve {
 			null();
 			insert_mode = insertion_mode;
 		}
-		~srSplineCurve( void )	{
+		~srSplineCurve()	{
 			clear();
 		}
-		void print( void );
+		void print();
 
-		int get_num_keys( void ) { return( key_count ); }
-		int get_num_nodes( void ) { return( node_count ); }
+		int get_num_keys() { return( key_count ); }
+		int get_num_nodes() { return( node_count ); }
 
-		void clear( void );
+		void clear();
 
 		void set_extensions( int head, int tail )	{ 
 			head_ext_mode = head; 
@@ -160,7 +160,7 @@ class srSplineCurve {
 			algorithm = alg;
 		}
 
-		void apply_extensions( void )	{
+		void apply_extensions()	{
 			extend_head();
 			extend_tail();
 		}
@@ -171,16 +171,16 @@ class srSplineCurve {
 
 	protected:
 
-		void clear_nodes( void );
+		void clear_nodes();
 
 		bool insert_key( Key *key_p );
 		void insert_head_key( Key *key_p ) ;
 		void insert_after_key( Key *prev_p, Key *key_p );
 		
-		void decrement_key( void )	{ key_count--; dirty = true; }
-		void increment_key( void )	{ key_count++; dirty = true; }
-		void decrement_node( void )	{ node_count--; dirty = true; }
-		void increment_node( void )	{ node_count++; dirty = true; }
+		void decrement_key()	{ key_count--; dirty = true; }
+		void increment_key()	{ key_count++; dirty = true; }
+		void decrement_node()	{ node_count--; dirty = true; }
+		void increment_node()	{ node_count++; dirty = true; }
 
 		Key *find_floor_key( double t );
 		Node *find_floor_node( double t );
@@ -188,12 +188,12 @@ class srSplineCurve {
 		bool edit_head( double t, double v );
 		bool edit_tail( double t, double v );
 
-		void build_tail( void );
-		bool extend_head( void );
-		bool extend_tail( void );
+		void build_tail();
+		bool extend_head();
+		bool extend_tail();
 
-		void update_key_order( void );
-		void update( void );
+		void update_key_order();
+		void update();
 
 	public:
 	// utilities for selecting, editing and display
@@ -218,7 +218,7 @@ class srSplineCurve {
 		);
 	
 	// iterate/access
-		void edit_reset( void ) { curr_edit_key_p = head_key_p; }
+		void edit_reset() { curr_edit_key_p = head_key_p; }
 		bool edit( double t, double v, bool increment = false );
 
 		void query_reset( bool keys = true, bool nodes = true )	{ 

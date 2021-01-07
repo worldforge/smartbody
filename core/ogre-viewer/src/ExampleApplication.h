@@ -86,7 +86,7 @@ public:
     }
 
     /// Start the example
-    virtual void go(void)
+    virtual void go()
     {
         if (!setup())
             return;
@@ -107,7 +107,7 @@ protected:
 
     // These internal methods package up the stages in the startup process
     /** Sets up the application - returns false if the user chooses to abandon configuration. */
-    virtual bool setup(void)
+    virtual bool setup()
     {
 
 		String pluginsPath;
@@ -145,7 +145,7 @@ protected:
 
     }
     /** Configures the application - returns false if the user chooses to abandon configuration. */
-    virtual bool configure(void)
+    virtual bool configure()
     {
         // Show the configuration dialog and initialise the system
         // You can skip this and use root.restoreConfig() to load configuration
@@ -163,12 +163,12 @@ protected:
         }
     }
 
-    virtual void chooseSceneManager(void)
+    virtual void chooseSceneManager()
     {
         // Create the SceneManager, in this case a generic one
         mSceneMgr = mRoot->createSceneManager(ST_GENERIC, "ExampleSMInstance");
     }
-    virtual void createCamera(void)
+    virtual void createCamera()
     {
         // Create the camera
         mCamera = mSceneMgr->createCamera("PlayerCam");
@@ -180,18 +180,18 @@ protected:
         mCamera->setNearClipDistance(5);
 
     }
-    virtual void createFrameListener(void)
+    virtual void createFrameListener()
     {
         mFrameListener= new ExampleFrameListener(mWindow, mCamera);
         mFrameListener->showDebugOverlay(true);
         mRoot->addFrameListener(mFrameListener);
     }
 
-    virtual void createScene(void) = 0;    // pure virtual - this has to be overridden
+    virtual void createScene() = 0;    // pure virtual - this has to be overridden
 
-    virtual void destroyScene(void){}    // Optional to override this
+    virtual void destroyScene(){}    // Optional to override this
 
-    virtual void createViewports(void)
+    virtual void createViewports()
     {
         // Create one viewport, entire window
         Viewport* vp = mWindow->addViewport(mCamera);
@@ -203,7 +203,7 @@ protected:
     }
 
     /// Method which will define the source of resources (other than current folder)
-    virtual void setupResources(void)
+    virtual void setupResources()
     {
         // Load resource paths from config file
         ConfigFile cf;
@@ -237,14 +237,14 @@ protected:
     }
 
 	/// Optional override method where you can create resource listeners (e.g. for loading screens)
-	virtual void createResourceListener(void)
+	virtual void createResourceListener()
 	{
 
 	}
 
 	/// Optional override method where you can perform resource group loading
 	/// Must at least do ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-	virtual void loadResources(void)
+	virtual void loadResources()
 	{
 		// Initialise, parse scripts etc
 		ResourceGroupManager::getSingleton().initialiseAllResourceGroups();

@@ -67,8 +67,8 @@ protected:
 private:
 	// for singleton
 	static SbmShaderManager* _singleton;
-	SBAPI SbmShaderManager(void) {}
-	SBAPI ~SbmShaderManager(void) {}
+	SBAPI SbmShaderManager() {}
+	SBAPI ~SbmShaderManager() {}
 public:
 	SBAPI static SbmShaderManager& singleton() {}
 	SBAPI static void destroy_singleton() {}
@@ -124,8 +124,8 @@ protected:
 private:
 	// for singleton
 	static SbmShaderManager* _singleton;
-	SBAPI SbmShaderManager(void);
-	SBAPI ~SbmShaderManager(void);
+	SBAPI SbmShaderManager();
+	SBAPI ~SbmShaderManager();
 public:
 	SBAPI static SbmShaderManager& singleton();
 	SBAPI static void destroy_singleton();

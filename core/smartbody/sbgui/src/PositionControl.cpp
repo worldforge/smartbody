@@ -154,7 +154,7 @@ void PositionControl::drawCenter()
 }
 
 
-PositionControl::PositionControl(void) : ObjectControl()
+PositionControl::PositionControl() : ObjectControl()
 {	
 	opdir = 3;	
 	colors[3]=SrVec(100.0f/255.0f, 220.0f/255.0f, 1.f);
@@ -169,7 +169,7 @@ PositionControl::PositionControl(void) : ObjectControl()
 	ss_len=3;	
 }
 
-PositionControl::~PositionControl(void)
+PositionControl::~PositionControl()
 {
 }
 

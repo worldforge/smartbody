@@ -24,12 +24,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <math.h>
 
 
-SteerPath::SteerPath(void)
+SteerPath::SteerPath()
 {
 	currentGoal = 1;
 }
 
-SteerPath::~SteerPath(void)
+SteerPath::~SteerPath()
 {
 }
 

@@ -21,12 +21,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "gwiz_math.h"
 //#include "sbm/lin_win.h"
 
-//int gwiz::temp_read2( void ) { return( temp_test ); }
+//int gwiz::temp_read2() { return( temp_test ); }
 
 using namespace gwiz;
 #define gw_float	gwiz::float_t // Ubuntu: float_t defined in mathdef.h
 
-//int temp_read2( void ) { return( temp_test ); }
+//int temp_read2() { return( temp_test ); }
 
 ////////////////////////////////
 // SAFE TRIGONOMETRY:
@@ -684,7 +684,7 @@ inline int decompose4x4TRS( const gw_float M[4][4], vector_t* T, quat_t* Q, eule
 // CLASS MEMBERS
 ////////////////////////////////
 
-vector_t gwiz::vector_t::normal( void ) const	{
+vector_t gwiz::vector_t::normal() const	{
 	register float_t len = length();
 
 		if( len < epsilon6() )
@@ -692,7 +692,7 @@ vector_t gwiz::vector_t::normal( void ) const	{
 		return( (*this) / len );
 }
 
-vector_t& gwiz::vector_t::normalize( void )	{
+vector_t& gwiz::vector_t::normalize()	{
 	register float_t len = length();
 
 		if( len < epsilon6() )
@@ -798,7 +798,7 @@ vector_t gwiz::quat_t::swingtwist( int use_radians ) const	{
 	return( vector_t( DEG( swing_x ), DEG( swing_y ), DEG( twist ) ) );
 }
 
-quat_t& gwiz::quat_t::normalize( void )	{
+quat_t& gwiz::quat_t::normalize()	{
 	register float_t len = sqrt( W*W + X*X + Y*Y + Z*Z );
 
 #if 0
@@ -871,7 +871,7 @@ gwiz::euler_t::euler_t( const quat_t& q )	{
 		*this = eulerFromQuat( q );
 }
 
-euler_t gwiz::euler_t::operator - ( void ) const { 
+euler_t gwiz::euler_t::operator - () const {
 
 	// COMPARE: return( matrix_t( *this ).transposition() )
 		return ( -quat_t( *this ) ); 
@@ -903,7 +903,7 @@ gwiz::matrix_t::matrix_t( const euler_t& e )	{
 		matrix4x4FromQuat( M, quat_t( e ) );
 }
 
-matrix_t gwiz::matrix_t::inverse( void )	const {
+matrix_t gwiz::matrix_t::inverse()	const {
 	matrix_t tmp;
 		
 		if( inverse4x4( tmp.M, M ) == 0 )	{
@@ -912,7 +912,7 @@ matrix_t gwiz::matrix_t::inverse( void )	const {
 		return( tmp );
 }
 
-matrix_t& gwiz::matrix_t::invert( void )	{
+matrix_t& gwiz::matrix_t::invert()	{
 		
 		if( invert4x4( M ) == 0 )	{
 			matrix_t tmp;
@@ -1139,7 +1139,7 @@ void read_gwiz_composition( vector_t T, euler_t E, vector_t S )	{
 	printf( "\n" );
 }
 
-void test_gwiz_composition( void )	{
+void test_gwiz_composition()	{
 
 	vector_t T( 1.0, 2.0, 3.0 );
 	euler_t E( vector_t( 1.0, 0.0, 1.0 ), 10.0 );
@@ -1177,7 +1177,7 @@ void read_swing_twist( euler_t e )	{
 	e2.print();
 }
 
-void test_axis_angle( void )	{
+void test_axis_angle()	{
 
 #if 0
 	read_axis_angle( euler_t( 0.0, 0.0, 0.0 ) );
@@ -1245,7 +1245,7 @@ void test_axis_angle( void )	{
 #endif
 }
 
-void test_quat_product( void )	{
+void test_quat_product()	{
 	quat_t P = euler_t( 30.0, 0.0, 0.0 ); // pitch
 	quat_t H = euler_t( 0.0, 25.5, 0.0 ); // heading
 	quat_t R = euler_t( 0.0, 0.0, 10.0 ); // heading
@@ -1318,7 +1318,7 @@ void test_quat_diff_print( quat_t A, quat_t B )	{
 #endif
 }
 
-void test_quat_difference( void )	{
+void test_quat_difference()	{
 
 	printf( "-- -- -- --\n" );
 	test_quat_diff_print(

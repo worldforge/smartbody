@@ -181,7 +181,7 @@ MeCtDataDrivenReach::MeCtDataDrivenReach(SkSkeleton* sk) : MeCtReach(sk)
 	useIK = true;
 }
 
-MeCtDataDrivenReach::~MeCtDataDrivenReach(void)
+MeCtDataDrivenReach::~MeCtDataDrivenReach()
 {
 }
 

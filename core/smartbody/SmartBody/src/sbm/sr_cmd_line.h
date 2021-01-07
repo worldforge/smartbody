@@ -36,15 +36,15 @@
 class srCmdLine	{
 	
 	public:
-		srCmdLine( void );
-		virtual ~srCmdLine( void );
+		srCmdLine();
+		virtual ~srCmdLine();
 		
 		int pending_cmd( bool );
 		
-		char *peek_cmd( void );
-		char *read_cmd( void );
+		char *peek_cmd();
+		char *read_cmd();
 		
-		void test_prompt( void );
+		void test_prompt();
 	
 	private:
 		int realloc_buffer( int len );

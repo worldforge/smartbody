@@ -52,7 +52,7 @@ using namespace Ogre;
 class ExampleFrameListener: public FrameListener, public WindowEventListener
 {
 protected:
-	virtual void updateStats(void)
+	virtual void updateStats()
 	{
 		static String currFps = "Current FPS: ";
 		static String avgFps = "Average FPS: ";

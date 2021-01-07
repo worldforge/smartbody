@@ -159,7 +159,7 @@ class TimeIntervalProfiler { // T.I.P.
 		int 	suppression;
 		int 	selection;
 
-		void null( void );
+		void null();
 		void null_group( group_entry_t* group_p, const char* group_name = "" );
 		void null_profile( profile_entry_t* profile_p, const char* label = "" );
 		
@@ -170,17 +170,17 @@ class TimeIntervalProfiler { // T.I.P.
 
 	public:
 
-		TimeIntervalProfiler( void );
-		~TimeIntervalProfiler( void );
+		TimeIntervalProfiler();
+		~TimeIntervalProfiler();
 
 		void bypass( bool bp );
-		void reset( void );
-		void print_legend( void );
-		void print( void );
-		void report( void );
-		void erase( void );
+		void reset();
+		void print_legend();
+		void print();
+		void report();
+		void erase();
 		void enable( bool en );
-		void preload( void );
+		void preload();
 		bool enable( const char* group_name, bool en );
 		bool preload( const char* group_name );
 		void set_suppression( int sup );
@@ -197,7 +197,7 @@ class TimeIntervalProfiler { // T.I.P.
 
 	private:
 
-		void print_data( void );
+		void print_data();
 		void print_profile( profile_entry_t* profile_p );
 		void print_group( group_entry_t *group_p );
 		void print_profile_report( profile_entry_t *profile_p, int group_id );
@@ -228,7 +228,7 @@ class TimeIntervalProfiler { // T.I.P.
 	public:
 
 		void update( double time );
-		void update( void );
+		void update();
 		void mark_time( const char* group_name, int level, const char* label, double time );
 		int mark_time( const char* group_name, double time );
 		void mark( const char* group_name, int level, const char* label );

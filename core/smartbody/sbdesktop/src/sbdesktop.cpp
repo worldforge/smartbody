@@ -425,7 +425,7 @@ int mcu_quit_func( srArgBuffer& args )
 	return( CMD_SUCCESS );
 }
 
-void mcu_register_callbacks( void ) {
+void mcu_register_callbacks() {
 	
 	SmartBody::SBCommandManager* cmdMgr = SmartBody::SBScene::getScene()->getCommandManager();
 	
@@ -437,7 +437,7 @@ void mcu_register_callbacks( void ) {
 	cmdMgr->insert( "camera",		mcu_camera_func );
 }
 
-void cleanup( void )	{
+void cleanup()	{
 	{
 
 		

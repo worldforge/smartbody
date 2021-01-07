@@ -66,7 +66,7 @@ public:
 	bool useIK;
 public:
 	MeCtDataDrivenReach(SkSkeleton* sk);
-	~MeCtDataDrivenReach(void);
+	~MeCtDataDrivenReach();
 	const PoseExampleSet& ResampledPosedata() const { return resampledPosedata; }
 	const PoseExampleSet& ExamplePoseData() const { return examplePoseData; }	
 

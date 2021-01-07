@@ -9,7 +9,7 @@
 
 
 #if 0
-VBOData::~VBOData(void)
+VBOData::~VBOData()
 {
 	if (m_iVBO_ID)
 		glDeleteBuffers(1,&m_iVBO_ID);

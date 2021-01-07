@@ -846,7 +846,7 @@ void SBAnimationBlend::plotMotionJointTrajectory(const std::string& motionName, 
 }
 
 
-void SBAnimationBlend::clearPlotMotion(void)
+void SBAnimationBlend::clearPlotMotion()
 {
 	for(unsigned int i=0; i<plotMotionLinesArray.size(); i++)
 		plotMotionLinesArray[i]->unref();

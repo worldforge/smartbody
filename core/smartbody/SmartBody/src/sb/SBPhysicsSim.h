@@ -217,8 +217,8 @@ protected:
 	SBPhysicsCharacterMap characterMap;
 	SBPhysicsPawnMap      pawnObjMap;
 public:
-	SBAPI SBPhysicsSim(void);
-	SBAPI virtual ~SBPhysicsSim(void);		
+	SBAPI SBPhysicsSim();
+	SBAPI virtual ~SBPhysicsSim();
 	SBAPI void updateSimulation(float timestep);
 	SBAPI void setEnable(bool enable);
 	SBAPI void setGravity(float gravity);	

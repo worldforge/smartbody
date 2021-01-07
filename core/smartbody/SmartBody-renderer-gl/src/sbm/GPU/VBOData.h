@@ -63,7 +63,7 @@ public:
 	VBOData(char* name, int type, std::vector<SrVec4i>& Data) {}
 	VBOData(char* name, int type, std::vector<float>& Data) {}
 public:
-	~VBOData(void) {}
+	~VBOData() {}
 
 	void BindBuffer() {}
 	void UnbindBuffer() {}
@@ -104,7 +104,7 @@ public:
 	VBOData(char* name, int type, std::vector<SrVec4i>& Data);
 	VBOData(char* name, int type, std::vector<float>& Data);
 public:
-	~VBOData(void);
+	~VBOData();
 	
 	void BindBuffer();
 	void UnbindBuffer();
@@ -153,7 +153,7 @@ VBOData<S>::VBOData(char* name, GLuint ArrayType, GLuint UsageType, std::vector<
 }
 
 template <class S>
-VBOData<S>::~VBOData(void)
+VBOData<S>::~VBOData()
 {
 	//SmartBody::util::log("Delete VBOData, m_iVBO_ID = %d", m_iVBO_ID);
 	if (m_iVBO_ID)

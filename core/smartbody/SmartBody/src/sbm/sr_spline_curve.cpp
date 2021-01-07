@@ -113,7 +113,7 @@ void srSplineCurve::Node::print( int i ) {
 	printf( "\n" );
 }
 
-void srSplineCurve::print( void )	{
+void srSplineCurve::print()	{
 
 	if( dirty ) update();
 	printf( "srSplineCurve: KEYS: %d[%d]\n", key_count, node_count );
@@ -156,7 +156,7 @@ void srSplineCurve::print( void )	{
 
 //////////////////////////////////////////////////////////////////
 
-void srSplineCurve::clear( void )	{
+void srSplineCurve::clear()	{
 
 	Key *key_p = head_key_p;
 	while( key_p )	{
@@ -174,7 +174,7 @@ void srSplineCurve::clear( void )	{
 	init();
 }
 
-void srSplineCurve::clear_nodes( void )	{
+void srSplineCurve::clear_nodes()	{
 
 	Node *node_p = head_node_p;
 	while( node_p )	{
@@ -430,7 +430,7 @@ bool srSplineCurve::edit_tail( double t, double v )	{
 
 //////////////////////////////////////////////////////////////////
 
-void srSplineCurve::build_tail( void ) {
+void srSplineCurve::build_tail() {
 
 	if( key_count >= 2 ) { // at least 2 nodes to register an interval, with default eps4()...
 
@@ -487,7 +487,7 @@ void srSplineCurve::build_tail( void ) {
 	return;
 }
 
-bool srSplineCurve::extend_head( void )	{
+bool srSplineCurve::extend_head()	{
 
 	if( head_ext_mode == EXTEND_NONE ) return( false );
 
@@ -547,7 +547,7 @@ bool srSplineCurve::extend_head( void )	{
 	return( false );
 }
 
-bool srSplineCurve::extend_tail( void )	{
+bool srSplineCurve::extend_tail()	{
 
 	if( tail_ext_mode == EXTEND_NONE ) return( false );
 
@@ -655,7 +655,7 @@ bool srSplineCurve::extend_tail( void )	{
 
 #define COALESCE_THRESH 0.1
 
-void srSplineCurve::update_key_order( void )	{
+void srSplineCurve::update_key_order()	{
 
 	if( head_key_p )	{
 		double t_prev = head_key_p->p();
@@ -745,7 +745,7 @@ void srSplineCurve::update_key_order( void )	{
 	}
 }
 
-void srSplineCurve::update( void ) {
+void srSplineCurve::update() {
 
 // TODO:
 	// Can we now re-order its keys, since it will scratch build the node arr?

@@ -20,7 +20,7 @@ std::string originalScript = "";
 std::string originalPath = "";
 
 //-------------------------------------------------------------------------------------
-OgreSmartBody::OgreSmartBody(void)
+OgreSmartBody::OgreSmartBody()
     : mRoot(0),
     mResourcesCfg(Ogre::StringUtil::BLANK),
     mPluginsCfg(Ogre::StringUtil::BLANK),
@@ -32,7 +32,7 @@ OgreSmartBody::OgreSmartBody(void)
 	firstTime = true;
 }
 //-------------------------------------------------------------------------------------
-OgreSmartBody::~OgreSmartBody(void)
+OgreSmartBody::~OgreSmartBody()
 {
     //Remove ourself as a Window listener
     Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, this);
@@ -47,7 +47,7 @@ Ogre::SceneManager* OgreSmartBody::getSceneManager()
 }
  
  
-bool OgreSmartBody::go(void)
+bool OgreSmartBody::go()
 {
 #ifdef _DEBUG
     mResourcesCfg = "resources_d.cfg";

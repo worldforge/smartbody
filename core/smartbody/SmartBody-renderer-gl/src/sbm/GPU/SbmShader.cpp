@@ -280,7 +280,7 @@ void SbmShaderProgram::printOglError(const char* tag)
 SbmShaderManager* SbmShaderManager::_singleton = nullptr;
 int SbmShaderManager::shaderSupport = SUPPORT_OPENGL_2_0;
 
-SbmShaderManager::SbmShaderManager(void)
+SbmShaderManager::SbmShaderManager()
 {
 	viewer = nullptr;
 	shaderInit = false;
@@ -300,7 +300,7 @@ void SbmShaderManager::setViewer( SrViewer* vw )
 	viewer = vw;	
 }
 
-SbmShaderManager::~SbmShaderManager(void)
+SbmShaderManager::~SbmShaderManager()
 {
 	releaseAllShaders();
 }

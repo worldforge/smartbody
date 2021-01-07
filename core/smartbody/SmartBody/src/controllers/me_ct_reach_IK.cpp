@@ -2,12 +2,12 @@
 #include <sr/sr_alg.h>
 
 
-MeCtReachIK::MeCtReachIK(void)
+MeCtReachIK::MeCtReachIK()
 {
 	max_iteration = 30;
 }
 
-MeCtReachIK::~MeCtReachIK(void)
+MeCtReachIK::~MeCtReachIK()
 {
 }
 

@@ -99,7 +99,7 @@ void Heightfield::load( char* filename )	{
 }
 
 #if 0
-void Heightfield::paste_img( void )	{
+void Heightfield::paste_img()	{
 
 	int alignment;
 	glGetIntegerv( GL_UNPACK_ALIGNMENT, &alignment );

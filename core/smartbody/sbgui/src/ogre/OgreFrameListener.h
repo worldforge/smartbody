@@ -20,7 +20,7 @@ class OgreFrameListener : public ExampleFrameListener
 		bool processUnbufferedKeyInput(const Ogre::FrameEvent& evt);
 		virtual bool processUnbufferedMouseInput( const Ogre::FrameEvent & evt );
 		bool frameStarted( const Ogre::FrameEvent & evt );
-		void scheduleQuit(void);
+		void scheduleQuit();
 		void SetOgreMouse( const bool enabled );	
 
 		std::vector<std::string>	m_characterList;

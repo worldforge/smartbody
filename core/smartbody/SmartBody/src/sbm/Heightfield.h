@@ -39,9 +39,9 @@ class Heightfield
 		SBAPI void load( char* filename );
 		SBAPI void set_scale( float x, float y, float z );
 		SBAPI void set_origin( float x, float y, float z );
-		SBAPI void set_auto_origin( void );
+		SBAPI void set_auto_origin();
 		
-//		void paste_img( void );
+//		void paste_img();
 		SBAPI float get_elevation( float x, float z, float *normal_p = nullptr );
 
 		struct MeshData {
@@ -63,8 +63,8 @@ class Heightfield
 
 		void load_normals( );
 	private:
-		void clear( void );
-		void defaults( void );
+		void clear();
+		void defaults();
 		
 		unsigned char* parse_ppm( FILE *stream );
 		unsigned char* read_ppm( const char* filename );

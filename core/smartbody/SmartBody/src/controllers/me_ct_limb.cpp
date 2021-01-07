@@ -1,12 +1,12 @@
 #include "me_ct_limb.hpp"
 #include <assert.h>
 
-MeCtLimb::MeCtLimb(void)
+MeCtLimb::MeCtLimb()
 {
 	skeleton = nullptr;
 }
 
-MeCtLimb::~MeCtLimb(void)
+MeCtLimb::~MeCtLimb()
 {
 }
 

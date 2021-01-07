@@ -141,8 +141,8 @@ public:
 	float  maxOffset;
 	bool    ikUseBalance, ikUseReference;
 public:
-	MeCtJacobianIK(void);
-	~MeCtJacobianIK(void);
+	MeCtJacobianIK();
+	~MeCtJacobianIK();
 public:
 	virtual void update(MeCtIKTreeScenario* scenario);
 	float getDt() const { return dt; }

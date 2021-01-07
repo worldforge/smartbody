@@ -8,7 +8,7 @@
 #define SHOW_OGRE_DEBUG_OVERLAY 0
 
 using namespace Ogre;
-void ExampleFrameListener::updateStats( void )
+void ExampleFrameListener::updateStats()
 {
 #if SHOW_OGRE_DEBUG_OVERLAY
 	static String currFps = "Current FPS: ";

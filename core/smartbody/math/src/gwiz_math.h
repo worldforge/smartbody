@@ -147,17 +147,17 @@ namespace gwiz_sample_namespace_for_first_timers {
 	class gwiz_cl	{
 	public:
 		int x() { return( X ); }
-		int x_cnst( void ) const { return( 0 ); }
+		int x_cnst() const { return( 0 ); }
 	private:
 		int X;
 	};
 //	int x; No... only types in a namespace
-//	int x_fcn( void ) { return( 0 ); } No!
-	static int y_fcn( void ) { return( 0 ); }
-//	int z_fcn( void ) const { return( 0 ); } No!
-	int a_cpp_fcn( void ); // cpp def'd
+//	int x_fcn() { return( 0 ); } No!
+	static int y_fcn() { return( 0 ); }
+//	int z_fcn() const { return( 0 ); } No!
+	int a_cpp_fcn(); // cpp def'd
 }
-// cpp: int gwiz_sample_namespace_for_first_timers::a_cpp_fcn( void ) { return( 0 ); }
+// cpp: int gwiz_sample_namespace_for_first_timers::a_cpp_fcn() { return( 0 ); }
 */
 
 namespace gwiz {
@@ -165,8 +165,8 @@ namespace gwiz {
 /*
 	// decl/defn examples
 	static int temp_test = 0;
-	static int temp_read( void ) { return( ++temp_test ); }
-	int temp_read2( void );
+	static int temp_read() { return( ++temp_test ); }
+	int temp_read2();
 */
   // matrix_t composition optimization flags
 	enum martrix_enum_set    {
@@ -178,27 +178,27 @@ namespace gwiz {
 	};
 
   // precision constants, typically between 5 and 10:
-	static float_t epsilon4( void )	{ return( 0.00001 ); } // used by vector_t quat_t::swingtwist( deg )
-	static float_t epsilon5( void )	{ return( 0.000001 ); } /* one millionth */
-	static float_t epsilon6( void )	{ return( 0.0000001 ); }
-	static float_t epsilon7( void )	{ return( 0.00000001 ); }
-	static float_t epsilon8( void )	{ return( 0.000000001 ); } /* one billionth */
-	static float_t epsilon9( void )	{ return( 0.0000000001 ); }
-	static float_t epsilon10( void ) { return( 0.00000000001 ); }
-	static float_t epsilon11( void ) { return( 0.000000000001 ); } /* one trillionth */
+	static float_t epsilon4()	{ return( 0.00001 ); } // used by vector_t quat_t::swingtwist( deg )
+	static float_t epsilon5()	{ return( 0.000001 ); } /* one millionth */
+	static float_t epsilon6()	{ return( 0.0000001 ); }
+	static float_t epsilon7()	{ return( 0.00000001 ); }
+	static float_t epsilon8()	{ return( 0.000000001 ); } /* one billionth */
+	static float_t epsilon9()	{ return( 0.0000000001 ); }
+	static float_t epsilon10() { return( 0.00000000001 ); }
+	static float_t epsilon11() { return( 0.000000000001 ); } /* one trillionth */
 
   // trigonometry
-	static float_t pi( void ) { return( 3.14159265358979323846 ); }
+	static float_t pi() { return( 3.14159265358979323846 ); }
 	static float_t rad( float_t deg ) { return( deg * 0.017453292519943295 ); }
 	static float_t deg( float_t rad ) { return( rad * 57.295779513082323 ); }
-	static float_t safe_arc_threshold( void ) { return( 1.0 - epsilon8() ); }
+	static float_t safe_arc_threshold() { return( 1.0 - epsilon8() ); }
 	float_t safe_asin( float_t s );
 	float_t safe_acos( float_t c );
 	float_t safe_atan( float_t t );
 
 #if 1
   // Ubuntu warning suppression
- 	static inline double use_warn_suppress(void)	{
+ 	static inline double use_warn_suppress()	{
 		static double x = use_warn_suppress(); // use once
 		x = epsilon4(); x = epsilon5(); x = epsilon6(); 
 		x = epsilon7(); x = epsilon8(); x = epsilon9();
@@ -216,12 +216,12 @@ namespace gwiz {
 		private:
 			float_t param, value;
 		public:
-			ctrl_key( void ) { set( 0.0, 0.0 ); }
+			ctrl_key() { set( 0.0, 0.0 ); }
 			ctrl_key( float_t p_in, float_t v_in )	{ set( p_in, v_in ); }
 
 			void set( float_t p_in, float_t v_in )	{ param = p_in; value = v_in; }
-			float_t p( void ) const { return( param ); }
-			float_t v( void ) const { return( value ); }
+			float_t p() const { return( param ); }
+			float_t v() const { return( value ); }
 
 			// maybe not the correct place for this...
 			// GWIZ gui utils... simple 2D bounds checking: box, circle, rect.
@@ -234,7 +234,7 @@ namespace gwiz {
 			float_t m_lt, m_rt;		
 		public:
 
-			cardinal_key( void ) { set( 0.0, 0.0, 0.0, 0.0 ); }
+			cardinal_key() { set( 0.0, 0.0, 0.0, 0.0 ); }
 			cardinal_key( 
 				float_t t_in, float_t v_in,
 				float_t ml_in, float_t mr_in
@@ -247,8 +247,8 @@ namespace gwiz {
 				m_lt = ml_in; m_rt = mr_in; 
 			}
 
-			float_t ml( void ) const { return( m_lt ); }
-			float_t mr( void ) const { return( m_rt ); }
+			float_t ml() const { return( m_lt ); }
+			float_t mr() const { return( m_rt ); }
 	};
 
 	class tempordinal_key : public cardinal_key	{
@@ -256,7 +256,7 @@ namespace gwiz {
 		private:
 			float_t d_lt, d_rt;
 		public:
-			tempordinal_key( void ) { set( 0.0, 0.0, 0.0, 0.0, 1.0, 1.0 ); }
+			tempordinal_key() { set( 0.0, 0.0, 0.0, 0.0, 1.0, 1.0 ); }
 			void set( 
 				float_t t_in, float_t v_in,
 				float_t ml_in, float_t mr_in,
@@ -265,8 +265,8 @@ namespace gwiz {
 				d_lt = dl_in; d_rt = dr_in; 
 			}
 
-			float_t dl( void ) const { return( d_lt ); }
-			float_t dr( void ) const { return( d_rt ); }
+			float_t dl() const { return( d_lt ); }
+			float_t dr() const { return( d_rt ); }
 
 			void simple( const ctrl_key& k0, const ctrl_key& k1, const ctrl_key& k2 );
 
@@ -313,13 +313,13 @@ class vector_t {
 
     public:
 #if 1
-		void print( void ) const { printf( " vector_t:\n  %f %f %f\n", X, Y, Z ); }
+		void print() const { printf( " vector_t:\n  %f %f %f\n", X, Y, Z ); }
 #else
-		void print( void ) const { printf( " vector_t:\n  %.12f %.12f %.12f\n", X, Y, Z ); }
+		void print() const { printf( " vector_t:\n  %.12f %.12f %.12f\n", X, Y, Z ); }
 #endif
 
 	// CONSTRUCT
-        inline vector_t( void )
+        inline vector_t()
             { X = 0.0; Y = 0.0; Z = 0.0; }
         inline vector_t( float_t x_in, float_t y_in, float_t z_in )
             { X = x_in; Y = y_in; Z = z_in; }
@@ -332,14 +332,14 @@ class vector_t {
 		inline void z( float_t z_in ) { Z = z_in; }
 
 	// READ
-		inline float_t x( void ) const { return( X ); }
-		inline float_t y( void ) const { return( Y ); }
-		inline float_t z( void ) const { return( Z ); }
+		inline float_t x() const { return( X ); }
+		inline float_t y() const { return( Y ); }
+		inline float_t z() const { return( Z ); }
 
 	// MISC
-        inline float_t sqlen( void ) const 
+        inline float_t sqlen() const
 			{ return( X*X + Y*Y + Z*Z ); }
-        inline float_t length( void ) const 
+        inline float_t length() const
 			{ return( sqrt( sqlen() ) ); }
 		inline float_t dot( const vector_t& v ) const 
 			{ return( X*v.X + Y*v.Y + Z*v.Z ); }
@@ -354,8 +354,8 @@ class vector_t {
 		inline float_t box( const vector_t& v1, const vector_t& v2, const vector_t& v3 ) const 
 			{ return( ( v1 - *this ).dot( ( v2 - *this ).cross( v3 - *this ) ) ); }
 
-        vector_t normal( void ) const;
-        vector_t& normalize( void );
+        vector_t normal() const;
+        vector_t& normalize();
 
 		inline vector_t lerp( float_t s, const vector_t& v ) const 
 #if 0
@@ -367,7 +367,7 @@ class vector_t {
 			{ return( (*this) = v0.lerp( s, v1 ) ); }
 		
 	// OPERATE
-        inline vector_t operator - ( void ) const 
+        inline vector_t operator - () const
             { return( vector_t( -x(), -y(), -z() ) ); }
 
         inline vector_t operator * ( float_t s ) const 
@@ -405,13 +405,13 @@ class vector4_t: public vector_t {
 
     public:
 #if 1
-		void print( void ) const { printf( " vector4_t:\n  %f %f %f %f\n", x(), y(), z(), W ); }
+		void print() const { printf( " vector4_t:\n  %f %f %f %f\n", x(), y(), z(), W ); }
 #else
-		void print( void ) const { printf( " vector4_t:\n  %.12f %.12f %.12f %.12f\n", x(), y(), z(), W ); }
+		void print() const { printf( " vector4_t:\n  %.12f %.12f %.12f %.12f\n", x(), y(), z(), W ); }
 #endif
 
 	// CONSTRUCT
-        inline vector4_t( void ): vector_t()
+        inline vector4_t(): vector_t()
             { W = 0.0; }
         inline vector4_t( float_t x_in, float_t y_in, float_t z_in, float_t w_in )
 			: vector_t( x_in, y_in, z_in )
@@ -424,12 +424,12 @@ class vector4_t: public vector_t {
 		inline void w( float_t w_in ) { W = w_in; }
 
 	// READ
-		inline float_t w( void ) const { return( W ); }
+		inline float_t w() const { return( W ); }
 
 	// MISC
-        inline float_t sqlen( void ) const 
+        inline float_t sqlen() const
 			{ return( vector_t::sqlen() + W*W ); }
-        inline float_t length( void ) const 
+        inline float_t length() const
 			{ return( sqrt( sqlen() ) ); }
 
 	// OPERATE: not implemented
@@ -444,13 +444,13 @@ class quat_t {
 
     public:
 #if 1
-		void print( void ) const { printf( " quat_t:\n  %f %f %f %f\n", W, X, Y, Z ); }
+		void print() const { printf( " quat_t:\n  %f %f %f %f\n", W, X, Y, Z ); }
 #else
-		void print( void ) const { printf( " quat_t:\n  %.12f %.12f %.12f %.12f\n", W, X, Y, Z ); }
+		void print() const { printf( " quat_t:\n  %.12f %.12f %.12f %.12f\n", W, X, Y, Z ); }
 #endif
 
 	// CONSTRUCT
-        SBAPI quat_t( void )
+        SBAPI quat_t()
             { W = 1.0; X = 0.0; Y = 0.0; Z = 0.0; }
         SBAPI quat_t( float w_in, float x_in, float y_in, float z_in )
             { set( w_in, x_in, y_in, z_in ); }
@@ -472,22 +472,22 @@ class quat_t {
 			{ set( (float_t)w_in, (float_t)x_in, (float_t)y_in, (float_t)z_in ); }
 
 	// READ
-        inline float_t w( void ) const { return( W ); }
-        inline float_t x( void ) const { return( X ); }
-        inline float_t y( void ) const { return( Y ); }
-        inline float_t z( void ) const { return( Z ); }
-        inline float wf( void ) const { return( (float)W ); }
-        inline float xf( void ) const { return( (float)X ); }
-        inline float yf( void ) const { return( (float)Y ); }
-        inline float zf( void ) const { return( (float)Z ); }
+        inline float_t w() const { return( W ); }
+        inline float_t x() const { return( X ); }
+        inline float_t y() const { return( Y ); }
+        inline float_t z() const { return( Z ); }
+        inline float wf() const { return( (float)W ); }
+        inline float xf() const { return( (float)X ); }
+        inline float yf() const { return( (float)Y ); }
+        inline float zf() const { return( (float)Z ); }
 
-		inline vector_t axisangle( void ) const // Axis-Angle: Same as Exponential Map
+		inline vector_t axisangle() const // Axis-Angle: Same as Exponential Map
 			{ return( axis() * radians() ); }
-		inline float_t radians( void ) const
+		inline float_t radians() const
 			{ return( 2.0 * gwiz::safe_acos( W ) ); }
-		inline float_t degrees( void ) const 
+		inline float_t degrees() const
 			{ return( DEG( radians() ) ); }
-		inline vector_t axis( void ) const 
+		inline vector_t axis() const
 			{ return( vector_t( X, Y, Z ).normal() ); }
 		vector_t swingtwist( int use_radians = 0 ) const;
 		
@@ -495,28 +495,28 @@ class quat_t {
 		inline float_t dot( const quat_t& q ) const 
 			{ return( W*q.W + X*q.X + Y*q.Y + Z*q.Z ); }
 
-		inline quat_t reflection(void) const 
+		inline quat_t reflection() const
 			{ return( quat_t( -W, X, Y, Z ) ); } // reverse
-		inline quat_t conjugate(void) const 
+		inline quat_t conjugate() const
 			{ return( quat_t( W, -X, -Y, -Z ) ); } // inverse
-		inline quat_t complement(void) const 
+		inline quat_t complement() const
 			{ return( quat_t( -W, -X, -Y, -Z ) ); }
 
-		inline quat_t shortest( void ) const 
+		inline quat_t shortest() const
 			{ if( W < 0.0 ) return( complement() ); return( *this ); }
 		inline quat_t shortest( const quat_t& q_ref ) const 
 			{ if( dot( q_ref ) < 0.0 ) return( complement() ); return( *this ); }
 
-		SBAPI quat_t& normalize( void );
+		SBAPI quat_t& normalize();
 
 		quat_t lerp( float_t s, const quat_t& q ) const;
 		inline quat_t& lerp( float_t s, const quat_t& q0, const quat_t& q1 ) 
 			{ return( (*this) = q0.lerp( s, q1 ) ); }
 
 	// OPERATE
-		inline quat_t operator - ( void ) const 
+		inline quat_t operator - () const
 			{ return( conjugate() ); }
-		inline quat_t operator ~ ( void ) const 
+		inline quat_t operator ~ () const
 			{ return( complement() ); }
 
 		inline quat_t operator * ( float_t s ) const 
@@ -613,13 +613,13 @@ class euler_t {
 	
     public:
 #if 1
-		void print( void ) const { printf( " euler_t:\n  %f %f %f\n", X, Y, Z ); }
+		void print() const { printf( " euler_t:\n  %f %f %f\n", X, Y, Z ); }
 #else
-		void print( void ) const { printf( " euler_t:\n  %.12f %.12f %.12f\n", X, Y, Z ); }
+		void print() const { printf( " euler_t:\n  %.12f %.12f %.12f\n", X, Y, Z ); }
 #endif
 
 	// CONSTRUCT
-        SBAPI euler_t( void )
+        SBAPI euler_t()
             { X = 0.0; Y = 0.0; Z = 0.0; }
         SBAPI euler_t( float_t x_in, float_t y_in, float_t z_in )
             { X = x_in; Y = y_in; Z = z_in; }
@@ -644,13 +644,13 @@ class euler_t {
 			{ return( (*this) = euler_t( -dir, up_approx ) ); } // NOTE: flipped z-axis
 
 	// READ
-		inline float_t x( void ) const { return( X ); }
-		inline float_t y( void ) const { return( Y ); }
-		inline float_t z( void ) const { return( Z ); }
+		inline float_t x() const { return( X ); }
+		inline float_t y() const { return( Y ); }
+		inline float_t z() const { return( Z ); }
 
-		inline float_t p( void ) const { return( X ); }
-		inline float_t h( void ) const { return( Y ); }
-		inline float_t r( void ) const { return( Z ); }
+		inline float_t p() const { return( X ); }
+		inline float_t h() const { return( Y ); }
+		inline float_t r() const { return( Z ); }
 
 	// MISC
 		inline euler_t lerp( float_t s, const euler_t& e ) const 
@@ -659,7 +659,7 @@ class euler_t {
 			{ return( (*this) = e0.lerp( s, e1 ) ); }
 
 	// OPERATE
-		euler_t operator - ( void ) const;
+		euler_t operator - () const;
 		
 		inline euler_t operator * ( float_t s ) const 
 			{ return( quat_t(*this) * s ); }
@@ -706,7 +706,7 @@ class matrix_t {
 		}
 
 	// CONSTRUCT
-        inline matrix_t( void ) { stack = 0x0; }
+        inline matrix_t() { stack = 0x0; }
         inline matrix_t( int init ) { stack = 0x0; if( init ) identity(); }
         inline matrix_t( const float_t M_array[ 4 ][ 4 ] ) { stack = 0x0; set( M_array ); }
         inline matrix_t( const vector_t& x, const vector_t& y, const vector_t& z )
@@ -726,8 +726,8 @@ class matrix_t {
 		matrix_t( const euler_t& e );
 	
 	// DESTRUCT
-//		inline virtual ~matrix_t( void ) { while( stack ) pop(); }
-		~matrix_t( void ) { while( stack ) pop(); }
+//		inline virtual ~matrix_t() { while( stack ) pop(); }
+		~matrix_t() { while( stack ) pop(); }
 
 	// WRITE
 		inline matrix_t& set( int c, int r, float_t f ) 
@@ -812,21 +812,21 @@ class matrix_t {
 		}
 
 	// MISC
-        inline matrix_t& identity( void ) { 
+        inline matrix_t& identity() {
 			for(int i=0;i<4;i++) 
 				for(int j=0;j<4;j++) 
 					M[ i ][ j ] = ( ( i==j ) ? 1.0 : 0.0 ); 
 			return( *this );
 		}
-        inline matrix_t& id( void ) { return( identity() ); }
-        inline matrix_t transposition( void ) const { 
+        inline matrix_t& id() { return( identity() ); }
+        inline matrix_t transposition() const {
 			matrix_t tmp;
 			for(int i=0;i<4;i++) 
 				for(int j=0;j<4;j++) 
 					tmp.M[ i ][ j ] = M[ j ][ i ];
 			return( tmp );
 		}
-        inline matrix_t& transpose( void ) { 
+        inline matrix_t& transpose() {
 			float_t tmp;
 			tmp = M[0][1]; M[0][1] = M[1][0]; M[1][0] = tmp;
 			tmp = M[0][2]; M[0][2] = M[2][0]; M[2][0] = tmp;
@@ -836,8 +836,8 @@ class matrix_t {
 			tmp = M[2][3]; M[2][3] = M[3][2]; M[3][2] = tmp;
 			return( *this );
 		}
-        matrix_t inverse( void ) const;
-        matrix_t& invert( void );
+        matrix_t inverse() const;
+        matrix_t& invert();
 
 	// ASSIGN TRANSFORMS
 		matrix_t& frustum( float_t l, float_t r, float_t b, float_t t, float_t n, float_t f );
@@ -866,7 +866,7 @@ class matrix_t {
 			{ return( scaler( vector_t( x, y, z ) ) ); }
 		
 	// OPERATE
-		inline matrix_t operator - ( void ) const { return( inverse() ); }
+		inline matrix_t operator - () const { return( inverse() ); }
 
 	// PIPELINE
 		inline matrix_t operator * ( const matrix_t& R ) const { 
@@ -949,7 +949,7 @@ class matrix_t {
 		}
 
 	// STACK
-		inline matrix_t& push(void)	{
+		inline matrix_t& push()	{
 			if( matrix_t *tmp = new matrix_t( *this ) )	{
 				tmp->stack = stack;
 				stack = tmp;

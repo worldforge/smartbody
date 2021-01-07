@@ -197,7 +197,7 @@ protected:
 	GLenum dataType;
 public:
 	SBAPI SbmCubeMapTexture(const std::vector<std::string> &textureNames, const std::vector<std::string> &fileNames);
-	SBAPI ~SbmCubeMapTexture(void);
+	SBAPI ~SbmCubeMapTexture();
 	SBAPI bool hasBuild() { return finishBuild; }
 	SBAPI bool isTransparent() { return transparentTexture; }
 	SBAPI const std::vector<std::string>& getNames() { return textureNames; }

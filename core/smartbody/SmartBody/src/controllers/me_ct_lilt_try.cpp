@@ -40,7 +40,7 @@ MeCtAnkleLilt::MeCtAnkleLilt() {
 		 _phase_offset= 0;
 }
 
-MeCtAnkleLilt::~MeCtAnkleLilt(void){}
+MeCtAnkleLilt::~MeCtAnkleLilt(){}
 
 void MeCtAnkleLilt::init(SbmPawn* pawn,SkSkeleton* skeleton_p){ //attaches skeleton and defines each joint that will be altered as a seperate channel
 	int err = 0;

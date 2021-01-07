@@ -17,8 +17,8 @@ protected:
 	SrVec defaultColor;
 	
 public:
-	ObjectManipulationHandle(void);
-	~ObjectManipulationHandle(void);
+	ObjectManipulationHandle();
+	~ObjectManipulationHandle();
 
 	void setPicking(SrVec2& loc) { pick_loc = loc; bHasPicking = true; }
 	void setPickingType(ControlType type) { pickType = type; }

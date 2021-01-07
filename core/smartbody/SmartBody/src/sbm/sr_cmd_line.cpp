@@ -65,7 +65,7 @@ void edit_char_buffer( char *buff_p, int usage, int pos, char c ) {
 
 #ifndef WIN32
 
-inline void linux_enable_kbd_poll( void )	{
+inline void linux_enable_kbd_poll()	{
 
 	struct termios attr;
 	tcgetattr( STDIN_FILENO, &attr );
@@ -73,7 +73,7 @@ inline void linux_enable_kbd_poll( void )	{
 	tcsetattr( STDIN_FILENO, TCSANOW, &attr );
 }
 
-inline void linux_disable_kbd_poll( void )	{
+inline void linux_disable_kbd_poll()	{
 
 	struct termios attr;
 	tcgetattr( STDIN_FILENO, &attr );
@@ -81,7 +81,7 @@ inline void linux_disable_kbd_poll( void )	{
 	tcsetattr( STDIN_FILENO, TCSANOW, &attr );
 }
 
-inline int linux_query_kbhit( void )	{
+inline int linux_query_kbhit()	{
 
 	struct timeval tv;
 	tv.tv_sec = 0;
@@ -95,7 +95,7 @@ inline int linux_query_kbhit( void )	{
 }
 #endif
 
-inline int query_kbhit_stdin( void )	{
+inline int query_kbhit_stdin()	{
 
 #ifdef WIN32
 	return( _kbhit() );
@@ -104,7 +104,7 @@ inline int query_kbhit_stdin( void )	{
 #endif
 }
 
-inline char read_char_stdin( void )	{
+inline char read_char_stdin()	{
 
 #ifdef WIN32
 	return( (char)_getch() );
@@ -399,7 +399,7 @@ int commandline_query(
 
 ///////////////////////////////////////////////////////////////////////////
 
-srCmdLine::srCmdLine( void )
+srCmdLine::srCmdLine()
 {
 	cmd_buffer = nullptr;
 	buffer_len = 0;
@@ -415,7 +415,7 @@ srCmdLine::srCmdLine( void )
 #endif
 }
 
-srCmdLine::~srCmdLine( void )
+srCmdLine::~srCmdLine()
 {
 	if( cmd_buffer )	{
 		delete [] cmd_buffer;
@@ -425,12 +425,12 @@ srCmdLine::~srCmdLine( void )
 #endif
 }
 
-char* srCmdLine::peek_cmd( void )
+char* srCmdLine::peek_cmd()
 {
 	return( cmd_buffer );
 }
 
-char* srCmdLine::read_cmd( void )
+char* srCmdLine::read_cmd()
 {
 	buffer_use = 0;
 	buffer_pos = 0;
@@ -466,7 +466,7 @@ int srCmdLine::realloc_buffer( int len )
 #define LinWin_strcmp strcmp
 #endif
 
-void srCmdLine::test_prompt( void )	{
+void srCmdLine::test_prompt()	{
 	bool quit = false;
 	bool verbose = false;
 	int buffer_cap = 0;

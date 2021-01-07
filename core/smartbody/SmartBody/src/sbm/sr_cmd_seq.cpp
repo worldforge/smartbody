@@ -31,7 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 //////////////////////////////////////////////////////////////////////////////////
 
-srCmdSeq::srCmdSeq( void )	{
+srCmdSeq::srCmdSeq()	{
 		
 	event_count = 0;
 	event_offset = 0.0;
@@ -43,7 +43,7 @@ srCmdSeq::srCmdSeq( void )	{
 	_valid = true;
 }
 
-srCmdSeq::~srCmdSeq( void )	{
+srCmdSeq::~srCmdSeq()	{
 
 	if( event_count > 0 )	{
 		//SmartBody::util::log( "srCmdSeq::~srCmdSeq NOTE: deleting %d events\n", event_count );
@@ -376,7 +376,7 @@ int srCmdSeq::insert( sr_command_event_t *event )	{
 	return( CMD_SUCCESS );
 }
 
-srCmdSeq::sr_command_event_t *srCmdSeq::remove( void )	{
+srCmdSeq::sr_command_event_t *srCmdSeq::remove()	{
 	sr_command_event_t *event;
 
 	event = handle->next;

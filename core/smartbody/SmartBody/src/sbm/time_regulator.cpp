@@ -55,7 +55,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-double SBM_get_real_time_nodelay( void ) {
+double SBM_get_real_time_nodelay() {
 #ifdef WIN32
 #if ENABLE_QPF_TIME
 
@@ -92,7 +92,7 @@ double SBM_get_real_time_nodelay( void ) {
 #endif
 }
 
-double SBM_get_real_time( void ) {
+double SBM_get_real_time() {
 
 	static double t = -1.0;
 	double next_t = 0.0;
@@ -300,7 +300,7 @@ bool TimeRegulator::update( double in_time ) {
 	return( false );
 }
 
-void TimeRegulator::update_perf( void )	{
+void TimeRegulator::update_perf()	{
 
 	if( perf_interval <= 0.0 ) return;
 
@@ -329,7 +329,7 @@ void TimeRegulator::update_perf( void )	{
 	}
 }
 
-void TimeRegulator::print( void )	{
+void TimeRegulator::print()	{
 	SmartBody::util::log( "TimeRegulator( %.3f ): ", real_time );
 	SmartBody::util::log( "   status: %s", paused ? "PAUSED" : ( do_steps ? "STEPPING" : "RUNNING" ) );
 	SmartBody::util::log( "    speed: %.3f", speed );
@@ -350,7 +350,7 @@ void TimeRegulator::print_update( int id, double in_time ) {
 
 //#include <stdlib.h>
 
-void test_time_regulator( void )	{
+void test_time_regulator()	{
 	TimeRegulator tr;
 	int c = 0;
 	

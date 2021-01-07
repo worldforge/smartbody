@@ -103,7 +103,7 @@ class SBAnimationBlend : public PABlend
 		SBAPI void createMotionVectorFlow(const std::string& motionName, const std::string& chrName, float plotThreshold=0.45f,
 									unsigned int slidWinHalfSize=7, bool clearAll=false);
 		SBAPI std::vector<SrSnLines*>& getVectorFlowSrSnLines() { return vecflowLinesArray; }
-		SBAPI void clearMotionVectorFlow(void);
+		SBAPI void clearMotionVectorFlow();
 
 		/* plot motion frames (stick figures) and joint trajectory
 		// added by David Huang, June 2012 */
@@ -113,7 +113,7 @@ class SBAnimationBlend : public PABlend
 		SBAPI void plotMotionJointTrajectory(const std::string& motionName, const std::string& chrName, const std::string& jointName,
 										float start_t=0.0f, float end_t=0.0f, bool useRandomColor=false);
 		SBAPI std::vector<SrSnLines*>& getPlotMotionSrSnLines() { return plotMotionLinesArray; }
-		SBAPI void clearPlotMotion(void);
+		SBAPI void clearPlotMotion();
 
 		SBAPI void setChrPlotMotionTransform(const std::string& chrName);
 		SBAPI void setPlotMotionTransform(SrVec offset=SrVec::null, float yRot=0.0f);

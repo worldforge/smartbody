@@ -17,7 +17,7 @@
 
 using namespace gwiz;
 
-RotationControl::RotationControl(void) : ObjectControl()
+RotationControl::RotationControl() : ObjectControl()
 {		
 	dragging=false;
 	opdir=3;
@@ -31,7 +31,7 @@ RotationControl::RotationControl(void) : ObjectControl()
 		circle[i]=SrVec2(cos(2.0f*(float)M_PI/seg*i),sin(2.0f*(float)M_PI/seg*i));
 }
 
-RotationControl::~RotationControl(void)
+RotationControl::~RotationControl()
 {
 }
 

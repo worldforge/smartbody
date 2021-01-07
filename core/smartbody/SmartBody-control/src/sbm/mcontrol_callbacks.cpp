@@ -783,7 +783,7 @@ int mcu_time_func( srArgBuffer& args, SmartBody::SBScene& scene )	{
 	}
 	else
 	if( strcmp( time_cmd, "test" ) == 0 )	{
-//			void test_time_regulator( void );
+//			void test_time_regulator();
 //			test_time_regulator();
 		return( CMD_SUCCESS );
 	}

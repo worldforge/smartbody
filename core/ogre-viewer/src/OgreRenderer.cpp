@@ -23,7 +23,7 @@ bool OgreRenderer::isUseBoneBus()
 	return m_useBoneBus;
 }
 
-void OgreRenderer::destroyScene(void)
+void OgreRenderer::destroyScene()
 {
 	// Send vrProcEnd message to ActiveMQ
 	vhmsg::ttu_notify2( "vrProcEnd", "renderer" );

@@ -41,8 +41,8 @@ protected:
 class PawnSelectControl : public SelectionControl, public PawnControl // Dummy control for character/pawn selection
 {
 public:
-	PawnSelectControl(void);
-	~PawnSelectControl(void);
+	PawnSelectControl();
+	~PawnSelectControl();
 
 	virtual void renderControl(SrCamera& cam);
 	virtual void updateControl(SrCamera& cam, float fx, float fy, float tx, float ty);	
@@ -53,8 +53,8 @@ public:
 class PawnPosControl : public PositionControl, public PawnControl
 {
 public:
-	PawnPosControl(void);
-	~PawnPosControl(void);
+	PawnPosControl();
+	~PawnPosControl();
 	
 	virtual void renderControl(SrCamera& cam);
 	virtual void updateControl(SrCamera& cam, float fx, float fy, float tx, float ty);

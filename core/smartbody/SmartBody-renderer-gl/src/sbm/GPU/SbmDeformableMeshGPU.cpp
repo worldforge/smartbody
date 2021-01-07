@@ -594,7 +594,7 @@ std::string shaderFSSimple =
 
 typedef std::pair<int,int> IntPair;
 
-SbmDeformableMeshGPU::SbmDeformableMeshGPU(void) : DeformableMesh()
+SbmDeformableMeshGPU::SbmDeformableMeshGPU() : DeformableMesh()
 {
 	useGPU = false;	
 	VBOPos = nullptr;
@@ -611,7 +611,7 @@ SbmDeformableMeshGPU::SbmDeformableMeshGPU(void) : DeformableMesh()
 	initGPUVertexBuffer = false;
 }
 
-SbmDeformableMeshGPU::~SbmDeformableMeshGPU(void)
+SbmDeformableMeshGPU::~SbmDeformableMeshGPU()
 {
   SmartBody::util::log("Delete Deformable Mesh GPU '%s'", this->getName().c_str());
 	initShader = false;

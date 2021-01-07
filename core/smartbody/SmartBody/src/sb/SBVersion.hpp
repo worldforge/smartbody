@@ -6,7 +6,7 @@
 
 namespace SmartBody {
 
-inline std::string getVersion(void)
+inline std::string getVersion()
 {
 	std::stringstream strstr;
 	strstr << "SmartBody ";

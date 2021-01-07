@@ -28,8 +28,8 @@ namespace SmartBody
 class EmbeddedOgre
 {
 public:
-	EmbeddedOgre(void);
-	~EmbeddedOgre(void);
+	EmbeddedOgre();
+	~EmbeddedOgre();
 	void createOgreWindow(void* windowHandle, void* parentHandle, unsigned long glContext, int width, int height, std::string windowName);
 	void setupResource(std::string resourceLocation);
 	void createDefaultScene();	

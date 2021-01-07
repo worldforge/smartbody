@@ -26,19 +26,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-TimeIntervalProfiler::TimeIntervalProfiler( void )
+TimeIntervalProfiler::TimeIntervalProfiler()
 { 
 	group_map = new srHashMap <group_entry_t>();
 	reset();
 }
 
-TimeIntervalProfiler::~TimeIntervalProfiler( void )
+TimeIntervalProfiler::~TimeIntervalProfiler()
 {
 	delete group_map;
 }
 
 
-void TimeIntervalProfiler::null( void )	{
+void TimeIntervalProfiler::null()	{
 
 	group_map->expunge();
 	for( int i=0; i<MAX_GROUPS; i++ ) group_p_arr[ i ] = nullptr;
@@ -149,7 +149,7 @@ void TimeIntervalProfiler::reset_profile( profile_entry_t* profile_p ) {
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-void TimeIntervalProfiler::print_legend( void )	{
+void TimeIntervalProfiler::print_legend()	{
 	
 	printf( "TIP <> legend:" );								printf( "\n" );
 	printf( "#	- overflow groups and profiles" );			printf( "\n" );
@@ -227,7 +227,7 @@ void TimeIntervalProfiler::print_group( group_entry_t *group_p )	{
 	}
 }
 
-void TimeIntervalProfiler::print_data( void )	{
+void TimeIntervalProfiler::print_data()	{
 
 	printf( "TIP <>: %s\n", enabled ? "ENABLED" : "DISABLED" );
 	printf( "  suppress: %d\n", suppression );
@@ -1076,7 +1076,7 @@ void TimeIntervalProfiler::bypass( bool bp )
 	}
 }
 
-void TimeIntervalProfiler::reset( void )
+void TimeIntervalProfiler::reset()
 {
 	null();
 	sys_bypass = DEFAULT_BYPASS;
@@ -1088,7 +1088,7 @@ void TimeIntervalProfiler::reset( void )
 	rolling_length = DEFAULT_ROLLING;
 }
 
-void TimeIntervalProfiler::print( void )
+void TimeIntervalProfiler::print()
 {
 	if( sys_bypass )	{
 		SmartBody::util::log( "TIP BYPASS: print request ignored\n" );
@@ -1098,7 +1098,7 @@ void TimeIntervalProfiler::print( void )
 	pending_request = true;
 }
 
-void TimeIntervalProfiler::report( void )
+void TimeIntervalProfiler::report()
 {
 	if( sys_bypass )	{
 		SmartBody::util::log( "TIP BYPASS: report request ignored\n" );
@@ -1108,7 +1108,7 @@ void TimeIntervalProfiler::report( void )
 	pending_request = true;
 }
 
-void TimeIntervalProfiler::erase( void )
+void TimeIntervalProfiler::erase()
 {
 	if( sys_bypass )	{
 		SmartBody::util::log( "TIP BYPASS: erase request ignored\n" );
@@ -1129,7 +1129,7 @@ void TimeIntervalProfiler::enable( bool en )
 	pending_request = true;
 }
 
-void TimeIntervalProfiler::preload( void )	{
+void TimeIntervalProfiler::preload()	{
 	if( sys_bypass )	{
 		SmartBody::util::log( "TIP BYPASS: preload request ignored\n" );
 		return;
@@ -1273,7 +1273,7 @@ void TimeIntervalProfiler::update( double time )
 	sys_update( convert_time( time ) );
 }
 
-void TimeIntervalProfiler::update( void )
+void TimeIntervalProfiler::update()
 {
 	update( -1.0 );
 }

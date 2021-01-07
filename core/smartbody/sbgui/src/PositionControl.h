@@ -59,7 +59,7 @@ protected:
 	SrVec colors[4];
 public:
 	PositionControl();
-	~PositionControl(void);
+	~PositionControl();
 
 	virtual void draw(SrCamera& cam);
 	virtual bool drag(SrCamera& cam, float  fx, float fy, float tx, float ty);

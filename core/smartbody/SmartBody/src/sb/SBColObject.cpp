@@ -105,12 +105,12 @@ SBTransform::SBTransform()
 	tran = SrVec(0,0,0);
 }
 
-SBGeomObject::SBGeomObject(void)
+SBGeomObject::SBGeomObject()
 {
 	color.set(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
-SBGeomObject::~SBGeomObject(void)
+SBGeomObject::~SBGeomObject()
 {
 	
 }

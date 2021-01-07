@@ -12,8 +12,8 @@ protected:
 
 	SrQuat quat0;
 public:
-	RotationControl(void);
-	~RotationControl(void);
+	RotationControl();
+	~RotationControl();
 
 	virtual void draw(SrCamera& cam);
 	virtual bool drag(SrCamera& cam, float  fx, float fy, float tx, float ty);

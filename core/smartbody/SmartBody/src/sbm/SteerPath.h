@@ -42,8 +42,8 @@ protected:
 	float              pathRadius;
 	unsigned int       currentGoal;
 public:
-	SteerPath(void);
-	~SteerPath(void);
+	SteerPath();
+	~SteerPath();
 	
 	void initPath(const std::vector<SrPnt>& pts, float radius);	
 	void clearPath();

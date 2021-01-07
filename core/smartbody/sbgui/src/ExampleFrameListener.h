@@ -55,7 +55,7 @@ D:        Step right
 class ExampleFrameListener: public Ogre::FrameListener, public Ogre::WindowEventListener
 {	
 protected:
-	virtual void updateStats(void);
+	virtual void updateStats();
 
 public:
 	// Constructor takes a RenderWindow because it uses that to determine input context

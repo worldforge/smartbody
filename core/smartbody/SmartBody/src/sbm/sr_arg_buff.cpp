@@ -42,7 +42,7 @@ srArgBuffer::srArgBuffer( const char *arg )	{
 	token = nullptr;
 }
 
-srArgBuffer::~srArgBuffer( void )	{
+srArgBuffer::~srArgBuffer()	{
 	delete [] tok_buff;
 }
 
@@ -68,12 +68,12 @@ int srArgBuffer::calc_num_tokens( /*int quote_sensitive = FALSE*/ )	{
 }
 
 //// Old count quoted
-//int srArgBuffer::calc_num_quotes( void )	{
+//int srArgBuffer::calc_num_quotes()	{
 //	return( calc_num_tokens( TRUE ) );
 //}
 
 //// Old read unquoted token
-//char* srArgBuffer::read_token( void )	{
+//char* srArgBuffer::read_token()	{
 //	char *peek_buff = peek_string();
 //	if( token == nullptr )	{
 //		token = EMPTY_STRING;
@@ -82,7 +82,7 @@ int srArgBuffer::calc_num_tokens( /*int quote_sensitive = FALSE*/ )	{
 //}
 
 
-char* srArgBuffer::read_token( void )	{
+char* srArgBuffer::read_token()	{
 	char *peek_buff = peek_string();
 	size_t spaces = strspn( peek_buff, WHITE_SPACE );
 	peek_buff += spaces;
@@ -98,13 +98,13 @@ char* srArgBuffer::read_token( void )	{
 }
 
 
-char* srArgBuffer::read_remainder_raw( void )	{
+char* srArgBuffer::read_remainder_raw()	{
 	token = peek_string();
 	return( token );
 }
 
 
-char* srArgBuffer::peek_string( void )	{
+char* srArgBuffer::peek_string()	{
 	if( token == nullptr )	{
 		return( tok_buff );
 	}

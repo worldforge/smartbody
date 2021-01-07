@@ -38,7 +38,7 @@ template <class X> class srCmdMap	{
             : cmdToCallback( size )
         {}
 
-		virtual ~srCmdMap( void )	{
+		virtual ~srCmdMap()	{
 			cmdToCallback.reset();
 			while( cmdToCallback.pull() != nullptr )	{}
 		}

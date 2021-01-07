@@ -71,7 +71,7 @@ const char * srSynchPoints::error_label( const int index ) {
 
 //////////////////////////////////////////////////////////////////
 
-void srSynchPoints::init( void )	{
+void srSynchPoints::init()	{
 
 	for( int i=0; i<NUM_SYNCH_TAGS; i++ )	{
 		synch_time_arr[ i ] = -1.0;
@@ -580,7 +580,7 @@ srLinearCurve *srSynchPoints::get_trapezoid( srLinearCurve *curve_p, double dfl_
 
 //////////////////////////////////////////////////////////////////
 
-void srSynchPoints::print( void )	{
+void srSynchPoints::print()	{
 
 	for( int i=0; i<NUM_SYNCH_TAGS; i++ )	{
 		if( synch_time_arr[ i ] >= 0.0 )	{
@@ -589,7 +589,7 @@ void srSynchPoints::print( void )	{
 	}
 }
 
-void srSynchPoints::print_error( void )	{
+void srSynchPoints::print_error()	{
 
 	if( err_code )	{
 		SmartBody::util::log( "srSynchPoints ERR: %s", error_label( err_code ) );
@@ -612,7 +612,7 @@ int srSynchPoints::get_error( bool print_out )	{
 //////////////////////////////////////////////////////////////////
 
 #if 0
-void test_synch_points( void )	{
+void test_synch_points()	{
 	srSynchPoints sp;
 	
 	srLinearCurve *c_p = sp.new_trapezoid();

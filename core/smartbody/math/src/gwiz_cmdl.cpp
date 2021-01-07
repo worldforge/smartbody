@@ -60,7 +60,7 @@ int GWIZ_cmdl_count_global( int inc = 0 )	{
 	return( c );
 }
 
-int GWIZ_query_console_width( void )	{
+int GWIZ_query_console_width()	{
 #ifdef WIN32
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo; 
 	HANDLE hstdout;
@@ -79,7 +79,7 @@ int GWIZ_query_console_width( void )	{
 
 #ifndef WIN32
 
-inline void GWIZ_linux_enable_kbd_poll( void )	{
+inline void GWIZ_linux_enable_kbd_poll()	{
 
 	struct termios attr;
 	tcgetattr( STDIN_FILENO, &attr );
@@ -93,7 +93,7 @@ inline void GWIZ_linux_enable_kbd_poll( void )	{
 #endif
 }
 
-inline void GWIZ_linux_disable_kbd_poll( void )	{
+inline void GWIZ_linux_disable_kbd_poll()	{
 
 	struct termios attr;
 	tcgetattr( STDIN_FILENO, &attr );
@@ -107,7 +107,7 @@ inline void GWIZ_linux_disable_kbd_poll( void )	{
 #endif
 }
 
-inline bool GWIZ_linux_query_kbhit( void )	{
+inline bool GWIZ_linux_query_kbhit()	{
 
 	struct timeval tv;
 	tv.tv_sec = 0;
@@ -136,7 +136,7 @@ inline bool GWIZ_linux_query_kbhit( void )	{
 }
 #endif
 
-inline int GWIZ_query_kbhit_stdin( void )	{
+inline int GWIZ_query_kbhit_stdin()	{
 
 #ifdef WIN32
 	return( _kbhit() );
@@ -391,7 +391,7 @@ int gwiz::line_editor::query( bool v_key, bool v_tab )	{
 	return( NULL_MODE );
 }
 
-void gwiz::line_editor::render_stats( void ) {
+void gwiz::line_editor::render_stats() {
 
 	fprintf( stdout, "=< [%d:%d]:=[%d:%d] '%s' >\n", 
 		prev_pos,
@@ -452,7 +452,7 @@ void gwiz::line_editor::render_line( bool diagnostic ) {
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-gwiz::cmdl::cmdl( void )	{
+gwiz::cmdl::cmdl()	{
 	
 	verbose_key = false;
 	verbose_line = false;
@@ -474,7 +474,7 @@ gwiz::cmdl::cmdl( void )	{
 #endif
 }
 
-gwiz::cmdl::~cmdl( void )	{
+gwiz::cmdl::~cmdl()	{
 
 	int c = GWIZ_cmdl_count_global( -1 );
 #ifndef WIN32

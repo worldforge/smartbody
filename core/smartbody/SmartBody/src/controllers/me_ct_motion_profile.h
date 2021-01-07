@@ -46,7 +46,7 @@ public:
 	ProfileCurve*   avgVelProfile;
 public:
 	MotionProfile(SkMotion* m);
-	virtual ~MotionProfile(void);	
+	virtual ~MotionProfile();
 	void buildEulerCurveProfile(float startTime, float endTime, float timeStep);
 	void buildVelocityProfile(float startTime, float endTime, float timeStep);
 	void buildInterpolationProfile(float startTime, float endTime, float timeStep);

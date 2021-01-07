@@ -151,7 +151,7 @@ void PawnControl::notify(SmartBody::SBSubject* subject)
 /************************************************************************/
 
 
-PawnPosControl::PawnPosControl(void) : PositionControl()
+PawnPosControl::PawnPosControl() : PositionControl()
 {
 	/*
 	dragging = false;
@@ -175,7 +175,7 @@ PawnPosControl::PawnPosControl(void) : PositionControl()
 	//init_font();
 }
 
-PawnPosControl::~PawnPosControl(void)
+PawnPosControl::~PawnPosControl()
 {
 }
 
@@ -232,7 +232,7 @@ void PawnPosControl::setWorldPt(SrVec& newPt)
 }
 
 
-PawnRotationControl::PawnRotationControl(void) : RotationControl()
+PawnRotationControl::PawnRotationControl() : RotationControl()
 {
 	pawn = nullptr;
 }
@@ -274,12 +274,12 @@ SrVec PawnRotationControl::getWorldPt()
 /* Pawn Select Control                                                  */
 /************************************************************************/
 
-PawnSelectControl::PawnSelectControl( void )
+PawnSelectControl::PawnSelectControl()
 {
 
 }
 
-PawnSelectControl::~PawnSelectControl( void )
+PawnSelectControl::~PawnSelectControl()
 {
 
 }

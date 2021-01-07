@@ -71,8 +71,8 @@ class srSynchPoints	{
 		const char * error_label( const int index );
 
 	// CPP cruft:
-		~srSynchPoints( void ) {}
-		srSynchPoints( void )	{
+		~srSynchPoints() {}
+		srSynchPoints()	{
 			init();
 		}
 		srSynchPoints( double start, double stop )	{
@@ -103,7 +103,7 @@ class srSynchPoints	{
 
 	// internal maintenance:
 
-		void init( void );
+		void init();
 		bool valid_tag( int tag );		
 		bool set_interval( int tag, double t );
 
@@ -112,7 +112,7 @@ class srSynchPoints	{
 		void set_global_offset( double offset )	{
 			global_offset = offset;
 		}
-		double get_global_offset( void )	{
+		double get_global_offset()	{
 			return( global_offset );
 		}
 		
@@ -172,10 +172,10 @@ class srSynchPoints	{
 		double get_interval_to( int to_tag );
 		double get_interval_from( int fr_tag );
 		
-		double get_length( void ) {
+		double get_length() {
 			return( get_interval( START, STOP ) );
 		}
-		double get_duration( void ) {
+		double get_duration() {
 			return( get_time( STOP ) );
 		}
 		double get_prev( int *tag_p, bool global = false );
@@ -192,8 +192,8 @@ class srSynchPoints	{
 			return( new_trapezoid( dfl_dur, dfl_ramp, dfl_ramp ) );
 		}
 			
-		void print( void );
-		void print_error( void );
+		void print();
+		void print_error();
 		int get_error( bool print_out = false );
 		
 	private:

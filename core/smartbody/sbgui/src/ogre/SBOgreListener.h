@@ -10,7 +10,7 @@ class OgreListener : public FLTKListener
 {
 public:
 	OgreListener(EmbeddedOgre* ogreInterface);
-	~OgreListener(void);
+	~OgreListener();
 
 	virtual void OnCharacterCreate( const std::string & name, const std::string & objectClass );
 	virtual void OnCharacterDelete( const std::string & name );

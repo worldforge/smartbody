@@ -32,7 +32,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 class SBAPI srArgBuffer	{
     public:
 		srArgBuffer( const char *arg );
-		virtual ~srArgBuffer( void );
+		virtual ~srArgBuffer();
 		
         /**
          *  Returns a count remaining of tokens.
@@ -51,7 +51,7 @@ class SBAPI srArgBuffer	{
          *  Tokens returned are owned by the srArgBuffer, and should not be
          *  freed or deleted.
          */
-		char *read_token( void );		
+		char *read_token();
 
         /**
          *  Read the remainder of the argument buffer as a single string.
@@ -61,7 +61,7 @@ class SBAPI srArgBuffer	{
          *  The string returned is owned by the srArgBuffer, and should not
          *  be freed or deleted.
          */
-		char *read_remainder_raw( void );
+		char *read_remainder_raw();
 
 
 		/**
@@ -73,7 +73,7 @@ class SBAPI srArgBuffer	{
          *  The string returned is owned by the srArgBuffer, and should not
          *  be freed or deleted.
          */
-        char *peek_string( void );
+        char *peek_string();
 
         /////////////////////////////////////////////////////////////////////
         //  Inline convience functions...
@@ -90,7 +90,7 @@ class SBAPI srArgBuffer	{
         /**
          *  Returns a token as an integer, as interpretted by atoi().
          */
-		int		read_int( void )	{ return( atoi( read_token() ) ); }
+		int		read_int()	{ return( atoi( read_token() ) ); }
 
         /**
          *  Returns a series of token as an array of integer, 
@@ -101,7 +101,7 @@ class SBAPI srArgBuffer	{
         /**
          *  Returns a token as an double float, as interpretted by atof().
          */
-        float	read_float( void )	{ return( (float)atof( read_token() ) ); }
+        float	read_float()	{ return( (float)atof( read_token() ) ); }
 
         /**
          *  Returns a series of token as an array of floats, 
@@ -116,7 +116,7 @@ class SBAPI srArgBuffer	{
         /**
          *  Returns a token as an double float, as interpretted by atof().
          */
-        double	read_double( void )	{ return( atof( read_token() ) ); }
+        double	read_double()	{ return( atof( read_token() ) ); }
 
         /**
          *  Returns a series of token as an array of doubles, 

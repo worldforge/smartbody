@@ -255,7 +255,7 @@ void matrixToQuat(XnSkeletonJointOrientation& m, float& qw, float& qx, float& qy
 } 
 
 // this function is called each frame
-void glutDisplay (void)
+void glutDisplay ()
 {
 
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -483,7 +483,7 @@ void glutDisplay (void)
 }
 
 #ifndef USE_GLES
-void glutIdle (void)
+void glutIdle ()
 {
 	if (g_bQuit) {
 		CleanupExit();

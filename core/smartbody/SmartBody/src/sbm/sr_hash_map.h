@@ -50,10 +50,10 @@ class srHashMapBase {
 	public:
 		srHashMapBase( unsigned int size = 128 );
 		srHashMapBase( srHashMapBase & map );
-		virtual ~srHashMapBase( void );		
+		virtual ~srHashMapBase();
 
 		void	print( int reverse = 0 );
-		int		get_num_entries( void )	{ return( entry_count ); }
+		int		get_num_entries()	{ return( entry_count ); }
 		bool	key_in_use( const char *key ) { return( lookup( key ) != nullptr ); }
 
 		int		insert( const char *key, void *data, int claim = FALSE );
@@ -61,7 +61,7 @@ class srHashMapBase {
 		void	*remove( const char *key, int *claimed_p = nullptr );
 		
 
-		void	reset( void );					  // start iterator
+		void	reset();					  // start iterator
 		void	*next( char** key_ref_p = nullptr ); // lookup iterator
 		void	*pull( int *claimed_p = nullptr );	  // remove iterator
 
@@ -79,8 +79,8 @@ class srHashMapBase {
 		sr_map_entry_t	*new_table_entry( const char *key, void *data, int claim, sr_map_entry_t *next );
 		void			*find_table_data( sr_map_entry_t *bucket_p, const char *key );
 		
-		void			increment_iterator(void);
-		void			decrement_iterator(void);
+		void			increment_iterator();
+		void			decrement_iterator();
 
 		int				curr_bucket;
 		sr_map_entry_t	*iterator_p;
@@ -99,7 +99,7 @@ template <class X> class srHashMap : public srHashMapBase	{
 		// shallow-copy constructor for multiple-iteration
 		srHashMap( srHashMap<X> & map ): srHashMapBase( map ) {}
 
-		virtual ~srHashMap( void ) {
+		virtual ~srHashMap() {
 			if( shallow_copy == false )	{
 				expunge();
 			}
@@ -153,7 +153,7 @@ template <class X> class srHashMap : public srHashMapBase	{
 			return( (X*)srHashMapBase::pull( claimed_p ) );
 		}
 		
-		void expunge( void )	{
+		void expunge()	{
 			int claimed = FALSE;
 			X* xp;
 			reset();

@@ -72,7 +72,7 @@ class SkJointName
     operator const char* () const { return _id<0? "":_htable.key(_id); }
     
 	/* thiebaux 6/19/2006 */
-	const char * get_string( void ) { return _id<0? "":_htable.key(_id); }
+	const char * get_string() { return _id<0? "":_htable.key(_id); }
 
     /*! Returns the unique id of this name; used for debug purposes only */
     int id () const { return _id; }

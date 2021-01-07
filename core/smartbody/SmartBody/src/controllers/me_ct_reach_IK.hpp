@@ -6,8 +6,8 @@ class MeCtReachIK :
 	public MeCtIK
 {
 public:
-	MeCtReachIK(void);
-	~MeCtReachIK(void);
+	MeCtReachIK();
+	~MeCtReachIK();
 public:	
 	virtual void update(MeCtIKScenario* scenario);
 

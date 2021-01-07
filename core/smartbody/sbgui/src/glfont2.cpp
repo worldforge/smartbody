@@ -100,7 +100,7 @@ bool GLFont::Create (const std::string &file_name, int tex)
 	return Create(file_name.c_str(), tex);
 }
 //*******************************************************************
-void GLFont::Destroy (void)
+void GLFont::Destroy ()
 {
 	//Delete the character array if necessary
 	if (header.chars)
@@ -117,13 +117,13 @@ void GLFont::GetTexSize (std::pair<int, int> *size)
 	size->second = header.tex_height;
 }
 //*******************************************************************
-int GLFont::GetTexWidth (void)
+int GLFont::GetTexWidth ()
 {
 	//Return texture width
 	return header.tex_width;
 }
 //*******************************************************************
-int GLFont::GetTexHeight (void)
+int GLFont::GetTexHeight ()
 {
 	//Return texture height
 	return header.tex_height;
@@ -136,13 +136,13 @@ void GLFont::GetCharInterval (std::pair<int, int> *interval)
 	interval->second = header.end_char;
 }
 //*******************************************************************
-int GLFont::GetStartChar (void)
+int GLFont::GetStartChar ()
 {
 	//Return start character
 	return header.start_char;
 }
 //*******************************************************************
-int GLFont::GetEndChar (void)
+int GLFont::GetEndChar ()
 {
 	//Return end character
 	return header.end_char;
@@ -199,7 +199,7 @@ int GLFont::GetCharHeightGL (int c)
 	}
 }
 //*******************************************************************
-void GLFont::Begin (void)
+void GLFont::Begin ()
 {
 	//Bind to font texture
 	glBindTexture(GL_TEXTURE_2D, header.tex);

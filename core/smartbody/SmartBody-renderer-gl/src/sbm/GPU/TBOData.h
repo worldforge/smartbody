@@ -21,7 +21,7 @@ public:
 	TBOData(char* name, ublas::vector<Vec4f>& Data);	
 	TBOData(char* name, int nSize);
 public:
-	~TBOData(void);	
+	~TBOData();
 	void BindBufferToTexture();	
 
 	void ReadOutData(float* pOutData, int nSize);
@@ -50,7 +50,7 @@ public:
 	TBOData(char* name, ublas::vector<Vec4f>& Data){};	
 	TBOData(char* name, int nSize){};
 public:
-	~TBOData(void){};	
+	~TBOData(){};
 	void BindBufferToTexture(){};	
 
 	void ReadOutData(float* pOutData, int nSize){};

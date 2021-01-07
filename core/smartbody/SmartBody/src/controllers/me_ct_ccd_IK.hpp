@@ -10,8 +10,8 @@ class MeCtCCDIK : public MeCtIKInterface
 protected:	
 	MeCtIKTreeScenario* ikScenario;
 public:
-	MeCtCCDIK(void);
-	~MeCtCCDIK(void);
+	MeCtCCDIK();
+	~MeCtCCDIK();
 public:
 	virtual void update(MeCtIKTreeScenario* scenario);	
 	static gwiz::vector_t quat2SwingTwist(gwiz::quat_t& quat);

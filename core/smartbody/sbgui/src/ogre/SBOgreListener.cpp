@@ -27,7 +27,7 @@ OgreListener::OgreListener(EmbeddedOgre* ogre)
 	ogreInterface = ogre;
 }
 
-OgreListener::~OgreListener(void)
+OgreListener::~OgreListener()
 {
 }
 

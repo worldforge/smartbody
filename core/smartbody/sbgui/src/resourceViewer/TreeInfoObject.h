@@ -5,8 +5,8 @@
 class TreeInfoObject : public SmartBody::SBObject
 {
 public:
-	TreeInfoObject(void);
-	~TreeInfoObject(void);
+	TreeInfoObject();
+	~TreeInfoObject();
 
 	virtual void notify(SmartBody::SBSubject* subject);
 };

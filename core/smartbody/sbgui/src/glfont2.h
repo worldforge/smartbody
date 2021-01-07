@@ -61,17 +61,17 @@ public:
 	bool Create (const std::string &file_name, int tex);
 
 	//Destroys the glFont
-	void Destroy (void);
+	void Destroy ();
 
 	//Texture size retrieval methods
 	void GetTexSize (std::pair<int, int> *size);
-	int GetTexWidth (void);
-	int GetTexHeight (void);
+	int GetTexWidth ();
+	int GetTexHeight ();
 
 	//Character interval retrieval methods
 	void GetCharInterval (std::pair<int, int> *interval);
-	int GetStartChar (void);
-	int GetEndChar (void);
+	int GetStartChar ();
+	int GetEndChar ();
 
 	//Character size retrieval methods
 	void GetCharSize (int c, std::pair<int, int> *size);
@@ -143,7 +143,7 @@ public:
 	}
 
 	//Begins text output with this font
-	void Begin (void);
+	void Begin ();
 
 	//Template function to output a character array
 	template<class T> void DrawString (const T *text, float x,

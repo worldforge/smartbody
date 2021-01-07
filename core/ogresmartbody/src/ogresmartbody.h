@@ -16,9 +16,9 @@ class DeformableMeshInstance;
 class OgreSmartBody : public OgreBites::WindowEventListener, public Ogre::FrameListener
 {
 public:
-    OgreSmartBody(void);
-    virtual ~OgreSmartBody(void);
-    bool go(void);
+    OgreSmartBody();
+    virtual ~OgreSmartBody();
+    bool go();
 
 	Ogre::SceneManager* getSceneManager();
  

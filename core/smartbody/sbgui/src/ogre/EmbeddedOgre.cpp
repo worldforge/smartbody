@@ -31,7 +31,7 @@
 
 using namespace Ogre;
 
-EmbeddedOgre::EmbeddedOgre(void)
+EmbeddedOgre::EmbeddedOgre()
 {
 	ogreRoot = nullptr;
 	ogreWnd  = nullptr;
@@ -41,7 +41,7 @@ EmbeddedOgre::EmbeddedOgre(void)
 	ogreCharacterVisible = false;
 }
 
-EmbeddedOgre::~EmbeddedOgre(void)
+EmbeddedOgre::~EmbeddedOgre()
 {
 }
 

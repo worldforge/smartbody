@@ -43,11 +43,11 @@ class srCmdSeq	{
 	} sr_command_event_t;
 
 	public:
-		SBAPI srCmdSeq(void);
-		virtual ~srCmdSeq(void);
+		SBAPI srCmdSeq();
+		virtual ~srCmdSeq();
 
 		void	print( FILE *fp = stdout );						/* print events */
-		int		get_count(void)	{ return( event_count ); }
+		int		get_count()	{ return( event_count ); }
 		
 		int		write_file( char *seq_file );
 		int		read_file( FILE *seq_fp );
@@ -66,7 +66,7 @@ class srCmdSeq	{
 		/** remove first event passed */
 		std::string pop( float time );
 
-		void	reset(void) { iterator = handle; }
+		void	reset() { iterator = handle; }
 		char	*next( float *t = nullptr );	// return pointer, time
 		char	*pull( float *t = nullptr );	// return instance, time
 
@@ -75,7 +75,7 @@ class srCmdSeq	{
 
 	protected:
 		int		insert( sr_command_event_t *event );	/* sort by event.time, add after same time */
-		sr_command_event_t *remove( void );
+		sr_command_event_t *remove();
 		
 	private:
 		int		event_count;

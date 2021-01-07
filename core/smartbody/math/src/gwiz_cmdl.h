@@ -34,12 +34,12 @@ class line_editor	{
 
 		typedef std::string (*callback_fp)( std::string );
 
-		line_editor( void ) {
+		line_editor() {
 			pos = 0;
 			prev_pos = 0;
 			tab_callback_fp = NULL;
 		}
-		virtual ~line_editor( void ) {}
+		virtual ~line_editor() {}
 
 		inline std::string *
 		read( std::string *io_p, bool clear = true ) {
@@ -97,7 +97,7 @@ class line_editor	{
 		int edit( char key, int key_mode, bool v_tab = false );
 		int query( bool v_key = false, bool v_tab = false );
 
-		void render_stats( void );
+		void render_stats();
 		SBAPI void render_line( bool diagnostic = false );
 
 		std::string line;
@@ -116,8 +116,8 @@ class cmdl : public line_editor	{
 	
 	public:
 
-		SBAPI cmdl( void );
-		SBAPI virtual ~cmdl( void );
+		SBAPI cmdl();
+		SBAPI virtual ~cmdl();
 
 		void set_verbose( bool key, bool line, bool tab, bool diagnostic )	{
 			verbose_key = key;
@@ -154,7 +154,7 @@ class cmdl : public line_editor	{
 		int nest_level;
 //		bool blocking;
 
-		void bell( void )	{
+		void bell()	{
 			fprintf( stdout, "%c", 7 );
 		}
 

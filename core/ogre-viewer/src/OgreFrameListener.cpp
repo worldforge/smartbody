@@ -366,7 +366,7 @@ bool OgreFrameListener::frameStarted( const FrameEvent & evt )
 }
 
 
-void OgreFrameListener::scheduleQuit(void)
+void OgreFrameListener::scheduleQuit()
 {
 	mQuit = true;
 }

@@ -79,7 +79,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
         
         Supplementary functions:
         
-        double	SBM_get_real_time( void );
+        double	SBM_get_real_time();
         void	SBM_sleep_msec( int msec );
         double	SBM_sleep_wait( double prev_time, double target_dt, bool verbose = false );
 */
@@ -88,8 +88,8 @@ class TimeRegulator	{
 
 	public:
 	
-		TimeRegulator( void ) { defaults(); }
-		~TimeRegulator( void ) {}
+		TimeRegulator() { defaults(); }
+		~TimeRegulator() {}
 
 		bool isStarted() { return started; }
 		bool isRunning() { return !paused; }
@@ -125,23 +125,23 @@ class TimeRegulator	{
 		}
 		
 		void start( double in_time = -1.0 );
-		void stop( void );
+		void stop();
 		void reset( double in_time = -1.0 );
 		bool update( double in_time = -1.0 );
 
-		void pause( void )				{ do_pause = true; }
+		void pause()				{ do_pause = true; }
 		void step( int num_steps = 1 )	{ do_steps = num_steps; }
-		void resume( void )				{ do_resume = true; }
+		void resume()				{ do_resume = true; }
 		
-		double get_time( void ) 	{ return( out_time ); }
-		double get_dt( void )		{ return( out_dt ); }
-		double get_sim_dt( void )	{ return( sim_dt ); }
+		double get_time() 	{ return( out_time ); }
+		double get_dt()		{ return( out_dt ); }
+		double get_sim_dt()	{ return( sim_dt ); }
 
-		void print( void );
+		void print();
 		void print_update( int id, double in_time = -1.0 );
 		
 	private:
-		void defaults( void )	{
+		void defaults()	{
 			
 			verbose = false;
 			started = false;
@@ -173,7 +173,7 @@ class TimeRegulator	{
 			out_time = 0.0;
 			out_dt = 0.0;
 		}
-		void 	update_perf( void );
+		void 	update_perf();
 
 		bool	verbose;
 		bool	started;
@@ -206,7 +206,7 @@ class TimeRegulator	{
 		double	out_dt;
 };
 
-double SBM_get_real_time( void );
+double SBM_get_real_time();
 void SBM_sleep_msec( int msec );
 double SBM_sleep_wait( double prev_time, double target_dt, bool verbose = false );
 

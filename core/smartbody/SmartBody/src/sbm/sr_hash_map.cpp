@@ -117,7 +117,7 @@ srHashMapBase::srHashMapBase( srHashMapBase & map )	{
 	shallow_copy = true;
 }
 
-srHashMapBase::~srHashMapBase( void )	{
+srHashMapBase::~srHashMapBase()	{
 		
 	if( shallow_copy == false )	{
 		if( entry_count > 0 )	{
@@ -272,7 +272,7 @@ void srHashMapBase::removeAll()	{
 
 ////////////////////////////////////////////////////////////
  
-void srHashMapBase::reset(void)	{
+void srHashMapBase::reset()	{
 		curr_bucket = NULL_BUCKET; 
 		iterator_p = nullptr;
 }
@@ -308,7 +308,7 @@ void *srHashMapBase::pull( int *claimed_p )	{
  
 ////////////////////////////////////////////////////////////
 
-void srHashMapBase::increment_iterator(void)	{
+void srHashMapBase::increment_iterator()	{
 
 		if( bucket_pp == nullptr ) {
 			SmartBody::util::log( "srHashMapBase::increment_iterator ERR: bucket_pp is nullptr \n" );
@@ -322,7 +322,7 @@ void srHashMapBase::increment_iterator(void)	{
 		}
 }
 
-void srHashMapBase::decrement_iterator(void)	{
+void srHashMapBase::decrement_iterator()	{
 
 		if( bucket_pp == nullptr ) {
 			SmartBody::util::log( "srHashMapBase::decrement_iterator ERR: bucket_pp is nullptr \n" );

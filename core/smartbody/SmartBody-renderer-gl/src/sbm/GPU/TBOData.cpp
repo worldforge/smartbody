@@ -41,7 +41,7 @@ TBOData::TBOData( char* name, ublas::vector<Vec4f>& Data )
 	m_bUpdate = false;
 }
 
-TBOData::~TBOData(void)
+TBOData::~TBOData()
 {
 	if (m_iTBO_ID)
 		glDeleteBuffers(1,&m_iTBO_ID);

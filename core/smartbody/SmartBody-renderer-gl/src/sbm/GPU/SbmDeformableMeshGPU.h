@@ -64,8 +64,8 @@ protected:
 	std::vector<SrMat>  transformBuffer;	
 	bool initGPUVertexBuffer;
 public:
-	SBAPI SbmDeformableMeshGPU(void);
-	~SbmDeformableMeshGPU(void);	
+	SBAPI SbmDeformableMeshGPU();
+	~SbmDeformableMeshGPU();
 public:
 	virtual void update();
 	virtual bool buildVertexBufferGPU();	
@@ -156,8 +156,8 @@ protected:
 	std::vector<SrMat>  transformBuffer;	
 	bool initGPUVertexBuffer;
 public:
-	SBAPI SbmDeformableMeshGPU(void){};
-	~SbmDeformableMeshGPU(void){};	
+	SBAPI SbmDeformableMeshGPU(){};
+	~SbmDeformableMeshGPU(){};
 public:
 	virtual void update(){};
 	virtual bool buildVertexBufferGPU(){};	
