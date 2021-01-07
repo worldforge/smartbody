@@ -86,7 +86,7 @@ private :
 	* The topmost layer defines the character animation.
 	 * TODO: fix memory handling
 	*/
-	list<BreathLayer*> _breath_layers;
+	list<std::unique_ptr<BreathLayer>> _breath_layers;
 	/**
 	* \brief The default linear breath cycle
 	*
@@ -161,7 +161,7 @@ private :
 	*
 	* Transition will occur at the beginning of the next breath cycle.
 	*/
-	BreathLayer* _pending_breath_layer;
+	std::unique_ptr<BreathLayer> _pending_breath_layer;
 	/**
 	* \brief Whether there is a pending motion to be loaded
 	*
@@ -202,7 +202,7 @@ public :
 	/** 
 	* \brief Constructor 
 	*/
-	MeCtBreathing (SmartBody::SBPawn& pawn);
+	explicit MeCtBreathing (SmartBody::SBPawn& pawn);
 	/** 
 	* \brief Destructor 
 	*
@@ -222,23 +222,23 @@ public :
 
 	* \brief Implements MeCtBreathingInterface::push_breath_layer
 	*/
-	void push_breath_layer(BreathCycle* cycle, int cyclesRemaining=-1, bool smoothTransition=true);
+	void push_breath_layer(std::unique_ptr<BreathCycle> cycle, int cyclesRemaining=-1, bool smoothTransition=true) override;
 	/**
 	* \brief Implements MeCtBreathingInterface::pop_breath_layer
 	*/
-	void pop_breath_layer();
+	void pop_breath_layer() override;
 	/**
 	* \brief Implements MeCtBreathingInterface::clear_breath_layers
 	*/
-	void clear_breath_layers();
+	void clear_breath_layers() override;
 	/**
 	* \brief Implements MeCtBreathingInterface::breath_layers_count
 	*/
-	int breath_layers_count(){ return _breath_layers.size(); }
+	int breath_layers_count() override{ return _breath_layers.size(); }
 	/**
 	* \brief Implements MeCtBreathingInterface::current_breath_layer
 	*/
-	BreathLayer* current_breath_layer();
+	BreathLayer* current_breath_layer() override;
 
 	/** 
 	* \brief Gets the default linear breath cycle
@@ -262,7 +262,7 @@ public :
 	/** 
 	* \brief Gets whether the breathing motion is additive
 	*/
-	bool incremental(){ return _incremental; }
+	bool incremental() const{ return _incremental; }
 	/** 
 	* \brief Sets whether the breathing motion is additive
 	*/
@@ -271,35 +271,35 @@ public :
 	/**
 	* \brief Implements MeCtBreathingInterface::breaths_per_minute
 	*/
-	void breaths_per_minute ( float bpm, bool smooth_transition = true );
+	void breaths_per_minute ( float bpm, bool smooth_transition = true ) override;
 	/**
 	* \brief Implements MeCtBreathingInterface::breaths_per_minute
 	*/
-	float breaths_per_minute () { return _bpm; }
+	float breaths_per_minute () override { return _bpm; }
 	/** 
 	* \brief Gets the motion frame time corresponding to neutral position
 	*
 	* Notice that frame time 0 corresponds to maximum expiratory volume.
 	*/
-	float expiratory_reserve_volume_threshold(){ return _expiratory_reserve_volume_threshold; }
+	float expiratory_reserve_volume_threshold() const{ return _expiratory_reserve_volume_threshold; }
 
 	/** 
 	* \brief Returns -1 to signal that this controller has infinite duration
 	*/
-	virtual double controller_duration () { return -1; }
+	double controller_duration () override { return -1; }
 
 	/** 
 	* \brief Implements MeController::controller_evaluate
 	*/
-	virtual bool controller_evaluate ( double t, MeFrameData& frame );
+	bool controller_evaluate ( double t, MeFrameData& frame ) override;
 	/** 
 	* \brief Implements MeController::controller_channels
 	*/
-	virtual SkChannelArray& controller_channels ();
+	SkChannelArray& controller_channels () override;
 	/** 
 	* \brief Implements MeController::controller_type
 	*/
-	virtual const std::string& controller_type () const;
+	const std::string& controller_type () const override;
 
 	/** 
 	* \brief Use channels to control breathing parameters, rather than using an animation.
@@ -311,14 +311,14 @@ public :
 	*/
 	virtual bool getUseBlendChannels();
 
-	virtual void notify(SBSubject* subject);
+	void notify(SBSubject* subject) override;
 
 
 private:
 	/** 
 	* \brief Immediately pushes a new breath layer into the stack
 	*/
-	void immediate_push_breath_layer(BreathLayer* layer);
+	void immediate_push_breath_layer(std::unique_ptr<BreathLayer> layer);
 	/** 
 	* \brief Immediately pops the topmost breath layer from the stack
 	*/
@@ -335,7 +335,7 @@ private:
 	/** 
 	* \brief Implements MeController::controller_map_updated
 	*/
-	virtual void controller_map_updated();
+	void controller_map_updated() override;
 
 };
 

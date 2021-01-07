@@ -55,15 +55,14 @@ class NumericalInterpolationKey;
 * animation is defined by the topmost layer;
 * - general breathing parameters such as breaths-per-minute.
 */
-class MeCtBreathingInterface
+struct MeCtBreathingInterface
 { 
-protected:
 	/**
 	* \brief The constructor
 	*/
-	MeCtBreathingInterface(){}
+	MeCtBreathingInterface()= default;
 
-public :
+
 	/**
 	* \brief Pushes a breathing cycle into the stack
 	*
@@ -71,7 +70,7 @@ public :
 	* \param[in] cyclesRemaining The number of cycles to run the breathing cycle. 
 	* Pass -1 if the breathing cycle is to loop forever
 	*/
-	virtual void push_breath_layer(BreathCycle* cycle, int cyclesRemaining=-1, bool smoothTransition=true) = 0;
+	virtual void push_breath_layer(std::unique_ptr<BreathCycle> cycle, int cyclesRemaining=-1, bool smoothTransition=true) = 0;
 	/**
 	* \brief Pops the top breathing layer from the stack
 	*
@@ -112,37 +111,24 @@ public :
 *
 * Used in the breathing cycle stack in the breathing interface
 */
-class BreathLayer
+struct BreathLayer
 {
-public:
-	/**
-	* \brief Constructor
-	*
-	* Assumes the breathing cycle will loop forever.
-	*
-	* \param[in] cycle The breathing cycle
-	*/
-	explicit BreathLayer(BreathCycle* cycle)
-	{
-		this->cycle = cycle;
-		this->cycles_remaining = -1;
-	}
+
 	/**
 	* \brief Constructor
 	*
 	* \param[in] cycle The breathing cycle
 	* \param[in] cyclesRemaining The number of cycles to run the breathing cycle
 	*/
-	BreathLayer(BreathCycle* cycle, int cyclesRemaining)
+	explicit BreathLayer(std::unique_ptr<BreathCycle> cycle, int cyclesRemaining = -1)
+	: cycle(std::move(cycle)), cycles_remaining(cyclesRemaining)
 	{
-		this->cycle = cycle;
-		this->cycles_remaining = cyclesRemaining;
 	}
 
 	/**
 	* \brief The breathing cycle
 	*/
-	BreathCycle* cycle;
+	std::unique_ptr<BreathCycle> cycle;
 	/**
 	* \brief The number of cycles to run the breathing cycle
 	*/
@@ -182,7 +168,7 @@ protected:
 	BreathCycle();
 
 public:
-	virtual ~BreathCycle() {}
+	virtual ~BreathCycle() = default;
 
 	/**
 	* \brief Gets the type
@@ -192,7 +178,7 @@ public:
 	/**
 	* \brief Whether it is inspiring
 	*/
-	bool is_inspiring(){ return _is_inspiring; }
+	bool is_inspiring() const{ return _is_inspiring; }
 
 	/**
 	* \brief The cycle duration
@@ -240,7 +226,7 @@ public:
 	/**
 	* \brief Gets the minimum value
 	*/
-	float min(){ return _min; }
+	float min() const{ return _min; }
 	/**
 	* \brief Sets the minimum value
 	*
@@ -257,7 +243,7 @@ public:
 	/**
 	* \brief Gets the maximum value
 	*/
-	float max(){ return _max; }
+	float max() const{ return _max; }
 	/**
 	* \brief Sets the maximum value
 	*
@@ -275,11 +261,11 @@ public:
 	/**
 	* \brief Implements BreathCycle::duration
 	*/
-	virtual float duration() = 0;
+	float duration() override = 0;
 	/**
 	* \brief Implements BreathCycle::value
 	*/
-	virtual float value(double realTime, double cycleTime) = 0;
+	float value(double realTime, double cycleTime) override = 0;
 
 protected:
 	/**
@@ -327,11 +313,11 @@ public:
 	/**
 	* \brief Implements BreathCycle::duration
 	*/
-	float duration(){ return 2.0f; }
+	float duration() override{ return 2.0f; }
 	/**
 	* \brief Implements BreathCycle::value
 	*/
-	float value(double realTime, double cycleTime);
+	float value(double realTime, double cycleTime) override;
 };
 
 /**
@@ -357,11 +343,11 @@ public:
 	/**
 	* \brief Implements BreathCycle::duration
 	*/
-	float duration(){ return float(M_PI); }
+	float duration() override{ return float(M_PI); }
 	/**
 	* \brief Implements BreathCycle::value
 	*/
-	float value(double realTime, double cycleTime);
+	float value(double realTime, double cycleTime) override;
 };
 
 /**
@@ -387,25 +373,8 @@ public:
 	/**
 	* \brief A keyframe
 	*/
-	class Keyframe
+	struct Keyframe
 	{
-	public:
-		/**
-		* \brief Constructor
-		*/
-		Keyframe(){}
-		/**
-		* \brief Constructor
-		*
-		* \param[in] value The value
-		* \param[in] time The time
-		*/
-		Keyframe(float value, float time)
-		{
-			this->value = value;
-			this->time = time;
-		}
-
 		/**
 		* \brief The value
 		*/
@@ -419,7 +388,7 @@ public:
 	/**
 	* \brief The keyframes vector
 	*/
-	vector<Keyframe*> keyframes;
+	vector<Keyframe> keyframes;
 
 public:
 	/**
@@ -434,7 +403,7 @@ public:
 	* \param[in] expirationEndTime The expiration end time
 	* \param[in] breathEndTime The end time
 	*/
-	static KeyframeBreathCycle* custom(float breathMin, float breathMax, 
+	static std::unique_ptr<KeyframeBreathCycle> custom(float breathMin, float breathMax,
 		float breathStartTime, float inspirationStartTime, float inspirationEndTime, 
 		float expirationStartTime, float expirationEndTime, float breathEndTime);
 
@@ -445,7 +414,7 @@ public:
 	/**
 	* \brief Destructor
 	*/
-	virtual ~KeyframeBreathCycle();
+	~KeyframeBreathCycle() override;
 
 	/**
 	* \brief Commits the keyframe sequence
@@ -457,11 +426,11 @@ public:
 	/**
 	* \brief Implements BreathCycle::duration
 	*/
-	float duration();
+	float duration() override;
 	/**
 	* \brief Implements BreathCycle::value
 	*/
-	float value(double realTime, double cycleTime);
+	float value(double realTime, double cycleTime) override;
 };
 
 /**
@@ -475,9 +444,8 @@ private:
 	/**
 	* \brief The spline
 	*
-	* The spline is deleted with the cycle.
 	*/
-	MeSpline1D* _spline;
+	std::unique_ptr<MeSpline1D> _spline;
 	/**
 	* \brief Time associated to the maximum value
 	*/
@@ -489,16 +457,16 @@ public:
 	*
 	* \param[in] spline The spline. The spline is deleted with the cycle
 	*/
-	SplineBreathCycle(MeSpline1D* spline);
+	explicit SplineBreathCycle(std::unique_ptr<MeSpline1D> spline);
 	/**
 	* \brief Destructor
 	*/
-	virtual ~SplineBreathCycle();
+	~SplineBreathCycle() override;
 
 	/**
 	* \brief Gets the spline
 	*/
-	MeSpline1D* spline() { return _spline; }
+	MeSpline1D* spline() { return _spline.get(); }
 
 	/**
 	* \brief Commits the spline
@@ -510,11 +478,11 @@ public:
 	/**
 	* \brief Implements BreathCycle::duration
 	*/
-	float duration();
+	float duration() override;
 	/**
 	* \brief Implements BreathCycle::value
 	*/
-	float value(double realTime, double cycleTime);
+	float value(double realTime, double cycleTime) override;
 };
 
 /**
@@ -568,7 +536,7 @@ public:
 	/**
 	* \brief Gets the start time
 	*/
-	float getStartTime(){ return _startTime; }
+	float getStartTime() const{ return _startTime; }
 	/**
 	* \brief Sets the end time
 	*
@@ -578,7 +546,7 @@ public:
 	/**
 	* \brief Gets the end time
 	*/
-	float getEndTime(){ return _endTime; }
+	float getEndTime() const{ return _endTime; }
 	/**
 	* \brief Updates the interpolated value
 	*
@@ -588,11 +556,11 @@ public:
 	/**
 	* \brief Whether the interpolation has finished
 	*/
-	bool isFinished(){ return _finished; }
+	bool isFinished() const{ return _finished; }
 	/**
 	* \brief Gets the current interpolation value
 	*/
-	float getValue(){ return _value; }
+	float getValue() const{ return _value; }
 };
 
 

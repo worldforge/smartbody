@@ -2881,7 +2881,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBS
 			transition = args.read_float();
 		if((strcmp(breathing_p->current_breath_layer()->cycle->type(), "LinearBreathCycle") == 0)
 			|| (strcmp(breathing_p->current_breath_layer()->cycle->type(), "SineBreathCycle") == 0))
-			((MinMaxBreathCycle*)breathing_p->current_breath_layer()->cycle)->min(min, transition);
+			((MinMaxBreathCycle*)breathing_p->current_breath_layer()->cycle.get())->min(min, transition);
 		return( CMD_SUCCESS );
 	}
 	else if( strcmp( breathing_cmd, "max" ) == 0 )	
@@ -2892,7 +2892,7 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBS
 			transition = args.read_float();
 		if((strcmp(breathing_p->current_breath_layer()->cycle->type(), "LinearBreathCycle") == 0)
 			|| (strcmp(breathing_p->current_breath_layer()->cycle->type(), "SineBreathCycle") == 0))
-			((MinMaxBreathCycle*)breathing_p->current_breath_layer()->cycle)->max(max, transition);
+			((MinMaxBreathCycle*)breathing_p->current_breath_layer()->cycle.get())->max(max, transition);
 		return( CMD_SUCCESS );
 	}
 	else if( strcmp( breathing_cmd, "motion" ) == 0 )	
@@ -2919,9 +2919,11 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBS
 		char *type = args.read_token();
 
 		if( strcmp(type, "linear") == 0)
-			breathing_p->push_breath_layer(breathing_p->default_breath_cycle());
+			//The default cycle is linear, so just pop all others.
+			breathing_p->clear_breath_layers();
+			//breathing_p->push_breath_layer(breathing_p->default_breath_cycle());
 		else if( strcmp(type, "sine") == 0)
-			breathing_p->push_breath_layer(new SineBreathCycle(
+			breathing_p->push_breath_layer(std::make_unique<SineBreathCycle>(
 			breathing_p->default_breath_cycle()->min(), breathing_p->default_breath_cycle()->max()));
 		else if( strcmp(type, "keyframe") == 0)
 		{
@@ -2932,16 +2934,16 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBS
 				return( CMD_FAILURE );
 			}
 			
-			auto cycle = new KeyframeBreathCycle();
+			auto cycle = std::make_unique<KeyframeBreathCycle>();
 			for(int i=0; i<args_count; i = i+2)
 			{
 				float time = args.read_float();
 				float value = args.read_float();
-				cycle->keyframes.emplace_back(new KeyframeBreathCycle::Keyframe(value, time));
+				cycle->keyframes.emplace_back(KeyframeBreathCycle::Keyframe{value, time});
 			}
 			cycle->update();
 
-			breathing_p->push_breath_layer(cycle);
+			breathing_p->push_breath_layer(std::move(cycle));
 		}
 		else if( strcmp(type, "spline") == 0)
 		{
@@ -2953,14 +2955,14 @@ int mcu_character_breathing( const char* name, srArgBuffer& args, SmartBody::SBS
 				return( CMD_FAILURE );
 			}
 
-			MeSpline1D* spline = new MeSpline1D();
+			auto spline = std::make_unique<MeSpline1D>();
 			for(int i=0; i<args_count; i = i+2)
 			{
 				float x = args.read_float();
 				float y = args.read_float();
 				spline->make_smooth(x, y, 0, 0, 0);
 			}
-			breathing_p->push_breath_layer(new SplineBreathCycle(spline));
+			breathing_p->push_breath_layer(std::make_unique<SplineBreathCycle>(std::move(spline)));
 #endif
 		}
 		return( CMD_SUCCESS );

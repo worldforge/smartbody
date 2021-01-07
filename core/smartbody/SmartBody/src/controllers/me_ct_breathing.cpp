@@ -20,8 +20,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 # include <controllers/me_ct_breathing.h>
 #include "gwiz_math.h"
-# include <sr/sr_output.h>
-#include <cstdio>
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
@@ -36,7 +34,7 @@ MeCtBreathing::MeCtBreathing (SmartBody::SBPawn& pawn) : SmartBody::SBController
 	_local_time_offset = 0;
 
 	_default_breath_cycle = new LinearBreathCycle();
-	_breath_layers.push_front(new BreathLayer(_default_breath_cycle, -1));
+	_breath_layers.emplace_front(std::make_unique<BreathLayer>(std::unique_ptr<BreathCycle>(_default_breath_cycle), -1));
 
 	_pending_breath_layer = nullptr;
 	_pending_pop = false;
@@ -61,16 +59,7 @@ MeCtBreathing::MeCtBreathing (SmartBody::SBPawn& pawn) : SmartBody::SBController
 	addDefaultAttributeBool("breathing.incremental", false, "Breathing");
 }
 
-MeCtBreathing::~MeCtBreathing ()
-{
-	for (auto & _breath_layer : _breath_layers)
-	{
-		delete _breath_layer;
-	}
-	
-	delete _default_breath_cycle;
-
-}
+MeCtBreathing::~MeCtBreathing () = default;
 
 void MeCtBreathing::setUseBlendChannels(bool val)
 {
@@ -136,6 +125,7 @@ void MeCtBreathing::setMotion ( SkMotion* m )
 
 	_default_breath_cycle->min(_expiratory_reserve_volume_threshold);
 	_default_breath_cycle->max(1.0f);
+
 }
 
 SkMotion* MeCtBreathing::getMotion () 
@@ -143,12 +133,12 @@ SkMotion* MeCtBreathing::getMotion ()
 	return _motion;
 }
 
-void MeCtBreathing::push_breath_layer(BreathCycle* cycle, int cyclesRemaining, bool smoothTransition)
+void MeCtBreathing::push_breath_layer(std::unique_ptr<BreathCycle> cycle, int cyclesRemaining, bool smoothTransition)
 {
 	if(smoothTransition)
-		_pending_breath_layer = new BreathLayer(cycle, cyclesRemaining);
+		_pending_breath_layer = std::make_unique<BreathLayer>(std::move(cycle), cyclesRemaining);
 	else
-		immediate_push_breath_layer(new BreathLayer(cycle, cyclesRemaining));
+		immediate_push_breath_layer(std::make_unique<BreathLayer>(std::move(cycle), cyclesRemaining));
 }
 void MeCtBreathing::pop_breath_layer()
 {
@@ -156,14 +146,17 @@ void MeCtBreathing::pop_breath_layer()
 }
 void MeCtBreathing::clear_breath_layers()
 {
-	_breath_layers.clear();
+	//Keep the default layer
+	while (_breath_layers.size() > 1) {
+		_breath_layers.pop_front();
+	}
 }
 BreathLayer* MeCtBreathing::current_breath_layer()
 {
 	if(_breath_layers.empty())
 		return nullptr;
 	else
-		return _breath_layers.front();
+		return _breath_layers.front().get();
 }
 void MeCtBreathing::breaths_per_minute(float bpm, bool smooth_transition) 
 { 
@@ -173,20 +166,16 @@ void MeCtBreathing::breaths_per_minute(float bpm, bool smooth_transition)
 		immediate_breaths_per_minute(bpm);
 }
 
-void MeCtBreathing::immediate_push_breath_layer(BreathLayer* layer)
+void MeCtBreathing::immediate_push_breath_layer(std::unique_ptr<BreathLayer> layer)
 {
-	_breath_layers.push_front(layer);
+	_breath_layers.emplace_front(std::move(layer));
 }
 void MeCtBreathing::immediate_pop_breath_layer()
 {
-	if(current_breath_layer() == nullptr)
+	//Never pop the base layer
+	if (_breath_layers.size() == 1) {
 		return;
-
-	BreathLayer* layer = current_breath_layer();
-	if(layer->cycle != _default_breath_cycle)
-		delete layer->cycle;
-	delete layer;
-
+	}
 	_breath_layers.pop_front();
 }
 void MeCtBreathing::immediate_breaths_per_minute(float bpm)
@@ -258,7 +247,7 @@ bool MeCtBreathing::controller_evaluate ( double t, MeFrameData& frame )
 	if (!_motion)
 		return true;
 
-	float frameTime = 0;
+	float frameTime;
 	bool isFrameTimeSet = false;
 	while(!isFrameTimeSet)
 	{
@@ -307,9 +296,8 @@ bool MeCtBreathing::controller_evaluate ( double t, MeFrameData& frame )
 			}
 			if(_pending_breath_layer != nullptr)
 			{
-				immediate_push_breath_layer(_pending_breath_layer);
+				immediate_push_breath_layer(std::move(_pending_breath_layer));
 				_local_time_offset = t;
-				_pending_breath_layer = nullptr;
 				isFrameTimeSet = false;
 			}
 
@@ -354,13 +342,13 @@ void MeCtBreathing::notify(SBSubject* subject)
 	addDefaultAttributeBool("breathing.useBlendChannels", false, "Breathing");
 	addDefaultAttributeFloat("breathing.bpm", 15, "Breathing");
 
-	SmartBody::SBAttribute* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SmartBody::SBAttribute*>(subject);
 	if (attribute)
 	{
 		const std::string& name = attribute->getName();
 		if (name == "breathing.motion")
 		{
-			SmartBody::StringAttribute* attr = dynamic_cast<SmartBody::StringAttribute*>(attribute);
+			auto* attr = dynamic_cast<SmartBody::StringAttribute*>(attribute);
 			
 			SmartBody::SBMotion* motion = getScene()->getMotion(attr->getValue());
 			if (!motion)
@@ -374,12 +362,12 @@ void MeCtBreathing::notify(SBSubject* subject)
 		}
 		else if (name == "breathing.useBlendChannels")
 		{
-			SmartBody::BoolAttribute* attr = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
+			auto* attr = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 			setUseBlendChannels(attr->getValue());		
 		}
 		else if (name == "breathing.bpm")
 		{
-			SmartBody::DoubleAttribute* attr = dynamic_cast<SmartBody::DoubleAttribute*>(attribute);
+			auto* attr = dynamic_cast<SmartBody::DoubleAttribute*>(attribute);
 			breaths_per_minute((float) attr->getValue());
 		}
 	}

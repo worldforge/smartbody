@@ -159,21 +159,21 @@ float SineBreathCycle::value(double realTime, double cycleTime)
 
 	return _min + float(sin(cycleTime)) * (_max-_min);
 }
-KeyframeBreathCycle* KeyframeBreathCycle::custom(float breathMin, float breathMax, 
+std::unique_ptr<KeyframeBreathCycle> KeyframeBreathCycle::custom(float breathMin, float breathMax,
 		float breathStartTime, float inspirationStartTime, float inspirationEndTime, 
 		float expirationStartTime, float expirationEndTime, float breathEndTime)
 {
-	KeyframeBreathCycle* breath_cycle = new KeyframeBreathCycle();
+	auto breath_cycle = std::make_unique<KeyframeBreathCycle>();
 
-	breath_cycle->keyframes.emplace_back(new Keyframe(breathMin, breathStartTime));
+	breath_cycle->keyframes.emplace_back(Keyframe{breathMin, breathStartTime});
 	if(inspirationStartTime != breathStartTime)
-		breath_cycle->keyframes.emplace_back(new Keyframe(breathMin, inspirationStartTime));
-	breath_cycle->keyframes.emplace_back(new Keyframe(breathMax, inspirationEndTime));
+		breath_cycle->keyframes.emplace_back(Keyframe{breathMin, inspirationStartTime});
+	breath_cycle->keyframes.emplace_back(Keyframe{breathMax, inspirationEndTime});
 	if(expirationStartTime != inspirationEndTime)
-		breath_cycle->keyframes.emplace_back(new Keyframe(breathMax, expirationStartTime));
-	breath_cycle->keyframes.emplace_back(new Keyframe(breathMin, expirationEndTime));
+		breath_cycle->keyframes.emplace_back(Keyframe{breathMax, expirationStartTime});
+	breath_cycle->keyframes.emplace_back(Keyframe{breathMin, expirationEndTime});
 	if(breathEndTime != expirationEndTime)
-		breath_cycle->keyframes.emplace_back(new Keyframe(breathMin, breathEndTime));
+		breath_cycle->keyframes.emplace_back(Keyframe{breathMin, breathEndTime});
 	breath_cycle->update();
 
 	return breath_cycle;
@@ -184,15 +184,10 @@ KeyframeBreathCycle::KeyframeBreathCycle()
 	_max_time = -1;
 	_last_start_keyframe = 0;
 }
-KeyframeBreathCycle::~KeyframeBreathCycle()
+KeyframeBreathCycle::~KeyframeBreathCycle() = default;
+bool compare_keyframes(const KeyframeBreathCycle::Keyframe& k1, const KeyframeBreathCycle::Keyframe& k2)
 {
-	vector<Keyframe*>::iterator it;
-	for(it = keyframes.begin(); it != keyframes.end(); it++)
-		delete *it;
-}
-bool compare_keyframes(KeyframeBreathCycle::Keyframe* k1, KeyframeBreathCycle::Keyframe* k2)
-{
-	return (k1->time < k2->time);
+	return (k1.time < k2.time);
 }
 void KeyframeBreathCycle::update()
 {
@@ -200,19 +195,18 @@ void KeyframeBreathCycle::update()
 
 	_max_time = -1;
 	float max = -1;
-	vector<Keyframe*>::iterator it;
-	for(it = keyframes.begin(); it!=keyframes.end(); it++)
+	for(auto & keyframe : keyframes)
 	{
-		if((*it)->value > max)
+		if(keyframe.value > max)
 		{
-			_max_time = (*it)->time;
-			max = (*it)->value;
+			_max_time = keyframe.time;
+			max = keyframe.value;
 		}
 	}
 }
 float KeyframeBreathCycle::duration()
 {
-	return keyframes[keyframes.size()-1]->time;
+	return keyframes[keyframes.size()-1].time;
 }
 float KeyframeBreathCycle::value(double realTime, double cycleTime)
 {
@@ -220,13 +214,13 @@ float KeyframeBreathCycle::value(double realTime, double cycleTime)
 
 	int start_keyframe = 0;
 	int end_keyframe = 0;
-	if(cycleTime > keyframes[_last_start_keyframe]->time)
+	if(cycleTime > keyframes[_last_start_keyframe].time)
 		start_keyframe = _last_start_keyframe;
-	for(unsigned int i=start_keyframe; i<keyframes.size(); i++)
+	for(auto i=start_keyframe; i<keyframes.size(); i++)
 	{
-		if(cycleTime == keyframes[i]->time)
-			return keyframes[i]->value;
-		if(cycleTime > keyframes[i]->time)
+		if(cycleTime == keyframes[i].time)
+			return keyframes[i].value;
+		if(cycleTime > keyframes[i].time)
 			start_keyframe = i;
 		else
 		{
@@ -236,21 +230,18 @@ float KeyframeBreathCycle::value(double realTime, double cycleTime)
 	}
 	_last_start_keyframe = start_keyframe;
 
-	double t = (cycleTime - keyframes[start_keyframe]->time) / (keyframes[end_keyframe]->time - keyframes[start_keyframe]->time);
-	return float(keyframes[start_keyframe]->value + t * (keyframes[end_keyframe]->value - keyframes[start_keyframe]->value));
+	double t = (cycleTime - keyframes[start_keyframe].time) / (keyframes[end_keyframe].time - keyframes[start_keyframe].time);
+	return float(keyframes[start_keyframe].value + t * (keyframes[end_keyframe].value - keyframes[start_keyframe].value));
 }
-SplineBreathCycle::SplineBreathCycle(MeSpline1D* spline)
+SplineBreathCycle::SplineBreathCycle(std::unique_ptr<MeSpline1D> spline)
+: _spline(std::move(spline))
 {
 	_type = "SplineBreathCycle";
 	_max_time = -1;
-	_spline = spline;
 
 	update();
 }
-SplineBreathCycle::~SplineBreathCycle()
-{
-	delete _spline;
-}
+SplineBreathCycle::~SplineBreathCycle() = default;
 void SplineBreathCycle::update()
 {
 #if !defined(__ANDROID__) && !defined(SB_IPHONE)
