@@ -54,11 +54,11 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 
 	menubar = new Fl_Menu_Bar(0, 0, w, 30); 
 	menubar->labelsize(10);
-	menubar->add("&File/New", 0, NewCB, this, 0);	
+	menubar->add("&File/New", 0, NewCB, this, 0);
 	menubar->add("&File/Load from script", 0, LoadCB, this, 0);
-	//menubar->add("&File/Save to script", 0, SaveCB, this, nullptr);		
-	menubar->add("&File/Run Script...", 0, LoadSceneSettingCB, this, FL_MENU_DIVIDER);	
-//	menubar->add("&File/Save Scene Settings", 0, SaveSceneSettingCB, this, nullptr);	
+	//menubar->add("&File/Save to script", 0, SaveCB, this, nullptr);
+	menubar->add("&File/Run Script...", 0, LoadSceneSettingCB, this, FL_MENU_DIVIDER);
+//	menubar->add("&File/Save Scene Settings", 0, SaveSceneSettingCB, this, nullptr);
 	menubar->add("&File/Export Scene", 0, ExportCB, this, 0);
 #if TEST_EXPORT_SMARTBODY_PACKAGE
 	//menubar->add("&File/Export to folder", 0, ExportPackageCB, (void*)0, nullptr);
@@ -78,7 +78,7 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 	menubar->add("&View/Character/Deformable Geometry", 0, ModeDeformableGeometryCB, this, 0);
 	menubar->add("&View/Character/GPU Deformable Geometry", 0, ModeGPUDeformableGeometryCB, this, 0);
 	menubar->add("&View/Character/Axis", 0, ModeAxisCB, this, 0);
-//	menubar->add("&View/Character/Show Selected", 0, ShowSelectedCB, this, nullptr);	
+//	menubar->add("&View/Character/Show Selected", 0, ShowSelectedCB, this, nullptr);
 	menubar->add("&View/Character/Eyebeams", 0, ModeEyebeamsCB, this, 0);
 	menubar->add("&View/Character/Gaze Limits", 0, ModeGazeLimitCB, this, 0);
 //	menubar->add("&View/Character/Eyelid calibration", 0, ModeEyelidCalibrationCB, this, nullptr);
@@ -90,7 +90,7 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 //	menubar->add("&View/Character/Locomotion/Locomotion Footsteps", 0, LocomotionFootstepsCB, this, nullptr);
 //	menubar->add("&View/Character/Locomotion/Velocity", 0, VelocityCB, this, nullptr);
 //	menubar->add("&View/Character/Locomotion/Trajectory", 0, TrajectoryCB, this, nullptr);
-	menubar->add("&View/Character/Show Trajectory", 0, TrajectoryCB, this, 0);	
+	menubar->add("&View/Character/Show Trajectory", 0, TrajectoryCB, this, 0);
 	menubar->add("&View/Character/Show Gesture", 0, GestureCB, this, 0);
 	menubar->add("&View/Character/Show Joint Labels", 0, JointLabelCB, this, 0);
 	menubar->add("&View/Character/Show Selected Object", 0, ShowSelectedCharacterCB, this, 0);
@@ -104,17 +104,17 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 	menubar->add("&View/Background Color", 0, BackgroundColorCB, this, 0);
 	menubar->add("&View/Floor/Show Floor", 0, FloorCB, this, 0);
 	menubar->add("&View/Floor/Floor Color", 0, FloorColorCB, this, 0);
-	//menubar->add("&View/Reach Pose Examples", 0, ShowPoseExamples, this, nullptr);	
+	//menubar->add("&View/Reach Pose Examples", 0, ShowPoseExamples, this, nullptr);
 	menubar->add("&View/Terrain/Shaded", 0, TerrainShadedCB, this, 0);
 	menubar->add("&View/Terrain/Wireframe", 0, TerrainWireframeCB, this, 0);
-	menubar->add("&View/Terrain/No Terrain", 0, TerrainNoneCB, this, 0);	
+	menubar->add("&View/Terrain/No Terrain", 0, TerrainNoneCB, this, 0);
 	menubar->add("&View/NavigationMesh/NoMesh", 0, NavigationMeshNoneCB, this, 0);
 	menubar->add("&View/NavigationMesh/Show RawMesh", 0, NavigationMeshRawMeshCB, this, 0);
-	menubar->add("&View/NavigationMesh/Show NaviMesh", 0, NavigationMeshNaviMeshCB, this, 0);	
+	menubar->add("&View/NavigationMesh/Show NaviMesh", 0, NavigationMeshNaviMeshCB, this, 0);
 	menubar->add("&View/Steer/Characters and Goals", 0, SteeringCharactersCB, this, 0);
 	menubar->add("&View/Steer/All Steering", 0, SteeringAllCB, this, 0);
 	menubar->add("&View/Steer/No Steering", 0, SteeringNoneCB, this, 0);
-	
+
 	menubar->add("&View/Collisions/Show Collision Info", 0, ShowCollisionCB, this, 0);
 	menubar->add("&View/Collisions/Hide Collisions Info", 0, HideCollisionCB, this, 0);
 
@@ -123,31 +123,31 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 	menubar->add("&Create/Pawn from model...", 0, CreatePawnFromModelCB, this, 0);
 	menubar->add("&Create/Light", 0, CreateLightCB, this, 0);
 	menubar->add("&Create/Camera...", 0, CreateCameraCB, this, FL_MENU_DIVIDER);
-	deleteObjectMenuIndex = menubar->add("&Create/Delete Object", 0, 0, 0, FL_SUBMENU_POINTER);
+	//deleteObjectMenuIndex = menubar->add("&Create/Delete Object", 0, nullptr, nullptr, FL_SUBMENU_POINTER);
 	menubar->add("&Create/Delete Selected Object", 0, DeleteSelectionCB, this, 0);
 
-	//menubar->add("&Create/Terrain...", 0, CreateTerrainCB, this, nullptr); // should replace it with create navigation mesh.
-	
+	menubar->add("&Create/Terrain...", 0, CreateTerrainCB, this, nullptr); // should replace it with create navigation mesh.
+
 //	setResolutionMenuIndex = menubar->add("&Settings/Set Resolution", 0, 0, 0, FL_SUBMENU_POINTER);
 	menubar->add("&Settings/Default Media Path", 0, SettingsDefaultMediaPathCB, this, 0);
-	menubar->add("&Settings/Internal Audio", 0, AudioCB, this, 0);	
+	menubar->add("&Settings/Internal Audio", 0, AudioCB, this, 0);
 
 	menubar->add("&Camera/Save Camera View", 0, SaveCameraCB, this, 0 );
-	loadCameraMenuIndex = menubar->add("&Camera/Load Camera", 0, 0, 0, FL_SUBMENU_POINTER );
-	deleteCameraMenuIndex = menubar->add("&Camera/Delete Camera", 0, 0, 0, FL_SUBMENU_POINTER );
+	//loadCameraMenuIndex = menubar->add("&Camera/Load Camera", 0, nullptr, nullptr, FL_SUBMENU_POINTER );
+	//deleteCameraMenuIndex = menubar->add("&Camera/Delete Camera", 0, nullptr, nullptr, FL_SUBMENU_POINTER );
 	menubar->add("&Camera/Reset", 0, CameraResetCB, this, 0);
 	menubar->add("&Camera/Frame All", 0, CameraFrameCB, this, 0);
 	menubar->add("&Camera/Frame Selected Object", 0, CameraFrameObjectCB, this, 0);
 	menubar->add("&Camera/Face Camera", 0, FaceCameraCB, this, 0);
 	menubar->add("&Camera/Character Cone Sight", 0, CameraCharacterShightCB, this, 0);
 	menubar->add("&Camera/Track Character", 0, TrackCharacterCB, this, 0);
-	menubar->add("&Camera/Rotate Around Selected", 0, RotateSelectedCB, this, 0);	
-   menubar->add("&Camera/Modes/Default", 0, SetDefaultCamera, this, 0);	
-   menubar->add("&Camera/Modes/Free Look", 0, SetFreeLookCamera, this, 0);	
-   menubar->add("&Camera/Modes/Follow Renderer", 0, SetFollowRendererCamera, this, 0);	
-   menubar->add("&Camera/Take Snapshot/JPG...", 0, SetTakeSnapshotCB, this, 0);	
-   menubar->add("&Camera/Take Snapshot/TGA...", 0, SetTakeSnapshot_tgaCB, this, 0);	
-	
+	menubar->add("&Camera/Rotate Around Selected", 0, RotateSelectedCB, this, 0);
+   menubar->add("&Camera/Modes/Default", 0, SetDefaultCamera, this, 0);
+   menubar->add("&Camera/Modes/Free Look", 0, SetFreeLookCamera, this, 0);
+   menubar->add("&Camera/Modes/Follow Renderer", 0, SetFollowRendererCamera, this, 0);
+   menubar->add("&Camera/Take Snapshot/JPG...", 0, SetTakeSnapshotCB, this, 0);
+   menubar->add("&Camera/Take Snapshot/TGA...", 0, SetTakeSnapshot_tgaCB, this, 0);
+
 //	menubar->add("&Window/Resource View", 0, LaunchResourceViewerCB, this, nullptr);
 	menubar->add("&Window/Command Window", 0, LaunchConsoleCB, this, 0);
 	menubar->add("&Window/Data Viewer", 0, LaunchDataViewerCB,this, 0);
@@ -182,59 +182,59 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 	}
 	*/
 
-	
+
 	int curY= 2;
-	//Fl_Group* cameraGroup = new Fl_Group(10, curY, w, 25, nullptr);	
+	//Fl_Group* cameraGroup = new Fl_Group(10, curY, w, 25, nullptr);
 	//cameraGroup->type(Fl_Pack::HORIZONTAL);
- 	
-// 
+
+//
 // 	cameraChoice = new Fl_Choice(curX, curY, 80, 25, "Camera");
 // 	cameraChoice->when(FL_WHEN_NOT_CHANGED|FL_WHEN_CHANGED);
 // 	cameraChoice->callback(ChooseCameraCB, this);
-// 	updateCameraList();	
+// 	updateCameraList();
 // 	cameraChoice->value(0);
 // 	curX += 85;
 // 	saveCamera = new Fl_Button(curX, curY, 45, 25, "Save");
 // 	saveCamera->callback(SaveCameraCB, this);
-// 
+//
   	int curX = 500;
 // 	deleteCamera = new Fl_Button(curX, curY, 45, 25, "Del");
-// 	deleteCamera->callback(DeleteCameraCB, this);			
-	windowSizes.emplace_back("640x360");
-	windowSizes.emplace_back("640x480");
-	windowSizes.emplace_back("720x480");
-	windowSizes.emplace_back("720x576");
-	windowSizes.emplace_back("800x600");
-	windowSizes.emplace_back("854x480");
-	windowSizes.emplace_back("960x600");
-	windowSizes.emplace_back("1024x576");
-	windowSizes.emplace_back("1024x768");
-	windowSizes.emplace_back("1280x720");
-	windowSizes.emplace_back("1280x768");
-	windowSizes.emplace_back("1366x768");
-	windowSizes.emplace_back("1280x800");
-	windowSizes.emplace_back("1280x1024");
-	windowSizes.emplace_back("1440x900");
-	windowSizes.emplace_back("1600x900");
-	windowSizes.emplace_back("1920x1080");
-
-	resolutionMenuList.clear();
-	Fl_Menu_Item defaultItem = {"Default", 0, ResizeWindowCB, this};
-	resolutionMenuList.emplace_back(defaultItem);
-	for (auto & windowSize : windowSizes)
-	{
-		Fl_Menu_Item resItem = { windowSize.c_str(), 0, ResizeWindowCB, this } ;
-		resolutionMenuList.emplace_back(resItem);
-	}
-
-	Fl_Menu_Item customItem = {"Custom...", 0, ResizeWindowCB, this};
-	Fl_Menu_Item tempItem = {0};
-	resolutionMenuList.emplace_back(customItem);
-	resolutionMenuList.emplace_back(tempItem);
-	
-	Fl_Menu_Item* menuList = const_cast<Fl_Menu_Item*>(menubar->menu());
-//	Fl_Menu_Item& resolutionSubMenu = menuList[setResolutionMenuIndex];
-//	resolutionSubMenu.user_data(&resolutionMenuList[0]);
+// 	deleteCamera->callback(DeleteCameraCB, this);
+//	windowSizes.emplace_back("640x360");
+//	windowSizes.emplace_back("640x480");
+//	windowSizes.emplace_back("720x480");
+//	windowSizes.emplace_back("720x576");
+//	windowSizes.emplace_back("800x600");
+//	windowSizes.emplace_back("854x480");
+//	windowSizes.emplace_back("960x600");
+//	windowSizes.emplace_back("1024x576");
+//	windowSizes.emplace_back("1024x768");
+//	windowSizes.emplace_back("1280x720");
+//	windowSizes.emplace_back("1280x768");
+//	windowSizes.emplace_back("1366x768");
+//	windowSizes.emplace_back("1280x800");
+//	windowSizes.emplace_back("1280x1024");
+//	windowSizes.emplace_back("1440x900");
+//	windowSizes.emplace_back("1600x900");
+//	windowSizes.emplace_back("1920x1080");
+//
+//	resolutionMenuList.clear();
+//	Fl_Menu_Item defaultItem = {"Default", 0, ResizeWindowCB, this};
+//	resolutionMenuList.emplace_back(defaultItem);
+//	for (auto & windowSize : windowSizes)
+//	{
+//		Fl_Menu_Item resItem = { windowSize.c_str(), 0, ResizeWindowCB, this } ;
+//		resolutionMenuList.emplace_back(resItem);
+//	}
+//
+//	Fl_Menu_Item customItem = {"Custom...", 0, ResizeWindowCB, this};
+//	Fl_Menu_Item tempItem = {nullptr};
+//	resolutionMenuList.emplace_back(customItem);
+//	resolutionMenuList.emplace_back(tempItem);
+//
+//	Fl_Menu_Item* menuList = const_cast<Fl_Menu_Item*>(menubar->menu());
+////	Fl_Menu_Item& resolutionSubMenu = menuList[setResolutionMenuIndex];
+////	resolutionSubMenu.user_data(&resolutionMenuList[0]);
 
 	//cameraGroup->end();	
 
