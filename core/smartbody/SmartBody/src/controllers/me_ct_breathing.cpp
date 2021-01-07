@@ -185,6 +185,7 @@ void MeCtBreathing::immediate_pop_breath_layer()
 	BreathLayer* layer = current_breath_layer();
 	if(layer->cycle != _default_breath_cycle)
 		delete layer->cycle;
+	delete layer;
 
 	_breath_layers.pop_front();
 }
