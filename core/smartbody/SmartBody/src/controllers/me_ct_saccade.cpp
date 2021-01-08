@@ -147,7 +147,7 @@ void MeCtSaccade::spawnOnce(float dir, float amplitude, float dur)
 	_lastFixedRotation = _rotation;
 	_fixedRotation = SrQuat(_axis, _magnitude * (float)M_PI / 180.0f);
 
-	_time = (float) getScene()->getSimulationManager()->getTime();;
+	_time = (float) getScene().getSimulationManager()->getTime();;
 }
 
 void MeCtSaccade::reset(double t)
@@ -198,7 +198,7 @@ void MeCtSaccade::processing(double t, MeFrameData& frame)
         if (_idL < 0 || _idR < 0)
             return;
 	float time = float(t);
-	float dt = (float) getScene()->getSimulationManager()->getTimeDt();;
+	float dt = (float) getScene().getSimulationManager()->getTimeDt();;
 	if (_time == -1.0f)
 		return;
 
@@ -403,7 +403,7 @@ bool MeCtSaccade::controller_evaluate(double t, MeFrameData& frame)
 	if (_character->getStringAttribute("saccadePolicy") == "stopinutterance")
 	{
 
-		if (getScene()->getSpeechBehaviourProvider() && getScene()->getSpeechBehaviourProvider()->hasSpeechBehavior(*_character))
+		if (getScene().getSpeechBehaviourProvider() && getScene().getSpeechBehaviourProvider()->hasSpeechBehavior(*_character))
 		{
 			_validByPolicy = false;
 			reset(t);

@@ -611,7 +611,7 @@ void MeController::saveMotionRecord( const std::string &recordname )
 	
 	// load the motion
 	SrInput recordInput = SrInput((const char*)(stringOutput));
-	SmartBody::SBMotion* sbMotion = getScene()->createMotion(recordname);
+	SmartBody::SBMotion* sbMotion = getScene().createMotion(recordname);
 	if (sbMotion == nullptr)
 	{
 		SmartBody::util::log("Recorded motion %s is already existing!", recordname.c_str());
@@ -854,8 +854,8 @@ void MeController::notify(SmartBody::SBSubject* subject)
 
 }
 
-SmartBody::SBScene* MeController::getScene() {
-	return &_pawn._scene;
+SmartBody::SBScene& MeController::getScene() {
+	return _pawn._scene;
 }
 
 

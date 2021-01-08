@@ -139,7 +139,7 @@ MeCtGenericHand::MeCtGenericHand( boost::intrusive_ptr<SmartBody::SBSkeleton> sk
 	
 	// load the databsae motions for body and hand
 	_bodyDatabase = c->_scene.getMotion("brad_body_motion.skm");
-	//_handDatabase = getScene()->getMotion("brad_hand_motion.skm");
+	//_handDatabase = getScene().getMotion("brad_hand_motion.skm");
 
 	// try sbhandsynthesis here
 	_handSynthesis = std::make_unique<SmartBody::SBHandSynthesis>(_sk, _channels);
@@ -282,8 +282,8 @@ void MeCtGenericHand::updateChannelBuffer(MeFrameData& frame)
 
 	SmartBody::SBRetarget* retarget = nullptr;
 	{
-		SmartBody::SBScene* scene = getScene();
-		retarget = scene->getRetargetManager()->getRetarget(_bodyMotion->getMotionSkeletonName(),_character->getSkeleton()->getName());	
+		auto& scene = getScene();
+		retarget = scene.getRetargetManager()->getRetarget(_bodyMotion->getMotionSkeletonName(),_character->getSkeleton()->getName());
 		
 	}
 	_bodyMotion->connect(_sk.get());
@@ -395,7 +395,7 @@ void MeCtGenericHand::notify(SBSubject* subject)
 				return;
 			}
 			int numLevels = _character->getIntAttribute("hand.levels");
-			SmartBody::SBMotion* motion = getScene()->getMotion(motionName);
+			SmartBody::SBMotion* motion = getScene().getMotion(motionName);
 			if (!motion)
 			{
 				SmartBody::util::log("No motion named %s available. Cannot initialize hand controller.", motionName.c_str());

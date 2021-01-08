@@ -561,7 +561,7 @@ void MeCtReachEngine::updateReach(float t, float dt, BodyMotionFrame& inputFrame
 		reachData->locomotionComplete = (curCharacter->_reachTarget && !curCharacter->_lastReachStatus);		
 	}
 	
-	//reachData->hasSteering = (getScene()->getSteerManager()->isInitialized());
+	//reachData->hasSteering = (getScene().getSteerManager()->isInitialized());
 
 	curReachState->updateEffectorTargetState(reachData.get());
 	curReachState->update(reachData.get());

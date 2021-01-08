@@ -353,8 +353,8 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 	{
 		///////////////////////////////////////////////////////////////////////
 		// check automatic transitions
-		SmartBody::SBScene* scene = getScene();
-		SmartBody::SBAnimationBlendManager* blendManager = scene->getBlendManager();
+		auto& scene = getScene();
+		SmartBody::SBAnimationBlendManager* blendManager = scene.getBlendManager();
 		PABlend* blend = curStateData->state;
 		SmartBody::SBAnimationBlend* sbstate = dynamic_cast<SmartBody::SBAnimationBlend*>(blend);
 		std::vector<std::string> blends = blendManager->getTransitionBlends(blend->stateName);
@@ -510,7 +510,7 @@ void MeCtParamAnimation::schedule( PABlend* state, const std::vector<double>& we
 	unit.schedule = scheduleMode;
 	unit.blend = blend;
 	unit.partialJoint = jName;
-	unit.time = getScene()->getSimulationManager()->getTime() + timeOffset;
+	unit.time = getScene().getSimulationManager()->getTime() + timeOffset;
 	unit.stateTimeOffset = (float)stateTimeOffset;
 	unit.stateTimeTrim = (float)stateTimeTrim;
 	unit.directPlay = directPlay;
@@ -806,7 +806,7 @@ void MeCtParamAnimation::autoScheduling(double time)
 			delete transitionManager;
 		SmartBody::SBAnimationTransition* data = nullptr;
 		if (nextUnit.data)
-			data = getScene()->getBlendManager()->getTransition(curStateData->state->stateName, nextUnit.data->stateName);
+			data = getScene().getBlendManager()->getTransition(curStateData->state->stateName, nextUnit.data->stateName);
 		nextStateData = createStateModule(nextUnit);
 		nextStateData->active = false;
 		if (!data) // no existing transition data
@@ -864,7 +864,7 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 		SmartBody::SBAnimationBlend* animBlend = dynamic_cast<SmartBody::SBAnimationBlend*>(su.data);
 		if (animBlend) // set retarget information if it is available
 		{
-			SmartBody::SBRetargetManager* retargetManager = getScene()->getRetargetManager();
+			SmartBody::SBRetargetManager* retargetManager = getScene().getRetargetManager();
 			SmartBody::SBRetarget* retarget = retargetManager->getRetarget(animBlend->getBlendSkeleton(),character->getSkeleton()->getName());
 			if (retarget && character->getBoolAttribute("onlineRetarget"))
 				module->retarget = retarget;
@@ -1080,14 +1080,14 @@ void MeCtParamAnimation::updateJointTrajectory( PABlendData* blendData )
 	{		
 		baseGmat = baseJoint->gmat();//baseJoint->getParent()->gmat();		
 	}
-//	SmartBody::SBScene* scene = getScene();
+//	auto& scene = getScene();
 
 	SmartBody::SBAnimationBlend* animBlend = dynamic_cast<SmartBody::SBAnimationBlend*>(blendData->state);
 
 	SmartBody::SBRetarget* retarget = nullptr;
 	if (animBlend)
 	{
-		SmartBody::SBRetargetManager* retargetManager = getScene()->getRetargetManager();
+		SmartBody::SBRetargetManager* retargetManager = getScene().getRetargetManager();
 		retarget = retargetManager->getRetarget(animBlend->getBlendSkeleton(),character->getSkeleton()->getName());
 	}
 	

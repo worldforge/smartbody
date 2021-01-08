@@ -1190,7 +1190,7 @@ void MeCtGaze::set_fade_in_scheduled(float interval, double time)
 	FadingInfo info;
 	info.fadingMode = FADING_MODE_IN;
 	info.fadingInterval = interval;
-	double fadingScheduleTime = getScene()->getSimulationManager()->getTime() + time;
+	double fadingScheduleTime = getScene().getSimulationManager()->getTime() + time;
 	fadingSchedules.insert(std::make_pair((float)fadingScheduleTime, info));
 	//SmartBody::util::log("set_fade_in_scheduled(%s): Current time %f, scheduled fading time is at %f.", this->_handle.c_str(), mcuCBHandle::singleton().time, fadingScheduleTime);
 }
@@ -1200,7 +1200,7 @@ void MeCtGaze::set_fade_out_scheduled(float interval, double time)
 	FadingInfo info;
 	info.fadingMode = FADING_MODE_OUT;
 	info.fadingInterval = interval;
-	double fadingScheduleTime = getScene()->getSimulationManager()->getTime() + time;
+	double fadingScheduleTime = getScene().getSimulationManager()->getTime() + time;
 	fadingSchedules.insert(std::make_pair((float)fadingScheduleTime, info));
 	//SmartBody::util::log("set_fade_out_scheduled(%s): Current time %f, scheduled fading time is at %f.", this->_handle.c_str(), mcuCBHandle::singleton().time, fadingScheduleTime);
 }
@@ -1327,7 +1327,7 @@ void MeCtGaze::updateGazeSchedules( float dt )
 		for (; iter != gazeSchedules.end(); ++iter)
 		{
 			GazeScheduleInfo& s = (*iter).second;
-			if (getScene()->getSimulationManager()->getTime() >= iter->first)
+			if (getScene().getSimulationManager()->getTime() >= iter->first)
 			{
 				this->set_offset_polar( s.direction, s.sweepAngle, s.roll );
 				if (s.hasTargetJoint)
@@ -1337,7 +1337,7 @@ void MeCtGaze::updateGazeSchedules( float dt )
 					{
 						std::string t = s.targetJoint.substr(0, pos);
 						std::string joint = s.targetJoint.substr(pos + 1);
-						SmartBody::SBPawn* pawn = getScene()->getPawn(t);
+						SmartBody::SBPawn* pawn = getScene().getPawn(t);
 						if (!pawn)
 						{
 							SmartBody::util::log("Gaze cannot be switched to %s, does not exist.", s.targetJoint.c_str());
@@ -1365,7 +1365,7 @@ void MeCtGaze::updateGazeSchedules( float dt )
 					}
 					else
 					{
-						SmartBody::SBPawn* pawn = getScene()->getPawn(s.targetJoint.c_str());
+						SmartBody::SBPawn* pawn = getScene().getPawn(s.targetJoint.c_str());
 						if (!pawn)
 						{
 							SmartBody::util::log("Gaze cannot be switched to %s, does not exist.", s.targetJoint.c_str());

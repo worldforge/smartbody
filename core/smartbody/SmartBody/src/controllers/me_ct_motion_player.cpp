@@ -58,7 +58,7 @@ void MeCtMotionPlayer::init(const std::string& name, double n)
 	}
 	//SmartBody::util::log("after if (controller != nullptr)");
 
-	SmartBody::SBMotion* motion = getScene()->getAssetManager()->getMotion(name);
+	SmartBody::SBMotion* motion = getScene().getAssetManager()->getMotion(name);
 	if (!motion)
 	{
 		SmartBody::util::log("No motion named '%s' found. Motionplayer cannot play it.", name.c_str());
@@ -147,10 +147,10 @@ bool MeCtMotionPlayer::controller_evaluate(double t, MeFrameData& frame)
 
 	SmartBody::SBRetarget* retarget = nullptr;
 
-		SmartBody::SBScene* scene = getScene();
+		auto& scene = getScene();
 		auto* sbMotion = dynamic_cast<SmartBody::SBMotion*>(motion);
 		if (sbMotion)
-			retarget = scene->getRetargetManager()->getRetarget(sbMotion->getMotionSkeletonName(),character.getSkeleton()->getName());
+			retarget = scene.getRetargetManager()->getRetarget(sbMotion->getMotionSkeletonName(),character.getSkeleton()->getName());
 
 
 	double deltaT = motion->duration() / double(motion->frames() - 1);

@@ -209,7 +209,7 @@ void PATimeManager::checkEvents()
 			// localTime is the parameterized time, determine the local time of the event
 			if (localTimes[motionIndex] >= event.first->getTime())
 			{
-				SmartBody::SBEventManager* manager = blendData->_controller->getScene()->getEventManager();
+				SmartBody::SBEventManager* manager = blendData->_controller->getScene().getEventManager();
 
 				SmartBody::SBMotionEvent motionEventInstance;
 				motionEventInstance.setType(event.first->getType());
@@ -217,7 +217,7 @@ void PATimeManager::checkEvents()
 				MeCtParamAnimation* controller = blendData->getController();
 				if (controller)
 				{
-					std::string sourceStr = blendData->_controller->getScene()->getStringFromObject(controller->getPawn());
+					std::string sourceStr = blendData->_controller->getScene().getStringFromObject(controller->getPawn());
 					motionEventInstance.setSource(sourceStr);
 				}
 
@@ -487,7 +487,7 @@ SrMat PAMotions::getBaseMatFromBuffer(SrBuffer<float>& buffer)
 	mat.set(14, buffer[baseBuffId.z]);
 
 	/* this breaks the locomotion
-	if (getScene()->getBoolAttribute("blendFix"))
+	if (getScene().getBoolAttribute("blendFix"))
 	{
 		mat = SrMat();
 	}
@@ -1006,7 +1006,7 @@ PABlendData::PABlendData(MeCtParamAnimation* controller, const std::string& stat
 	directPlay = dplay;
 	playSpeed = 1.f;
 	retarget = nullptr;
-	SmartBody::SBAnimationBlend* s = controller->getScene()->getBlendManager()->getBlend(stateName);
+	SmartBody::SBAnimationBlend* s = controller->getScene().getBlendManager()->getBlend(stateName);
 	state = s;
 	if (state)
 	{
@@ -1067,11 +1067,11 @@ PABlendData::~PABlendData()
 
 bool PABlendData::getTrajPosition( const std::string& effectorName, float time, SrVec& outPos )
 {
-	SmartBody::SBScene* scene = _controller->getScene();
+	auto& scene = _controller->getScene();
 	outPos = SrVec(0,0,0);	
 	for (unsigned int i=0;i<weights.size();i++)
 	{
-		SmartBody::SBMotion* sbMotion = scene->getMotion(state->getMotionName(i));
+		SmartBody::SBMotion* sbMotion = scene.getMotion(state->getMotionName(i));
 		SrVec moPos;
 		bool hasTraj = sbMotion->getTrajPosition(effectorName,(float)timeManager->motionTimes[i],moPos);
 		if (!hasTraj)

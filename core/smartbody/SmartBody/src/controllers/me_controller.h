@@ -367,7 +367,7 @@ public :
 
     SBAPI void notify(SmartBody::SBSubject* subject) override;
 
-    SmartBody::SBScene* getScene();
+    SmartBody::SBScene& getScene();
 
 	friend class MeControllerContext;
 };

@@ -46,7 +46,7 @@ void RealTimeLipSyncController::updateLipSyncChannels()
 	if (attribute)
 	{
 		const std::string& value = attribute->getValue();
-		auto& allDiphones = getScene()->getDiphoneManager()->getDiphones(value);
+		auto& allDiphones = getScene().getDiphoneManager()->getDiphones(value);
 		std::set<std::string> allVisemes;
 		for (auto & allDiphone : allDiphones)
 		{
@@ -166,7 +166,7 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 	}
 
 	
-	SmartBody::SBPhonemeManager* phonemeManager = getScene()->getDiphoneManager();
+	SmartBody::SBPhonemeManager* phonemeManager = getScene().getDiphoneManager();
 
 	const std::string& realTimeLipSyncName = _pawn.getStringAttribute("lipsync.realTimeLipSyncName");
 
@@ -228,7 +228,7 @@ bool RealTimeLipSyncController::controller_evaluate ( double t, MeFrameData& fra
 		bool pass5 = _pawn.getBoolAttribute("lipsync.usePass5");
 
 		std::vector<SmartBody::VisemeData*> debugVisemeCurves;
-		std::map<std::string, std::vector<float> > lipSyncCurves = getScene()->getDiphoneManager()->generateCurvesGivenDiphoneSet(&visemes, lipSyncSetName, _pawn.getName(), pass3, pass4, pass5, debugVisemeCurves);
+		std::map<std::string, std::vector<float> > lipSyncCurves = getScene().getDiphoneManager()->generateCurvesGivenDiphoneSet(&visemes, lipSyncSetName, _pawn.getName(), pass3, pass4, pass5, debugVisemeCurves);
 
 		// smooth the curves
 		for (auto & lipSyncCurve : lipSyncCurves)

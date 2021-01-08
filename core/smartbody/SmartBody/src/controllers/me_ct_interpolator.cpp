@@ -166,7 +166,7 @@ void MeCtInterpolator::initKeys()
 	key1.clear();
 	key2.clear();
 
-	SmartBody::SBAnimationBlend* state = getScene()->getBlendManager()->getBlend(this->getName());
+	SmartBody::SBAnimationBlend* state = getScene().getBlendManager()->getBlend(this->getName());
 	if (state != nullptr)
 	{
 		for (int i = 0; i < state->getNumMotions(); i++)
@@ -327,7 +327,7 @@ void MeCtInterpolator::adjustStartTime(double origW, double newW)
 		keyP.emplace_back(k);
 	}
 
-	double t = getScene()->getSimulationManager()->getTime() - startTime;
+	double t = getScene().getSimulationManager()->getTime() - startTime;
 	double dur = key[key.size() - 1] - key[0];
 	if (t > dur) t -= dur; 
 	bool err = true;

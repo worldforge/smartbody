@@ -66,16 +66,16 @@ bool MeCtPhysicsController::controller_evaluate(double t, MeFrameData& frame)
 			std::string eventType = "collision";
 			motionEvent.setType(eventType);			
 			motionEvent.setParameters(cmd);
-			motionEvent.setSource(getScene()->getStringFromObject(_character));
-			SmartBody::SBEventManager* manager = getScene()->getEventManager();
+			motionEvent.setSource(getScene().getStringFromObject(_character));
+			SmartBody::SBEventManager* manager = getScene().getEventManager();
 			manager->handleEvent(&motionEvent);
 #else
 			SmartBody::SBMotionEvent* motionEvent = new SmartBody::SBMotionEvent();
 			std::string eventType = "collision";
 			motionEvent->setType(eventType);			
 			motionEvent->setParameters(cmd);
-			motionEvent->setSource(getScene()->getStringFromObject(_character));
-			SmartBody::SBEventManager* manager = getScene()->getEventManager();
+			motionEvent->setSource(getScene().getStringFromObject(_character));
+			SmartBody::SBEventManager* manager = getScene().getEventManager();
 			manager->handleEvent(motionEvent);
 			delete motionEvent;
 #endif
@@ -96,16 +96,16 @@ bool MeCtPhysicsController::controller_evaluate(double t, MeFrameData& frame)
 			std::string eventType = "collision";
 			motionEvent.setType(eventType);						
 			motionEvent.setParameters(cmd);
-			motionEvent.setSource(getScene()->getStringFromObject(_character));
-			SmartBody::SBEventManager* manager = getScene()->getEventManager();
+			motionEvent.setSource(getScene().getStringFromObject(_character));
+			SmartBody::SBEventManager* manager = getScene().getEventManager();
 			manager->handleEvent(&motionEvent);
 #else
 			SmartBody::SBMotionEvent *motionEvent = new SmartBody::SBMotionEvent();
 			std::string eventType = "collision";
 			motionEvent->setType(eventType);						
 			motionEvent->setParameters(cmd);
-			motionEvent->setSource(getScene()->getStringFromObject(_character));
-			SmartBody::SBEventManager* manager = getScene()->getEventManager();
+			motionEvent->setSource(getScene().getStringFromObject(_character));
+			SmartBody::SBEventManager* manager = getScene().getEventManager();
 			manager->handleEvent(motionEvent);
 			delete motionEvent;
 #endif

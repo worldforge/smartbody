@@ -219,7 +219,7 @@ MeCtScheduler2::MeCtScheduler2 (SmartBody::SBPawn& pawn)
 MeCtScheduler2::~MeCtScheduler2 () {
 
    //SmartBody::util::log("delete scheduler %s\n",this->getName().c_str());
-   stop (getScene()->getSimulationManager()->getTime());
+   stop (getScene().getSimulationManager()->getTime());
    //clear();
    //remove_tracks(_tracks);
 }
@@ -384,7 +384,7 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct, ScheduleDat
 	double relaxAt  = scheduleData.readyAt;
 	double endAt    = scheduleData.endAt;
 	
-	double now = getScene()->getSimulationManager()->getTime();;
+	double now = getScene().getSimulationManager()->getTime();;
 
 	// if any of the sync points begin before the current time, 
 	// then offset the motion accordingly
@@ -625,7 +625,7 @@ MeCtScheduler2::TrackPtr MeCtScheduler2::schedule( MeController* ct1, MeControll
 	double indt  = readyAt - startAt;
 	double outdt = endAt - relaxAt;
 
-	auto* interpolator = new MeCtInterpolator(_pawn, ct1, ct2, getScene()->getSimulationManager()->getTime(), double(value), loop);
+	auto* interpolator = new MeCtInterpolator(_pawn, ct1, ct2, getScene().getSimulationManager()->getTime(), double(value), loop);
 	double ct_dur = interpolator->controller_duration();
 	bool dur_defined = (ct_dur >= 0);
 

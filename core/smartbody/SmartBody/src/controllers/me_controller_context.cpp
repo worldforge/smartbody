@@ -53,7 +53,7 @@ void MeControllerContext::add_controller( MeController* ct ) {
 
 void MeControllerContext::remove_controller( MeController* ct ) {
 	if( ct->active() )
-		ct->stop(ct->getScene()->getSimulationManager()->getTime());
+		ct->stop(ct->getScene().getSimulationManager()->getTime());
 
 	ct->_context = nullptr;
 	// No unref().  Contexts refs controllers, not vice versa.

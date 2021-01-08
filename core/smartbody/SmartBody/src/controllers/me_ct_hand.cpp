@@ -96,7 +96,7 @@ MeCtHand::~MeCtHand( ) = default;
 SbmPawn* MeCtHand::getAttachedPawn()
 {
 	
-	SbmPawn* attachedPawn =  getScene()->getPawn(attachedPawnName);
+	SbmPawn* attachedPawn =  getScene().getPawn(attachedPawnName);
 	if (!attachedPawnName.empty() && !attachedPawn) // pawn is removed
 	{
 		releasePawn();
@@ -108,7 +108,7 @@ SbmPawn* MeCtHand::getAttachedPawn()
 SbmPawn* MeCtHand::getTargetObject()
 {
 	
-	SbmPawn* targetObject =  getScene()->getPawn(grabTargetName);
+	SbmPawn* targetObject =  getScene().getPawn(grabTargetName);
 	if (!grabTargetName.empty() && !targetObject) // pawn is removed
 		grabTargetName = "";
 	return targetObject;
@@ -276,13 +276,13 @@ void MeCtHand::init(const std::string& grabType, const MotionDataSet& reachPose,
 
 	bool useRetarget = true;
 	if (releaseHand)
-		releaseFrame.setMotionPose(*getScene(), (float)releaseHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,releaseHand,useRetarget);
+		releaseFrame.setMotionPose(getScene(), (float)releaseHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,releaseHand,useRetarget);
 	if (grabHand)
-		grabFrame.setMotionPose(*getScene(), (float)grabHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,grabHand,useRetarget);
+		grabFrame.setMotionPose(getScene(), (float)grabHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,grabHand,useRetarget);
 	if (reachHand)
-		reachFrame.setMotionPose(*getScene(), (float)reachHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,reachHand,useRetarget);
+		reachFrame.setMotionPose(getScene(), (float)reachHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,reachHand,useRetarget);
 	if (pointHand)
-		pointFrame.setMotionPose(*getScene(), (float)pointHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,pointHand,useRetarget);
+		pointFrame.setMotionPose(getScene(), (float)pointHand->time_stroke_emphasis(),skeletonCopy.get(),affectedJoints,pointHand,useRetarget);
 //	if (releaseHand && grabHand && reachHand)
 //	{
 		//printf("set example hand pose\n");		

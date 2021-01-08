@@ -253,11 +253,11 @@ bool MeCtExampleBodyReach::updateLocomotion()
 		cmd = "bml char " + charName + " <locomotion target=\"" + boost::lexical_cast<std::string>(steerTarget.x) + " " + 
 			boost::lexical_cast<std::string>(steerTarget.z) + "\"/>";//+ "\" facing=\"" + boost::lexical_cast<std::string>(facing) +"\"/>";//"\" proximity=\"" +  boost::lexical_cast<std::string>(rd->characterHeight*0.8f*0.01f) +"\"/>";
 		//rd->curHandAction->sendReachEvent(cmd);			
-		getScene()->getCommandManager()->execute(const_cast<char*>(cmd.c_str()));
+		getScene().getCommandManager()->execute(const_cast<char*>(cmd.c_str()));
 		isMoving = true;
 		//currentReachData->startReach = false;
 		startReach = false;		
-		SmartBody::SBEventManager* eventManager = getScene()->getEventManager();
+		SmartBody::SBEventManager* eventManager = getScene().getEventManager();
 		eventManager->addEventHandler("locomotion",this);
 		return false;
 	}
@@ -588,7 +588,7 @@ void MeCtExampleBodyReach::notify(SBSubject* subject)
 SBAPI void MeCtExampleBodyReach::executeAction( SmartBody::SBEvent* event )
 {
 	locomotionReachTarget = true;
-	SmartBody::SBEventManager* eventManager = getScene()->getEventManager();
+	SmartBody::SBEventManager* eventManager = getScene().getEventManager();
 	eventManager->removeEventHandler("locomotion");
 }
 

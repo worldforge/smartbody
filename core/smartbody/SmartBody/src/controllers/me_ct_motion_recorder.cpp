@@ -40,8 +40,8 @@ MeCtMotionRecorder::~MeCtMotionRecorder() = default;
 void MeCtMotionRecorder::startRecording( double frameRate )
 {
 	// make sure that all the channels are available for recording
-	SmartBody::SBScene* scene = getScene();
-	//auto skel = scene->getSkeleton(_pawn.getSkeleton()->getName());
+	auto& scene = getScene();
+	//auto skel = scene.getSkeleton(_pawn.getSkeleton()->getName());
 	auto skel = _pawn.getSkeleton();
 	if (!skel) 
 		return;

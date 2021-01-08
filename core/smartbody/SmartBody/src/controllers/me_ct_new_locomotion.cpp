@@ -110,7 +110,7 @@ void MeCtNewLocomotion::setup()
 	}
 	if(!SameMotion)
 	{
-		dataCycle  = getScene()->getMotion(character.getStringAttribute("walkCycle"));
+		dataCycle  = getScene().getMotion(character.getStringAttribute("walkCycle"));
 		if (!dataCycle)
 		return;
 		dataCycle->setName(character.getStringAttribute("walkCycle"));
@@ -428,7 +428,7 @@ void MeCtNewLocomotion::updateChannelBuffer(SrBuffer<float>& buffer, std::vector
 
 void MeCtNewLocomotion::updateChannelBuffer(SrBuffer<float>& buffer, float t)
 {
-	SmartBody::SBRetargetManager* retargetManager = getScene()->getRetargetManager();
+	SmartBody::SBRetargetManager* retargetManager = getScene().getRetargetManager();
 	SmartBody::SBRetarget* retarget =retargetManager->getRetarget(smoothCycle->getMotionSkeletonName(),character.getSkeleton()->getName());
 	smoothCycle->connect(sk.get());
 	smoothCycle->apply(t);//,SkMotion::Linear, 0, retarget);
@@ -522,10 +522,10 @@ void MeCtNewLocomotion::controller_start()
 
 void MeCtNewLocomotion::addPawn(SrVec& pos, const std::string& name)
 {
-	SmartBody::SBPawn* pawn = getScene()->getPawn(name);
+	SmartBody::SBPawn* pawn = getScene().getPawn(name);
 	float maxerror = 0.30f;
 	if(pawn == nullptr)
-		pawn = getScene()->createPawn(name);
+		pawn = getScene().createPawn(name);
 	pawn->setStringAttribute("collisionShape","sphere");
 	pawn->setVec3Attribute("collisionShapeScale",0.025f,0.025f,0.025f);
 	if(errorSum/maxerror<1.0f )

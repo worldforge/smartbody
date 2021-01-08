@@ -317,9 +317,9 @@ bool MeCtMotion::controller_evaluate ( double t, MeFrameData& frame ) {
 	}	
 	SmartBody::SBRetarget* retarget = nullptr;
 	auto* sbMotion = dynamic_cast<SmartBody::SBMotion*>(_motion);
-		SmartBody::SBScene* scene = getScene();
+		auto& scene = getScene();
 		if (sbMotion)
-			retarget = scene->getRetargetManager()->getRetarget(sbMotion->getMotionSkeletonName(),_character.getSkeleton()->getName());	
+			retarget = scene.getRetargetManager()->getRetarget(sbMotion->getMotionSkeletonName(),_character.getSkeleton()->getName());
 		if (retarget)
 		{
 			SrVec leftSholderRot = _character.getVec3Attribute("leftShoulderOffset");
@@ -529,7 +529,7 @@ void MeCtMotion::checkMotionEvents(double time)
 		{
 			if (time >= motionEvent->getTime())
 			{
-				SmartBody::SBEventManager* manager = getScene()->getEventManager();
+				SmartBody::SBEventManager* manager = getScene().getEventManager();
 				SmartBody::SBMotionEvent motionEventInstance;
 				motionEventInstance.setType(motionEvent->getType());
 				motionEventInstance.setParameters(motionEvent->getParameters());
@@ -537,7 +537,7 @@ void MeCtMotion::checkMotionEvents(double time)
 				SmartBody::SBPawn* pawn = this->getPawn();
 				if (pawn)
 				{
-					std::string pawnStr = getScene()->getStringFromObject(pawn);
+					std::string pawnStr = getScene().getStringFromObject(pawn);
 					motionEventInstance.setSource(pawnStr);
 				}
 

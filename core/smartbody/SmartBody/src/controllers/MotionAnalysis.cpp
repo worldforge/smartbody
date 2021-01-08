@@ -552,7 +552,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
  // use height field
 	
 	heightField = _scene.getHeightfield();
-//	SmartBody::SBNavigationMesh* navMesh = getScene()->getNavigationMesh();
+//	SmartBody::SBNavigationMesh* navMesh = getScene().getNavigationMesh();
 	if (heightField)
 	{
 		float tnormal[3];
@@ -562,7 +562,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		float maxHeight = -1e30f;	
 		if (heightField && sbChar->getBoolAttribute("terrainWalk"))
 		{
-			//terrainHeight = getScene()->queryTerrain(x, z, tnormal);
+			//terrainHeight = getScene().queryTerrain(x, z, tnormal);
 			for (auto & legState : legStates)
 			{
 
@@ -585,7 +585,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 				for (unsigned int m=0;m<legState.curSupportPos.size();m++)
 				{				
 					SrVec supPos = legState.globalSupportPos[m];
-					float height = getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
+					float height = getScene().queryTerrain(supPos.x, supPos.z, tnormal);
 					if (minHeight > height)
 						minHeight = height;
 					if (maxHeight < height)
@@ -612,13 +612,13 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 //		SrVec searchSize = SrVec(sbChar->getHeight()*0.3f, sbChar->getHeight(), sbChar->getHeight()*0.3f);
 //		if (navMesh && sbChar->getBoolAttribute("terrainWalk"))
 //		{
-//			//terrainHeight = getScene()->queryTerrain(x, z, tnormal);
+//			//terrainHeight = getScene().queryTerrain(x, z, tnormal);
 //			for (auto & legState : legStates)
 //			{
 //					for (unsigned int m=0;m<legState.curSupportPos.size();m++)
 //				{
 //					SrVec supPos = legState.globalSupportPos[m];
-//					//float height = getScene()->queryTerrain(supPos.x, supPos.z, tnormal);
+//					//float height = getScene().queryTerrain(supPos.x, supPos.z, tnormal);
 //					float height = navMesh->queryFloorHeight(supPos,searchSize);
 //					float supHeightOffset = (height + tgtBaseHeight) - gmatBase.get_translation().y;
 //					legState.globalSupportPos[m].y += supHeightOffset + footOffset;

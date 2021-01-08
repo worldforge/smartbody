@@ -41,7 +41,7 @@ bool MeCtMotionGraph::controller_evaluate( double t, MeFrameData& frame )
 	{	
 		std::string blendSkel = motionState->getCurrentMotionNode()->getAnimBlend()->getBlendSkeleton();
 		std::string charSkel = sbChar->getSkeleton()->getName();
-		SmartBody::SBRetargetManager* retargetManager = getScene()->getRetargetManager();
+		SmartBody::SBRetargetManager* retargetManager = getScene().getRetargetManager();
 		SmartBody::SBRetarget* retarget = retargetManager->getRetarget(blendSkel, charSkel);		
 		SrMat curWO = sbChar->get_world_offset();
 		float tdt = 0.01f;
