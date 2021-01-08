@@ -25,7 +25,7 @@ FLTKListener::~FLTKListener() = default;
 
 void FLTKListener::OnCharacterCreate( const std::string & name, const std::string & objectClass )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBPawn* pawn = scene->getPawn(name);
 
 	if (otherListener)
@@ -58,7 +58,7 @@ void FLTKListener::OnCharacterCreate( const std::string & name, const std::strin
 
 void FLTKListener::OnCharacterDelete( const std::string & name )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 	if (!pawn)
 		return;
@@ -130,7 +130,7 @@ void FLTKListener::OnCharacterDelete( const std::string & name )
 
 void FLTKListener::OnCharacterUpdate( const std::string & name)
 {
-//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	SmartBody::SBScene* scene = &Session::current->scene;
 //	SmartBody::SBPawn* pawn = Session::current->scene.getPawn(name);
 //	if (!pawn)
 //		return;
@@ -182,7 +182,7 @@ void FLTKListener::OnChannel( const std::string & name, const std::string & chan
 
 void FLTKListener::notify(SmartBody::SBSubject* subject)
 {
-//	SmartBody::SBScene* scene =	SmartBody::SBScene::getScene();
+//	SmartBody::SBScene* scene =	&Session::current->scene;
 
 	auto* pawn = dynamic_cast<SmartBody::SBPawn*>(subject);
 	if (pawn)
@@ -623,7 +623,7 @@ void FLTKListener::OnSimulationEnd()
 
 void FLTKListener::OnSimulationUpdate()
 {
-//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	SmartBody::SBScene* scene = &Session::current->scene;
 //
 //	const std::vector<std::string>& pawns = scene->getPawnNames();
 //	for (const auto & pawnIter : pawns)

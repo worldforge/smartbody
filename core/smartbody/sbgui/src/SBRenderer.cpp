@@ -127,7 +127,7 @@ void SBRenderer::initRenderer(int w, int h)
 	height = h;
 	gbuffer.initBuffer(w, h);
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 
 	std::string shaderPath = scene->getMediaPath() + "/shaders/";
 	SbmShaderManager& shaderManager = SbmShaderManager::singleton();
@@ -212,7 +212,7 @@ void SBRenderer::initSSAO(int w, int h)
 
 	
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string shaderPath = scene->getMediaPath() + "/shaders/";
 	SbmShaderManager& shaderManager = SbmShaderManager::singleton();
 	shaderManager.addShader("ssao_shader", shaderPath + "ssao.vert", shaderPath + "ssao.frag", true);
@@ -273,7 +273,7 @@ void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, st
 {	
 	// update skinning transform
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::vector<std::string> pawnNames = scene->getPawnNames();
 #if 1
 	for (auto& entry : renderScene.getRenderables()) {
@@ -353,7 +353,7 @@ void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, st
 
 void SBRenderer::drawForwardRendering(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights, bool isDrawFloor)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 
 	std::vector<std::string> pawnNames = scene->getPawnNames();
 #if 1
@@ -431,7 +431,7 @@ void SBRenderer::drawForwardRendering(SmartBody::SBRenderScene& renderScene, std
 
 void SBRenderer::drawLightPass(SmartBody::SBRenderScene& renderScene, std::vector<SrLight>& lights)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SrCamera* cam = renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
@@ -511,7 +511,7 @@ void SBRenderer::drawIBLPass(SmartBody::SBRenderScene& renderScene, std::vector<
 	auto envMap = texManager.findTexture(texName.c_str());
 	if (!envMap) return;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SrCamera* cam = renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
@@ -655,7 +655,7 @@ void SBRenderer::drawIBLPass(SmartBody::SBRenderScene& renderScene, std::vector<
 
 void SBRenderer::drawSSAOPass(SmartBody::SBRenderScene& renderScene)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SrCamera* cam = renderScene.getActiveCamera();
 	// if there is no active camera, then only show the blank screen
 	if (!cam)
@@ -762,7 +762,7 @@ void SBRenderer::drawSSAOPass(SmartBody::SBRenderScene& renderScene)
 
 void SBRenderer::registerGUI()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 
 	std::vector<std::string> GBufferOptions;
 	GBufferOptions.emplace_back("none");

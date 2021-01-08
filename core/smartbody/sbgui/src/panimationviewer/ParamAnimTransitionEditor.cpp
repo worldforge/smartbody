@@ -129,7 +129,7 @@ void PATransitionEditor::loadTransitions()
 {
 	transitionList->clear();
 	transitionList->add("---");
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	int numTransitions = scene->getBlendManager()->getNumTransitions();
 	for (int t = 0; t < numTransitions; t++)
 	{
@@ -289,7 +289,7 @@ void PATransitionEditor::removeTransitionTimeMark(Fl_Widget* widget, void* data)
 
 void PATransitionEditor::updateTransitionTimeMark(Fl_Widget* widget, void* data)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	PATransitionEditor* editor = (PATransitionEditor*) data;
 	SmartBody::SBAnimationTransition* transition = nullptr;
 	std::string fromStateName = "";

@@ -156,7 +156,7 @@ void SBGUIManager::init()
 {
 	if (initialized) return; // don't init twice	
 #if USE_CEGUI
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();	
+	SmartBody::SBScene* scene = &Session::current->scene;
 #ifdef _DEBUG
 	scene->run("from PyCEGUI_d import *");
 	scene->run("from PyCEGUIOpenGLRenderer_d import *");

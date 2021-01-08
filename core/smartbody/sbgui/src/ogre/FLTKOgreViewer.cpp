@@ -39,7 +39,7 @@ void FLTKOgreWindow::show_viewer()
 		initOgreWindow();
 		make_current();		
 		SBGUIManager::singleton().init();			
-		SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+		SmartBody::SBScene* sbScene = &Session::current->scene;
 		fltkListener = new OgreListener(ogreInterface);
 		sbScene->addSceneListener(fltkListener);
 
@@ -149,7 +149,7 @@ void FLTKOgreWindow::draw()
 
 void FLTKOgreWindow::updateOgreCamera()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	if (!ogreInterface)
 		return;
 	Ogre::Camera* ogreCam = ogreInterface->getCamera();
@@ -209,7 +209,7 @@ void FLTKOgreWindow::fltkRender()
 
 	//FltkViewer::draw();
     //return;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	glEnable(GL_DEPTH_TEST);
 // 	if (_objManipulator.hasPicking())
 // 	{

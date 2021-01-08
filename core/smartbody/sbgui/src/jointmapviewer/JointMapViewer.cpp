@@ -1181,7 +1181,7 @@ std::string SkeletonViewer::getFocusJointName()
 
 void SkeletonViewer::setSkeleton( std::string skelName )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	auto sk = scene->getSkeleton(skelName);
 	if (sk)
 	{
@@ -1229,7 +1229,7 @@ void SkeletonViewer::focusOnSkeleton()
 
 void SkeletonViewer::draw()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBSimulationManager* simManager = scene->getSimulationManager();	
 
 	prevTime = curTime;
@@ -1319,7 +1319,7 @@ void SkeletonViewer::drawJointMapLabels( std::string jointMapName )
 	//glPushAttrib(GL_LIGHTING | GL_COLOR_BUFFER_BIT);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	float sceneScale = scene->getScale();
 	if (sceneScale == 0.0f)
 		sceneScale = 1.0f;
@@ -1415,7 +1415,7 @@ JointMapViewer::JointMapViewer(int x, int y, int w, int h, const char* name) : F
 	_jointMapName = "";
 	_skelName = "";
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 
 	Fl_Group* leftGroup	= new Fl_Group(10, startY, 400, h - startY, "");
 	leftGroup->begin();
@@ -1560,7 +1560,7 @@ JointMapViewer::JointMapViewer(int x, int y, int w, int h, const char* name) : F
 
 void JointMapViewer::updateJointLists()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	auto skel = scene->getSkeleton(_skelName);
 	int tempY = scrollY;
 	
@@ -1634,7 +1634,7 @@ void JointMapViewer::setCharacterName( std::string charName )
 // 			break;
 // 		}
 // 	}
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBCharacter* sbChar = scene->getCharacter(charName);
 	if (sbChar && targetSkeletonViewer)
 	{
@@ -1693,7 +1693,7 @@ void JointMapViewer::JointNameChange( Fl_Widget* widget, void* data )
 
 void JointMapViewer::updateJointName( Fl_Input_Choice* jointChoice )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string charName = _charName;
 	SmartBody::SBCharacter* curChar = scene->getCharacter(charName);
 	auto charSk = curChar->getSkeleton();
@@ -1728,7 +1728,7 @@ void JointMapViewer::updateJointName( Fl_Input_Choice* jointChoice )
 
 void JointMapViewer::updateCharacter()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string charName = _charName;
 	SmartBody::SBCharacter* curChar = scene->getCharacter(charName);
 	if (!curChar) return;
@@ -1751,7 +1751,7 @@ void JointMapViewer::updateCharacter()
 
 void JointMapViewer::autoGuessJointMap()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string jointMapName = _skelName + "-autoMap";
 	SmartBody::SBJointMapManager* jointMapManager = scene->getJointMapManager();
 	SmartBody::SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
@@ -1770,7 +1770,7 @@ void JointMapViewer::autoGuessJointMap()
 
 void JointMapViewer::updateSelectMap()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string jointMapName = _jointMapName;
 	SmartBody::SBJointMapManager* jointMapManager = scene->getJointMapManager();
 	SmartBody::SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
@@ -1804,7 +1804,7 @@ void JointMapViewer::updateSelectMap()
 
 void JointMapViewer::applyJointMap()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string jointMapName = _jointMapName;
 	SmartBody::SBJointMapManager* jointMapManager = scene->getJointMapManager();
 	SmartBody::SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
@@ -2022,7 +2022,7 @@ void JointMapViewer::showJointLabels( int showLabel )
 
 void JointMapViewer::testPlayMotion()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	auto targetSk = targetSkeletonViewer->getSkeleton();
 	auto commonSk = standardSkeletonViewer->getSkeleton();
 	if (!targetSk || !commonSk) return;
@@ -2095,7 +2095,7 @@ void JointMapViewer::testPlayMotion()
 
 void JointMapViewer::updateTestMotions()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::vector<std::string> motionNames = scene->getMotionNames();
 	_choiceTestMotions->clear();
 	for (unsigned int i=0;i<motionNames.size();i++)
@@ -2107,7 +2107,7 @@ void JointMapViewer::updateTestMotions()
 
 void JointMapViewer::setTestMotion( std::string motionName )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBMotion* motion = scene->getMotion(motionName);
 	if (motion)
 		testCommonSkMotion = motion;
@@ -2124,7 +2124,7 @@ void JointMapViewer::updateUI()
 
 // void JointMapViewer::updateCharacterList()
 // {
-// 	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+// 	SmartBody::SBScene* scene = &Session::current->scene;
 // 	const std::vector<std::string>& characters = scene->getCharacterNames();
 // 	_choiceCharacters->clear();
 // 	for (size_t c = 0; c < characters.size(); c++)
@@ -2135,7 +2135,7 @@ void JointMapViewer::updateUI()
 
 void JointMapViewer::updateJointMapList()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBJointMapManager* jointMapManager = scene->getJointMapManager();
 	std::vector<std::string> jointMapNames = jointMapManager->getJointMapNames();	
 	int oldValue = _choiceJointMaps->value();

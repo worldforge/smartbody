@@ -175,7 +175,7 @@ SBBaseRenderer::~SBBaseRenderer() = default;
 void SBBaseRenderer::draw(std::vector<SrLight>& lights, bool isDrawFloor)
 {
 	if (!isInitialized()) return;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::vector<std::string> pawnNames = scene->getPawnNames();
 #if 1
 	auto& renderables = Session::current->renderScene.getRenderables();
@@ -408,7 +408,7 @@ void SBBaseRenderer::initRenderer(int w, int h)
 	width = w;
 	height = h;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string shaderPath = scene->getMediaPath() + "/shaders/";
 	SbmShaderManager& shaderManager = SbmShaderManager::singleton();
 	

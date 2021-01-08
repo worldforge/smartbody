@@ -16,7 +16,7 @@
 RetargetViewer::RetargetViewer(int x, int y, int w, int h, const char* name) : Fl_Double_Window(x, y, w, h, name)
 {
 	rootWindow = nullptr;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	begin();
 
 	int curY = 10;

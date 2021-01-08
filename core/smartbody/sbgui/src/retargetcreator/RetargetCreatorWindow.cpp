@@ -51,7 +51,7 @@ RetargetCreatorWindow::RetargetCreatorWindow(int x, int y, int w, int h, const c
 
 void RetargetCreatorWindow::retargetSelectedMotion()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	// hard coded the script name for now
 	scene->runScript("motion-retarget.py");
 	scene->runScript("drag-and-drop.py");
@@ -88,7 +88,7 @@ void RetargetCreatorWindow::retargetSelectedMotion()
 
 void RetargetCreatorWindow::reloadAssets()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	//std::string assetDir = _curAssetDir->value();
 	for (int i=0; i < _assetDirList->size(); i++)
 	{

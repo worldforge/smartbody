@@ -232,7 +232,7 @@ bool PanimationWindow::checkCommand(std::string command)
 
 void PanimationWindow::execCmd(PanimationWindow* window, std::string cmd, double tOffset)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	
 
 	BML::SbmCommand* command = new BML::SbmCommand(cmd, (float)(Session::current->scene.getSimulationManager()->getTime() + tOffset));
@@ -387,7 +387,7 @@ void PanimationWindow::reset(Fl_Widget* widget, void* data)
 	std::stringstream resetPosCommand;
 	resetPosCommand << "set char " << charName << " world_offset x 0 z 0 h 0 p 0 r 0";
 	execCmd(window, resetPosCommand.str());		
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBCharacter* sbChar = scene->getCharacter(charName);
 	if (sbChar)
 	{
@@ -432,7 +432,7 @@ SmartBody::SBCharacter* PanimationWindow::getCurrentCharacter()
 		return nullptr;
 
 	std::string charName = characterList->menu()[characterList->value()].label();
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	return scene->getCharacter(charName);
 }
 

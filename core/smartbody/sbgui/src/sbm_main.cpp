@@ -105,7 +105,7 @@ void MyMeasure(const Fl_Label *o, int &W, int &H) {
 //
 //void sbm_vhmsg_callback( const char *op, const char *args, void * user_data )
 //{
-//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	SmartBody::SBScene* scene = &Session::current->scene;
 //	// Replace singleton with a user_data pointer
 //	if (scene->isRemoteMode())
 //	{
@@ -137,7 +137,7 @@ void MyMeasure(const Fl_Label *o, int &W, int &H) {
 //int mcu_viewer_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 //{
 //	auto& renderScene = Session::current->renderScene;
-//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	SmartBody::SBScene* scene = &Session::current->scene;
 //	char *view_cmd = args.read_token();
 ////	if( strcmp( view_cmd, "open" ) == 0 )
 ////	{
@@ -512,7 +512,7 @@ void cleanup( )	{
 	}
 
 	// explicitly delete SBScene singleton
-	//delete SmartBody::SBScene::getScene();	
+	//delete &Session::current->scene;
 	XMLPlatformUtils::Terminate();
 
 	SmartBody::util::log( "sbgui terminated gracefully." );

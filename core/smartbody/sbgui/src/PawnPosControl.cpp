@@ -303,7 +303,7 @@ void PawnSelectControl::hitTest( SrCamera& cam )
 	SrVec color(0.f,1.f,1.f);
 	if (bbox.max_size() < 1e-9) // no bounding box
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+		SmartBody::SBScene* scene = &Session::current->scene;
 		float sphereSize = 0.05f / scene->getScale();
 		SrVec pos = pawn->getPosition();
 		PositionControl::drawSphere(pos, sphereSize, color);

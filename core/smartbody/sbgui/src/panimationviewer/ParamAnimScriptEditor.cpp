@@ -248,7 +248,7 @@ void PAScriptEditor::updateAvailableStates(std::string currentState)
 {
 	availableStateList->clear();
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	int numTransitions = scene->getBlendManager()->getNumTransitions();
 	for (int t = 0; t < numTransitions; t++)
 	{

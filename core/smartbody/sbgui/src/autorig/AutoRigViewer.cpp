@@ -140,7 +140,7 @@ void AutoRigViewer::applyAutoRig( int riggingType /*= 0*/ )
 	if (_characterName.empty())
 		return;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 
 	SBAutoRigManager& autoRigManager = SBAutoRigManager::singleton();
 	autoRigManager.setAutoRigCallBack(this);

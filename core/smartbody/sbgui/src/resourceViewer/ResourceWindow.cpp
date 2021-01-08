@@ -192,7 +192,7 @@ void ResourceWindow::hide()
 
 bool ResourceWindow::processedDragAndDrop( std::string& dndText )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	boost::filesystem::path dndPath(dndText);
 	std::string fullPathName = dndText;
 	std::string filebasename = boost::filesystem::basename(dndText);
@@ -370,7 +370,7 @@ void ResourceWindow::resize( int x, int y, int w, int h )
 void ResourceWindow::updateGUI()
 {
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
 	auto& renderAssetManager = Session::current->renderAssetManager;
 
@@ -702,7 +702,7 @@ void ResourceWindow::updateScript( Fl_Tree_Item* tree, SmartBody::SBScript* scri
 
 void ResourceWindow::updateScriptFiles( Fl_Tree_Item* tree, std::string pname )
 {	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& scriptPaths = scene->getAssetStore().getAssetPaths("script");
 	
 	for (const auto & scriptPath : scriptPaths)
@@ -895,7 +895,7 @@ void ResourceWindow::updateCharacter( Fl_Tree_Item* tree, SmartBody::SBCharacter
 	gestureFolder->user_data((void*)-1);
 	gestureFolder->close();
 	// add individual gesture mappings
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 
 	SBGestureMap* gestureMap = scene->getGestureMapManager()->getGestureMap(sbcharacter->getName());
 	if (gestureMap)

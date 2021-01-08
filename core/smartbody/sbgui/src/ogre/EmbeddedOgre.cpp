@@ -147,7 +147,7 @@ void EmbeddedOgre::resetOgreScene()
 
 void EmbeddedOgre::setCharacterVisibility( bool bVisible )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::vector<std::string> charNames = scene->getCharacterNames();
 	ogreCharacterVisible = bVisible;
 	for (unsigned int i=0;i<charNames.size();i++)
@@ -190,7 +190,7 @@ void EmbeddedOgre::updateOgreLights()
 	if (!ogreSceneMgr)
 		return;
 		
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	int numLightsInScene = 0;
 	int numShadowLight = 0;
 	float inverseScale = float(1.0/scene->getScale());	
@@ -1529,7 +1529,7 @@ void EmbeddedOgre::addTexture( std::string texName )
 
 void EmbeddedOgre::updateOgreCharacterRenderMode(bool renderSkinWeight)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::vector<std::string> charNames = scene->getCharacterNames();
 	for (unsigned int i=0;i<charNames.size();i++)
 	{

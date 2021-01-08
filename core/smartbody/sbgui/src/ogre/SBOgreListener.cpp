@@ -41,7 +41,7 @@ void OgreListener::OnCharacterCreate( const std::string & name, const std::strin
 	// created a ogre entity only when the character is changed and valid
 	bool isPawn = false;
 	
-	SBCharacter* sbChar = SBScene::getScene()->getCharacter(name);
+	SBCharacter* sbChar = Session::current->scene.getCharacter(name);
 
 	//if (!sbChar) return; // no smartbody character exist ?
 	if (!sbChar) 

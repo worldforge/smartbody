@@ -114,7 +114,7 @@ void ExportWindow::ExportAllCB( Fl_Widget* widget, void* data )
 			aspects.emplace_back(iter->label());
 		}
 	}
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	if (window->exportToFolder && isExportAsset)
 	{
 		SmartBody::exportScenePackage(Session::current->renderScene, &Session::current->steerManager, fname);

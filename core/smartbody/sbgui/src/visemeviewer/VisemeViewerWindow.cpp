@@ -1349,7 +1349,7 @@ void VisemeViewerWindow::OnSetAudioPathCB(Fl_Widget* widget, void* data)
 	boost::filesystem::path abs_p = boost::filesystem::complete(audioDir);
 #endif
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	scene->removeAllAssetPaths("audio");
 	scene->addAssetPath("audio", abs_p.string());
 

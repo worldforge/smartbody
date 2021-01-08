@@ -144,7 +144,7 @@ void BMLCreatorWindow::RunBMLCB(Fl_Widget* w, void *data)
 {
 	BMLCreatorWindow* window = (BMLCreatorWindow*) data;
 	
-	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* sbScene = &Session::current->scene;
 	if (!sbScene->isRemoteMode())
 	{
 		Session::current->scene.run(window->_editor->buffer()->text());

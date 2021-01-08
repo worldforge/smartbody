@@ -75,7 +75,7 @@ void JointInfoObject::notify( SBSubject* subject )
 	if (!itemSkeleton)
 		return;	
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	auto templateSkel = scene->getSkeleton(itemSkeleton->getName());
 
 	SmartBody::SBJoint* templateSelectJoint = templateSkel->getJointByName(jointName);

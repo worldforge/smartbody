@@ -88,7 +88,7 @@ void MonitorConnectWindow::hide()
 
 void MonitorConnectWindow::loadProcesses()
 {
-	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* sbScene = &Session::current->scene;
 	Session::current->scene.setRemoteMode(true);
 
 	SmartBody::SBDebuggerServer& s = Session::current->debuggerServer;
@@ -113,7 +113,7 @@ void MonitorConnectWindow::OnConfirmCB(Fl_Widget* widget, void* data)
 {
 #ifndef SB_NO_VHMSG
 	MonitorConnectWindow* monitorConnectWindow = (MonitorConnectWindow*) data;
-	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* sbScene = &Session::current->scene;
 	SmartBody::SBDebuggerClient& c = monitorConnectWindow->mDebuggerClient;
 
 	if (monitorConnectWindow->_browserSBProcesses->value() <= 0)

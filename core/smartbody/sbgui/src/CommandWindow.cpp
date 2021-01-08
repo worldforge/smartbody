@@ -19,6 +19,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "CommandWindow.h"
+#include "Session.h"
 #include <vector>
 #include <iostream>
 #include <sys/stat.h>
@@ -167,7 +168,7 @@ CommandWindow* CommandWindow::getCommandWindow(Fl_Widget* w)
 
 void CommandWindow::entercb(int key, Fl_Text_Editor* editor) 
 {
-	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* sbScene = &Session::current->scene;
 	CommandWindow* commandWindow =  CommandWindow::getCommandWindow(editor);
 
 	Fl_Text_Buffer* tempBuffer = editor->buffer();

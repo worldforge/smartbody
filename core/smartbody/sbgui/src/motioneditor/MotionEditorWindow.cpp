@@ -431,7 +431,7 @@ void MotionEditorWindow::OnBrowserMotionList(Fl_Widget* widget, void* data)
 void MotionEditorWindow::OnButtonQueryAnims(Fl_Widget* widget, void* data)
 {
    std::stringstream ss;
-	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* sbScene = &Session::current->scene;
 	if (sbScene->isRemoteMode())
 	{
 		ss << "send sbm vhmsg log on";
@@ -526,7 +526,7 @@ void MotionEditorWindow::PlayAnimation(const std::string& characterName, const s
 	std::string bml = "<" + commandType + "\"" + animName + "\"/>";
 
    // this now works for remote mode
-   SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+   SmartBody::SBScene* sbScene = &Session::current->scene;
 	if (!sbScene->isRemoteMode())
 	{
 		Session::current->bmlProcessor.execBML(characterName, bml);
@@ -547,7 +547,7 @@ void MotionEditorWindow::GazeAt(const std::string& characterName, const std::str
 	std::string bml = "<" + commandType + "\"" + gazeTarget + "\"/>";
 
    // this now works for remote mode
-   SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+   SmartBody::SBScene* sbScene = &Session::current->scene;
 	if (!sbScene->isRemoteMode())
 	{
 		Session::current->bmlProcessor.execBML(characterName, bml);
@@ -565,7 +565,7 @@ void MotionEditorWindow::GazeAt(const std::string& characterName, const std::str
 void MotionEditorWindow::StopGaze(const std::string& characterName)
 {
    std::string cmd = "char " + characterName + " gazefade out 1";
-   SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+   SmartBody::SBScene* sbScene = &Session::current->scene;
    if (!sbScene->isRemoteMode())
 	{
       Session::current->scene.command(cmd);
@@ -684,7 +684,7 @@ void MotionEditorWindow::OnSliderMotionFrame(Fl_Widget* widget, void* data)
 	for (size_t c = 0; c < names.size(); c++)
 	{
 		std::stringstream ss;
-		SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+		SmartBody::SBScene* sbScene = &Session::current->scene;
 		if (sbScene->isRemoteMode())
 		{
 			ss << "send sbm ";
@@ -1012,7 +1012,7 @@ void MotionEditorWindow::OnButtonJointMap(Fl_Widget* widget, void* data)
 	// make sure the joint map exists
 	MotionEditorWindow* editor = (MotionEditorWindow*) data;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 
 	SmartBody::SBJointMap* jointMap = Session::current->scene.getJointMapManager()->getJointMap(editor->_selectedJointMap);
 	if (!jointMap)

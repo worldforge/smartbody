@@ -512,7 +512,7 @@ void FltkViewer::registerUIControls()
 {
 	// add UI controls to the scene
 	SmartBody::SBAttribute* attribute = nullptr;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	attribute = scene->createBoolAttribute("GUI.ShowCameras",false,true,"GUI",10,false,false,false,"Show/hide the cameras.");
 	attribute->registerObserver(this);
 	attribute = scene->createBoolAttribute("GUI.ShowLights",false,true,"GUI",10,false,false,false,"Show/hide the lights.");
@@ -579,7 +579,7 @@ void FltkViewer::OnSelect(const std::string& value)
 
 void FltkViewer::applyToCharacters()
 {
-//	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+//	SmartBody::SBScene* scene = &Session::current->scene;
 //	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 //	for (std::vector<std::string> ::const_iterator iter = characterNames.begin();
 //		iter != characterNames.end();
@@ -2277,7 +2277,7 @@ std::cout << "LOADING [" << fullPathName << "]" << std::endl;
 			}
 		}
 		
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+		SmartBody::SBScene* scene = &Session::current->scene;
 		
 		// load the new skeleton
 
@@ -3060,7 +3060,7 @@ void FltkViewer::set_reach_target( int itype, const char* targetname )
 	char exe_cmd[256];
 	SbmCharacter* actor = nullptr;
 	int counter = 0;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (const auto & characterName : characterNames)
 	{
@@ -3424,7 +3424,7 @@ void FltkViewer::drawGrid()
 		return;
 	}
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	float sceneScale = scene->getScale();
 	GLfloat gridHeight = 0.0f + 0.001f/scene->getScale();
 
@@ -3566,7 +3566,7 @@ void FltkViewer::drawGazeJointLimits()
 	std::string gazeLimitNames[] = {"gaze.limitPitchUp", "gaze.limitPitchDown", "gaze.limitHeading" };
 	 
 	glDisable(GL_CULL_FACE);
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
 		iter != characterNames.end();
@@ -3600,7 +3600,7 @@ void FltkViewer::drawEyeBeams()
 	if (_data->eyeBeamMode == ModeNoEyeBeams)
 		return;
 	//drawGazeJointLimits();
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
 		iter != characterNames.end();
@@ -3650,7 +3650,7 @@ void FltkViewer::drawEyeLids()
 
 	glPushAttrib(GL_LIGHTING_BIT | GL_POINT_BIT);
 	glDisable(GL_LIGHTING);
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (const auto & characterName : characterNames)
 	{
@@ -3822,7 +3822,7 @@ void FltkViewer::drawCharacterBoundingVolumes()
 		return;
 	bool singleChrCapsuleMode = colManager->getJointCollisionMode();
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (const auto & characterName : characterNames)
 	{
@@ -3870,7 +3870,7 @@ void FltkViewer::drawCharacterPhysicsObjs()
 	float pawnSize = 1.0;
 	
 	SmartBody::SBPhysicsSim* phyEngine = SmartBody::SBPhysicsSim::getPhysicsEngine();
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (const auto & characterName : characterNames)
 	{
@@ -4778,7 +4778,7 @@ static int pre_dominant = 0;
 void FltkViewer::drawLocomotion()
 {
 	int counter = 0;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
 		iter != characterNames.end();
@@ -4896,7 +4896,7 @@ void FltkViewer::drawInteractiveLocomotion()
 		return;
 
 	float pawnSize = 1.0;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (std::vector<std::string>::const_iterator iter = characterNames.begin();
 		iter != characterNames.end();
@@ -4921,7 +4921,7 @@ void FltkViewer::drawDynamics()
 {
 	if (_data->dynamicsMode == ModeNoDynamics && !_data->showmasses)
 		return;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (const auto & characterName : characterNames)
 	{
@@ -5061,7 +5061,7 @@ void FltkViewer::drawDynamics()
 
 SbmCharacter* FltkViewer::getCurrentCharacter()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	 SbmPawn* selectedPawn = getObjectManipulationHandle().get_selected_pawn();
 	 if (!selectedPawn)
 	 {
@@ -5094,7 +5094,7 @@ SbmCharacter* FltkViewer::getCurrentCharacter()
 
 SmartBody::SBAnimationBlend* FltkViewer::getCurrentCharacterAnimationBlend()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SbmCharacter* sbmChar = getCurrentCharacter();
 	SmartBody::SBCharacter* character = dynamic_cast<SmartBody::SBCharacter*>(sbmChar);
 	if (!character)
@@ -5456,7 +5456,7 @@ void FltkViewer::drawSteeringInfo()
 	if (_data->steerMode == ModeNoSteer)
 		return;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	auto& steerManager = Session::current->steerManager;
 	if (!steerManager.getEngineDriver()->isInitialized() || 
 		!steerManager.getEngineDriver()->_engine)
@@ -5499,7 +5499,7 @@ void FltkViewer::drawCollisionInfo()
 	if (_data->collisionMode == ModeCollisionHide)
 		return;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 
 	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LIGHTING | GL_LINE_BIT);
 	//glDisable(GL_LIGHTING);
@@ -5585,7 +5585,7 @@ void FltkViewer::notify(SmartBody::SBSubject* subject)
 		{
 			auto* boolAttribute = dynamic_cast<SmartBody::BoolAttribute*>(attribute);
 			bool value = boolAttribute->getValue();
-			SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+			SmartBody::SBScene* scene = &Session::current->scene;
 			const std::vector<std::string>& pawnNames = scene->getPawnNames();
 			for (auto name : pawnNames)
 			{

@@ -193,7 +193,7 @@ void setPawnMesh(const std::string& pawnName, const std::string& meshName, SrVec
 {
 	auto& renderAssetManager = Session::current->renderAssetManager;
 	auto& renderScene = Session::current->renderScene;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
 	auto renderable = renderScene.getRenderable(pawnName);
 	if (!renderable || !renderable->pawn)
@@ -745,7 +745,7 @@ std::vector<std::string> checkVisibility(const std::string& character)
 	bool DEBUG_CHECK_VISIBILITY			= true;
 
 	auto& renderScene = Session::current->renderScene;
-	SmartBody::SBScene* scene			= SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene			= &Session::current->scene;
 
 	BaseWindow& window = BaseWindow::getInstance();
 	if (window.curViewer)
@@ -769,7 +769,7 @@ std::vector<std::string> checkVisibility_current_view()
 {
 	bool DEBUG_CHECK_VISIBILITY			= true;
 	
-	SmartBody::SBScene* scene			= SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene			= &Session::current->scene;
 	auto& renderScene = Session::current->renderScene;
 
 	// make current

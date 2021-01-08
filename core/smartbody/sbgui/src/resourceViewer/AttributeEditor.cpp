@@ -45,7 +45,7 @@ void AttributeEditor::OnCharacterCreate( const std::string & name, const std::st
 
 void AttributeEditor::OnCharacterDelete( const std::string & name )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBCharacter* character = scene->getCharacter(name);
 	std::string id = scene->getStringFromObject(character);
 	if (id == _currentSelection)
@@ -65,7 +65,7 @@ void AttributeEditor::OnPawnCreate( const std::string & name )
 
 void AttributeEditor::OnPawnDelete( const std::string & name )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBPawn* pawn = scene->getPawn(name);
 	std::string id = scene->getStringFromObject(pawn);
 	if (id == _currentSelection)
@@ -80,7 +80,7 @@ void AttributeEditor::OnObjectCreate( SmartBody::SBObject* object )
 
 void AttributeEditor::OnObjectDelete( SmartBody::SBObject* object )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string id = scene->getStringFromObject(object);
 	if (id == _currentSelection)
 	{
@@ -135,7 +135,7 @@ void AttributeEditor::updateGUI()
 
 TreeItemInfoWidget* AttributeEditor::createInfoWidget( int x, int y, int w, int h, const std::string& name)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
 	SmartBody::SBAnimationBlendManager* blendManager = scene->getBlendManager();
 

@@ -52,7 +52,7 @@ void ObjectManipulationHandle::draw(SrCamera& cam)
 					SrBox box = sbPawn->getBoundingBox();
 					if (box.max_size() < 1e-9) // no bounding box
 					{
-						SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+						SmartBody::SBScene* scene = &Session::current->scene;
 						float boxSize = 0.05f / scene->getScale();
 						box.a = sbPawn->getPosition() - SrVec(boxSize,boxSize,boxSize);
 						box.b = sbPawn->getPosition() + SrVec(boxSize,boxSize,boxSize);
@@ -116,7 +116,7 @@ SbmPawn* ObjectManipulationHandle::getPickingPawn( float x, float y, SrCamera* c
 	this->get_pawn_list(pawn_list);
 
 	// determine the size of the pawns relative to the size of the characters
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	float pawnSize = 0.05f / scene->getScale();
 // 	const std::vector<std::string>& charNames = Session::current->scene.getCharacterNames();
 // 	for (size_t i = 0; i < charNames.size(); i++)

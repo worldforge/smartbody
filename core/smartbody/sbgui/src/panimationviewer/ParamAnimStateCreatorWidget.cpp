@@ -105,7 +105,7 @@ void PABlendCreator::setInfo(bool createModeFlag, const std::string& stateName)
 void PABlendCreator::loadMotions()
 {
 	animationList->clear();
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::vector<std::string> motionNames = scene->getMotionNames();
 	std::map<std::string, SkMotion*>::iterator iter;
 	for (std::vector<std::string>::iterator iter = motionNames.begin();

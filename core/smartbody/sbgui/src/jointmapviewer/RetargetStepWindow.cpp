@@ -152,7 +152,7 @@ RetargetStepWindow::~RetargetStepWindow()
 
 void RetargetStepWindow::updateCharacterList()
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	int oldValue = _choiceCharacters->value();
 	std::string oldCharacterName = "";
 	if (oldValue >= 0 && oldValue < _choiceCharacters->size())
@@ -223,7 +223,7 @@ void RetargetStepWindow::updateSkinWeight( int weightType /*= 0*/ )
 {
 	if (!_choiceCharacters->text())
 		return;
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	std::string charName = _choiceCharacters->text();	
 	SBAutoRigManager& autoRigManager = SBAutoRigManager::singleton();
 	bool autoRigSuccess = autoRigManager.updateSkinWeightFromCharacterMesh(charName, weightType);
@@ -341,7 +341,7 @@ void RetargetStepWindow::show()
 
 void RetargetStepWindow::SaveCharacterCB( Fl_Widget* widget, void* data )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene* scene = &Session::current->scene;
 	SmartBody::SBAssetManager* assetManager = scene->getAssetManager();
 	auto& renderAssetManager = Session::current->renderAssetManager;
 	RetargetStepWindow* retargetWindow = (RetargetStepWindow*)data;
