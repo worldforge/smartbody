@@ -139,8 +139,7 @@ void SbmPawn::setSkeleton(boost::intrusive_ptr<SkSkeleton> sk)
 	float height = _skeleton->getCurrentHeight();	
 	setHeight(height);
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+	std::vector<SmartBody::SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnCharacterUpdate( getName() );
@@ -157,9 +156,8 @@ int SbmPawn::init( boost::intrusive_ptr<SkSkeleton> new_skeleton_p ) {
 			return CMD_FAILURE; 
 		}
 		ct_tree_p->add_skeleton( _skeleton->getName(), _skeleton );
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 		
-		std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+		std::vector<SmartBody::SBSceneListener*>& listeners = _scene.getSceneListeners();
 		for (auto & listener : listeners)
 		{
 			listener->OnCharacterUpdate( getName() );
@@ -208,8 +206,7 @@ int SbmPawn::setup() {
 	wo_cache.p = 0;
 	wo_cache.r = 0;
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<SmartBody::SBSceneListener*>& listeners = scene->getSceneListeners();
+	std::vector<SmartBody::SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnCharacterUpdate( getName() );

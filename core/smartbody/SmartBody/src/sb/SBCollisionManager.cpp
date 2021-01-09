@@ -80,8 +80,6 @@ void SBCollisionManager::start()
 	SR_CLIP(jointBVLenRadRatio, 0.001f, 1000.0f);
 	_jointBVLenRadRatio = jointBVLenRadRatio;
 
-	SBScene* scene = SmartBody::SBScene::getScene();
-
 	_positions.clear();
 	_velocities.clear();
 //	if (!collisionSpace)
@@ -89,12 +87,12 @@ void SBCollisionManager::start()
 //		collisionSpace = new ODECollisionSpace();
 //
 //	}
-	const std::vector<std::string>& characterNames = scene->getCharacterNames();
+	const std::vector<std::string>& characterNames = _scene.getCharacterNames();
 	for (const auto & characterName : characterNames)
 	{
 		_positions.insert(std::pair<std::string, SrVec>(characterName, SrVec()));
 		_velocities.insert(std::pair<std::string, SrVec>(characterName, SrVec()));
-		SBCharacter* character = scene->getCharacter(characterName);
+		SBCharacter* character = _scene.getCharacter(characterName);
 		if (!character->getGeomObject() || character->getGeomObject()->geomType() == "null") // no collision geometry setup for the character
 		{
 			if(_singleChrCapsuleMode)
@@ -165,10 +163,10 @@ void SBCollisionManager::start()
 		}
 	}
 
-	const std::vector<std::string>& pawnNames = scene->getPawnNames();
+	const std::vector<std::string>& pawnNames = _scene.getPawnNames();
 	for (const auto & pawnName : pawnNames)
 	{
-		SBPawn* pawn = scene->getPawn(pawnName);
+		SBPawn* pawn = _scene.getPawn(pawnName);
 		if(pawn->getGeomObject()->geomType() != "null")
 		{
 			//SBGeomObject* obj = pawn->getGeomObject();
@@ -200,15 +198,14 @@ void SBCollisionManager::afterUpdate(double time)
 {	
 	// determine if any of the characters are currently in collision
 	// horribly inefficient n^2 implementation for characters only
-	SBScene* scene = SmartBody::SBScene::getScene();
-	double timeDt = scene->getSimulationManager()->getTimeDt();
+	double timeDt = _scene.getSimulationManager()->getTimeDt();
 	if (timeDt == 0.0)
 		timeDt = .016;
 	
-	const std::vector<std::string>& characters = scene->getCharacterNames();
+	const std::vector<std::string>& characters = _scene.getCharacterNames();
 	for (const auto & iter : characters)
 	{
-		SBCharacter* character =  scene->getCharacter(iter);
+		SBCharacter* character =  _scene.getCharacter(iter);
 		SrVec position = character->getPosition();
 		position[1] = 0.0;
 		SrVec& oldPosition = _positions[iter];
@@ -259,7 +256,7 @@ void SBCollisionManager::afterUpdate(double time)
 					SBCharacter* c2 = dynamic_cast<SBCharacter*>(g2->getAttachObj());
 					if (c1 && c2)
 					{
-						SBEvent* collisionEvent = eventManager->createEvent("collision",c1->getName()+"/"+c2->getName(), scene->getStringFromObject(c1));
+						SBEvent* collisionEvent = eventManager->createEvent("collision",c1->getName()+"/"+c2->getName(), _scene.getStringFromObject(c1));
 						eventManager->handleEvent(collisionEvent);
 						//SmartBody::util::log("Collision detected between character %s and character %s",c1->getName().c_str(), c2->getName().c_str());
 						delete collisionEvent; // free the memory
@@ -343,7 +340,7 @@ void SBCollisionManager::afterUpdate(double time)
 			 iter != characters.end();
 			 iter++)
 		{
-			SBCharacter* character1 =  scene->getCharacter((*iter));
+			SBCharacter* character1 =  _scene.getCharacter((*iter));
 			SrVec position1 = character1->getPosition();
 			position1[1] = 0.0;
 			
@@ -351,7 +348,7 @@ void SBCollisionManager::afterUpdate(double time)
 			 iter2 != characters.end();
 			 iter2++)
 			{
-				SBCharacter* character2 =  scene->getCharacter((*iter2));
+				SBCharacter* character2 =  _scene.getCharacter((*iter2));
 				// determine if the two characters are in collision
 				std::vector<SBGeomContact> contactPts;
 				SBCollisionUtil::collisionDetection(character1->getGeomObject(),character2->getGeomObject(),contactPts);

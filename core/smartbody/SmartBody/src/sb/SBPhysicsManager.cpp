@@ -26,7 +26,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBPhysicsSim.h"
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
-#include <sb/SBPhysicsSim.h>
 #include "SBUtilities.h"
 #include <chrono>
 
@@ -202,8 +201,7 @@ SmartBody::SBObject* SBPhysicsManager::getPhysicsPawn(const std::string& pawnNam
 
 SmartBody::SBObject* SBPhysicsManager::createPhysicsPawn(const std::string& pawnName, const std::string& geomType, const SrVec& geomSize) {
 	if (_physicsSim) {
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SmartBody::SBPawn* pawn = scene->getPawn(pawnName);
+		SmartBody::SBPawn* pawn = _scene.getPawn(pawnName);
 		if (!pawn) return nullptr;
 		SBPhysicsObj* phyObj = pawn->getPhysicsObject();//new SBPhysicsObj();
 		if (phyObj) getPhysicsEngine()->removePhysicsObj(phyObj); // remove existing physics object
@@ -224,8 +222,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsPawn(const std::string& pawn
 
 SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter(const std::string& charName) {
 	if (_physicsSim) {
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SmartBody::SBCharacter* sbmChar = scene->getCharacter(charName);
+		SmartBody::SBCharacter* sbmChar = _scene.getCharacter(charName);
 		if (!sbmChar) return nullptr; // no character with the name
 		auto phyChar = _physicsSim->getPhysicsCharacter(charName);
 		if (phyChar)
@@ -276,10 +273,9 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter(const std::string&
 
 void SBPhysicsManager::updatePhysicsPawn(const std::string& pawnName) {
 	if (_physicsSim) {
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 		SmartBody::SBPhysicsSim* phyEngine = getPhysicsEngine();
 		SBPhysicsObj* phyObj = phyEngine->getPhysicsPawn(pawnName);
-		SmartBody::SBPawn* pawn = scene->getPawn(pawnName);
+		SmartBody::SBPawn* pawn = _scene.getPawn(pawnName);
 		if (!phyObj || !pawn) return;
 
 		bool pawnPhySim = (phyEngine->getBoolAttribute("enable") && pawn->getBoolAttribute("enablePhysics"));

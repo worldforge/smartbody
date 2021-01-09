@@ -36,7 +36,7 @@ SBJointMapManager::~SBJointMapManager() = default;
 
 SmartBody::SBJointMap* SBJointMapManager::getJointMap(const std::string& name)
 {
-	std::map<std::string, SmartBody::SBJointMap*>::iterator iter = _jointMaps.find(name);
+	auto iter = _jointMaps.find(name);
 	if (iter != _jointMaps.end())
 		return (*iter).second;
 	else
@@ -45,17 +45,17 @@ SmartBody::SBJointMap* SBJointMapManager::getJointMap(const std::string& name)
 
 SmartBody::SBJointMap* SBJointMapManager::createJointMap(const std::string& name)
 {
-	std::map<std::string, SmartBody::SBJointMap*>::iterator iter = _jointMaps.find(name);
+	auto iter = _jointMaps.find(name);
 	if (iter == _jointMaps.end())
 	{
-		SmartBody::SBJointMap* map = new SmartBody::SBJointMap();
+		auto* map = new SmartBody::SBJointMap();
 		_jointMaps[name] = map;
 		map->setName(name);
 
-		std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-		for (size_t l = 0; l < listeners.size(); l++)
+		std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
+		for (auto & listener : listeners)
 		{
-			listeners[l]->OnObjectCreate(map);
+			listener->OnObjectCreate(map);
 		}
 
 		return map;
@@ -69,11 +69,9 @@ SmartBody::SBJointMap* SBJointMapManager::createJointMap(const std::string& name
 std::vector<std::string> SBJointMapManager::getJointMapNames()
 {
 	std::vector<std::string> names;
-	for (std::map<std::string, SmartBody::SBJointMap*>::iterator iter = _jointMaps.begin();
-		 iter != _jointMaps.end();
-		 iter++)
+	for (auto & _jointMap : _jointMaps)
 	{
-		names.emplace_back((*iter).first);
+		names.emplace_back(_jointMap.first);
 	}
 
 	return names;
@@ -81,14 +79,14 @@ std::vector<std::string> SBJointMapManager::getJointMapNames()
 
 void SBJointMapManager::removeJointMap(const std::string& name)
 {
-	std::map<std::string, SmartBody::SBJointMap*>::iterator iter = _jointMaps.find(name);
+	auto iter = _jointMaps.find(name);
 	if (iter != _jointMaps.end())
 	{
 		SmartBody::SBJointMap* map = (*iter).second;
-		std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
-		for (size_t l = 0; l < listeners.size(); l++)
+		std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
+		for (auto & listener : listeners)
 		{
-			listeners[l]->OnObjectDelete(map);
+			listener->OnObjectDelete(map);
 		}
 
 		_jointMaps.erase(iter);
@@ -102,11 +100,9 @@ void SBJointMapManager::removeJointMap(const std::string& name)
 
 void SBJointMapManager::removeAllJointMaps()
 {
-	for (std::map<std::string, SmartBody::SBJointMap*>::iterator iter = _jointMaps.begin();
-		 iter != _jointMaps.end();
-		 iter++)
+	for (auto & _jointMap : _jointMaps)
 	{
-		delete (*iter).second;
+		delete _jointMap.second;
 	}
 	_jointMaps.clear();
 }

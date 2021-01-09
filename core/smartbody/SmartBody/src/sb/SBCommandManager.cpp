@@ -358,7 +358,7 @@ int SBCommandManager::execute( char *cmd )
 int SBCommandManager::execute_seq( srCmdSeq *seq )
 {
 	std::ostringstream seq_id;
-	SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(SmartBody::SBScene::getScene()->getAttribute("queuedCommandsIndex"));
+	SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(_scene.getAttribute("queuedCommandsIndex"));
 	seq_id << "execute_seq-" << (intAttr->getValue());
 	intAttr->setValue(intAttr->getValue() + 1);
 
@@ -391,7 +391,7 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 
 	const std::string& first_seq_name = *it;  // convenience reference
 	std::string fullPath;
-	FILE* first_file_p = SmartBody::SBScene::getScene()->getAssetManager()->open_sequence_file( first_seq_name.c_str(), fullPath );
+	FILE* first_file_p = _scene.getAssetManager()->open_sequence_file( first_seq_name.c_str(), fullPath );
 	if( first_file_p == nullptr ) {
 		if( error_prefix )
 			SmartBody::util::log("%s Cannot find sequence \"%s\". Aborting seq-chain.", error_prefix, first_seq_name.c_str());
@@ -417,7 +417,7 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 		const std::string& next_seq = *it;  // convenience reference
 
 		std::string fullPath;
-		FILE* file = SmartBody::SBScene::getScene()->getAssetManager()->open_sequence_file( next_seq.c_str(), fullPath );
+		FILE* file = _scene.getAssetManager()->open_sequence_file( next_seq.c_str(), fullPath );
 		if( file == nullptr ) {
 			if( error_prefix )
 				SmartBody::util::log("%s Cannot find sequence \"%s\". Aborting seq-chain.", error_prefix, next_seq.c_str() );
@@ -463,10 +463,10 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 int SBCommandManager::execute_later( const char* command, float seconds )
 {
 	srCmdSeq *temp_seq = new srCmdSeq();
-	temp_seq->insert( (float)SmartBody::SBScene::getScene()->getSimulationManager()->getTime() +seconds, command );
+	temp_seq->insert( (float)_scene.getSimulationManager()->getTime() +seconds, command );
 
 	std::ostringstream seqName;
-	SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(SmartBody::SBScene::getScene()->getAttribute("queuedCommandsIndex"));
+	SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(_scene.getAttribute("queuedCommandsIndex"));
 	seqName << "execute_later-" << (intAttr->getValue());
 	intAttr->setValue(intAttr->getValue() + 1);
 
@@ -497,7 +497,7 @@ srCmdSeq* SBCommandManager::lookup_seq( const char* name )
 	{
 		// Sequence not found.  Load new instance from file.
 		std::string fullPath;
-		FILE* file = SmartBody::SBScene::getScene()->getAssetManager()->open_sequence_file( name, fullPath );
+		FILE* file = _scene.getAssetManager()->open_sequence_file( name, fullPath );
 		if( file ) {
 			seq = new srCmdSeq();
 			err = seq->read_file( file );
@@ -557,7 +557,7 @@ SequenceManager* SBCommandManager::getActiveSequences()
 
 //int SBCommandManager::mcu_set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 //    char* arg = args.read_token();
-//    int result = SmartBody::SBScene::getScene()->getCommandManager()->set_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
+//    int result = _scene.getCommandManager()->set_cmd_map.execute( arg, args, _scene.getCommandManager() );
 //	if( result == CMD_NOT_FOUND ) {
 //		// TODO: Differentiate between not finding this var and subargs
 //		SmartBody::util::log("SmartBody error: Unknown Variable, Cannot set: '%s'\n> ", arg );  // Clarify this as a set command error
@@ -574,7 +574,7 @@ SequenceManager* SBCommandManager::getActiveSequences()
 //
 //int SBCommandManager::mcu_print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 //    char* arg = args.read_token();
-//    int result = SmartBody::SBScene::getScene()->getCommandManager()->print_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
+//    int result = _scene.getCommandManager()->print_cmd_map.execute( arg, args, _scene.getCommandManager() );
 //	if( result == CMD_NOT_FOUND ) {
 //		// TODO: Differentiate between not finding this var and subargs
 //		SmartBody::util::log("SmartBody error: Print command NOT FOUND: '%s'\n> ", arg );  // Clarify this as a print command error
@@ -591,7 +591,7 @@ SequenceManager* SBCommandManager::getActiveSequences()
 //
 //int SBCommandManager::mcu_test_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 //    char* arg = args.read_token();
-//    int result = SmartBody::SBScene::getScene()->getCommandManager()->test_cmd_map.execute( arg, args, SmartBody::SBScene::getScene()->getCommandManager() );
+//    int result = _scene.getCommandManager()->test_cmd_map.execute( arg, args, _scene.getCommandManager() );
 //	if( result == CMD_NOT_FOUND ) {
 //		SmartBody::util::log("SmartBody error: Test command NOT FOUND: '%s'\n> ", arg );  // Clarify this as a test command error
 //		return CMD_SUCCESS; // Avoid multiple error messages

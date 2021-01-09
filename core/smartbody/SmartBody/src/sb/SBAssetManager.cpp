@@ -189,7 +189,7 @@ boost::intrusive_ptr<SBSkeleton> SBAssetManager::addSkeletonDefinition(const std
 	auto result = _skeletons.emplace(sbSkel->getName(), std::move(sbSkel));
 
 	if (result.second) {
-		std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+		std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 		for (auto & listener : listeners)
 		{
 			listener->OnObjectCreate(result.first->second.get());
@@ -213,7 +213,7 @@ void SBAssetManager::removeSkeletonDefinition(const std::string& skelName )
 
 	auto& existingSkeleton = (*iter).second;
 
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnObjectDelete(existingSkeleton.get());
@@ -241,7 +241,7 @@ SBMotion* SBAssetManager::createMotion(const std::string& motionName)
 	auto result = _motions.emplace(motionName, std::move(motion));
 
 	if (result.second) {
-		std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+		std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 		for (auto & listener : listeners)
 		{
 			listener->OnObjectCreate(result.first->second.get());
@@ -263,7 +263,7 @@ SBAPI bool SBAssetManager::addMotion(std::unique_ptr<SmartBody::SBMotion> motion
 	}
 	auto result = _motions.emplace(motion->getName(), std::move(motion));
 	if (result.second) {
-		std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+		std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 		for (auto & listener : listeners)
 		{
 			listener->OnObjectCreate(result.first->second.get());
@@ -314,7 +314,7 @@ SBAPI void SBAssetManager::removeMotion(SmartBody::SBMotion* motion)
 	auto iter = _motions.find(motion->getName());
 	if (iter != _motions.end())
 	{
-		std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+		std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 		for (auto & listener : listeners)
 		{
 			listener->OnObjectDelete(motion);
@@ -427,8 +427,6 @@ FILE* SBAssetManager::open_sequence_file( const char *seq_name, std::string& ful
 
 SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-
 	int* counter = nullptr;
 	auto* motion = dynamic_cast<SBMotion*>(asset);
 	if (motion)
@@ -438,7 +436,7 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 			_motionCounter++;
 			std::stringstream strstr;
 			strstr << motion->getName() << "xxx" << _motionCounter;
-			if (!scene->getMotion(strstr.str()))
+			if (!_scene.getMotion(strstr.str()))
 			{
 				return strstr.str();
 			}
@@ -452,7 +450,7 @@ SBAPI std::string SBAssetManager::getAssetNameVariation(SBAsset* asset)
 			_skeletonCounter++;
 			std::stringstream strstr;
 			strstr << skeleton->getName() << _skeletonCounter;
-			if (!scene->getSkeleton(strstr.str()))
+			if (!_scene.getSkeleton(strstr.str()))
 			{
 				return strstr.str();
 

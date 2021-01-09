@@ -229,8 +229,7 @@ void SBAssetStore::loadAssets() {
 
 std::vector<std::unique_ptr<SBAsset>> SBAssetStore::loadAsset(const std::string& assetPath) {
 	//SmartBody::util::log("Loading asset [%s]", assetPath.c_str());
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	const std::string& mediaPath = scene->getMediaPath();
+	const std::string& mediaPath = _scene.getMediaPath();
 	boost::filesystem::path p(mediaPath);
 	boost::filesystem::path assetP(assetPath);
 

@@ -36,16 +36,15 @@ SBReachManager::~SBReachManager()
 
 SBAPI SBReach* SBReachManager::createReachWithTag( std::string characterName, std::string reachTag )
 {
-	SBScene* scene = SmartBody::SBScene::getScene();
 	// get the character
-	SBCharacter* character = scene->getCharacter(characterName);
+	SBCharacter* character = _scene.getCharacter(characterName);
 	if (!character)
 	{
 		SmartBody::util::log("Character named %s does not exist.", characterName.c_str());
 		return nullptr;
 	}
 	std::string charReachTag = characterName + "_" + reachTag;
-	std::map<std::string, SBReach*>::iterator iter = _reaches.find(charReachTag);
+	auto iter = _reaches.find(charReachTag);
 	if (iter != _reaches.end())
 	{
 		// remove the old reach data
@@ -86,7 +85,7 @@ int SBReachManager::getNumReaches()
 SBReach* SBReachManager::getReach(std::string characterName, std::string reachTag)
 {
 	std::string charReachTag = characterName + "_" + reachTag;
-	std::map<std::string, SBReach*>::iterator iter = _reaches.find(charReachTag);
+	auto iter = _reaches.find(charReachTag);
 	if (iter != _reaches.end())
 	{
 		return (*iter).second;

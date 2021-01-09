@@ -182,10 +182,9 @@ void SBPhysicsSim::updateAllPhysicsJoints()
 	{
 		SBPhysicsCharacter* phyChar = mi->second;
 		std::vector<SBPhysicsJoint*> jointList = phyChar->getPhyJointList();
-		for (unsigned int i=0;i<jointList.size();i++)
+		for (auto phyJoint : jointList)
 		{
-			SBPhysicsJoint* phyJoint = jointList[i];
-			updatePhysicsJoint(phyJoint);
+				updatePhysicsJoint(phyJoint);
 		}
 	}
 }
@@ -644,7 +643,7 @@ std::map<std::string,SbmJointObj*>& SBPhysicsCharacter::getJointObjMap()
 
 void SBPhysicsCharacter::initPhysicsCharacter(const std::string& charName, std::vector<std::string>& jointNameList, bool buildGeometry )
 {
-	
+
 	SBScene* scene = SmartBody::SBScene::getScene();
 	SBPhysicsSim* phySim = SBPhysicsSim::getPhysicsEngine();
 	SBCharacter* character = scene->getCharacter(charName);

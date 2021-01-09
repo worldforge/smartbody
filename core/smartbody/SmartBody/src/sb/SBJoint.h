@@ -26,15 +26,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBColObject.h>
 #include <string>
 
-#ifdef __native_client__
-#include <sb/SBSkeleton.h>
-#endif
-
 namespace SmartBody {
 
-#ifndef __native_client__
 class SBSkeleton;
-#endif
 
 class SBJoint : public SkJoint, public SBTransformObjInterface
 {
