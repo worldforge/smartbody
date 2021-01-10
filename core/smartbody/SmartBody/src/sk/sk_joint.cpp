@@ -18,14 +18,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#include <math.h>
+#include <cmath>
 #include <sr/sr_model.h>
 #include <sk/sk_joint.h>
 #include <sk/sk_skeleton.h>
-#include <sb/SBSkeleton.h>
-#include <sb/SBScene.h>
-#include <sb/SBJointMapManager.h>
-#include <sb/SBJointMap.h>
 
 #include <memory>
 #include "SBUtilities.h"
@@ -315,25 +311,7 @@ void SkJoint::recursive_children(std::vector<SkJoint*>& joints, SkJoint* root)
 	}
 }
 
-void SkJoint::updateMappedJointName()
-{
-#if 1
-	_sbName = _name;
-	if (_skeleton)
-	{
-		SmartBody::SBJointMap* jointMap = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMap(_skeleton->getJointMapName());
-		if (jointMap)
-		{
-			const std::string& target = jointMap->getMapTarget(_name);
-			if (!target.empty())
-				_sbName = target;
-		}		
-	}	
-#endif
-
-}
-
-std::string SkJoint::getMappedJointName()
+const std::string& SkJoint::getMappedJointName() const
 {
 	return _sbName;
 }
@@ -342,20 +320,6 @@ std::string SkJoint::getMappedJointName()
 const std::string& SkJoint::jointName() const
 {
 	return _name;
-#if 0
-	std::string outName = _name;
-	if (_skeleton)
-	{
-		SmartBody::SBJointMap* jointMap = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMap(_skeleton->getJointMapName());
-		if (jointMap)
-		{
-			const std::string& target = jointMap->getMapTarget(_name);
-			if (target != "")
-				outName = target;
-		}		
-	}
-	return outName;
-#endif
 }
 
 void SkJoint::copyTo( SkJoint* dest )

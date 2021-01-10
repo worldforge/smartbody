@@ -82,13 +82,6 @@ void FootStepRecord::updateJointAveragePosition( SBSkeleton* skel, SBMotion* mot
 	motion->disconnect();			
 }
 
-
-JointTrajectory::JointTrajectory() = default;
-
-JointTrajectory::~JointTrajectory() = default;
-
-JointTrajectory& JointTrajectory::operator=( const JointTrajectory& rt ) = default;
-
 SBMotion::SBMotion() : SkMotion()
 {
 	_motionFile = "";
@@ -175,6 +168,7 @@ float SBMotion::getScale() const
 std::vector<float> SBMotion::getFrameData(int frameId)
 {
 	std::vector<float> ret;
+	ret.reserve(getFrameSize());
 	for (int i = 0; i < getFrameSize(); i++)
 		ret.emplace_back(posture(frameId)[i]);
 	return ret;
@@ -372,7 +366,7 @@ void SBMotion::bakeFrames(float fps)
 			const std::string channelName = _channels.name(c);
 			SkChannel& channel = _channels.get(c);
 			SkChannel::Type channelType = _channels.type(c);
-			std::string keyName = "";
+			std::string keyName;
 			if (channelType == SkChannel::XPos)
 			{
 				keyName = channelName + "/" + "XPos";
@@ -484,7 +478,7 @@ void SBMotion::checkSkeleton(std::string skel)
 		{				
 			std::stringstream outputInfo;
 			chan = mChanArray[i];
-			std::string jointName = chan.joint->jointName().c_str();
+			std::string jointName = chan.joint->jointName();
 			int	chanType = chan.type;
 			std::string chanTypeString;
 			switch (chanType)
@@ -1304,7 +1298,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 }
 
 
-SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkeletonName, std::string rootName, std::vector<FootStepRecord>& footStepRecords )
+SBMotion* SBMotion::autoFootSkateCleanUp( const std::string& name, const std::string& srcSkeletonName, const std::string& rootName, std::vector<FootStepRecord>& footStepRecords )
 {
 	auto origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
 	if (!origSkel) return nullptr;
@@ -1457,7 +1451,7 @@ SBMotion* SBMotion::autoFootSkateCleanUp( std::string name, std::string srcSkele
 	return cleanMotion;
 }
 
-SBMotion* SBMotion::mirror2(std::string name, std::string skeletonName, std::vector<std::string> from, std::vector<std::string> to)
+SBMotion* SBMotion::mirror2(const std::string& name, std::string skeletonName, std::vector<std::string> from, std::vector<std::string> to)
 {
 
 	auto skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
@@ -1466,11 +1460,11 @@ SBMotion* SBMotion::mirror2(std::string name, std::string skeletonName, std::vec
 		SmartBody::util::log("Skeleton %s not found. Mirror motion %s not built.", skeletonName.c_str(), name.c_str());
 		return nullptr;
 	}
-	SkMotion* motion = buildMirrorMotion(skeleton.get(), from, to);
+	SkMotion* motion = buildMirrorMotion(skeleton.get(), std::move(from), to);
 	auto* sbmotion = dynamic_cast<SBMotion*>(motion);
 	if (sbmotion)
 	{
-		std::string motionName = "";
+		std::string motionName;
 		if (name == "")
 		{
 			motionName = sbmotion->getName();
@@ -1479,7 +1473,7 @@ SBMotion* SBMotion::mirror2(std::string name, std::string skeletonName, std::vec
 		}
 		else
 			motionName = name;
-		sbmotion->setName(motionName.c_str());
+		sbmotion->setName(motionName);
 
 		bool success = SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion));
 		if (!success)
@@ -1987,9 +1981,9 @@ SBJointMap* SBMotion::getJointMap()
 {
 	SBJointMapManager* jointMapManager = SBScene::getScene()->getJointMapManager();
 	const std::vector<std::string>& jointMapNames = jointMapManager->getJointMapNames();
-	for (size_t i = 0; i < jointMapNames.size(); ++i)
+	for (const auto & jointMapName : jointMapNames)
 	{
-		SBJointMap* jointMap = jointMapManager->getJointMap(jointMapNames[i]);
+		SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
 		if (jointMap->isAppliedToMotion(this->getName()))
 			return jointMap;
 	}
@@ -2917,9 +2911,9 @@ SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, cons
 	{
 		SmartBody::util::log("Effector joint '%s' or reference joint '%s' does not exist.", effectorName.c_str(), refJointName.c_str());
 	}
-	auto traj = std::make_unique<JointTrajectory>();
-	traj->effectorName = effectorName;
-	traj->refJointName = refJointName;
+	JointTrajectory traj{};
+	traj.effectorName = effectorName;
+	traj.refJointName = refJointName;
 	connect(&skelCopy);
 	SmartBody::SBJoint* effector = skelCopy.getJointByName(effectorName); // find the global position of end effector
 	SmartBody::SBJoint* refJoint = skelCopy.getJointByName(refJointName); // compute offset relative to ref joint
@@ -2933,7 +2927,7 @@ SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, cons
 		SrVec refPos = refJoint->gmat().get_translation();
 		SrMat baseRot = baseJoint->gmat().get_rotation();		
 		SrVec trajPos = (effPos-refPos)*baseRot.inverse();
-		traj->jointTrajectory.emplace_back(trajPos);
+		traj.jointTrajectory.emplace_back(trajPos);
 	}
 	disconnect();	
 	trajMap[effectorName] = std::move(traj);
@@ -2941,11 +2935,12 @@ SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, cons
 
 SBAPI JointTrajectory* SBMotion::getJointTrajectory( const std::string& effectorName )
 {
-	if (trajMap.find(effectorName) == trajMap.end())
+	auto I = trajMap.find(effectorName);
+	if (I == trajMap.end())
 	{
 		return nullptr;
 	}	
-	return trajMap[effectorName].get();
+	return &I->second;
 }
 
 

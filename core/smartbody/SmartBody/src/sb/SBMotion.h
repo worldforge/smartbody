@@ -49,12 +49,8 @@ class FootStepRecord
 		float endTime{};
 };
 
-class JointTrajectory
+struct JointTrajectory
 {	
-public:
-	JointTrajectory();
-	~JointTrajectory();
-	JointTrajectory& operator= ( const JointTrajectory& rt);
 	std::vector<SrVec> jointTrajectory;
 	std::string effectorName;
 	std::string refJointName; // joint trajectory is computed as the offset vector relative to the refJoint position
@@ -139,7 +135,7 @@ class SBMotion : public SkMotion
 		SBAPI SBMotion* duplicateCycle(int num, std::string name);
 
 		SBAPI SBMotion* mirror(std::string name, std::string skeletonName);
-		SBAPI SBMotion* mirror2(std::string name, std::string skeletonName, std::vector<std::string> from, std::vector<std::string> to);
+		SBAPI SBMotion* mirror2(const std::string& name, std::string skeletonName, std::vector<std::string> from, std::vector<std::string> to);
 		SBAPI SBMotion* mirrorChildren(std::string name, std::string skeletonName, std::string parentJointName);
 		SBAPI SBMotion* smoothCycle(std::string name, float timeInterval);
 
@@ -189,7 +185,7 @@ class SBMotion : public SkMotion
 								   int speedWindow, bool isPrintDebugInfo = false);
 
 		SBAPI bool autoFootPlantDetection(SBSkeleton* srcSk, std::vector<std::string>& footJoints, float floorHeight, float heightThreshold, float speedThreshold, std::vector<FootStepRecord>& footStepRecords);		
-		SBAPI SBMotion* autoFootSkateCleanUp(std::string name, std::string srcSkeletonName, std::string rootName, std::vector<FootStepRecord>& footStepRecords);
+		SBAPI SBMotion* autoFootSkateCleanUp(const std::string& name, const std::string& srcSkeletonName, const std::string& rootName, std::vector<FootStepRecord>& footStepRecords);
 		SBAPI SBMotion* buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* targetSk, SBMotion* targetMotion, std::vector<std::string>& endJoints, std::vector<std::string>& endJointRoots );
 
 		// API wrapper
@@ -265,7 +261,7 @@ class SBMotion : public SkMotion
 		std::string _motionSkeleton;
 		int alignIndex;
 		std::map<std::string, std::string> tagAttrMap; // store the tagged attributes in a map
-		std::map<std::string, std::unique_ptr<JointTrajectory>> trajMap;
+		std::map<std::string, JointTrajectory> trajMap;
 		
 		MotionType _motionType;
 		float _scale;

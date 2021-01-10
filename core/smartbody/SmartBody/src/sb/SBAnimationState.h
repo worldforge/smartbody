@@ -102,7 +102,7 @@ class SBAnimationBlend : public PABlend
 		// added by David Huang, June 2012 */
 		SBAPI void createMotionVectorFlow(const std::string& motionName, const std::string& chrName, float plotThreshold=0.45f,
 									unsigned int slidWinHalfSize=7, bool clearAll=false);
-		SBAPI std::vector<SrSnLines*>& getVectorFlowSrSnLines() { return vecflowLinesArray; }
+		SBAPI std::vector<boost::intrusive_ptr<SrSnLines>>& getVectorFlowSrSnLines() { return vecflowLinesArray; }
 		SBAPI void clearMotionVectorFlow();
 
 		/* plot motion frames (stick figures) and joint trajectory
@@ -112,7 +112,7 @@ class SBAnimationBlend : public PABlend
 		SBAPI void plotMotionFrameTime(const std::string& motionName, const std::string& chrName, float time, bool useRandomColor);
 		SBAPI void plotMotionJointTrajectory(const std::string& motionName, const std::string& chrName, const std::string& jointName,
 										float start_t=0.0f, float end_t=0.0f, bool useRandomColor=false);
-		SBAPI std::vector<SrSnLines*>& getPlotMotionSrSnLines() { return plotMotionLinesArray; }
+		SBAPI std::vector<boost::intrusive_ptr<SrSnLines>>& getPlotMotionSrSnLines() { return plotMotionLinesArray; }
 		SBAPI void clearPlotMotion();
 
 		SBAPI void setChrPlotMotionTransform(const std::string& chrName);
@@ -146,12 +146,12 @@ class SBAnimationBlend : public PABlend
 		std::vector<KeyTagMap> keyTagList;
 		SrMat plotMotionTransform;
 		SrMat plotVectorFlowTransform;
-		std::vector<SrSnShape<SrLines>*> vecflowLinesArray;
+		std::vector<boost::intrusive_ptr<SrSnShape<SrLines>>> vecflowLinesArray;
 		// put a list of joint global positions into array
 		void getJointsGPosFromSkel(SkSkeleton* sk, SrArray<SrVec>& pnts_array, const std::vector<std::unique_ptr<SkJoint>>& jnt_list);
 		// find maximum vector norm (vector are connected between jnt global positions in consecutive frame pairs)
 		float getVectorMaxNorm(SrArray<SrArray<SrVec>*>& pnts_arr);
-		std::vector<SrSnLines*> plotMotionLinesArray; // plotMotion()
+		std::vector<boost::intrusive_ptr<SrSnLines>> plotMotionLinesArray; // plotMotion()
 		std::vector<SkJoint*> plot_excld_list;
 		// create a list for joint exclusion when plotting motion and vector flow (hard coded to exclude fingers, eye, etc)
 		void createJointExclusionArray(const std::vector<std::unique_ptr<SkJoint>>& orig_list);

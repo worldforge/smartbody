@@ -5530,10 +5530,10 @@ void FltkViewer::drawMotionVectorFlow()
 	SrMat mat = animBlend->getPlotVectorFlowTransform();
 	glMultMatrixf((const float*) mat);
 
-	std::vector<SrSnLines*>& vecflow_lines = animBlend->getVectorFlowSrSnLines();
+	auto& vecflow_lines = animBlend->getVectorFlowSrSnLines();
 	for(auto & vecflow_line : vecflow_lines)
 	{
-		SrSnShapeBase* sp = dynamic_cast<SrSnShapeBase*>(vecflow_line);
+		SrSnShapeBase* sp = dynamic_cast<SrSnShapeBase*>(vecflow_line.get());
 		SrGlRenderFuncs::render_lines(sp);
 	}
 	glPopMatrix();
@@ -5550,10 +5550,10 @@ void FltkViewer::drawPlotMotion()
 	SrMat mat = animBlend->getPlotMotionTransform();
 	glMultMatrixf((const float*) mat);
 
-	std::vector<SrSnLines*>& plotmotion_lines = animBlend->getPlotMotionSrSnLines();
+	auto& plotmotion_lines = animBlend->getPlotMotionSrSnLines();
 	for(auto & plotmotion_line : plotmotion_lines)
 	{
-		SrSnShapeBase* sp = dynamic_cast<SrSnShapeBase*>(plotmotion_line);
+		SrSnShapeBase* sp = dynamic_cast<SrSnShapeBase*>(plotmotion_line.get());
 		SrGlRenderFuncs::render_lines(sp);
 	}
 	glPopMatrix();

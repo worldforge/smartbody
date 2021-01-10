@@ -85,7 +85,6 @@ class SBJointMap : public SBObject
 
 		std::vector<std::string> _mappedMotions;
 		std::vector<std::string> _mappedSkeletons;
-		std::string emptyString;
 
 	protected:
 

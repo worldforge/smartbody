@@ -36,10 +36,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBJointMap::SBJointMap()
-{
-	emptyString = "";
-}
+SBJointMap::SBJointMap() = default;
 
 SBJointMap::~SBJointMap() = default;
 
@@ -81,7 +78,7 @@ void SBJointMap::applyMotionRecurse(const std::string& directory)
 #else
 	std::string rootDir = path.root_directory();
 #endif
-	if (rootDir.size() == 0)
+	if (rootDir.empty())
 	{	
 		finalPath = operator/(mediaPath, path);
 	}
@@ -328,7 +325,7 @@ void SBJointMap::setMapping(const std::string& from, const std::string& to)
 	if (iter != _sourceMap.end())
 	{
 		(*iter).second = to;
-		std::map<std::string, std::string>::iterator iter2 = _targetMap.find(to);
+		auto iter2 = _targetMap.find(to);
 		if (iter2 != _targetMap.end())
 		{
 			(*iter2).second = from;
@@ -380,13 +377,13 @@ void SBJointMap::clearMapping()
 void SBJointMap::removeMapping(const std::string& from)
 {
 #ifdef USE_TWO_MAPS
-	std::map<std::string, std::string>::iterator iter = _sourceMap.find(from);
+	auto iter = _sourceMap.find(from);
 	if (iter != _sourceMap.end())
 	{
 		std::string to = (*iter).second;
 		_sourceMap.erase(iter);
 
-		std::map<std::string, std::string>::iterator iter2 = _targetMap.find(to);
+		auto iter2 = _targetMap.find(to);
 		if (iter2 != _targetMap.end())
 		{
 			_targetMap.erase(iter2);
@@ -420,13 +417,13 @@ void SBJointMap::removeMapping(const std::string& from)
 void SBJointMap::removeMappingTo( const std::string& to )
 {
 #ifdef USE_TWO_MAPS
-	std::map<std::string, std::string>::iterator iter = _targetMap.find(to);
+	auto iter = _targetMap.find(to);
 	if (iter != _targetMap.end())
 	{
 		std::string from = (*iter).second;
 		_targetMap.erase(iter);
 
-		std::map<std::string, std::string>::iterator iter2 = _sourceMap.find(from);
+		auto iter2 = _sourceMap.find(from);
 		if (iter2 != _sourceMap.end())
 		{
 			_sourceMap.erase(iter2);
@@ -459,7 +456,7 @@ void SBJointMap::removeMappingTo( const std::string& to )
 const std::string& SBJointMap::getMapSource(const std::string& to)
 {
 #ifdef USE_TWO_MAPS
-	std::map<std::string, std::string>::iterator iter = _targetMap.find(to);
+	auto iter = _targetMap.find(to);
 	if (iter != _targetMap.end())
 	{
 		return (*iter).second;
@@ -484,13 +481,14 @@ const std::string& SBJointMap::getMapSource(const std::string& to)
 	}	
 #endif
 #endif
+	static std::string emptyString;
 	return emptyString;
 }
 
 const std::string& SBJointMap::getMapTarget(const std::string& from)
 {
 #ifdef USE_TWO_MAPS
-	std::map<std::string, std::string>::iterator iter = _sourceMap.find(from);
+	auto iter = _sourceMap.find(from);
 	if (iter != _sourceMap.end())
 	{
 		return (*iter).second;
@@ -515,6 +513,7 @@ const std::string& SBJointMap::getMapTarget(const std::string& from)
 	}	
 #endif
 #endif
+	static std::string emptyString;
 	return emptyString;
 }
 
@@ -531,18 +530,14 @@ int SBJointMap::getNumMappings()
 #endif
 }
 
-const std::string& SBJointMap::getTarget(int num)
-{
+const std::string& SBJointMap::getTarget(int num) {
 #ifdef USE_TWO_MAPS
-	  int count = 0;
-  for (std::map<std::string, std::string>::iterator iter = _sourceMap.begin();
-        iter != _sourceMap.end();
-        iter++)
-  {
-    if (count == num)
-    return (*iter).second;
-    count++;
-  }
+	int count = 0;
+	for (auto& iter : _sourceMap) {
+		if (count == num)
+			return iter.second;
+		count++;
+	}
 #else
 #if USE_STL_MAP
 	_map = getMappingList();
@@ -552,6 +547,7 @@ const std::string& SBJointMap::getTarget(int num)
 		return _map[num].second;
 	}
 #endif
+	static std::string emptyString;
 	return emptyString;
 }
 
@@ -559,12 +555,10 @@ const std::string& SBJointMap::getSource(int num)
 {
 #ifdef USE_TWO_MAPS
 	int count = 0;
-	for (std::map<std::string, std::string>::iterator iter = _sourceMap.begin();
-		 iter != _sourceMap.end();
-		 iter++)
+	for (auto & iter : _sourceMap)
 	{
 		if (count == num)
-			return (*iter).first;
+			return iter.first;
 		count++;
 	}
 	
@@ -577,6 +571,7 @@ const std::string& SBJointMap::getSource(int num)
 		return _map[num].first;
 	}
 #endif
+	static std::string emptyString;
 	return emptyString;
 }
 
@@ -628,26 +623,26 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 	SkJoint *eyeball_left=nullptr,		*eyeball_right=nullptr;
 	SkJoint *l_acromioclavicular=nullptr,	*r_acromioclavicular=nullptr; // shoulder
 	SkJoint *l_shoulder=nullptr,	*r_shoulder=nullptr; // uparm
-	SkJoint *l_elbow=nullptr,		*r_elbow=0;
-	SkJoint *l_forearm=nullptr,	*r_forearm=0; // forearm twist/roll
-	SkJoint *l_wrist=0,		*r_wrist=nullptr;
-	SkJoint *l_hip=nullptr,		*r_hip=0; // upleg
-	SkJoint *l_knee=nullptr,		*r_knee=0;
-	SkJoint *l_ankle=0,		*r_ankle=0;
-	SkJoint *l_forefoot=0,	*r_forefoot=0; // toebase
-	SkJoint *l_toe=0,		*r_toe=0; // toe
+	SkJoint *l_elbow=nullptr,		*r_elbow=nullptr;
+	SkJoint *l_forearm=nullptr,	*r_forearm=nullptr; // forearm twist/roll
+	SkJoint *l_wrist=nullptr,		*r_wrist=nullptr;
+	SkJoint *l_hip=nullptr,		*r_hip=nullptr; // upleg
+	SkJoint *l_knee=nullptr,		*r_knee=nullptr;
+	SkJoint *l_ankle=nullptr,		*r_ankle=nullptr;
+	SkJoint *l_forefoot=nullptr,	*r_forefoot=nullptr; // toebase
+	SkJoint *l_toe=nullptr,		*r_toe=nullptr; // toe
 
-	SkJoint *l_thumb1=0,*l_thumb2=0, *l_thumb3=0, *l_thumb4=0;
-	SkJoint *l_index1=0, *l_index2=0, *l_index3=0, *l_index4=0;
-	SkJoint *l_middle1=0, *l_middle2=0, *l_middle3=0, *l_middle4=0;
-	SkJoint *l_ring1=0,	*l_ring2=0, *l_ring3=0, *l_ring4=0;
-	SkJoint *l_pinky1=0, *l_pinky2=0, *l_pinky3=0, *l_pinky4=0;
+	SkJoint *l_thumb1=nullptr,*l_thumb2=nullptr, *l_thumb3=nullptr, *l_thumb4=nullptr;
+	SkJoint *l_index1=nullptr, *l_index2=nullptr, *l_index3=nullptr, *l_index4=nullptr;
+	SkJoint *l_middle1=nullptr, *l_middle2=nullptr, *l_middle3=nullptr, *l_middle4=nullptr;
+	SkJoint *l_ring1=nullptr,	*l_ring2=nullptr, *l_ring3=nullptr, *l_ring4=nullptr;
+	SkJoint *l_pinky1=nullptr, *l_pinky2=nullptr, *l_pinky3=nullptr, *l_pinky4=nullptr;
 
-	SkJoint *r_thumb1=0, *r_thumb2=0, *r_thumb3=0, *r_thumb4=0;
-	SkJoint *r_index1=0, *r_index2=0, *r_index3=0, *r_index4=0;
-	SkJoint *r_middle1=0, *r_middle2=0, *r_middle3=0, *r_middle4=0;
-	SkJoint *r_ring1=0, *r_ring2=0, *r_ring3=0, *r_ring4=0;
-	SkJoint *r_pinky1=0, *r_pinky2=0, *r_pinky3=0, *r_pinky4=0;
+	SkJoint *r_thumb1=nullptr, *r_thumb2=nullptr, *r_thumb3=nullptr, *r_thumb4=nullptr;
+	SkJoint *r_index1=nullptr, *r_index2=nullptr, *r_index3=nullptr, *r_index4=nullptr;
+	SkJoint *r_middle1=nullptr, *r_middle2=nullptr, *r_middle3=nullptr, *r_middle4=nullptr;
+	SkJoint *r_ring1=nullptr, *r_ring2=nullptr, *r_ring3=nullptr, *r_ring4=nullptr;
+	SkJoint *r_pinky1=nullptr, *r_pinky2=nullptr, *r_pinky3=nullptr, *r_pinky4=nullptr;
 
 
 	auto& jnts = skeleton->joints();
@@ -934,7 +929,7 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 	if(spine4 && spine4->num_children()>0)
 	{
 		std::vector<SkJoint*> j_list;
-		for (unsigned int i=0;i< (size_t) spine4->num_children();i++)
+		for (size_t i=0;i< (size_t) spine4->num_children();i++)
 		{
 			SkJoint* j = spine4->child(i);
 			SrString jname(j->jointName().c_str());
@@ -947,17 +942,16 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 		if (spine5)
 			setJointMap("spine5",spine5, prtMap);
 		listChildrenJoints(spine4, j_list);
-		for(unsigned int i=0; i<j_list.size(); i++)
+		for(auto j : j_list)
 		{
-			SkJoint* j = j_list[i];
-			SrString jname(j->jointName().c_str());
+				SrString jname(j->jointName().c_str());
 			if(jname.search("head")>=0||jname.search("skull")>=0)
 			{
 				skullbase = j;
 				break;
 			}
 		}
-		if(skullbase==0 && j_list.size()>2) // for skel w/ many facial bones
+		if(skullbase==nullptr && j_list.size()>2) // for skel w/ many facial bones
 		{ // try parent of the joint with largest offset
 			SkJoint* ja = j_list[1];
 			float offset_len = ja->offset().norm();
@@ -971,7 +965,7 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 				}
 			}
 		}
-		else if(skullbase==0) // should never reach here
+		else if(skullbase==nullptr) // should never reach here
 		{
 			skullbase = getDeepestLevelJoint(j_list);
 			if(skullbase)
@@ -984,12 +978,11 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 		setJointMap("skullbase", skullbase, prtMap);
 
 		// try find eye joints.
-		SkJoint* j1 = 0;
-		SkJoint* j2 = 0;
-		for(unsigned int i=0; i<j_list.size(); i++)
+		SkJoint* j1 = nullptr;
+		SkJoint* j2 = nullptr;
+		for(auto j : j_list)
 		{
-			SkJoint* j = j_list[i];
-			SrString jname(j->jointName().c_str());
+				SrString jname(j->jointName().c_str());
 			if(!j1 && jname.search("eye")>=0)
 			{
 				if(jname.search("lid")>=0||jname.search("brow")>=0||jname.search("lash")>=0) continue;
@@ -1015,10 +1008,10 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 	//-------------------------------------------------------------------------
 	// CONTINUE with left/right shoulders, try finding hand/hand_end
 	{
-		SkJoint* j1 = 0;
-		SkJoint* j2 = 0;
-		SkJoint* ja = 0;
-		SkJoint* jb = 0;
+		SkJoint* j1 = nullptr;
+		SkJoint* j2 = nullptr;
+		SkJoint* ja = nullptr;
+		SkJoint* jb = nullptr;
 
 		std::vector<SkJoint*> j_listL, j_listR;
 		listChildrenJoints(l_acromioclavicular, j_listL); listChildrenJoints(r_acromioclavicular, j_listR);
@@ -1122,7 +1115,7 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 					r_shoulder = r_acromioclavicular;
 					setJointMap("l_shoulder", l_shoulder, prtMap);
 					setJointMap("r_shoulder", r_shoulder, prtMap);
-					l_acromioclavicular = 0; r_acromioclavicular = 0; // don't use AC_shoulder anymore
+					l_acromioclavicular = nullptr; r_acromioclavicular = nullptr; // don't use AC_shoulder anymore
 
 					SmartBody::util::log("guessMap: Might have two arm twist/roll joints.\n");
 				}
@@ -1222,7 +1215,7 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 					r_shoulder = r_acromioclavicular;
 					setJointMap("l_shoulder", l_shoulder, prtMap);
 					setJointMap("r_shoulder", r_shoulder, prtMap);
-					l_acromioclavicular = 0; r_acromioclavicular = 0; // don't use AC_shoulder anymore
+					l_acromioclavicular = nullptr; r_acromioclavicular = nullptr; // don't use AC_shoulder anymore
 
 					SmartBody::util::log("guessMap: Might have two arm twist/roll joints.\n");
 				}
@@ -1275,10 +1268,10 @@ bool SBJointMap::guessMapping(SmartBody::SBSkeleton* skeleton, bool prtMap)
 	//-------------------------------------------------------------------------
 	// CONTINUE with left/right uplegs, try finding foot/toe_end
 	{
-		SkJoint* j1 = 0;
-		SkJoint* j2 = 0;
-		SkJoint* ja = 0;
-		SkJoint* jb = 0;
+		SkJoint* j1 = nullptr;
+		SkJoint* j2 = nullptr;
+		SkJoint* ja = nullptr;
+		SkJoint* jb = nullptr;
 		std::vector<SkJoint*> j_listL, j_listR;
 		listChildrenJoints(l_hip, j_listL); listChildrenJoints(r_hip, j_listR);
 		//for(unsigned int i=getJointIndex(l_hip), j=getJointIndex(r_hip); i<jnts.size()&&j<jnts.size(); i++,j++)
@@ -1622,7 +1615,7 @@ int SBJointMap::getJointIndex(SkJoint* j)
 	if(sk==nullptr)
 		return -1; // not found
 
-	for(unsigned int i=0; i<sk->joints().size(); i++)
+	for(size_t i=0; i<sk->joints().size(); i++)
 	{
 		if(sk->joints()[i].get()==j) // found
 		{
@@ -1639,7 +1632,7 @@ int SBJointMap::getJointHierarchyLevel(SkJoint* j, SkJoint* j_top)
 	if(!j)
 		return -1;
 
-	if(j_top==0)
+	if(j_top==nullptr)
 		j_top = j->skeleton()->root();
 
 	int level = 0;
@@ -1759,7 +1752,7 @@ SkJoint* SBJointMap::getDeepestLevelJoint(const std::vector<SkJoint*>& j_list)
 
 void SBJointMap::setJointMap(const std::string& SB_jnt, SkJoint* j, bool prtMap)
 {
-	if(j==0)
+	if(j==nullptr)
 	{
 		SmartBody::util::log("WARNING! guessMap::setJointMap() joint not found! %s \n", SB_jnt.c_str());
 		return;
@@ -1776,7 +1769,7 @@ void SBJointMap::setJointMap(const std::string& SB_jnt, SkJoint* j, bool prtMap)
 	}
 
 
-	setMapping(j->jointName().c_str(), SB_jnt); // set the mapping here
+	setMapping(j->jointName(), SB_jnt); // set the mapping here
 
 	if(prtMap)
 	{

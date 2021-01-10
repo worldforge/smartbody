@@ -267,30 +267,27 @@ SkJoint* SkSkeleton::search_joint ( const char* n )
 	if (_extJointMap.empty() &&
 		!_joints.empty())
 	{
-		int jointSize = _joints.size();
-		for (int i = 0; i < jointSize; i++)
+		for (auto& joint : _joints)
 		{
-			_extJointMap.emplace(_joints[i]->extName(), _joints[i].get());
+			_extJointMap.emplace(joint->extName(), joint.get());
 		}
 	}
 
 	if (_extIDJointMap.empty() &&
 		!_joints.empty())
 	{
-		int jointSize = _joints.size();
-		for (int i = 0; i < jointSize; i++)
+		for (auto& joint : _joints)
 		{
-			_extIDJointMap.emplace(_joints[i]->extID(), _joints[i].get());
+			_extIDJointMap.emplace(joint->extID(), joint.get());
 		}
 	}
 
 	if (_extSIDJointMap.empty() &&
 		!_joints.empty())
 	{
-		int jointSize = _joints.size();
-		for (int i = 0; i < jointSize; i++)
+		for (auto& joint : _joints)
 		{
-			_extSIDJointMap.emplace(_joints[i]->extSID(), _joints[i].get());
+			_extSIDJointMap.emplace(joint->extSID(), joint.get());
 		}
 	}
 
@@ -498,28 +495,31 @@ void SkSkeleton::updateJointMap()
 	_jointMap.clear();
 	//SmartBody::util::log("After cleanup jointMap");
 	int jointSize = _joints.size();	
-	SmartBody::SBJointMap* jointMap = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMap(getJointMapName());	
+	SmartBody::SBJointMap* jointMap = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMap(getJointMapName());
 	for (int i = 0; i < jointSize; i++)
 	{
-		std::string jname = _joints[i]->jointName();
-		_joints[i]->updateMappedJointName();
+		auto& joint = _joints[i];
+		auto jname = joint->jointName();
+
 		if (jointMap)
 		{			
-			const std::string& mappedName = jointMap->getMapTarget(jname);	
+			const std::string& mappedName = jointMap->getMapTarget(jname);
 
 			//SmartBody::util::log("Has JointMap, origName = %s, mappedName = %s", jname.c_str(), mappedName.c_str());
 
-			if (!mappedName.empty())
+			if (!mappedName.empty()) {
 				jname = mappedName;
+			}
 			//SmartBody::util::log("After mapped name, jname = %s", jname.c_str());
 		}
+		joint->_sbName = jname;
 		//SmartBody::util::log("Before search jname = %s", jname.c_str());
-		auto iter = _jointMap.find(jname);
+		auto iter = _jointMap.find(joint->getMappedJointName());
 		//SmartBody::util::log("After search jname = %s", jname.c_str());
 		//if (iter != _jointMap.end())
 		//	SmartBody::util::log("Found duplicate joint name %s", jname.c_str());
 		//SmartBody::util::log("Insert joint name %s, _joint[%d] = %s", jname.c_str(), i, _joints[i]->getName().c_str());
-		_jointMap.emplace(jname, _joints[i].get());
+		_jointMap.emplace(joint->getMappedJointName(), _joints[i].get());
 
 	}
 	//nSmartBody::util::log("Done update Joint Map : %s", getJointMapName().c_str());

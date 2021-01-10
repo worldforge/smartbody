@@ -583,7 +583,7 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 	// plot vector flow
 	for(int i=1; i<mo->frames()-1; i++)
 	{
-		SrSnLines* l = new SrSnLines; l->ref();
+		SrSnLines* l = new SrSnLines;
 		l->resolution(VFLOW_LINE_WIDTH); // change vector flow lines thickness
 		vecflowLinesArray.emplace_back(l);
 		SrLines& line = l->shape();
@@ -623,24 +623,21 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 
 void SBAnimationBlend::clearMotionVectorFlow()
 {
-	// clear vector flow lines
-	for(auto & i : vecflowLinesArray)
-		i->unref();
-	vecflowLinesArray.resize(0);
+	vecflowLinesArray.clear();
 }
 
 void SBAnimationBlend::plotMotion(const std::string& motionName, const std::string& chrName, unsigned int interval,
 								   bool clearAll, bool useRandomColor)
 {
 	SkMotion* mo = SBAnimationBlend::getSkMotion(motionName);
-	if(mo==0) return;
+	if(mo==nullptr) return;
 	if(mo->frames()<3)
 	{
 		SmartBody::util::log("plotMotion(): motion does not have enough frames, aborting...");
 		return;
 	}
 	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
-	if(sk==0)
+	if(sk==nullptr)
 	{
 		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 		SBCharacter* sbSk = scene->getCharacter(chrName);
@@ -687,7 +684,7 @@ void SBAnimationBlend::plotMotion(const std::string& motionName, const std::stri
 		sk->invalidate_global_matrices();
 		sk->update_global_matrices();
 
-		SrSnLines* l = new SrSnLines; l->ref();
+		auto* l = new SrSnLines;
 		plotMotionLinesArray.emplace_back(l);
 		SrLines& line = l->shape();
 
@@ -746,7 +743,7 @@ void SBAnimationBlend::plotMotionFrameTime(const std::string& motionName, const 
 	//sk->invalidate_global_matrices();
 	sk->update_global_matrices();
 
-	SrSnLines* l = new SrSnLines; l->ref();
+	SrSnLines* l = new SrSnLines;
 	plotMotionLinesArray.emplace_back(l);
 	SrLines& line = l->shape();
 	line.init();
@@ -826,7 +823,7 @@ void SBAnimationBlend::plotMotionJointTrajectory(const std::string& motionName, 
 		hue += 0.1f;
 		if(hue>1.0f) hue = 0.0f;
 	}
-	SrSnLines* l = new SrSnLines; l->ref();
+	SrSnLines* l = new SrSnLines;
 	plotMotionLinesArray.emplace_back(l);
 	SrLines& line = l->shape();
 	line.init();
@@ -848,9 +845,7 @@ void SBAnimationBlend::plotMotionJointTrajectory(const std::string& motionName, 
 
 void SBAnimationBlend::clearPlotMotion()
 {
-	for(unsigned int i=0; i<plotMotionLinesArray.size(); i++)
-		plotMotionLinesArray[i]->unref();
-	plotMotionLinesArray.resize(0);
+	plotMotionLinesArray.clear();
 }
 
 void SBAnimationBlend::setChrPlotMotionTransform(const std::string& chrName)
@@ -1651,7 +1646,7 @@ SBMotion* SBAnimationBlend1D::createMotionFromBlend(SrVec parameters, SBCharacte
 
 	double blendedMotionLength = (1.0 - amount) * motion1->getDuration() +  amount * motion2->getDuration();
 
-	SBMotion* motion = new SBMotion();
+	auto* motion = new SBMotion();
 	motion->setName(motionName);
 	
 	SkChannelArray channelArray;

@@ -133,7 +133,7 @@ public:
 
 	/*! traverse hierarchy */
 	SkJoint* parent() const { return _parent; }
-	SkJoint* child ( int i ) const { return _children[i]; }
+	SkJoint* child ( size_t i ) const { return _children[i]; }
 	size_t num_children () const { return _children.size(); }
 
 	/* Recursively get all the child joint of current joint */
@@ -143,8 +143,7 @@ public:
 	void name ( const std::string& jn ) { _name=jn; }
 	SBAPI const std::string& jointName () const;
 
-	SBAPI std::string getMappedJointName();
-	void updateMappedJointName();
+	SBAPI const std::string& getMappedJointName() const;
 
 	/*! Set the name of this joint */
 	void extName ( const std::string& jn ) { _extName=jn; }
