@@ -34,12 +34,12 @@ class SBAPI SrSharedClass
    protected :
 
     /*! Constructor initializes the reference counter as 0 */
-    SrSharedClass () { _ref=0; };
+    SrSharedClass () :_ref(0) {  };
 
     /*! Destructor in derived classes should always be declared as
         protected in order to oblige users to call always unref(),
         instead of delete */
-    virtual ~SrSharedClass() {};
+    virtual ~SrSharedClass() = default;;
 
    public :
 #if USE_SHARE_PTR

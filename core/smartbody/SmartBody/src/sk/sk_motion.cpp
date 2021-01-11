@@ -19,10 +19,9 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-# include <math.h>
-# include <stdlib.h>
-# include <string.h>
-#include <iostream>
+# include <cmath>
+# include <cstdlib>
+# include <cstring>
 #include <queue>
 
 # include <sk/sk_motion.h>
@@ -63,27 +62,16 @@ SkMotion::~SkMotion()
  {
    init ();
 
-   for (size_t f = 0; f < _frames.size(); f++ )
-   {
-      //free( _frames[f].posture );
-	   delete [] _frames[f].posture;
-      _frames[f].posture = nullptr;
-   }
-
-   for (size_t x = 0; x < _motionEvents.size(); x++)
-	   delete _motionEvents[x];
+   for (auto & _motionEvent : _motionEvents)
+	   delete _motionEvent;
  }
 
 void SkMotion::init()
  {
-   _skeleton = 0;
-   _floatbuffer = 0;
+   _skeleton = nullptr;
+   _floatbuffer = nullptr;
    _postsize = 0;
 
-   for (size_t x = 0; x < _frames.size(); x++)
-   {
-	   free ( _frames[x].posture );
-   }
 	_frames.clear();
 
    _channels.init();
@@ -133,13 +121,11 @@ bool SkMotion::insert_channel ( int pos, const char* name, SkChannel::Type type,
    // add position in all frames:
    int ins = SkChannel::size(type);
    int size;
-   for (size_t f=0; f<_frames.size(); f++ )
-    { size = _postsize; // we need to save size here as buffer_insert will update it
-      _frames[f].posture =
-       (float*) sr_buffer_insert ( _frames[f].posture, sizeof(float), size, pos, ins );
-      for (int i=0; i<ins; i++ )
-       _frames[f].posture[pos+i] = values[i];
-    }
+	 for (auto& _frame : _frames) {
+		 size = _postsize; // we need to save size here as buffer_insert will update it
+		 auto insertionIterator = _frame.posture.begin() + pos;
+		 _frame.posture.insert(insertionIterator, values, values + ins);
+	 }
 
    _postsize+=ins;
 
@@ -156,7 +142,7 @@ bool SkMotion::insert_frame ( int pos, float kt )
    }
    else
    {
-	   for (std::vector<Frame>::iterator iter = _frames.begin();
+	   for (auto iter = _frames.begin();
 		   iter != _frames.end();
 		   iter++)
 	   {
@@ -169,20 +155,20 @@ bool SkMotion::insert_frame ( int pos, float kt )
    }
   
    _frames[pos].keytime = kt;
-   _frames[pos].posture = (float*) malloc ( sizeof(float)*_postsize );
+   _frames[pos].posture.resize(_postsize);
    return true;
  }
 
 int SkMotion::connect ( SkSkeleton* s )
  {
    _skeleton = s;
-   _floatbuffer = 0;
+   _floatbuffer = nullptr;
    return _channels.connect(s);
  }
 
 void SkMotion::connect ( float* buffer )
  {
-   _skeleton = 0;
+   _skeleton = nullptr;
    _floatbuffer = buffer;
  }
 
@@ -202,7 +188,7 @@ void SkMotion::getChannelValueAtFrame( int f, int index, float* val )
 	
 	int i = _frames.size()-1;
 	f = SR_BOUND(f,0,i);
-	float* fp = _frames[f].posture;
+	float* fp = _frames[f].posture.data();
 	
 	SkChannel& chan = _channels[index];
 	int fidx = _channels.float_position(index);
@@ -217,7 +203,7 @@ void SkMotion::apply_frame ( int f, float* buffer, SrBuffer<int>* map_p, bool is
 	int i = _frames.size()-1;
 	f = SR_BOUND(f,0,i);
 
-	float* fp = _frames[f].posture;
+	float* fp = _frames[f].posture.data();
 
 	if ( buffer ) {
 		if( map_p ) {
@@ -358,8 +344,8 @@ void SkMotion::applyNew ( float t,
 	if ( lastframe )
 		*lastframe = _last_apply_frame;
 
-	float* fp1 = _frames[f].posture;
-	float* fp2 = _frames[f+1].posture;
+	float* fp1 = _frames[f].posture.data();
+	float* fp2 = _frames[f+1].posture.data();
 
 	// convert t to [0,1] according to the keytimes:
 	t = (t-_frames[f].keytime) / (_frames[f+1].keytime-_frames[f].keytime);
@@ -515,7 +501,7 @@ void SkMotion::apply ( float t,
 	SkMotion::InterpType itype, int* lastframe, bool isAdditive, SmartBody::SBRetarget* retarget )
 {
 	// new version of apply skMotion
-	int fsize=_frames.size();
+	size_t fsize=_frames.size();
 	if ( fsize<=0 )
 		return;
 	if ( t!= 0.f && t<=_frames[0].keytime )	{
@@ -566,8 +552,8 @@ void SkMotion::apply ( float t,
 		*lastframe = _last_apply_frame;
 	int nxtFrame = _frames.size() > 1 ? f+1 : f;
 
-	float* fp1 = _frames[f].posture;
-	float* fp2 = _frames[nxtFrame].posture;
+	float* fp1 = _frames[f].posture.data();
+	float* fp2 = _frames[nxtFrame].posture.data();
 	// convert t to [0,1] according to the keytimes:
 	t = _frames.size() > 1 ? (t-_frames[f].keytime) / (_frames[f+1].keytime-_frames[f].keytime) : 0.f;
 
@@ -720,12 +706,11 @@ SkMotion::InterpType SkMotion::interp_type_name ( const char* type ) {
    return Linear;
  }
 
-void SkMotion::operator = ( const SkMotion& m )
+SkMotion& SkMotion::operator = ( const SkMotion& m )
  {
    disconnect();
    init();
-   SkMotion& m2 = const_cast<SkMotion&>(m);
-   const std::string& fromName = m2.getName();
+   auto& fromName = m.getName();
    setName(fromName);
 
    int i;
@@ -734,24 +719,19 @@ void SkMotion::operator = ( const SkMotion& m )
    _floatbuffer = m._floatbuffer;
    _channels = m._channels;
 
-   int fsize = m._frames.size();
-   _frames.resize( fsize );
-   _frames.clear();
-   for ( i=0; i<fsize; i++ )
-    { insert_frame ( i, m._frames[i].keytime );
-      sr_buffer_copy ( _frames[i].posture, sizeof(float), _postsize, m._frames[i].posture, _postsize );
-    }
+   _frames = m._frames;
+   return *this;
  }
 
 void SkMotion::move_keytimes ( float startkt )
  {
-    if ( _frames.size()==0 ) return;
+    if ( _frames.empty() ) return;
    
    float diff = _frames[0].keytime-startkt;
    if ( diff==0 ) return;
 
-   for (size_t i=0; i<_frames.size(); i++ )
-    { _frames[i].keytime -= diff;
+   for (auto & _frame : _frames)
+    { _frame.keytime -= diff;
     }
  }
 
@@ -798,13 +778,13 @@ void SkMotion::change_channel_values ( int f1, int f2, int channel, float mfacto
    int fp = _channels.float_position ( channel );
    int f;
    for ( f=f1; f<=f2; f++ )
-    { ch.change_values ( _frames[f].posture+fp, mfactor, offset );
+    { ch.change_values ( _frames[f].posture.data()+fp, mfactor, offset );
     }
  }
 
 void SkMotion::registerAnimation()
 {
-	if (_frames.size() == 0)
+	if (_frames.empty())
 		return;
 
 	std::string jname("base");
@@ -829,10 +809,9 @@ void SkMotion::registerAnimation()
 
 	_frameOffset.clear();
 	_frameOrientation.clear();
-	for (size_t f = 0; f < _frames.size(); f++)
+	for (auto & frame : _frames)
 	{
-		SkMotion::Frame& frame = _frames[f];
-		_frameOffset.emplace_back(SrVec(frame.posture[xPos], frame.posture[yPos], frame.posture[zPos]));
+			_frameOffset.emplace_back(SrVec(frame.posture[xPos], frame.posture[yPos], frame.posture[zPos]));
 		_frameOrientation.emplace_back(SrQuat(frame.posture[qPos], frame.posture[qPos + 1], frame.posture[qPos + 2], frame.posture[qPos + 3]));
 
 		// remove the position and orientation from the motion
@@ -850,7 +829,7 @@ void SkMotion::registerAnimation()
 
 	void SkMotion::unregisterAnimation()
 	{
-		if (_frames.size() == 0)
+		if (_frames.empty())
 		return;
 
 	std::string jname("base");
@@ -893,7 +872,7 @@ void SkMotion::registerAnimation()
 	_isRegistered = false;
 	}
 
-	bool SkMotion::isRegistered()
+	bool SkMotion::isRegistered() const
 	{
 		return _isRegistered;
 	}
@@ -1791,26 +1770,7 @@ SkMotion* SkMotion::copyMotion()
 */
 std::vector<SkMotion::Frame> SkMotion::data_frames() const
 {
-	std::vector<SkMotion::Frame> frame_copy;
-	for (size_t i=0; i < _frames.size(); i++)
-	{
-		Frame frame = _frames[i];
-		Frame temp_frame;
-		temp_frame.keytime = frame.keytime;
-		temp_frame.posture = new float[posture_size()];
-		memcpy(temp_frame.posture,frame.posture,sizeof(float)*posture_size());
-		frame_copy.emplace_back(temp_frame);
-	}
-	return frame_copy;
-}
-
-/*
-	This function returns copy of the channels
-*/
-SkChannelArray& SkMotion::copy_channels() const
-{
-	SkChannelArray* temp_array = new SkChannelArray(_channels);
-	return *temp_array;
+	return _frames;
 }
 
 
@@ -1943,7 +1903,7 @@ SkMotion* SkMotion::buildPoststrokeHoldMotion(float holdTime, std::vector<std::s
 		newMotion->smoothAtFrame(strokeEndFrameId, 1, 5);
 		newMotion->smoothAtFrame(strokeEndFrameId + numHoldFrames, 1, 5);
 	}
-	else if (joints.size() > 0)	// joint specified, add perlin noise
+	else if (!joints.empty())	// joint specified, add perlin noise
 	{
 		newMotion->addPerlinNoise(joints, strokeEndFrameId, strokeEndFrameId + numHoldFrames, scale, freq);
 		//newMotion->smoothAtFrame(strokeEndFrameId, 3, 5);
@@ -2040,7 +2000,7 @@ void SkMotion::addPerlinNoise(std::vector<std::string>& affectedJoints, int star
 
 void SkMotion::smoothByMask(std::vector<int>& frameIds, std::vector<float>& mask)
 {
-	if (mask.size() == 0 || (mask.size() % 2) == 0)
+	if (mask.empty() || (mask.size() % 2) == 0)
 	{
 		SmartBody::util::log("SkMotion::smoothByMask Warning: mask size has to be odd number or non-zero.");
 		return;
@@ -2142,8 +2102,9 @@ SkMotion* SkMotion::buildMirrorMotion(SkSkeleton* skeleton, std::vector<std::str
 SkMotion* SkMotion::buildMirrorMotionJoints(SkSkeleton* skeleton, const std::map<std::string, bool>& jointNameMap, std::vector<std::string> from, std::vector<std::string> to)
 {
 	SkChannelArray& mchan_arr = this->channels();
-	SmartBody::SBMotion* originalMotion = dynamic_cast<SmartBody::SBMotion*>(this);
-	SmartBody::SBMotion *mirror_p = new SmartBody::SBMotion();
+	//TODO: move out of this class to avoid casting to a subclass
+	auto* originalMotion = dynamic_cast<SmartBody::SBMotion*>(this);
+	auto *mirror_p = new SmartBody::SBMotion();
 	mirror_p->setMotionSkeletonName(originalMotion->getMotionSkeletonName());
 	srSynchPoints sp(synch_points);
 	mirror_p->synch_points = sp;

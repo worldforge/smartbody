@@ -174,7 +174,7 @@ bool SBSerializer::readFromSkb(SBMotion& motion, const std::string& fileName)
 	}
 	for (int f = 0; f < inputMotion.numframes(); f++)
 	{
-		motion._frames[f].posture = (float*) malloc ( sizeof(float)*postureSize );
+		motion._frames[f].posture.resize(postureSize);
 		for (int p = 0; p < postureSize; p++)
 		{
 			motion._frames[f].posture[p] = inputMotion.keyvalues(f * postureSize + p);

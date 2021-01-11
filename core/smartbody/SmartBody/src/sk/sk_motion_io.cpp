@@ -19,10 +19,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-# include <stdlib.h>
+# include <cstdlib>
 # include <sk/sk_motion.h>
 #include <iostream>
-#include <sstream>
 #include <sb/SBMotion.h>
 #include <sb/SBJointMap.h>
 #include "SBUtilities.h"
@@ -94,9 +93,9 @@ bool SkMotion::_load_bvh ( SrInput& in ) {
    for ( f=0; f<frames; f++ )
     {
 		_frames.emplace_back(Frame());
-		int topFrame = _frames.size() - 1;
+		auto topFrame = _frames.size() - 1;
       _frames[topFrame].keytime = kt;
-      _frames[topFrame].posture = (float*) malloc ( sizeof(float)*_postsize );
+      _frames[topFrame].posture.resize(_postsize);
       kt += freq;
       for ( i=0; i<_postsize; i++ )
        { in.getn();
@@ -248,7 +247,7 @@ bool SkMotion::load ( SrInput& in, double scale ) {
 			break;
 		insert_frame ( f, in.last_token().atof() );
 		in.get_token(); // fr
-		pt = _frames[f].posture;
+		pt = _frames[f].posture.data();
 		for ( i=0; i<chsize; i++ ) {
 			pt += _channels[i].load ( in, pt, scale );
 		}
@@ -563,9 +562,9 @@ bool SkMotion::save ( SrOutput& out )
 	int chsize = _channels.size();
 	int chFloatSize = _channels.floats();
 	SmartBody::util::log("chsize = %d, chFloatSize = %d",chsize, chFloatSize);
-	for (size_t i=0; i<_frames.size(); i++ )
-	{ out << "kt " << _frames[i].keytime << " fr ";
-		pt = _frames[i].posture;
+	for (auto & _frame : _frames)
+	{ out << "kt " << _frame.keytime << " fr ";
+		pt = _frame.posture.data();
 		for (int j=0; j<chsize; j++ )
 		{ pt += _channels[j].save ( out, pt );
 			if ( j+1<chsize ) out<<srspc;

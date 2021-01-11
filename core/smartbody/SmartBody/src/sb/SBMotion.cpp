@@ -44,6 +44,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #pragma warning(pop)
 #endif
 #include <fstream>
+#include <utility>
 
 
 namespace SmartBody {
@@ -60,7 +61,7 @@ void FootStepRecord::updateJointAveragePosition( SBSkeleton* skel, SBMotion* mot
 	posVec.resize(jointNames.size());
 	for (auto & i : posVec) i = SrVec();
 
-	float frameRate = (float)motion->getFrameRate();
+	auto frameRate = (float)motion->getFrameRate();
 	motion->connect(skel);
 	//for (float t = startTime; t <= endTime; t += frameRate)
 	float t = startTime;
@@ -120,7 +121,7 @@ void SBMotion::setMotion(const SBMotion& motion)
 	_floatbuffer = motion.connected_buffer();
 	_filename = motion.filename();
 	_frames = motion.data_frames();
-	_channels = motion.copy_channels();
+	_channels = motion._channels;
 	_last_apply_frame = motion.last_apply_frame();
 	transformDepth = motion.getTransformDepth();
 	_motionFile = motion.getMotionFileName();
@@ -134,7 +135,7 @@ void SBMotion::setMotion(const SBMotion& motion)
 
 SBMotion::SBMotion(std::string file) : SkMotion()
 {
-	_motionFile = file;
+	_motionFile = std::move(file);
 	alignIndex = 0;
 	transformDepth = 0;
 	_motionType = Unknown;
@@ -277,7 +278,7 @@ void SBMotion::addFrame(float frameTime, const std::vector<float>& frameData)
 
 		_frames.resize(_frames.size() + 1);
 		_frames[frameSize].keytime = frameTime;
-		_frames[frameSize].posture = (float*) malloc ( sizeof(float)*postureSize );
+		_frames[frameSize].posture.resize(postureSize);
 		for (int p = 0; p < postureSize; p++)
 		{
 			_frames[frameSize].posture[p] = frameData[p];
@@ -941,7 +942,7 @@ SBMotion* SBMotion::removeChannels(std::string motionName, bool isTranslation, s
 	float* data = new float[ch2.count_floats()];
 	for (size_t f = 0; f < this->_frames.size(); f++)
 	{
-		float* curFrame = this->_frames[f].posture;
+		float* curFrame = this->_frames[f].posture.data();
 		int curPos = 0;
 		for (int c = 0; c < ch2.size(); c++)
 		{
@@ -2271,14 +2272,13 @@ bool SBMotion::trim(int numFramesFromFront, int numFramesFromBack)
 		Frame& srcFrame = _frames[idx];
 		Frame& tgtFrame = _frames[i];
 		// copy over the posture at that frame, but reserved the key time
-		memcpy(tgtFrame.posture,srcFrame.posture,sizeof(float)*posture_size());
+		tgtFrame.posture = srcFrame.posture;
 	}
 	// remove all frames from the back
-	for (int i=frames()-1; i>= newFrames; i--)
+	for (auto i=frames()-1; i>= newFrames; i--)
 	{
 		Frame& delFrame = _frames[i];
 		//free(delFrame.posture);
-		delete [] delFrame.posture;
 		_frames.pop_back();
 	}
 
@@ -3029,8 +3029,8 @@ SrQuat SBMotion::getChannelQuat( const std::string& channelName, float t )
 		frame2 = _frames.size()-1; 		
 	}
 	
-	float* fp1 = _frames[frame1].posture;
-	float* fp2 = _frames[frame2].posture;
+	float* fp1 = _frames[frame1].posture.data();
+	float* fp2 = _frames[frame2].posture.data();
 	float keyDuration = (frame1 != frame2) ? _frames[frame2].keytime - _frames[frame1].keytime : 1.f;
 	float interpWeight = (t - _frames[frame1].keytime)/keyDuration;
 
@@ -3064,8 +3064,8 @@ SrVec SBMotion::getChannelPos( const std::string& channelName, float t )
 		frame2 = _frames.size()-1; 		
 	}
 
-	float* fp1 = _frames[frame1].posture;
-	float* fp2 = _frames[frame2].posture;
+	float* fp1 = _frames[frame1].posture.data();
+	float* fp2 = _frames[frame2].posture.data();
 	float keyDuration = (frame1 != frame2) ? _frames[frame2].keytime - _frames[frame1].keytime : 1.f;
 	float interpWeight = (t - _frames[frame1].keytime)/keyDuration;
 
@@ -3105,7 +3105,7 @@ SrQuat SBMotion::getChannelQuatFrame(const std::string& channelName, int f)
 		return SrQuat();
 	}
 
-	float* p = _frames[f].posture;
+	float* p = _frames[f].posture.data();
 
 	return SrQuat(p[idx], p[idx + 1], p[idx + 2], p[idx + 3]);
 }
@@ -3132,7 +3132,7 @@ SrVec SBMotion::getChannelPosFrame(const std::string& channelName, int f)
 		return SrVec();
 	}
 
-	float* p = _frames[f].posture;
+	float* p = _frames[f].posture.data();
 
 	return SrVec(p[idx], p[idx + 1], p[idx + 2]);
 }
@@ -3192,7 +3192,7 @@ void SBMotion::setChannelQuatFrame(const std::string& channelName, int frame, Sr
 		return;
 	}
 
-	float* p = _frames[frame].posture;
+	float* p = _frames[frame].posture.data();
 	p[idx] = quat.w;
 	p[idx + 1] = quat.x;
 	p[idx + 2] = quat.y;
@@ -3221,7 +3221,7 @@ void SBMotion::setChannelPosFrame(const std::string& channelName, int frame, SrV
 		return;
 	}
 
-	float* p = _frames[frame].posture;
+	float* p = _frames[frame].posture.data();
 
 	p[idx] = vec.x;
 	p[idx + 1] = vec.y;
@@ -3263,7 +3263,7 @@ void SBMotion::setChannelMatFrame(const std::string& channelName, int frame, SrM
 		return;
 	}
 
-	float* p = _frames[frame].posture;
+	float* p = _frames[frame].posture.data();
 	p[floatIdxt] = mat[13];
 	p[floatIdxt + 1] = mat[14];
 	p[floatIdxt + 2] = mat[15];
@@ -3306,8 +3306,8 @@ void SBMotion::getAllChannelPos( const std::vector<std::string>& channeNames, fl
 		frame2 = _frames.size()-1; 		
 	}
 
-	float* fp1 = _frames[frame1].posture;
-	float* fp2 = _frames[frame2].posture;
+	float* fp1 = _frames[frame1].posture.data();
+	float* fp2 = _frames[frame2].posture.data();
 	float keyDuration = (frame1 != frame2) ? _frames[frame2].keytime - _frames[frame1].keytime : 1.f;
 	float interpWeight = (t - _frames[frame1].keytime)/keyDuration;
 
@@ -3342,8 +3342,8 @@ void SBMotion::getAllChannelQuat( const std::vector<std::string>& channeNames, f
 		frame2 = _frames.size()-1; 		
 	}
 
-	float* fp1 = _frames[frame1].posture;
-	float* fp2 = _frames[frame2].posture;
+	float* fp1 = _frames[frame1].posture.data();
+	float* fp2 = _frames[frame2].posture.data();
 	float keyDuration = (frame1 != frame2) ? _frames[frame2].keytime - _frames[frame1].keytime : 1.f;
 	float interpWeight = (t - _frames[frame1].keytime)/keyDuration;
 	for (unsigned int i=0;i<channeNames.size();i++)
@@ -3386,7 +3386,7 @@ SBAPI void SBMotion::unrollPrerotation( const std::string& skelName )
 	auto skel = SBScene::getScene()->getSkeleton(skelName);
 	for (auto & _frame : _frames)
 	{
-		float* fbuffer = _frame.posture;
+		float* fbuffer = _frame.posture.data();
 		for (int j=0;j<_channels.size();j++)
 		{
 			if (_channels[j].type == SkChannel::Quat)
@@ -3418,7 +3418,7 @@ SBAPI void SBMotion::addTemporalRotationOffset( const std::string& chanName, SrQ
 	int fidx = _channels.float_position(chanID);
 	for (size_t i=0;i<_frames.size();i++)
 	{
-		float* fbuffer = _frames[i].posture;
+		float* fbuffer = _frames[i].posture.data();
 		SrQuat chanQuat = SrQuat(fbuffer[fidx], fbuffer[fidx+1], fbuffer[fidx+2], fbuffer[fidx+3]);
 		SrQuat offsetQuat = slerp(startQuat,endQuat, ratio*(i+1));
 		SrQuat newQuat = chanQuat*offsetQuat;

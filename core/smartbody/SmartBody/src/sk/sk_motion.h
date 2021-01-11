@@ -45,7 +45,7 @@ class SkMotion : public SmartBody::SBAsset
 public:
 	struct Frame { 
 			float keytime; 
-			float* posture; 
+			std::vector<float> posture;
 	};
 
 	protected :
@@ -136,7 +136,7 @@ public :
 	/*! Returns a float array of size posture_size(), containing the
 	posture at frame f. It is the user responsibility to
 	ensure that 0<=f and f<frames() */
-	float* posture ( int f ) { return _frames[f].posture; }
+	float* posture ( int f ) { return _frames[f].posture.data(); }
 
 	/*! Returns the keytime of frame f. It is the user
 	responsibility to ensure that 0<=f and f<frames() */
@@ -196,9 +196,6 @@ public :
 	/*! get the last apply frame */
 	int last_apply_frame () const { return _last_apply_frame;}
 
-	/*! get the copy of the channels */
-	SkChannelArray& copy_channels() const ;
-
 	
 	/*! Interpolation type used by apply */
 	enum InterpType { Linear, CubicSpline };
@@ -230,7 +227,7 @@ public :
 	static InterpType interp_type_name ( const char* type );
 
 	/*! Copy operator. Copies all motion data and connection status from m */
-	void operator = ( const SkMotion& m );
+	SkMotion& operator = ( const SkMotion& m );
 
 	/*! Move all keytimes so that the first keytime starts at the given time */
 	void move_keytimes ( float startkt );
@@ -326,7 +323,7 @@ public :
 	*/
 	void registerAnimation();
 	void unregisterAnimation();
-	bool isRegistered();
+	bool isRegistered() const;
 	void setFrameOrientation(std::vector<SrQuat>& orientation);
 	std::vector<SrQuat>& getFrameOrientation();
 	void setFrameOffset(std::vector<SrVec>& offset);
