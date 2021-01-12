@@ -128,7 +128,7 @@ SBScene::SBScene(const CoreServicesProvider& coreServicesProvider) :
 		_retargetManager(std::make_unique<SBRetargetManager>()),
 		_eventManager(std::make_unique<SBEventManager>(*this)),
 		_assetManager(std::make_unique<SBAssetManager>(*this, *_assetStore)),
-		_speechManager(std::make_unique<SBSpeechManager>()),
+		_speechManager(std::make_unique<SBSpeechManager>(*this)),
 		_commandManager(std::make_unique<SBCommandManager>(*this)),
 		_motionGraphManager(std::make_unique<SBMotionGraphManager>(*this)),
 		_handConfigManager(std::make_unique<SBHandConfigurationManager>()),

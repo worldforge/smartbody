@@ -787,6 +787,7 @@ void SBCharacter::notify(SBSubject* subject)
 		}
 		else if (attrName == "voice")
 		{
+			//TODO: this could be moved out of this class, so we don't depend on the SpeechManager class
 			auto* strAttribute = dynamic_cast<SmartBody::StringAttribute*>(attribute);
 			this->setVoice(strAttribute->getValue());
 		}

@@ -27,54 +27,46 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBSpeechManager::SBSpeechManager() : SBObject()
+SBSpeechManager::SBSpeechManager(SBScene& scene) : SBObject()
 {
-	_speech_rvoice = new remote_speech();
-	_speech_localvoice = new local_speech();
-	_speech_audiofile = new SmartBody::AudioFileSpeech();
-	_speech_text = new text_speech();
-	_festivalRelayLocal = new FestivalSpeechRelayLocal();
-	_cereprocRelayLocal = new CereprocSpeechRelayLocal();
+	_speech_rvoice = std::make_unique<remote_speech>(scene);
+	_speech_localvoice = std::make_unique<local_speech>(scene);
+	_speech_audiofile = std::make_unique<SmartBody::AudioFileSpeech>();
+	_speech_text = std::make_unique<text_speech>();
+	_festivalRelayLocal = std::make_unique<FestivalSpeechRelayLocal>();
+	_cereprocRelayLocal = std::make_unique<CereprocSpeechRelayLocal>();
 }
 
-SBSpeechManager::~SBSpeechManager()
-{
-	delete _speech_rvoice;
-	delete _speech_localvoice;
-	delete _speech_audiofile;
-	delete _speech_text;
-	delete _festivalRelayLocal;
-	delete _cereprocRelayLocal;
-}
+SBSpeechManager::~SBSpeechManager() = default;
 
 FestivalSpeechRelayLocal* SBSpeechManager::festivalRelay()
 { 
-	return _festivalRelayLocal;
+	return _festivalRelayLocal.get();
 }
 
 CereprocSpeechRelayLocal* SBSpeechManager::cereprocRelay()
 { 
-	return _cereprocRelayLocal;
+	return _cereprocRelayLocal.get();
 }
 
 remote_speech* SBSpeechManager::speech_rvoice()
 { 
-	return _speech_rvoice;
+	return _speech_rvoice.get();
 }
 
 local_speech* SBSpeechManager::speech_localvoice()
 {
-	return _speech_localvoice;
+	return _speech_localvoice.get();
 }
 
 SmartBody::AudioFileSpeech* SBSpeechManager::speech_audiofile()
 { 
-	return _speech_audiofile;
+	return _speech_audiofile.get();
 }
 
 text_speech* SBSpeechManager::speech_text()
 { 
-	return _speech_text;
+	return _speech_text.get();
 } 
 
 }

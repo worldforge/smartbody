@@ -192,8 +192,6 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBAnimationTransitionRule.cpp
         src/sb/SBAnimationStateManager.cpp
         src/sb/SBMotionGraph.cpp
-#        src/sb/SBSteerManager.cpp
-#        src/sb/SBSteerAgent.cpp
         src/sb/SBReachManager.cpp
         src/sb/SBReach.cpp
         src/sb/SBHandSynthesis.cpp
@@ -228,6 +226,7 @@ set(SMARTBODY_LIB_SBM_SRC
         src/sb/SBAssetManager.cpp
         src/sb/SBAssetStore.cpp
         src/sb/SBSpeechManager.cpp
+        src/sb/SBSpeechCommands.cpp
         src/sb/SBCommandManager.cpp
 
         src/sb/SBAssetHandler.cpp

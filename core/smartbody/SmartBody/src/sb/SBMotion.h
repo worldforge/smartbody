@@ -178,7 +178,7 @@ class SBMotion : public SkMotion
 		SBAPI SrVec getJointPositionFromBase(SBJoint* joint, SBJoint* baseJoint, float time);
 		SBAPI SrQuat getJointRotation(SBJoint* joint, float time);
 
-		SBAPI SBJointMap* getJointMap();
+		//SBAPI SBJointMap* getJointMap();
 
 		SBAPI bool autoFootStepDetection(std::vector<double>& outMeans, int numStepsPerJoint, int maxNumSteps, SBSkeleton* skeleton, 
 								   std::vector<std::string>& selectedJoints, float floorHeight, float floorThreshold, float speedThreshold, 

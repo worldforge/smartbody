@@ -1978,18 +1978,19 @@ SrQuat SBMotion::getJointRotation(SBJoint* joint, float time)
 	return rot;	
 }
 
-SBJointMap* SBMotion::getJointMap()
-{
-	SBJointMapManager* jointMapManager = SBScene::getScene()->getJointMapManager();
-	const std::vector<std::string>& jointMapNames = jointMapManager->getJointMapNames();
-	for (const auto & jointMapName : jointMapNames)
-	{
-		SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
-		if (jointMap->isAppliedToMotion(this->getName()))
-			return jointMap;
-	}
-	return nullptr;
-}
+//SBJointMap* SBMotion::getJointMap()
+//{
+//	//FIXME: implement
+////	SBJointMapManager* jointMapManager = SBScene::getScene()->getJointMapManager();
+////	const std::vector<std::string>& jointMapNames = jointMapManager->getJointMapNames();
+////	for (const auto & jointMapName : jointMapNames)
+////	{
+////		SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
+////		if (jointMap->isAppliedToMotion(this->getName()))
+////			return jointMap;
+////	}
+//	return nullptr;
+//}
 
 /*
 // subtract current motion with base motion 

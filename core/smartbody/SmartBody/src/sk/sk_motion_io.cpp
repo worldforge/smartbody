@@ -535,8 +535,9 @@ bool SkMotion::save ( SrOutput& out )
 	//writing out channel directly won't consider the joint mapping issue
 	//out << _channels << srnl;
 	SmartBody::SBJointMap* jointMap = nullptr;
-	if (sbMotion)
-		jointMap = sbMotion->getJointMap();
+	//TODO: handle there being a joint map set.
+//	if (sbMotion)
+//		jointMap = sbMotion->getJointMap();
 
 	out << "channels " << ((int)_channels.size()) << srnl;
 	for (int i = 0; i < _channels.size(); ++i)

@@ -37,10 +37,12 @@ namespace  SmartBody
 
 namespace SmartBody {
 
+//TODO: move out into separate module
+
 class SBSpeechManager : public SBObject
 {
 	public:
-		SBAPI SBSpeechManager();
+		SBAPI explicit SBSpeechManager(SBScene& scene);
 		SBAPI ~SBSpeechManager();
 
 		SBAPI FestivalSpeechRelayLocal* festivalRelay();
@@ -51,12 +53,12 @@ class SBSpeechManager : public SBObject
 		SBAPI text_speech* speech_text();
 
 	protected:
-		remote_speech* _speech_rvoice;
-		local_speech* _speech_localvoice;
-		SmartBody::AudioFileSpeech* _speech_audiofile;
-		text_speech* _speech_text;
-		FestivalSpeechRelayLocal* _festivalRelayLocal; 
-		CereprocSpeechRelayLocal* _cereprocRelayLocal;
+		std::unique_ptr<remote_speech> _speech_rvoice;
+		std::unique_ptr<local_speech> _speech_localvoice;
+		std::unique_ptr<SmartBody::AudioFileSpeech> _speech_audiofile;
+		std::unique_ptr<text_speech> _speech_text;
+		std::unique_ptr<FestivalSpeechRelayLocal> _festivalRelayLocal;
+		std::unique_ptr<CereprocSpeechRelayLocal> _cereprocRelayLocal;
 };
 
 }

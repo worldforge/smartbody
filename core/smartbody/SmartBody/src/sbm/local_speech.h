@@ -62,17 +62,17 @@ protected:
 public:
 	FestivalSpeechRelayLocal();
 	~FestivalSpeechRelayLocal();
-	virtual void initSpeechRelay(std::string libPath, std::string cacheDirectory);
-	virtual void processSpeechMessage( const char * message );
-	virtual void setVoice(std::string voice);
-	virtual void setVoiceAndLicenses(const std::vector<std::string>& voiceList, const std::vector<std::string>& licenseList);
+	void initSpeechRelay(std::string libPath, std::string cacheDirectory) override;
+	void processSpeechMessage( const char * message ) override;
+	void setVoice(std::string voice) override;
+	void setVoiceAndLicenses(const std::vector<std::string>& voiceList, const std::vector<std::string>& licenseList) override;
     //void evalFestivalCommand( const char * cmd );	
 protected:
 	std::string generateReply(const char * utterance,const char * soundFileName);	
 	void removeTabsFromString(std::string &spoken_text);
 	std::string storeXMLMetaData( const std::string & txt);
 	//void cleanString(std::string &message);
-	void set_phonemes_to_visemes();
+	//void set_phonemes_to_visemes();
 };
 
 
@@ -92,10 +92,10 @@ protected:
 public:
 	CereprocSpeechRelayLocal();
 	~CereprocSpeechRelayLocal();
-	virtual void initSpeechRelay(std::string libPath, std::string cacheDirectory);
-	virtual void processSpeechMessage( const char * message );
-	virtual void setVoice(std::string voice);	
-	virtual void setVoiceAndLicenses(const std::vector<std::string>& voiceList, const std::vector<std::string>& licenseList);
+	void initSpeechRelay(std::string libPath, std::string cacheDirectory) override;
+	void processSpeechMessage( const char * message ) override;
+	void setVoice(std::string voice) override;
+	void setVoiceAndLicenses(const std::vector<std::string>& voiceList, const std::vector<std::string>& licenseList) override;
 protected:
 	std::string textToSpeech(const char * text, const char * cereproc_file_name, std::string voice_id);
 	void set_phonemes_to_visemes();
@@ -115,7 +115,7 @@ class local_speech: public remote_speech {
          */
 
 		// Default Constructor/Destructor
-		local_speech( float timeOutInSeconds = 10 );
+		local_speech(SmartBody::SBScene& scene, float timeOutInSeconds = 10 );
 		virtual ~local_speech();
 
 		// Methods

@@ -220,14 +220,14 @@ namespace SmartBody {
          *  Returns a unique request identifier.
          */
 		// TODO: Define error return value as a constant somewhere (or new exception type).
-        virtual RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, const DOMNode* node, const char* callbackCmd ) = 0;
+        virtual RequestId requestSpeechAudio( const char* agentName, std::string voiceCode, const DOMNode* node, const char* callbackCmd ) = 0;
 
         /**
          *  Requests audio for a speech char[] text by agentName.
          *  Returns a unique request identifier.
          */
 		// TODO: Define error return value as a constant somewhere (or new exception type).
-		virtual RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, std::string text, const char* callbackCmd ) = 0;
+		virtual RequestId requestSpeechAudio( const char* agentName, std::string voiceCode, std::string text, const char* callbackCmd ) = 0;
 
         /**
          *  If the request has been processed, returns the time ordered vector 

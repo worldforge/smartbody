@@ -1661,10 +1661,10 @@ SBMotion* SBAnimationBlend1D::createMotionFromBlend(SrVec parameters, SBCharacte
 	}
 
 	// perform a joint map if one exists on motion1 or motion2
-	SmartBody::SBJointMap* jointMap = motion1->getJointMap();
-	if (jointMap)
-		jointMap->applyMotion(motion);
-	
+	if (motion1->channels()._jointLookupFn) {
+		motion->channels()._jointLookupFn = motion1->channels()._jointLookupFn;
+	}
+
 	float step = 1.0f / fps;
 
 	SrBuffer<float> buffer(channelArray.count_floats());
@@ -1713,8 +1713,9 @@ SBMotion* SBAnimationBlend1D::createMotionFromBlend(SrVec parameters, SBCharacte
 			SkChannel& channel = channelArray.get(c);
 			const std::string& name = channelArray.name(c);
 			std::string mappedName = name;
-			if (jointMap)
-				mappedName = jointMap->getMapTarget(name);
+			if (motion1->channels()._jointLookupFn) {
+				mappedName = motion1->channels()._jointLookupFn(name);
+			}
 
 			int pos1 = channelArray1.search(mappedName, channel.type);
 			int pos2 = channelArray2.search(mappedName, channel.type);

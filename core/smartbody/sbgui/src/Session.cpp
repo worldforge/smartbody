@@ -35,6 +35,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sb/SBAssetHandlerSBMeshBinary.h"
 
 #include "sb/SBServiceManager.h"
+#include "sb/SBSpeechCommands.h"
 
 #include "sb/SBPhysicsManager.h"
 #include "sb/SBCollisionManager.h"
@@ -99,6 +100,8 @@ Session::Session()
 	SmartBody::registerControlCommands(commandContext);
 
 	setupPython(*this);
+
+	SmartBody::SBSpeechCommands::registerCommands(scene, *scene.getCommandManager(), *scene.getSpeechManager());
 
 }
 

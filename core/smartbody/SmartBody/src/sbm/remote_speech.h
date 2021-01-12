@@ -34,17 +34,20 @@ class remote_speech;
 #include "sb/sbm_character.hpp"
 // Predeclare class
 
+namespace SmartBody {
+	class SBSpeechManager;
+}
 
-int remoteSpeechResult_func( srArgBuffer& args, SmartBody::SBCommandManager* manager);
+int remoteSpeechResult_func( srArgBuffer& args, SmartBody::SBScene& scene, SmartBody::SBSpeechManager& speechManager );
 int set_char_voice(char* char_name, char* voiceCode);
-int remoteSpeechTimeOut_func(srArgBuffer& args, SmartBody::SBCommandManager* manager);
+int remoteSpeechTimeOut_func(srArgBuffer& args, SmartBody::SBSpeechManager& speechManager );
 
 // Test functions
 // TODO: move to "test ..."
-int remote_speech_test( srArgBuffer& args, SmartBody::SBCommandManager* manager);
-int remoteSpeechReady_func( srArgBuffer& args, SmartBody::SBCommandManager* manager);
+int remote_speech_test( srArgBuffer& args, SmartBody::SBScene& scene);
+int remoteSpeechReady_func( srArgBuffer& args, SmartBody::SBScene& scene);
 
-class remote_speech: public SmartBody::SpeechInterface {
+class remote_speech: public SmartBody::SpeechInterface, public SmartBody::SBSceneOwned {
     public:
         /**
          *  Requests audio for a speech by agentName as specified in XML node.
@@ -55,12 +58,12 @@ class remote_speech: public SmartBody::SpeechInterface {
          */
 
 		// Default Constructor/Destructor
-		remote_speech( float timeOutInSeconds = 20 );
+		explicit remote_speech(SmartBody::SBScene& scene, float timeOutInSeconds = 20 );
 		virtual ~remote_speech();
 
 		// Methods
-		virtual SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, const DOMNode* node, const char* callbackCmd ); //accepts dom document of which sound will be created from, returns Request ID
-		virtual SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, std::string text, const char* callbackCmd ); //accepts char* of above and returns request ID
+		virtual SmartBody::RequestId requestSpeechAudio( const char* agentName, std::string voiceCode, const DOMNode* node, const char* callbackCmd ); //accepts dom document of which sound will be created from, returns Request ID
+		virtual SmartBody::RequestId requestSpeechAudio( const char* agentName, std::string voiceCode, std::string text, const char* callbackCmd ); //accepts char* of above and returns request ID
 		virtual std::vector<SmartBody::VisemeData *>* getVisemes( SmartBody::RequestId requestId,  SbmCharacter* character ); //returns visemes  for given request
 		virtual char* getSpeechPlayCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //returns the command to play speech
 		virtual char* getSpeechStopCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //''                     stop
@@ -72,8 +75,8 @@ class remote_speech: public SmartBody::SpeechInterface {
 		virtual void requestComplete( SmartBody::RequestId requestId );
 
 		// RemoteSpeech specific methods
-		int handleRemoteSpeechResult( SbmCharacter* character, char* msgID, char* status, char* result, SmartBody::SBCommandManager* manager);
-		int testRemoteSpeechTimeOut( const char* request_id_str, SmartBody::SBCommandManager* manager);
+		int handleRemoteSpeechResult( SbmCharacter* character, char* msgID, char* status, char* result);
+		int testRemoteSpeechTimeOut( const char* request_id_str);
 	protected:
 		virtual void sendSpeechCommand(const char* cmd);
 		virtual void sendSpeechTimeout(std::ostringstream& outStream);

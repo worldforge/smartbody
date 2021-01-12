@@ -262,12 +262,10 @@ void SBCommandManager::registerCallbacks()
 
 
 
-	insert( "RemoteSpeechReply",   remoteSpeechResult_func );
-	insert( "RemoteSpeechTimeOut", remoteSpeechTimeOut_func);  // internally routed message
+
 //	insert( "locomotion",          locomotion_cmd_func );
 //	insert( "loco",                locomotion_cmd_func ); // shorthand
 	insert( "bml",				   test_bml_func );
-	insert( "RemoteSpeechReplyRecieved", remoteSpeechReady_func);  // TODO: move to test commands
 
 #ifdef USE_GOOGLE_PROFILER
 	insert( "startprofile",			   startprofile_func );
@@ -280,7 +278,6 @@ void SBCommandManager::registerCallbacks()
 
 	insert_test_cmd( "bml",  test_bml_func );
 	insert_test_cmd( "fml",  test_fml_func );
-	insert_test_cmd( "rhet", remote_speech_test);
 	insert_test_cmd( "bone_pos", test_bone_pos_func );
 	
 

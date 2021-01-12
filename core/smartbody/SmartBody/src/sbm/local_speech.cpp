@@ -52,24 +52,18 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <cerevoice_eng_int.h>
 #endif
 
-#include <boost/algorithm/string.hpp>
-#include <boost/regex.hpp>
-#include <stdlib.h>
+
 #include <iostream>
 #include <vector>
 #include <string>
-#include <sys/types.h>
 #if 0
 #include <sys/timeb.h>
 #endif
-#include <sstream>
-#include <float.h>
-#include "time.h"
+#include <cfloat>
 
 #include "sbm/xercesc_utils.hpp"
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/framework/MemBufFormatTarget.hpp>
-#include "sbm/BMLDefs.h"
 #include <sb/SBScene.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBCommandManager.h>
@@ -818,7 +812,7 @@ void CereprocSpeechRelayLocal::processSpeechMessage( const char * message )
    std::string agent_name = tokens.at( 1 );
 
    // if the agent doesn't exist locally, don't create a voice for it
-   SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(agent_name);
+   SmartBody::SBCharacter* character = _scene.getCharacter(agent_name);
    if (!character)
    {
 	   SmartBody::util::log("Character '%s' does not exist in this context. Speech will not be generated for it.", agent_name.c_str());
@@ -871,7 +865,7 @@ void CereprocSpeechRelayLocal::processSpeechMessage( const char * message )
 	  string replyCmd = "RemoteSpeechReply ";
 	  replyCmd = replyCmd + reply; //cmdConst;
 	  //SmartBody::util::log("replyCmd = %s", replyCmd.c_str());
-	  SmartBody::SBScene::getScene()->command(replyCmd);
+	  _scene.command(replyCmd);
 	  //mcu.execute_later(replyCmd.c_str());
       //vhmsg::ttu_notify2( "RemoteSpeechReply", reply.c_str() );
    }
@@ -930,15 +924,9 @@ void CereprocSpeechRelayLocal::set_phonemes_to_visemes()
 	phonemeToViseme[ "zh" ]  = "Sh";  // ZH	
 }
 #else
-CereprocSpeechRelayLocal::CereprocSpeechRelayLocal()
-{
+CereprocSpeechRelayLocal::CereprocSpeechRelayLocal() = default;
 
-}
-
-CereprocSpeechRelayLocal::~CereprocSpeechRelayLocal()
-{
-
-}
+CereprocSpeechRelayLocal::~CereprocSpeechRelayLocal() = default;
 
 void CereprocSpeechRelayLocal::setVoiceAndLicenses(const std::vector<std::string>& voiceList, const std::vector<std::string>& licenseList)
 {
@@ -1211,7 +1199,7 @@ void FestivalSpeechRelayLocal::processSpeechMessage( const char * message )
 
 	std::string agent_name = tokens.at( 1 );
    // if the agent doesn't exist locally, don't create a voice for it
-   SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(agent_name):
+   SmartBody::SBCharacter* character = _scene.getCharacter(agent_name):
    if (!character)
    {
 	   SmartBody::util::log("Character '%s' does not exist in this context. Speech will not be generated for it.", agent_name.c_str());
@@ -1461,14 +1449,9 @@ void FestivalSpeechRelayLocal::initSpeechRelay(std::string libPath, std::string 
 }
 #else
 
-FestivalSpeechRelayLocal::FestivalSpeechRelayLocal()
-{
-	
-}
+FestivalSpeechRelayLocal::FestivalSpeechRelayLocal() = default;
 
-FestivalSpeechRelayLocal::~FestivalSpeechRelayLocal()
-{
-}
+FestivalSpeechRelayLocal::~FestivalSpeechRelayLocal() = default;
 
 void FestivalSpeechRelayLocal::setVoiceAndLicenses(const std::vector<std::string>& voiceList, const std::vector<std::string>& licenseList)
 {
@@ -1510,8 +1493,8 @@ void FestivalSpeechRelayLocal::initSpeechRelay(std::string libPath, std::string 
 #define LOG_RHETORIC_SPEECH (0)
 #define USE_CURVES_FOR_VISEMES 0
 
-local_speech::local_speech( float timeOutInSeconds )
-:	remote_speech(timeOutInSeconds) // default is 10 seconds
+local_speech::local_speech(SmartBody::SBScene& scene, float timeOutInSeconds )
+:	remote_speech(scene, timeOutInSeconds) // default is 10 seconds
 {}
 
 local_speech::~local_speech() = default;
@@ -1521,7 +1504,7 @@ void local_speech::sendSpeechCommand(const char* cmd)
 	//SmartBody::util::log("speech cmd = %s",cmd);
 	//SmartBody::util::log("local_speech::sendSpeechCommand");
 	char* cmdConst = const_cast<char*>(cmd);
-	//SmartBody::SBScene::getScene()->getCommandManager()->execute_later( cmdConst ); //sends the remote speech command using singleton* MCU_p
-	SBScene::getScene()->sendVHMsg2( "RemoteSpeechCmd", cmdConst );
+	//_scene.getCommandManager()->execute_later( cmdConst ); //sends the remote speech command using singleton* MCU_p
+	_scene.sendVHMsg2( "RemoteSpeechCmd", cmdConst );
 }
 
