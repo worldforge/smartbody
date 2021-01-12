@@ -56,18 +56,10 @@ private :
 	class Channel : public SkChannel
 	{ 
 		public:
-			Channel()
+			Channel() : fmap(0)
 			{
-				name = "";
-				fmap = 0;
 			}
-			Channel& operator=(const Channel& c)
-			{
-				name = c.name;
-				fmap = c.fmap;
-				SkChannel::operator=(c);
-				return *this;
-			}					
+
 		int fmap;		
 		std::string name; 
 		std::string mappedName;
@@ -81,7 +73,6 @@ private :
 	std::map<std::string, std::map<SkChannel::Type, int> > _channelMapedNameMap;
 	std::vector<Channel> _channelList;	
 	std::vector<bool>    _channelUpdateTable;
-	std::string jointMapName;
 public :
 	//////////////////////////////////////////////////////////////////////////
 	//  Public Methods
@@ -92,8 +83,8 @@ public :
 	/*! Destructor is public but be sure to check if unref() has to be used */
 	~SkChannelArray () override;
 
-	void setJointMapName(const std::string& jmapName);
-	std::string getJointMapName() const ;
+//	void setJointMapName(const std::string& jmapName);
+//	std::string getJointMapName() const ;
 
 	const std::string& getMappedChannelName(const Channel& chan) const;
 	/*! Set the array as empty */
@@ -105,7 +96,7 @@ public :
 	/*! Returns the number of channels in the array */
 	size_t size () const { return _channelList.size(); }
 
-	bool doesChannelExist(std::string name, SkChannel::Type t);
+	bool doesChannelExist(const std::string& name, SkChannel::Type t);
 
 	/*! Add in the end of the array a new channel, by giving
 		only its name and type; the joint is set to null (disconnected) */
@@ -118,12 +109,12 @@ public :
 	/*! Same as add(ch.joint,ch.type) */
 	void add ( SkChannel ch ) { _add(ch.joint, "",ch.type,false); }
 
-	void changeChannelName(std::string oldName, std::string newName);
+	void changeChannelName(const std::string& oldName, const std::string& newName);
 	void startChannelNameChange(); // reset bool table
 
 	/*! Inserts a channel in the array at given position. The joint is
 		set as null and can be 'connected' later */
-	bool insert ( int pos, std::string name, SkChannel::Type type );
+	bool insert ( int pos, const std::string& name, SkChannel::Type type );
 
 	/*! Access operator */
 	SkChannel& operator[] ( int i ) { return _channelList[i]; }
@@ -228,7 +219,7 @@ public :
 	bool merge ( SkChannelArray& ca );
 
 	/*! Copy operator copies all fields. */
-	void operator = ( const SkChannelArray& a );
+	SkChannelArray& operator = ( const SkChannelArray& a );
 
 	/*! Comparison operator checks if the channel names and types are the same. */
 	bool operator == ( const SkChannelArray& a );
@@ -248,6 +239,10 @@ public :
 	}
 
 	void clear();
+
+	typedef std::function<const std::string&(const std::string&)> JointLookupFn;
+
+	JointLookupFn _jointLookupFn;
 
 private:
 	void _add ( SkJoint* j, std::string name, SkChannel::Type t, bool connect );

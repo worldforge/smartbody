@@ -22,12 +22,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 //#include "sbm_pawn.hpp"
 #include "gwiz_math.h"
 #include "controllers/me_ct_face.h"
-#include <sstream>
 #include <sbm/action_unit.hpp>
-#include <sb/sbm_pawn.hpp>
 #include <sb/sbm_character.hpp>
 #include <sb/SBScene.h>
-#include <sb/SBPawn.h>
 #include "SBUtilities.h"
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -79,7 +76,7 @@ MeCtFace::MeCtFace(SbmCharacter& pawn) :
 	if (faceNeutral) {
 		_base_pose_p = faceNeutral;
 		_base_pose_p->move_keytimes(0.0); // make sure motion starts at 0
-		_channels.setJointMapName(_base_pose_p->channels().getJointMapName());
+		_channels._jointLookupFn = _base_pose_p->channels()._jointLookupFn;
 
 		SkChannelArray& mchan_arr = _base_pose_p->channels();
 		int size = mchan_arr.size();

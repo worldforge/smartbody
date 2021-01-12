@@ -1518,14 +1518,16 @@ void saveJointMaps(SBRenderScene& renderScene, std::ostream& ostream, bool remot
 #else
 		for (auto& mappedMotion : mappedMotions) {
 			SmartBody::SBMotion* motion = scene->getMotion(mappedMotion);
-			if (motion && motion->channels().getJointMapName() == jointMapName)
-				ostream << "jointMap.applyMotion(scene.getMotion(\"" << mappedMotion << "\"))\n";
+			//FIXME: keep joint map reference in motion
+//			if (motion && motion->channels().getJointMapName() == jointMapName)
+//				ostream << "jointMap.applyMotion(scene.getMotion(\"" << mappedMotion << "\"))\n";
 		}
 
 		for (auto& mappedSkeleton : mappedSkeletons) {
-			auto skel = scene->getSkeleton(mappedSkeleton);
-			if (skel && skel->getJointMapName() == jointMapName)
-				ostream << "jointMap.applySkeleton(scene.getSkeleton(\"" << mappedSkeleton << "\"))\n";
+			//FIXME: keep joint map reference in skeleton
+//			auto skel = scene->getSkeleton(mappedSkeleton);
+//			if (skel && skel->getJointMapName() == jointMapName)
+//				ostream << "jointMap.applySkeleton(scene.getSkeleton(\"" << mappedSkeleton << "\"))\n";
 		}
 #endif
 	}

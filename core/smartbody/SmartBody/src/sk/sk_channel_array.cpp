@@ -24,9 +24,7 @@
 
 # include <sk/sk_channel_array.h>
 # include <sk/sk_skeleton.h>
-#include <sb/SBScene.h>
-#include <sb/SBJointMapManager.h>
-#include <sb/SBJointMap.h>
+
 
 //============================= SkChannelArray ============================
 //  A persistent empty SkChannelArray returned by empty_channel_array().
@@ -34,15 +32,12 @@ SkChannelArray SkChannelArray::EMPTY_CHANNELS = SkChannelArray();
 
 
 SkChannelArray::SkChannelArray ()
-{
-	_floats = 0;
-	jointMapName = "";
-
-}
-
-SkChannelArray::~SkChannelArray ()
+: _floats(0),
+_dirty(true)
 {
 }
+
+SkChannelArray::~SkChannelArray () = default;
 
 void SkChannelArray::init()
 {
@@ -52,13 +47,13 @@ void SkChannelArray::init()
 	_channelList.clear();	
 }
 
-bool SkChannelArray::doesChannelExist(std::string name, SkChannel::Type t)
+bool SkChannelArray::doesChannelExist(const std::string& name, SkChannel::Type t)
 {
-	std::map<std::string, std::map<SkChannel::Type, int> >::iterator iter = _channelMap.find(name);
+	auto iter = _channelMap.find(name);
 	if (iter != _channelMap.end())
 	{
 		std::map<SkChannel::Type, int>& typeMap = (*iter).second;
-		std::map<SkChannel::Type, int>::iterator typeIter = typeMap.find(t);
+		auto typeIter = typeMap.find(t);
 		if (typeIter != typeMap.end())
 		{
 			return true;
@@ -66,11 +61,11 @@ bool SkChannelArray::doesChannelExist(std::string name, SkChannel::Type t)
 	}
 
 	// check the mapped names
-	std::map<std::string, std::map<SkChannel::Type, int> >::iterator iter2 = _channelMapedNameMap.find(name);
+	auto iter2 = _channelMapedNameMap.find(name);
 	if (iter2 != _channelMapedNameMap.end())
 	{
 		std::map<SkChannel::Type, int>& typeMap = (*iter2).second;
-		std::map<SkChannel::Type, int>::iterator typeIter = typeMap.find(t);
+		auto typeIter = typeMap.find(t);
 		if (typeIter != typeMap.end())
 		{
 			return true;
@@ -81,7 +76,7 @@ bool SkChannelArray::doesChannelExist(std::string name, SkChannel::Type t)
 }
 
 void SkChannelArray::_add ( SkJoint* j, std::string name, SkChannel::Type t, bool connect ) {
-	if ( name == "" && j )
+	if ( name.empty() && j )
 		name = j->jointName();
 
 	// does this channel name and type already exist
@@ -94,11 +89,11 @@ void SkChannelArray::_add ( SkJoint* j, std::string name, SkChannel::Type t, boo
 	if (exist)
 		return;
 
-	std::map<std::string, std::map<SkChannel::Type, int> >::iterator iter = _channelMap.find(name);
+	auto iter = _channelMap.find(name);
 	if (iter != _channelMap.end())
 	{
 		std::map<SkChannel::Type, int>& typeMap = (*iter).second;
-		std::map<SkChannel::Type, int>::iterator typeIter = typeMap.find(t);
+		auto typeIter = typeMap.find(t);
 
 		_channelList.emplace_back(channel);
 		typeMap.insert(std::pair<SkChannel::Type, int>(t, _channelList.size() - 1));
@@ -115,7 +110,7 @@ void SkChannelArray::_add ( SkJoint* j, std::string name, SkChannel::Type t, boo
 	_dirty = true;
 }
 
-bool SkChannelArray::insert ( int pos, std::string name, SkChannel::Type t )
+bool SkChannelArray::insert ( int pos, const std::string& name, SkChannel::Type t )
 {
 	if (pos < 0 || size_t(pos) > _channelList.size())
 		return false;
@@ -129,7 +124,7 @@ bool SkChannelArray::insert ( int pos, std::string name, SkChannel::Type t )
 	channel.name = name;	
 	channel.mappedName = name;
 	int counter = 0;
-	for (std::vector<Channel>::iterator iter = _channelList.begin();
+	for (auto iter = _channelList.begin();
 		iter != _channelList.end();
 		iter++)
 	{
@@ -142,11 +137,11 @@ bool SkChannelArray::insert ( int pos, std::string name, SkChannel::Type t )
 		counter++;
 	}
 
-	std::map<std::string, std::map<SkChannel::Type, int> >::iterator iter = _channelMap.find(name);
+	auto iter = _channelMap.find(name);
 	if (iter != _channelMap.end())
 	{
 		std::map<SkChannel::Type, int>& typeMap = (*iter).second;
-		std::map<SkChannel::Type, int>::iterator typeIter = typeMap.find(t);
+		auto typeIter = typeMap.find(t);
 
 		typeMap.insert(std::pair<SkChannel::Type, int>(t, counter));
 	}
@@ -222,10 +217,7 @@ void SkChannelArray::add_active_channels ( SkSkeleton* sk, bool connect )
 		}
 	}
 	count_floats();
-	if (jointMapName != sk->getJointMapName())
-	{
-		jointMapName = sk->getJointMapName();			
-	}		
+	_jointLookupFn = sk->channels()._jointLookupFn;
 	rebuild_hash_table();
 }
 
@@ -281,7 +273,7 @@ void SkChannelArray::set_values ( const float* fp )
 bool SkChannelArray::get_used_channels ( const std::vector<SkPosture*>& postures, std::vector<int>* indices )
 {
 	init ();
-	if ( postures.size()<1 ) return 0;
+	if ( postures.size()<1 ) return false;
 
 	// check the actual channels being used:
 	SrBuffer<float>& firstpost = postures[0]->values;
@@ -295,8 +287,8 @@ bool SkChannelArray::get_used_channels ( const std::vector<SkPosture*>& postures
 		index[0] = 1;
 	else
 	{
-		for (size_t i = 0; i < index.size(); i++)
-			index[i] = -1;
+		for (int & i : index)
+			i = -1;
 	}
 
 	// mark with 1 the indices of active channels, ie, those with changing values:
@@ -354,11 +346,11 @@ int SkChannelArray::search ( const std::string& name, SkChannel::Type type )
 		_dirty = false;
 	}
 
-	std::map<std::string, std::map<SkChannel::Type, int> >::iterator iter = _channelMapedNameMap.find(name);
+	auto iter = _channelMapedNameMap.find(name);
 	if (iter != _channelMapedNameMap.end())
 	{
 		std::map<SkChannel::Type, int>& typeMap = (*iter).second;
-		std::map<SkChannel::Type, int>::iterator typeIter = typeMap.find(type);
+		auto typeIter = typeMap.find(type);
 		if (typeIter == typeMap.end())
 		{
 			return -1;
@@ -528,13 +520,9 @@ bool SkChannelArray::merge ( SkChannelArray& ca )
 		add(namesToAdd[x], typesToAdd[x]); // add it	
 	}
 
+	_jointLookupFn = ca._jointLookupFn;
 
-	if (jointMapName != ca.getJointMapName())
-	{
-		jointMapName = ca.getJointMapName();		
-	}
-
-	if (namesToAdd.size() > 0)
+	if (!namesToAdd.empty())
 	{
 		rebuild_hash_table();
 		return true;
@@ -545,25 +533,19 @@ bool SkChannelArray::merge ( SkChannelArray& ca )
 	}
 }
 
-void SkChannelArray::operator = ( const SkChannelArray& a )
+SkChannelArray& SkChannelArray::operator = ( const SkChannelArray& a )
 {
 	if (this == &a)
 	{
-		return;
+		return *this;
 	}
+	_channelList = a._channelList;
+	_jointLookupFn = a._jointLookupFn;
 
-	_channelList.clear();
-	for (size_t x = 0; x < a._channelList.size(); x++)
-	{
-		_channelList.emplace_back(a._channelList[x]);
-	}
-	if (jointMapName != a.getJointMapName())
-	{
-		jointMapName = a.getJointMapName();		
-	}
 	rebuild_hash_table();
 	_floats = a._floats;	
 	_dirty = true;
+	return *this;
 }
 
 bool SkChannelArray::operator == ( const SkChannelArray& a )
@@ -669,7 +651,7 @@ SrInput& operator>> ( SrInput& in, SkChannelArray& ca )
 }
 
 
-void SkChannelArray::changeChannelName(std::string oldName, std::string newName)
+void SkChannelArray::changeChannelName(const std::string& oldName, const std::string& newName)
 {
 	bool channelFound = false;
 	for (size_t c = 0; c < _channelList.size(); c++)
@@ -701,14 +683,21 @@ void SkChannelArray::startChannelNameChange()
 
 const std::string& SkChannelArray::getMappedChannelName( const Channel& chan ) const
 {
-	SmartBody::SBJointMap* jointMap = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMap(jointMapName);
-	if (jointMap)
-	{
-		const std::string& target = jointMap->getMapTarget(chan.name);
-		if (target != "")
-			return target;
+	if (_jointLookupFn) {
+		auto& mappedName = _jointLookupFn(chan.name);
+		if (!mappedName.empty()) {
+			return mappedName;
+		}
 	}
 	return chan.name;
+//	SmartBody::SBJointMap* jointMap = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMap(jointMapName);
+//	if (jointMap)
+//	{
+//		const std::string& target = jointMap->getMapTarget(chan.name);
+//		if (target != "")
+//			return target;
+//	}
+//	return chan.name;
 }
 
 const std::string& SkChannelArray::name( int i ) const
@@ -725,16 +714,6 @@ const std::string& SkChannelArray::mappedName( int i ) const
 }
 
 
-void SkChannelArray::setJointMapName( const std::string& jmapName )
-{
-	jointMapName = jmapName;
-}
-
-std::string SkChannelArray::getJointMapName() const
-{
-	return jointMapName;
-}
-
 void SkChannelArray::clear()
 {
 	_floats = 0;
@@ -745,7 +724,7 @@ void SkChannelArray::clear()
 
 	_channelList.clear();
 	_channelUpdateTable.clear();
-	jointMapName = "";
+	_jointLookupFn = nullptr;
 }
 
 //============================ End of File ============================

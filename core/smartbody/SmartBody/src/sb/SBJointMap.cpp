@@ -46,7 +46,7 @@ void SBJointMap::applyMotion(SmartBody::SBMotion* motion)
 		return;
 	
 	SkChannelArray& channels = motion->channels();
-	channels.setJointMapName(getName());
+	channels._jointLookupFn = [&](const std::string& name) -> const std::string& { return getMapTarget(name); };
 	channels.rebuild_hash_table();
 #if 0
 	channels.startChannelNameChange();
@@ -60,7 +60,7 @@ void SBJointMap::applyMotion(SmartBody::SBMotion* motion)
 	}
 #endif
 
-	_mappedMotions.emplace_back(motion->getName());
+//	_mappedMotions.emplace_back(motion->getName());
 }
 
 void SBJointMap::applyMotionRecurse(const std::string& directory)
@@ -161,21 +161,21 @@ void SBJointMap::applyMotionInverse( SmartBody::SBMotion* motion )
 		std::string to = (*iter).first;		
 		channels.changeChannelName(from, to);
 	}
-#else	
-	channels.setJointMapName(""); // remove joint map
+#else
+	channels._jointLookupFn = {}; // remove joint map
 	channels.rebuild_hash_table();
 #endif
 
-	for (auto iter = _mappedMotions.begin();
-		 iter != _mappedMotions.end();
-		 iter++)
-	{
-		if ((*iter) == motion->getName())
-		{
-			_mappedMotions.erase(iter);
-			break;
-		}
-	}
+//	for (auto iter = _mappedMotions.begin();
+//		 iter != _mappedMotions.end();
+//		 iter++)
+//	{
+//		if ((*iter) == motion->getName())
+//		{
+//			_mappedMotions.erase(iter);
+//			break;
+//		}
+//	}
 }
 
 
@@ -214,21 +214,21 @@ void SBJointMap::applySkeletonInverse( SmartBody::SBSkeleton* skeleton )
 	}
 #else
 	// remove joint map
-	skeleton->setJointMapName("");	
-	skeleton->channels().setJointMapName("");
+	skeleton->_jointLookupFn = {};
+	skeleton->channels()._jointLookupFn = {};
 #endif
 	skeleton->resetSearchJoint();
 	skeleton->updateJointMap();	
-	for (auto iter = _mappedSkeletons.begin();
-		 iter != _mappedSkeletons.end();
-		 iter++)
-	{
-		if ((*iter) == skeleton->getName())
-		{
-			_mappedSkeletons.erase(iter);
-			break;
-		}
-	}
+//	for (auto iter = _mappedSkeletons.begin();
+//		 iter != _mappedSkeletons.end();
+//		 iter++)
+//	{
+//		if ((*iter) == skeleton->getName())
+//		{
+//			_mappedSkeletons.erase(iter);
+//			break;
+//		}
+//	}
 	SmartBody::SBPawn* pawn = skeleton->getPawn();
 	if (pawn)
 	{
@@ -272,8 +272,8 @@ void SBJointMap::applySkeleton(SmartBody::SBSkeleton* skeleton)
 		channels.changeChannelName(from, to);
 	}
 #else
-	skeleton->setJointMapName(getName());	
-	skeleton->channels().setJointMapName(getName());
+	skeleton->_jointLookupFn = [&](const std::string& name) -> const std::string& { return getMapTarget(name); };
+	skeleton->channels()._jointLookupFn = [&](const std::string& name) -> const std::string& { return getMapTarget(name); };
 #endif
 
 	skeleton->resetSearchJoint();
@@ -284,38 +284,38 @@ void SBJointMap::applySkeleton(SmartBody::SBSkeleton* skeleton)
 	{
 		pawn->ct_tree_p->child_channels_updated(nullptr);
 	}
-	_mappedSkeletons.emplace_back(skeleton->getName());
+//	_mappedSkeletons.emplace_back(skeleton->getName());
 }
 
-std::vector<std::string>&  SBJointMap::getMappedMotions()
-{
-	return _mappedMotions;
-}
+//std::vector<std::string>&  SBJointMap::getMappedMotions()
+//{
+//	return _mappedMotions;
+//}
+//
+//std::vector<std::string>& SBJointMap::getMappedSkeletons()
+//{
+//	return _mappedSkeletons;
+//}
 
-std::vector<std::string>& SBJointMap::getMappedSkeletons()
-{
-	return _mappedSkeletons;
-}
-
-bool SBJointMap::isAppliedToMotion(const std::string& name)
-{
-	for (auto & _mappedMotion : _mappedMotions)
-	{
-		if (_mappedMotion == name)
-			return true;
-	}
-	return false;
-}
-
-bool SBJointMap::isAppliedToSkeleton(const std::string& name)
-{
-	for (auto & _mappedSkeleton : _mappedSkeletons)
-	{
-		if (_mappedSkeleton == name)
-			return true;
-	}
-	return false;
-}
+//bool SBJointMap::isAppliedToMotion(const std::string& name)
+//{
+//	for (auto & _mappedMotion : _mappedMotions)
+//	{
+//		if (_mappedMotion == name)
+//			return true;
+//	}
+//	return false;
+//}
+//
+//bool SBJointMap::isAppliedToSkeleton(const std::string& name)
+//{
+//	for (auto & _mappedSkeleton : _mappedSkeletons)
+//	{
+//		if (_mappedSkeleton == name)
+//			return true;
+//	}
+//	return false;
+//}
 
 void SBJointMap::setMapping(const std::string& from, const std::string& to)
 {
@@ -453,7 +453,7 @@ void SBJointMap::removeMappingTo( const std::string& to )
 #endif
 }
 
-const std::string& SBJointMap::getMapSource(const std::string& to)
+const std::string& SBJointMap::getMapSource(const std::string& to) const
 {
 #ifdef USE_TWO_MAPS
 	auto iter = _targetMap.find(to);
@@ -485,7 +485,7 @@ const std::string& SBJointMap::getMapSource(const std::string& to)
 	return emptyString;
 }
 
-const std::string& SBJointMap::getMapTarget(const std::string& from)
+const std::string& SBJointMap::getMapTarget(const std::string& from) const
 {
 #ifdef USE_TWO_MAPS
 	auto iter = _sourceMap.find(from);

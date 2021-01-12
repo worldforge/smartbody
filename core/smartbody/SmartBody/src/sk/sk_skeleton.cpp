@@ -25,9 +25,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # include <sk/sk_posture.h>
 #include <queue>
 #include <sb/SBJoint.h>
-#include <sb/SBScene.h>
-#include <sb/SBJointMapManager.h>
-#include <sb/SBJointMap.h>
 #include "SBUtilities.h"
 
 //============================ SkSkeleton ============================
@@ -43,7 +40,8 @@ SkSkeleton::SkSkeleton() : SmartBody::SBAsset(),
 
 SkSkeleton::SkSkeleton(const SkSkeleton& rhs)  : SmartBody::SBAsset()
 {
-	jointMap = rhs.jointMap;
+	_jointLookupFn = rhs._jointLookupFn;
+//	jointMap = rhs.jointMap;
 	setName(rhs.getName());
 	_skfilename = rhs._skfilename;
 	if (!rhs._root)
@@ -64,6 +62,7 @@ SkSkeleton::SkSkeleton(const SkSkeleton& rhs)  : SmartBody::SBAsset()
 	}
 
 	_gmat_uptodate = rhs._gmat_uptodate;
+	//TODO: Use a copy ctor instead.
 	_channels = new SkChannelArray;
 	auto& origChannels = rhs.channels();
 	for (int c = 0; c < origChannels.size(); c++)
@@ -76,7 +75,7 @@ SkSkeleton::SkSkeleton(const SkSkeleton& rhs)  : SmartBody::SBAsset()
 			_channels->add(joint, origChannel.type, true);
 		}
 	}
-	_channels->setJointMapName(rhs.getJointMapName());
+	_channels->_jointLookupFn = origChannels._jointLookupFn;
 	_channels->count_floats();
 	_com = rhs._com;
 
@@ -127,7 +126,7 @@ SkSkeleton& SkSkeleton::operator=(const SkSkeleton& rhs)
 	}
 	_channels->count_floats();
 	_com = rhs.com();	
-	setJointMapName(rhs.getJointMapName());
+	_jointLookupFn = rhs._jointLookupFn;
 	compress ();
 	updateJointMap();
 	return *this;
@@ -495,15 +494,14 @@ void SkSkeleton::updateJointMap()
 	_jointMap.clear();
 	//SmartBody::util::log("After cleanup jointMap");
 	int jointSize = _joints.size();	
-	SmartBody::SBJointMap* jointMap = SmartBody::SBScene::getScene()->getJointMapManager()->getJointMap(getJointMapName());
 	for (int i = 0; i < jointSize; i++)
 	{
 		auto& joint = _joints[i];
 		auto jname = joint->jointName();
 
-		if (jointMap)
+		if (_jointLookupFn)
 		{			
-			const std::string& mappedName = jointMap->getMapTarget(jname);
+			auto& mappedName = _jointLookupFn(jname);
 
 			//SmartBody::util::log("Has JointMap, origName = %s, mappedName = %s", jname.c_str(), mappedName.c_str());
 
@@ -553,15 +551,15 @@ SrVec SkSkeleton::getFacingDirection()
 	return defaultDir;
 }
 
-void SkSkeleton::setJointMapName( const std::string& jointMapName )
-{	
-	jointMap = jointMapName;
-}
-
-const std::string& SkSkeleton::getJointMapName() const
-{
-	return jointMap;
-}
+//void SkSkeleton::setJointMapName( const std::string& jointMapName )
+//{
+//	jointMap = jointMapName;
+//}
+//
+//const std::string& SkSkeleton::getJointMapName() const
+//{
+//	return jointMap;
+//}
 
 
 //============================ End of File ============================

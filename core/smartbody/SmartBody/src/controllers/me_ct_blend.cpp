@@ -72,7 +72,7 @@ void MeCtBlend::Context::remap_channels() {
 	if( _context && blend->count_children()==1 ) {
 		SkChannelArray& parent_channels = _context->channels();
 		SkChannelArray& child_channels   = blend->child(0)->controller_channels();
-		_local_channels.setJointMapName(parent_channels.getJointMapName());
+		_local_channels._jointLookupFn = parent_channels._jointLookupFn;
 		// Set size and clear data
 		const int MAX_PARENT_CH = parent_channels.size();
 		const int MAX_CHILD_CH = child_channels.size();

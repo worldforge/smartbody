@@ -687,8 +687,9 @@ BOOST_PYTHON_MODULE (SmartBody) {
 			.def("applyMotionInverse", &SBJointMap::applyMotionInverse, "Applies the inverse joint mapping to a motion.")
 			.def("applySkeletonInverse", &SBJointMap::applySkeletonInverse, "Applies the inverse skeleton mapping to a motion.")
 			.def("guessMapping", &SBJointMap::guessMapping, "Automatic joint name matching to standard SmartBody names.")
-			.def("getMappedMotions", &SBJointMap::getMappedMotions, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of the motions that have been mapped by this joint map.")
-			.def("getMappedSkeletons", &SBJointMap::getMappedSkeletons, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of the skeletons that have been mapped by this joint map.");
+//			.def("getMappedMotions", &SBJointMap::getMappedMotions, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of the motions that have been mapped by this joint map.")
+//			.def("getMappedSkeletons", &SBJointMap::getMappedSkeletons, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns a list of the skeletons that have been mapped by this joint map.")
+			;
 
 	boost::python::class_<SBJointMapManager, boost::noncopyable>("SBJointMapManager", boost::python::no_init)
 			.def("getJointMap", &SBJointMapManager::getJointMap, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the joint map associated with a given name.")

@@ -32,10 +32,8 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <sb/SBMotion.h>
-#include <sb/SBSkeleton.h>
 #include <sb/SBRetarget.h>
 #include "SBUtilities.h"
-#include <sb/SBScene.h>
 #include <perlin/perlin.h>
 
 using namespace gwiz;

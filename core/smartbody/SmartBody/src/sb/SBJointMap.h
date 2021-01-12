@@ -50,10 +50,10 @@ class SBJointMap : public SBObject
 		SBAPI void applyMotionInverse(SmartBody::SBMotion* motion); // apply the inverse mapping 
 		SBAPI void applySkeleton(SmartBody::SBSkeleton* skeleton);
 		SBAPI void applySkeletonInverse(SmartBody::SBSkeleton* skeleton);
-		SBAPI std::vector<std::string>& getMappedMotions();
-		SBAPI std::vector<std::string>& getMappedSkeletons();
-		SBAPI bool isAppliedToMotion(const std::string& name);
-		SBAPI bool isAppliedToSkeleton(const std::string& name);
+//		SBAPI std::vector<std::string>& getMappedMotions();
+//		SBAPI std::vector<std::string>& getMappedSkeletons();
+//		SBAPI bool isAppliedToMotion(const std::string& name);
+//		SBAPI bool isAppliedToSkeleton(const std::string& name);
 
 		SBAPI void setMapping(const std::string& from, const std::string& to);
 		SBAPI void removeMapping(const std::string& from);
@@ -61,8 +61,8 @@ class SBJointMap : public SBObject
 
 		SBAPI void clearMapping(); // remove all mapings
 
-		SBAPI const std::string& getMapTarget(const std::string& to);
-		SBAPI const std::string& getMapSource(const std::string& from);
+		SBAPI const std::string& getMapTarget(const std::string& to) const;
+		SBAPI const std::string& getMapSource(const std::string& from) const;
 
 		SBAPI int getNumMappings();
 		SBAPI const std::string& getTarget(int num);
@@ -83,8 +83,8 @@ class SBJointMap : public SBObject
 		std::vector<std::pair<std::string, std::string> > _map;		
 #endif
 
-		std::vector<std::string> _mappedMotions;
-		std::vector<std::string> _mappedSkeletons;
+//		std::vector<std::string> _mappedMotions;
+//		std::vector<std::string> _mappedSkeletons;
 
 	protected:
 
