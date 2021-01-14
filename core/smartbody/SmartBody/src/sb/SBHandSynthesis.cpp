@@ -37,7 +37,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/property_map/property_map.hpp>
 
 #include <sb/SBMotion.h>
-#include <sb/SBScene.h>
 #include <sb/SBJoint.h>
 #include <sb/SBAssetManager.h>
 #include <sb/SBHandConfigurationManager.h>
@@ -46,7 +45,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <ostream>
 #include <utility>
 
@@ -71,8 +69,8 @@ SBHandSynthesis::SBHandSynthesis(boost::intrusive_ptr<SmartBody::SBSkeleton> ske
 //	LOG ( " \n \n \n SBHandSynthesis started \n \n \n " );
 
 	// initailize variables
-	_leftDb = new MotionDatabase();
-	_rightDb = new MotionDatabase();
+	_leftDb = new MotionDatabase(skeleton->_scene);
+	_rightDb = new MotionDatabase(skeleton->_scene);
 	_selectDb = _rightDb;
 	_bodyMotion = nullptr;
 	_sk = std::move(skeleton);
@@ -92,7 +90,7 @@ SBHandSynthesis::SBHandSynthesis(boost::intrusive_ptr<SmartBody::SBSkeleton> ske
 	_baseJoint = _sk->getJointByName("base");
 
 	// add the two motions to asset manager
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager =_sk->_scene.getAssetManager();
 	
 	// set the names
 	_leftDb->getFinalMotion()->setName("_leftMotion");
@@ -151,8 +149,8 @@ void SBHandSynthesis::addDatabaseMotion(SmartBody::SBMotion* dbMotion)
 	}
 
 	// make new motions for hand and body
-	SmartBody::SBMotion *handMotion = new SmartBody::SBMotion();
-	SmartBody::SBMotion *bodyMotion = new SmartBody::SBMotion();
+	SmartBody::SBMotion *handMotion = new SmartBody::SBMotion(_sk->_scene);
+	SmartBody::SBMotion *bodyMotion = new SmartBody::SBMotion(_sk->_scene);
 
 	// copy the body motion
 	handMotion->setMotion(*dbMotion);
@@ -203,7 +201,7 @@ bool SBHandSynthesis::loadDatabase()
 		SmartBody::util::log("Going to use hand configuration %s", _configName.c_str());
 
 	// instead get the database from the configuration manager
-	SBHandConfiguration* config = SmartBody::SBScene::getScene()->getHandConfigurationManager()->getHandConfiguration(_configName);
+	SBHandConfiguration* config = _sk->_scene.getHandConfigurationManager()->getHandConfiguration(_configName);
 
 	if (!config)
 		return false;
@@ -306,8 +304,8 @@ void SBHandSynthesis::generateDatabaseSegments()
 		// if length smaller 
 		if (!added){
 			// copy the motion and give them new names
-			SmartBody::SBMotion* bodySegment = new SmartBody::SBMotion();
-			SmartBody::SBMotion* handSegment = new SmartBody::SBMotion();
+			SmartBody::SBMotion* bodySegment = new SmartBody::SBMotion(_sk->_scene);
+			SmartBody::SBMotion* handSegment = new SmartBody::SBMotion(_sk->_scene);
 
 			// set motions
 			bodySegment->setMotion(*curBodyDbMotion);
@@ -481,7 +479,7 @@ void SBHandSynthesis::generateMotionSegments()
 	// if not added, add the whole motion copy
 	if (!isAdded)
 	{
-		SmartBody::SBMotion* copyMotion = new SmartBody::SBMotion();
+		SmartBody::SBMotion* copyMotion = new SmartBody::SBMotion(_sk->_scene);
 		copyMotion->setMotion(*_bodyMotion);
 		_selectDb->addMotionSegment(copyMotion);
 		copyMotion->setName(_bodyMotion->getName()+"_motion_seg_"+_selectDb->getJointName()+"_" +boost::lexical_cast<std::string>(_selectDb->getMotionSegments().size()));
@@ -498,7 +496,7 @@ void SBHandSynthesis::generateMotionSegments()
 // create a segment given a motion
 SmartBody::SBMotion* SBHandSynthesis::createSegment(SmartBody::SBMotion* motion, float tStart, float tEnd, float frameRate)
 {
-	SmartBody::SBMotion* segment = new SmartBody::SBMotion();
+	SmartBody::SBMotion* segment = new SmartBody::SBMotion(_sk->_scene);
 	segment->setMotion(*motion);
 
 	int trimFront = (int)(tStart/frameRate);
@@ -1378,7 +1376,7 @@ void SBHandSynthesis::printResults()
 	std::string fileName = _bodyMotion->getName()+"results_";
 
 	// generate the file name
-	std::string filePath =  SmartBody::SBScene::getScene()->getMediaPath() 
+	std::string filePath =  _sk->_scene.getMediaPath()
 								+ "/Hand/" + fileName + "_" + _selectDb->getJointName() + ".txt";
 
 	if (_printDebug)
@@ -1398,9 +1396,9 @@ void SBHandSynthesis::printResults()
 
 	// print all the database motion names
 	myFile << "\n Body Database Motions : \n";
-	for ( size_t i = 0 ; i < _bodyDbMotion.size() ; i++)
+	for (auto & i : _bodyDbMotion)
 	{
-		_selectDb->printMotion(_bodyDbMotion[i], myFile);
+		_selectDb->printMotion(i, myFile);
 	}
 
 	// print the hand db motions 
@@ -1415,9 +1413,9 @@ void SBHandSynthesis::printResults()
 }
 
 // initialize the motion datbase
-MotionDatabase::MotionDatabase()
+MotionDatabase::MotionDatabase(SBScene& scene) : SBSceneOwned(scene)
 {
-	_finalMotion = new SmartBody::SBMotion();
+	_finalMotion = new SmartBody::SBMotion(_scene);
 }
 
 
@@ -1451,13 +1449,13 @@ void MotionDatabase::clearDb()
 		delete _finalMotion;
 
 		// reinitialize
-		_finalMotion = new SmartBody::SBMotion();
+		_finalMotion = new SmartBody::SBMotion(_scene);
 	}
 
 	// clera motion segments
-	for (size_t i = 0 ; i < _motionSegments.size() ; i++ )
+	for (auto & _motionSegment : _motionSegments)
 	{
-		delete _motionSegments[i];
+		delete _motionSegment;
 	}
 
 	// clear the datbases 

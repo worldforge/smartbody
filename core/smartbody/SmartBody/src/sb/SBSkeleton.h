@@ -23,6 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBTypes.h>
 #include <sk/sk_skeleton.h>
+#include "sb/SBSceneOwned.h"
 #include <string>
 
 
@@ -32,12 +33,12 @@ class SBSubject;
 class SBJoint;
 class SBPawn;
 
-class SBSkeleton : public SkSkeleton
+class SBSkeleton : public SkSkeleton, public SBSceneOwned
 {
 public:
-	SBAPI SBSkeleton();
-	SBAPI explicit SBSkeleton(const std::string& skelFile);
-	SBAPI explicit SBSkeleton(const SBSkeleton& rhs);
+	SBAPI explicit SBSkeleton(SBScene& scene);
+	SBAPI explicit SBSkeleton(SBScene& scene, const std::string& skelFile);
+	SBAPI SBSkeleton(const SBSkeleton& rhs);
 	SBAPI ~SBSkeleton() override;
 
 	SBAPI SBSkeleton& operator=(const SBSkeleton& rhs);

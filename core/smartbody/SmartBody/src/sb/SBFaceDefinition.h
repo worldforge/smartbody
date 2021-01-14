@@ -26,6 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <string>
 #include <sb/SBObject.h>
+#include "sb/SBSceneOwned.h"
 
 /**
  *  Maps viseme ids to the related motion.
@@ -39,11 +40,11 @@ namespace SmartBody {
 
 class SBMotion;
 
-class SBFaceDefinition : public SBObject
+class SBFaceDefinition : public SBObject, public SBSceneOwned
 {
 	public:
-		SBAPI SBFaceDefinition();
-		SBAPI explicit SBFaceDefinition(const std::string& name);
+		//SBAPI SBFaceDefinition(SBScene& scene);
+		SBAPI explicit SBFaceDefinition(SBScene& scene, const std::string& name);
 		SBAPI explicit SBFaceDefinition(SBFaceDefinition* source);
 
 		SBAPI ~SBFaceDefinition();

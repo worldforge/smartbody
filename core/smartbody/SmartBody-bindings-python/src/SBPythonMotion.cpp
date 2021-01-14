@@ -81,7 +81,7 @@ namespace SmartBody
 void pythonFuncsMotion()
 {
 
-	boost::python::class_<SBMotion, boost::python::bases<SBObject> >("SBMotion")
+	boost::python::class_<SBMotion, boost::python::bases<SBObject>, boost::noncopyable >("SBMotion", boost::python::no_init)
 		//.def(boost::python::init<std::string>())
 		.def("addChannel", &SBMotion::addChannel, "Adds a channel to the motion with a given type (XPos, YPos, ZPos, Quat)")
 		.def("addFrame", &SBMotion::addFrame, "Adds a frame to the motion a given time.")
@@ -190,7 +190,7 @@ void pythonFuncsMotion()
 		.def("getTgtNode", &SBMotionTransitionEdge::getTgtNode, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Get the target motion node.")
 		;
 
-	boost::python::class_<SBMotionGraph>("SBMotionGraph")
+	boost::python::class_<SBMotionGraph, boost::noncopyable>("SBMotionGraph", boost::python::no_init)
 		//.def(boost::python::init<std::string>())
 		.def("addMotionNodeFromBlend", &SBMotionGraph::addMotionNodeFromBlend, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Adds a motion node to the motion graph.")
 		.def("addMotionEdge", &SBMotionGraph::addMotionEdge, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Adds a motion edge to the motion graph.")

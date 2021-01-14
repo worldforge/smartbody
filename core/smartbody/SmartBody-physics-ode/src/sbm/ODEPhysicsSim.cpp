@@ -21,7 +21,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SB_NO_ODE_PHYSICS
 #include "ODEPhysicsSim.h"
 
-#include <sb/SBScene.h>
 #include <sb/SBCollisionManager.h>
 #include "SBUtilities.h"
 
@@ -191,12 +190,6 @@ void ODEPhysicsSim::updateSimulationInternal( float timeStep )
 	}
 }
 
-ODEPhysicsSim* ODEPhysicsSim::getODESim()
-{
-	ODEPhysicsSim* odePhysics = dynamic_cast<ODEPhysicsSim*>(SBPhysicsSim::getPhysicsEngine());
-	return odePhysics;
-}
-
 void ODEPhysicsSim::updatePhysicsJoint( SmartBody::SBPhysicsJoint* phyJoint )
 {
 	ODEJoint* odeJoint = getODEJoint(phyJoint);
@@ -343,9 +336,7 @@ void ODEPhysicsSim::removePhysicsCharacter( SmartBody::SBPhysicsCharacter* phyCh
 void ODEPhysicsSim::addPhysicsObj( SmartBody::SBPhysicsObj* obj )
 {
 	if (hasPhysicsObj(obj)) return;
-	ODEPhysicsSim* odeSim = ODEPhysicsSim::getODESim();
-	if (!odeSim)	return;
-	if (!odeSim->systemIsInit())   return;
+	if (!systemIsInit())   return;
 
 	SmartBody::SBPhysicsSim::addPhysicsObj(obj);
 	if (odeObjMap.find(obj->getID()) == odeObjMap.end())
@@ -354,7 +345,7 @@ void ODEPhysicsSim::addPhysicsObj( SmartBody::SBPhysicsObj* obj )
 	}
 
 	ODEObj* odeObj = getODEObj(obj);		
-	odeObj->bodyID = dBodyCreate(odeSim->getWorldID());
+	odeObj->bodyID = dBodyCreate(getWorldID());
 	dBodySetData(odeObj->bodyID,obj); // attach physics obj with ode body
 	odeObj->physicsObj = obj;
 	if (obj)
@@ -390,12 +381,11 @@ void ODEPhysicsSim::updateODEGeometryTransform( SBGeomObject* geomObj, dGeomID g
 void ODEPhysicsSim::removePhysicsObj( SmartBody::SBPhysicsObj* obj )
 {
 	if (!hasPhysicsObj(obj)) return;
-	ODEPhysicsSim* odeSim = ODEPhysicsSim::getODESim();
-	if (!odeSim)	return;
-	if (!odeSim->systemIsInit())   return;
+
+	if (!systemIsInit())   return;
 
 	SBPhysicsSim::removePhysicsObj(obj);
-	ODEObjMap::iterator li = odeObjMap.find(obj->getID());
+	auto li = odeObjMap.find(obj->getID());
 	if (li != odeObjMap.end())
 	{
 		ODEObj* odeObj = li->second;
@@ -406,7 +396,7 @@ void ODEPhysicsSim::removePhysicsObj( SmartBody::SBPhysicsObj* obj )
 
 SmartBody::SBPhysicsObj* ODEPhysicsSim::createPhyObj()
 {
-	return new SmartBody::SBPhysicsObj();
+	return new SmartBody::SBPhysicsObj(*this);
 }
 
 ODEObj* ODEPhysicsSim::getODEObj( SmartBody::SBPhysicsObj* obj )
@@ -423,7 +413,7 @@ ODEObj* ODEPhysicsSim::getODEObj( SmartBody::SBPhysicsObj* obj )
 ODEJoint* ODEPhysicsSim::getODEJoint( SmartBody::SBPhysicsJoint* joint )
 {
 	ODEJoint* odeJoint = nullptr;
-	unsigned long jointID = (unsigned long)joint;
+	auto jointID = (unsigned long)joint;
 	if (odeJointMap.find(jointID) != odeJointMap.end())
 	{
 		odeJoint = odeJointMap[jointID];
@@ -456,9 +446,7 @@ SrVec ODEPhysicsSim::getJointRotationAxis( SmartBody::SBPhysicsJoint* joint, int
 
 void ODEPhysicsSim::updatePhyObjGeometry( SmartBody::SBPhysicsObj* obj)
 {
-	ODEPhysicsSim* odeSim = ODEPhysicsSim::getODESim();
-	if (!odeSim)	return;
-	if (!odeSim->systemIsInit())   return;
+	if (!systemIsInit())   return;
 	ODEObj* odeObj = getODEObj(obj);	
 	if (odeObj)
 	{
@@ -610,13 +598,11 @@ void ODEPhysicsSim::updateODEMass( dMass& odeMass, SBGeomObject* geomObj, float 
 
 dGeomID ODEPhysicsSim::createODEGeometry( SmartBody::SBPhysicsObj* obj, float mass )
 {
-	ODEPhysicsSim* odeSim = ODEPhysicsSim::getODESim();
-	if (!odeSim)	return 0;
-	if (!odeSim->systemIsInit())   return 0;
+	if (!systemIsInit())   return nullptr;
 	ODEObj* odeObj = getODEObj(obj);	
 	SBGeomObject* geom = obj->getColObj();
 	dGeomID geomID = ODEPhysicsSim::createODERawGeometry(geom);
-	if (geomID) dSpaceAdd(odeSim->getSpaceID(),geomID);
+	if (geomID) dSpaceAdd(getSpaceID(),geomID);
 	ODEPhysicsSim::updateODEMass(odeObj->odeMass,geom,mass);	
 	return geomID;
 
@@ -719,13 +705,12 @@ ODECollisionSpace::ODECollisionSpace()
 	spaceID = dSimpleSpaceCreate(nullptr);
 }
 
-void ODECollisionSpace::addCollisionObjects( const std::string& objName )
+void ODECollisionSpace::addCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName )
 {
-	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
-	SBGeomObject* obj = colManager->getCollisionObject(objName);
+	SBGeomObject* obj = collisionManager.getCollisionObject(objName);
 	if (obj)
 	{
-		SBCollisionSpace::addCollisionObjects(objName);
+		SBCollisionSpace::addCollisionObjects(collisionManager, objName);
 		dGeomID geomID = ODEPhysicsSim::createODERawGeometry(obj);
 		ODEPhysicsSim::updateODEGeometryTransform(obj,geomID);
 		odeGeomMap[objName] = geomID;
@@ -734,10 +719,9 @@ void ODECollisionSpace::addCollisionObjects( const std::string& objName )
 	}	
 }
 
-void ODECollisionSpace::removeCollisionObjects( const std::string& objName )
+void ODECollisionSpace::removeCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName )
 {
-	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
-	SBGeomObject* obj = colManager->getCollisionObject(objName);
+	SBGeomObject* obj = collisionManager.getCollisionObject(objName);
 	if (!obj) return;
 
 	dGeomID geomID = getODEGeomID(objName);
@@ -749,7 +733,7 @@ void ODECollisionSpace::removeCollisionObjects( const std::string& objName )
 		dSpaceRemove(spaceID,geomID);
 		dGeomDestroy(geomID);		
 	}
-	SBCollisionSpace::removeCollisionObjects(objName);
+	SBCollisionSpace::removeCollisionObjects(collisionManager, objName);
 }
 
 dGeomID ODECollisionSpace::getODEGeomID( const std::string& geomName )

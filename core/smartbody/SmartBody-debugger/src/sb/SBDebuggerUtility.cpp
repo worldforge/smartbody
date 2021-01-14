@@ -19,7 +19,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "vhcl.h"
-#include "vhcl_socket.h"
 
 #include "sb/NetRequest.h"
 #include "SBDebuggerUtility.h"
@@ -52,7 +51,6 @@ void SBDebuggerUtility::initScene()
 
 void SBDebuggerUtility::queryResources()
 {
-	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
 
 	// get assets
 	std::string assetTypes[4] = {"script", "motion", "audio", "mesh"};
@@ -83,13 +81,13 @@ void SBDebuggerUtility::initCharacter(const std::string& name, const std::string
 		SmartBody::util::log("Character has no name - will not be created.");
 		return;
 	}
-	SmartBody::SBCharacter* sbCharacter = SmartBody::SBScene::getScene()->createCharacter(name, "");
+	SmartBody::SBCharacter* sbCharacter = _client._scene.createCharacter(name, "");
 	if (!sbCharacter)
 	{
 		SmartBody::util::log("Problem creating character %s, will not be created in remote session...", name.c_str());
 		return;
 	}
-	auto sbSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
+	auto sbSkeleton = _client._scene.getSkeleton(skelName);
 	if (!sbSkeleton)
 	{
 		SmartBody::util::log("Problem creating skeleton %s, character %s will not be created in remote session...", name.c_str(), skelName.c_str());
@@ -104,14 +102,13 @@ void SBDebuggerUtility::initCharacter(const std::string& name, const std::string
 	sbCharacter->setSkeleton(copySbSkeleton);	
 }
 
-void SBDebuggerUtility::initCharacterFaceDefinition(const std::string& characterName, const std::string& faceDefName, const std::string& message)
+void SBDebuggerUtility::initCharacterFaceDefinition(SmartBody::SBScene& scene, const std::string& characterName, const std::string& faceDefName, const std::string& message)
 {
-	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
-	SmartBody::SBCharacter* sbCharacter = sbScene->getCharacter(characterName);
+	SmartBody::SBCharacter* sbCharacter = scene.getCharacter(characterName);
 	if (!sbCharacter)
 		return;
 
-	SmartBody::SBFaceDefinition* faceDef = sbScene->getFaceDefinition(faceDefName);
+	SmartBody::SBFaceDefinition* faceDef = scene.getFaceDefinition(faceDefName);
 	if (!faceDef)
 		return;
 
@@ -120,7 +117,7 @@ void SBDebuggerUtility::initCharacterFaceDefinition(const std::string& character
 
 void SBDebuggerUtility::initPawn(const std::string& name)
 {
-	SmartBody::SBPawn* sbPawn = SmartBody::SBScene::getScene()->createPawn(name);
+	SmartBody::SBPawn* sbPawn = _client._scene.createPawn(name);
 }
 
 /*
@@ -131,16 +128,16 @@ void SBDebuggerUtility::initPawn(const std::string& name)
 */
 void SBDebuggerUtility::runPythonCommand(const std::string& info)
 {
-	SmartBody::SBScene::getScene()->run(info.c_str());
+	_client._scene.run(info.c_str());
 }
 
 void SBDebuggerUtility::initSkeleton(const std::string& skFileName, const std::string& info)
 {
 	SrInput input(info.c_str());
-	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSkel(new SmartBody::SBSkeleton());
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSkel(new SmartBody::SBSkeleton(_client._scene));
 	sbSkel->loadSk(input);
 	sbSkel->skfilename(skFileName.c_str());
-	SmartBody::SBScene::getScene()->getAssetManager()->addSkeleton(std::move(sbSkel));
+	_client._scene.getAssetManager()->addSkeleton(std::move(sbSkel));
 }
 
 
@@ -148,7 +145,7 @@ void SBDebuggerUtility::updateCharacter(const std::string& cName, const std::str
 										 float& posX, float& posY, float& posZ, 
 										 float& rotX, float& rotY, float& rotZ, float& rotW)
 {
-	SmartBody::SBCharacter* sbCharacter = SmartBody::SBScene::getScene()->getCharacter(cName);
+	SmartBody::SBCharacter* sbCharacter = _client._scene.getCharacter(cName);
 	if (!sbCharacter)
 		return;
 
@@ -167,7 +164,7 @@ void SBDebuggerUtility::updateCharacter(const std::string& cName, const std::str
 void SBDebuggerUtility::updatePawn(const std::string& pName, float& posX, float& posY, float& posZ, 
 									float& rotX, float& rotY, float& rotZ, float& rotW)
 {
-	SmartBody::SBPawn* sbPawn  = SmartBody::SBScene::getScene()->getPawn(pName);
+	SmartBody::SBPawn* sbPawn  = _client._scene.getPawn(pName);
 	if (!sbPawn)
 		return;
 
@@ -187,9 +184,9 @@ void SBDebuggerUtility::updateCamera(float& eyePosX, float& eyePosY, float& eyeP
 									  float& fovY, float& aspect, float& zNear, float zFar)
 {
 	//TODO: make this work
-//	SrCamera* camera = SmartBody::SBScene::getScene()->getActiveCamera();
+//	SrCamera* camera = _client._scene.getActiveCamera();
 //
-//	if (!camera || !SmartBody::SBScene::getScene()->IsCameraLocked())
+//	if (!camera || !_client._scene.IsCameraLocked())
 //		return;
 //
 //	camera->setEye(eyePosX, eyePosY, eyePosZ);
@@ -203,28 +200,29 @@ void SBDebuggerUtility::updateCamera(float& eyePosX, float& eyePosY, float& eyeP
 
 bool QueryResourcesCB(void* caller, NetRequest* req)
 {
-	SmartBody::SBScene* sbScene = SmartBody::SBScene::getScene();
+	auto* utility = (SBDebuggerUtility*)caller;
+	auto& sbScene = utility->_client._scene;
 	std::vector<std::string> args = req->Args();
 	switch (req->Rid())
 	{
 	case NetRequest::Get_Seq_Asset_Paths:
-		for (size_t i = 0; i < args.size(); i++)
-			sbScene->addAssetPath("script", args[i]);
+		for (auto & arg : args)
+			sbScene.addAssetPath("script", arg);
 		break;
 
 	case NetRequest::Get_ME_Asset_Paths:
-		for (size_t i = 0; i < args.size(); i++)
-			sbScene->addAssetPath("motion", args[i]);
+		for (auto & arg : args)
+			sbScene.addAssetPath("motion", arg);
 		break;
 
 	case NetRequest::Get_Audio_Asset_Paths:
-		for (size_t i = 0; i < args.size(); i++)
-			sbScene->addAssetPath("audio", args[i]);
+		for (auto & arg : args)
+			sbScene.addAssetPath("audio", arg);
 		break;
 
 	case NetRequest::Get_Mesh_Asset_Paths:
-		for (size_t i = 0; i < args.size(); i++)
-			sbScene->addAssetPath("mesh", args[i]);
+		for (auto & arg : args)
+			sbScene.addAssetPath("mesh", arg);
 		break;
 
 	case NetRequest::Get_Script_Names:
@@ -234,9 +232,9 @@ bool QueryResourcesCB(void* caller, NetRequest* req)
 		break;
 
 	case NetRequest::Get_Motion_Names:
-		for (size_t i = 0; i < args.size(); i++)
+		for (auto & arg : args)
 		{
-			SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->createMotion(args[i]);
+			SmartBody::SBMotion* motion = utility->_client._scene.getAssetManager()->createMotion(arg);
 		}
 		break;
 
@@ -250,7 +248,7 @@ bool QueryResourcesCB(void* caller, NetRequest* req)
 		break;
 
 	case NetRequest::Get_Scene_Scale: 
-		sbScene->setScale(SmartBody::util::toFloat(req->ArgsAsString()));
+		sbScene.setScale(SmartBody::util::toFloat(req->ArgsAsString()));
 		break;
   case NetRequest::Get_Viseme_Names:
     break;

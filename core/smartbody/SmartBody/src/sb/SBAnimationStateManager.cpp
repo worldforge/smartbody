@@ -74,7 +74,7 @@ bool SBAnimationBlendManager::addTransitionEdgeToGraph( const std::string& sourc
 SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& name)
 {
 
-	SBAnimationBlend0D* blend = new SBAnimationBlend0D(name);
+	SBAnimationBlend0D* blend = new SBAnimationBlend0D(_scene, name);
 
 	addBlendToGraph(name);
 	_blends.emplace_back(blend);
@@ -90,7 +90,7 @@ SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& na
 SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& name)
 {
 
-	SBAnimationBlend1D* blend = new SBAnimationBlend1D(name);
+	SBAnimationBlend1D* blend = new SBAnimationBlend1D(_scene, name);
 	
 	addBlendToGraph(name);
 	_blends.emplace_back(blend);
@@ -106,7 +106,7 @@ SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& na
 SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& name)
 {
 
-	SBAnimationBlend2D* blend = new SBAnimationBlend2D(name);
+	SBAnimationBlend2D* blend = new SBAnimationBlend2D(_scene, name);
 	
 	addBlendToGraph(name);
 	_blends.emplace_back(blend);
@@ -123,7 +123,7 @@ SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& na
 SBAnimationBlend3D* SBAnimationBlendManager::createBlend3D(const std::string& name)
 {
 
-	SBAnimationBlend3D* blend = new SBAnimationBlend3D(name);
+	SBAnimationBlend3D* blend = new SBAnimationBlend3D(_scene, name);
 	
 	addBlendToGraph(name);
 	_blends.emplace_back(blend);

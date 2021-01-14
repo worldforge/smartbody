@@ -253,15 +253,15 @@ BehaviorRequestPtr parse_bml_locomotion(DOMElement& elem,
 
 
 		command << "steer facing " << c->getName() << " " << facingAngleVal;
-		srCmdSeq* seq = new srCmdSeq();
+		auto seq = std::make_unique<srCmdSeq>();
 		seq->insert(float(scene.getSimulationManager()->getTime() + scene.getSimulationManager()->getTimeDt()), command.str().c_str());
-		scene.getCommandManager()->execute_seq(seq);
+		scene.getCommandManager()->execute_seq(std::move(seq));
 	} else {
 		std::stringstream command;
 		command << "steer facing " << c->getName() << " " << "-200"; // set to fabs() > 180 to cancel old facing value
-		srCmdSeq* seq = new srCmdSeq();
+		auto seq = std::make_unique<srCmdSeq>();
 		seq->insert(float(scene.getSimulationManager()->getTime() + scene.getSimulationManager()->getTimeDt()), command.str().c_str());
-		scene.getCommandManager()->execute_seq(seq);
+		scene.getCommandManager()->execute_seq(std::move(seq));
 	}
 	std::string following = xml_parse_string(BMLDefs::ATTR_FOLLOW, &elem);
 	SmartBody::SBPawn* followingC = scene.getPawn(following);

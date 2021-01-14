@@ -632,14 +632,12 @@ void SBMotionNode::getRandomBlendWeights( std::vector<float>& outWeights )
 /* SBMotionGraph                                                        */
 /************************************************************************/
 
-SBAPI SBMotionGraph::SBMotionGraph()
+SBAPI SBMotionGraph::SBMotionGraph(SBScene& scene) : SBSceneOwned(scene)
 {
 	useTransitionInterpolation = true;		
 }
 
-SBAPI SBMotionGraph::~SBMotionGraph()
-{
-}
+SBAPI SBMotionGraph::~SBMotionGraph() = default;
 
 SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromBlend( SBAnimationBlend* blend )
 {
@@ -658,7 +656,7 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromBlend( SBAnimationBlend* ble
 
 SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromMotion( const std::string& nodeName, const std::string& motionName, int startFrame /*= -1*/, int endFrame /*= -1*/ )
 {	
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	SmartBody::SBMotion* sbMotion = assetManager->getMotion(motionName);	
 	return addMotionNodeFromMotionRef(nodeName, sbMotion, startFrame, endFrame);
 }
@@ -668,7 +666,7 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromMotionRef( const std::string
 {
 	if (!sbMotion)
 		return nullptr; // no motion available
-	SmartBody::SBAnimationBlend1D* animBlend = new SBAnimationBlend1D(nodeName);
+	SmartBody::SBAnimationBlend1D* animBlend = new SBAnimationBlend1D(_scene, nodeName);
 	if (startFrame < 0 || startFrame >= sbMotion->getNumFrames())
 		startFrame = 0;
 	if (endFrame < 0 || endFrame >= sbMotion->getNumFrames())
@@ -693,11 +691,11 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromMotionRef( const std::string
 SBMotionNode* SBMotionGraph::addMotionNodeFromMotionTransition( const std::string& nodeName, const std::string& motionName1, std::string& motionName2, int mo1EndFrme, int mo2StartFrame, int transitionLength )
 {
 	SBMotionNode* motionNode = nullptr;
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	SmartBody::SBMotion* motion1 = assetManager->getMotion(motionName1);
 	SmartBody::SBMotion* motion2 = assetManager->getMotion(motionName2);	
 
-	SmartBody::SBMotion* transMotion = new SmartBody::SBMotion();
+	SmartBody::SBMotion* transMotion = new SmartBody::SBMotion(_scene);
 	SBMotionFrameBuffer frame1, frame2, outFrame;
 	std::vector<std::string> affectedJointNames;
 	frame1.initFrameBuffer(motion1->channels(), affectedJointNames);
@@ -833,7 +831,7 @@ SBAPI SBMotionTransitionEdge* SBMotionGraph::getMotionEdge( const std::string& s
 
 SBAPI void SBMotionGraph::synthesizePath( SteerPath& desiredPath, const std::string& skeletonName, std::vector<std::pair<std::string,std::string> >& graphTraverseEdges )
 {
-	SBRetargetManager* retargetManager = SmartBody::SBScene::getScene()->getRetargetManager();
+	SBRetargetManager* retargetManager = _scene.getRetargetManager();
 	// build the delta transform cache to quickly compute the path cost	
 	std::map<std::string, MotionNodeCache> pathDeltaTransformCache;	
 	for (unsigned int i=0;i<motionNodes.size();i++)
@@ -1070,7 +1068,7 @@ struct MotionGraphNode
 
 SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::string>& motionNames, const std::string& skelName, const std::vector<std::string>& endJointNames )
 {
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	MeCtIKTreeScenario ikTree;
 	auto skel = assetManager->getSkeleton(skelName);
 	if (!skel)
@@ -1320,7 +1318,7 @@ SBAPI void SBMotionGraph::buildAutomaticMotionGraph( const std::vector<std::stri
 
 void SBMotionGraph::computeMotionTransitionFast( const std::string& moName1, const std::string& moName2, const std::string& skelName, const std::vector<std::string>& affectedJointNames, float threshold, std::vector<std::pair<int,int> >& outTransition )
 {
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	SmartBody::SBMotion* motion1 = assetManager->getMotion(moName1);
 	SmartBody::SBMotion* motion2 = assetManager->getMotion(moName2);
 	auto moSkel = assetManager->getSkeleton(skelName);
@@ -1497,7 +1495,7 @@ float SBMotionGraph::computeTransitionErrorFast( MotionCoordCache& cache, int fr
 #if 0
 void SBMotionGraph::computeMotionTransition( const std::string& moName1, const std::string& moName2, const std::string& skelName, const std::vector<std::string>& affectedJointNames, float threshold, std::vector<std::pair<int,int> >& outTransition )
 {
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	SmartBody::SBMotion* motion1 = assetManager->getMotion(moName1);
 	SmartBody::SBMotion* motion2 = assetManager->getMotion(moName2);
 	auto moSkel = assetManager->getSkeleton(skelName);
@@ -2041,7 +2039,7 @@ SBAPI SBMotionGraph* SBMotionGraphManager::createMotionGraph( const std::string&
 		return nullptr;
 	}
 
-	moGraph = new SBMotionGraph();
+	moGraph = new SBMotionGraph(_scene);
 	_motionGraphMap[moGraphName] = moGraph;
 	return moGraph;
 }

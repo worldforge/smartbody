@@ -40,7 +40,7 @@ SBAssetHandlerBvh::SBAssetHandlerBvh()
 
 SBAssetHandlerBvh::~SBAssetHandlerBvh() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerBvh::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerBvh::getAssets(SBScene& scene, const std::string& path)
 {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -57,12 +57,12 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerBvh::getAssets(const std::st
 
 	std::ifstream filestream(convertedPath.c_str());
 
-	auto skeleton = std::make_unique<SmartBody::SBSkeleton>();
+	auto skeleton = std::make_unique<SmartBody::SBSkeleton>(scene);
 	double scale = 1.0;
-	if (SmartBody::SBScene::getScene()->getAttribute("globalSkeletonScale"))
-		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalSkeletonScale");
+	if (scene.getAttribute("globalSkeletonScale"))
+		scale = scene.getDoubleAttribute("globalSkeletonScale");
 
-	auto motion = std::make_unique<SmartBody::SBMotion>();
+	auto motion = std::make_unique<SmartBody::SBMotion>(scene);
 
 	bool ok = ParserBVH::parse(*skeleton, *motion, convertedPath, filestream, float(scale));
 	if (!ok)

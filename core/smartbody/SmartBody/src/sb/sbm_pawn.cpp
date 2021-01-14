@@ -80,7 +80,7 @@ SkChannelArray& SbmPawn::getWorldOffsetChannels() {
 SbmPawn::SbmPawn(SmartBody::SBScene& scene, const char * name ) 
 : SmartBody::SBObject(),
 SmartBody::SBSceneOwned(scene),
-_skeleton(new SmartBody::SBSkeleton()),
+_skeleton(new SmartBody::SBSkeleton(scene)),
 blendMeshGroup(new SrSnGroup()),
 ct_tree_p( MeControllerTreeRoot::create(*this) ),
 //TODO: remove the need for this hideous cast

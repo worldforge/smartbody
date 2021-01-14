@@ -33,7 +33,7 @@ SBAssetHandlerHdr::SBAssetHandlerHdr() {
 
 SBAssetHandlerHdr::~SBAssetHandlerHdr() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerHdr::getAssets(const std::string& path) {
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerHdr::getAssets(SBScene& scene, const std::string& path) {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
 	std::string convertedPath = checkPath(path);

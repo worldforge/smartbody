@@ -26,7 +26,7 @@ scene.run('zebra2-map.py')
 zebra2Map = scene.getJointMapManager().getJointMap('zebra2')
 bradSkeleton = scene.getSkeleton('ChrBrad.sk')
 zebra2Map.applySkeleton(bradSkeleton)
-zebra2Map.applyMotionRecurse('ChrBrad')
+zebra2Map.applyMotionRecurse(scene, 'ChrBrad')
 
 print('Adding characters into scene')
 # Set up multiple Brads

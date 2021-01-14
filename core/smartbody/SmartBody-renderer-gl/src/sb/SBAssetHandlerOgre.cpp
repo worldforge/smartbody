@@ -42,7 +42,7 @@ SBAssetHandlerOgre::SBAssetHandlerOgre()
 
 SBAssetHandlerOgre::~SBAssetHandlerOgre() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(SBScene& scene, const std::string& path)
 {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -54,13 +54,13 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 	std::string fileName = boost::filesystem::basename( p );
 	std::string extension =  boost::filesystem::extension( p );
 
-	auto skeleton = std::make_unique<SmartBody::SBSkeleton>();
+	auto skeleton = std::make_unique<SmartBody::SBSkeleton>(scene);
 	skeleton->skfilename(convertedPath.c_str());
 	skeleton->setName(fileName + extension);
 
 	double scale = 1.0;
-	if (SmartBody::SBScene::getScene()->getAttribute("globalSkeletonScale"))
-		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalSkeletonScale");
+	if (scene.getAttribute("globalSkeletonScale"))
+		scale = scene.getDoubleAttribute("globalSkeletonScale");
 
 	// is this a .skeleton.xml or a .mesh.xml file?
 	if (convertedPath.find(".skeleton.xml") != std::string::npos)
@@ -81,7 +81,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 	{
 		// parse the mesh and skinweights in a separate pass (should be collapsed into only one pass...)
 #if !defined(__native_client__) && !defined(EMSCRIPTEN)
-		auto mesh = std::make_unique<SbmDeformableMeshGPU>();
+		auto mesh = std::make_unique<SbmDeformableMeshGPU>(new SBSkeleton(scene));
 #else
 		auto mesh = std::make_unique<DeformableMesh>();
 #endif
@@ -95,7 +95,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerOgre::getAssets(const std::s
 			if (!skeletonName.empty())
 			{
 				// find the skeleton
-				existingSkeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonName);
+				existingSkeleton = scene.getAssetManager()->getSkeleton(skeletonName);
 				if (existingSkeleton)
 				{
 					for (auto& sw : mesh->skinWeights)

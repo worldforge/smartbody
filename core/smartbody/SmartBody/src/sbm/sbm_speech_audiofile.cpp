@@ -42,7 +42,8 @@ using namespace SmartBody;
 #define _MAX_PATH 1024
 #endif
 
-AudioFileSpeech::AudioFileSpeech()
+AudioFileSpeech::AudioFileSpeech(SBScene& scene)
+: SBSceneOwned(scene)
 {
 
    m_requestIdCounter = 1;  // start with 1, in case 0 is a special case
@@ -70,7 +71,7 @@ RequestId AudioFileSpeech::requestSpeechAudio( const char * agentName, const std
    xmlConverted += "encoding=\"" + encoding.substr( 0, 7 ) + "\"?>";
 
    xml_utils::xmlToString( node, xmlConverted ); //Xml to string recursively searches DOM tree and returns a string of the xml document
-   if (SmartBody::SBScene::getScene()->getBoolAttribute("useFastSpeechParsing"))
+   if (_scene.getBoolAttribute("useFastSpeechParsing"))
    {
 	  // mcu.mark("requestSpeechAudio");
 	   return requestSpeechAudioFast( agentName, voiceCode, xmlConverted, callbackCmd );
@@ -113,7 +114,7 @@ RequestId AudioFileSpeech::requestSpeechAudioFast( const char * agentName, std::
 		return 0;
 	}
 
-   SmartBody::SBCharacter * agent = SmartBody::SBScene::getScene()->getCharacter(agentName );
+   SmartBody::SBCharacter * agent = _scene.getCharacter(agentName );
    if ( agent == nullptr )
    {
       SmartBody::util::log( "AudioFileSpeech::requestSpeechAudio ERR: insert AudioFile voice code lookup FAILED, msgId=%s\n", agentName ); 
@@ -133,7 +134,7 @@ RequestId AudioFileSpeech::requestSpeechAudioFast( const char * agentName, std::
 #endif
    { 
 	   bool hasAudioPath = false;
-	   std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetPaths("audio");
+	   std::vector<std::string> audioPaths = _scene.getAssetPaths("audio");
 	   for (size_t audioPathCounter = 0; audioPathCounter < audioPaths.size(); ++audioPathCounter)
 	   {
 		   boost::filesystem::path p( audioPaths[audioPathCounter] );
@@ -222,7 +223,7 @@ RequestId AudioFileSpeech::requestSpeechAudioFast( const char * agentName, std::
 	m_speechRequestInfo[m_requestIdCounter].emotionData.clear();
 	ReadEmotionData(emoFilename.c_str(), m_speechRequestInfo[m_requestIdCounter].emotionData);
 
-	SmartBody::SBScene::getScene()->getCommandManager()->execute_later(SmartBody::util::format( "%s %s %d %s", callbackCmd, agentName, m_requestIdCounter, "SUCCESS" ).c_str() );
+	_scene.getCommandManager()->execute_later(SmartBody::util::format( "%s %s %d %s", callbackCmd, agentName, m_requestIdCounter, "SUCCESS" ).c_str() );
 	return m_requestIdCounter++;
 }
 
@@ -252,7 +253,7 @@ RequestId AudioFileSpeech::requestSpeechAudio( const char * agentName, std::stri
 
    
 
-   SmartBody::SBCharacter * agent = SmartBody::SBScene::getScene()->getCharacter( agentName );
+   SmartBody::SBCharacter * agent = _scene.getCharacter( agentName );
    if ( agent == nullptr )
    {
       SmartBody::util::log( "AudioFileSpeech::requestSpeechAudio ERR: insert AudioFile voice code lookup FAILED, msgId=%s\n", agentName ); 
@@ -272,7 +273,7 @@ RequestId AudioFileSpeech::requestSpeechAudio( const char * agentName, std::stri
    if( !boost::filesystem2::exists( voicecodeabs_p ))
 #endif
    {
-	   std::vector<std::string> audioPaths = SmartBody::SBScene::getScene()->getAssetPaths("audio");
+	   std::vector<std::string> audioPaths = _scene.getAssetPaths("audio");
 	   bool hasAudioPath = false;
 	   for (size_t audioPathCounter = 0; audioPathCounter < audioPaths.size(); ++audioPathCounter)
 	   {
@@ -354,7 +355,7 @@ RequestId AudioFileSpeech::requestSpeechAudio( const char * agentName, std::stri
    m_speechRequestInfo[m_requestIdCounter].emotionData.clear();
    ReadEmotionData(emoFilename.c_str(), m_speechRequestInfo[m_requestIdCounter].emotionData);
 
-   SmartBody::SBScene::getScene()->getCommandManager()->execute_later(SmartBody::util::format( "%s %s %d %s", callbackCmd, agentName, m_requestIdCounter, "SUCCESS" ).c_str() );
+   _scene.getCommandManager()->execute_later(SmartBody::util::format( "%s %s %d %s", callbackCmd, agentName, m_requestIdCounter, "SUCCESS" ).c_str() );
 
 
    return m_requestIdCounter++;
@@ -639,7 +640,7 @@ void AudioFileSpeech::ReadMotionDataBML(const char * filename, std::vector< Vise
 
 	std::unique_ptr<DOMDocument> xmlDoc;
 	DOMDocument* xmlPtr = nullptr;
-	if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCache"))
+	if (_scene.getBoolAttribute("useXMLCache"))
 	{
 		boost::filesystem::path path(filename);
 #if (BOOST_VERSION > 104400)
@@ -657,7 +658,7 @@ void AudioFileSpeech::ReadMotionDataBML(const char * filename, std::vector< Vise
 		{
 			xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, filename );
 			xmlPtr = xmlDoc.get();
-			if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCacheAuto"))
+			if (_scene.getBoolAttribute("useXMLCacheAuto"))
 			{
 				// add to the cache if in auto cache mode
 				xmlCache.emplace(absPathStr, std::move(xmlDoc));
@@ -701,7 +702,7 @@ void AudioFileSpeech::ReadVisemeDataBML( const char * filename, std::vector< Vis
 
    	std::unique_ptr<DOMDocument> xmlDoc;
 	DOMDocument* xmlPtr = nullptr;
-	if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCache"))
+	if (_scene.getBoolAttribute("useXMLCache"))
 	{
 		boost::filesystem::path path(filename);
 #if (BOOST_VERSION > 104400)
@@ -719,7 +720,7 @@ void AudioFileSpeech::ReadVisemeDataBML( const char * filename, std::vector< Vis
 		{
 			xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, filename );
 			xmlPtr = xmlDoc.get();
-			if (SmartBody::SBScene::getScene()->getBoolAttribute("useXMLCacheAuto"))
+			if (_scene.getBoolAttribute("useXMLCacheAuto"))
 			{
 				// add to the cache if in auto cache mode
 				xmlCache.emplace(absPathStr, std::move(xmlDoc));

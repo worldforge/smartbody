@@ -41,8 +41,8 @@ class SbmDeformableMeshGPU;
 class SbmBlendFace: public DeformableMesh
 {
 	public:
-		SbmBlendFace();
-		~SbmBlendFace();
+		SbmBlendFace(boost::intrusive_ptr<SkSkeleton> skeleton);
+		~SbmBlendFace() override;
 
 		bool			buildVertexBufferGPU(int);
 		void			addFace(SbmDeformableMeshGPU*);
@@ -50,9 +50,9 @@ class SbmBlendFace: public DeformableMesh
 
 		void addFaceVertices( std::vector<SrVec> vertices );
 
-		void			initShaderProgram();
-		void			initShaderProgram_Dan();
-		void			initShader();
+		void			initShaderProgram(const std::string& mediaPath);
+		void			initShaderProgram_Dan(const std::string& mediaPath);
+		void			initShader(const std::string& mediaPath);
 		
 		void			setDeformableMesh(DeformableMesh*);
 		DeformableMesh* getDeformableMesh();
@@ -92,7 +92,7 @@ class SbmBlendTextures
 		SbmBlendTextures();
 		~SbmBlendTextures();
 
-		static GLuint getShader(const std::string);
+		static GLuint getShader(const std::string& mediaPath, const std::string);
 		static void BlendTwoFBO(GLuint, GLuint, GLuint, GLuint, float, GLuint, int, int);
 		static void BlendAllAppearances(GLuint, GLuint, std::vector<float>, std::vector<GLuint>, GLuint, int, int);
 		static void BlendAllAppearancesPairwise(GLuint *, GLuint *, std::vector<float>, std::vector<GLuint>,  std::vector<std::string>, GLuint, int, int);

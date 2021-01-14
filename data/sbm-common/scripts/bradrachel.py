@@ -44,7 +44,7 @@ scene.run("init-param-animation.py")
 
 # established gesture data set
 
-gMapManager = getScene().getGestureMapManager()
+gMapManager = scene.getGestureMapManager()
 # Brad's gestures
 gMap = gMapManager.createGestureMap("ChrBrad")
 gMap.addGestureMapping("ChrBrad@Idle01_YouLf01", "DEICTIC", "YOU", "LEFT_HAND", "", "ChrBrad@Idle01")

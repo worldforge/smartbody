@@ -25,10 +25,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 #include <sb/SBObject.h>
+#include "sb/SBSceneOwned.h"
 
 namespace SmartBody {
 
-class SBGestureMap : public SBObject 
+class SBGestureMap : public SBObject, public SBSceneOwned
 {
 	public:
 		SBAPI struct GestureInfo
@@ -49,8 +50,8 @@ class SBGestureMap : public SBObject
 		};
 
 	public:
-		SBAPI SBGestureMap();
-		SBAPI SBGestureMap(const std::string& name);
+		SBAPI SBGestureMap(SBScene& scene);
+		SBAPI SBGestureMap(SBScene& scene, const std::string& name);
 		SBAPI ~SBGestureMap();
 
 		SBAPI SBGestureMap* copy();

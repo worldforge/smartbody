@@ -31,8 +31,8 @@ SBSpeechManager::SBSpeechManager(SBScene& scene) : SBObject()
 {
 	_speech_rvoice = std::make_unique<remote_speech>(scene);
 	_speech_localvoice = std::make_unique<local_speech>(scene);
-	_speech_audiofile = std::make_unique<SmartBody::AudioFileSpeech>();
-	_speech_text = std::make_unique<text_speech>();
+	_speech_audiofile = std::make_unique<SmartBody::AudioFileSpeech>(scene);
+	_speech_text = std::make_unique<text_speech>(scene);
 	_festivalRelayLocal = std::make_unique<FestivalSpeechRelayLocal>();
 	_cereprocRelayLocal = std::make_unique<CereprocSpeechRelayLocal>();
 }

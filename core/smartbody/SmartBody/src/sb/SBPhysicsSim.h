@@ -29,6 +29,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody
 {
+class SBCharacter;
+class SBPhysicsSim;
 
 class SBPhysicsObjInterface : public SBTransformObjInterface
 {
@@ -39,8 +41,8 @@ protected:
 	SBTransform  refTransform;
 
 public:	
-	SBAPI virtual SBTransform& getGlobalTransform() { return globalTransform; }
-	SBAPI virtual void setGlobalTransform(SBTransform& rt);	
+	SBAPI SBTransform& getGlobalTransform() override { return globalTransform; }
+	SBAPI void setGlobalTransform(SBTransform& rt) override;
 
 	SBAPI void setGlobalTransform(const SrMat& gmat);
 	SBAPI SBTransform& getRefTransform() { return refTransform; }
@@ -50,8 +52,8 @@ public:
 	SBAPI virtual void enablePhysicsSim(bool bPhy) = 0;
 	SBAPI virtual void enableCollisionSim(bool bCol) = 0;
 
-	SBAPI bool hasPhysicsSim() { return bHasPhysicsSim; }
-	SBAPI bool hasCollisionSim() { return bHasCollisionSim; }	
+	SBAPI bool hasPhysicsSim() const { return bHasPhysicsSim; }
+	SBAPI bool hasCollisionSim() const { return bHasCollisionSim; }
 	SBAPI void hasPhysicsSim(bool phySim) { bHasPhysicsSim = phySim; }
 	SBAPI void hasCollisionSim(bool colSim) { bHasCollisionSim = colSim; }
 	SBAPI unsigned long getID();	
@@ -60,17 +62,18 @@ public:
 class SBPhysicsObj : public SBPhysicsObjInterface, public SmartBody::SBObject// abstraction for rigid objects in the physics engine
 {
 protected:
+	SBPhysicsSim& physicsSim;
 	std::unique_ptr<SBGeomObject> colObj;
 	float         objDensity;
 	SrVec         externalForce, externalTorque;
 	SrVec         linearVel, angularVel;	
 	bool          initGeom;
 public:
-	SBAPI SBPhysicsObj();
+	SBAPI explicit SBPhysicsObj(SBPhysicsSim& physicsSim);
 	SBAPI ~SBPhysicsObj();
 
-	SBAPI virtual void enablePhysicsSim(bool bPhy);
-	SBAPI virtual void enableCollisionSim(bool bCol);	
+	SBAPI void enablePhysicsSim(bool bPhy) override;
+	SBAPI void enableCollisionSim(bool bCol) override;
 	SBAPI virtual void updateSbmObj();
 	SBAPI virtual void updatePhySim();
 
@@ -80,7 +83,7 @@ public:
 	SBAPI SBGeomObject* getColObj() { return colObj.get(); }
 	SBAPI float         getMass();	
 	SBAPI void          setMass(float mass);
-	SBAPI float         getDensity() { return objDensity; }
+	SBAPI float         getDensity() const { return objDensity; }
 	SBAPI void          setDensity(float density) { objDensity = density; }
 
 	SBAPI SrVec& getExternalTorque() { return externalTorque; }
@@ -93,7 +96,7 @@ public:
 	SBAPI SrVec getAngularVel();
 	SBAPI void  setAngularVel(SrVec val);
 
-	SBAPI virtual void notify(SBSubject* subject);	
+	SBAPI void notify(SBSubject* subject) override;
 	SBAPI virtual void handleCollision(SrVec contactPt, SBPhysicsObj* colObj);
 };
 
@@ -103,6 +106,7 @@ class SBPhysicsCharacter;
 class SBPhysicsJoint : public SmartBody::SBObject
 {
 protected:
+	SBPhysicsSim& physicsSim;
 	SBJoint* sbmJoint;
 	SbmJointObj* parentObj;	
 	SbmJointObj* childObj;
@@ -111,7 +115,7 @@ protected:
 	SrVec jointTorque;
 	float totalSupportMass; // all 	
 public:
-	SBAPI SBPhysicsJoint(SBJoint* joint);
+	SBAPI SBPhysicsJoint(SBPhysicsSim& physicsSim, SBJoint* joint);
 	SBAPI ~SBPhysicsJoint();
 	SBAPI SBJoint* getSBJoint() { return sbmJoint; }
 	SBAPI SrQuat& getRefQuat() { return refQuat; }
@@ -128,11 +132,11 @@ public:
 
 	SBAPI unsigned long getID();
 
-	SBAPI virtual void notify(SBSubject* subject);
+	SBAPI void notify(SBSubject* subject) override;
 
 public:
 	SBAPI void updateTotalSupportMass();
-	SBAPI float getTotalSupportMass() { return totalSupportMass; }
+	SBAPI float getTotalSupportMass() const { return totalSupportMass; }
 };
 
 struct CollisionRecord
@@ -152,7 +156,7 @@ protected:
 	SBPhysicsCharacter* phyChar;
 	SBPhysicsJoint* phyJoint;	
 public:
-	SBAPI SbmJointObj(SBPhysicsCharacter* phyc);
+	SBAPI explicit SbmJointObj(SBPhysicsSim& physicsSim, SBPhysicsCharacter* phyc);
 	SBAPI ~SbmJointObj();
 	SBAPI SrMat getRelativeOrientation();
 	SBAPI SBPhysicsJoint* getPhyJoint() { return phyJoint; 	}
@@ -165,28 +169,29 @@ public:
 	SBAPI SbmJointObj* getParentObj() { return phyJoint->getParentObj(); }
 	//void setParentObj(SbmJointObj* parent) { parentObj = parent; }
 	SBAPI virtual void initJoint(SBPhysicsJoint* joint);
-	SBAPI virtual void handleCollision(SrVec contactPt, SBPhysicsObj* colObj);
+	SBAPI void handleCollision(SrVec contactPt, SBPhysicsObj* colObj) override;
 };
 
 
 class SBPhysicsCharacter : public SBPhysicsObjInterface, public SmartBody::SBObject // interface for articulated dynamic character 
 {
-protected:	
+protected:
+	SBPhysicsSim& physicsSim;
 	SBPhysicsJoint* root;
 	std::map<std::string, SBPhysicsJoint*> jointMap;
 	std::map<std::string, SbmJointObj*>     jointObjMap;
 	//std::map<std::string, SBGeomObject*>   jointGeometryMap;
-	std::string characterName;	
+	SBCharacter* character;
 	std::vector<CollisionRecord> collisionRecords;
 public:
-	SBAPI SBPhysicsCharacter();
-	SBAPI virtual void initPhysicsCharacter(const std::string& charName, std::vector<std::string>& jointNameList, bool buildGeometry = false);
+	SBAPI explicit SBPhysicsCharacter(SBPhysicsSim& physicsSim);
+	SBAPI virtual void initPhysicsCharacter(SBCharacter* character, std::vector<std::string>& jointNameList, bool buildGeometry = false);
 
 	SBAPI void enablePhysicsSim(bool bPhy) override;
 	SBAPI void enableCollisionSim(bool bCol) override;
 	SBAPI std::vector<CollisionRecord>& getCollisionRecords() { return collisionRecords; }
 
-	SBAPI std::string getPhysicsCharacterName() { return characterName; }		
+	SBAPI std::string getPhysicsCharacterName();
 	SBAPI SbmJointObj* getJointObj(const std::string& jointName); // get body part associated with this joint
 	SBAPI SBPhysicsJoint* getPhyJoint(const std::string& jointName);
 	SBAPI SBPhysicsJoint* getPhyJointRoot() { return root; }
@@ -253,8 +258,8 @@ public:
 	SBAPI virtual void updateSimulationInternal(float timeStep) = 0;
 	SBAPI virtual SBPhysicsObj* createPhyObj() = 0;	
 
-	SBAPI virtual void notify(SBSubject* subject);
-	SBAPI static SBPhysicsSim* getPhysicsEngine();
+	SBAPI void notify(SBSubject* subject) override;
+//	SBAPI static SBPhysicsSim* getPhysicsEngine();
 };
 
 }

@@ -31,19 +31,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBFaceDefinition::SBFaceDefinition() : SBObject()
-{
-	_faceNeutral = nullptr;
-}
+//SBFaceDefinition::SBFaceDefinition() : SBObject()
+//{
+//	_faceNeutral = nullptr;
+//}
 
-SBFaceDefinition::SBFaceDefinition(const std::string& name)
+SBFaceDefinition::SBFaceDefinition(SBScene& scene, const std::string& name) : SBSceneOwned(scene)
 {
 	_faceNeutral = nullptr;
 	_name = name;
 	setName(name);
 }
 
-SBFaceDefinition::SBFaceDefinition(SBFaceDefinition* source)
+SBFaceDefinition::SBFaceDefinition(SBFaceDefinition* source) : SBSceneOwned(*source)
 {
 	if (!source)
 	{
@@ -90,7 +90,7 @@ void SBFaceDefinition::setFaceNeutral(const std::string& motionName)
 	SmartBody::SBMotion* motion = nullptr;
 	if (motionName.length() > 0)
 	{
-		motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+		motion = _scene.getAssetManager()->getMotion(motionName);
 		if (!motion)
 		{
 			SmartBody::util::log("ERROR: Unknown facial neutral motion \"%s\".", motionName.c_str());
@@ -217,7 +217,7 @@ void SBFaceDefinition::setAU(int auNum, const std::string& side, const std::stri
 	SmartBody::SBMotion*  motion = nullptr;
 	if (motionName.length() > 0)
 	{
-		motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+		motion = _scene.getAssetManager()->getMotion(motionName);
 		if (!motion)
 		{
 			SmartBody::util::log("ERROR: Unknown facial pose \"%s\".", motionName.c_str());
@@ -347,7 +347,7 @@ void SBFaceDefinition::setViseme(const std::string& visemeName, const std::strin
 		}
 
 		// motion name given, find the associated motion
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+		SmartBody::SBMotion* motion = _scene.getAssetManager()->getMotion(motionName);
 		if (!motion)
 		{
 			SmartBody::util::log("Cannot find viseme named '%s'. Viseme named '%s' not added.", visemeName.c_str(), motionName.c_str());
@@ -373,7 +373,7 @@ void SBFaceDefinition::setViseme(const std::string& visemeName, const std::strin
 			}
 			else
 			{
-				SmartBody::SBMotion* newMotion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+				SmartBody::SBMotion* newMotion = _scene.getAssetManager()->getMotion(motionName);
 				if (!newMotion)
 				{
 					SmartBody::util::log("Cannot find viseme named '%s'. Viseme named '%s' not added.", visemeName.c_str(), motionName.c_str());

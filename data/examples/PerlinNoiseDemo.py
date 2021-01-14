@@ -34,7 +34,7 @@ zebra2Map = scene.getJointMapManager().getJointMap('zebra2')
 bradSkeleton = scene.getSkeleton('ChrBrad.dae')
 bradSkeleton.rescale(.01)
 zebra2Map.applySkeleton(bradSkeleton)
-zebra2Map.applyMotionRecurse('ChrBrad')
+zebra2Map.applyMotionRecurse(scene, 'ChrBrad')
 
 # Setting up Brad
 print('Setting up Brad')

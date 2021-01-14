@@ -117,9 +117,6 @@ class SBScene : public SBObject
 		SBAPI std::string getStringFromObject(SmartBody::SBObject* object);
 		SBAPI SmartBody::SBObject* getObjectFromString(const std::string& value);
 
-		SBAPI static SBScene* getScene();		
-		SBAPI static void destroyScene();
-
 		SBAPI void setScale(float val);
 		SBAPI float getScale() const;
 
@@ -319,7 +316,6 @@ class SBScene : public SBObject
 		std::string _mediaPath;
 
 		std::string _processId;
-		static SBScene* _scene;
 		static std::map<std::string, std::string> _systemParameters;
 
 		boost::intrusive_ptr<SrSnGroup> _rootGroup;
@@ -334,8 +330,7 @@ class SBScene : public SBObject
 
 
 		std::unique_ptr<KinectProcessor> _kinectProcessor;
-		Heightfield* _heightField;
-		SBNavigationMesh* _navigationMesh;
+		std::unique_ptr<Heightfield> _heightField;
 		std::map<std::string, GeneralParam*> _generalParams;
 
 		std::string _lastScriptDirectory;

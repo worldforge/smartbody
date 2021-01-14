@@ -23,18 +23,19 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sb/SBScene.h>
 #include <string>
+#include "SBSceneOwned.h"
 
 namespace SmartBody{
 
 
-class SBHandConfiguration{
+class SBHandConfiguration : public SBSceneOwned {
 
 public:
-	SBAPI SBHandConfiguration();
+	SBAPI explicit SBHandConfiguration(SBScene& scene);
 	SBAPI ~SBHandConfiguration();
 
-	SBAPI void addMotion(std::string motionName);
-	SBAPI void removeMotion(std::string motionName);
+	SBAPI void addMotion(const std::string& motionName);
+	SBAPI void removeMotion(const std::string& motionName);
 	SBAPI int getNumMotions();
 	SBAPI void printMotionNames();
 	SBAPI SBMotion* getMotion(int i);

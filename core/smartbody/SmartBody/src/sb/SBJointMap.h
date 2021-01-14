@@ -46,7 +46,7 @@ class SBJointMap : public SBObject
 		SBAPI ~SBJointMap();
 
 		SBAPI void applyMotion(SmartBody::SBMotion* motion);
-		SBAPI void applyMotionRecurse(const std::string& directory);
+		SBAPI void applyMotionRecurse(SBScene& scene, const std::string& directory);
 		SBAPI void applyMotionInverse(SmartBody::SBMotion* motion); // apply the inverse mapping 
 		SBAPI void applySkeleton(SmartBody::SBSkeleton* skeleton);
 		SBAPI void applySkeletonInverse(SmartBody::SBSkeleton* skeleton);

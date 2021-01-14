@@ -42,7 +42,7 @@ SBAssetHandlerCOLLADA::SBAssetHandlerCOLLADA()
 
 SBAssetHandlerCOLLADA::~SBAssetHandlerCOLLADA() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(SBScene& scene, const std::string& path)
 {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -54,10 +54,8 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 	std::string extension = boost::filesystem::extension(p);
 	std::string basename = boost::filesystem::basename(p);
 	
-	double skeletonScale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalSkeletonScale");
-	double motionScale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalMotionScale");
 
-	bool useFastParsing = SmartBody::SBScene::getScene()->getBoolAttribute("useFastCOLLADAParsing");
+	bool useFastParsing = scene.getBoolAttribute("useFastCOLLADAParsing");
 	if (useFastParsing)
 	{
 		rapidxml::xml_document<> doc;
@@ -98,9 +96,9 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 			std::map<std::string, std::string> materialId2Name;
 			if (!visualSceneNode)
 				SmartBody::util::log(" .dae file %s doesn't contain visual scene information.", convertedPath.c_str());
-			auto skeleton = std::make_unique<SBSkeleton>();
+			auto skeleton = std::make_unique<SBSkeleton>(scene);
 			skeleton->setName(basename + extension);
-			auto singleMotion = std::make_unique<SBMotion>();
+			auto singleMotion = std::make_unique<SBMotion>(scene);
 			singleMotion->setName(basename + extension);
 			int order;
 			if (visualSceneNode)
@@ -134,27 +132,26 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerCOLLADA::getAssets(const std
 			
 			rapidxml::xml_node<>* skmNode = ParserCOLLADAFast::getNode("library_animations", colladaNode, 0, 1);
 
-			SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 			std::vector<std::unique_ptr<SBMotion>> motions;
 			
 			if (skmNode)
 			{
 				// NOTE: Some Collada files put each animation channel in a separate <animation> node. For this kind of special case, enable "parseSingleAnimation" to combine all nodes into one animation.
 				// Otherwise, the default ( and correct ) behavior should be separate each <animation> node into an individual SBMotion. 
-				if (scene->getBoolAttribute("parseSingleAnimation"))
+				if (scene.getBoolAttribute("parseSingleAnimation"))
 				{					
 					ParserCOLLADAFast::parseLibrarySingleAnimation(skmNode, *skeleton, *singleMotion, 1.0, order, false);
 					motions.emplace_back(std::move(singleMotion));
 				}
 				else
 				{
-					ParserCOLLADAFast::parseLibraryAnimations(skmNode, *skeleton, motions, 1.0, order, false);
+					ParserCOLLADAFast::parseLibraryAnimations(scene, skmNode, *skeleton, motions, 1.0, order, false);
 				}				
 			}
 
 			// parsing geometry
 #if !defined(__native_client__) && !defined(EMSCRIPTEN)
-			auto mesh = std::make_unique<SbmDeformableMeshGPU>();
+			auto mesh = std::make_unique<SbmDeformableMeshGPU>(new SBSkeleton(scene));
 #else
 			auto mesh = std::make_unique<DeformableMesh>();
 #endif

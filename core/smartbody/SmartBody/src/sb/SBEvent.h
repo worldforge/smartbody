@@ -68,14 +68,14 @@ class SBEventHandler : public SBObject
 		bool _enabled;
 };
 
-class SBBasicHandler : public SBEventHandler
+class SBBasicHandler : public SBEventHandler, public SBSceneOwned
 {
 	public:
-		SBAPI SBBasicHandler();
+		SBAPI SBBasicHandler(SBScene& scene);
 		SBAPI void setAction(const std::string& action);
 		SBAPI const std::string& getAction();
-		SBAPI virtual void executeAction(SBEvent* event);
-		SBAPI void notify(SBSubject* subject);
+		SBAPI void executeAction(SBEvent* event) override;
+		SBAPI void notify(SBSubject* subject) override;
 };
 
 class SBEventManager : public SBSceneOwned

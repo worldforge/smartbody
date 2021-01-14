@@ -27,7 +27,7 @@ BML::BehaviorRequestPtr BML::parse_bml_states( DOMElement* elem, const std::stri
 
 	// get character
 	std::string characterName = request->actor->getName();
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+	SmartBody::SBCharacter* character = scene->getCharacter(characterName);
 	if (character == nullptr)
 	{
 		SmartBody::util::log("parse_bml_states ERR: cannot find character with name %s.", characterName.c_str());
@@ -57,7 +57,7 @@ BML::BehaviorRequestPtr BML::parse_bml_states( DOMElement* elem, const std::stri
 		SmartBody::util::log("parse_bml_states ERR: expecting a state name.");
 		return BehaviorRequestPtr();
 	}
-	PABlend* state = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(stateName);
+	PABlend* state = scene->getBlendManager()->getBlend(stateName);
 	if (!state)
 	{
 		SmartBody::util::log("parse_bml_states WARNING: Can't find state name %s, will schedule PseudoIdle state under schedule mode", stateName.c_str());

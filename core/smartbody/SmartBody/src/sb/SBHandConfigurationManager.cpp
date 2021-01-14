@@ -25,13 +25,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody{
 
-SBAPI SBHandConfigurationManager::SBHandConfigurationManager()
+SBAPI SBHandConfigurationManager::SBHandConfigurationManager(SBScene& scene) : SBSceneOwned(scene)
 {
 }
 
 SBAPI SBHandConfigurationManager::~SBHandConfigurationManager()
 {
-	std::map<std::string, SBHandConfiguration*>::iterator iter = _configMap.begin();
+	auto iter = _configMap.begin();
 	for (; iter != _configMap.end(); iter++)
 	{
 		delete iter->second;
@@ -39,24 +39,24 @@ SBAPI SBHandConfigurationManager::~SBHandConfigurationManager()
 	_configMap.clear();
 }
 
-SBAPI SBHandConfiguration* SBHandConfigurationManager::createHandConfiguration(std::string configName)
+SBAPI SBHandConfiguration* SBHandConfigurationManager::createHandConfiguration(const std::string& configName)
 {
 
-	std::map<std::string, SBHandConfiguration*>::iterator iter = _configMap.find(configName);
+	auto iter = _configMap.find(configName);
 	if (iter != _configMap.end())
 	{
 		delete iter->second;
 		_configMap.erase(iter);
 	}
 
-	SBHandConfiguration* config = new SBHandConfiguration();
+	SBHandConfiguration* config = new SBHandConfiguration(_scene);
 	_configMap.insert(std::pair<std::string, SBHandConfiguration*>(configName, config));
 	return config;
 }
 
-SBAPI void SBHandConfigurationManager::removeHandConfiguration(std::string configName)
+SBAPI void SBHandConfigurationManager::removeHandConfiguration(const std::string& configName)
 {
-	std::map<std::string, SBHandConfiguration*>::iterator iter = _configMap.find(configName);
+	auto iter = _configMap.find(configName);
 	if (iter != _configMap.end())
 	{
 		delete iter->second;
@@ -69,9 +69,9 @@ SBAPI int SBHandConfigurationManager::getNumHandConfigurations()
 	return _configMap.size();
 }
 
-SBAPI void SBHandConfigurationManager::printHandConfiguration(std::string configName)
+SBAPI void SBHandConfigurationManager::printHandConfiguration(const std::string& configName)
 {
-	std::map<std::string, SBHandConfiguration*>::iterator iter = _configMap.find(configName);
+	auto iter = _configMap.find(configName);
 	if (iter != _configMap.end())
 	{
 		std::string name = iter->first;
@@ -81,9 +81,9 @@ SBAPI void SBHandConfigurationManager::printHandConfiguration(std::string config
 	}
 }
 
-SBAPI SBHandConfiguration* SBHandConfigurationManager::getHandConfiguration(std::string configName)
+SBAPI SBHandConfiguration* SBHandConfigurationManager::getHandConfiguration(const std::string& configName)
 {
-	std::map<std::string, SBHandConfiguration*>::iterator iter = _configMap.find(configName);
+	auto iter = _configMap.find(configName);
 	if (iter != _configMap.end())
 	{
 		return iter->second;

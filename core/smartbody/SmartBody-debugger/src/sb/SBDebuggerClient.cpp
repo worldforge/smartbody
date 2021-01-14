@@ -40,8 +40,8 @@ using std::vector;
 
 namespace SmartBody {
 
-SBDebuggerClient::SBDebuggerClient()
-: m_debuggerUtility(*this)
+SBDebuggerClient::SBDebuggerClient(SmartBody::SBScene& scene)
+: SBSceneOwned(scene), m_debuggerUtility(*this)
 {
 	m_sockTCP_client = 0;
 	m_initFinish = false;
@@ -223,9 +223,9 @@ void SBDebuggerClient::Update()
 // 						  if (split[4] == "ChrBackovicPrefab")						  
 // 						  {							  
 // 							  static double prevTime = 0.0;
-// 							  float dt = SmartBody::SBScene::getScene()->getSimulationManager()->getTime() - prevTime;
+// 							  float dt = _scene.getSimulationManager()->getTime() - prevTime;
 // 							  SmartBody::util::log("Update ChrBackovic, time = %f, num bones = %d", dt,split.size() - 7);
-// 							  prevTime = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+// 							  prevTime = _scene.getSimulationManager()->getTime();
 // 						  }
                           for (size_t i = 7; i < split.size(); i++)
                           {
@@ -393,9 +393,9 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
 // 							  fprintf(fp,"%s",rest.c_str());
 // 							  fclose(fp);
 
-							  SmartBody::SBScene::getScene()->run(rest);
+							  _scene.run(rest);
 							  m_initFinish = true;
-							  //SmartBody::SBScene::getScene()->runScript("e:/scene.py");
+							  //_scene.runScript("e:/scene.py");
 						  }
 					  }
 #if 0
@@ -405,39 +405,39 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
 						{
 							string name = split[4];
 							string skeletonName = split[5];
-							SmartBody::SBScene::getScene()->getDebuggerUtility()->initCharacter(name, skeletonName);
+							_scene.getDebuggerUtility()->initCharacter(name, skeletonName);
 						}
 						else if (split[3] == "character-face_definition")
 						{
 							string name = split[4];
 							string faceDefName = split[5];
-							SmartBody::SBScene::getScene()->getDebuggerUtility()->initCharacterFaceDefinition(name, faceDefName, message);
+							_scene.getDebuggerUtility()->initCharacterFaceDefinition(name, faceDefName, message);
 
 						}
 						else if (split[3] == "skeleton")
 						{
 							std::string skFileName = split[4];
 							std::string command = "# " + message;
-							SmartBody::SBScene::getScene()->getDebuggerUtility()->initSkeleton(skFileName, command);
+							_scene.getDebuggerUtility()->initSkeleton(skFileName, command);
 						}
                         else if (split[3] == "pawn")
                         {
-							SmartBody::SBScene::getScene()->getDebuggerUtility()->initPawn(split[4]);
+							_scene.getDebuggerUtility()->initPawn(split[4]);
                         }
 						else if (split[3] == "face_definition")
 						{
 							std::string command = "# " + message;
-							SmartBody::SBScene::getScene()->getDebuggerUtility()->runPythonCommand(command);						
+							_scene.getDebuggerUtility()->runPythonCommand(command);						
 						}
 						else if (split[3] == "blend")
 						{
 							std::string command = "# " + message;
-							SmartBody::SBScene::getScene()->getDebuggerUtility()->runPythonCommand(command);						
+							_scene.getDebuggerUtility()->runPythonCommand(command);						
 						}
 						else if (split[3] == "transition")
 						{
 							std::string command = "# " + message;
-							SmartBody::SBScene::getScene()->getDebuggerUtility()->runPythonCommand(command);						
+							_scene.getDebuggerUtility()->runPythonCommand(command);						
 						}
                      }
 #endif
@@ -454,7 +454,7 @@ void SBDebuggerClient::ProcessVHMsgs(const char * op, const char * args)
          if (split[1] == "MotionFile")
          {
             //split[split.size() - 1];
-            //SmartBody::SBScene::getScene()->addAssetPath();
+            //_scene.addAssetPath();
          }
       }
       else if (split[0] == "vrAllCall")

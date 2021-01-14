@@ -104,7 +104,7 @@ intersect3D_RayTriangle(SrLine L, SrPnt V0, SrPnt V1, SrPnt V2, SrPnt& I, float&
 namespace SmartBody {
 
 SBRenderAssetManager::SBRenderAssetManager(SBScene& scene, SBAssetStore& assetStore) :
-		_scene(scene),
+		SBSceneOwned(scene),
 		_assetStore(assetStore),
 		_meshCounter(0) {
 
@@ -701,7 +701,7 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 		return false;
 	}
 	if (showVisualization)
-		SmartBody::SBScene::getScene()->run("import GUIInterface");
+		_scene.run("import GUIInterface");
 
 	// find the center of the base shape
 	SrVec center;
@@ -714,7 +714,7 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 			std::stringstream strstr3;
 			strstr3 << "GUIInterface.addPoint('x" << v << "', SrVec(" << baseShape.V[v].x << ", " << baseShape.V[v].y << ", " << baseShape.V[v].z << "), SrVec(1, .75, .79), 5)";
 			//SmartBody::util::log("Running: %s", strstr2.str().c_str());
-			SmartBody::SBScene::getScene()->run(strstr3.str());
+			_scene.run(strstr3.str());
 		}
 	}
 	center /= baseShape.V.size();
@@ -740,17 +740,17 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 			//SmartBody::util::log("Drawing point from %f %f %f to %f %f %f", baseShape.V[face[0]].x, baseShape.V[face[0]].y, baseShape.V[face[0]].z, endPoint.x, endPoint.y, endPoint.z);
 			std::stringstream strstr4;
 			strstr4 << "x = VecArray()";
-			SmartBody::SBScene::getScene()->run(strstr4.str());
+			_scene.run(strstr4.str());
 			std::stringstream strstr5;
 			strstr5 << "x.append(SrVec(" << avgPoint.x << ", " << avgPoint.y << ", " << avgPoint.z << "))";
-			SmartBody::SBScene::getScene()->run(strstr5.str());
+			_scene.run(strstr5.str());
 			std::stringstream strstr6;
 			strstr6 << "x.append(SrVec(" << endPoint.x << ", " << endPoint.y << ", " << endPoint.z << "))";
-			SmartBody::SBScene::getScene()->run(strstr6.str());
+			_scene.run(strstr6.str());
 
 			std::stringstream strstr7;
 			strstr7 << "GUIInterface.addLine('l" << f << "', x, SrVec(0,1,0), 1)";
-			SmartBody::SBScene::getScene()->run(strstr7.str());
+			_scene.run(strstr7.str());
 		}
 
 	}
@@ -763,7 +763,7 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 		std::stringstream strstr10;
 		strstr10 << "GUIInterface.addPoint('center', SrVec(" << center.x << ", " << center.y << ", " << center.z << "), SrVec(0, 1, 0), 8)";
 		//SmartBody::util::log("Running: %s", strstr10.str().c_str());
-		SmartBody::SBScene::getScene()->run(strstr10.str());
+		_scene.run(strstr10.str());
 	}
 
 	// loop through the vertices
@@ -776,7 +776,7 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 			std::stringstream strstr2;
 			strstr2 << "GUIInterface.addPoint('x" << v << "', SrVec(" << curV.x << ", " << curV.y << ", " << curV.z << "), SrVec(1,1,0), 2)";
 			//SmartBody::util::log("Running: %s", strstr2.str().c_str());
-			SmartBody::SBScene::getScene()->run(strstr2.str());
+			_scene.run(strstr2.str());
 		}
 		// find the intersecting triangle
 		SrPnt point2(curV.x, curV.y, curV.z);
@@ -809,17 +809,17 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 				//SmartBody::util::log("Drawing point from %f %f %f to %f %f %f", baseShape.V[face[0]].x, baseShape.V[face[0]].y, baseShape.V[face[0]].z, endPoint.x, endPoint.y, endPoint.z);
 				std::stringstream strstr4;
 				strstr4 << "x = VecArray()";
-				SmartBody::SBScene::getScene()->run(strstr4.str());
+				_scene.run(strstr4.str());
 				std::stringstream strstr5;
 				strstr5 << "x.append(SrVec(" << avgFaces[f].x << ", " << avgFaces[f].y << ", " << avgFaces[f].z << "))";
-				SmartBody::SBScene::getScene()->run(strstr5.str());
+				_scene.run(strstr5.str());
 				std::stringstream strstr6;
 				strstr6 << "x.append(SrVec(" << endNormal.x << ", " << endNormal.y << ", " << endNormal.z << "))";
-				SmartBody::SBScene::getScene()->run(strstr6.str());
+				_scene.run(strstr6.str());
 
 				std::stringstream strstr7;
 				strstr7 << "GUIInterface.addLine('fn" << f << "', x, SrVec(0,1,0), 1)";
-				SmartBody::SBScene::getScene()->run(strstr7.str());
+				_scene.run(strstr7.str());
 			}
 			//bool doesIntersect = line.intersects_triangle(baseShape.V[face[0]], baseShape.V[face[1]], baseShape.V[face[2]], t, a, b);
 			if (doesIntersect)
@@ -844,7 +844,7 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 					std::stringstream strstr;
 					strstr << "GUIInterface.addPoint('" << v << "_" << "', SrVec(" << intersectionPoint[0] << ", " << intersectionPoint[1] << ", " << intersectionPoint[2] << "), SrVec(0,0,1), 4)";
 					SmartBody::util::log("Running: %s", strstr.str().c_str());
-					SmartBody::SBScene::getScene()->run(strstr.str());
+					_scene.run(strstr.str());
 				}
 
 				break;
@@ -869,17 +869,17 @@ bool SBRenderAssetManager::handlePenetrations(std::string deformableMesh, std::s
 				// draw a line from the original vertex to the intersection point
 				std::stringstream strstr4;
 				strstr4 << "x = VecArray()";
-				SmartBody::SBScene::getScene()->run(strstr4.str());
+				_scene.run(strstr4.str());
 				std::stringstream strstr5;
 				strstr5 << "x.append(SrVec(" << closestIntersectionPoint[0] << ", " << closestIntersectionPoint[1] << ", " << closestIntersectionPoint[2] << "))";
-				SmartBody::SBScene::getScene()->run(strstr5.str());
+				_scene.run(strstr5.str());
 				std::stringstream strstr6;
 				strstr6 << "x.append(SrVec(" << curV.x << ", " << curV.y << ", " << curV.z << "))";
-				SmartBody::SBScene::getScene()->run(strstr6.str());
+				_scene.run(strstr6.str());
 
 				std::stringstream strstr7;
 				strstr7 << "GUIInterface.addLine('l" << v << "', x, SrVec(0,1,0), 1)";
-				SmartBody::SBScene::getScene()->run(strstr7.str());
+				_scene.run(strstr7.str());
 			}
 
 

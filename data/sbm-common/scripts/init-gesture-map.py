@@ -1,4 +1,4 @@
-gMapManager = getScene().getGestureMapManager()
+gMapManager = scene.getGestureMapManager()
 numCharacters = scene.getNumCharacters()
 charNames = scene.getCharacterNames()
 

@@ -25,6 +25,7 @@
 #ifndef SR_PATH_LIST_H
 #define SR_PATH_LIST_H
 
+#include <boost/filesystem/path.hpp>
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -37,12 +38,12 @@ class srPathList
 		srPathList();
 		virtual ~srPathList();
 
-		bool insert(std::string path);
-		bool remove(std::string path);
+		bool insert(const std::string& path);
+		bool remove(const std::string& path);
 		void removeAll();
 		void reset();
-		std::string next_path(bool addPrefix = true);
-		std::string next_filename(char *buffer, const char *name);
+		std::string next_path(const boost::filesystem::path& prefixPath);
+		std::string next_filename(char *buffer, const char *name, const boost::filesystem::path& prefixPath);
 		std::vector<std::string>& getPaths()	{ return _paths; }
 	private:
 		std::string _prefix;

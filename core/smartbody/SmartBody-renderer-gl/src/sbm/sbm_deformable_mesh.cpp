@@ -49,6 +49,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <sbm/ParserCOLLADAFast.h>
 #include <sbm/ParserOpenCOLLADA.h>
+#include "sb/SBRenderAssetManager.h"
 
 
 
@@ -406,13 +407,13 @@ void SkinWeight::createCache()
 	}
 }
 
-DeformableMesh::DeformableMesh() : SBAsset()
+DeformableMesh::DeformableMesh(boost::intrusive_ptr<SkSkeleton> skeleton) : SBAsset()
+, skeleton(std::move(skeleton))
 {	
 	initSkinnedVertexBuffer = false;
 	initStaticVertexBuffer = false;
 	hasVertexColor = false;	
 	hasTexCoord = false;
-	skeleton.reset(new SmartBody::SBSkeleton());
 }
 
 DeformableMesh::~DeformableMesh() {
@@ -1839,7 +1840,7 @@ bool DeformableMesh::saveToDae(SmartBody::SBRenderAssetManager& renderAssetManag
 
 	std::vector<std::string> moNames;
 	double scale = 1.0;
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(skeletonName);
+	SmartBody::SBCharacter* character = renderAssetManager._scene.getCharacter(skeletonName);
 	if (character)
 	{
 		SrVec scale3 = character->getVec3Attribute("deformableMeshScale");
@@ -2667,9 +2668,9 @@ void DeformableMeshInstance::blendShapes()
 		//std::vector<SrPnt> newN = readBaseModel->shape().N;
 		
 		double blendShapeProximity = gwiz::epsilon4();
-		if (SmartBody::SBScene::getScene()->hasAttribute("blendshapeProximity"))
+		if (_character->_scene.hasAttribute("blendshapeProximity"))
 		{
-			blendShapeProximity = SmartBody::SBScene::getScene()->getDoubleAttribute("blendshapeProximity");
+			blendShapeProximity = _character->_scene.getDoubleAttribute("blendshapeProximity");
 		}
 
 		if (foundBaseModel && 
@@ -3023,7 +3024,7 @@ void DeformableMeshInstance::blendShapes()
 		{		
 #if !defined(EMSCRIPTEN)
 			// Computes blended texture pairwise, and saves it into _tempTexPairs[0], which is going to be used later as a texture (in the normal blendshape pipeline)
-			SbmBlendTextures::BlendAllAppearancesPairwise( _tempFBOPairs, _tempTexPairs, weights, texIDs, texture_names, SbmBlendTextures::getShader("Blend_All_Textures_Pairwise"), tex_w, tex_h);
+			SbmBlendTextures::BlendAllAppearancesPairwise( _tempFBOPairs, _tempTexPairs, weights, texIDs, texture_names, SbmBlendTextures::getShader(_character->_scene.getMediaPath(), "Blend_All_Textures_Pairwise"), tex_w, tex_h);
 #endif
 		}
 #endif

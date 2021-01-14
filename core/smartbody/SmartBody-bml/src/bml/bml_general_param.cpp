@@ -59,8 +59,8 @@ BehaviorRequestPtr BML::parse_bml_param( DOMElement* elem, const std::string& un
 	int channel_size = 0;
 	int Index = 0;
 	
-	GeneralParamMap::const_iterator pos	=	SmartBody::SBScene::getScene()->getGeneralParameters().begin();
-	GeneralParamMap::const_iterator end	=	SmartBody::SBScene::getScene()->getGeneralParameters().end();
+	GeneralParamMap::const_iterator pos	=	scene->getGeneralParameters().begin();
+	GeneralParamMap::const_iterator end	=	scene->getGeneralParameters().end();
 
 	string char_name;
 	string unique_id_copy = unique_id;

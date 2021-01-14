@@ -35,7 +35,7 @@ class SequenceManager
 		SBAPI SequenceManager();
 		SBAPI ~SequenceManager();
 
-		SBAPI bool addSequence(const std::string& seqName, srCmdSeq* seq);
+		SBAPI bool addSequence(const std::string& seqName, std::unique_ptr<srCmdSeq> seq);
 		SBAPI bool removeSequence(const std::string& seqName, bool deleteSequence);
 		SBAPI srCmdSeq* getSequence(const std::string& name);
 		SBAPI srCmdSeq* getSequence(int num, std::string& name);
@@ -46,7 +46,7 @@ class SequenceManager
 
 	protected:
 		std::set<std::string> _sequenceSet;
-		std::vector<std::pair<std::string, srCmdSeq*> > _sequences;
+		std::vector<std::pair<std::string, std::unique_ptr<srCmdSeq>> > _sequences;
 };
 
 
@@ -66,8 +66,8 @@ class SBCommandManager : public SBObject, public SBSceneOwned
 		SBAPI int execute( const char *key, srArgBuffer& args );
 		SBAPI int execute( const char *key, char* strArgs );
 		SBAPI int execute( char *cmd );
-		SBAPI int execute_seq( srCmdSeq *seq );
-		SBAPI int execute_seq( srCmdSeq *seq, const char* seq_name );
+		SBAPI int execute_seq( std::unique_ptr<srCmdSeq> seq );
+		SBAPI int execute_seq( std::unique_ptr<srCmdSeq> seq, const char* seq_name );
 		SBAPI int execute_seq_chain( const std::vector<std::string>& seq_names, const char* error_prefix = nullptr );
 		SBAPI int execute_later( const char* command, float seconds );
 		SBAPI int execute_later( const char* command );

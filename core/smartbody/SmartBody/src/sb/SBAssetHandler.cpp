@@ -37,7 +37,7 @@ std::vector<std::string> SBAssetHandler::getAssetTypes()
 	return assetTypes;
 }
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandler::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandler::getAssets(SBScene& scene, const std::string& path)
 {
 	return {};
 }

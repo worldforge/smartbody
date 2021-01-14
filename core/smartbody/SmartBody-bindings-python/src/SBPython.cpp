@@ -667,7 +667,7 @@ BOOST_PYTHON_MODULE (SmartBody) {
 			.def("getNumHandConfiguration", &SBHandConfigurationManager::getNumHandConfigurations, "Get the number of hand configuration")
 			.def("printHandConfiguration", &SBHandConfigurationManager::printHandConfiguration, "Print the hand configuration.");
 
-	boost::python::class_<SBHandConfiguration>("SBHandConfiguration")
+	boost::python::class_<SBHandConfiguration, boost::noncopyable>("SBHandConfiguration", boost::python::no_init)
 			.def("addMotion", &SBHandConfiguration::addMotion, "Add a new motion to the configuration")
 			.def("removeMotion", &SBHandConfiguration::removeMotion, "Remove the motion from the configuration")
 			.def("getNumMotions", &SBHandConfiguration::getNumMotions, "Get the number of motions")
@@ -1032,7 +1032,7 @@ std::function<bool(SmartBody::SBScene& scene, const std::string&)> SBPython::scr
 		candidateSeqName.append(".py");
 	}
 
-	std::string curFilename = SmartBody::SBScene::getScene()->getAssetManager()->findFileName("script", candidateSeqName);
+	std::string curFilename = scene.getAssetManager()->findFileName("script", candidateSeqName);
 	SmartBody::util::log("script name = '%s', curFilename = '%s'", script.c_str(), curFilename.c_str());
 	if (!curFilename.empty()) {
 		try {

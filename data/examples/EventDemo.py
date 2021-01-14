@@ -35,7 +35,7 @@ zebra2Map = scene.getJointMapManager().getJointMap('zebra2')
 rachelSkeleton = scene.getSkeleton('ChrRachel.dae')
 rachelSkeleton.rescale(.01)
 zebra2Map.applySkeleton(rachelSkeleton)
-zebra2Map.applyMotionRecurse('ChrRachel')
+zebra2Map.applyMotionRecurse(scene, 'ChrRachel')
 
 # Establish lip syncing data set
 scene.run('init-diphoneDefault.py')

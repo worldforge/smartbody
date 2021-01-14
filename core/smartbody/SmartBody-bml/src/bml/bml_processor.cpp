@@ -96,7 +96,7 @@ namespace BML {
 		const char* agent_id,
 		const char* message_id,
 		const char* error_msg,
-		 SmartBody::SBScene* scene )
+		 SmartBody::SBScene& scene )
 	{
 		//  Let's not error on our error messages.  Be thorough.
 		if( agent_id==nullptr || agent_id[0]=='\0' )
@@ -111,7 +111,7 @@ namespace BML {
 		// Old vrSpeakFailed form (sans recipient)
 		std::ostringstream buff;
 		buff << agent_id << " RECIPIENT " << message_id << " " << error_msg;
-		scene->sendVHMsg2( "vrSpeakFailed", buff.str() );
+		scene.sendVHMsg2( "vrSpeakFailed", buff.str() );
 
 		// New vrAgentBML form...
 		std::ostringstream buff2;
@@ -121,7 +121,7 @@ namespace BML {
 		buff2 << agent_id << " " << message_id << " end error " << error_msg;
 #endif
 		
-		scene->sendVHMsg2( "vrAgentBML", buff2.str() );
+		scene.sendVHMsg2( "vrAgentBML", buff2.str() );
 	}
 }
 
@@ -258,7 +258,7 @@ void BML::Processor::deregisterBmlHandler(const std::string& tag)
 
 
 
-void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* scene )
+void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene& scene )
 {
 	if(LOG_METHODS) std::cout<<"BodyPlannerImpl::vrSpeak(..)"<< std::endl;
 
@@ -284,7 +284,7 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 		std::string targetProcId = xml_utils::xml_parse_string( BMLDefs::ATTR_PROCID, root );
 		if (!targetProcId.empty())
 		{
-			const std::string& procId = scene->getProcessId();
+			const std::string& procId = scene.getProcessId();
 			if (!procId.empty() &&
 				procId != targetProcId)
 			{
@@ -328,7 +328,7 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
       XMLString::release(&theXMLString_Unicode);
       pSerializer->release();
 			request->xmlBody = xmlBodyString;
-			if (SmartBody::SBScene::getScene()->getBoolAttribute("enableExportProcessedBMLLOG"))
+			if (scene.getBoolAttribute("enableExportProcessedBMLLOG"))
 			{
 				SmartBody::util::log("%s, %s", request->msgId.c_str(), request->localId.c_str());
 				SmartBody::util::log("xmlbody %s", xmlBodyString.c_str());
@@ -350,7 +350,7 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 		
 			if( !( request->speech_request ) ) {
 				// realize immediately
-				request->realize( this, scene );
+				request->realize( this, &scene );
 			}
 
 			//if (requestcb)
@@ -371,7 +371,7 @@ void BML::Processor::bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* sc
 	}
 }
 
-void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr& request, SmartBody::SBScene* scene,
+void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr& request, SmartBody::SBScene& scene,
                                          size_t& behavior_ordinal, bool required )
 {
 	if (request->actor->getBoolAttribute("gestureRequest.useLastRandomGesture"))
@@ -426,7 +426,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr&
 				// TEMPORARY: <speech> can only be the first behavior
 				if( behavior_ordinal == 1 ) {
 					// This speech is the first
-					BML::SpeechRequestPtr speechPtr =  parse_bml_speech( child, unique_id, behav_syncs, required, request, scene );
+					BML::SpeechRequestPtr speechPtr =  parse_bml_speech( child, unique_id, behav_syncs, required, request, &scene );
 					if (!speechPtr)
 						return;
 					SpeechRequestPtr speech_request(speechPtr);
@@ -468,41 +468,41 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr&
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_HEAD )==0 ) {
 				behavior = parse_bml_head( child, unique_id, behav_syncs, required, request, scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_FACE )==0 ) {
-				behavior = parse_bml_face( child, unique_id, behav_syncs, required, request, scene );
+				behavior = parse_bml_face( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_GAZE )==0 ) {
-				behavior = /*BML::*/parse_bml_gaze( child, unique_id, behav_syncs, required, request, scene );
+				behavior = /*BML::*/parse_bml_gaze( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_SACCADE )==0 ) {
-				behavior = /*BML::*/parse_bml_saccade( child, unique_id, behav_syncs, required, request, scene );
+				behavior = /*BML::*/parse_bml_saccade( child, unique_id, behav_syncs, required, request, &scene );
 			}  else if( XMLString::compareString( tag, BMLDefs::TAG_NOISE )==0 ) {
-				behavior = /*BML::*/parse_bml_noise( child, unique_id, behav_syncs, required, request, scene );
+				behavior = /*BML::*/parse_bml_noise( child, unique_id, behav_syncs, required, request, &scene );
 			}else if( XMLString::compareString( tag, BMLDefs::TAG_CONSTRAINT )==0 ) {
-				behavior = /*BML::*/parse_bml_constraint( child, unique_id, behav_syncs, required, request, scene );
+				behavior = /*BML::*/parse_bml_constraint( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_BODYREACH )==0 ) {
-				behavior = /*BML::*/parse_bml_bodyreach( child, unique_id, behav_syncs, required, request, scene );
+				behavior = /*BML::*/parse_bml_bodyreach( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_GRAB )==0 ) {
-				behavior = /*BML::*/parse_bml_grab( child, unique_id, behav_syncs, required, request, scene );
+				behavior = /*BML::*/parse_bml_grab( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_EVENT )==0 ) {
 				// DEPRECATED FORM
-				behavior = parse_bml_event( child, unique_id, behav_syncs, required, request, scene );
+				behavior = parse_bml_event( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_PARAM )==0 ) {
-				behavior = parse_bml_param( child, unique_id, behav_syncs, required, request, scene );
+				behavior = parse_bml_param( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_SBM_EVENT )==0 ) {
-				behavior = parse_bml_event( child, unique_id, behav_syncs, required, request, scene );
+				behavior = parse_bml_event( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_SPEECH )==0 ) {
 				SmartBody::util::log("ERROR: BML::Processor::parseBML(): <speech> BML tag must be first behavior (TEMPORARY HACK).");
 //			} else if( XMLString::compareString( tag, BMLDefs::TAG_LOCOTMOTION )==0 ) {
 //				behavior = parse_bml_locomotion( child, unique_id, behav_syncs, required, request, scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_STATES )==0 || XMLString::compareString( tag, BMLDefs::TAG_BLEND )==0) {
-				behavior = parse_bml_states( child, unique_id, behav_syncs, required, request, scene );
+				behavior = parse_bml_states( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_GESTURE )==0 ) {
-				behavior = parse_bml_gesture( child, unique_id, behav_syncs, required, request, scene );
+				behavior = parse_bml_gesture( child, unique_id, behav_syncs, required, request, &scene );
 			} else if( XMLString::compareString( tag, BMLDefs::TAG_INTERRUPT )==0 ) {
-				behavior = parse_bml_interrupt(child, unique_id, behav_syncs, required, request, scene);
+				behavior = parse_bml_interrupt(child, unique_id, behav_syncs, required, request, &scene);
 			} else {
 				auto I = _bmlHandlers.find(tagStr);
 				if (I != _bmlHandlers.end()) {
 					BMLHandler::Payload payload {
-							*child, unique_id, behav_syncs, required, request, *scene
+							*child, unique_id, behav_syncs, required, request, scene
 					};
 					behavior = I->second->parseBML(*tag, payload);
 				} else {
@@ -522,7 +522,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr&
 				request->registerBehavior( xml_utils::xml_s2w(idStr), behavior );
 				if (bml_feedback)
 				{
-					std::string actorString = SmartBody::SBScene::getScene()->getStringFromObject(request->actor);
+					std::string actorString = scene.getStringFromObject(request->actor);
 					for (int i = 0; i < 7; i++)
 					{
 						BehaviorSyncPoints feedbackSyncStart;
@@ -542,7 +542,7 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr&
 						std::string finalMsg = msg.str();
 						DOMElement* textXml = xml_utils::parseMessageXml( xmlContext.parser, finalMsg.c_str())->getDocumentElement();
 						feedbackSyncStart.parseStandardSyncPoints( textXml, request, newId );
-						BehaviorRequestPtr startRequestBehavior = parse_bml_event(textXml, newId, feedbackSyncStart, required, request, scene);
+						BehaviorRequestPtr startRequestBehavior = parse_bml_event(textXml, newId, feedbackSyncStart, required, request, &scene);
 						startRequestBehavior->required = false;
 						request->registerBehavior( L"", startRequestBehavior );
 					}
@@ -573,12 +573,12 @@ void BML::Processor::parseBehaviorGroup( DOMElement *group, const BmlRequestPtr&
 	}
 }
 
-void BML::Processor::parseBML( DOMElement *bmlElem, const BmlRequestPtr& request, SmartBody::SBScene* scene ) {
+void BML::Processor::parseBML( DOMElement *bmlElem, const BmlRequestPtr& request, SmartBody::SBScene& scene ) {
 	size_t behavior_ordinal	= 0;
 
-	SmartBody::SBScene::getScene()->getProfiler()->mark_time("BML", 1, "parseBML", SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+	scene.getProfiler()->mark_time("BML", 1, "parseBML", scene.getSimulationManager()->getTime());
 	parseBehaviorGroup( bmlElem, request, scene, behavior_ordinal, false );
-	SmartBody::SBScene::getScene()->getProfiler()->mark("BML");
+	scene.getProfiler()->mark("BML");
 
 	if( behavior_ordinal==0 ) { // No change
 		return;
@@ -589,7 +589,7 @@ void BML::Processor::parseBML( DOMElement *bmlElem, const BmlRequestPtr& request
 	}
 }
 
-BehaviorRequestPtr BML::Processor::parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, const BmlRequestPtr& request, SmartBody::SBScene* scene ) {
+BehaviorRequestPtr BML::Processor::parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, const BmlRequestPtr& request, SmartBody::SBScene& scene ) {
 	
 	const XMLCh* id = elem->getAttribute(BMLDefs::ATTR_ID);
 	std::string localId;
@@ -601,7 +601,7 @@ BehaviorRequestPtr BML::Processor::parse_bml_body( DOMElement* elem, std::string
 		std::string pose_id = xml_utils::asciiString(postureName);
 		{
 			// Check for a motion (a motion texture, or motex) of the same name
-			SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(pose_id);
+			SmartBody::SBMotion* motion = scene.getAssetManager()->getMotion(pose_id);
 			if (motion)
 			{
 				auto* motionCt = new MeCtMotion(*static_cast<SmartBody::SBCharacter*>(request->actor));
@@ -634,7 +634,7 @@ BehaviorRequestPtr BML::Processor::parse_bml_body( DOMElement* elem, std::string
 	return BehaviorRequestPtr();  // a.k.a., nullptr
 }
 
-BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) {
+BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene& scene ) {
 	
 	if (!request->actor->head_sched_p)
 	{
@@ -747,7 +747,7 @@ BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string
 			{
 				std::string stateName = xml_utils::xml_parse_string(BMLDefs::ATTR_STATENAME, elem);
 				std::string characterName = request->actor->getName();
-				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+				SmartBody::SBCharacter* character = scene.getCharacter(characterName);
 				if (character == nullptr)
 				{
 					SmartBody::util::log("parse_bml_states ERR: cannot find character with name %s.", characterName.c_str());
@@ -907,9 +907,9 @@ BehaviorRequestPtr BML::Processor::parse_bml_head( DOMElement* elem, std::string
 	return BehaviorRequestPtr();  // a.k.a., nullptr
 }
 
-void BML::Processor::speechReply( SbmCharacter* actor, SmartBody::RequestId requestId, srArgBuffer& response_args, SmartBody::SBScene* scene ) {
+void BML::Processor::speechReply( SbmCharacter* actor, SmartBody::RequestId requestId, srArgBuffer& response_args, SmartBody::SBScene& scene ) {
 	std::string speechKey = buildSpeechKey( actor, requestId );
-	MapOfSpeechRequest::iterator find_result = speeches.find( speechKey );
+	auto find_result = speeches.find( speechKey );
 
 	if( find_result != speeches.end() ) {
 		SpeechRequestPtr speech_request( find_result->second );
@@ -940,7 +940,7 @@ void BML::Processor::speechReply( SbmCharacter* actor, SmartBody::RequestId requ
 						temp = temp->next;
 					}*/
 
-					request->realize( this, scene );
+					request->realize( this, &scene );
 				} catch( std::exception& e ) {
 					std::stringstream strstr;
 					strstr << "ERROR: BML::Processor::speechReply() exception:" << e.what();
@@ -975,7 +975,7 @@ void BML::Processor::speechReply( SbmCharacter* actor, SmartBody::RequestId requ
 	}   // else ignore... not a part of this BodyPlanner or expired
 }
 
-void BML::Processor::interrupt( SbmCharacter* actor, time_sec duration, SmartBody::SBScene* scene )
+void BML::Processor::interrupt( SbmCharacter* actor, time_sec duration, SmartBody::SBScene& scene )
 {
 	std::vector<std::string> keysToErase;
     std::vector<BmlRequestPtr> requestsToInterrupt;
@@ -1008,7 +1008,7 @@ void BML::Processor::interrupt( SbmCharacter* actor, time_sec duration, SmartBod
 }
 
 // Interrupt BML Performance (usually via message from InterruptBehavior)
-int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performance_id, time_sec duration, SmartBody::SBScene* scene ) {
+int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performance_id, time_sec duration, SmartBody::SBScene& scene ) {
 	std::string request_id = performance_id; //buildRequestId( actor, performance_id );
 	auto result = bml_requests.find( request_id );
 	if( result != bml_requests.end() ) {
@@ -1016,18 +1016,18 @@ int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performan
 
 		if( BML_LOG_INTERRUPT )
 			std::cout << "LOG: BML::Processor::interrupt(..): Found BehaviorRequest for \"" << performance_id << "\"." << std::endl;
-		request->unschedule( this, scene, duration );
+		request->unschedule( this, &scene, duration );
 		//bml_requests.erase( result );
 		return CMD_SUCCESS;
 	} else {
 		// add this interrupt requests to a map of pending interrupt requests
-		pendingInterrupts[request_id] = SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+		pendingInterrupts[request_id] = scene.getSimulationManager()->getTime();
 		// clean up any old requests that have expired
 		std::vector<std::string> interruptsToDelete;
 		for (auto & pendingInterrupt : pendingInterrupts)
 		{
 			double lastTime = pendingInterrupt.second;
-			if (lastTime - SmartBody::SBScene::getScene()->getSimulationManager()->getTime() > 60.0) // has a minute elapsed?
+			if (lastTime - scene.getSimulationManager()->getTime() > 60.0) // has a minute elapsed?
 			{
 				interruptsToDelete.emplace_back(request_id);
 			}
@@ -1048,7 +1048,7 @@ int BML::Processor::interrupt( SbmCharacter* actor, const std::string& performan
 }
 
 // Cleanup Callback
-int BML::Processor::bml_end( BMLProcessorMsg& bpMsg, SmartBody::SBScene* scene ) {
+int BML::Processor::bml_end( BMLProcessorMsg& bpMsg, SmartBody::SBScene& scene ) {
 	const char* requestId = bpMsg.requestId.c_str();
 	auto find_result = bml_requests.find( requestId );
 	if( find_result == bml_requests.end() ) {
@@ -1081,7 +1081,7 @@ int BML::Processor::bml_end( BMLProcessorMsg& bpMsg, SmartBody::SBScene* scene )
 		SmartBody::util::log(strstr.str().c_str());
 	}
 
-	request->cleanup( this, scene );
+	request->cleanup( this, &scene );
 	bml_requests.erase( requestId );
 
 	return CMD_SUCCESS;
@@ -1115,7 +1115,7 @@ std::string BML::Processor::hasSpeechBehavior(SbmCharacter& character)
 ///////////////////////////////////////////////////////////////////////////////
 //  Static Command and Message Hooks
 
-int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBScene& scene )
 {
 	
 	
@@ -1126,7 +1126,7 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 #endif
 
 	const char   *character_id     = args.read_token();
-	SmartBody::SBCharacter *character        = SmartBody::SBScene::getScene()->getCharacter( character_id );
+	SmartBody::SBCharacter *character        = scene.getCharacter( character_id );
 	if( character == nullptr ) {
 		//  Character is not managed by this SBM process
 		if( warn_unknown_agents )
@@ -1147,7 +1147,7 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 	//cout << "DEBUG: vrAgentBML " << character_id << " " << recipientId << " " << messageId << endl;
 
 	if( !character->is_initialized() ) {
-		bml_error( character_id, message_id, "Uninitialized SbmCharacter.", SmartBody::SBScene::getScene() );
+		bml_error( character_id, message_id, "Uninitialized SbmCharacter.", scene );
 		return CMD_FAILURE;
 	}
 
@@ -1159,7 +1159,7 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 		char       *xml          = args.read_remainder_raw();
 
 		if( xml[0]=='\0' ) {
-			bml_error( character_id, message_id, "\"vrAgentBML .. request\" message incomplete (empty XML argument).", SmartBody::SBScene::getScene() );
+			bml_error( character_id, message_id, "\"vrAgentBML .. request\" message incomplete (empty XML argument).", scene );
 			return CMD_FAILURE;
 		}
 		if( xml[0] == '"' ) {
@@ -1171,7 +1171,7 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 		try {
 			auto xmlDoc = xml_utils::parseMessageXml( xmlContext.parser, xml );
 			if( !xmlDoc ) {
-				bml_error( character_id, message_id, "XML parser returned nullptr document.", SmartBody::SBScene::getScene() );
+				bml_error( character_id, message_id, "XML parser returned nullptr document.", scene );
 				return CMD_FAILURE;
 			}
 
@@ -1180,18 +1180,18 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 #else
 			BMLProcessorMsg bpMsg( character_id, message_id, character, std::move(xmlDoc), args );
 #endif
-			bml_request( bpMsg, SmartBody::SBScene::getScene() );
+			bml_request( bpMsg, scene );
 
 			return( CMD_SUCCESS );
 		} catch( BML::BmlException& e ) {
 			std::ostringstream msg;
 			msg << e.type() << ": "<<e.what();
-			bml_error( character_id, message_id, msg.str().c_str(), SmartBody::SBScene::getScene() );
+			bml_error( character_id, message_id, msg.str().c_str(), scene );
 			return CMD_FAILURE;
 		} catch( const std::exception& e ) {
 			std::ostringstream msg;
 			msg << "std::exception: "<<e.what();
-			bml_error( character_id, message_id, msg.str().c_str(), SmartBody::SBScene::getScene() );
+			bml_error( character_id, message_id, msg.str().c_str(), scene );
 			return CMD_FAILURE;
 		//} catch( ... ) {
 		//	ostringstream msg;
@@ -1214,7 +1214,7 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 			return bp.bml_end( BMLProcessorMsg( character_id, recipient_id, message_id, character, nullptr, args ), mcu );
 #else
 			BMLProcessorMsg msg( character_id, message_id, character, nullptr, args );
-			int ret = bml_end( msg, SmartBody::SBScene::getScene() );
+			int ret = bml_end( msg, scene );
 
 			SmartBody::Nvbg* nvbg = character->getNvbg();
 			if (nvbg)
@@ -1256,9 +1256,8 @@ int BML::Processor::vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommand
 	}
 }
 
-int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )	{
+int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBScene& scene )	{
 	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	int suppress = 1;
 
 	const char *agent_id     = args.read_token();
@@ -1292,7 +1291,7 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 			}
 		}
 
-		SmartBody::SBCharacter* agent = scene->getCharacter( agent_id );
+		SmartBody::SBCharacter* agent = scene.getCharacter( agent_id );
 		if( agent==nullptr ) {
 			//  Agent is not managed by this SBM process
 			if( warn_unknown_agents )
@@ -1314,7 +1313,7 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 
 		std::unique_ptr<DOMDocument> xmlDoc;
 		// check the cache to see if it exists first
-		if (scene->getBoolAttribute("useXMLCache"))
+		if (scene.getBoolAttribute("useXMLCache"))
 		{
 			boost::filesystem::path path(xml);
 #if (BOOST_VERSION > 104400)
@@ -1363,9 +1362,8 @@ int BML::Processor::vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager
 	}
 }
 
-int BML::Processor::vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int BML::Processor::vrSpoke_func( srArgBuffer& args, SmartBody::SBScene& scene )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
 	//cout << "DEBUG: vrSpoke " << args.read_remainder_raw() << endl;
 	char *agent_id     = args.read_token();
@@ -1376,7 +1374,7 @@ int BML::Processor::vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager
 	try {
 		//cout << "DEBUG: vrSpoke " << agent_id << " " << recipientId << " " << message_id << endl;
 
-		SmartBody::SBCharacter* agent = scene->getCharacter( agent_id );
+		SmartBody::SBCharacter* agent = scene.getCharacter( agent_id );
 		if( agent==nullptr ) {
 			// Ignore unknown agent.  Probably managed by other SBM process.
 			return CMD_SUCCESS;
@@ -1405,9 +1403,8 @@ int BML::Processor::vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager
 	}
 }
 
-int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBScene& scene )
 {	
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
     std::string command = args.read_token();
     if( command == "reset" ) {
@@ -1417,7 +1414,7 @@ int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager*
 		//SmartBody::util::log("bp speech ready");
 		// bp speech_ready <CharacterId> <RequestId> SUCCESS/ERROR reason
 		char* actorId = args.read_token();
-		SmartBody::SBCharacter* actor = scene->getCharacter( actorId );
+		SmartBody::SBCharacter* actor = scene.getCharacter( actorId );
 		if( actor==nullptr ) {
 			std::stringstream strstr;
 			strstr << "WARNING: BML::Processor::bp_cmd_func(): Unknown actor \"" << actorId << "\".  This is probably an error since the command \"bp speech_reply\" is not supposed to be sent over the network, thus it should not be coming from another SBM process." << std::endl;
@@ -1438,7 +1435,7 @@ int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager*
 			return CMD_FAILURE;
 		}
 
-		SmartBody::SBCharacter* actor = scene->getCharacter( actor_id );
+		SmartBody::SBCharacter* actor = scene.getCharacter( actor_id );
 		if( actor==nullptr ) {
 			// Unknown actor.  ignore and 
 			std::cout << "WARNING: bp interrupt: Unknown actor \""<<actor_id<<"\"." << std::endl;
@@ -1482,7 +1479,6 @@ int BML::Processor::bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager*
 
 int BML::Processor::set_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
 	std::string attribute = args.read_token();
 	if( attribute == "auto_print_controllers" ||
@@ -1631,7 +1627,6 @@ int BML::Processor::set_func( srArgBuffer& args, SmartBody::SBCommandManager* cm
 
 int BML::Processor::print_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 
 	std::string attribute = args.read_token();
 	if( attribute == "auto_print_controllers" ||

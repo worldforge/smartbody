@@ -79,7 +79,7 @@ scene.run('zebra2-map.py')
 zebra2Map = scene.getJointMapManager().getJointMap('zebra2')
 bradSkeleton = scene.getSkeleton('ChrBrad.sk')
 zebra2Map.applySkeleton(bradSkeleton)
-zebra2Map.applyMotionRecurse('ChrBrad')
+zebra2Map.applyMotionRecurse(scene, 'ChrBrad')
 
 # setting up retargetting between the source motion and the current character
 print('Setting up joint map and configuring Brad\'s skeleton')

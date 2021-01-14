@@ -50,10 +50,10 @@ SBGestureMap* SBGestureMapManager::createGestureMap(const std::string& gestureNa
 		_gestureMaps.erase(iter);
 	}
 	
-	auto* map = new SBGestureMap(gestureName);
+	auto* map = new SBGestureMap(_scene, gestureName);
 	_gestureMaps.insert(std::make_pair(gestureName, map));
 
-	std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
 		listener->OnObjectCreate(map);
@@ -67,7 +67,7 @@ void SBGestureMapManager::removeGestureMap(const std::string& gestureName)
 	auto iter = _gestureMaps.find(gestureName);
 	if (iter != _gestureMaps.end())
 	{
-		std::vector<SBSceneListener*>& listeners = SmartBody::SBScene::getScene()->getSceneListeners();
+		std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 		for (auto & listener : listeners)
 		{
 			listener->OnObjectDelete((*iter).second);

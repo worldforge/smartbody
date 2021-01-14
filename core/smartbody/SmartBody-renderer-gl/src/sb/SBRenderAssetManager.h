@@ -23,6 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define SMARTBODY_SBRENDERASSETMANAGER_H
 
 #include "sb/SBAssetStore.h"
+#include "sb/SBSceneOwned.h"
 #include <boost/noncopyable.hpp>
 #include <map>
 #include <string>
@@ -31,7 +32,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 class DeformableMesh;
 class SbmTexture;
 namespace SmartBody {
-class SBRenderAssetManager : public SBAssetsProcessor, public boost::noncopyable {
+class SBRenderAssetManager : public SBAssetsProcessor, public SBSceneOwned, public boost::noncopyable {
 public:
 	explicit SBRenderAssetManager(SBScene& scene, SBAssetStore& assetStore);
 
@@ -71,7 +72,6 @@ public:
 
 protected:
 
-	SBScene& _scene;
 	SBAssetStore& _assetStore;
 	std::map<std::string, std::unique_ptr<DeformableMesh>> _deformableMeshMap;
 	int _meshCounter;

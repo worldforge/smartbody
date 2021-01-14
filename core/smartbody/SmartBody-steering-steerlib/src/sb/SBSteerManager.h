@@ -99,7 +99,6 @@ protected:
 			CharacterObserver observer;
 		};
 
-		SBScene& _scene;
 		std::map<std::string, SteerAgentEntry> _steerAgents;
 		std::vector<std::unique_ptr<SteerLib::BoxObstacle>> _boundaryObstacles;
 		std::map<std::string, PawnObstacle> _pawnObstacles;

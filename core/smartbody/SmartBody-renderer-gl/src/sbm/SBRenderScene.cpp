@@ -170,8 +170,7 @@ SBRenderScene::~SBRenderScene() {
 //
 std::vector<std::string> SBRenderScene::checkVisibility_current_view() {
 	//SmartBody::util::log("Checking visibility...\n");
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<std::string> pawnNames = scene->getPawnNames();
+	std::vector<std::string> pawnNames = mScene.getPawnNames();
 	auto removeItem = std::remove(pawnNames.begin(), pawnNames.end(), "cameraDefault");
 	pawnNames.erase(removeItem, pawnNames.end());
 	std::vector<std::string> visible_pawns = frustumTest(pawnNames);
@@ -181,14 +180,13 @@ std::vector<std::string> SBRenderScene::checkVisibility_current_view() {
 	frustum.extractFrustum();
 
 	// Checks visibility
-	SmartBody::SBScene * scene = SmartBody::SBScene::getScene();
-	const std::vector<std::string>& pawns = scene->getPawnNames();
+	const std::vector<std::string>& pawns = mScene.getPawnNames();
 
 	for (	std::vector<std::string>::const_iterator pawnIter = pawns.begin();
 			pawnIter != pawns.end();
 			pawnIter++)
 	{
-		SmartBody::SBPawn* pawn		= scene->getPawn((*pawnIter));
+		SmartBody::SBPawn* pawn		= mScene.getPawn((*pawnIter));
 
 		SrBox pawn_bb				= pawn->getBoundingBox();
 
@@ -224,7 +222,7 @@ std::vector<std::string> SBRenderScene::checkVisibility(const std::string& chara
 	std::vector<std::string> visible_pawns, nonOccludePawns;
 #if !defined(EMSCRIPTEN)
 	//	Gets the character from which we want to look from
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+	SmartBody::SBCharacter* character = mScene.getCharacter(characterName);
 
 	if (!character) {
 		SmartBody::util::log("Character %s not found.", characterName.c_str());
@@ -255,7 +253,7 @@ std::vector<std::string> SBRenderScene::checkVisibility(const std::string& chara
 	//	Center of the eyse world coordinates
 	SrVec center_eyes_location = (leftEye_location + rightEye_location) / 2;
 
-	float scale = 1.f / SmartBody::SBScene::getScene()->getScale();
+	float scale = 1.f / mScene.getScale();
 	float znear = 0.01f * scale;
 	float zfar = 100.0f * scale;
 	float eyebeamLength = 100 * character->getHeight() / 175.0f;
@@ -299,8 +297,7 @@ std::vector<std::string> SBRenderScene::checkVisibility(const std::string& chara
 	glPushMatrix();
 	glLoadMatrix(camera->get_view_mat(mat));
 	//	Creates characters frustrm
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<std::string> pawnNames = scene->getPawnNames();
+	std::vector<std::string> pawnNames = mScene.getPawnNames();
 	auto removeItem = std::remove(pawnNames.begin(), pawnNames.end(), characterName);
 	pawnNames.erase(removeItem, pawnNames.end());
 	visible_pawns = frustumTest(pawnNames);
@@ -338,11 +335,10 @@ std::vector<std::string> SBRenderScene::occlusionTest(const std::vector<std::str
 	float m[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, m);
 	SrMat modelViewMat = SrMat(m);
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	// sort the pawn from front to back
 	std::vector<std::pair<float, int> > pawnZSortedList;
 	for (unsigned int i = 0; i < testPawns.size(); i++) {
-		SmartBody::SBPawn* pawn = scene->getPawn(testPawns[i]);
+		SmartBody::SBPawn* pawn = mScene.getPawn(testPawns[i]);
 
 		SBGeomObject* geomObject = pawn->getGeomObject();
 		auto* box = dynamic_cast<SBGeomBox*>(geomObject);
@@ -417,7 +413,7 @@ std::vector<std::string> SBRenderScene::occlusionTest(const std::vector<std::str
 	glGenQueries(1, &uiOcclusionQuery);
 	for (auto& entry : pawnZSortedList) {
 		int pawnIdx = entry.second;
-		SmartBody::SBPawn* pawn = scene->getPawn(testPawns[pawnIdx]);
+		SmartBody::SBPawn* pawn = mScene.getPawn(testPawns[pawnIdx]);
 		SrBox pawn_bb;
 		pawn_bb = pawn->getBoundingBox();
 		//SmartBody::util::log("pawn %s, min = %.3f %.3f %.3f, max = %.3f %.3f %.3f", pawn->getName().c_str(), pawn_bb.a[0], pawn_bb.a[1], pawn_bb.a[2], pawn_bb.b[0], pawn_bb.b[1], pawn_bb.b[2]);
@@ -459,12 +455,11 @@ std::vector<std::string> SBRenderScene::frustumTest(const std::vector<std::strin
 	SrFrustum frustum;
 	frustum.extractFrustum();
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	const std::vector<std::string>& pawns = testPawnNames;
 
 	//	Iterates over all pawns, to check which ones are visible from the characters viewport
 	for (const auto& pawnIter : pawns) {
-		SmartBody::SBPawn* pawn = scene->getPawn(pawnIter);
+		SmartBody::SBPawn* pawn = mScene.getPawn(pawnIter);
 
 		SBGeomObject* geomObject = pawn->getGeomObject();
 		auto* box = dynamic_cast<SBGeomBox*>(geomObject);
@@ -518,9 +513,8 @@ std::vector<std::string> SBRenderScene::frustumTest(const std::vector<std::strin
 //	renders the scene from the characters viewpoint
 //
 void SBRenderScene::updateConeOfSight() {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	//	Gets the character from which we want to look from
-	SmartBody::SBCharacter* character = scene->getCharacter(_coneOfSight_character);
+	SmartBody::SBCharacter* character = mScene.getCharacter(_coneOfSight_character);
 	character->getSkeleton()->invalidate_global_matrices();
 	character->getSkeleton()->update_global_matrices();
 
@@ -545,7 +539,7 @@ void SBRenderScene::updateConeOfSight() {
 	//	Center of the eyse world coordinates
 	SrVec center_eyes_location = (leftEye_location + rightEye_location) / 2;
 
-	float scale = 1.f / scene->getScale();
+	float scale = 1.f / mScene.getScale();
 	float znear = 0.01f * scale;
 	float zfar = 100.0f * scale;
 	SrCamera* camera = getActiveCamera();
@@ -583,7 +577,7 @@ bool SBRenderScene::setCameraConeOfSight(const std::string& characterName) {
 		SmartBody::util::log("No active camera found. Cannot create camera track.");
 		return false;
 	}
-	SbmPawn* pawn = SmartBody::SBScene::getScene()->getPawn(characterName);
+	SbmPawn* pawn = mScene.getPawn(characterName);
 	if (!pawn) {
 		SmartBody::util::log("Object %s was not found, cannot track.", characterName.c_str());
 		return false;
@@ -718,7 +712,7 @@ void SBRenderScene::setCameraTrack(const std::string& characterName, const std::
 		SmartBody::util::log("No active camera found. Cannot create camera track.");
 		return;
 	}
-	SbmPawn* pawn = SmartBody::SBScene::getScene()->getPawn(characterName);
+	SbmPawn* pawn = mScene.getPawn(characterName);
 	if (!pawn) {
 		SmartBody::util::log("Object %s was not found, cannot track.", characterName.c_str());
 		return;

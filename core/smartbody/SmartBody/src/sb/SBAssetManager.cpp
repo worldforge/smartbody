@@ -25,7 +25,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSceneListener.h>
 #include "SBUtilities.h"
 #include <sbm/lin_win.h>
-#include <sbm/sr_path_list.h>
 #include <sbm/sbm_constants.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -107,7 +106,7 @@ boost::intrusive_ptr<SBSkeleton> SBAssetManager::createSkeleton(const std::strin
 {
 	if (skeletonDefinition.empty())
 	{
-		boost::intrusive_ptr<SBSkeleton> skeleton(new SBSkeleton());
+		boost::intrusive_ptr<SBSkeleton> skeleton(new SBSkeleton(_scene));
 		std::stringstream strstr;
 		strstr << "skeleton" << uniqueSkeletonId;
 		uniqueSkeletonId++;
@@ -125,7 +124,7 @@ boost::intrusive_ptr<SBSkeleton> SBAssetManager::createSkeleton(const std::strin
 	}
 	else
 	{
-		return {new SBSkeleton(skeletonDefinition)};
+		return {new SBSkeleton(_scene, skeletonDefinition)};
 	}
 }
 
@@ -183,7 +182,7 @@ boost::intrusive_ptr<SBSkeleton> SBAssetManager::addSkeletonDefinition(const std
 		SmartBody::util::log("Skeleton named %s already exists, new skeleton will not be created.", skelName.c_str());
 		return nullptr;
 	}
-	boost::intrusive_ptr<SBSkeleton> sbSkel(new SBSkeleton());
+	boost::intrusive_ptr<SBSkeleton> sbSkel(new SBSkeleton(_scene));
 	sbSkel->setName(skelName);
 	sbSkel->skfilename(skelName.c_str());
 	auto result = _skeletons.emplace(sbSkel->getName(), std::move(sbSkel));
@@ -236,7 +235,7 @@ SBMotion* SBAssetManager::createMotion(const std::string& motionName)
 		return nullptr;
 	}
 
-	auto motion = std::make_unique<SBMotion>();
+	auto motion = std::make_unique<SBMotion>(_scene);
 	motion->setName(motionName);
 	auto result = _motions.emplace(motionName, std::move(motion));
 
@@ -284,7 +283,7 @@ SBMotion* SBAssetManager::addMotionDefinition(const std::string& name, double du
 		return nullptr;
 	}
 
-	auto sbMotion = std::make_unique<SBMotion>();
+	auto sbMotion = std::make_unique<SBMotion>(_scene);
 	if (numFrames <= 2 && duration > 0)
 	{
 		sbMotion->insert_frame(0,0.f);
@@ -390,7 +389,7 @@ FILE* SBAssetManager::open_sequence_file( const char *seq_name, std::string& ful
 	if (seq_paths) {
 
 		seq_paths->reset();
-		std::string filename = seq_paths->next_filename(buffer, candidateSeqName.c_str());
+		std::string filename = seq_paths->next_filename(buffer, candidateSeqName.c_str(), _scene.getMediaPath());
 		//filename = mcn_return_full_filename_func( CurrentPath, filename );
 		//SmartBody::util::log("seq name = %s, filename = %s\n",seq_name,filename.c_str());
 
@@ -401,14 +400,14 @@ FILE* SBAssetManager::open_sequence_file( const char *seq_name, std::string& ful
 				fullPath = filename;
 				break;
 			}
-			filename = seq_paths->next_filename(buffer, candidateSeqName.c_str());
+			filename = seq_paths->next_filename(buffer, candidateSeqName.c_str(), _scene.getMediaPath());
 			//filename = mcn_return_full_filename_func( CurrentPath, filename );
 		}
 		if (file_p == nullptr) {
 			// Could not find the file as named.  Perhap it excludes the extension
 			sprintf(label, "%s.seq", seq_name);
 			seq_paths->reset();
-			filename = seq_paths->next_filename(buffer, candidateSeqName.c_str());
+			filename = seq_paths->next_filename(buffer, candidateSeqName.c_str(), _scene.getMediaPath());
 			//filename = mcn_return_full_filename_func( CurrentPath, filename );
 			while (!filename.empty()) {
 				if ((file_p = fopen(filename.c_str(), "r")) != nullptr) {
@@ -416,7 +415,7 @@ FILE* SBAssetManager::open_sequence_file( const char *seq_name, std::string& ful
 					fullPath = filename;
 					break;
 				}
-				filename = seq_paths->next_filename(buffer, candidateSeqName.c_str());
+				filename = seq_paths->next_filename(buffer, candidateSeqName.c_str(), _scene.getMediaPath());
 				//filename = mcn_return_full_filename_func( CurrentPath, filename );
 			}
 		}

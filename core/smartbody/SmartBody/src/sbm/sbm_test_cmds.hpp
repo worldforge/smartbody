@@ -29,13 +29,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
  *  Handles the "test bml ..." commands.
  *  Try "test bml help".
  */
-int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int test_bml_func( srArgBuffer& args, SmartBody::SBScene& scene );
 
 /**
  *  Handles the "test fml ..." commands.
  *  Try "test fml help".
  */
-int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int test_fml_func( srArgBuffer& args, SmartBody::SBScene& scene );
 
 
 /**
@@ -44,7 +44,7 @@ int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
  *  line put:
  *    test bone_pos <joint name> <x pos> <y pos> <z pos>
  */
-int test_bone_pos_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+int test_bone_pos_func( srArgBuffer& args, SmartBody::SBScene& scene );
 
 
 #endif // SBM_TEST_CMDS_HPP

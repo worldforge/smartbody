@@ -23,7 +23,9 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sr_cmd_seq.h"
 #include "sr_arg_buff.h"
 
-#include <string.h>
+#include <cstring>
+
+#include <utility>
 #include "SBUtilities.h"
 
 #define MAX_CMD_ARGL 8192
@@ -33,36 +35,16 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 srCmdSeq::srCmdSeq()	{
 		
-	event_count = 0;
 	event_offset = 0.0;
-	handle = new sr_command_event_t;
-	handle->next = nullptr;
-	handle->time = 0.0;
-	handle->cmd = nullptr;
-	iterator = nullptr;
 	_valid = true;
+	current = 0;
 }
 
-srCmdSeq::~srCmdSeq()	{
-
-	if( event_count > 0 )	{
-		//SmartBody::util::log( "srCmdSeq::~srCmdSeq NOTE: deleting %d events\n", event_count );
-		char *cmd;
-		reset();
-		while( ( cmd = pull() ) != nullptr )	{
-			delete [] cmd;
-		}
-	}
-	delete handle;
-}
+srCmdSeq::~srCmdSeq() = default;
 
 void srCmdSeq::print( FILE *fp )	{
-	sr_command_event_t *event;
-	
-	event = handle->next;
-	while( event != nullptr )	{
-		fprintf( fp, "%f  %s\n", event->time, event->cmd );
-		event = event->next;
+	for (auto& event : command_events) {
+		fprintf( fp, "%f  %s\n", event.time, event.cmd.c_str() );
 	}
 }
 
@@ -260,43 +242,17 @@ int srCmdSeq::read_file( char *seq_file, int report_open_fail )	{
 
 //////////////////////////////////////////////////////////////////////////////////
 
-int srCmdSeq::insert( float time, const char *cmd_ref )	{
-	sr_command_event_t *eventSeq;
-
-	eventSeq = new sr_command_event_t;
-	eventSeq->next = nullptr;
-	eventSeq->time = time;
-	eventSeq->cmd = new char[ strlen( cmd_ref ) + 1 ];
-	sprintf( eventSeq->cmd, "%s", cmd_ref );
-	return( insert( eventSeq ) );
-}
-
-int srCmdSeq::insert_ref( float time, char *cmd_ref )	{
-	sr_command_event_t *event;
-
-	event = new sr_command_event_t;
-	event->next = nullptr;
-	event->time = time;
-	event->cmd = cmd_ref;
-	return( insert( event ) );
+int srCmdSeq::insert( float time, std::string cmd )	{
+	return insert(command_event{time, std::move(cmd)});
 }
 
 std::string srCmdSeq::pop( float time )	{
-	sr_command_event_t *event;
-	float offset_time = time - event_offset;
-	event = handle->next;
-	if( event != nullptr )	{
-		//SmartBody::util::log("event time = %f, time = %f",event->time, time);
-		if( event->time <= offset_time )	{
-			handle->next = event->next;
-			std::string cmdStr = "";
-      if (event->cmd) {
-				cmdStr = event->cmd;
-        delete [] event->cmd;
-      }
-			delete event;
-			event_count--;
-			return( cmdStr );
+	if (!command_events.empty()) {
+		float offset_time = time - event_offset;
+		if (command_events.front().time <= offset_time) {
+			auto first = command_events.front().cmd;
+			command_events.pop_front();
+			return first;
 		}
 	}
 	return( "" );
@@ -305,87 +261,50 @@ std::string srCmdSeq::pop( float time )	{
 //////////////////////////////////////////////////////////////////////////////////
 
 float srCmdSeq::duration() {
-	float last_time = 0;
-
-	sr_command_event_t *i = handle;
-	while( i != nullptr ) {
-		if( i->time > last_time )
-			last_time = i->time;
-		i = i->next;
+	if (!command_events.empty()) {
+		return command_events.back().time;
 	}
-
-	return last_time;
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 
-char *srCmdSeq::next( float *t )	{
-		
-	if( iterator )	{
-		iterator = iterator->next;
-		if( iterator )	{
-			if( t )	{
-				*t = iterator->time;
-			}
-			return( iterator->cmd );
-		}
-	}
-	return( nullptr );
-}
-
-char *srCmdSeq::pull( float *t )	{
-
-	sr_command_event_t *event = remove();
-	if( event )	{
-		char *cmd = event->cmd;
-		if( t )	{
-			*t = event->time;
-		}
-		delete event;
-		return( cmd );
-	}
-	return( nullptr );
-}
+//srCmdSeq::command_event* srCmdSeq::next( )	{
+//	if (current + 1 <)
+//
+//	if( iterator )	{
+//		iterator = iterator->next;
+//		if( iterator )	{
+//			if( t )	{
+//				*t = iterator->time;
+//			}
+//			return( iterator->cmd );
+//		}
+//	}
+//	return( nullptr );
+//}
 
 //////////////////////////////////////////////////////////////////////////////////
 
-int srCmdSeq::insert( sr_command_event_t *event )	{
-	sr_command_event_t *prev, *tmp;
-	float time;
-		
-	if( event == nullptr )	{
-		return( CMD_FAILURE );
-	}
-	prev = handle;
-	tmp = handle->next;
-	time = event->time;
-	
-	while( tmp != nullptr )	{
-		if( time < tmp->time )	{ // add after, if same time
-			prev->next = event;
-			event->next = tmp;
-			event_count++;
-			return( CMD_SUCCESS );
+int srCmdSeq::insert( command_event event )	{
+
+	for (auto I = command_events.begin(); I != command_events.end(); ++I) {
+		if (I->time > event.time) {
+			command_events.insert(I, std::move(event));
+			return CMD_SUCCESS;
 		}
-		prev = tmp;
-		tmp = tmp->next;
 	}
-	prev->next = event;
-	event->next = nullptr;
-	event_count++;
+	command_events.emplace_back(std::move(event));
 	return( CMD_SUCCESS );
 }
 
-srCmdSeq::sr_command_event_t *srCmdSeq::remove()	{
-	sr_command_event_t *event;
-
-	event = handle->next;
-	if( event != nullptr )	{
-		handle->next = event->next;
-		event->next = nullptr;
-		event_count--;
+srCmdSeq::command_event srCmdSeq::remove()	{
+	if (command_events.empty()) {
+		return {};
 	}
-	return( event );
+	auto front = std::move(command_events.front());
+	command_events.pop_front();
+	return front;
 }
 
 //////////////////////////////////////////////////////////////////////////////////

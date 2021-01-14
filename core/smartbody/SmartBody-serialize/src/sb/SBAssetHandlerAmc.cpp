@@ -38,7 +38,7 @@ SBAssetHandlerAmc::SBAssetHandlerAmc()
 
 SBAssetHandlerAmc::~SBAssetHandlerAmc() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAmc::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAmc::getAssets(SBScene& scene, const std::string& path)
 {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -76,8 +76,8 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAmc::getAssets(const std::st
 	std::ifstream filestream(convertedPath.c_str());
 
 	double scale = 1.0;
-	if (SmartBody::SBScene::getScene()->getAttribute("globalMotionScale"))
-		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalMotionScale");
+	if (scene.getAttribute("globalMotionScale"))
+		scale = scene.getDoubleAttribute("globalMotionScale");
 
 	boost::intrusive_ptr<SBSkeleton> skeleton;
 	// find a skeleton with a prefix that matches the first part of this motion file
@@ -87,7 +87,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAmc::getAssets(const std::st
 		std::string skelPrefix = fileName.substr(0, pos);
 		// find a skeleton with that name
 		std::string skelName = skelPrefix + ".asf";
-		skeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skelName);
+		skeleton = scene.getAssetManager()->getSkeleton(skelName);
 		if (!skeleton)
 		{
 			SmartBody::util::log("No skeleton with name %s could be find to accompany .asf file, %s not loaded.", skelName.c_str(), convertedPath.c_str());
@@ -102,7 +102,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAmc::getAssets(const std::st
 	}
 
 	
-	auto motion = std::make_unique<SmartBody::SBMotion>();
+	auto motion = std::make_unique<SmartBody::SBMotion>(scene);
 	bool ok = ParserASFAMC::parseAmc(*motion, skeleton.get(), filestream, float(scale));
 	if (ok)
 	{

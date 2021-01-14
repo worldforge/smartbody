@@ -38,15 +38,15 @@ void pythonExit()
 	
 }
 
-void quitSbm()
-{
-	SmartBody::SBScene::getScene()->getSimulationManager()->stop();
-}
-
-void reset()
-{
-	SmartBody::SBScene::destroyScene();
-}
+//void quitSbm()
+//{
+//	SmartBody::SBScene::getScene()->getSimulationManager()->stop();
+//}
+//
+//void reset()
+//{
+//	SmartBody::SBScene::destroyScene();
+//}
 
 void printLog(const std::string& message)
 {

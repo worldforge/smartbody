@@ -198,7 +198,7 @@ void remote_speech::sendSpeechCommand(const char* cmd)
 }
 void remote_speech::sendSpeechTimeout(std::ostringstream& outStream)
 {
-	srCmdSeq *rVoiceTimeout= new srCmdSeq(); 
+	auto rVoiceTimeout= std::make_unique<srCmdSeq>();
 	rVoiceTimeout->offset((float)(_scene.getSimulationManager()->getTime()));
 	string argumentString="RemoteSpeechTimeOut";
 	argumentString += " ";
@@ -209,7 +209,7 @@ void remote_speech::sendSpeechTimeout(std::ostringstream& outStream)
 //	sprintf( seqName, "RemoteSpeechTimeOut", myStream.str() );  // Anm - huh?? No % in format arg.
 	sprintf( seqName, "RemoteSpeechTimeOut" );  // Anm - huh?? No % in format arg.
 	_scene.getCommandManager()->getActiveSequences()->removeSequence( seqName, true );  // remove old sequence by this name
-	if( !_scene.getCommandManager()->getActiveSequences()->addSequence( seqName, rVoiceTimeout ) ) {
+	if( !_scene.getCommandManager()->getActiveSequences()->addSequence( seqName, std::move(rVoiceTimeout) ) ) {
 		SmartBody::util::log( "remote_speech::rVoiceTimeOut ERR:insert Rvoice timeoutCheck into active_seq_map FAILED, msgId=%s\n", seqName ); 
 	}	
 	delete [] seqName;
@@ -247,7 +247,7 @@ std::vector<VisemeData*>* remote_speech::extractVisemes(DOMNode* node, vector<Vi
 #if USE_CURVES_FOR_VISEMES
 				curViseme = new VisemeData(id, startTime);
 #else
-				curViseme = new VisemeData(id.c_str(), articulation, startTime, 0.0f, 0.0f, 0.0f); //the weight is always made one
+				curViseme = new VisemeData(id, articulation, startTime, 0.0f, 0.0f, 0.0f); //the weight is always made one
 #endif
 				if ( visemes->size() > 0 ) 
 				{   

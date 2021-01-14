@@ -87,8 +87,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define SHOW_DEPRECATION_MESSAGES 0
 namespace SmartBody {
 
-SBScene* SBScene::_scene = nullptr;
-
 
 std::map<std::string, std::string> SBScene::_systemParameters;
 
@@ -131,7 +129,7 @@ SBScene::SBScene(const CoreServicesProvider& coreServicesProvider) :
 		_speechManager(std::make_unique<SBSpeechManager>(*this)),
 		_commandManager(std::make_unique<SBCommandManager>(*this)),
 		_motionGraphManager(std::make_unique<SBMotionGraphManager>(*this)),
-		_handConfigManager(std::make_unique<SBHandConfigurationManager>()),
+		_handConfigManager(std::make_unique<SBHandConfigurationManager>(*this)),
 		_parser(std::make_unique<SBParser>()),
 		_scale(1.f),
 		_isRemoteMode(false),
@@ -141,8 +139,6 @@ SBScene::SBScene(const CoreServicesProvider& coreServicesProvider) :
 		_vhMsgProvider(nullptr),
 		_speechBehaviourProvider(nullptr)
 		{
-	_scene = this;
-
 	// add the services
 	_serviceManager->addService(_coreServices.physicsManager.get());
 	_serviceManager->addService(_coreServices.collisionManager.get());
@@ -207,7 +203,6 @@ SBScene::SBScene(const CoreServicesProvider& coreServicesProvider) :
 	_rootGroup = new SrSnGroup();
 
 	_heightField = nullptr;
-	_navigationMesh = nullptr;
 
 	//TODO: don't init process shared random pool in this class
 	srand((unsigned int)time(nullptr));
@@ -279,19 +274,6 @@ SBScene::~SBScene()
 	removeAllAssetPaths("audio");
 
 
-
-	delete _heightField;
-
-	_heightField = nullptr;
-
-#if 0 // this should be done in asset manager
-	if (_navigationMesh)
-	{
-		delete _navigationMesh;
-	}
-#endif
-	_navigationMesh = nullptr;
-
 	_rootGroup.reset();
 
 	for (auto iter = _scripts.begin();
@@ -307,26 +289,6 @@ SBScene::~SBScene()
 #endif
 	stopFileLogging();
 
-	if (_scene == this) {
-		_scene = nullptr;
-	}
-
-}
-
-
-SBScene* SBScene::getScene()
-{
-	return _scene;
-}
- 
-void SBScene::destroyScene()
-{
-	if (_scene)
-	{
-		XMLPlatformUtils::Terminate(); 
-		delete _scene;
-		_scene = nullptr;
-	}
 }
 
 void SBScene::setProcessId(const std::string& id)
@@ -689,7 +651,7 @@ SBCharacter* SBScene::createCharacter(const std::string& charName, const std::st
 
 		//if (getCharacterListener() )
 		//	getCharacterListener()->OnCharacterCreate( character->getName().c_str(), character->getClassType() );
-		auto* skeleton = new SBSkeleton();
+		auto* skeleton = new SBSkeleton(*this);
 		character->setSkeleton(skeleton);
 //		SkJoint* joint = skeleton->add_joint(SkJoint::TypeQuat);
 //		joint->setName("world_offset");		
@@ -729,7 +691,7 @@ SBPawn* SBScene::createPawn(const std::string& pawnName)
 	else
 	{
 		auto* pawn = new SBPawn(*this, pawnName.c_str());
-		boost::intrusive_ptr<SBSkeleton> skeleton(new SBSkeleton());
+		boost::intrusive_ptr<SBSkeleton> skeleton(new SBSkeleton(*this));
 		pawn->setSkeleton(skeleton);
 		//SkJoint* joint = skeleton->add_joint(SkJoint::TypeQuat);
 		//joint->setName("world_offset");
@@ -1205,7 +1167,7 @@ SmartBody::SBFaceDefinition* SBScene::createFaceDefinition(const std::string& na
 		return I->second.get();
 	}
 
-	auto result = _faceDefinitions.emplace(name, std::make_unique<SBFaceDefinition>(name));
+	auto result = _faceDefinitions.emplace(name, std::make_unique<SBFaceDefinition>(*this, name));
 	if (result.second) {
 		for (auto& _sceneListener : this->_sceneListeners) {
 			_sceneListener->OnObjectCreate(result.first->second.get());
@@ -1632,21 +1594,18 @@ void SBScene::updateCharacterNames()
 
 Heightfield* SBScene::getHeightfield()
 {
-	return _heightField;
+	return _heightField.get();
 }
 
 
 Heightfield* SBScene::createHeightfield()
 {
-	delete _heightField;
-	_heightField = new Heightfield();
-	return _heightField;
+	_heightField = std::make_unique<Heightfield>();
+	return _heightField.get();
 }
 
 void SBScene::removeHeightfield()
 {
-
-	delete _heightField;
 	_heightField = nullptr;
 }
 

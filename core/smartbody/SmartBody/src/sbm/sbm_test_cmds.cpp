@@ -51,7 +51,7 @@ using namespace std;
  *
  *  Returns true if valid.
  */
-bool normalize_character_id( const string& module, const string& role, const string& char_id ) {
+bool normalize_character_id( SmartBody::SBScene& scene, const string& module, const string& role, const string& char_id ) {
 	
 
 	if( char_id.length()==0 ) {
@@ -63,7 +63,7 @@ bool normalize_character_id( const string& module, const string& role, const str
 	} else {
 		// Lookup character
 		if( char_id!="*" ) {
-			SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter( char_id );
+			SmartBody::SBCharacter* character = scene.getCharacter( char_id );
 			if( character == nullptr ) {
 				std::stringstream strstr;
 				strstr << "WARNING: "<<module<<": Unknown "<<role<<" id \""<<char_id<<"\".";
@@ -83,7 +83,7 @@ bool normalize_character_id( const string& module, const string& role, const str
  *  - noecho
  *  in any order (but last option take priority in conflict)
  */
-bool read_options( const string& module, srArgBuffer& args, string& arg,
+bool read_options( SmartBody::SBScene& scene, const string& module, srArgBuffer& args, string& arg,
                    string& char_id, string& recip_id,
 				   string& seq_id, bool& echo, bool& send ) {
 	bool did_set_char = false;
@@ -112,11 +112,11 @@ bool read_options( const string& module, srArgBuffer& args, string& arg,
 	}
 	
 	if( did_set_char ) {
-		if( !normalize_character_id( module, "actor", char_id ) )
+		if( !normalize_character_id(scene, module, "actor", char_id ) )
 			return false;
 	}
 	if( did_set_recip ) {
-		if( !normalize_character_id( module, "recipient", recip_id ) )
+		if( !normalize_character_id(scene, module, "recipient", recip_id ) )
 			return false;
 	}
 
@@ -127,16 +127,15 @@ bool read_options( const string& module, srArgBuffer& args, string& arg,
 /**
  *  Sets the contents of buffer to the cmd (usually vrSpeak or vrExpress) command for the given character & BML.
  */
-void build_vrX( ostringstream& buffer, const string& cmd, const string& char_id, const string& recip_id, const string& content, bool for_seq ) {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+void build_vrX(SmartBody::SBScene& scene, ostringstream& buffer, const string& cmd, const string& char_id, const string& recip_id, const string& content, bool for_seq ) {
 	buffer.str("");
 	if( for_seq )
 		buffer << "send " << cmd << " ";
 	buffer << char_id << " "<< recip_id << " sbm";
-	if (!scene->getProcessId().empty() )  // Insert process_id if present.
-		buffer << '_' << scene->getProcessId(); 
+	if (!scene.getProcessId().empty() )  // Insert process_id if present.
+		buffer << '_' << scene.getProcessId(); 
 
-	SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(scene->getAttribute("bmlIndex"));
+	SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(scene.getAttribute("bmlIndex"));
 	buffer << "_test_bml_" << (intAttr->getValue()) << endl << content;
 	intAttr->setValue(intAttr->getValue() + 1);
 }
@@ -147,7 +146,7 @@ void build_vrX( ostringstream& buffer, const string& cmd, const string& char_id,
  *  If seq_id has length>0, then a sequence is generated,
  *  including echoing output.
  */
-int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
+int send_vrX(SmartBody::SBScene& scene, const char* cmd, const string& char_id, const string& recip_id,
 			  const string& seq_id, bool echo, bool send, const string& bml ) {
 	
 	ostringstream msg;
@@ -156,7 +155,7 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 
 	if( seq_id.length()==0 ) {
 		if( echo ) {
-			build_vrX( msg, cmd, char_id, recip_id, bml, false );
+			build_vrX(scene, msg, cmd, char_id, recip_id, bml, false );
 			// removed logging of vr messages
 			//SmartBody::util::log("%s %s", cmd, msg.str().c_str());
 		}
@@ -165,23 +164,23 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 			// execute directly
 			if( all_characters )
 			{
-				const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+				const std::vector<std::string>& characterNames = scene.getCharacterNames();
 				for (const auto & characterName : characterNames)
 				{
-					SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
-					build_vrX( msg, cmd, character->getName(), recip_id, bml, false );
-					SmartBody::SBScene::getScene()->sendVHMsg2( cmd, msg.str() );
+					SmartBody::SBCharacter* character = scene.getCharacter(characterName);
+					build_vrX(scene, msg, cmd, character->getName(), recip_id, bml, false );
+					scene.sendVHMsg2( cmd, msg.str() );
 				}
 			} else {
-				build_vrX( msg, cmd, char_id, recip_id, bml, false );
-				SmartBody::SBScene::getScene()->sendVHMsg2( cmd, msg.str() );
+				build_vrX(scene, msg, cmd, char_id, recip_id, bml, false );
+				scene.sendVHMsg2( cmd, msg.str() );
 			}
 		}
 		return CMD_SUCCESS;
 	} else {
 		// Command sequence to trigger vrSpeak
-		srCmdSeq *seq = new srCmdSeq(); // sequence file that holds the bml command(s)
-		seq->offset( (float)(SmartBody::SBScene::getScene()->getSimulationManager()->getTime()) );
+		auto seq = std::make_unique<srCmdSeq>(); // sequence file that holds the bml command(s)
+		seq->offset( (float)(scene.getSimulationManager()->getTime()) );
 
 		if( echo ) {
 			msg << "echo // Running sequence \"" << seq_id << "\"...";
@@ -190,7 +189,7 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 				strstr << "WARNING: send_vrX(..): Failed to insert echo header command for character \"" << char_id << "\".";
 				SmartBody::util::log(strstr.str().c_str());
 			}
-			build_vrX( msg, cmd, char_id, recip_id, bml, false );
+			build_vrX(scene, msg, cmd, char_id, recip_id, bml, false );
 			if( seq->insert( 0, msg.str().c_str() )!=CMD_SUCCESS ) {
 				std::stringstream strstr;
 				strstr << "WARNING: send_vrX(..): Failed to insert echoed command for character \"" << char_id << "\".";
@@ -200,11 +199,11 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 
 		if( all_characters )
 		{
-			const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+			const std::vector<std::string>& characterNames = scene.getCharacterNames();
 			for (const auto & characterName : characterNames)
 			{
-				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
-				build_vrX( msg, cmd, character->getName().c_str(), recip_id, bml, true );
+				SmartBody::SBCharacter* character = scene.getCharacter(characterName);
+				build_vrX(scene, msg, cmd, character->getName().c_str(), recip_id, bml, true );
 
 				//echo.str("");
 				//echo << "echo " << msg.str();
@@ -219,7 +218,7 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 				}
 			}
 		} else {
-			build_vrX( msg, cmd, char_id, recip_id, bml, true );
+			build_vrX(scene, msg, cmd, char_id, recip_id, bml, true );
 
 			//echo.str("");
 			//echo << "echo " << msg.str();
@@ -235,8 +234,8 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 		}
 
 		if( send ) {
-			SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->removeSequence( seq_id, true );  // remove old sequence by this name
-			if( !SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->addSequence( seq_id, seq ))
+			scene.getCommandManager()->getActiveSequences()->removeSequence( seq_id, true );  // remove old sequence by this name
+			if( !scene.getCommandManager()->getActiveSequences()->addSequence( seq_id, std::move(seq) ))
 			{
 				std::stringstream strstr;
 				strstr << "ERROR: send_vrX(..): Failed to insert seq into active sequences.";
@@ -244,8 +243,8 @@ int send_vrX( const char* cmd, const string& char_id, const string& recip_id,
 				return CMD_FAILURE;
 			}
 		} else {
-			SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->removeSequence( seq_id, true );   // remove old sequence by this name
-			if( !SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->addSequence( seq_id, seq ))
+			scene.getCommandManager()->getPendingSequences()->removeSequence( seq_id, true );   // remove old sequence by this name
+			if( !scene.getCommandManager()->getPendingSequences()->addSequence( seq_id, std::move(seq) ))
 			{
 				std::stringstream strstr;
 				strstr << "ERROR: send_vrX(..): Failed to insert seq into pending sequences.";
@@ -285,18 +284,17 @@ void print_test_bml_help() {
 }
 
 // Handles all "test bml ..." sbm commands.
-int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
+int test_bml_func( srArgBuffer& args, SmartBody::SBScene& scene )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	string char_id = scene->getStringAttribute("defaultCharacter");
-	string recip_id = scene->getStringAttribute("defaultRecipient");
+	string char_id = scene.getStringAttribute("defaultCharacter");
+	string recip_id = scene.getStringAttribute("defaultRecipient");
 	string seq_id;
 	bool   echo = true;
 	bool   send = true;
 
 
 	string arg = args.read_token();
-	if( !read_options( "test bml", args, arg,
+	if( !read_options(scene, "test bml", args, arg,
 		               char_id, recip_id,
 					   seq_id, echo, send ) )
 		return CMD_FAILURE;
@@ -305,7 +303,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 	
 	if (char_id != "*" )
 	{
-		SmartBody::SBCharacter* character = scene->getCharacter(char_id);
+		SmartBody::SBCharacter* character = scene.getCharacter(char_id);
 		if (!character)
 		{
 			SmartBody::util::log("No character named '%s'.", char_id.c_str());
@@ -320,29 +318,29 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		ostringstream bml;
 		if( arg=="<?xml" ) {  // does not work with quotes like vrSpeak
 			bml << "<?xml " << args.read_remainder_raw();
-			return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+			return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 		} else if( arg.compare(0,4,"<act",4)==0 ) {
 			bml << "<?xml version=\"1.0\" ?>"
 			    << arg << " " << args.read_remainder_raw();
-			return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+			return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 		} else if( arg.compare(0,4,"<bml",4)==0 ) {
 			bml << "<?xml version=\"1.0\" ?>";
-			const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+			const std::string& procId = scene.getProcessId();
 			if (procId != "")
 				bml << "<act procid=\"" << procId << "\">";
 			else
 				bml << "<act>";
 			bml << arg << " " << args.read_remainder_raw() << "</act>";
-			return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+			return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 		} else {
 			bml << "<?xml version=\"1.0\" ?>";
-			const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+			const std::string& procId = scene.getProcessId();
 			if (procId != "")
 				bml << "<act procid=\"" << procId << "\">";
 			else
 				bml << "<act>";
 			bml << "<bml>" << arg << " " << args.read_remainder_raw() << "</bml></act>";
-			return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+			return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 		}
 	} else if( arg=="file") {
 		string filename = args.read_remainder_raw();
@@ -357,19 +355,19 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		boost::filesystem::path abs_p = boost::filesystem::absolute( p );
 		if (!boost::filesystem::exists( abs_p ))
 		{
-			boost::filesystem::path finalPath(scene->getMediaPath());
+			boost::filesystem::path finalPath(scene.getMediaPath());
 			finalPath /= p;
 			if (!boost::filesystem::exists( finalPath ))
 #else
 		boost::filesystem::path abs_p = boost::filesystem::complete( p );
 		if (!boost::filesystem2::exists( abs_p ))
 		{
-			boost::filesystem::path finalPath(scene->getMediaPath());
+			boost::filesystem::path finalPath(scene.getMediaPath());
 			finalPath /= p;
 			if (!boost::filesystem2::exists( finalPath ))
 #endif
 			{
-				SmartBody::util::log("File %s was not found using media path %s. BML will not be processed.", filename.c_str(), scene->getMediaPath().c_str());
+				SmartBody::util::log("File %s was not found using media path %s. BML will not be processed.", filename.c_str(), scene.getMediaPath().c_str());
 				return CMD_FAILURE;
 			}
 			p = finalPath;
@@ -387,7 +385,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		xml.assign((std::istreambuf_iterator<char>(in)),
                  std::istreambuf_iterator<char>());
 
-		std::string procId = scene->getProcessId();
+		std::string procId = scene.getProcessId();
 		if (procId != "")
 		{
 			// replace any <act> tag with <act procid="foo"> if the current instance has a proc id.
@@ -405,7 +403,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			xml.insert(0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"); 
 		}
 		
-		return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, xml );
+		return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, xml );
 	} else if( arg=="anim" || arg=="animation") { //  anim[ation] <animation name>
 		string anim = args.read_token();
 		if( anim.length()==0 ) {
@@ -413,13 +411,13 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			return CMD_FAILURE;
 		}
 
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(anim);
+		SmartBody::SBMotion* motion = scene.getAssetManager()->getMotion(anim);
 		if (!motion)
 			SmartBody::util::log("WARNING: Unknown animation \"%s\".", anim.c_str());
 
 		ostringstream bml;
 		bml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+		const std::string& procId = scene.getProcessId();
 		if (procId != "")
 			bml << "<act procid=\"" << procId << "\">";
 		else
@@ -428,7 +426,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			<< "\t\t<sbm:animation name=\"" << anim << "\"/>\n"
 			<< "\t</bml>\n"
 			<< "</act>";
-		return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+		return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 	} else if( arg=="posture") { // posture <posture name>
 		string posture = args.read_token();
 		if( posture.length()==0 ) {
@@ -438,7 +436,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
 		ostringstream bml;
 		bml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+		const std::string& procId = scene.getProcessId();
 		if (procId != "")
 			bml << "<act procid=\"" << procId << "\">\n";
 		else
@@ -447,7 +445,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			<< "\t\t<body posture=\"" << posture << "\"/>\n"
 			<< "\t</bml>\n"
 			<< "</act>";
-		return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+		return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 	} else if( arg=="gaze") {
 		// gaze [direction <direction> [angle <angle>]]
 		//      [speed <lumbar> <neck> <eye>]
@@ -512,7 +510,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		ostringstream bml;
 		// First half of BML
 		bml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+		const std::string& procId = scene.getProcessId();
 		if (procId != "")
 			bml << "<act procid=\"" << procId << "\">\n";
 		else
@@ -521,7 +519,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			<< "\t\t<gaze " << targetAttr << directionAttr << angleAttr << speedAttr << smoothAttr << "/>\n"
 			<< "\t</bml>\n"
 			<< "</act>";
-		return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+		return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 	} else if( arg=="head" ) { // head [orient <direction> <amount>|target <target>]
 		ostringstream head_attrs;
 
@@ -575,7 +573,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 		ostringstream bml;
 		// First half of BML
 		bml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+		const std::string& procId = scene.getProcessId();
 		if (procId != "")
 			bml << "<act procid=\"" << procId << "\">\n";
 		else
@@ -584,7 +582,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			<< "\t\t<head " << head_attrs.str() << "/>\n"
 			<< "\t</bml>\n"
 			<< "</act>";
-		return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+		return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 	} else if( arg=="speech") { // speech [text|ssml] <sentence>
 		enum { PLAIN_TEXT, SSML };
 		int speech_type = PLAIN_TEXT;
@@ -621,7 +619,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
 		ostringstream bml;
 		bml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+		const std::string& procId = scene.getProcessId();
 		if (procId != "")
 			bml << "<act procid=\"" << procId << "\">\n";
 		else
@@ -630,7 +628,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			<< "\t\t"<< speech_tag << speech << "</speech>\n"
 			<< "\t</bml>\n"
 			<< "</act>";
-		return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+		return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 	} else if( arg=="interrupt") {
 		string act = args.read_token();
 		if( act.length()==0 ) {
@@ -640,7 +638,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
 		ostringstream bml;
 		bml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+		const std::string& procId = scene.getProcessId();
 		if (procId != "")
 			bml << "<act procid=\"" << procId << "\">\n";
 		else
@@ -649,7 +647,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			<< "\t\t<sbm:interrupt act=\"" << act << "\"/>\n"
 			<< "\t</bml>\n"
 			<< "</act>";
-		return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+		return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 	} else if( arg=="qdraw" || arg=="quickdraw" ) {  // Shhh! Its a secret!
 		string target = args.read_token();
 		if( target.length()==0 ) {
@@ -673,7 +671,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 
 		ostringstream bml;
 		bml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+		const std::string& procId = scene.getProcessId();
 		if (procId != "")
 			bml << "<act procid=\"" << procId << "\">\n";
 		else
@@ -693,7 +691,7 @@ int test_bml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr )
 			<< "\t</bml>\n"
 			<< "</act>";
 
-		return send_vrX( "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
+		return send_vrX(scene, "vrSpeak", char_id, recip_id, seq_id, echo, send, bml.str() );
 	} else {
 		SmartBody::util::log("ERROR: test bml: Unrecognized \"test bml\" subscommand \"%s\".", arg.c_str());
 		print_test_bml_help();
@@ -714,16 +712,16 @@ void print_test_fml_help() {
 	SmartBody::util::log("\t<fml>...</fml>              // sends inline <fml> XML");
 }
 
-int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
-	string char_id = SmartBody::SBScene::getScene()->getStringAttribute("defaultCharacter");
-	string recip_id = SmartBody::SBScene::getScene()->getStringAttribute("defaultRecipient");
+int test_fml_func( srArgBuffer& args, SmartBody::SBScene& scene ) {
+	string char_id = scene.getStringAttribute("defaultCharacter");
+	string recip_id = scene.getStringAttribute("defaultRecipient");
 	string seq_id;
 	bool   echo = true;
 	bool   send = true;
 
 
 	string arg = args.read_token();
-	if( !read_options( "test fml", args, arg,
+	if( !read_options(scene, "test fml", args, arg,
 		               char_id, recip_id,
 					   seq_id, echo, send ) )
 		return CMD_FAILURE;
@@ -735,20 +733,20 @@ int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 		ostringstream fml;
 		if( arg=="<?xml" ) {  // does not work with quotes like vrSpeak
 			fml << "<?xml " << args.read_remainder_raw();
-			return send_vrX( "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
+			return send_vrX(scene, "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
 		} else if( arg.compare(0,4,"<act",4)==0 ) {
 			fml << "<?xml version=\"1.0\" ?>"
 			    << arg << args.read_remainder_raw();
-			return send_vrX( "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
+			return send_vrX(scene, "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
 		} else if( arg.compare(0,4,"<fml",4)==0 ) {
 			fml << "<?xml version=\"1.0\" ?>";
-			const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+			const std::string& procId = scene.getProcessId();
 			if (!procId.empty())
 				fml << "<act procid=\"" << procId << "\">\n";
 			else
 				fml << "<act>\n";
 			fml << arg << args.read_remainder_raw() << "</act>";
-			return send_vrX( "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
+			return send_vrX(scene, "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
 		} else {
 			SmartBody::util::log("ERROR: test_fml_func: Unrecognized test FML command: \"%s\"", arg.c_str());
 			return CMD_FAILURE;
@@ -769,7 +767,7 @@ int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 		}
 		fml << file.rdbuf();
 
-		return send_vrX( "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
+		return send_vrX(scene, "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
 	} else if( arg=="speech") {
 		enum { PLAIN_TEXT, SSML };
 		int speech_type = PLAIN_TEXT;
@@ -799,7 +797,7 @@ int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 
 		ostringstream fml;
 		fml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+		const std::string& procId = scene.getProcessId();
 		if (procId != "")
 			fml << "<act procid=\"" << procId << "\">\n";
 		else
@@ -809,7 +807,7 @@ int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 			<< "\t\t"<< speech_tag << speech << "</speech>\n"
 			<< "\t</bml>\n"
 			<< "</act>";
-		return send_vrX( "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
+		return send_vrX(scene, "vrExpress", char_id, recip_id, seq_id, echo, send, fml.str() );
 	} else {
 		SmartBody::util::log("ERROR: test bml: Unrecognized command \"%s\".", arg.c_str());
 		print_test_fml_help();
@@ -818,14 +816,14 @@ int test_fml_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
 }
 
 
-int test_bone_pos_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr ) {
-	const string& character_id = SmartBody::SBScene::getScene()->getStringAttribute("defaultCharacter");
+int test_bone_pos_func( srArgBuffer& args, SmartBody::SBScene& scene ) {
+	const string& character_id = scene.getStringAttribute("defaultCharacter");
 	if( character_id.empty() ) {
 		SmartBody::util::log("ERROR: No test character defined");
 		return CMD_FAILURE;
 	}
 
-	SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter( character_id );
+	SmartBody::SBCharacter* character = scene.getCharacter( character_id );
 	if( character == nullptr ) {
 		SmartBody::util::log("ERROR: Unknown test character \"%s\"", character_id.c_str());
 		return CMD_FAILURE;

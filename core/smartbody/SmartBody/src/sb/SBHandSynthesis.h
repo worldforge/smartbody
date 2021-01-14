@@ -160,11 +160,11 @@ private:
 /*
 MotionDatbase - contains data for the motion database
 */
-class MotionDatabase{
+class MotionDatabase : public SBSceneOwned{
 public:
 
 	// initialize the motion datbase
-	MotionDatabase();
+	MotionDatabase(SBScene& scene);
 	~MotionDatabase();
 
 	// clear the database

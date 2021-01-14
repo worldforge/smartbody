@@ -34,7 +34,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBGestureMap::SBGestureMap() : SBObject()
+SBGestureMap::SBGestureMap(SBScene& scene) : SBObject(), SBSceneOwned(scene)
 {
 	defaultGestureInfo._animation = "";
 	defaultGestureInfo._lexeme = "";
@@ -44,7 +44,7 @@ SBGestureMap::SBGestureMap() : SBObject()
 	defaultGestureInfo._posture = "";
 }
 
-SBGestureMap::SBGestureMap(const std::string& name)
+SBGestureMap::SBGestureMap(SBScene& scene, const std::string& name) : SBSceneOwned(scene)
 {
 	setName(name);
 
@@ -82,7 +82,7 @@ void SBGestureMap::addGestureMapping(const std::string& name, const std::string&
 
 	_gestureMaps.emplace_back(gInfo);
 
-	SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(name);
+	SBMotion* motion = _scene.getMotion(name);
 	if (!motion)
 		return;
 	motion->setMotionType(SBMotion::Gesture);
@@ -122,14 +122,12 @@ std::vector<std::string> SBGestureMap::getGestureListByInfo(const std::string& l
 
 
 	std::vector<std::string> retAnimations;
-	for (std::vector<GestureInfo>::iterator iter = _gestureMaps.begin(); 
-		iter != _gestureMaps.end(); 
-		iter++)
+	for (auto & _gestureMap : _gestureMaps)
 	{
 		bool hasMatching = true;
-		for (size_t i = 0; i < compTypes.size(); ++i)
+		for (auto & compType : compTypes)
 		{
-			if (!gestureInfoCompare(iter->_lexeme, iter->_type, iter->_hand, iter->_style, iter->_posture, lexeme, type, hand, style, posture, compTypes[i]))
+			if (!gestureInfoCompare(_gestureMap._lexeme, _gestureMap._type, _gestureMap._hand, _gestureMap._style, _gestureMap._posture, lexeme, type, hand, style, posture, compType))
 			{
 				hasMatching = false;
 				break;
@@ -137,7 +135,7 @@ std::vector<std::string> SBGestureMap::getGestureListByInfo(const std::string& l
 		}
 
 		if (hasMatching)
-			retAnimations.emplace_back(iter->_animation);
+			retAnimations.emplace_back(_gestureMap._animation);
 	}
 
 	return retAnimations;
@@ -151,7 +149,7 @@ std::vector<std::string> SBGestureMap::getGestureListByInfo(const std::string& l
 std::string SBGestureMap::getGestureByInfo(const std::string& lexeme, const std::string& type, const std::string& hand, const std::string& style, const std::string& posture, const std::string& policy, int useIndex, int& appliedIndex)
 {
 	const std::vector<std::string>& retAnimations = getGestureListByInfo(lexeme, type, hand, style, posture);
-	if (retAnimations.size() == 0)
+	if (retAnimations.empty())
 	{
 		SmartBody::util::log("Gesture %s cannot find gesture with type %s, posture %s, hand %s.", getName().c_str(), type.c_str(), posture.c_str(), hand.c_str());
 		return "";
@@ -211,18 +209,17 @@ int SBGestureMap::getNumMappings()
 
 void SBGestureMap::validate()
 {
-	SBScene* scene = SBScene::getScene();
-	std::vector<GestureInfo>::iterator iter = _gestureMaps.begin();
+	auto iter = _gestureMaps.begin();
 	for (; iter != _gestureMaps.end(); iter++)
 	{
 		SmartBody::util::log("Gesture: motion='%s' idle='%s' lexeme='%s', type='%s', hand='%s', style='%s'", 
 			 iter->_animation.c_str(), iter->_posture.c_str(), iter->_lexeme.c_str(), iter->_type.c_str(), iter->_hand.c_str(), iter->_style.c_str());
-		SBMotion* animation = scene->getMotion(iter->_animation);
+		SBMotion* animation = _scene.getMotion(iter->_animation);
 		if (!animation)
 		{
 			SmartBody::util::log("WARNING: Animation '%s' is not loaded.", iter->_animation.c_str());
 		}
-		SBMotion* idle = scene->getMotion(iter->_posture);
+		SBMotion* idle = _scene.getMotion(iter->_posture);
 		if (!idle)
 		{
 			SmartBody::util::log("WARNING: Idle '%s' is not loaded.", iter->_posture.c_str());

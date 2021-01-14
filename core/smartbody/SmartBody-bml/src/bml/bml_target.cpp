@@ -64,7 +64,7 @@ const SkJoint* BML::parse_target( const XMLCh* tagname, const XMLCh* attrTarget,
 			string::size_type colon_index = object_id.find( ':' );
 			if( colon_index == string::npos ) {
 				// Missing ':' object/bone delimiter, so guess...
-				target = SmartBody::SBScene::getScene()->getCharacter( object_id );
+				target = scene->getCharacter( object_id );
 				if( target ) {
 					// Target is a character, look at eyeball
 					bone_id = "eyeball_left";
@@ -77,7 +77,7 @@ const SkJoint* BML::parse_target( const XMLCh* tagname, const XMLCh* attrTarget,
 #endif
         } else {
 					// Target is a pawn, look at world offset
-					target =  SmartBody::SBScene::getScene()->getPawn( object_id );
+					target =  scene->getPawn( object_id );
 					if( target ) {
 						bone_id = SbmPawn::WORLD_OFFSET_JOINT_NAME;
 #if DEBUG_BML_TARGET
@@ -102,11 +102,11 @@ const SkJoint* BML::parse_target( const XMLCh* tagname, const XMLCh* attrTarget,
 #if DEBUG_BML_TARGET
 					cout << "DEBUG: BML::parse_target(): Gaze:\tobject_id \""<<object_id<<"\",\tbone_id \""<<bone_id<<"\"." <<endl;
 #endif
-				target =  SmartBody::SBScene::getScene()->getPawn( object_id );
+				target =  scene->getPawn( object_id );
 				if( target==nullptr ) {
 
 					// we've failed to find object:bone locally, now query wsp
-					target =  SmartBody::SBScene::getScene()->getPawn( object_id + ":" + bone_id );
+					target =  scene->getPawn( object_id + ":" + bone_id );
 					if( target )
 					{
 						bone_id = SbmPawn::WORLD_OFFSET_JOINT_NAME;
@@ -131,7 +131,7 @@ const SkJoint* BML::parse_target( const XMLCh* tagname, const XMLCh* attrTarget,
 			// Look up the joint
 			const SkJoint* joint = target->get_joint( bone_id.c_str() );
 			if( joint == nullptr ) {
-				if (SmartBody::SBScene::getScene()->getCharacter( object_id )) // target is a character but does not have eye joint
+				if (scene->getCharacter( object_id )) // target is a character but does not have eye joint
 				{
 					return target->get_world_offset_joint();
 				}
@@ -172,7 +172,7 @@ const SbmPawn* BML::parse_target_pawn( const XMLCh* tagname, const XMLCh* attrTa
 	// TODO: Revisit the target syntax.
 	// Currently, we use "object_id:bone_id", but this is probably not sufficient
 	// Target is a pawn, look at world offset
-	target =  SmartBody::SBScene::getScene()->getPawn( object_id );
+	target =  scene->getPawn( object_id );
 	if( target ) 
 	{
 		return target;	   

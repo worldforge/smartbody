@@ -36,7 +36,6 @@ namespace SmartBody {
 
 SBSteerManager::SBSteerManager(SBScene& scene)
 		: SBService(scene),
-		  _scene(scene),
 		  _driver(std::make_unique<SteerSuiteEngineDriver>()),
 		  _maxUpdateFrequency(1)
 {
@@ -428,7 +427,6 @@ SBSteerManager::CharacterObserver::~CharacterObserver() {
 
 void SBSteerManager::CharacterObserver::notify(SBSubject* subject) {
 	auto* attribute = dynamic_cast<SBAttribute*>(subject);
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	if (attribute)
 	{
 		if (attribute->getName().find("steering.") == 0)

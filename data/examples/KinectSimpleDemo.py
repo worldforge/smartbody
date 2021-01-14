@@ -23,7 +23,7 @@ zebra2Map = scene.getJointMapManager().getJointMap('zebra2')
 bradSkeleton = scene.getSkeleton('ChrBrad.sk')
 bradSkeleton.rescale(100)
 zebra2Map.applySkeleton(bradSkeleton)
-zebra2Map.applyMotionRecurse('ChrBrad')
+zebra2Map.applyMotionRecurse(scene, 'ChrBrad')
 
 scale = 100.0
 

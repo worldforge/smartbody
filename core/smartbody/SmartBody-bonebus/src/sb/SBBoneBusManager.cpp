@@ -122,7 +122,6 @@ void SBBoneBusManager::update(double time)
 
 void SBBoneBusManager::afterUpdate(double time)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	bool isClosingBoneBus = false;
 	for (auto& entry: _entries) {
 
@@ -158,7 +157,7 @@ void SBBoneBusManager::afterUpdate(double time)
 		}
 
 		if (character->getSkeleton()) {
-			NetworkSendSkeleton(bonebusCharacter, character->getSkeleton().get(), &scene->getGeneralParameters());
+			NetworkSendSkeleton(bonebusCharacter, character->getSkeleton().get(), &_scene.getGeneralParameters());
 
 			const SkJoint* joint = character->get_world_offset_joint();
 
@@ -175,8 +174,8 @@ void SBBoneBusManager::afterUpdate(double time)
 			// const_cast because the SrQuat does validation (no const version of value())
 			const SrQuat& q = ((SkJoint*) joint)->quat()->value();
 
-			bonebusCharacter->SetPosition(x, y, z, scene->getSimulationManager()->getTime());
-			bonebusCharacter->SetRotation((float) q.w, (float) q.x, (float) q.y, (float) q.z, scene->getSimulationManager()->getTime());
+			bonebusCharacter->SetPosition(x, y, z, _scene.getSimulationManager()->getTime());
+			bonebusCharacter->SetRotation((float) q.w, (float) q.x, (float) q.y, (float) q.z, _scene.getSimulationManager()->getTime());
 
 			if (bonebusCharacter->GetNumErrors() > 3) {
 				// connection is bad, remove the bonebus character

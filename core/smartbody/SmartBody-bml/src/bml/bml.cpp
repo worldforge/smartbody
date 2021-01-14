@@ -765,7 +765,7 @@ void coarticulate(std::vector<GestureRequest*>& gestures, bool showLog)
 	}
 }
 
-void BmlRequest::gestureRequestProcess()
+void BmlRequest::gestureRequestProcess(SmartBody::SBScene& scene)
 {
 	bool useGestureLog = actor->getBoolAttribute("gestureRequest.gestureLog");
 	std::string str = actor->getStringAttribute("gestureRequest.lastGestureRandom");
@@ -773,9 +773,9 @@ void BmlRequest::gestureRequestProcess()
 	std::vector<int> lastChoices;
 	std::vector<std::string> tokens;
 	SmartBody::util::tokenize(str, tokens, "|");
-	for (size_t t = 0; t < tokens.size(); t++)
+	for (auto & token : tokens)
 	{
-		lastChoices.emplace_back(atoi(tokens[t].c_str()));
+		lastChoices.emplace_back(atoi(token.c_str()));
 	}
 	
 	if (actor->getBoolAttribute("gestureRequest.experimentalCoarticulation"))
@@ -786,9 +786,9 @@ void BmlRequest::gestureRequestProcess()
 
 		
 
-		for (VecOfBehaviorRequest::iterator i = behaviors.begin(); i != behaviors.end(); ++i)
+		for (auto & i : behaviors)
 		{
-			BehaviorRequest* behavior = (*i).get();
+			BehaviorRequest* behavior = i.get();
 			GestureRequest* gesture = dynamic_cast<GestureRequest*> (behavior);
 			if (gesture)
 			{
@@ -1227,20 +1227,20 @@ void BmlRequest::gestureRequestProcess()
 	if (actor->getBoolAttribute("gestureUseBlends"))
 	{
 		std::vector<EventRequest*> blends;
-		for (VecOfBehaviorRequest::iterator i = behaviors.begin(); i != behaviors.end(); ++i) 
+		for (auto & i : behaviors)
 		{
-			BehaviorRequest* behavior = (*i).get();
+			BehaviorRequest* behavior = i.get();
 			EventRequest* blend = dynamic_cast<EventRequest*> (behavior);
 			if (blend)
 			{
 				blends.emplace_back(blend);
 			}
 		}
-		for (size_t i = 0; i < blends.size(); ++i)
+		for (auto & blend : blends)
 		{
-			float start = (float)blends[i]->behav_syncs.sync_start()->time();
+			float start = (float)blend->behav_syncs.sync_start()->time();
 			std::vector<std::string> tokens;
-			std::string blendCommand = blends[i]->getMessage();
+			std::string blendCommand = blend->getMessage();
 			SmartBody::SBAnimationBlend* blendObject = nullptr;
 			bool isScheduling = false;
 			double x = 0;
@@ -1255,7 +1255,7 @@ void BmlRequest::gestureRequestProcess()
 					{
 						if (useGestureLog)
 							SmartBody::util::log("blend name is %s", tokens[j + 1].c_str());
-						blendObject = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(tokens[j + 1]);
+						blendObject = scene.getBlendManager()->getBlend(tokens[j + 1]);
 					}
 				}
 				if (tokens[j] == "x")
@@ -1333,7 +1333,7 @@ void BmlRequest::gestureRequestProcess()
 					localStartTime += startTimes[k] * tempBlendData->weights[k];
 				}
 				float offset = localStrokeTime - localStartTime;
-				blends[i]->behav_syncs.sync_start()->set_time(start - offset);
+				blend->behav_syncs.sync_start()->set_time(start - offset);
 				if (useGestureLog)
 					SmartBody::util::log("stroke time for blend is %f, start time for blend is %f", start, start - offset);
 				delete tempBlendData;
@@ -1430,7 +1430,7 @@ void BmlRequest::gestureRequestProcess()
 			SkMotion* prevMotion = prev_motion_ct->motion();
 			SBMotion* prevSBMotion = dynamic_cast<SBMotion*> (prevMotion);
 
-			auto tempSkel = SmartBody::SBScene::getScene()->createSkeleton(actor->getSkeleton()->getName());
+			auto tempSkel = scene.createSkeleton(actor->getSkeleton()->getName());
 			prevSBMotion->connect(tempSkel.get());
 			SrVec prevLWristPos = prevSBMotion->getJointPosition(lWrist, (float)prevMotion->time_stroke_end());
 			SrVec prevRWristPos = prevSBMotion->getJointPosition(rWrist, (float)prevMotion->time_stroke_end());
@@ -1453,7 +1453,7 @@ void BmlRequest::gestureRequestProcess()
 			}
 			for (auto & l : currGestureList)
 			{
-				SBMotion *motionInList = SmartBody::SBScene::getScene()->getMotion(l);
+				SBMotion *motionInList = scene.getMotion(l);
 				if (!motionInList)
 					continue;
 				if (useGestureLog)
@@ -2010,7 +2010,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 					{
 						// interrupt the current utterance and associated behaviors and
 						// schedule the current behavior set instead
-						bp->interrupt(character, speechMsdId, 0.0, scene);
+						bp->interrupt(character, speechMsdId, 0.0, *scene);
 						break;
 					}
 										
@@ -2041,7 +2041,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 
 	//  Schedule vrAgentBML start sequence
 	// (Separate sequence to ensure it occurs before all behavior sequence events)
-	srCmdSeq *start_seq = new srCmdSeq(); //sequence that holds the startup feedback
+	auto start_seq = std::make_unique<srCmdSeq>(); //sequence that holds the startup feedback
 	{
 
 	    ostringstream start_command;
@@ -2080,7 +2080,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 			oss << actorId << ':' << msgId << ":seq-start";
 			start_seq_name = oss.str();
 		}
-		if( scene->getCommandManager()->execute_seq( start_seq, start_seq_name.c_str() ) != CMD_SUCCESS ) {
+		if( scene->getCommandManager()->execute_seq( std::move(start_seq), start_seq_name.c_str() ) != CMD_SUCCESS ) {
 			ostringstream oss;
 			oss << "Failed to execute BmlRequest sequence \""<<start_seq_name<<"\" (actorId=\""<< actorId << "\", msgId=\"" << msgId << "\")"; 
 			throw RealizingException( oss.str().c_str() );
@@ -2090,7 +2090,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 	}
 
 	faceRequestProcess();
-	gestureRequestProcess();
+	gestureRequestProcess(*scene);
 	speechRequestProcess((float)scene->getSimulationManager()->getTime());
 
 	// Realize behaviors
@@ -2114,7 +2114,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 
 	//  Schedule cleanup sequence, including vrAgentBML end
 	// (Separate sequence to ensure it occurs after all behavior sequence events)
-	srCmdSeq *cleanup_seq = new srCmdSeq(); //sequence that holds the feedback and cleanup commands
+	auto cleanup_seq = std::make_unique<srCmdSeq>(); //sequence that holds the feedback and cleanup commands
 
 	//  Schedule vrAgentBML end
 	{
@@ -2173,7 +2173,7 @@ void BML::BmlRequest::realize( Processor* bp, SmartBody::SBScene* scene ) {
 		oss << actorId << ':' << msgId << ":seq-cleanup";
 		cleanup_seq_name = oss.str();
 	}
-	if( scene->getCommandManager()->execute_seq( cleanup_seq, cleanup_seq_name.c_str() ) != CMD_SUCCESS ) {
+	if( scene->getCommandManager()->execute_seq( std::move(cleanup_seq), cleanup_seq_name.c_str() ) != CMD_SUCCESS ) {
 		ostringstream oss;
 		oss << "Failed to execute BmlRequest sequence \""<<cleanup_seq_name<<"\" (actorId=\""<< actorId << "\", msgId=\"" << msgId << "\")"; 
 		throw RealizingException( oss.str().c_str() );
@@ -3435,7 +3435,7 @@ bool SequenceRequest::realize_sequence( VecOfSbmCommand& commands, SmartBody::SB
 		return false;
 	}
 
-	srCmdSeq *seq = new srCmdSeq(); //sequence that holds the commands
+	auto seq = std::make_unique<srCmdSeq>(); //sequence that holds the commands
 
 	bool success = true;
 
@@ -3461,7 +3461,7 @@ bool SequenceRequest::realize_sequence( VecOfSbmCommand& commands, SmartBody::SB
 
 	if( success ) {
 		// TODO: test result, possible throwing RealizingException
-		if( scene->getCommandManager()->execute_seq( seq, unique_id.c_str() ) != CMD_SUCCESS ) {
+		if( scene->getCommandManager()->execute_seq( std::move(seq), unique_id.c_str() ) != CMD_SUCCESS ) {
 			// TODO: Throw RealizingException
 			std::stringstream strstr;
 			strstr << "ERROR: SequenceRequest::realize_sequence(..): SequenceRequest \"" << unique_id << "\": " << "Failed to execute sequence \"" << unique_id.c_str() << "\".";

@@ -27,7 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBHandConfiguration::SBHandConfiguration()
+SBHandConfiguration::SBHandConfiguration(SmartBody::SBScene& scene) : SBSceneOwned(scene)
 {
 }
 
@@ -37,10 +37,10 @@ SBHandConfiguration::~SBHandConfiguration()
 	_motions.clear();
 }
 
-void SBHandConfiguration::addMotion(std::string motionName)
+void SBHandConfiguration::addMotion(const std::string& motionName)
 {
 	// extract motion from scene
-	SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+	SBMotion* motion = _scene.getAssetManager()->getMotion(motionName);
 
 	if (!motion)
 	{
@@ -52,9 +52,9 @@ void SBHandConfiguration::addMotion(std::string motionName)
 	_motions.emplace_back(motion);
 }
 
-void SBHandConfiguration::removeMotion(std::string motionName)
+void SBHandConfiguration::removeMotion(const std::string& motionName)
 {
-	SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motionName);
+	SBMotion* motion = _scene.getAssetManager()->getMotion(motionName);
 
 	if (!motion)
 	{
@@ -62,7 +62,7 @@ void SBHandConfiguration::removeMotion(std::string motionName)
 		return;
 	}
 
-	std::vector<SBMotion*>::iterator iter = std::find(_motions.begin(), _motions.end(), motion);
+	auto iter = std::find(_motions.begin(), _motions.end(), motion);
 
 	// if found remove
 	if (iter != _motions.end())
@@ -78,7 +78,7 @@ int SBHandConfiguration::getNumMotions()
 
 void SBHandConfiguration::printMotionNames()
 {
-	std::vector<SBMotion*>::iterator iter = _motions.begin();
+	auto iter = _motions.begin();
 	for (; iter != _motions.end() ; iter++)
 	{
 		SBMotion* motion = *iter;
@@ -100,7 +100,7 @@ SBMotion* SBHandConfiguration::getMotion(int i)
 std::vector<std::string> SBHandConfiguration::getMotionNames()
 {
 	std::vector<std::string> motionNames;
-	std::vector<SBMotion*>::iterator iter = _motions.begin();
+	auto iter = _motions.begin();
 	for (; iter != _motions.end() ; iter++)
 	{
 		SBMotion* motion = *iter;

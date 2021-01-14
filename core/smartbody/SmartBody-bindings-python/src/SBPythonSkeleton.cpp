@@ -40,7 +40,7 @@ void pythonFuncsSkeleton()
 
 	boost::python::class_<SBSkeleton, boost::intrusive_ptr<SBSkeleton>, boost::python::bases<SBObject>, boost::noncopyable>("SBSkeleton", boost::python::no_init)
 	//	.def(boost::python::init<>())
-		.def(boost::python::init<std::string>())
+//		.def(boost::python::init<std::string>())
 		.def("load", &SBSkeleton::load, "Loads the skeleton definition from the given skeleton name.")
 		.def("save", &SBSkeleton::save, "Saves the skeleton definition with the given skeleton name.")
 		.def("loadFromString",  &SBSkeleton::loadFromString, "Loads the skeleton definition from a string.")
@@ -64,7 +64,7 @@ void pythonFuncsSkeleton()
 	boostPatch::register_intrusive_ptr_from_python_and_casts( (SBSkeleton *)nullptr, boostPatch::class_<SBSkeleton>::metadata::bases() );
 
 	boost::python::class_<SBJoint, boost::python::bases<SBObject>, boost::noncopyable >("SBJoint", boost::python::no_init)
-		.def(boost::python::init<>())
+//		.def(boost::python::init<>())
 		.def("setName", &SBJoint::setName, "Set the name of the joint.")
 		.def("getName", &SBJoint::getName, boost::python::return_value_policy<boost::python::return_by_value>(), "Returns the name of the joint.")
 		.def("getParent", &SBJoint::getParent, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns the parent joint.")

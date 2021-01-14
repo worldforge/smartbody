@@ -167,7 +167,7 @@ namespace SmartBody {
 		void updateNextStateBufferCache();
 	};	
 
-	class SBMotionGraph 
+	class SBMotionGraph : public SBSceneOwned
 	{	
 		struct MotionCoordCache
 		{
@@ -205,7 +205,7 @@ namespace SmartBody {
 		std::vector<SBMotion*> transitionMotions; // store the temp motions created by addMotionNodeFromMotionTransition
 		bool useTransitionInterpolation;
 	public:		
-		SBAPI SBMotionGraph();
+		SBAPI SBMotionGraph(SBScene& scene);
 		SBAPI ~SBMotionGraph();		
 
 		SBAPI SBMotionNode* addMotionNodeFromMotion( const std::string& nodeName, const std::string& motionName, int startFrame = -1, int endFrame = -1);		

@@ -27,6 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SbmTexture.h"
 #include <string>
 #include <set>
+#include <utility>
 #include <sb/SBScene.h>
 #include <sb/SBSkeleton.h>
 #if !defined(EMSCRIPTEN)
@@ -594,7 +595,7 @@ std::string shaderFSSimple =
 
 typedef std::pair<int,int> IntPair;
 
-SbmDeformableMeshGPU::SbmDeformableMeshGPU() : DeformableMesh()
+SbmDeformableMeshGPU::SbmDeformableMeshGPU(boost::intrusive_ptr<SkSkeleton> skeleton) : DeformableMesh(std::move(skeleton))
 {
 	useGPU = false;	
 	VBOPos = nullptr;
@@ -649,11 +650,13 @@ void SbmDeformableMeshGPU::skinTransformGPU(DeformableMeshInstance* meshInstance
 	std::vector<SrMat>& tranBuffer = gpuMeshInstance->getTransformBuffer();
 
 	std::string activeShader = shaderName;//SbmDeformableMeshGPU::useShadowPass ? shadowShaderName : shaderName;
-	if (SmartBody::SBScene::getScene()->getBoolAttribute("enableFaceShader"))
+
+	auto& scene = meshInstance->getCharacter()->_scene;
+	if (scene.getBoolAttribute("enableFaceShader"))
 		activeShader = shaderFaceName;
 
-	int numLightInScene = SmartBody::SBScene::getScene()->getIntAttribute("numLightsInScene");
-	bool useDefaultLights = SmartBody::SBScene::getScene()->getBoolAttribute("useDefaultLights");
+	int numLightInScene = scene.getIntAttribute("numLightsInScene");
+	bool useDefaultLights = scene.getBoolAttribute("useDefaultLights");
 	//std::string activeShader = shaderFaceName;
 
 	GLuint program = SbmShaderManager::singleton().getShader(activeShader)->getShaderProgram();		

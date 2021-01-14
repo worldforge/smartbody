@@ -40,7 +40,7 @@ namespace SmartBody {
 //	blendType = "";
 //}
 
-SBMotionBlendBase::SBMotionBlendBase(SBScene& scene, const std::string& name, const std::string& skelName, int dimension) : SBAnimationBlend(name), SBSceneOwned(scene)
+SBMotionBlendBase::SBMotionBlendBase(SBScene& scene, const std::string& name, const std::string& skelName, int dimension) : SBAnimationBlend(scene, name)
 {
 	_isFinalized = false;
 	parameterDim = 3;	
@@ -51,7 +51,7 @@ SBMotionBlendBase::SBMotionBlendBase(SBScene& scene, const std::string& name, co
 	if (sbSkel)
 	{
 		skeletonName = skelName;
-		blendEngine = new MeCtBlendEngine(sbSkel, "base");
+		blendEngine = std::make_unique<MeCtBlendEngine>(sbSkel, "base");
 	}
 	else // error
 	{
@@ -183,7 +183,7 @@ void SBMotionBlendBase::buildBlendBase( const std::string& motionParameter, cons
 			addTetrahedron(motionNameList[0],motionNameList[1],motionNameList[2],motionNameList[3]);
 		}		
 	}
-	auto sbSkel = SBScene::getScene()->getSkeleton(skeletonName);
+	auto sbSkel = _scene.getSkeleton(skeletonName);
 	SrVec center = SrVec(0,0,0);
 	if (sbSkel)
 	{

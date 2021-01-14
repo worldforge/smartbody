@@ -18,20 +18,14 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#include <sb/SBTypes.h>
-
-#if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 #include "GL/glew.h"
-#endif
 
-#if !defined(SB_IPHONE)
 #include "sbm/sbm_deformable_mesh.h"
 #include "SbmDeformableMeshGPU.h"
 #include <sbm/GPU/SbmTexture.h>
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#endif
 
 
 #include <algorithm>
@@ -43,10 +37,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
+#include <utility>
 
-#if !defined(__ANDROID__) && !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 
-SbmBlendFace::SbmBlendFace() : DeformableMesh()
+SbmBlendFace::SbmBlendFace(boost::intrusive_ptr<SkSkeleton> skeleton) : DeformableMesh(std::move(skeleton))
 {
 //	_VBOPos							= nullptr;
 	_VBONormal						= nullptr;
@@ -78,7 +72,7 @@ SbmBlendFace::~SbmBlendFace()
 	subMeshTris.clear();
 }
 
-void SbmBlendFace::initShader() {
+void SbmBlendFace::initShader(const std::string& mediaPath) {
 
 	SbmShaderProgram* program		= SbmShaderManager::singleton().getShader(_shaderName);
 
@@ -91,7 +85,7 @@ void SbmBlendFace::initShader() {
 	else
 	{
 //		SmartBody::util::log("Program does not exist yet");
-		initShaderProgram();
+		initShaderProgram(mediaPath);
 		_programID	= SbmShaderManager::singleton().getShader(_shaderName)->getShaderProgram();
 	}
 	
@@ -185,10 +179,9 @@ void SbmBlendFace::addFaceVertices( std::vector<SrVec> vertices )
 }
 
 
-void SbmBlendFace::initShaderProgram_Dan()
+void SbmBlendFace::initShaderProgram_Dan(const std::string& mediaPath)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::string shaderPath = scene->getMediaPath() + "/shaders/";
+	std::string shaderPath = mediaPath + "/shaders/";
 
 	const std::string shaderVs	= shaderPath + "blendFace.vert";
 	const std::string shaderFs	= shaderPath + "blendFace.frag";
@@ -254,10 +247,9 @@ void SbmBlendFace::initShaderProgram_Dan()
 	glDetachShader(_programID, _fsID);
 }
 
-void SbmBlendFace::initShaderProgram()
+void SbmBlendFace::initShaderProgram(const std::string& mediaPath)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::string shaderPath = scene->getMediaPath() + "/shaders/";
+	std::string shaderPath = mediaPath + "/shaders/";
 
 	const std::string shaderVs	= shaderPath + "blendFace.vert";
 	const std::string shaderFs	= shaderPath + "blendFace.frag";
@@ -289,10 +281,8 @@ void SbmBlendFace::initShaderProgram()
 	*/
 }
 
-#endif
 
 
-#if !defined(SB_IPHONE) && !defined(EMSCRIPTEN)
 SbmBlendTextures::SbmBlendTextures()
 {
 }
@@ -302,10 +292,9 @@ SbmBlendTextures::~SbmBlendTextures()
 }
 
 
-GLuint SbmBlendTextures::getShader(const std::string _shaderName)
+GLuint SbmBlendTextures::getShader(const std::string& mediaPath, const std::string _shaderName)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::string shaderPath = scene->getMediaPath() + "/shaders/";
+	std::string shaderPath = mediaPath + "/shaders/";
 
 	if(_shaderName.compare("Blend_Two_Textures") == 0)
 	{
@@ -1066,7 +1055,7 @@ void SbmBlendTextures::BlendGeometryWithMasks(GLuint * FBODst, std::vector<float
 
 	SbmShaderProgram::printOglError("SbmBlendTextures::BlendGeometry #0");
 
-	SbmBlendFace * aux = new SbmBlendFace();
+	SbmBlendFace * aux = new SbmBlendFace(new SmartBody::SBSkeleton(meshInstance->getSkeleton()->_scene));
 
 	std::vector<int> verticesUsed(_mesh->posBuf.size(), 0);
 	std::vector<SrVec2> edges;
@@ -1310,7 +1299,7 @@ void SbmBlendTextures::RenderGeometryWithMasks(GLuint * FBODst, std::vector<floa
 
 	SbmShaderProgram::printOglError("SbmBlendTextures::BlendGeometry #0");
 
-	SbmBlendFace * aux = new SbmBlendFace();
+	SbmBlendFace * aux = new SbmBlendFace(new SmartBody::SBSkeleton(meshInstance->getSkeleton()->_scene));
 
 	
 	SrSnModel* writeToBaseModel = nullptr;
@@ -1459,7 +1448,7 @@ void SbmBlendTextures::BlendGeometry(GLuint * FBODst, std::vector<float> weights
 
 	SbmShaderProgram::printOglError("SbmBlendTextures::BlendGeometry #0");
 
-	SbmBlendFace * aux = new SbmBlendFace();
+	SbmBlendFace * aux = new SbmBlendFace(new SmartBody::SBSkeleton(meshInstance->getSkeleton()->_scene));
 
 	std::vector<int> verticesUsed(_mesh->posBuf.size(), 0);
 	std::vector<SrVec2> edges;
@@ -1952,7 +1941,7 @@ void SbmBlendTextures::BlendGeometryWithMasksFeedback( GLuint * FBODst, std::vec
 		}
 	}
 
-	SbmBlendFace * aux = new SbmBlendFace();
+	SbmBlendFace * aux = new SbmBlendFace(new SmartBody::SBSkeleton(meshInstance->getSkeleton()->_scene));
 	aux->vtxNewVtxIdxMap = _mesh->vtxNewVtxIdxMap;
 	SbmShaderProgram::printOglError("Setup Transform Feedback begin");
 	std::vector<SrVec> blendedVerties(_mesh->posBuf.size());
@@ -2339,4 +2328,3 @@ void SbmBlendTextures::BlendTextureWithMasks(GLuint FBODst, GLuint FBOTex,std::v
 }
 #endif
 
-#endif

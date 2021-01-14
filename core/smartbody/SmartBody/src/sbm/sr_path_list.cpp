@@ -10,15 +10,13 @@ srPathList::srPathList()
 	_curIndex = 0;
 }
 
-srPathList::~srPathList()
-{
-}
+srPathList::~srPathList() = default;
 		
-bool srPathList::insert(std::string path)
+bool srPathList::insert(const std::string& path)
 {
-	for (size_t x = 0; x < _paths.size(); x++)
+	for (auto & _path : _paths)
 	{
-		if (_paths[x] == path)
+		if (_path == path)
 			return false;
 	}
 
@@ -26,9 +24,9 @@ bool srPathList::insert(std::string path)
 	return true;	
 }
 
-bool srPathList::remove(std::string path)
+bool srPathList::remove(const std::string& path)
 {
-	for (std::vector<std::string>::iterator iter = _paths.begin();
+	for (auto iter = _paths.begin();
 		iter != _paths.end();
 		iter++)
 	{
@@ -53,32 +51,19 @@ void srPathList::reset()
 	_curIndex = 0;
 }
 		
-std::string srPathList::next_path(bool withPrefix)
+std::string srPathList::next_path(const boost::filesystem::path& prefixPath)
 {
 	if (size_t(_curIndex) >= _paths.size())
 		return "";
 
-	std::stringstream strstr;
 	// if the path is an absolute path, don't prepend the media path
-	const boost::filesystem::path p = _paths[_curIndex];
-	const std::string& pathPrefix = SmartBody::SBScene::getScene()->getMediaPath();
-	if (withPrefix && (pathPrefix.size() > 0 && !p.has_root_path()))
+	boost::filesystem::path p = _paths[_curIndex];
+	if (!prefixPath.empty() && !p.has_root_path())
 	{
-		boost::filesystem::path mediapath(pathPrefix);
-		mediapath /= p;
-		strstr << mediapath.string();
-	}
-	else
-	{
-		strstr << p.string();
+		 p = prefixPath / p;
 	}
 
-	boost::filesystem::path finalPath(strstr.str());
-#if (BOOST_VERSION > 104400)
-	finalPath.normalize();
-#else
-	finalPath.canonize();
-#endif
+	p.normalize();
 
 #ifdef WIN32
 	std::string convertedPath = finalPath.string();
@@ -87,15 +72,15 @@ std::string srPathList::next_path(bool withPrefix)
 	return convertedPath;
 #else
 	_curIndex++;
-	return finalPath.string();
+	return p.string();
 #endif
 
 }
 
-std::string srPathList::next_filename(char *buffer, const char *name)
+std::string srPathList::next_filename(char *buffer, const char *name, const boost::filesystem::path& prefixPath)
 {
-	std::string path = next_path();
-	if( path.size() > 0 )	{
+	std::string path = next_path(prefixPath);
+	if( !path.empty() )	{
 		std::stringstream strstr;
 		strstr << path << "/" << name;
 		return( strstr.str() );

@@ -18,17 +18,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-#include <stdlib.h>
 #include <iostream>
 #include <vector>
 #include <string>
-#include <sys/types.h>
 #if 0
 #include <sys/timeb.h>
 #endif
-#include <sstream>
-#include <float.h>
-#include "time.h"
+#include <cfloat>
 
 #include "sbm/xercesc_utils.hpp"
 #include "text_speech.h"
@@ -45,8 +41,8 @@ using namespace SmartBody;
 #define FLOAT_EQ(x,v) (((v - DBL_EPSILON) < x) && (x <( v + DBL_EPSILON)))
 
 
-text_speech::text_speech()
-:	msgNumber( 0 )
+text_speech::text_speech(SmartBody::SBScene& scene)
+:	SmartBody::SBSceneOwned(scene), msgNumber( 0 )
 {}
 
 text_speech::~text_speech() = default;
@@ -134,12 +130,12 @@ RequestId text_speech::requestSpeechAudio( const char* agentName, std::string vo
 	uttLookUp.emplace(myStream.str(), std::unique_ptr<DOMNode>(replyDoc->getDocumentElement()->cloneNode(true)));
 
 	string seqName = "text_speech" + myStream.str();
-	SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->removeSequence(seqName, true);
-	srCmdSeq* sq = new srCmdSeq();
+	_scene.getCommandManager()->getActiveSequences()->removeSequence(seqName, true);
+	auto sq = std::make_unique<srCmdSeq>();
 	string s = string(callbackCmd) + *agentNamePtr + " " + myStream.str().c_str() + " SUCCESS";
 	sq->insert(0, s.c_str());
-	sq->offset((float)SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
-	SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->addSequence(seqName, sq);
+	sq->offset((float)_scene.getSimulationManager()->getTime());
+	_scene.getCommandManager()->getActiveSequences()->addSequence(seqName, std::move(sq));
 
 	return (msgNumber); //returns the unique message number
 }
@@ -285,13 +281,13 @@ void text_speech::requestComplete( RequestId requestId ){
 void text_speech::startSchedule( SmartBody::RequestId requestId ) {
 	ostringstream myStream;
 	myStream << requestId << flush;
-	srCmdSeq* seq = scheduleLookUp.lookup(myStream.str().c_str());
+	auto seq = std::make_unique<srCmdSeq>(*scheduleLookUp.lookup(myStream.str().c_str()));
 
 	if (seq != nullptr) {
 		
-		seq->offset((float)SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+		seq->offset((float)_scene.getSimulationManager()->getTime());
 		string seqname = "text_speech_" + myStream.str();
-		SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->addSequence(seqname, seq);
+		_scene.getCommandManager()->getActiveSequences()->addSequence(seqname, std::move(seq));
 	}
 }
 

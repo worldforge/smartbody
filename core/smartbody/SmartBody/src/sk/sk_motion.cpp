@@ -1004,7 +1004,8 @@ SkMotion* SkMotion::buildSmoothMotionCycle( float timeInterval, bool smoothBase 
 {
 	SkChannelArray& mchan_arr = this->channels();
 	auto* originalMotion = dynamic_cast<SmartBody::SBMotion*>(this);
-	auto *smooth_p = new SmartBody::SBMotion();
+	//FIXME: remove the need for these horrible casts.
+	auto *smooth_p = (SmartBody::SBMotion*)createNewMotion();
 	smooth_p->setMotionSkeletonName(originalMotion->getMotionSkeletonName());	
 	srSynchPoints sp(synch_points);
 	smooth_p->synch_points = sp;
@@ -1242,7 +1243,7 @@ SkMotion* SkMotion::buildRetargetMotionV2( SkSkeleton* sourceSk, SkSkeleton* tar
 	tempSrcSk.root()->quat()->prerot(offsetRot);
 #endif
 	
-	SkMotion *retarget_p = new SmartBody::SBMotion();	
+	SkMotion *retarget_p = createNewMotion();
 	//srSynchPoints sp(synch_points);
 	retarget_p->synch_points.copy_points(synch_points);// = sp;
 	retarget_p->init( mchan_arr ); // use the target channels instead
@@ -1748,7 +1749,7 @@ SkMotion* SkMotion::buildRetargetMotion2( SkSkeleton* sourceSk, SkSkeleton* targ
 SkMotion* SkMotion::copyMotion()
 {
 	SkChannelArray& mchan_arr = this->channels();
-	SkMotion* cpMotion = new SmartBody::SBMotion();
+	SkMotion* cpMotion = createNewMotion();
 	srSynchPoints sp(synch_points);
 	cpMotion->synch_points = sp;
 	cpMotion->init( mchan_arr );
@@ -1762,6 +1763,11 @@ SkMotion* SkMotion::copyMotion()
 	}
 	return cpMotion;	
 }
+
+SkMotion* SkMotion::createNewMotion() const {
+	return new SkMotion();
+}
+
 
 /*
 	this function returns the data frames
@@ -1781,7 +1787,7 @@ SkMotion* SkMotion::buildPrestrokeHoldMotion(float holdTime, SkMotion* idleMotio
 	int strokeStartFrameId = int(synch_points.get_time(srSynchPoints::STROKE_START) * this->frames() / this->duration());
 
 	SkChannelArray& mchan_arr = this->channels();
-	SkMotion* newMotion = new SmartBody::SBMotion();
+	SkMotion* newMotion = createNewMotion();
 	newMotion->synch_points.set_time(	synch_points.get_time(srSynchPoints::START),
 										synch_points.get_time(srSynchPoints::READY),
 										synch_points.get_time(srSynchPoints::STROKE_START) + holdTime,
@@ -1822,7 +1828,7 @@ SkMotion* SkMotion::buildPoststrokeHoldMotion(float holdTime, std::vector<std::s
 	int strokeEndFrameId = int(synch_points.get_time(srSynchPoints::STROKE_STOP) * this->frames() / this->duration());
 
 	SkChannelArray& mchan_arr = this->channels();
-	SkMotion* newMotion = new SmartBody::SBMotion();
+	SkMotion* newMotion = createNewMotion();
 	newMotion->synch_points.set_time(	synch_points.get_time(srSynchPoints::START),
 										synch_points.get_time(srSynchPoints::READY),
 										synch_points.get_time(srSynchPoints::STROKE_START),
@@ -2102,7 +2108,7 @@ SkMotion* SkMotion::buildMirrorMotionJoints(SkSkeleton* skeleton, const std::map
 	SkChannelArray& mchan_arr = this->channels();
 	//TODO: move out of this class to avoid casting to a subclass
 	auto* originalMotion = dynamic_cast<SmartBody::SBMotion*>(this);
-	auto *mirror_p = new SmartBody::SBMotion();
+	auto *mirror_p = (SmartBody::SBMotion*)createNewMotion();
 	mirror_p->setMotionSkeletonName(originalMotion->getMotionSkeletonName());
 	srSynchPoints sp(synch_points);
 	mirror_p->synch_points = sp;

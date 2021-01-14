@@ -27,6 +27,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/algorithm/string.hpp>
 #include <sbm/sbm_deformable_mesh.h>
 #include <sbm/GPU/SbmDeformableMeshGPU.h>
+#include "sb/SBSkeleton.h"
 
 namespace SmartBody {
 
@@ -38,7 +39,7 @@ namespace SmartBody {
 
 	SBAssetHandlerSBMeshBinary::~SBAssetHandlerSBMeshBinary() = default;
 
-	std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSBMeshBinary::getAssets(const std::string& path)
+	std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSBMeshBinary::getAssets(SBScene& scene, const std::string& path)
 	{
 		std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -52,7 +53,7 @@ namespace SmartBody {
 
 #if !defined(__native_client__) && !defined(EMSCRIPTEN)
 		SmartBody::util::log("Creating GPU Deformable Mesh");
-		auto mesh = std::make_unique<SbmDeformableMeshGPU>();
+		auto mesh = std::make_unique<SbmDeformableMeshGPU>(new SmartBody::SBSkeleton(scene));
 #else
 		DeformableMesh* mesh = new DeformableMesh();
 #endif

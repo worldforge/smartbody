@@ -74,7 +74,7 @@ void MeCtBreathing::setUseBlendChannels(bool val)
 	{
 		// blend channels are being turned on, so
 		// create a motion containing simulated breathing
-		_blendChannelBreathingMotion = new SmartBody::SBMotion();
+		_blendChannelBreathingMotion = new SmartBody::SBMotion(getScene());
 		SkChannelArray breathingChannels;
 		breathingChannels.add("breathX", SkChannel::XPos);
 		breathingChannels.add("breathY", SkChannel::XPos);

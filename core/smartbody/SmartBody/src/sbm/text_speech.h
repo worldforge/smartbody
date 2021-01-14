@@ -37,24 +37,24 @@ class text_speech;
 class srCmdSeq;
 
 
-class text_speech: public SmartBody::SpeechInterface {
+class text_speech: public SmartBody::SpeechInterface, public SmartBody::SBSceneOwned {
     public:
 		// Default Constructor/Destructor
-		text_speech();
+		text_speech(SmartBody::SBScene& scene);
 		virtual ~text_speech();
 
 		// Methods
-		SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, const DOMNode* node, const char* callbackCmd ); //accepts dom document of which sound will be created from, returns Request ID
-		SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, std::string text, const char* callbackCmd ); //accepts char* of above and returns request ID
-		std::vector<SmartBody::VisemeData *>* getVisemes( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //returns visemes  for given request
-		char* getSpeechPlayCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //returns the command to play speech
-		char* getSpeechStopCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ); //''                     stop
-		char* getSpeechAudioFilename( SmartBody::RequestId requestId ); // gets the fileName of speech
-		float getMarkTime( SmartBody::RequestId requestId, const XMLCh* markId ); //gets time value for a given marker
-		void requestComplete( SmartBody::RequestId requestId );
+		SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, const DOMNode* node, const char* callbackCmd ) override; //accepts dom document of which sound will be created from, returns Request ID
+		SmartBody::RequestId requestSpeechAudio( const char* agentName, const std::string voiceCode, std::string text, const char* callbackCmd ) override; //accepts char* of above and returns request ID
+		std::vector<SmartBody::VisemeData *>* getVisemes( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ) override; //returns visemes  for given request
+		char* getSpeechPlayCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ) override; //returns the command to play speech
+		char* getSpeechStopCommand( SmartBody::RequestId requestId, SbmCharacter* character = nullptr ) override; //''                     stop
+		char* getSpeechAudioFilename( SmartBody::RequestId requestId ) override; // gets the fileName of speech
+		float getMarkTime( SmartBody::RequestId requestId, const XMLCh* markId ) override; //gets time value for a given marker
+		void requestComplete( SmartBody::RequestId requestId ) override;
 
-		std::vector<float> getEmotionCurve(SmartBody::RequestId requestId, const std::string& emotionType, SbmCharacter* character = nullptr);
-		std::vector<std::string> getEmotionNames(SmartBody::RequestId requestId, SbmCharacter* character = nullptr);
+		std::vector<float> getEmotionCurve(SmartBody::RequestId requestId, const std::string& emotionType, SbmCharacter* character = nullptr) override;
+		std::vector<std::string> getEmotionNames(SmartBody::RequestId requestId, SbmCharacter* character = nullptr) override;
 
 		void startSchedule( SmartBody::RequestId requestId );
 	private:

@@ -3869,8 +3869,8 @@ void FltkViewer::drawCharacterPhysicsObjs()
 {
 	float pawnSize = 1.0;
 	
-	SmartBody::SBPhysicsSim* phyEngine = SmartBody::SBPhysicsSim::getPhysicsEngine();
 	SmartBody::SBScene* scene = &Session::current->scene;
+	SmartBody::SBPhysicsSim* phyEngine = scene->getPhysicsManager()->getPhysicsEngine();
 	const std::vector<std::string>& characterNames = scene->getCharacterNames();
 	for (const auto & characterName : characterNames)
 	{
@@ -3901,11 +3901,10 @@ void FltkViewer::drawCharacterPhysicsObjs()
 			SmartBody::SbmJointObj* obj = mi->second;
 			SrMat gmat = obj->getGlobalTransform().gmat();
 			SmartBody::SBJoint* joint = obj->getSBJoint();	
-			SmartBody::SBPhysicsSim* physics = SmartBody::SBPhysicsSim::getPhysicsEngine();
 #if 1
-			if (physics)
+			if (phyEngine)
 			{
-				SrVec jointPos = physics->getJointConstraintPos(obj->getPhyJoint());
+				SrVec jointPos = phyEngine->getJointConstraintPos(obj->getPhyJoint());
 				SrSnSphere sphere;				
 				sphere.shape().center = jointPos;//SrVec(0,-cap->extent,0);
 				sphere.shape().radius = character->getHeight()*0.022f;
@@ -3921,20 +3920,20 @@ void FltkViewer::drawCharacterPhysicsObjs()
 
 				
 				glBegin(GL_LINES);
-				SrVec axis = physics->getJointRotationAxis(obj->getPhyJoint(),0)*axisScale;
+				SrVec axis = phyEngine->getJointRotationAxis(obj->getPhyJoint(),0)*axisScale;
 				//axis = SrVec(gmat.get(0),gmat.get(1),gmat.get(2))*axisScale;
 				glColor3f(1.f,0.f,0.f);
 				glVertex3f(jointPos[0],jointPos[1],jointPos[2]);
 				glVertex3f(jointPos[0]+axis[0],jointPos[1]+axis[1],jointPos[2]+axis[2]);
 
 				glColor3f(0.f,1.f,0.f);
-				axis = physics->getJointRotationAxis(obj->getPhyJoint(),1)*axisScale;
+				axis = phyEngine->getJointRotationAxis(obj->getPhyJoint(),1)*axisScale;
 				//axis = SrVec(gmat.get(4),gmat.get(5),gmat.get(6))*axisScale;
 				glVertex3f(jointPos[0],jointPos[1],jointPos[2]);
 				glVertex3f(jointPos[0]+axis[0],jointPos[1]+axis[1],jointPos[2]+axis[2]);
 
 				glColor3f(0.f,0.f,1.f);				
-				axis = physics->getJointRotationAxis(obj->getPhyJoint(),2)*axisScale;
+				axis = phyEngine->getJointRotationAxis(obj->getPhyJoint(),2)*axisScale;
 				//axis = SrVec(gmat.get(8),gmat.get(9),gmat.get(10))*axisScale;
 				glVertex3f(jointPos[0],jointPos[1],jointPos[2]);
 				glVertex3f(jointPos[0]+axis[0],jointPos[1]+axis[1],jointPos[2]+axis[2]);
@@ -5815,6 +5814,7 @@ void FltkViewer::drawDeformableModels()
 	printOglError2("drawDeformableModels()", 1);
 	auto& scene = Session::current->scene;
 	auto& renderScene = Session::current->renderScene;
+	bool useGPUBlendShapes = scene.getBoolAttribute("useGPUBlendshapes");
 
 	for (auto& entry : renderScene.getRenderables()) {
 		auto& renderable = entry.second;
@@ -5847,7 +5847,8 @@ void FltkViewer::drawDeformableModels()
 				if ( (!SbmDeformableMeshGPU::useGPUDeformableMesh && meshInstance->getVisibility() == 1) || meshInstance->getVisibility() == 2)
 				{
 					bool showSkinWeight = (meshInstance->getVisibility() == 2);
-					SrGlRenderFuncs::renderDeformableMesh(meshInstance, showSkinWeight);
+
+					SrGlRenderFuncs::renderDeformableMesh(useGPUBlendShapes, meshInstance, showSkinWeight);
 					
 // 					glDisable(GL_DEPTH_TEST);
 // 					if (pawn->scene_p)
@@ -5864,7 +5865,7 @@ void FltkViewer::drawDeformableModels()
 				if ( (!SbmDeformableMeshGPU::useGPUDeformableMesh && meshInstance->getVisibility() == 1) || meshInstance->getVisibility() == 2)
 				{
 					// simply draw the static mesh
-					SrGlRenderFuncs::renderDeformableMesh(meshInstance, false);
+					SrGlRenderFuncs::renderDeformableMesh(useGPUBlendShapes, meshInstance, false);
 
 					//SrGlRenderFuncs::renderBlendFace(meshInstance);
 				}				

@@ -43,7 +43,7 @@ BaseWindow* BaseWindow::sInstance = nullptr;
 BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* name)
 : 	SrViewer(x, y, w, h),
 	Fl_Double_Window(x, y, w, h, name),
- 	mDebuggerClient(std::make_unique<SmartBody::SBDebuggerClient>()),
+ 	mDebuggerClient(std::make_unique<SmartBody::SBDebuggerClient>(Session::current->scene)),
 	 mSession(Session::current)
 {
 	sInstance = this;
@@ -682,6 +682,8 @@ void BaseWindow::ResetScene()
 
 	delete Session::current;
 	Session::current = new Session();
+	mDebuggerClient = std::make_unique<SmartBody::SBDebuggerClient>(Session::current->scene);
+
 	mSession = Session::current;
 
 	SmartBody::PythonInterface::renderScene = &mSession->renderScene;
@@ -1018,7 +1020,7 @@ void BaseWindow::QuitCB(Fl_Widget* widget, void* data)
 	if (confirm == 1)
 	{
 		auto* window = (BaseWindow*) data;
-		window->mSession->scene.run("quit()");
+		Session::current->scene.getSimulationManager()->stop();
 	}
 }
 

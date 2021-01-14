@@ -19,10 +19,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "SBColObject.h"
-#include "SBPhysicsSim.h"
 #include "gwiz_math.h"
 #include <sb/SBCollisionManager.h>
-#include <sb/SBScene.h>
 
 SrVec SBTransform::localToGlobal( const SrVec& vLocal )
 {
@@ -602,22 +600,20 @@ SBCollisionSpace::SBCollisionSpace() = default;
 
 SBCollisionSpace::~SBCollisionSpace() = default;
 
-void SBCollisionSpace::addCollisionObjects( const std::string& objName )
+void SBCollisionSpace::addCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName )
 {	
-	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
-	SBGeomObject* obj = colManager->getCollisionObject(objName);
+	SBGeomObject* obj = collisionManager.getCollisionObject(objName);
 	// remove the old one if it exists
 	if (collsionObjMap.find(objName) != collsionObjMap.end())
 	{
-		removeCollisionObjects(objName);		
+		removeCollisionObjects(collisionManager, objName);
 	}	
 	collsionObjMap[objName] = obj;
 }
 
-void SBCollisionSpace::removeCollisionObjects( const std::string& objName  )
+void SBCollisionSpace::removeCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName  )
 {
-	SmartBody::SBCollisionManager* colManager = SmartBody::SBScene::getScene()->getCollisionManager();
-	SBGeomObject* obj = colManager->getCollisionObject(objName);
+	SBGeomObject* obj = collisionManager.getCollisionObject(objName);
 	if (collsionObjMap.find(objName) != collsionObjMap.end())
 	{
 		collsionObjMap.erase(objName);					

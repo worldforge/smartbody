@@ -40,7 +40,7 @@ SBAssetHandlerSkmb::SBAssetHandlerSkmb()
 
 SBAssetHandlerSkmb::~SBAssetHandlerSkmb() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkmb::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkmb::getAssets(SBScene& scene, const std::string& path)
 {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -52,7 +52,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkmb::getAssets(const std::s
 	std::string fileName = boost::filesystem::basename( p );
 	std::string extension =  boost::filesystem::extension( p );
 
-	auto motion = std::make_unique<SBMotion>();
+	auto motion = std::make_unique<SBMotion>(scene);
 	bool ok = SBSerializer::readFromSkb(*motion, convertedPath);
 	if (ok)
 		assets.emplace_back(std::move(motion));

@@ -74,8 +74,6 @@ def reachSetup(characterName, interpolatorType, originalSkeleton, preFix):
     leftHandMotions.append(preFix + "ChrGarza@IdleStand01_LReachRight30MediumMid01")
     leftHandMotions.append(preFix + "ChrGarza@IdleStand01_LReachRight30MediumNear01")
 
-    scene = getScene()
-
     character = scene.getCharacter(characterName)
     skeleton = character.getSkeleton()
     reachManager = scene.getReachManager()

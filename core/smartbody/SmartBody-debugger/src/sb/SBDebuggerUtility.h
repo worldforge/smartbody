@@ -23,6 +23,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 namespace SmartBody {
+class SBScene;
 class SBDebuggerClient;
 }
 class SBDebuggerUtility
@@ -35,7 +36,7 @@ public:
 	void queryResources();
 
 	void initCharacter(const std::string& name, const std::string& skelName);
-	void initCharacterFaceDefinition(const std::string& characterName, const std::string& faceDefName, const std::string& message);
+	void initCharacterFaceDefinition(SmartBody::SBScene& scene, const std::string& characterName, const std::string& faceDefName, const std::string& message);
 	void initPawn(const std::string& name);
 	void initSkeleton(const std::string& skFileName, const std::string& info);
 
@@ -45,7 +46,6 @@ public:
 	void updatePawn(const std::string& pName, float& posX, float& posY, float& posZ, float& rotX, float& rotY, float& rotZ, float& rotW);
 	void updateCamera(float& eyePosX, float& eyePosY, float& eyePosZ, float& lookAtPosX, float& lookAtPosY, float& lookAtPosZ, float& fovY, float& aspect, float& zNear, float zFar);
 
-private:
 	SmartBody::SBDebuggerClient& _client;
 };
 

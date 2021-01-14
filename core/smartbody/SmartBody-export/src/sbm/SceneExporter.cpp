@@ -493,7 +493,6 @@ SBAPI void exportScenePackage(SBRenderScene& renderScene, SBSteerManager* steerM
 		boost::filesystem::create_directories(tempPath);
 	}
 
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
 	std::string initScriptFile = "initScene.py";
 	std::string scriptFileLocation = outDir + "/" + initScriptFile;
 	std::ofstream file(scriptFileLocation.c_str());
@@ -1468,6 +1467,7 @@ void saveBlends(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSe
 }
 
 void saveJointMaps(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup) {
+	auto& scene = renderScene.mScene;
 	ostream << "# -------------------- joint maps\n";
 	ostream << "print \"Save Joint Maps\"\n";
 	// joint maps
@@ -1489,9 +1489,8 @@ void saveJointMaps(SBRenderScene& renderScene, std::ostream& ostream, bool remot
 	}
 
 	ostream << "# -------------------- applying joint maps\n";
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	std::vector<std::string> mappedMotions = scene->getMotionNames();
-	std::vector<std::string> mappedSkeletons = scene->getSkeletonNames();
+	std::vector<std::string> mappedMotions = scene.getMotionNames();
+	std::vector<std::string> mappedSkeletons = scene.getSkeletonNames();
 
 	for (auto& jointMapName : jointMapNames) {
 		SBJointMap* jointMap = jointMapManager->getJointMap(jointMapName);
@@ -1517,7 +1516,7 @@ void saveJointMaps(SBRenderScene& renderScene, std::ostream& ostream, bool remot
 		}
 #else
 		for (auto& mappedMotion : mappedMotions) {
-			SmartBody::SBMotion* motion = scene->getMotion(mappedMotion);
+			SmartBody::SBMotion* motion = scene.getMotion(mappedMotion);
 			//FIXME: keep joint map reference in motion
 //			if (motion && motion->channels().getJointMapName() == jointMapName)
 //				ostream << "jointMap.applyMotion(scene.getMotion(\"" << mappedMotion << "\"))\n";

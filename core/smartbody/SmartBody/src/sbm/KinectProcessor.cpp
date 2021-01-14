@@ -161,7 +161,7 @@ void KinectProcessor::inferJointOffsets( std::vector<SrVec>& gPos, std::vector<S
 
 void KinectProcessor::initKinectSkeleton(std::vector<SrVec>& gPos, std::vector<SrQuat>& gRot)
 {
-	boost::intrusive_ptr<SmartBody::SBSkeleton> kinectSk(new SmartBody::SBSkeleton());
+	boost::intrusive_ptr<SmartBody::SBSkeleton> kinectSk(new SmartBody::SBSkeleton(_scene));
 	kinectSk->setName("kinect.sk");
 	kinectSk->setFileName("kinect.sk");
 	// only use the first 20 joints to build the skeleton

@@ -38,7 +38,7 @@ SBAssetHandlerAsf::SBAssetHandlerAsf()
 
 SBAssetHandlerAsf::~SBAssetHandlerAsf() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAsf::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAsf::getAssets(SBScene& scene, const std::string& path)
 {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -74,10 +74,10 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerAsf::getAssets(const std::st
 	std::ifstream filestream(convertedPath.c_str());
 
 	double scale = 1.0;
-	if (SmartBody::SBScene::getScene()->getAttribute("globalSkeletonScale"))
-		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalSkeletonScale");
+	if (scene.getAttribute("globalSkeletonScale"))
+		scale = scene.getDoubleAttribute("globalSkeletonScale");
 
-	auto skeleton = std::make_unique<SmartBody::SBSkeleton>();
+	auto skeleton = std::make_unique<SmartBody::SBSkeleton>(scene);
 	bool ok = ParserASFAMC::parseAsf(*skeleton, filestream, float(scale));
 	if (ok)
 	{

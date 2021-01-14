@@ -25,6 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <string>
 #include <sk/sk_motion.h>
+#include "sb/SBSceneOwned.h"
 
 namespace SmartBody {
 
@@ -75,7 +76,7 @@ struct rotationCurve {
 
 class SBSerializer;
 
-class SBMotion : public SkMotion
+class SBMotion : public SkMotion, public SBSceneOwned
 {
 	public:
 		friend class SBSerializer;
@@ -83,9 +84,9 @@ class SBMotion : public SkMotion
 		{
 			Unknown, Posture, Gesture, Locomotion, Reach
 		};
-		SBAPI SBMotion();
+		SBAPI explicit SBMotion(SBScene& scene);
 		SBAPI SBMotion(const SBMotion& motion);
-		SBAPI explicit SBMotion(std::string motionFile);
+		SBAPI explicit SBMotion(SBScene& scene, std::string motionFile);
 		SBAPI ~SBMotion() override;
 		SBAPI const std::string& getMotionFileName() const;
 		SBAPI int getNumFrames();
@@ -247,7 +248,7 @@ class SBMotion : public SkMotion
 		SrVec getGestureStartLocation();
 		void setGestureHoldLocation(SrVec vec);
 		void setGestureStartLocation(SrVec vec);
-
+		SkMotion* createNewMotion() const override;
 	protected:
 		void alignToSide(int numFrames, int direction = 0);
 		bool getInterpolationFrames(float time, int& f1, int& f2, float& weight);

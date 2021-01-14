@@ -67,17 +67,17 @@ class ParserCOLLADAFast
 		static std::unique_ptr<rapidxml::file<char>> getParserDocumentFile(std::string fileName, rapidxml::xml_document<>* doc);
 		static std::string getNodeAttributeString(rapidxml::xml_node<>* node, std::string attrName);
 		static int getNodeAttributeInt(rapidxml::xml_node<>* node, std::string attrName);
-		static void nodeStr(const std::string s, std::string& out);
+		static void nodeStr(std::string s, std::string& out);
 
 		// parse from files
-		static bool parse(SkSkeleton& skeleton, SkMotion& motion, std::string fileName, float scale, bool doParseSkeleton, bool doParseMotion);
+		static bool parse(SmartBody::SBScene& scene, SkSkeleton& skeleton, SkMotion& motion, std::string fileName, float scale, bool doParseSkeleton, bool doParseMotion);
 		static bool parseStaticMesh(std::vector<SrModel*>& meshModelVecs, std::string fileName);
 
 		// parse nodes
 		static void parseLibraryControllers(rapidxml::xml_node<>* node, DeformableMesh& mesh, float scaleFactor, std::string jointPrefix);
 		static void parseLibraryVisualScenes(rapidxml::xml_node<>* node, SkSkeleton& skeleton, SkMotion& motion, float scale, int& order, std::map<std::string, std::string>& materialId2Name);
 		static void parseJoints(rapidxml::xml_node<>* node, SkSkeleton& skeleton, SkMotion& motion, float scale, int& order, std::map<std::string, std::string>& materialId2Name, SkJoint* parent = nullptr, bool hasRootJoint = false);
-		static void parseLibraryAnimations(rapidxml::xml_node<>* node, SkSkeleton& skeleton, std::vector<std::unique_ptr<SmartBody::SBMotion>>& motions, float scale, int& order, bool zaxis = false);
+		static void parseLibraryAnimations(SmartBody::SBScene& scene, rapidxml::xml_node<>* node, SkSkeleton& skeleton, std::vector<std::unique_ptr<SmartBody::SBMotion>>& motions, float scale, int& order, bool zaxis = false);
 		static void parseLibrarySingleAnimation(rapidxml::xml_node<>* node, SkSkeleton& skeleton, SkMotion& motion, float scale, int& order, bool zaxis);
 		static void parseNodeAnimation(rapidxml::xml_node<>* node1, std::map<std::string, ColladaFloatArrayFast > &floatArrayMap, float scale, std::map<std::string, ColladaSamplerFast > &samplerMap, std::vector<ColladChannelFast> &channelSamplerNameMap, SkSkeleton &skeleton );
 

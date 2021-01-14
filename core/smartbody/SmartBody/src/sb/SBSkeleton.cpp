@@ -33,7 +33,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBSkeleton::SBSkeleton() : SkSkeleton()
+SBSkeleton::SBSkeleton(SBScene& scene) : SkSkeleton(), SBSceneOwned(scene)
 {
 	_scale = 1.0f;
 	_origRootChanged = false;
@@ -41,7 +41,7 @@ SBSkeleton::SBSkeleton() : SkSkeleton()
 	linkedPawnName = "";
 }
 
-SBSkeleton::SBSkeleton(const std::string& skelFile) : SkSkeleton()
+SBSkeleton::SBSkeleton(SBScene& scene, const std::string& skelFile) : SkSkeleton(), SBSceneOwned(scene)
 {
 	_scale = 1.0f;
 	_origRootChanged = false;
@@ -50,7 +50,7 @@ SBSkeleton::SBSkeleton(const std::string& skelFile) : SkSkeleton()
 	linkedPawnName = "";
 }
 
-SBSkeleton::SBSkeleton(const SBSkeleton& rhs) : SkSkeleton(rhs)
+SBSkeleton::SBSkeleton(const SBSkeleton& rhs) : SkSkeleton(rhs), SBSceneOwned(rhs)
 {
 	_scale = rhs.getScale();
 	_origRootChanged = false;
@@ -244,7 +244,7 @@ const std::string& SBSkeleton::getFileName()
 
 bool SBSkeleton::load(const std::string& skeletonFile)
 {
-	auto skeleton = SmartBody::SBScene::getScene()->getAssetManager()->getSkeleton(skeletonFile);
+	auto skeleton = _scene.getAssetManager()->getSkeleton(skeletonFile);
 	if (skeleton)
 	{
 		*this = *skeleton;
@@ -457,14 +457,14 @@ SBPawn* SBSkeleton::getPawn()
 {
 	// determine which character uses this skeleton
 	// NOTE: there should be back pointer between the skeleton and the pawn/character
-	SmartBody::SBPawn* skelPawn = SmartBody::SBScene::getScene()->getPawn(linkedPawnName);
+	SmartBody::SBPawn* skelPawn = _scene.getPawn(linkedPawnName);
 	if (skelPawn)
 		return skelPawn;
 
-	const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
+	const std::vector<std::string>& pawns = _scene.getPawnNames();
 	for (const auto & pawnIter : pawns)
 	{
-		SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
+		SBPawn* pawn = _scene.getPawn(pawnIter);
 		if (pawn->getSkeleton() == this)
 		{
 			setPawnName(pawn->getName());
@@ -487,9 +487,8 @@ void SBSkeleton::update()
 	SBCharacter* character = dynamic_cast<SBCharacter*>(pawn);
 	if (character)
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		
-		std::vector<SBSceneListener*>& listeners = scene->getSceneListeners();
+
+		std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 		for (auto & listener : listeners)
 		{
 			listener->OnCharacterUpdate( character->getName().c_str() );
@@ -561,7 +560,7 @@ void SBSkeleton::_createSkelWithoutPreRot(SBSkeleton* TposeSk, SBSkeleton* newSk
 // same as above but for Python interface
 SBSkeleton* SBSkeleton::createSkelWithoutPreRot(const char* new_name)
 {
-	SBSkeleton* newSk = new SBSkeleton;
+	SBSkeleton* newSk = new SBSkeleton(_scene);
 	_createSkelWithoutPreRot(this, newSk, new_name);
 	return newSk;
 }

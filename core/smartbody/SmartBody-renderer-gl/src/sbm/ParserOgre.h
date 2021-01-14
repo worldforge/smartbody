@@ -43,7 +43,7 @@ class ParserOgre
 		static DOMNode* getNode(const std::string& nodeName, DOMNode* node);
 
 		static bool parseSkeleton(DOMNode* skeletonNode, SmartBody::SBSkeleton& skeleton, std::string fileName, float scale);
-		static bool parseMotion(DOMNode* motionNode, std::vector<std::unique_ptr<SmartBody::SBMotion>>&, std::string fileName, float scale);
+		static bool parseMotion(SmartBody::SBScene& scene, DOMNode* motionNode, std::vector<std::unique_ptr<SmartBody::SBMotion>>&, std::string fileName, float scale);
 		static bool parseMesh(DOMNode* meshNode, std::vector<SrModel*>& meshModelVec, float scaleFactor);
 		static bool parseSkinWeight(DOMNode* node, std::vector<std::unique_ptr<SkinWeight>>& skinWeights, float scaleFactor);
 		static bool parseMeshMaterial(std::vector<SrModel*>& meshModelVec, std::string materialFilePath);

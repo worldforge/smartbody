@@ -22,7 +22,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #define SBM_SPEECH_AUDIOFILE_HPP
 
 #include <sb/SBTypes.h>
-//#include <hash_map>
+#include "sb/SBSceneOwned.h"
 #include <map>
 
 #include "sbm/sbm_speech.hpp"
@@ -31,7 +31,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 namespace SmartBody
 {
 
-class AudioFileSpeech : public SpeechInterface
+class AudioFileSpeech : public SpeechInterface, public SBSceneOwned
 {
    public:
       struct SpeechRequestInfo
@@ -57,20 +57,20 @@ class AudioFileSpeech : public SpeechInterface
       std::map< RequestId, SpeechRequestInfo > m_speechRequestInfo;
 
    public:
-      AudioFileSpeech();
+      explicit AudioFileSpeech(SBScene& scene);
       virtual ~AudioFileSpeech();
 
-      virtual RequestId requestSpeechAudio( const char * agentName, const std::string voiceCode, const DOMNode * node, const char * callbackCmd );
-	  virtual RequestId requestSpeechAudio( const char * agentName, const std::string voiceCode, std::string text, const char * callbackCmd );
+      RequestId requestSpeechAudio( const char * agentName, const std::string voiceCode, const DOMNode * node, const char * callbackCmd ) override;
+	  RequestId requestSpeechAudio( const char * agentName, const std::string voiceCode, std::string text, const char * callbackCmd ) override;
 	  virtual RequestId requestSpeechAudioFast( const char * agentName, const std::string voiceCode, std::string text, const char * callbackCmd );
-      virtual std::vector<VisemeData *> * getVisemes( RequestId requestId, SbmCharacter* character);
-	  virtual std::vector<float> getEmotionCurve(RequestId requestId, const std::string& emotionType, SbmCharacter* character = nullptr);
-	  virtual std::vector<std::string> getEmotionNames(RequestId requestId, SbmCharacter* character = nullptr);
-      virtual char * getSpeechPlayCommand( RequestId requestId, SbmCharacter * character = nullptr );
-      virtual char * getSpeechStopCommand( RequestId requestId, SbmCharacter * character = nullptr );
-      virtual char * getSpeechAudioFilename( RequestId requestId );
-      virtual float getMarkTime( RequestId requestId, const XMLCh * markId );
-      virtual void requestComplete( RequestId requestId );
+      std::vector<VisemeData *> * getVisemes( RequestId requestId, SbmCharacter* character) override;
+	  std::vector<float> getEmotionCurve(RequestId requestId, const std::string& emotionType, SbmCharacter* character = nullptr) override;
+	  std::vector<std::string> getEmotionNames(RequestId requestId, SbmCharacter* character = nullptr) override;
+      char * getSpeechPlayCommand( RequestId requestId, SbmCharacter * character = nullptr ) override;
+      char * getSpeechStopCommand( RequestId requestId, SbmCharacter * character = nullptr ) override;
+      char * getSpeechAudioFilename( RequestId requestId ) override;
+      float getMarkTime( RequestId requestId, const XMLCh * markId ) override;
+      void requestComplete( RequestId requestId ) override;
 //	  stdext::hash_map< RequestId, SpeechRequestInfo >& getSpeechRequestInfo();
 	  SBAPI std::map< RequestId, SpeechRequestInfo >& getSpeechRequestInfo();
 

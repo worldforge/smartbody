@@ -35,7 +35,7 @@ class SBAssetHandlerObj: public SBAssetHandler
 		SBAPI SBAssetHandlerObj();
 		SBAPI ~SBAssetHandlerObj() override;
 
-		SBAPI std::vector<std::unique_ptr<SBAsset>> getAssets(const std::string& path) override;
+		SBAPI std::vector<std::unique_ptr<SBAsset>> getAssets(SBScene& scene, const std::string& path) override;
 
 };
 

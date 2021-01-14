@@ -26,7 +26,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBSkeleton.h>
 #include <sb/SBEvent.h>
 #include <sb/SBAssetManager.h>
-#include <sb/SBJointMap.h>
 #include "SBUtilities.h"
 #include <set>
 #include <boost/algorithm/string.hpp>
@@ -39,12 +38,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBAnimationBlend::SBAnimationBlend() : PABlend(), _isFinalized(false)
-{
-}
+//SBAnimationBlend::SBAnimationBlend() : PABlend(), _isFinalized(false)
+//{
+//}
 
-SBAnimationBlend::SBAnimationBlend(const std::string& name)
-: PABlend(name), _isFinalized(false)
+SBAnimationBlend::SBAnimationBlend(SBScene& scene, const std::string& name)
+: PABlend(name), SBSceneOwned(scene), _isFinalized(false)
 {
 }
 
@@ -496,12 +495,11 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
 	if(sk==0)
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SBCharacter* sbSk = scene->getCharacter(chrName);
+		SBCharacter* sbSk = _scene.getCharacter(chrName);
 		if(sbSk)
 		{
 			std::string sbName = sbSk->getSkeleton()->getName();
-			sk = SmartBody::SBScene::getScene()->getSkeleton(sbName);
+			sk = _scene.getSkeleton(sbName);
 		}
 		if(sk)
 		{
@@ -639,12 +637,11 @@ void SBAnimationBlend::plotMotion(const std::string& motionName, const std::stri
 	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
 	if(sk==nullptr)
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SBCharacter* sbSk = scene->getCharacter(chrName);
+		SBCharacter* sbSk = _scene.getCharacter(chrName);
 		if(sbSk)
 		{
 			std::string sbName = sbSk->getSkeleton()->getName();
-			sk = SmartBody::SBScene::getScene()->getSkeleton(sbName);
+			sk = _scene.getSkeleton(sbName);
 		}
 		if(sk)
 		{
@@ -717,12 +714,11 @@ void SBAnimationBlend::plotMotionFrameTime(const std::string& motionName, const 
 	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
 	if(sk==nullptr)
 	{
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SBCharacter* sbSk = scene->getCharacter(chrName);
+		SBCharacter* sbSk = _scene.getCharacter(chrName);
 		if(sbSk)
 		{
 			std::string sbName = sbSk->getSkeleton()->getName();
-			sk = SmartBody::SBScene::getScene()->getSkeleton(sbName);
+			sk = _scene.getSkeleton(sbName);
 		}
 		if(sk)
 		{
@@ -783,12 +779,11 @@ void SBAnimationBlend::plotMotionJointTrajectory(const std::string& motionName, 
 	if(sk==0)
 	{
 		
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SBCharacter* sbSk = scene->getCharacter(chrName);
+		SBCharacter* sbSk = _scene.getCharacter(chrName);
 		if(sbSk)
 		{
 			std::string sbName = sbSk->getSkeleton()->getName();
-			sk = SmartBody::SBScene::getScene()->getSkeleton(sbName);
+			sk = _scene.getSkeleton(sbName);
 		}
 		if(sk)
 		{
@@ -850,8 +845,7 @@ void SBAnimationBlend::clearPlotMotion()
 
 void SBAnimationBlend::setChrPlotMotionTransform(const std::string& chrName)
 {
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SBCharacter* sbSk = scene->getCharacter(chrName);
+		SBCharacter* sbSk = _scene.getCharacter(chrName);
 		if(sbSk)
 		{
 			SrVec hpr = sbSk->getHPR();
@@ -869,8 +863,7 @@ void SBAnimationBlend::setPlotMotionTransform(SrVec offset, float yRot)
 
 void SBAnimationBlend::setChrPlotVectorFlowTransform(const std::string& chrName)
 {
-		SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-		SBCharacter* sbSk = scene->getCharacter(chrName);
+		SBCharacter* sbSk = _scene.getCharacter(chrName);
 		if(sbSk)
 		{
 			SrVec hpr = sbSk->getHPR();
@@ -1082,16 +1075,18 @@ std::string SBAnimationBlend::getDimension()
 
 void SBAnimationBlend::removeMotion(const std::string& motionName)
 {
-	SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(motionName);
-	if (!motion)
-	{
+	auto I = std::find_if(motions.begin(), motions.end(), [&](const SmartBody::SBMotion* motion){return motion->getName() == motionName;});
+
+	if (I != motions.end()) {
+		motions.erase(I);
+	} else {
 		SmartBody::util::log("No motion named %s found, cannot remove from state %s.", motionName.c_str(), this->stateName.c_str());
 	}
 }
 
 bool SBAnimationBlend::addSkMotion(const std::string& motion)
 {	
-	SBMotion* sbmotion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motion);
+	SBMotion* sbmotion = _scene.getAssetManager()->getMotion(motion);
 
 	if (!sbmotion)
 	{
@@ -1138,7 +1133,7 @@ void SBAnimationBlend::validateCorrespondencePoints()
 	for (int i = 0; i < getNumMotions(); i++)
 	{
 		
-		SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motions[i]->getName());		
+		SBMotion* motion = motions[i];
 		for (int j = 1; j < getNumCorrespondencePoints(); j++)
 		{
 			if (keys[i][j] < keys[i][j - 1])
@@ -1158,7 +1153,7 @@ bool SBAnimationBlend::validateState()
 	for (int i=0; i < getNumMotions(); i++)
 	{
 		
-		SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(motions[i]->getName());		
+		SBMotion* motion = motions[i];
 		if ((int)keys.size() < i) // no keys for this state
 		{			
 			keys.emplace_back(std::vector<double>());
@@ -1441,7 +1436,7 @@ void SBAnimationBlend::buildMotionAnalysis(SmartBody::SBScene& scene, const std:
 
 void SBAnimationBlend::setBlendSkeleton( std::string skelName )
 {
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = _scene.getAssetManager();
 	auto skel = assetManager->getSkeleton(skelName);
 	if (skel)
 	{
@@ -1556,11 +1551,7 @@ void SBAnimationBlend::getAllChannels(SkChannelArray& channels)
 	}
 }
 
-SBAnimationBlend0D::SBAnimationBlend0D() : SBAnimationBlend("unknown")
-{
-}
-
-SBAnimationBlend0D::SBAnimationBlend0D(const std::string& name) : SBAnimationBlend(name)
+SBAnimationBlend0D::SBAnimationBlend0D(SBScene& scene, const std::string& name) : SBAnimationBlend(scene, name)
 {
 	_dimension = "0D";
 	setType(0);
@@ -1591,12 +1582,7 @@ SBMotion* SBAnimationBlend0D::createMotionFromBlend(SrVec parameters, SBCharacte
 	return getSBMotion(0);
 }
 
-SBAnimationBlend1D::SBAnimationBlend1D() : SBAnimationBlend("unknown")
-{
-}
-
-
-SBAnimationBlend1D::SBAnimationBlend1D(const std::string& name) : SBAnimationBlend(name)
+SBAnimationBlend1D::SBAnimationBlend1D(SBScene& scene, const std::string& name) : SBAnimationBlend(scene, name)
 {
 	_dimension = "1D";
 	setType(0);
@@ -1639,14 +1625,14 @@ SBMotion* SBAnimationBlend1D::createMotionFromBlend(SrVec parameters, SBCharacte
 	// let's start by assuming no keys and a linear retiming from one animation to another
 	double amount = parameters[0];
 
-	SBMotion* motion1 = SmartBody::SBScene::getScene()->getMotion(this->getMotion(0));
-	SBMotion* motion2 = SmartBody::SBScene::getScene()->getMotion(this->getMotion(1));
+	SBMotion* motion1 = _scene.getMotion(this->getMotion(0));
+	SBMotion* motion2 = _scene.getMotion(this->getMotion(1));
 	if (!motion1 || !motion2)
 		return nullptr;
 
 	double blendedMotionLength = (1.0 - amount) * motion1->getDuration() +  amount * motion2->getDuration();
 
-	auto* motion = new SBMotion();
+	auto* motion = new SBMotion(_scene);
 	motion->setName(motionName);
 	
 	SkChannelArray channelArray;
@@ -1857,11 +1843,7 @@ SBMotion* SBAnimationBlend1D::createMotionFromBlend(SrVec parameters, SBCharacte
 
 
 
-SBAnimationBlend2D::SBAnimationBlend2D() : SBAnimationBlend("unknown")
-{
-}
-
-SBAnimationBlend2D::SBAnimationBlend2D(const std::string& name) : SBAnimationBlend(name)
+SBAnimationBlend2D::SBAnimationBlend2D(SBScene& scene, const std::string& name) : SBAnimationBlend(scene, name)
 {
 	_dimension = "2D";
 	setType(1);
@@ -1905,21 +1887,19 @@ SBMotion* SBAnimationBlend2D::createMotionFromBlend(SrVec parameters, SBCharacte
 	return getSBMotion(0);
 }
 
-SBAnimationBlend3D::SBAnimationBlend3D() : SBAnimationBlend("unknown")
-{
-}
+//SBAnimationBlend3D::SBAnimationBlend3D() : SBAnimationBlend("unknown")
+//{
+//}
 
 
-SBAnimationBlend3D::SBAnimationBlend3D(const std::string& name) : SBAnimationBlend(name)
+SBAnimationBlend3D::SBAnimationBlend3D(SBScene& scene, const std::string& name) : SBAnimationBlend(scene, name)
 {
 	_dimension = "3D";
 	setType(2);
 	parameterDim = 3;
 }
 
-SBAnimationBlend3D::~SBAnimationBlend3D()
-{
-}
+SBAnimationBlend3D::~SBAnimationBlend3D() = default;
 
 
 void SBAnimationBlend3D::addMotion(const std::string& motion, float parameter1, float parameter2, float parameter3)

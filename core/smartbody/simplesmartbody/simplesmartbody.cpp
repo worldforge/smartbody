@@ -5,6 +5,9 @@
 #include <sb/SBSimulationManager.h>
 #include <sb/SBSceneListener.h>
 #include "SBUtilities.h"
+#include "sb/SBPhysicsManager.h"
+#include "sb/SBCollisionManager.h"
+#include <memory>
 
 class SimpleListener : public SmartBody::SBSceneListener
 {
@@ -52,33 +55,35 @@ int main( int argc, char ** argv )
 	initPython();
 
 	// get the scene object
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	SmartBody::SBScene scene([](SmartBody::SBScene& newScene) {
+		return SmartBody::SBScene::CoreServices{};
+	});
 	SimpleListener listener;
-	scene->addSceneListener(&listener);
+	scene.addSceneListener(&listener);
 
 	// set the mediapath which dictates the top-level asset directory
-	//scene->setMediaPath(mediaPath);
-	scene->addAssetPath("script", scriptPath);
+	//scene.setMediaPath(mediaPath);
+	scene.addAssetPath("script", scriptPath);
 
 	// get the simulation object 
-	SmartBody::SBSimulationManager* sim = scene->getSimulationManager();
+	SmartBody::SBSimulationManager* sim = scene.getSimulationManager();
 
 	sim->setupTimer();
 	sim->setTime(0.0);
 
-	scene->runScript(script);
+	scene.runScript(script);
 
 	SmartBody::util::log("Starting the simulation...");
 	double lastPrint = 0;
 	sim->start();
 	while (true)
 	{
-		if (scene->getSimulationManager()->isStopped())
+		if (scene.getSimulationManager()->isStopped())
 		{
 			SmartBody::util::log("simulation stopped from script");
 			break;
 		}
-		scene->update();
+		scene.update();
 		sim->updateTimer();
 	}
 

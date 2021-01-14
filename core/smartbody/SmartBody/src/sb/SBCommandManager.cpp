@@ -39,22 +39,17 @@ SequenceManager::~SequenceManager()
 
 void SequenceManager::clear()
 {
-	for (auto & _sequence : _sequences)
-	{
-		delete _sequence.second;
-	}
-
 	_sequenceSet.clear();
 	_sequences.clear();
 }
 
-bool SequenceManager::addSequence(const std::string& seqName, srCmdSeq* seq)
+bool SequenceManager::addSequence(const std::string& seqName, std::unique_ptr<srCmdSeq> seq)
 {
 	if (_sequenceSet.find(seqName) != _sequenceSet.end())
 		return false;
 
 	_sequenceSet.insert(seqName);
-	_sequences.emplace_back(std::pair<std::string, srCmdSeq*>(seqName, seq));
+	_sequences.emplace_back(seqName, std::move(seq));
 	return true;
 }
 
@@ -92,7 +87,7 @@ srCmdSeq* SequenceManager::getSequence(const std::string& name)
 	{
 		if (_sequence.first == name)
 		{
-			return _sequence.second;
+			return _sequence.second.get();
 		}
 	}
 
@@ -104,7 +99,7 @@ srCmdSeq* SequenceManager::getSequence(int num, std::string& name)
 	if (num < (int) _sequences.size())
 	{
 		name = _sequences[num].first;
-		return _sequences[num].second;
+		return _sequences[num].second.get();
 	}
 	else
 	{
@@ -129,8 +124,6 @@ void SequenceManager::cleanupMarkedSequences()
 		{
 			if (!(*iter).second->isValid())
 			{
-				srCmdSeq* seq = (*iter).second;
-				delete seq;
 				_sequences.erase(iter);
 				hasInvalidSequences = true;
 				break;
@@ -265,7 +258,7 @@ void SBCommandManager::registerCallbacks()
 
 //	insert( "locomotion",          locomotion_cmd_func );
 //	insert( "loco",                locomotion_cmd_func ); // shorthand
-	insert( "bml",				   test_bml_func );
+	insert( "bml",				   [this](srArgBuffer& args){return test_bml_func(args, _scene);} );
 
 #ifdef USE_GOOGLE_PROFILER
 	insert( "startprofile",			   startprofile_func );
@@ -274,12 +267,11 @@ void SBCommandManager::registerCallbacks()
 	insert( "stopheapprofile",			   stopheapprofile_func );
 #endif
 
-	
 
-	insert_test_cmd( "bml",  test_bml_func );
-	insert_test_cmd( "fml",  test_fml_func );
-	insert_test_cmd( "bone_pos", test_bone_pos_func );
-	
+	insert_test_cmd( "bml",				   [this](srArgBuffer& args){return test_bml_func(args, _scene);} );
+	insert_test_cmd( "fml",				   [this](srArgBuffer& args){return test_fml_func(args, _scene);} );
+	insert_test_cmd( "bone_pos",				   [this](srArgBuffer& args){return test_bone_pos_func(args, _scene);} );
+
 
 
 
@@ -352,23 +344,23 @@ int SBCommandManager::execute( char *cmd )
 
 }
 
-int SBCommandManager::execute_seq( srCmdSeq *seq )
+int SBCommandManager::execute_seq( std::unique_ptr<srCmdSeq> seq )
 {
 	std::ostringstream seq_id;
 	SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(_scene.getAttribute("queuedCommandsIndex"));
 	seq_id << "execute_seq-" << (intAttr->getValue());
 	intAttr->setValue(intAttr->getValue() + 1);
 
-	return execute_seq( seq, seq_id.str().c_str() );
+	return execute_seq( std::move(seq), seq_id.str().c_str() );
 }
 
-int SBCommandManager::execute_seq( srCmdSeq *seq, const char* seq_name )
+int SBCommandManager::execute_seq( std::unique_ptr<srCmdSeq> seq, const char* seq_name )
 {
 	
 //	printf( "mcuCBHandle::execute_seq: id: '%s'\n", seq_id );
 //	seq_p->print();
 
-	if ( !activeSequences.addSequence( seq_name, seq ) ) {
+	if ( !activeSequences.addSequence( seq_name, std::move(seq) ) ) {
 		SmartBody::util::log("ERROR: mcuCBHandle::execute_seq(..): Failed to insert srCmdSeq \"%s\"into active_seq_map.", seq_name );
 		return CMD_FAILURE;
 	}	
@@ -395,15 +387,12 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 		return CMD_FAILURE;
 	}
 
-	srCmdSeq* seq_p = new srCmdSeq();
+	auto seq_p = std::make_unique<srCmdSeq>();
 	int parse_result = seq_p->read_file( first_file_p );
 	fclose( first_file_p );
 	if( parse_result != CMD_SUCCESS ) {
 		if( error_prefix )
 			SmartBody::util::log("%s Unable to parse sequence\"%s\".", error_prefix, first_seq_name.c_str());
-
-		delete seq_p;
-		seq_p = nullptr;
 
 		return CMD_FAILURE;
 	}
@@ -443,14 +432,11 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 			if( error_prefix )
 				SmartBody::util::log("%s Failed to insert seq-chain command at time %f", error_prefix, time);
 
-			delete seq_p;
-			seq_p = nullptr;
-
 			return CMD_FAILURE;
 		}
 	}
 
-	execute_seq( seq_p, first_seq_name.c_str() );
+	execute_seq( std::move(seq_p), first_seq_name.c_str() );
 
 	return CMD_SUCCESS;
 }
@@ -459,7 +445,7 @@ int SBCommandManager::execute_seq_chain( const std::vector<std::string>& seq_nam
 //  Schedule command in some seconds
 int SBCommandManager::execute_later( const char* command, float seconds )
 {
-	srCmdSeq *temp_seq = new srCmdSeq();
+	auto temp_seq = std::make_unique<srCmdSeq>();
 	temp_seq->insert( (float)_scene.getSimulationManager()->getTime() +seconds, command );
 
 	std::ostringstream seqName;
@@ -467,7 +453,7 @@ int SBCommandManager::execute_later( const char* command, float seconds )
 	seqName << "execute_later-" << (intAttr->getValue());
 	intAttr->setValue(intAttr->getValue() + 1);
 
-	return execute_seq( temp_seq, seqName.str().c_str() );;
+	return execute_seq( std::move(temp_seq), seqName.str().c_str() );;
 }
 
 //  Queue command for next frame

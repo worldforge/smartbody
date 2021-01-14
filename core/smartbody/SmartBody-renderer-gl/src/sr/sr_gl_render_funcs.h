@@ -32,15 +32,19 @@
 class SrSnShapeBase;
 class DeformableMeshInstance;
 
+namespace SmartBody {
+class SBScene;
+}
+
 /*! All render functions used to render SR shapes are static methods
     of class SrGlRenderFuncs. They are automatically registered to
     the ogl render action. See SrGlRenderAction class description. */
 class SBAPI SrGlRenderFuncs
  { public:
 
-	static void renderBlendFace( DeformableMeshInstance* shape);
+	static void renderBlendFace(SmartBody::SBScene& scene, DeformableMeshInstance* shape);
 	
-	static void renderDeformableMesh( DeformableMeshInstance* shape, bool showSkinWeight = false );
+	static void renderDeformableMesh(bool useGPUBlendShapes, DeformableMeshInstance* shape, bool showSkinWeight = false );
     static void render_model ( SrSnShapeBase* shape );
 
     static void render_lines ( SrSnShapeBase* shape );

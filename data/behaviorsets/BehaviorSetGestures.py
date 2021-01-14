@@ -131,7 +131,7 @@ def setupBehaviorSet():
         stateTest.addMotion(gestureMotions[s] + "2x", 1.0)
 
     # establish gesture data set
-    gMapManager = getScene().getGestureMapManager()
+    gMapManager = scene.getGestureMapManager()
 
     # Brad's gestures
     # neutral

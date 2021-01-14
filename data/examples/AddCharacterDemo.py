@@ -34,7 +34,7 @@ zebra2Map = scene.getJointMapManager().getJointMap('zebra2')
 bradSkeleton = scene.getSkeleton('ChrBrad.dae')
 bradSkeleton.rescale(.01)
 zebra2Map.applySkeleton(bradSkeleton)
-zebra2Map.applyMotionRecurse('ChrBrad')
+zebra2Map.applyMotionRecurse(scene, 'ChrBrad')
 
 # Establish lip syncing data set
 print('Establishing lip syncing data set')

@@ -107,45 +107,42 @@ int deprecatedMessage( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr  )
 */
 
 void mcu_preprocess_sequence( srCmdSeq *to_seq_p, srCmdSeq *fr_seq_p, SmartBody::SBCommandManager& cmdMgr )	{
-	float t;
-	char *cmd;
+
 	
 	fr_seq_p->reset();
-	while( (cmd = fr_seq_p->pull( & t )) )	{
-		srArgBuffer args( cmd );
-		srCmdSeq *inline_seq_p = nullptr;
+	auto command_event = fr_seq_p->remove();
+	while (!command_event.cmd.empty()) {
+		auto t = command_event.time;
+		auto& cmd = command_event.cmd;
+		srArgBuffer args(command_event.cmd.c_str());
+		srCmdSeq* inline_seq_p = nullptr;
 
-		char *tok = args.read_token();
-		if( strcmp( tok, "seq" ) == 0 )	{
-			char *name = args.read_token();
+		char* tok = args.read_token();
+		if (strcmp(tok, "seq") == 0) {
+			char* name = args.read_token();
 			tok = args.read_token();
-			if( strcmp( tok, "inline" ) == 0 )	{
+			if (strcmp(tok, "inline") == 0) {
 
-				inline_seq_p = cmdMgr.lookup_seq( name );
-				delete [] cmd;
-				cmd = nullptr;
-				if( inline_seq_p == nullptr )	{
-					SmartBody::util::log( "mcu_preprocess_sequence ERR: inline seq '%s' NOT FOUND\n", name );
+				inline_seq_p = cmdMgr.lookup_seq(name);
+
+				if (inline_seq_p == nullptr) {
+					SmartBody::util::log("mcu_preprocess_sequence ERR: inline seq '%s' NOT FOUND\n", name);
 					return;
 				}
 			}
 		}
-		
+
 		float absolute_offset = fr_seq_p->offset() + t;
-		if( inline_seq_p )	{
+		if (inline_seq_p) {
 			// iterate hierarchy
-			inline_seq_p->offset( absolute_offset );
-			mcu_preprocess_sequence( to_seq_p, inline_seq_p, cmdMgr);
-		}
-		else
-		if( cmd )	{
+			inline_seq_p->offset(absolute_offset);
+			mcu_preprocess_sequence(to_seq_p, inline_seq_p, cmdMgr);
+		} else if (!cmd.empty()) {
 			// propagate un-consumed command
-			to_seq_p->insert_ref( absolute_offset, cmd );
-      cmd = nullptr;
+			to_seq_p->insert(absolute_offset, cmd);
 		}
 
-      delete [] cmd;
-
+		command_event = fr_seq_p->remove();
 	}
 	delete fr_seq_p;
 }
@@ -158,11 +155,11 @@ int begin_sequence( char* name, SmartBody::SBCommandManager& cmdMgr, SmartBody::
 	
 	if( seq )
 	{
-		srCmdSeq* copySeq = new srCmdSeq;
-		mcu_preprocess_sequence( copySeq, seq, cmdMgr);
+		auto copySeq = std::make_unique<srCmdSeq>();
+		mcu_preprocess_sequence( copySeq.get(), seq, cmdMgr);
 
 		copySeq->offset( (float)( simMgr.getTime() ) );
-		bool success = cmdMgr.getActiveSequences()->addSequence(name, copySeq );
+		bool success = cmdMgr.getActiveSequences()->addSequence(name, std::move(copySeq) );
 
 		if( !success )
 		{
@@ -203,7 +200,7 @@ int mcu_sequence_func( srArgBuffer& args, SmartBody::SBCommandManager& cmdMgr, S
 		if (!seq)
 		{
 			seq = new srCmdSeq;
-			bool success = cmdMgr.getPendingSequences()->addSequence( seqName, seq );
+			bool success = cmdMgr.getPendingSequences()->addSequence( seqName, std::unique_ptr<srCmdSeq>(seq) );
 			if( !success )
 			{
 				SmartBody::util::log( "mcu_sequence_func ERR: insert pending '%s' FAILED\n", seqName ); 

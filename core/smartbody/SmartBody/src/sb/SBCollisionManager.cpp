@@ -459,7 +459,7 @@ bool SBCollisionManager::removeCollisionObject( const std::string& geomName )
 	auto I = geomObjectMap.find(geomName);
 	if (I != geomObjectMap.end()) {
 		if (_collisionSpace) {
-			_collisionSpace->removeCollisionObjects(geomName);
+			_collisionSpace->removeCollisionObjects(*this, geomName);
 		}
 		geomObjectMap.erase(I);
 		return true;
@@ -472,7 +472,7 @@ bool SBCollisionManager::addObjectToCollisionSpace( const std::string& geomName 
 	SBGeomObject* geomObj = getCollisionObject(geomName);
 	if (geomObj)
 	{
-		_collisionSpace->addCollisionObjects(geomName);
+		_collisionSpace->addCollisionObjects(*this, geomName);
 		return true;
 	}
 	return false;
@@ -485,7 +485,7 @@ bool SBCollisionManager::removeObjectFromCollisionSpace( const std::string& geom
 	if (geomObj)
 	{
 		if (_collisionSpace)
-			_collisionSpace->removeCollisionObjects(geomName);
+			_collisionSpace->removeCollisionObjects(*this, geomName);
 		return true;
 	}
 	return false;

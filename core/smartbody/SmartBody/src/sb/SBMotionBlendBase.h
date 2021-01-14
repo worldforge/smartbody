@@ -27,7 +27,7 @@ class MeCtBlendEngine;
 
 namespace SmartBody {
 
-	class SBMotionBlendBase : public SBAnimationBlend, public SBSceneOwned
+	class SBMotionBlendBase : public SBAnimationBlend
 	{
 		public:		
 			//SBAPI SBMotionBlendBase();
@@ -43,22 +43,22 @@ namespace SmartBody {
 			SBAPI virtual void setMotionParameter(const std::string& motion, std::vector<double>& parameter);
 			SBAPI virtual std::vector<double> getMotionParameter(const std::string& motion);
 
-			SBAPI virtual void removeMotion(const std::string& motionName);
+			SBAPI void removeMotion(const std::string& motionName) override;
 			SBAPI void buildBlendBase(const std::string& motionParameter, const std::string& interpolatorType, bool copySimplex);
 
 
-			SBAPI virtual bool getWeightsFromParameters(double x, std::vector<double>& weights);
-			SBAPI virtual bool getWeightsFromParameters(double x, double y, std::vector<double>& weights);
-			SBAPI virtual bool getWeightsFromParameters(double x, double y, double z, std::vector<double>& weights);
-			SBAPI virtual void getParametersFromWeights(float& x, std::vector<double>& weights);
-			SBAPI virtual void getParametersFromWeights(float& x, float& y, std::vector<double>& weights);
-			SBAPI virtual void getParametersFromWeights(float& x, float& y, float& z, std::vector<double>& weights);
+			SBAPI bool getWeightsFromParameters(double x, std::vector<double>& weights) override;
+			SBAPI bool getWeightsFromParameters(double x, double y, std::vector<double>& weights) override;
+			SBAPI bool getWeightsFromParameters(double x, double y, double z, std::vector<double>& weights) override;
+			SBAPI void getParametersFromWeights(float& x, std::vector<double>& weights) override;
+			SBAPI void getParametersFromWeights(float& x, float& y, std::vector<double>& weights) override;
+			SBAPI void getParametersFromWeights(float& x, float& y, float& z, std::vector<double>& weights) override;
 			SBAPI void addTetrahedron(const std::string& motion1, const std::string& motion2, const std::string& motion3, const std::string& motion4);
 
-			SBAPI virtual std::string saveToString();
+			SBAPI std::string saveToString() override;
 
 		protected:
-			MeCtBlendEngine* blendEngine;						
+			std::unique_ptr<MeCtBlendEngine> blendEngine;
 			std::string interpType;		
 			std::string skeletonName;
 			std::string blendType;

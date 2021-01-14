@@ -95,7 +95,7 @@ public:
 	
 	SBAPI GLuint createFBO(const char* fboName, bool recreateFBO = true);
 
-	SBAPI void updateEnvMaps();
+	SBAPI void updateEnvMaps(SmartBody::SBScene& scene);
 	void releaseAllTextures();	
 protected:
 

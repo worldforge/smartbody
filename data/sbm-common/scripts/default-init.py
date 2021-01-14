@@ -22,13 +22,13 @@ bradSkeleton = scene.getSkeleton('ChrBrad.sk')
 # skeleton is in meters, change to centimeter scale
 bradSkeleton.rescale(100)
 zebra2Map.applySkeleton(bradSkeleton)
-zebra2Map.applyMotionRecurse('ChrBrad')
+zebra2Map.applyMotionRecurse(scene, 'ChrBrad')
 
 rachelSkeleton = scene.getSkeleton('ChrRachel.sk')
 # skeleton is in meters, change to centimeter scale
 rachelSkeleton.rescale(100)
 zebra2Map.applySkeleton(rachelSkeleton)
-zebra2Map.applyMotionRecurse('ChrRachel')
+zebra2Map.applyMotionRecurse(scene, 'ChrRachel')
 
 # scale all the motions by 100
 motionNames = scene.getMotionNames()

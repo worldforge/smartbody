@@ -164,13 +164,13 @@ _bmlProcessor(std::make_unique<BML::Processor>())
 	_scene.registerObserver(_sceneObserver.get());
 
 	scene.getCommandManager()->insert("vrAgentBML", [this](srArgBuffer& args) -> int {
-		return getBMLProcessor()->vrAgentBML_cmd_func(args, nullptr);
+		return getBMLProcessor()->vrAgentBML_cmd_func(args, _scene);
 	});
 	scene.getCommandManager()->insert("bp", [this](srArgBuffer& args) -> int {
-		return getBMLProcessor()->bp_cmd_func(args, nullptr);
+		return getBMLProcessor()->bp_cmd_func(args, _scene);
 	});
 	scene.getCommandManager()->insert("vrSpeak", [this](srArgBuffer& args) -> int {
-		return getBMLProcessor()->vrSpeak_func(args, nullptr);
+		return getBMLProcessor()->vrSpeak_func(args, _scene);
 	});
 
 	scene.getCommandManager()->insert_set_cmd("bp", [this](srArgBuffer& args) -> int {
@@ -191,7 +191,7 @@ void SBBmlProcessor::vrSpeak(std::string agent, std::string recip, std::string m
 	std::stringstream msgStr;
 	msgStr << agent << " " << recip << " " << msgId << " " << msg;
 	srArgBuffer vrMsg(msgStr.str().c_str());
-	_bmlProcessor->vrSpeak_func(vrMsg, SmartBody::SBScene::getScene()->getCommandManager());
+	_bmlProcessor->vrSpeak_func(vrMsg, _scene);
 }
 
 void SBBmlProcessor::vrAgentBML(std::string op, std::string agent, std::string msgId, std::string msg)
@@ -201,7 +201,7 @@ void SBBmlProcessor::vrAgentBML(std::string op, std::string agent, std::string m
 		std::stringstream msgStr;
 		msgStr << agent << " " << msgId << " " << op << " " << msg;
 		srArgBuffer vrMsg(msgStr.str().c_str());
-		_bmlProcessor->vrAgentBML_cmd_func(vrMsg, SmartBody::SBScene::getScene()->getCommandManager());
+		_bmlProcessor->vrAgentBML_cmd_func(vrMsg, _scene);
 	}
 	else
 	{
@@ -221,10 +221,10 @@ std::string SBBmlProcessor::build_vrX(std::ostringstream& buffer, const std::str
 	}
 	else
 	{
-		SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(SmartBody::SBScene::getScene()->getAttribute("bmlIndex"));
+		SmartBody::IntAttribute* intAttr = dynamic_cast<SmartBody::IntAttribute*>(_scene.getAttribute("bmlIndex"));
 
-		if (!SmartBody::SBScene::getScene()->getProcessId().empty())
-			msgId << "sbm_" << SmartBody::SBScene::getScene()->getProcessId() << "_test_bml_" << (intAttr->getValue());
+		if (!_scene.getProcessId().empty())
+			msgId << "sbm_" << _scene.getProcessId() << "_test_bml_" << (intAttr->getValue());
 		else
 			msgId << "sbm_test_bml_" << intAttr->getValue();
 		intAttr->setValue(intAttr->getValue() + 1);
@@ -257,27 +257,27 @@ std::string SBBmlProcessor::send_vrX( const char* cmd, const std::string& char_i
 			// execute directly
 			if( all_characters )
 			{
-				const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+				const std::vector<std::string>& characterNames = _scene.getCharacterNames();
 				for (const auto & characterName : characterNames)
 				{
-					SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+					SmartBody::SBCharacter* character = _scene.getCharacter(characterName);
 					msgId = build_vrX( msg, cmd, character->getName().c_str(), recip_id, bml, false, candidateMsgId);
 					//SmartBody::util::log("vvmsg cmd =  %s, msg = %s", cmd, msg.str().c_str());
-					//SmartBody::SBScene::getScene()->getVHMsgManager()->send2( cmd, msg.str().c_str() );
-					SmartBody::SBScene::getScene()->getCommandManager()->execute(cmd, const_cast<char*>(msg.str().c_str()));
+					//_scene.getVHMsgManager()->send2( cmd, msg.str().c_str() );
+					_scene.getCommandManager()->execute(cmd, const_cast<char*>(msg.str().c_str()));
 				}
 			} else {
 				msgId = build_vrX( msg, cmd, char_id, recip_id, bml, false, candidateMsgId);
 				//SmartBody::util::log("vvmsg cmd =  %s, msg = %s", cmd, msg.str().c_str());
-				//SmartBody::SBScene::getScene()->getVHMsgManager()->send2( cmd, msg.str().c_str() );
-				SmartBody::SBScene::getScene()->getCommandManager()->execute(cmd, const_cast<char*>(msg.str().c_str()));
+				//_scene.getVHMsgManager()->send2( cmd, msg.str().c_str() );
+				_scene.getCommandManager()->execute(cmd, const_cast<char*>(msg.str().c_str()));
 			}
 		}		
 		return msgId;
 	}else {
 		// Command sequence to trigger vrSpeak
-		srCmdSeq *seq = new srCmdSeq(); // sequence file that holds the bml command(s)
-		seq->offset( (float)( SmartBody::SBScene::getScene()->getSimulationManager()->getTime()) );
+		auto seq = std::make_unique<srCmdSeq>(); // sequence file that holds the bml command(s)
+		seq->offset( (float)( _scene.getSimulationManager()->getTime()) );
 
 		if( echo ) {
 			msg << "echo // Running sequence \"" << seq_id << "\"...";
@@ -295,10 +295,10 @@ std::string SBBmlProcessor::send_vrX( const char* cmd, const std::string& char_i
 		}
 		if( all_characters )
 		{
-			const std::vector<std::string>& characterNames = SmartBody::SBScene::getScene()->getCharacterNames();
+			const std::vector<std::string>& characterNames = _scene.getCharacterNames();
 			for (const auto & characterName : characterNames)
 			{
-				SmartBody::SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+				SmartBody::SBCharacter* character = _scene.getCharacter(characterName);
 				msgId = build_vrX( msg, cmd, character->getName().c_str(), recip_id, bml, true );
 				if( seq->insert( 0, msg.str().c_str() )!=CMD_SUCCESS ) {
 					std::stringstream strstr;
@@ -316,8 +316,8 @@ std::string SBBmlProcessor::send_vrX( const char* cmd, const std::string& char_i
 		}
 
 		if( send ) {
-			SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->removeSequence(seq_id, true); // remove old sequence by this name
-			if( !SmartBody::SBScene::getScene()->getCommandManager()->getActiveSequences()->addSequence(seq_id, seq ))
+			_scene.getCommandManager()->getActiveSequences()->removeSequence(seq_id, true); // remove old sequence by this name
+			if( !_scene.getCommandManager()->getActiveSequences()->addSequence(seq_id, std::move(seq) ))
 			{
 				std::stringstream strstr;
 				strstr << "ERROR: send_vrX(..): Failed to insert seq into active sequences.";
@@ -325,8 +325,8 @@ std::string SBBmlProcessor::send_vrX( const char* cmd, const std::string& char_i
 				return msgId;
 			}
 		} else {
-			SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->removeSequence(seq_id, true);  // remove old sequence by this name
-			if (SmartBody::SBScene::getScene()->getCommandManager()->getPendingSequences()->addSequence(seq_id, seq))
+			_scene.getCommandManager()->getPendingSequences()->removeSequence(seq_id, true);  // remove old sequence by this name
+			if (_scene.getCommandManager()->getPendingSequences()->addSequence(seq_id, std::move(seq)))
 			{
 				std::stringstream strstr;
 				strstr << "ERROR: send_vrX(..): Failed to insert seq into pending sequences.";
@@ -342,7 +342,7 @@ std::string SBBmlProcessor::execBML(std::string character, std::string bml)
 {
 	std::ostringstream entireBml;
 	entireBml	<< "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-	const std::string& procId = SmartBody::SBScene::getScene()->getProcessId();
+	const std::string& procId = _scene.getProcessId();
 	if (procId != "")
 		entireBml << "<act procid=\"" << procId << "\">\n";
 	else
@@ -352,7 +352,7 @@ std::string SBBmlProcessor::execBML(std::string character, std::string bml)
 				<< "\t</bml>\n"
 				<< "</act>";		
 
-	if (SmartBody::SBScene::getScene()->getBoolAttribute("useNewBMLParsing"))
+	if (_scene.getBoolAttribute("useNewBMLParsing"))
 	{
 		std::vector<BMLObject*> behaviors = parseBML(entireBml.str());
 		scheduleBML(behaviors);
@@ -398,56 +398,50 @@ std::string SBBmlProcessor::execXML(std::string character, std::string xml)
 
 void SBBmlProcessor::execBMLAt(double time, std::string character, std::string bml)
 {
-	SBScene* scene = SBScene::getScene();
 
 	std::stringstream strstr;
 	strstr << "bml char " << character << " " << bml;
-	scene->commandAt((float) time, strstr.str());
+	_scene.commandAt((float) time, strstr.str());
 }
 
 void SBBmlProcessor::execBMLFileAt(double time, std::string character, std::string filename)
 {
-	SBScene* scene = SBScene::getScene();
 
 	std::stringstream strstr;
 	strstr << "bml char " << character << " file " << filename;
-	scene->commandAt((float) time, strstr.str());
+	_scene.commandAt((float) time, strstr.str());
 }
 
 void SBBmlProcessor::execXMLAt(double time, std::string character, std::string xml)
 {
-	SBScene* scene = SBScene::getScene();
-
 	std::stringstream strstr;
 	strstr << "bml char " << character << " " << xml;
-	scene->commandAt((float) time, strstr.str());
+	_scene.commandAt((float) time, strstr.str());
 }
 
 void SBBmlProcessor::interruptCharacter(const std::string& character, double seconds)
 {
-	SBScene* scene = SBScene::getScene();
-	SBCharacter* sbCharacter = scene->getCharacter(character);
+	SBCharacter* sbCharacter = _scene.getCharacter(character);
 	if (!sbCharacter)
 	{
 		SmartBody::util::log("No character named '%s' found. Interrupt not done.", character.c_str());
 		return;
 	}
 
-	_bmlProcessor->interrupt(sbCharacter, seconds, scene);
+	_bmlProcessor->interrupt(sbCharacter, seconds, _scene);
 	
 }
 
 void SBBmlProcessor::interruptBML(const std::string& character, const std::string& id, double seconds)
 {
-	SBScene* scene = SBScene::getScene();
-	SBCharacter* sbCharacter = scene->getCharacter(character);
+	SBCharacter* sbCharacter = _scene.getCharacter(character);
 	if (!sbCharacter)
 	{
 		SmartBody::util::log("No character named '%s' found. Interrupt not done.", character.c_str());
 		return;
 	}
 
-	_bmlProcessor->interrupt(sbCharacter, id, seconds, scene);
+	_bmlProcessor->interrupt(sbCharacter, id, seconds, _scene);
 }
 
 
@@ -533,7 +527,7 @@ void SBBmlProcessor::processBML(double time)
 	{
 		SBBMLSchedule* schedule = _bmlSchedule.second;
 		std::string characterName = _bmlSchedule.first;
-		SBCharacter* character = SmartBody::SBScene::getScene()->getCharacter(characterName);
+		SBCharacter* character = _scene.getCharacter(characterName);
 		if (!character)
 		{
 			// character no longer exists, remove the schedule

@@ -2984,7 +2984,7 @@ bool ParserOpenCOLLADA::exportCollada(SmartBody::SBRenderAssetManager& renderAss
 
 	std::string fullColladaPathName = outPathname + "/" + colladaName;
 	FILE* fp = fopen(fullColladaPathName.c_str(),"wt");
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = renderAssetManager._scene.getAssetManager();
 	fprintf(fp,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	fprintf(fp,"<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n");
 
@@ -3332,7 +3332,7 @@ bool ParserOpenCOLLADA::exportGeometry(SmartBody::SBRenderAssetManager& renderAs
 bool ParserOpenCOLLADA::exportSkinMesh( SmartBody::SBRenderAssetManager& renderAssetManager, FILE* fp, std::string deformMeshName, double scale, std::string skeletonName)
 {
 	printf("before export skin mesh\n");
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = renderAssetManager._scene.getAssetManager();
 	DeformableMesh* defMesh = renderAssetManager.getDeformableMesh(deformMeshName);
 	if (!defMesh)
 		return false;
@@ -3546,7 +3546,7 @@ bool ParserOpenCOLLADA::exportSkinMesh( SmartBody::SBRenderAssetManager& renderA
 
 bool ParserOpenCOLLADA::exportVisualScene( SmartBody::SBRenderAssetManager& renderAssetManager, FILE* fp, std::string skeletonName, std::string defMeshName, double scale )
 {
-	SmartBody::SBAssetManager* assetManager = SmartBody::SBScene::getScene()->getAssetManager();
+	SmartBody::SBAssetManager* assetManager = renderAssetManager._scene.getAssetManager();
 	auto sbSk = assetManager->getSkeleton(skeletonName);
 	DeformableMesh* defMesh = renderAssetManager.getDeformableMesh(defMeshName);
 	//if (!sbSk) return false;

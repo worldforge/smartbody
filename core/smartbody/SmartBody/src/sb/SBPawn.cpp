@@ -467,7 +467,7 @@ void SBPawn::notify(SBSubject* subject)
 SBPhysicsObj* SBPawn::getPhysicsObject()
 {
 #ifndef SB_NO_ODE_PHYSICS
-	SBPhysicsSim* phyEngine = SBPhysicsSim::getPhysicsEngine();
+	SBPhysicsSim* phyEngine = _scene.getPhysicsManager()->getPhysicsEngine();
 	return phyEngine->getPhysicsPawn(getName());	
 #else
 	return nullptr;

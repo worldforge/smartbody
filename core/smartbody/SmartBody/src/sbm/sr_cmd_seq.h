@@ -25,63 +25,57 @@
 
 
 #include <sb/SBTypes.h>
-#include <stdio.h>
+#include <cstdio>
 #include "sbm_constants.h"
 #include <string>
+#include <list>
 
 //////////////////////////////////////////////////////////////////////////////////
 
 class srCmdSeq	{
 
-	typedef struct sr_command_event_s  {
-		
-		float			time;
-		char			*cmd;
-
-		sr_command_event_s	*next;
-		
-	} sr_command_event_t;
+	struct command_event {
+		float time;
+		std::string cmd;
+	};
 
 	public:
 		SBAPI srCmdSeq();
 		virtual ~srCmdSeq();
 
 		void	print( FILE *fp = stdout );						/* print events */
-		int		get_count()	{ return( event_count ); }
+		int		get_count()	{ return( command_events.size() ); }
 		
 		int		write_file( char *seq_file );
 		int		read_file( FILE *seq_fp );
 		int		read_file( char *seq_file, int report_open_fail = TRUE );
 
-		SBAPI int		insert( float time, const char *cmd_ref );	/* copy (with new[]), sort by time */
-		int		insert_ref( float time, char *cmd_ref );	/* reference, sort by time */
+		SBAPI int		insert( float time, std::string cmd);
 
 		/* HACK: Query duration of seq (i.e., time of last command) */
 		float   duration();
 
 		/** Query sequence offset */
-		float	offset() { return event_offset; }
+		float	offset() const { return event_offset; }
 		/** Set pop by event.time + offset */
 		void	offset( float t ) { event_offset = t; }
 		/** remove first event passed */
 		std::string pop( float time );
 
-		void	reset() { iterator = handle; }
-		char	*next( float *t = nullptr );	// return pointer, time
-		char	*pull( float *t = nullptr );	// return instance, time
+		void	reset() { current = 0; }
+	   // srCmdSeq::command_event	*next();	// return pointer, time
 
-		bool	isValid() { return _valid; }
+		bool	isValid() const { return _valid; }
 		void	setValid(bool val) { _valid = val; }
+		command_event remove();
 
 	protected:
-		int		insert( sr_command_event_t *event );	/* sort by event.time, add after same time */
-		sr_command_event_t *remove();
-		
+		int		insert( command_event event );	/* sort by event.time, add after same time */
+
 	private:
-		int		event_count;
 		float	event_offset;
-		sr_command_event_t *handle;
-		sr_command_event_t *iterator;
+		std::list<command_event> command_events;
+		size_t current;
 		bool	_valid;
 };
 

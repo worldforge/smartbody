@@ -49,12 +49,11 @@ SbmTextureManager::~SbmTextureManager( )
     releaseAllTextures();
 }
 
-void SbmTextureManager::updateEnvMaps()
+void SbmTextureManager::updateEnvMaps(SmartBody::SBScene& scene)
 {
 	std::vector<std::string> hdrTexNames = getTextureNames(SbmTextureManager::TEXTURE_HDR_MAP);
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
-	SmartBody::StringAttribute* envMapAttr = dynamic_cast<SmartBody::StringAttribute*>(scene->getAttribute("Renderer.envMapName"));
-	SmartBody::StringAttribute* envDiffuseMapAttr = dynamic_cast<SmartBody::StringAttribute*>(scene->getAttribute("Renderer.envDiffuseMapName"));
+	SmartBody::StringAttribute* envMapAttr = dynamic_cast<SmartBody::StringAttribute*>(scene.getAttribute("Renderer.envMapName"));
+	SmartBody::StringAttribute* envDiffuseMapAttr = dynamic_cast<SmartBody::StringAttribute*>(scene.getAttribute("Renderer.envDiffuseMapName"));
 
 	if (envMapAttr)
 		envMapAttr->setValidValues(hdrTexNames);

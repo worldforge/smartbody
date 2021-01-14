@@ -27,12 +27,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <sb/SBScene.h>
 #include "SBDebuggerUtility.h"
+#include "sb/SBSceneOwned.h"
 
 #include "sb/NetRequest.h"
 
 namespace SmartBody {
 
-class SBDebuggerClient
+class SBDebuggerClient : public SBSceneOwned
 {
 private:
    //vhmsg::Client m_vhmsg;
@@ -47,7 +48,7 @@ private:
    SBDebuggerUtility m_debuggerUtility;
 
 public:
-   SBAPI SBDebuggerClient();
+   SBAPI SBDebuggerClient(SmartBody::SBScene& scene);
    SBAPI virtual ~SBDebuggerClient();
 
    SBAPI void QuerySbmProcessIds();

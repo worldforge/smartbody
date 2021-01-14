@@ -216,7 +216,7 @@ public:
 
 	SrModel _emptyModel;
 public:
-	SBAPI DeformableMesh();
+	SBAPI explicit DeformableMesh(boost::intrusive_ptr<SkSkeleton> skeleton);
 	SBAPI virtual ~DeformableMesh();	
 	SBAPI void initDeformMesh(std::vector<SrModel*>& meshVec);
 	SBAPI SkinWeight* getSkinWeight(const std::string& skinSourceName);

@@ -35,11 +35,11 @@ class MotionAnalysis;
 
 namespace SmartBody {
 
-class SBAnimationBlend : public PABlend
+class SBAnimationBlend : public PABlend, public SBSceneOwned
 {
 	public:
-		SBAPI SBAnimationBlend();
-		SBAPI SBAnimationBlend(const std::string& name);
+//		SBAPI SBAnimationBlend();
+		SBAPI SBAnimationBlend(SBScene& scene, const std::string& name);
 		SBAPI ~SBAnimationBlend();
 
 		SBAPI int getParameterDimension();
@@ -57,7 +57,7 @@ class SBAnimationBlend : public PABlend
 		SBAPI void buildMotionAnalysis(SmartBody::SBScene& scene, const std::string& skeletonName, const std::string& baseName, const std::vector<std::string>& motions, std::string motionPrefix);
 		SBAPI MotionAnalysis* getMotionAnalysis();
 
-		SBAPI virtual int getNumMotions();
+		SBAPI int getNumMotions() override;
 		SBAPI virtual std::string getMotion(int num);
 		SBAPI virtual SBMotion* getSBMotion(int num);
 		SBAPI SkMotion* getSkMotion(const std::string& motionName);
@@ -163,8 +163,7 @@ class SBAnimationBlend : public PABlend
 class SBAnimationBlend0D : public SBAnimationBlend
 {
 	public:
-		SBAPI SBAnimationBlend0D();
-		SBAPI SBAnimationBlend0D(const std::string& name);
+		SBAPI SBAnimationBlend0D(SBScene& scene, const std::string& name);
 		SBAPI ~SBAnimationBlend0D();		
 		SBAPI virtual void addMotion(const std::string& motion);
 		SBAPI virtual void removeMotion(const std::string& motionName);
@@ -175,8 +174,7 @@ class SBAnimationBlend0D : public SBAnimationBlend
 class SBAnimationBlend1D : public SBAnimationBlend
 {
 	public:
-		SBAPI SBAnimationBlend1D();
-		SBAPI SBAnimationBlend1D(const std::string& name);
+		SBAPI SBAnimationBlend1D(SBScene& scene, const std::string& name);
 		SBAPI ~SBAnimationBlend1D();
 		
 		virtual void addMotionFromRef(SmartBody::SBMotion* motion, float parameter);
@@ -189,8 +187,7 @@ class SBAnimationBlend1D : public SBAnimationBlend
 class SBAnimationBlend2D : public SBAnimationBlend
 {
 	public:
-		SBAPI SBAnimationBlend2D();
-		SBAPI SBAnimationBlend2D(const std::string& name);
+		SBAPI SBAnimationBlend2D(SBScene& scene, const std::string& name);
 		SBAPI ~SBAnimationBlend2D();
 
 		SBAPI virtual void addMotion(const std::string& motion, float parameter1, float paramter2);
@@ -203,8 +200,7 @@ class SBAnimationBlend2D : public SBAnimationBlend
 class SBAnimationBlend3D : public SBAnimationBlend
 {
 	public:
-		SBAPI SBAnimationBlend3D();
-		SBAPI SBAnimationBlend3D(const std::string& name);
+		SBAPI SBAnimationBlend3D(SBScene& scene, const std::string& name);
 		SBAPI ~SBAnimationBlend3D();
 
 		SBAPI virtual void addMotion(const std::string& motion, float parameter1, float paramter2, float paramter3);

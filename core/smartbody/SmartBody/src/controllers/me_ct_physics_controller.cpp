@@ -6,6 +6,7 @@
 #include <sb/SBScene.h>
 #include <sb/SBSceneListener.h>
 #include "SBUtilities.h"
+#include "sb/SBPhysicsManager.h"
 
 std::string MeCtPhysicsController::CONTROLLER_TYPE = "PhysicsController";
 
@@ -37,7 +38,7 @@ bool MeCtPhysicsController::controller_evaluate(double t, MeFrameData& frame)
 #if 1
 	if (_valid && _context )
 	{
-		SmartBody::SBPhysicsSim* phyEngine = SmartBody::SBPhysicsSim::getPhysicsEngine();
+		SmartBody::SBPhysicsSim* phyEngine = _character->_scene.getPhysicsManager()->getPhysicsEngine();
 		std::string charName = _character->getName();
 		SmartBody::SBPhysicsCharacter* phyChar = phyEngine->getPhysicsCharacter(charName);//_character->getPhysicsCharacter();
 		if (!phyChar) return true;
@@ -49,7 +50,7 @@ bool MeCtPhysicsController::controller_evaluate(double t, MeFrameData& frame)
 		static bool hasGaze = false;
 		static bool hasPD = true;
 		static float fadeOutTime = 0.f;
-		if (colRecords.size() > 0 && !hasGaze)
+		if (!colRecords.empty() && !hasGaze)
 		{
 			SmartBody::CollisionRecord& col = colRecords[0];
 			SrVec hitPos = col.collisionPt;

@@ -69,7 +69,7 @@
 
 //=============================== render_model ====================================
 
-void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
+void SrGlRenderFuncs::renderBlendFace(SmartBody::SBScene& scene, DeformableMeshInstance* shape)
 {
 	bool USE_SHADER_MANAGER = true;
 
@@ -87,7 +87,7 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 		return;
 	}
 	
-	auto* mesh	= new SbmDeformableMeshGPU();
+	auto* mesh	= new SbmDeformableMeshGPU(new SmartBody::SBSkeleton(scene));
 
 	boost::filesystem::path p(model_path);
 	std::string fileName		= boost::filesystem::basename(p);
@@ -115,7 +115,7 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 
 	SbmShaderProgram::printOglError("SrGlRenderFuncs::renderDeformableMesh #1");
 
-	SbmBlendFace * blendFace = new SbmBlendFace();
+	SbmBlendFace * blendFace = new SbmBlendFace(new SmartBody::SBSkeleton(scene));
 		//	Gets DeformableMesh
 		blendFace->setDeformableMesh(shape->getDeformableMesh());
 	
@@ -131,9 +131,9 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 		SbmShaderProgram::printOglError("HOLA 1");
 
 		if(USE_SHADER_MANAGER)
-			blendFace->initShader();
+			blendFace->initShader(scene.getMediaPath());
 		else
-			blendFace->initShaderProgram_Dan();
+			blendFace->initShaderProgram_Dan(scene.getMediaPath());
 
 		glBindFragDataLocation(blendFace->_programID, 0, "final_color");
 
@@ -206,7 +206,7 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 			auto tex0	= SbmTextureManager::singleton().findTexture(testMesh->subMeshList[i]->texName.c_str());
 			auto tex1	= SbmTextureManager::singleton().findTexture("Gale_Neutral_clean2_UV_diffuse.ARTUVwarped.png");
 
-			float weight = SmartBody::SBScene::getScene()->getPawn("defaultPawn0")->getBoundingBox().getCenter().x;
+			float weight = scene.getPawn("defaultPawn0")->getBoundingBox().getCenter().x;
 			glUniform1f(weightLocation, weight);
 
 			glActiveTexture(GL_TEXTURE0 + 0);
@@ -250,7 +250,7 @@ void SrGlRenderFuncs::renderBlendFace(DeformableMeshInstance* shape)
 }
 
 // Renders static mesh WITHOUT Ogre3D
-void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool showSkinWeight  )
+void SrGlRenderFuncs::renderDeformableMesh(bool useGPUBlendShapes, DeformableMeshInstance* shape, bool showSkinWeight  )
 {
 	bool USE_GPU_BLENDSHAPES = false; // set to false for no masks, true for masks
 #if USE_GL_FIXED_PIPELINE
@@ -272,7 +272,6 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 // 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 // 	}
 
-	bool useGPUBlendShapes = SmartBody::SBScene::getScene()->getBoolAttribute("useGPUBlendshapes");
 	if(useGPUBlendShapes)
 	{
 			SrVec offsetTrans_;
@@ -546,7 +545,7 @@ void SrGlRenderFuncs::renderDeformableMesh( DeformableMeshInstance* shape, bool 
 				// overlay wireframe on top of the original mesh
 				
 			}	
-			if (SmartBody::SBScene::getScene()->getBoolAttribute("drawMeshWireframe"))
+			if (shape->getCharacter()->_scene.getBoolAttribute("drawMeshWireframe"))
 			{
 				glDisableClientState(GL_COLOR_ARRAY);
 				glDisable(GL_LIGHTING);

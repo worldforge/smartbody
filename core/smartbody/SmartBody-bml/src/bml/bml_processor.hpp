@@ -129,11 +129,11 @@ namespace BML {
 		void set_bml_feedback( bool value ) {
 			bml_feedback = value;
 		}
-		bool get_bml_feedback( ) {
+		bool get_bml_feedback( ) const {
 			return bml_feedback;
 		}
 
-		bool get_auto_print_controllers() {
+		bool get_auto_print_controllers() const {
 			return auto_print_controllers;
 		}
 
@@ -141,7 +141,7 @@ namespace BML {
 			auto_print_controllers = value;
 		}
 
-		bool get_auto_print_sequence() {
+		bool get_auto_print_sequence() const {
 			return auto_print_sequence;
 		}
 
@@ -160,28 +160,28 @@ namespace BML {
 		/**
 		 *  Handles "vrAgentBML .. request .." and "vrSpeak .." messages
 		 */
-		void bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene* scene );
+		void bml_request( BMLProcessorMsg& bpMsg, SmartBody::SBScene& scene );
 
 		/**
 		 *  Parses <BML> elements
 		 */
-		void parseBML( DOMElement *el, const BML::BmlRequestPtr& request, SmartBody::SBScene* scene );
+		void parseBML( DOMElement *el, const BML::BmlRequestPtr& request, SmartBody::SBScene& scene );
 
 		/**
 		 */
-		void speechReply( SbmCharacter* character, SmartBody::RequestId requestId, srArgBuffer& response_args, SmartBody::SBScene* scene );
+		void speechReply( SbmCharacter* character, SmartBody::RequestId requestId, srArgBuffer& response_args, SmartBody::SBScene& scene );
 
 		/**
 		 *  Begins interrupting a BML performance.
 		 */
-		int interrupt( SbmCharacter* actor, const std::string& performance_id, time_sec duration, SmartBody::SBScene* scene );
+		int interrupt( SbmCharacter* actor, const std::string& performance_id, time_sec duration, SmartBody::SBScene& scene );
 
-		void interrupt( SbmCharacter* actor, time_sec duration, SmartBody::SBScene* scene );
+		void interrupt( SbmCharacter* actor, time_sec duration, SmartBody::SBScene& scene );
 
 		/**
 		 *  Handles "vrAgentBML .. end .." messages
 		 */
-		int bml_end( BMLProcessorMsg& bpMsg, SmartBody::SBScene* scene );
+		int bml_end( BMLProcessorMsg& bpMsg, SmartBody::SBScene& scene );
 
 		/**
 		* Returns a map of all BML requests to the BML request objects.
@@ -194,27 +194,27 @@ namespace BML {
 		/**
 		 *  Notify BodyPlanner of vrAgentBML commands/messages.
 		 */
-		int vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int vrAgentBML_cmd_func( srArgBuffer& args, SmartBody::SBScene& scene );
 
 		/**
 		 *  Notify BodyPlanner of vrSpeak command/message.
 		 */
-		int vrSpeak_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int vrSpeak_func( srArgBuffer& args, SmartBody::SBScene& scene );
 
 		/**
 		 *  Notify BodyPlanner of vrSpoke messages.
 		 */
-		int vrSpoke_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int vrSpoke_func( srArgBuffer& args, SmartBody::SBScene& scene );
 
 		/**
 		 *  Notify BodyPlanner of completed speech request.
 		 */
-		int bpSpeechReady_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int bpSpeechReady_func( srArgBuffer& args, SmartBody::SBScene& scene );
 
 		/**
 		 *  Notify BodyPlanner of request timings.
 		 */
-		int bp_cmd_func( srArgBuffer& args, SmartBody::SBCommandManager* cmdMgr );
+		int bp_cmd_func( srArgBuffer& args, SmartBody::SBScene& scene );
 
 		/**
 		 *  Handles the command "set bodyplanner" or "set bp"
@@ -232,7 +232,7 @@ namespace BML {
 		XercesDOMParser& getXMLParser();
 
 		void setExportXMLCounter(int i)	{ exportXMLCounter = i; }
-		int getExportXMLCounter()	{ return exportXMLCounter; }
+		int getExportXMLCounter() const	{ return exportXMLCounter; }
 
 		std::string hasSpeechBehavior(SbmCharacter& character);
 
@@ -255,10 +255,10 @@ namespace BML {
 		 *  Parses a group of behavior tags, such as <bml> or <required>.
 		 *  The workhorse function of parseBML(..)
 		 */
-		void parseBehaviorGroup( DOMElement *el, const BML::BmlRequestPtr& request, SmartBody::SBScene* scene, size_t& behavior_ordinal, bool required );
+		void parseBehaviorGroup( DOMElement *el, const BML::BmlRequestPtr& request, SmartBody::SBScene& scene, size_t& behavior_ordinal, bool required );
 
-		BehaviorRequestPtr parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, const BmlRequestPtr& request, SmartBody::SBScene* scene );
-		BehaviorRequestPtr parse_bml_head( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene );
+		BehaviorRequestPtr parse_bml_body( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, const BmlRequestPtr& request, SmartBody::SBScene& scene );
+		BehaviorRequestPtr parse_bml_head( DOMElement* elem, std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene& scene );
 
 		std::map<std::string, BMLHandler*> _bmlHandlers;
 ///  Is the following necessary anymore?

@@ -40,7 +40,7 @@ SBAssetHandlerObj::SBAssetHandlerObj()
 SBAssetHandlerObj::~SBAssetHandlerObj()
 = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerObj::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerObj::getAssets(SBScene& scene, const std::string& path)
 {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -57,7 +57,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerObj::getAssets(const std::st
 	if (loadSuccess)
 	{
 #if !defined(__native_client__) && !defined(EMSCRIPTEN)
-		auto mesh = std::make_unique<SbmDeformableMeshGPU>();
+		auto mesh = std::make_unique<SbmDeformableMeshGPU>(new SmartBody::SBSkeleton(scene));
 #else
 		DeformableMesh* mesh = new DeformableMesh();
 #endif

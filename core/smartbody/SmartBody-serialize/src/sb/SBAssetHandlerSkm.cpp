@@ -38,7 +38,7 @@ SBAssetHandlerSkm::SBAssetHandlerSkm()
 
 SBAssetHandlerSkm::~SBAssetHandlerSkm() = default;
 
-std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkm::getAssets(const std::string& path)
+std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkm::getAssets(SBScene& scene, const std::string& path)
 {
 	std::vector<std::unique_ptr<SBAsset>> assets;
 
@@ -46,7 +46,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkm::getAssets(const std::st
 	if (convertedPath.empty())
 		return assets;
 
-	auto motion = std::make_unique<SmartBody::SBMotion>();
+	auto motion = std::make_unique<SmartBody::SBMotion>(scene);
 	bool parseSuccessful = false;
 
 	SrInput in( convertedPath.c_str(), "rt" );
@@ -55,8 +55,8 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetHandlerSkm::getAssets(const std::st
 	SrInput fullin( (const char *)fullin_string );
 	fullin.filename( convertedPath.c_str() ); // copy filename for error message
 	double scale = 1.0;
-	if (SmartBody::SBScene::getScene()->getAttribute("globalMotionScale"))
-		scale = SmartBody::SBScene::getScene()->getDoubleAttribute("globalMotionScale");
+	if (scene.getAttribute("globalMotionScale"))
+		scale = scene.getDoubleAttribute("globalMotionScale");
 	parseSuccessful = motion->load( fullin, scale );
 	if (parseSuccessful)
 	{

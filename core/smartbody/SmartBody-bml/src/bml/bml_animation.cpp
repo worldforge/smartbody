@@ -38,7 +38,7 @@ using namespace std;
 using namespace BML;
 using namespace xml_utils;
 
-BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene* scene ) 
+BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::string& unique_id, BehaviorSyncPoints& behav_syncs, bool required, BmlRequestPtr request, SmartBody::SBScene& scene ) 
 {
 	if (!request->actor->motion_sched_p)
 	{
@@ -70,7 +70,7 @@ BML::BehaviorRequestPtr BML::parse_bml_animation( DOMElement* elem, const std::s
 		// Look up motion
 		string asciiName( xml_utils::asciiString( animName ) );
 
-		SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(asciiName);
+		SmartBody::SBMotion* motion = scene.getAssetManager()->getMotion(asciiName);
 		if (motion)
 		{
 /*

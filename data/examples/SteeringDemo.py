@@ -38,11 +38,11 @@ zebra2Map = scene.getJointMapManager().getJointMap('zebra2')
 bradSkeleton = scene.getSkeleton('ChrBrad.dae')
 bradSkeleton.rescale(.01)
 zebra2Map.applySkeleton(bradSkeleton)
-zebra2Map.applyMotionRecurse('ChrBrad')
+zebra2Map.applyMotionRecurse(scene, 'ChrBrad')
 rachelSkeleton = scene.getSkeleton('ChrRachel.dae')
 rachelSkeleton.rescale(.01)
 zebra2Map.applySkeleton(rachelSkeleton)
-zebra2Map.applyMotionRecurse('ChrRachel')
+zebra2Map.applyMotionRecurse(scene, 'ChrRachel')
 
 # Retarget setup
 # Setting up group of Brads

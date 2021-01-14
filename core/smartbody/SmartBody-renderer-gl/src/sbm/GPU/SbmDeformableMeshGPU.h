@@ -64,12 +64,12 @@ protected:
 	std::vector<SrMat>  transformBuffer;	
 	bool initGPUVertexBuffer;
 public:
-	SBAPI SbmDeformableMeshGPU();
-	~SbmDeformableMeshGPU();
+	SBAPI SbmDeformableMeshGPU(boost::intrusive_ptr<SkSkeleton> skeleton);
+	~SbmDeformableMeshGPU() override;
 public:
 	virtual void update();
 	virtual bool buildVertexBufferGPU();	
-	virtual void rebuildVertexBuffer(bool rebuild);
+	void rebuildVertexBuffer(bool rebuild) override;
 	SBAPI bool rebuildVertexBufferGPU(bool rebuild);
 	void skinTransformGPU(DeformableMeshInstance* meshInstance);
 	static void initShaderProgram();	

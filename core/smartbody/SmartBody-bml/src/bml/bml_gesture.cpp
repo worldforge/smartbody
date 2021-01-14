@@ -111,14 +111,14 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 	std::vector<std::string> animationList;
 	if (animationName.empty())	// If you have assigned the animation name, do not look for the map
 	{
-		SmartBody::SBGestureMap* gestureMap = SmartBody::SBScene::getScene()->getGestureMapManager()->getGestureMap(gestureMapName);
+		SmartBody::SBGestureMap* gestureMap = scene->getGestureMapManager()->getGestureMap(gestureMapName);
 		if (!gestureMap)
 		{
 			//SmartBody::util::log("WARNING: BML::parse_bml_gesture(): gesture map '%s' for emotion '%s' on character %s doesn't exist.", gestureMapName.c_str(), finalGestureMapName.c_str(), request->actor->getName().c_str());
 			// get the default gesture map if the emotional one isn't available
 			if (gestureMapName != "gestureMap")
 			{
-				gestureMap = SmartBody::SBScene::getScene()->getGestureMapManager()->getGestureMap(character->getStringAttribute("gestureMap"));
+				gestureMap = scene->getGestureMapManager()->getGestureMap(character->getStringAttribute("gestureMap"));
 			}
 			if (!gestureMap)
 			{
@@ -189,11 +189,11 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		SmartBody::util::log("Character %s does not have a motion scheduler, so cannot schedule motion.", request->actor->getName().c_str());
 		return BehaviorRequestPtr();
 	}
-	SmartBody::SBMotion* motion = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(animationName);
+	SmartBody::SBMotion* motion = scene->getAssetManager()->getMotion(animationName);
 
 	if (!motion) // gesture might be a blend, and not a simple motion
 	{
-		SmartBody::SBAnimationBlend* blend = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(animationName);
+		SmartBody::SBAnimationBlend* blend = scene->getBlendManager()->getBlend(animationName);
 		if (!blend)
 		{
 			SmartBody::util::log("Could not find blend named '%s' for gestures. Gesture will not be played.", animationName.c_str());
@@ -244,7 +244,7 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 			strstr2 << blend->getName() << "_" << nameStr;
 			std::string blendedMotionName = strstr2.str();
 
-			motion = SmartBody::SBScene::getScene()->getMotion(blendedMotionName);
+			motion = scene->getMotion(blendedMotionName);
 			if (!motion)
 			{
 				motion = blend->createMotionFromBlend(params, character, blendedMotionName, 30.0f);
@@ -396,12 +396,12 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 		// pre stroke hold
 		float prestrokehold = (float)xml_utils::xml_parse_double(BMLDefs::ATTR_PRESTROKE_HOLD, elem, -1.0);
 		std::string prestrokehold_idlemotion = xml_utils::xml_parse_string(BMLDefs::ATTR_PRESTROKE_HOLD_IDLEMOTION, elem);
-		SmartBody::SBMotion* preIdleMotion = SmartBody::SBScene::getScene()->getMotion(prestrokehold_idlemotion);
+		SmartBody::SBMotion* preIdleMotion = scene->getMotion(prestrokehold_idlemotion);
 		if (prestrokehold > 0)
 			mForCt = dynamic_cast<SmartBody::SBMotion*>(motion->buildPrestrokeHoldMotion(prestrokehold, preIdleMotion));
 		float poststrokehold = (float)xml_utils::xml_parse_double(BMLDefs::ATTR_POSTSTROKE_HOLD, elem, -1.0);
 		std::string poststrokehold_idlemotion = xml_utils::xml_parse_string(BMLDefs::ATTR_POSTSTROKE_HOLD_IDLEMOTION, elem);
-		SmartBody::SBMotion* postIdleMotion = SmartBody::SBScene::getScene()->getMotion(poststrokehold_idlemotion);
+		SmartBody::SBMotion* postIdleMotion = scene->getMotion(poststrokehold_idlemotion);
 		
 		// post stroke hold (it's alternative to setting stroke and relax time)
 		std::string joints = xml_utils::xml_parse_string(BMLDefs::ATTR_JOINT_RANGE, elem);
@@ -433,7 +433,7 @@ BML::BehaviorRequestPtr BML::parse_bml_gesture( DOMElement* elem, const std::str
 			}
 		}
 
-//		SmartBody::SBSteerManager* steerManager = SmartBody::SBScene::getScene()->getSteerManager();
+//		SmartBody::SBSteerManager* steerManager = scene->getSteerManager();
 //		SmartBody::SBSteerAgent* steerAgent = steerManager->getSteerAgent(request->actor->getName());
 //		if (steerAgent)
 //		{

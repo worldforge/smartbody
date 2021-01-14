@@ -63,7 +63,7 @@ BehaviorRequestPtr BML::parse_bml_quickdraw(
 	}
 
 	string anim_name = xml_parse_string( BMLDefs::ATTR_ANIM, elem, DEFAULT_QUICKDRAW_ANIM );
-	SmartBody::SBMotion* anim = SmartBody::SBScene::getScene()->getAssetManager()->getMotion(anim_name);
+	SmartBody::SBMotion* anim = scene->getAssetManager()->getMotion(anim_name);
 	if (!anim){
 		SmartBody::util::log( "BML::parse_bml_quickdraw ERR: unknown motion: \"%s\"", anim_name.c_str() );
 		return BehaviorRequestPtr();  // nullptr

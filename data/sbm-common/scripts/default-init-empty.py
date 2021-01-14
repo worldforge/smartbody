@@ -5,7 +5,6 @@ print("|--------------------------------------------|")
 import SmartBody
 from SmartBody import *
 
-scene = SmartBody.getScene()
 sim = scene.getSimulationManager()
 #bml = scene.getBmlProcessor()
 scene.setScale(.01)

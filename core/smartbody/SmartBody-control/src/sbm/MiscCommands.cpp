@@ -311,7 +311,7 @@ int pawn_cmd_func(srArgBuffer& args, SmartBody::SBScene& scene) {
 
 		pawn_p = scene.createPawn(pawn_name);
 		pawn_p->setClassType("pawn");
-		boost::intrusive_ptr<SkSkeleton> skeleton = new SmartBody::SBSkeleton();
+		boost::intrusive_ptr<SkSkeleton> skeleton = new SmartBody::SBSkeleton(scene);
 		std::string skel_name = pawn_name + "-skel";
 		skeleton->setName(skel_name);
 		// Init channels
@@ -540,7 +540,7 @@ int create_remote_pawn_func(srArgBuffer& args, SmartBody::SBScene& scene) {
 
 	pawn_p = scene.createPawn(pawn_and_attribute.c_str());
 
-	boost::intrusive_ptr<SkSkeleton> skeleton = new SmartBody::SBSkeleton();
+	boost::intrusive_ptr<SkSkeleton> skeleton = new SmartBody::SBSkeleton(scene);
 	std::string skel_name = pawn_and_attribute + "-skel";
 	skeleton->setName(skel_name.c_str());
 	// Init channels

@@ -166,7 +166,7 @@ namespace BML {
 		void faceRequestProcess();
 
 		// this function handles all the gesture process in between behaviors' schedule and realize
-		void gestureRequestProcess();
+		void gestureRequestProcess(SmartBody::SBScene& scene);
 
 		// this function takes scheduled speech request behaviors and hand the information over to Cerebella
 		void speechRequestProcess(float curTime);

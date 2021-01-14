@@ -55,7 +55,7 @@ public:
 	{
 		if (autoRigCallBack)
 		{
-			auto* autoRigSk = new SmartBody::SBSkeleton();
+			auto* autoRigSk = new SmartBody::SBSkeleton(Session::current->scene);
 			PinocchioOutput out;
 			out.embedding = embedding;
 			AutoRigToSBSk(out, *autoRigSk);
@@ -430,13 +430,13 @@ bool SBAutoRigManager::buildAutoRiggingVoxelsWithVoxelSkinWeights( SrModel& inMo
 
 	for(auto & i : out.embedding)
 		i = (i - m.toAdd) / m.scale;
-	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton());
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton(Session::current->scene));
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
 	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
 
 	// build deformable model using voxel skinning weights
-	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>();
+	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>(new SmartBody::SBSkeleton(Session::current->scene));
 	deformMesh->setName(outDeformableMeshName);
 
 	std::string meshName = (const char*) inModel.name;
@@ -581,11 +581,11 @@ bool SBAutoRigManager::buildAutoRiggingVoxels( SrModel& inModel, std::string out
 
 	for(auto & i : out.embedding)
 		i = (i - m.toAdd) / m.scale;
-	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton());
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton(Session::current->scene));
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
 	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
-	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>();
+	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>(new SmartBody::SBSkeleton(Session::current->scene));
 	deformMesh->setName(outDeformableMeshName);
 	bool isValidDeformableMesh = AutoRigToDeformableMesh(out, inModel, *sbSk, *deformMesh);
 
@@ -629,13 +629,13 @@ bool SBAutoRigManager::buildAutoRigging( SrModel& inModel, std::string outSkName
 
 	for(auto & i : out.embedding)
 		i = (i - m.toAdd) / m.scale;
-	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton());
+	boost::intrusive_ptr<SmartBody::SBSkeleton> sbSk(new SmartBody::SBSkeleton(Session::current->scene));
 	//sbSk->setName("testAutoRig.sk");
 	//sbSk->setFileName()
 	bool isValidSkeleton = AutoRigToSBSk(out, *sbSk);
 	//SmartBody::util::log("autoRig result, num joints = %d",out.embedding.size());
 	//SmartBody::util::log("AutoRig Skeleton = %s", sbSk->saveToString().c_str());
-	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>();
+	auto deformMesh = std::make_unique<SbmDeformableMeshGPU>(new SmartBody::SBSkeleton(Session::current->scene));
 	deformMesh->setName(outDeformableMeshName);
 	bool isValidDeformableMesh = AutoRigToDeformableMesh(out, inModel, *sbSk, *deformMesh);
 

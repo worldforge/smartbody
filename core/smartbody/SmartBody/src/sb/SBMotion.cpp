@@ -83,7 +83,7 @@ void FootStepRecord::updateJointAveragePosition( SBSkeleton* skel, SBMotion* mot
 	motion->disconnect();			
 }
 
-SBMotion::SBMotion() : SkMotion()
+SBMotion::SBMotion(SBScene& scene) : SkMotion(), SBSceneOwned(scene)
 {
 	_motionFile = "";
 	alignIndex = 0; 
@@ -95,7 +95,7 @@ SBMotion::SBMotion() : SkMotion()
 	_maxFrameValue = 0.0;
 }
 
-SBMotion::SBMotion(const SBMotion& motion)
+SBMotion::SBMotion(const SBMotion& motion): SBSceneOwned(motion)
 {
 	//...
 	alignIndex = 0;
@@ -133,7 +133,7 @@ void SBMotion::setMotion(const SBMotion& motion)
 	_motionType = motion.getMotionType();
 }
 
-SBMotion::SBMotion(std::string file) : SkMotion()
+SBMotion::SBMotion(SBScene& scene, std::string file) : SkMotion(), SBSceneOwned(scene)
 {
 	_motionFile = std::move(file);
 	alignIndex = 0;
@@ -455,15 +455,15 @@ void SBMotion::checkSkeleton(std::string skel)
 	int chanSize;
 	SkChannel chan;
 
-	SBMotion* motion = SmartBody::SBScene::getScene()->getMotion(getName());
+	SBMotion* motion = _scene.getMotion(getName());
 	if (!motion)
 	{
 		SmartBody::util::log("checkSkeleton ERR: Motion %s NOT EXIST!", getName().c_str());
 		return;
 	}
 
-	auto skSkel =  SmartBody::SBScene::getScene()->createSkeleton(skel);
-	//load_skeleton(skel.c_str(), mcu.me_paths, SmartBody::SBScene::getScene()->getAssetManager()->getGlobalSkeletonScale());
+	auto skSkel =  _scene.createSkeleton(skel);
+	//load_skeleton(skel.c_str(), mcu.me_paths, _scene.getAssetManager()->getGlobalSkeletonScale());
 	if (skSkel)
 	{
 		motion->connect(skSkel.get());	// connect and check for the joints
@@ -669,7 +669,7 @@ void SBMotion::alignToSide(int numFrames, int direction)
 
 	// create a new motion
 	SkChannelArray& mchan_arr = this->channels();
-	SkMotion* copyMotion = new SmartBody::SBMotion();
+	SkMotion* copyMotion = new SmartBody::SBMotion(_scene);
 	srSynchPoints sp(synch_points);
 	copyMotion->synch_points = sp;
 	copyMotion->init(mchan_arr);
@@ -779,7 +779,7 @@ SBMotion* SBMotion::duplicateCycle(int num, std::string newName)
 
 	// create a new motion
 	SkChannelArray& mchan_arr = this->channels();
-	auto copyMotion = std::make_unique<SmartBody::SBMotion>();
+	auto copyMotion = std::make_unique<SmartBody::SBMotion>(_scene);
 	std::string copyMotionName = newName;
 	if (newName.empty())
 	{
@@ -865,7 +865,7 @@ SBMotion* SBMotion::duplicateCycle(int num, std::string newName)
 	copyMotion->setTransformDepth(getTransformDepth()+1);
 	auto motionPtr = copyMotion.get();
 
-	if (SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::move(copyMotion))) {
+	if (_scene.getAssetManager()->addMotion(std::move(copyMotion))) {
 		return motionPtr;
 	} else {
 		return nullptr;
@@ -887,7 +887,7 @@ void SBMotion::removeMotionChannels(std::vector<std::string> channelNames)
 
 SBMotion* SBMotion::removeChannels(std::string motionName, bool isTranslation, std::vector<std::string> jointNames)
 {
-	SBMotion* newMotion = new SBMotion();
+	SBMotion* newMotion = new SBMotion(_scene);
 	newMotion->setName(motionName);
 
 	SkChannelArray& ch = channels();
@@ -993,7 +993,7 @@ SBMotion* SBMotion::removeChannels(std::string motionName, bool isTranslation, s
 
 void SBMotion::pertainMotionChannelsByEndJoints( std::string skelName, std::vector<std::string>& endJoints )
 {
-	auto srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
+	auto srcSkeleton = _scene.getSkeleton(skelName);
 	if (!srcSkeleton)
 	{
 		SmartBody::util::log("No skeleton named %s found. Can not match joint names and descendents", skelName.c_str());
@@ -1035,7 +1035,7 @@ void SBMotion::pertainMotionChannelsByEndJoints( std::string skelName, std::vect
 
 void SBMotion::removeMotionChannelsByEndJoints(std::string skelName, std::vector<std::string>& endJoints)
 {
-	auto srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(skelName);
+	auto srcSkeleton = _scene.getSkeleton(skelName);
 	if (!srcSkeleton)
 	{
 		SmartBody::util::log("No skeleton named %s found. Can not match joint names and descendents", skelName.c_str());
@@ -1061,13 +1061,13 @@ void SBMotion::removeMotionChannelsByEndJoints(std::string skelName, std::vector
 SBMotion* SBMotion::retarget( const std::string& name, std::string srcSkeletonName, std::string dstSkeletonName, std::vector<std::string>& endJoints, std::vector<std::string>& relativeJoints, std::map<std::string, SrVec>& offsetJointMap)
 {
 	 
-	auto srcSkeleton = SmartBody::SBScene::getScene()->getSkeleton(srcSkeletonName);
+	auto srcSkeleton = _scene.getSkeleton(srcSkeletonName);
 	if (!srcSkeleton)
 	{
 		SmartBody::util::log("No retarget source skeleton named %s found.", srcSkeletonName.c_str());
 		return nullptr;
 	}
-	auto dstSkeleton = SmartBody::SBScene::getScene()->getSkeleton(dstSkeletonName);
+	auto dstSkeleton = _scene.getSkeleton(dstSkeletonName);
 	if (!dstSkeleton)
 	{
 		SmartBody::util::log("No retarget destination skeleton named %s found.", dstSkeletonName.c_str());
@@ -1099,7 +1099,7 @@ SBMotion* SBMotion::retarget( const std::string& name, std::string srcSkeletonNa
 			motionName = name;
 		sbmotion->setName(motionName);
 		//mcu.motion_map.insert(std::pair<std::string, SkMotion*>(motionName, motion));
-		if (SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
+		if (_scene.getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
 			return sbmotion;
 		} else {
 			return nullptr;
@@ -1127,7 +1127,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 	std::vector<std::string> stopJoints;
 	ikScenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);	
 	MeCtJacobianIK ikJacobian;
-	float sceneScale = (float)1.f/SBScene::getScene()->getScale();	
+	float sceneScale = (float)1.f/_scene.getScale();	
 	float heightRatio = (interSk.getBaseHeight("base")/tempSrcSk.getBaseHeight("base"));//*0.99f;
 
 	ikJacobian.maxOffset = 0.05f*sceneScale;
@@ -1301,7 +1301,7 @@ SBMotion* SBMotion::buildConstraintMotion( SBSkeleton* sourceSk, SBSkeleton* tar
 
 SBMotion* SBMotion::autoFootSkateCleanUp( const std::string& name, const std::string& srcSkeletonName, const std::string& rootName, std::vector<FootStepRecord>& footStepRecords )
 {
-	auto origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
+	auto origSkel = _scene.getSkeleton(srcSkeletonName);
 	if (!origSkel) return nullptr;
 	boost::intrusive_ptr<SBSkeleton> skel(new SBSkeleton(*origSkel));
 	if (!skel) return nullptr;
@@ -1314,7 +1314,7 @@ SBMotion* SBMotion::autoFootSkateCleanUp( const std::string& name, const std::st
 	ikScenario.buildIKTreeFromJointRoot(rootJoint,stopJoints);
 	MeCtCCDIK ikCCD;
 	MeCtJacobianIK ikJacobian;
-	float sceneScale = (float)1.f/SBScene::getScene()->getScale();
+	float sceneScale = (float)1.f/_scene.getScale();
 	ikJacobian.maxOffset = 0.1f*sceneScale;
 	ikJacobian.dampJ = 1.5f*sceneScale;
 	std::map<int, std::vector<int> > frameConstraintMap;
@@ -1455,7 +1455,7 @@ SBMotion* SBMotion::autoFootSkateCleanUp( const std::string& name, const std::st
 SBMotion* SBMotion::mirror2(const std::string& name, std::string skeletonName, std::vector<std::string> from, std::vector<std::string> to)
 {
 
-	auto skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+	auto skeleton = _scene.getSkeleton(skeletonName);
 	if (!skeleton)
 	{
 		SmartBody::util::log("Skeleton %s not found. Mirror motion %s not built.", skeletonName.c_str(), name.c_str());
@@ -1476,7 +1476,7 @@ SBMotion* SBMotion::mirror2(const std::string& name, std::string skeletonName, s
 			motionName = name;
 		sbmotion->setName(motionName);
 
-		bool success = SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion));
+		bool success = _scene.getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion));
 		if (!success)
 		{
 			return nullptr;
@@ -1496,7 +1496,7 @@ SBMotion* SBMotion::mirror2(const std::string& name, std::string skeletonName, s
 SBMotion* SBMotion::mirror(std::string name, std::string skeletonName)
 {
 	 
-	auto skeleton = SmartBody::SBScene::getScene()->getSkeleton(skeletonName);
+	auto skeleton = _scene.getSkeleton(skeletonName);
 	if (!skeleton)
 	{
 		SmartBody::util::log("Skeleton %s not found. Mirror motion %s not built.",skeletonName.c_str(),name.c_str());
@@ -1521,7 +1521,7 @@ SBMotion* SBMotion::mirror(std::string name, std::string skeletonName)
 			motionName = name;
 		sbmotion->setName(motionName.c_str());
 
-		if (!SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
+		if (!_scene.getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
 			return nullptr;
 		}
 
@@ -1538,7 +1538,7 @@ SBMotion* SBMotion::mirror(std::string name, std::string skeletonName)
 SBMotion* SBMotion::mirrorChildren( std::string name, std::string skeletonName, std::string parentJointName )
 {
 	 
-	auto skeleton = SmartBody ::SBScene::getScene()->getSkeleton(skeletonName);
+	auto skeleton = _scene.getSkeleton(skeletonName);
 	if (!skeleton)
 	{
 		SmartBody::util::log("Skeleton %s not found. Mirror motion %s not built.",skeletonName.c_str(),name.c_str());
@@ -1574,7 +1574,7 @@ SBMotion* SBMotion::mirrorChildren( std::string name, std::string skeletonName, 
 			motionName = name;
 		sbmotion->setName(motionName.c_str());
 
-		if (!SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
+		if (!_scene.getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
 			return nullptr;
 		}
 		sbmotion->setTransformDepth(getTransformDepth()+1); // increment the depth counter
@@ -1611,7 +1611,7 @@ SBAPI SBMotion* SBMotion::motionSmoothCycle(float timeInterval, bool smoothBase,
 		else
 			motionName = name;
 		sbmotion->setName(motionName.c_str());
-		if (!SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
+		if (!_scene.getAssetManager()->addMotion(std::unique_ptr<SBMotion>(sbmotion))) {
 			return nullptr;
 		}
 		sbmotion->setTransformDepth(getTransformDepth() + 1); // increment the depth counter 
@@ -1981,7 +1981,7 @@ SrQuat SBMotion::getJointRotation(SBJoint* joint, float time)
 //SBJointMap* SBMotion::getJointMap()
 //{
 //	//FIXME: implement
-////	SBJointMapManager* jointMapManager = SBScene::getScene()->getJointMapManager();
+////	SBJointMapManager* jointMapManager = _scene.getJointMapManager();
 ////	const std::vector<std::string>& jointMapNames = jointMapManager->getJointMapNames();
 ////	for (const auto & jointMapName : jointMapNames)
 ////	{
@@ -2054,7 +2054,7 @@ SBAPI SBMotion* SBMotion::getOffset(SBMotion* baseMotion, std::string motionName
 	}
 	if (offsetMotion != nullptr)
 	{
-		SmartBody::SBScene::getScene()->getAssetManager()->addMotion(offsetMotion);
+		_scene.getAssetManager()->addMotion(offsetMotion);
 		SmartBody::util::log("Add motion %s to scene", offsetMotion->getName().c_str());
 	}
 
@@ -2078,7 +2078,7 @@ SBMotion* SBMotion::getOffset(std::string motionName, int index)
 	SkChannelArray& ch = channels();
 	int numFrames = frames();
 	SmartBody::SBMotion* originalMotion = dynamic_cast<SmartBody::SBMotion*>(this);
-	SmartBody::SBMotion* offsetMotion = new SmartBody::SBMotion();
+	SmartBody::SBMotion* offsetMotion = new SmartBody::SBMotion(_scene);
 	offsetMotion->setMotionSkeletonName(originalMotion->getMotionSkeletonName());
 	std::stringstream ss;
 	if (motionName == "")
@@ -2121,7 +2121,7 @@ SBMotion* SBMotion::getOffset(std::string motionName, int index)
 
 	if (offsetMotion )
 	{
-		if (!SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(offsetMotion))) {
+		if (!_scene.getAssetManager()->addMotion(std::unique_ptr<SBMotion>(offsetMotion))) {
 			return nullptr;
 		}
 		SmartBody::util::log("Add motion %s to scene", offsetMotion->getName().c_str());
@@ -2508,11 +2508,11 @@ void SBMotion::calculateMeans(std::vector<double>&inputPoints, std::vector<doubl
 
 SBMotion* SBMotion::constrain( std::string name, std::string srcSkeletonName, std::string tgtSkeletonName, std::string tgtMotionName, std::vector<std::string>& endJoints, std::vector<std::string>& endJointRoots )
 {
-	auto origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
+	auto origSkel = _scene.getSkeleton(srcSkeletonName);
 	if (!origSkel) return nullptr;
-	SBMotion* tgtMotion = SBScene::getScene()->getMotion(tgtMotionName);
+	SBMotion* tgtMotion = _scene.getMotion(tgtMotionName);
 	if (!tgtMotion) return nullptr;
-	auto tgtSkel  = SBScene::getScene()->getSkeleton(tgtSkeletonName);
+	auto tgtSkel  = _scene.getSkeleton(tgtSkeletonName);
 	if (!tgtSkel) return nullptr;
 
 	SBMotion* constraintMotion = buildConstraintMotion(origSkel.get(), tgtSkel.get(), tgtMotion, endJoints, endJointRoots);
@@ -2531,7 +2531,7 @@ SBMotion* SBMotion::constrain( std::string name, std::string srcSkeletonName, st
 		constraintMotion->setName(motionName.c_str());
 		
 		//mcu.motion_map.insert(std::pair<std::string, SkMotion*>(motionName, cleanUpMotion));
-		if (!SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(constraintMotion))) {
+		if (!_scene.getAssetManager()->addMotion(std::unique_ptr<SBMotion>(constraintMotion))) {
 			return nullptr;
 		}
 	}
@@ -2546,9 +2546,9 @@ SBMotion* SBMotion::footSkateCleanUp( std::string name, std::vector<std::string>
 {
 	SmartBody::util::log("foot skate cleanup for motion %s.", this->getName().c_str());
 
-	auto origSkel = SBScene::getScene()->getSkeleton(srcSkeletonName);
+	auto origSkel = _scene.getSkeleton(srcSkeletonName);
 	if (!origSkel) return nullptr;
-	SBMotion* origMotion = SBScene::getScene()->getMotion(srcMotionName);
+	SBMotion* origMotion = _scene.getMotion(srcMotionName);
 	if (!origMotion) return nullptr;
 
 	SmartBody::util::log("foot skate cleanup for motion %s.", this->getName().c_str());
@@ -2576,7 +2576,7 @@ SBMotion* SBMotion::footSkateCleanUp( std::string name, std::vector<std::string>
 		else
 			motionName = name;
 		cleanUpMotion->setName(motionName.c_str());
-		if (!SmartBody::SBScene::getScene()->getAssetManager()->addMotion(std::unique_ptr<SBMotion>(cleanUpMotion))) {
+		if (!_scene.getAssetManager()->addMotion(std::unique_ptr<SBMotion>(cleanUpMotion))) {
 			return nullptr;
 		}
 	}
@@ -2633,7 +2633,7 @@ bool SBMotion::autoFootPlantDetection( SBSkeleton* srcSk, std::vector<std::strin
 	}	
 
 	// merging the constraints
-	float sceneScale = 1.f/(float)SBScene::getScene()->getScale();
+	float sceneScale = 1.f/(float)_scene.getScale();
 	float Fmax = 10.f;
 	float dmax = 0.1f * sceneScale;
 	for (unsigned int i=0;i<footJoints.size();i++)
@@ -2901,7 +2901,7 @@ SBAPI const std::string& SBMotion::getMotionSkeletonName()
 
 SBAPI void SBMotion::buildJointTrajectory( const std::string& effectorName, const std::string& refJointName /*= "base" */ )
 {
-	auto motionSkel = SBScene::getScene()->getSkeleton(getMotionSkeletonName());
+	auto motionSkel = _scene.getSkeleton(getMotionSkeletonName());
 	if (!motionSkel)
 	{
 		SmartBody::util::log("Motion skeleton doesn't exist. Cannot compute effector trajectory");
@@ -3384,7 +3384,7 @@ SBAPI bool SBMotion::downsample( int factor )
 
 SBAPI void SBMotion::unrollPrerotation( const std::string& skelName )
 {
-	auto skel = SBScene::getScene()->getSkeleton(skelName);
+	auto skel = _scene.getSkeleton(skelName);
 	for (auto & _frame : _frames)
 	{
 		float* fbuffer = _frame.posture.data();
@@ -3433,7 +3433,7 @@ SBAPI void SBMotion::addTemporalRotationOffset( const std::string& chanName, SrQ
 
 SBMotion* SBMotion::copy(const std::string& motionName)
 {
-	SBMotion* newMotion = new SBMotion();
+	SBMotion* newMotion = new SBMotion(_scene);
 	newMotion->setName(motionName);
 
 	SkChannelArray& ch = channels();
@@ -3500,7 +3500,7 @@ SBMotion* SBMotion::buildPoststrokeHoldMotion(float holdTime, std::vector<std::s
 	int strokeEndFrameId = int(synch_points.get_time(srSynchPoints::STROKE_STOP) * this->frames() / this->duration());
 
 	SkChannelArray& mchan_arr = this->channels();
-	SBMotion* newMotion = new SmartBody::SBMotion();
+	SBMotion* newMotion = new SmartBody::SBMotion(_scene);
 	newMotion->synch_points.set_time(synch_points.get_time(srSynchPoints::START),
 		synch_points.get_time(srSynchPoints::READY),
 		synch_points.get_time(srSynchPoints::STROKE_START),
@@ -3599,7 +3599,7 @@ SBMotion* SBMotion::buildPrestrokeHoldMotion(float holdTime, SBMotion* idleMotio
 	int strokeStartFrameId = int(synch_points.get_time(srSynchPoints::STROKE_START) * this->frames() / this->duration());
 
 	SkChannelArray& mchan_arr = this->channels();
-	SBMotion* newMotion = new SmartBody::SBMotion();
+	SBMotion* newMotion = new SmartBody::SBMotion(_scene);
 	newMotion->synch_points.set_time(synch_points.get_time(srSynchPoints::START),
 		synch_points.get_time(srSynchPoints::READY),
 		synch_points.get_time(srSynchPoints::STROKE_START) + holdTime,
@@ -3647,7 +3647,7 @@ void SBMotion::calculateGestureSpeed()
 		SmartBody::util::log("Gesture %s has motion skeleton, cannot calculate gesture speed...", this->getName().c_str());
 		return;
 	}
-	auto skeleton = SmartBody::SBScene::getScene()->createSkeleton(skeletonName);
+	auto skeleton = _scene.createSkeleton(skeletonName);
 	if (skeleton == nullptr)
 	{
 		SmartBody::util::log("Gesture %s has motion skeleton %s but does not exist, cannot calculate gesture speed...", this->getName().c_str(), skeletonName.c_str());
@@ -3741,5 +3741,8 @@ void SBMotion::setGestureStartLocation(SrVec vec)
 	_startLocation = vec;
 }
 
+SkMotion* SBMotion::createNewMotion() const {
+	return new SBMotion(_scene);
+}
 
 };

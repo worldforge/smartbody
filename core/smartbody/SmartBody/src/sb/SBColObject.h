@@ -33,6 +33,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <memory>
 
+namespace SmartBody {
+class SBCollisionManager;
+}
+
 class SBTransform
 {
 public:
@@ -216,8 +220,8 @@ protected:
 public:
 	SBCollisionSpace();
 	~SBCollisionSpace();
-	virtual void addCollisionObjects(const std::string& objName);
-	virtual void removeCollisionObjects(const std::string& objName);
+	virtual void addCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName);
+	virtual void removeCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName);
 	virtual void addExcludePair(const std::string& objName1, const std::string& objName2);
 	virtual void getPotentialCollisionPairs(std::vector<SbmCollisionPair>& collisionPairs) = 0;
 	virtual void collisionDetection(SBGeomObject* obj1, SBGeomObject* obj2, std::vector<SBGeomContact>& contactPts) = 0;

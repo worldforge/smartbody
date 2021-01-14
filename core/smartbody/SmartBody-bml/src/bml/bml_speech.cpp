@@ -512,7 +512,7 @@ void BML::SpeechRequest::processVisemes(std::vector<VisemeData*>* result_visemes
 		std::map<std::string, std::vector<std::vector<float> > > emotionCurvesMap;
 		for (auto & emotionName : emotionNames)
 		{
-			std::map<std::string, std::vector<float> > tempCurves = SBScene::getScene()->getDiphoneManager()->generateCurvesGivenDiphoneSet(result_visemes, emotionName, character->getName(), true, true, true, debugVisemeCurves);
+			std::map<std::string, std::vector<float> > tempCurves = request->actor->_scene.getDiphoneManager()->generateCurvesGivenDiphoneSet(result_visemes, emotionName, character->getName(), true, true, true, debugVisemeCurves);
 			
 			// merge it back according to emotion curve
 			std::map<std::string, std::vector<float> >::iterator iter;
@@ -568,7 +568,7 @@ void BML::SpeechRequest::processVisemes(std::vector<VisemeData*>* result_visemes
 	}
 	else
 	{
-		finalCurves = SBScene::getScene()->getDiphoneManager()->generateCurvesGivenDiphoneSet(result_visemes, character->getStringAttribute("lipSyncSetName"), character->getName(), true, true, true, debugVisemeCurves);
+		finalCurves = request->actor->_scene.getDiphoneManager()->generateCurvesGivenDiphoneSet(result_visemes, character->getStringAttribute("lipSyncSetName"), character->getName(), true, true, true, debugVisemeCurves);
 	}
 
 	// assign back to viseme data
@@ -994,7 +994,7 @@ void BML::SpeechRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene
 				delete [] curve_info;
 
 #else
-				if (SmartBody::SBScene::getScene()->getCharacter(actor_id)->getBoolAttribute("dominancecurve"))
+				if (scene->getCharacter(actor_id)->getBoolAttribute("dominancecurve"))
 				{
 					std::vector<std::string> cTokens;
 					SmartBody::util::tokenize(v->getCurveInfo(), cTokens);
@@ -1012,14 +1012,14 @@ void BML::SpeechRequest::realize_impl( BmlRequestPtr request, SmartBody::SBScene
 						{
 							if (i % 4 == 1)
 							{
-								if (!SmartBody::SBScene::getScene()->getCharacter(actor_id)->hasAttribute(std::string(v->id())))
+								if (!scene->getCharacter(actor_id)->hasAttribute(std::string(v->id())))
 								{
 									SmartBody::util::log("Error! doesn't have attribute %s", v->id());
 									continue;
 								}
-								double attr = SmartBody::SBScene::getScene()->getCharacter(actor_id)->getDoubleAttribute(std::string(v->id()));
+								double attr = scene->getCharacter(actor_id)->getDoubleAttribute(std::string(v->id()));
 								std::string defaultAttrString = std::string(v->id()) + "_default";
-								double defaultAttr = SmartBody::SBScene::getScene()->getCharacter(actor_id)->getDoubleAttribute(defaultAttrString);
+								double defaultAttr = scene->getCharacter(actor_id)->getDoubleAttribute(defaultAttrString);
 								if (attr == 0)
 									attr = 1.0;
 								cValue[i] /= (float)(attr - defaultAttr);
@@ -1103,7 +1103,7 @@ void BML::SpeechRequest::unschedule(  SmartBody::SBScene* scene,
 	// Clear visemes
 	ostringstream cmd;
 	cmd << "char " << request->actor->getName() << " viseme ALL 0 " << duration;
-	SmartBody::SBScene::getScene()->getCommandManager()->execute_later( cmd.str().c_str(), 0 );
+	scene->getCommandManager()->execute_later( cmd.str().c_str(), 0 );
 	*/
 	MeCtSchedulerClass::VecOfTrack tracks = request->actor->head_sched_p->tracks();
 	for (const auto& track : tracks)
@@ -1123,7 +1123,7 @@ void BML::SpeechRequest::unschedule(  SmartBody::SBScene* scene,
 	}
 
 	if( !audioStop.empty() )
-		SmartBody::SBScene::getScene()->getCommandManager()->execute_later( audioStop.c_str(), request->actor->get_viseme_sound_delay() );
+		scene->getCommandManager()->execute_later( audioStop.c_str(), request->actor->get_viseme_sound_delay() );
 	else
 		SmartBody::util::log("WARNING: SpeechRequest::unschedule(): unique_id \"%s\": Missing audioStop.", unique_id.c_str());
 }

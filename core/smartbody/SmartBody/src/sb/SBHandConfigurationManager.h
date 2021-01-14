@@ -27,24 +27,25 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <map>
 #include <vector>
+#include "SBSceneOwned.h"
 
 namespace SmartBody {
 
 class SBHandConfiguration;
 
-class SBHandConfigurationManager{
+class SBHandConfigurationManager : public SBSceneOwned{
 
 public:
 
-	SBAPI SBHandConfigurationManager();
+	SBAPI SBHandConfigurationManager(SBScene& scene);
 	SBAPI ~SBHandConfigurationManager();
 
 	// create a hand configuration
-	SBAPI SBHandConfiguration* createHandConfiguration(std::string configName);
-	SBAPI SBHandConfiguration* getHandConfiguration(std::string configName);
-	SBAPI void removeHandConfiguration(std::string configName);
+	SBAPI SBHandConfiguration* createHandConfiguration(const std::string& configName);
+	SBAPI SBHandConfiguration* getHandConfiguration(const std::string& configName);
+	SBAPI void removeHandConfiguration(const std::string& configName);
 	SBAPI int getNumHandConfigurations();
-	SBAPI void printHandConfiguration(std::string configName);
+	SBAPI void printHandConfiguration(const std::string& configName);
 
 private:
 

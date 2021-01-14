@@ -281,9 +281,9 @@ bool ParserOgre::parse(SmartBody::SBSkeleton& skeleton, std::vector<std::unique_
 				SmartBody::util::log("<animations> was not found in file %s. No motions will be loaded.", pathName.c_str());
 				return false;
 			}
-			auto motion = std::make_unique<SmartBody::SBMotion>(""); 
+			auto motion = std::make_unique<SmartBody::SBMotion>(skeleton._scene, "");
 			motions.emplace_back(std::move(motion));
-			parseOk =  parseMotion(animations, motions, pathName, scale);
+			parseOk =  parseMotion(skeleton._scene, animations, motions, pathName, scale);
 		}
 
 		return parseOk;
@@ -553,7 +553,7 @@ bool ParserOgre::parseSkeleton(DOMNode* skeletonNode, SmartBody::SBSkeleton& ske
 }
 
 
-bool ParserOgre::parseMotion(DOMNode* animationsNode, std::vector<std::unique_ptr<SmartBody::SBMotion>>& motions, std::string pathName, float scale)
+bool ParserOgre::parseMotion(SmartBody::SBScene& scene, DOMNode* animationsNode, std::vector<std::unique_ptr<SmartBody::SBMotion>>& motions, std::string pathName, float scale)
 {
 	auto* motion = motions.back().get();
 	// many animations might be present. for now, only parse one of them
@@ -569,7 +569,7 @@ bool ParserOgre::parseMotion(DOMNode* animationsNode, std::vector<std::unique_pt
 		{
 			if (hasAnimation)
 			{
-				auto motion2 = std::make_unique<SmartBody::SBMotion>();
+				auto motion2 = std::make_unique<SmartBody::SBMotion>(scene);
 				motion = motion2.get();
 				motions.emplace_back(std::move(motion2));
 			}
@@ -1572,7 +1572,7 @@ bool ParserOgre::exportOgreXMLMesh( DeformableMesh* defMesh, std::string meshNam
 	std::string meshFileName = outPathName + "/" + meshName + ".mesh.xml";
 	std::string materialFileName = outPathName + "/" + meshName + ".material";
 	std::vector<std::string> textureFileNames;
-	auto skel = SmartBody::SBScene::getScene()->getSkeleton(defMesh->skeletonName);
+	auto skel = defMesh->skeleton;
 	if (!skel)
 		return false;
 

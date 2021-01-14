@@ -2,7 +2,6 @@ scene.run("BehaviorSetCommon.py")
 
 
 def setupBehaviorSet():
-    scene = getScene()
     print("Setting up behavior set for Reaching ...")
     scene.addAssetPath("script", "behaviorsets/reaching/scripts")
 

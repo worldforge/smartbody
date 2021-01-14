@@ -234,6 +234,8 @@ public :
 	
 	SkMotion* copyMotion();
 
+	virtual SkMotion* createNewMotion() const;
+
 	SkMotion* buildPrestrokeHoldMotion(float holdTime, SkMotion* idleMotion = nullptr);
 	SkMotion* buildPoststrokeHoldMotion(float holdTime, std::vector<std::string>& joints, float scale = 1.0f, float freq = -1.0f, SkMotion* idleMotion = nullptr);
 	

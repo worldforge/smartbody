@@ -200,7 +200,7 @@ bool SBSerializer::readFromSkb(SBMotion& motion, const std::string& fileName)
 
 void SBSerializer::saveToSkmByFrames(SBMotion& motion, const std::string& fileName, int startFrame, int endFrame)
 {
-	SBMotion newMotion;
+	SBMotion newMotion(motion._scene);
 	SkChannelArray& ch = motion.channels();
 	int numFrames = motion.frames();
 	newMotion.setMotionSkeletonName(motion.getMotionSkeletonName());
@@ -229,7 +229,7 @@ void SBSerializer::saveToSkmByFrames(SBMotion& motion, const std::string& fileNa
 
 void SBSerializer::saveToBVH(SBMotion& motion, const std::string& fileName, SBSkeleton& skel )
 {
-//	auto skel = SmartBody::SBScene::getScene()->getSkeleton(skelName);
+//	auto skel = scene.getSkeleton(skelName);
 //	if (!skel)
 //	{
 //		SmartBody::util::log("Error : skeleton '%s' does not exist.", skelName.c_str());

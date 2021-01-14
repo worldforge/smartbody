@@ -176,14 +176,13 @@ void SBDebuggerServer::Update()
          // call otherwise there is a massive delay on the receiving end
          bool sentCamUpdate = false;
          bool sentPawnUpdates = false;
-		 SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
          if (true)
          {
-			 const std::vector<std::string>& charNames = scene->getCharacterNames();
+			 const std::vector<std::string>& charNames = _scene.getCharacterNames();
 			string msg;
             for (const auto & charName : charNames)
             {
-				SmartBody::SBCharacter * c = scene->getCharacter(charName);
+				SmartBody::SBCharacter * c = _scene.getCharacter(charName);
 
                size_t numBones = c->getSkeleton()->getNumJoints();
 
@@ -225,10 +224,10 @@ void SBDebuggerServer::Update()
                if (!sentPawnUpdates)
                {
                   // sbmdebugger <sbmid> update pawn <name> pos <x y z> rot <x y z w> geom <s> size <s> 
-                  const std::vector<std::string>& pawnNames = scene->getPawnNames();
+                  const std::vector<std::string>& pawnNames = _scene.getPawnNames();
                   for (const auto & pawnName : pawnNames)
                   {
-                     SmartBody::SBPawn* p = scene->getPawn(pawnName);
+                     SmartBody::SBPawn* p = _scene.getPawn(pawnName);
                      msg += vhcl::Format("sbmdebugger %s update pawn %s", m_fullId.c_str(), p->getName().c_str());
                      SrVec pos = p->getPosition();
                      SrQuat rot = p->getOrientation();
@@ -401,10 +400,10 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 						vhmsg::ttu_notify1(message.c_str());
 
 #if 0
-						std::vector<string> skeletonNames = m_scene->getSkeletonNames();
+						std::vector<string> skeletonNames = m__scene.getSkeletonNames();
 					   for (size_t i = 0; i < skeletonNames.size(); ++i)
 					   {
-						   auto skeleton = m_scene->getSkeleton(skeletonNames[i]);
+						   auto skeleton = m__scene.getSkeleton(skeletonNames[i]);
 						   if (!skeleton)
 						   {
 							   SmartBody::util::log("Cannot find skeleton %s.", skeletonNames[i].c_str());
@@ -418,10 +417,10 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 						   }
 					   }
 
-					   const std::vector<string>& charNames = m_scene->getCharacterNames();
+					   const std::vector<string>& charNames = m__scene.getCharacterNames();
 					   for (size_t i = 0; i < charNames.size(); i++)
 					   {
-						  SmartBody::SBCharacter * c = m_scene->getCharacter(charNames[i]);
+						  SmartBody::SBCharacter * c = m__scene.getCharacter(charNames[i]);
 
 						  size_t numBones = c->getSkeleton()->getNumJoints();
 
@@ -443,10 +442,10 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 						  vhmsg::ttu_notify1(msg.c_str());
 					   }
 
-					   const std::vector<std::string>& pawnNames = m_scene->getPawnNames();
+					   const std::vector<std::string>& pawnNames = m__scene.getPawnNames();
 					   for (size_t i = 0; i < pawnNames.size(); i++)
 					   {
-						  SmartBody::SBPawn* p = m_scene->getPawn(pawnNames[i]);
+						  SmartBody::SBPawn* p = m__scene.getPawn(pawnNames[i]);
 						  string msg = vhcl::Format("sbmdebugger %s init pawn %s", m_fullId.c_str(), p->getName().c_str());
 						  SrVec pos = p->getPosition();
 						  SrQuat rot = p->getOrientation();
@@ -456,10 +455,10 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 						  vhmsg::ttu_notify1(msg.c_str());
 					   }
 
-					   const std::vector<std::string>& faceDefNames = m_scene->getFaceDefinitionNames();
+					   const std::vector<std::string>& faceDefNames = m__scene.getFaceDefinitionNames();
 					   for (size_t i = 0; i < faceDefNames.size(); i++)
 					   {
-						   SmartBody::SBFaceDefinition* faceDefinition = m_scene->getFaceDefinition(faceDefNames[i]);
+						   SmartBody::SBFaceDefinition* faceDefinition = m__scene.getFaceDefinition(faceDefNames[i]);
 						   std::string msg = vhcl::Format("sbmdebugger %s init face_definition %s", m_fullId.c_str(), faceDefNames[i].c_str());
 						   msg += faceDefinition->saveToString();
 
@@ -468,7 +467,7 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 
 					   for (size_t i = 0; i < charNames.size(); i++)
 					   {
-						   SmartBody::SBCharacter * c = m_scene->getCharacter(charNames[i]);
+						   SmartBody::SBCharacter * c = m__scene.getCharacter(charNames[i]);
 						   string msg = vhcl::Format("sbmdebugger %s init", m_fullId.c_str());
 						   SmartBody::SBFaceDefinition* faceDef = c->getFaceDefinition();
 						   if (faceDef)
@@ -478,7 +477,7 @@ void SBDebuggerServer::ProcessVHMsgs(const char * op, const char * args)
 						   }
 					   }
 
-					   SmartBody::SBAnimationBlendManager* blendManager = m_scene->getBlendManager();
+					   SmartBody::SBAnimationBlendManager* blendManager = m__scene.getBlendManager();
 					   const std::vector<std::string>& blendNames = blendManager->getBlendNames();
 					   for (size_t i = 0; i < blendNames.size(); i++)
 					   {

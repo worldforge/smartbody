@@ -70,7 +70,7 @@ void SBEventHandler::notify(SBSubject* subject)
 }
 
 
-SBBasicHandler::SBBasicHandler() : SBEventHandler() 
+SBBasicHandler::SBBasicHandler(SBScene& scene) : SBEventHandler(), SBSceneOwned(scene)
 {
 	this->createStringAttribute("eventName", "", true, "Event", 20, false, false, false, "Name of the event that this handler will respond to.");
 	this->createStringAttribute("eventAction", "", true, "Event", 30, false, false, false, "Behavior of event when triggered (command run using Python).");
@@ -98,7 +98,7 @@ void SBBasicHandler::executeAction(SBEvent* event)
 	SmartBody::SBScene::getScene()->getCommandManager()->execute((char*) action.c_str());
 	*/
 	StringAttribute* stringAttr = dynamic_cast<StringAttribute*>(this->getAttribute("eventAction"));
-	SmartBody::SBScene::getScene()->run(stringAttr->getValue());
+	_scene.run(stringAttr->getValue());
 }
 
 void SBBasicHandler::notify(SBSubject* subject)

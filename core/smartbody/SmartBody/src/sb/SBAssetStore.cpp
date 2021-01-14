@@ -34,10 +34,10 @@ std::vector<std::string> SBAssetStore::getAssetPaths(const std::string& type) {
 	if (I != _paths.end()) {
 		auto& path = I->second;
 		path.reset();
-		std::string nextPath = path.next_path(true);
+		std::string nextPath = path.next_path(_scene.getMediaPath());
 		while (!nextPath.empty()) {
 			list.emplace_back(nextPath);
-			nextPath = path.next_path(true);
+			nextPath = path.next_path(_scene.getMediaPath());
 		}
 	}
 
@@ -215,12 +215,12 @@ void SBAssetStore::loadAssets() {
 		auto& pathList = I->second;
 		pathList.reset();
 
-		std::string path = pathList.next_path(true);
+		std::string path = pathList.next_path(_scene.getMediaPath());
 		while (!path.empty()) {
 			loadAssetsFromPath(path);
 //		load_motions(path.c_str(), true);
 //		load_skeletons(path.c_str(), true);
-			path = pathList.next_path(true);
+			path = pathList.next_path(_scene.getMediaPath());
 		}
 
 	}
@@ -277,7 +277,7 @@ std::vector<std::unique_ptr<SBAsset>> SBAssetStore::loadAsset(const std::string&
 	if (I != _assetHandlerMap.end()) {
 		auto& assetHandlers = I->second;
 		for (auto assetHandler : assetHandlers) {
-				std::vector<std::unique_ptr<SBAsset>> assets = assetHandler->getAssets(finalPath);
+				std::vector<std::unique_ptr<SBAsset>> assets = assetHandler->getAssets(_scene, finalPath);
 			for (auto & asset : assets) {
 				asset->setFullFilePath(finalPath);
 				allAssets.emplace_back(std::move(asset));
@@ -361,7 +361,7 @@ std::string SBAssetStore::findFileName(const std::string& type, const std::strin
 		auto& path = I->second;
 
 		path.reset();
-		std::string curFilename = path.next_filename( buffer, filename.c_str() );
+		std::string curFilename = path.next_filename( buffer, filename.c_str(), _scene.getMediaPath() );
 		while (!curFilename.empty())
 		{
 			SmartBody::util::log("next curFilename = '%s'", curFilename.c_str());
@@ -374,7 +374,7 @@ std::string SBAssetStore::findFileName(const std::string& type, const std::strin
 			}
 			else
 			{
-				curFilename = path.next_filename( buffer, filename.c_str() );
+				curFilename = path.next_filename( buffer, filename.c_str(), _scene.getMediaPath() );
 			}
 		}
 

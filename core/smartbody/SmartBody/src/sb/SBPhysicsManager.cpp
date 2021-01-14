@@ -206,7 +206,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsPawn(const std::string& pawn
 		SBPhysicsObj* phyObj = pawn->getPhysicsObject();//new SBPhysicsObj();
 		if (phyObj) getPhysicsEngine()->removePhysicsObj(phyObj); // remove existing physics object
 
-		phyObj = new SBPhysicsObj();
+		phyObj = new SBPhysicsObj(*_physicsSim);
 		phyObj->setName(pawnName);
 		auto geomObj = SBGeomObject::createGeometry(geomType, geomSize);
 		phyObj->setGeometry(std::move(geomObj));
@@ -231,7 +231,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter(const std::string&
 		// create physics character
 		auto& joints = sbmChar->getSkeleton()->joints();
 		//printf("init physics obj\n");
-		phyChar = new SBPhysicsCharacter();
+		phyChar = new SBPhysicsCharacter(*_physicsSim);
 		std::queue<SkJoint*> tempJointList;
 		std::vector<std::string> jointNameList;
 		std::set<std::string> excludeNameList;
@@ -261,7 +261,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter(const std::string&
 					tempJointList.push(cj);
 			}
 		}
-		phyChar->initPhysicsCharacter(charName, jointNameList, true);
+		phyChar->initPhysicsCharacter(sbmChar, jointNameList, true);
 #if USE_PHYSICS_CHARACTER
 		_physicsSim->addPhysicsCharacter(phyChar);
 #endif

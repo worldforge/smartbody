@@ -399,7 +399,7 @@ void PPRAISteeringAgent::updateSteerStateName()
 
 SrVec PPRAISteeringAgent::getCollisionFreeGoal( SrVec targetPos, SrVec curPos )
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = _steerManager._scene;
 	SmartBody::SBCharacter* character = this->getCharacter();
 	if (character->hasAttribute("steering.useCollisionFreeGoal"))
 	{
@@ -447,7 +447,7 @@ SrVec PPRAISteeringAgent::getCollisionFreeGoal( SrVec targetPos, SrVec curPos )
 void PPRAISteeringAgent::evaluate(double dtime)
 {
 	//SmartBody::util::log("evaluate PPRAISteeringAgent, time = %f",dtime);
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = _steerManager._scene;
 
 	float dt = (float) dtime;
 
@@ -484,11 +484,11 @@ void PPRAISteeringAgent::evaluate(double dtime)
 		numGoals = goalQueue.size();
 
 		// make sure the character is within the grid
-		if (!pathFollowing && _steerManager.getEngineDriver()->_engine->getSpatialDatabase()->getCellIndexFromLocation(x * scene->getScale(), z * scene->getScale()) == -1)
+		if (!pathFollowing && _steerManager.getEngineDriver()->_engine->getSpatialDatabase()->getCellIndexFromLocation(x * scene.getScale(), z * scene.getScale()) == -1)
 		{
 			if (numGoals > 0)
 			{
-				SmartBody::util::log("Character %s is out of range of grid (%f, %f). All goals will be cancelled.", character->getName().c_str(), x * scene->getScale(), z * scene->getScale());
+				SmartBody::util::log("Character %s is out of range of grid (%f, %f). All goals will be cancelled.", character->getName().c_str(), x * scene.getScale(), z * scene.getScale());
 				agent->clearGoals();
 				sendLocomotionEvent("failure");
 			}
@@ -507,14 +507,14 @@ void PPRAISteeringAgent::evaluate(double dtime)
 			float goalz = goalList.front();
 			goalList.pop_front();
 			agent->clearGoals();
-			SrVec newGoal = getCollisionFreeGoal(SrVec(goalx,goaly,goalz)*scene->getScale(),curSteerPos*scene->getScale());		
+			SrVec newGoal = getCollisionFreeGoal(SrVec(goalx,goaly,goalz)*scene.getScale(),curSteerPos*scene.getScale());		
 
 			//SmartBody::util::log("original goal = %f %f %f, new goal = %f %f %f",goalx,goaly,goalz, newGoal.x*100.f, newGoal.y*100.f, newGoal.z*100.f);
 			SteerLib::AgentGoalInfo goal;		
 			goal.desiredSpeed = desiredSpeed;
 			goal.goalType = SteerLib::GOAL_TYPE_SEEK_STATIC_TARGET;
 			goal.targetIsRandom = false;
-			// goal.targetLocation = Util::Point(goalx * scene->getScale(), 0.0f, goalz * scene->getScale());
+			// goal.targetLocation = Util::Point(goalx * scene.getScale(), 0.0f, goalz * scene.getScale());
 			// compute a collision free goal toward the target
 			goal.targetLocation = Util::Point(newGoal.x , 0.0f, newGoal.z);
 			// make sure that the desired goal is within the bounds of the steering grid
@@ -544,14 +544,14 @@ void PPRAISteeringAgent::evaluate(double dtime)
 	
 
 	// Update Steering Engine (position, orientation, scalar speed)
-	Util::Point newPosition(x * scene->getScale(), 0.0f, z * scene->getScale());
+	Util::Point newPosition(x * scene.getScale(), 0.0f, z * scene.getScale());
 	Util::Vector newOrientation = Util::rotateInXZPlane(Util::Vector(0.0f, 0.0f, 1.0f), yaw * float(M_PI) / 180.0f);
 	static float accumTime = 0.f;
 	try {
 			
 		agent->updateAgentState(newPosition, newOrientation, newSpeed);				
 		//accumTime += dt;
-		//agent->updateAI((float) SmartBody::SBScene::getScene()->getSimulationManager()->getTime(), dt, _curFrame++);
+		//agent->updateAI((float) _steerManager._scene.getSimulationManager()->getTime(), dt, _curFrame++);
 	} catch (Util::GenericException& ge) {
 		std::string message = ge.what();
 		if (lastMessage == message)
@@ -604,9 +604,9 @@ void PPRAISteeringAgent::evaluate(double dtime)
 			goal.goalType = SteerLib::GOAL_TYPE_SEEK_STATIC_TARGET;
 			goal.targetIsRandom = false;
 			if (dynamic_cast<SmartBody::SBCharacter*>(target)) // if target is a character
-				goal.targetLocation = Util::Point(x1 * scene->getScale(), 0.0f, (z1 * scene->getScale() - 1.0f * scene->getScale()));
+				goal.targetLocation = Util::Point(x1 * scene.getScale(), 0.0f, (z1 * scene.getScale() - 1.0f * scene.getScale()));
 			else 
-				goal.targetLocation = Util::Point(x1 * scene->getScale(), 0.0f, z1 * scene->getScale());
+				goal.targetLocation = Util::Point(x1 * scene.getScale(), 0.0f, z1 * scene.getScale());
 			
 			agent->addGoal(goal);
 		}
@@ -671,9 +671,9 @@ void PPRAISteeringAgent::sendLocomotionEvent(const std::string& status)
 	std::stringstream strstr;
 	strstr << character->getName() << " " << status;
 	motionEvent->setParameters(strstr.str());
-	motionEvent->setSource(SmartBody::SBScene::getScene()->getStringFromObject(character));
-	SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();		
-	manager->handleEvent(motionEvent, SmartBody::SBScene::getScene()->getSimulationManager()->getTime());
+	motionEvent->setSource(_steerManager._scene.getStringFromObject(character));
+	SmartBody::SBEventManager* manager = _steerManager._scene.getEventManager();		
+	manager->handleEvent(motionEvent, _steerManager._scene.getSimulationManager()->getTime());
 	delete motionEvent;
 	//SmartBody::util::log("PPRAISteeringAgent::sendLocomotionEvent Over");
 #else
@@ -683,8 +683,8 @@ void PPRAISteeringAgent::sendLocomotionEvent(const std::string& status)
 	std::stringstream strstr;
 	strstr << character->getName() << " " << status;
 	motionEvent.setParameters(strstr.str());
-	motionEvent.setSource(SmartBody::SBScene::getScene()->getStringFromObject(character));
-	SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();		
+	motionEvent.setSource(_steerManager._scene.getStringFromObject(character));
+	SmartBody::SBEventManager* manager = _steerManager._scene.getEventManager();		
 	manager->handleEvent(&motionEvent);
 #endif
 	//SmartBody::util::log("locomotio sucess");
@@ -701,7 +701,7 @@ void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float
 	
 	bool locomotionEnd = false;
 	static int counter = 0;		
-	float sceneScale = 1.f/SmartBody::SBScene::getScene()->getScale();	
+	float sceneScale = 1.f/_steerManager._scene.getScale();	
 	//float distThreshold = 0.05f*sceneScale;
 	//float speedThreshold = 0.05f*sceneScale;	
 	float pathDistThreshold = distThreshold*sceneScale;
@@ -715,7 +715,7 @@ void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float
 	float parameterScale = 1.f;
 	if (character && blend)
 	{
-		SmartBody::SBRetarget* retarget = SmartBody::SBScene::getScene()->getRetargetManager()->getRetarget(blend->getBlendSkeleton(),character->getSkeleton()->getName());				
+		SmartBody::SBRetarget* retarget = _steerManager._scene.getRetargetManager()->getRetarget(blend->getBlendSkeleton(),character->getSkeleton()->getName());				
 		if (retarget)
 			parameterScale = 1.f/retarget->getHeightRatio();
 	}
@@ -724,7 +724,7 @@ void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float
 	//	return; 
 	if (character->param_animation_ct->isIdle() && steerPath.pathLength() > 0)    // need to define when you want to start the locomotion
 	{
-		PABlend* locoState = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(locomotionName.c_str());
+		PABlend* locoState = _steerManager._scene.getBlendManager()->getBlend(locomotionName.c_str());
 		SrVec pathDir;
 		float pathDist;		
 		curSteerPos = SrVec(x,0,z);
@@ -735,7 +735,7 @@ void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float
 		SrVec targetPos = steerPath.closestPointOnNextGoal(SrVec(x,0,z),pathDir,pathDist);
 		//SrVec targetPos = steerPath.closestPointOnPath(SrVec(x,0,z),pathDir,pathDist);
 		float distOnPath = steerPath.pathDistance(targetPos);
-		float sceneScale = 1.f/SmartBody::SBScene::getScene()->getScale();
+		float sceneScale = 1.f/_steerManager._scene.getScale();
 		//SmartBody::util::log("pathfollowing:targetSpeed = %f",this->currentTargetSpeed);
 		float maxSpeed = this->currentTargetSpeed*sceneScale;//(float)character->getDoubleAttribute("steering.pathMaxSpeed")*sceneScale;
 		nextPtOnPath = steerPath.pathPoint(distOnPath+maxSpeed);
@@ -878,10 +878,10 @@ void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float
 		// update locomotion state
 		float tnormal[3];
 		float terrainHeight = 0.0f;
-		Heightfield* heightField = SmartBody::SBScene::getScene()->getHeightfield();
+		Heightfield* heightField = _steerManager._scene.getHeightfield();
 		if (heightField)
 		{
-			terrainHeight = SmartBody::SBScene::getScene()->queryTerrain(x, z, tnormal);
+			terrainHeight = _steerManager._scene.queryTerrain(x, z, tnormal);
 		}
 		// float difference = y - terrainHeight;
 		// float ang = - difference * tiltGain;
@@ -963,7 +963,7 @@ void PPRAISteeringAgent::normalizeAngle(float& angle)
 */
 float PPRAISteeringAgent::evaluateBasicLoco(float dt, float x, float y, float z, float yaw)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = _steerManager._scene;
 	
  	PPRAgent* pprAgent = dynamic_cast<PPRAgent*>(agent);
 	const std::queue<SteerLib::AgentGoalInfo>& goalQueue = pprAgent->getLandmarkQueue();
@@ -1073,7 +1073,7 @@ float PPRAISteeringAgent::evaluateBasicLoco(float dt, float x, float y, float z,
 	else
 	{
 		character->basic_locomotion_ct->setValid(true);
-		float curSpeed = character->basic_locomotion_ct->getMovingSpd() * scene->getScale();
+		float curSpeed = character->basic_locomotion_ct->getMovingSpd() * scene.getScale();
 		if (steeringCommand.aimForTargetSpeed)
 		{
 			if (curSpeed < steeringCommand.targetSpeed)
@@ -1092,7 +1092,7 @@ float PPRAISteeringAgent::evaluateBasicLoco(float dt, float x, float y, float z,
 		else
 			curSpeed += acceleration * dt;
 		newSpeed = curSpeed;
-		curSpeed = curSpeed / scene->getScale();
+		curSpeed = curSpeed / scene.getScale();
 		character->basic_locomotion_ct->setMovingSpd(curSpeed);	
 
 
@@ -1110,7 +1110,7 @@ float PPRAISteeringAgent::evaluateBasicLoco(float dt, float x, float y, float z,
 		angleGlobal = radToDeg(atan2(forward.x, forward.z));
 		normalizeAngle(angleGlobal);
 
-		curSpeed = currentSpeed / scene->getScale();
+		curSpeed = currentSpeed / scene.getScale();
 		newSpeed = currentSpeed;
 		character->basic_locomotion_ct->setMovingSpd(curSpeed);
 		character->basic_locomotion_ct->setDesiredHeading(angleGlobal); // affective setting
@@ -1153,7 +1153,7 @@ float PPRAISteeringAgent::evaluateBasicLoco(float dt, float x, float y, float z,
 
 float PPRAISteeringAgent::evaluateNewLoco(float dt, float x, float y, float z, float yaw)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = _steerManager._scene;
  	PPRAgent* pprAgent = dynamic_cast<PPRAgent*>(agent);
 	const std::queue<SteerLib::AgentGoalInfo>& goalQueue = pprAgent->getLandmarkQueue();
 	const SteerLib::SteeringCommand & steeringCommand = pprAgent->getSteeringCommand();
@@ -1260,7 +1260,7 @@ float PPRAISteeringAgent::evaluateNewLoco(float dt, float x, float y, float z, f
 	else
 	{
 		character->new_locomotion_ct->setValid(true);
-		curSpeed = character->new_locomotion_ct->getMovingSpd() * scene->getScale();
+		curSpeed = character->new_locomotion_ct->getMovingSpd() * scene.getScale();
 		if (steeringCommand.aimForTargetSpeed)
 		{
 			if (curSpeed < steeringCommand.targetSpeed)
@@ -1279,7 +1279,7 @@ float PPRAISteeringAgent::evaluateNewLoco(float dt, float x, float y, float z, f
 		else
 			curSpeed += acceleration * dt;
 		newSpeed = curSpeed;
-		curSpeed = curSpeed / scene->getScale();
+		curSpeed = curSpeed / scene.getScale();
 		character->new_locomotion_ct->setMovingSpd(curSpeed);	
 #endif
 	static bool flag=true;
@@ -1312,7 +1312,7 @@ float PPRAISteeringAgent::evaluateNewLoco(float dt, float x, float y, float z, f
 		forward = Util::normalize(velocity);
 		angleGlobal = radToDeg(atan2(forward.x, forward.z));
 		normalizeAngle(angleGlobal);
-		curSpeed = currentSpeed / scene->getScale();
+		curSpeed = currentSpeed / scene.getScale();
 		newSpeed = currentSpeed;
 		character->new_locomotion_ct->setValid(true);
 		character->new_locomotion_ct->setMovingSpd(curSpeed);
@@ -1361,7 +1361,7 @@ float PPRAISteeringAgent::evaluateNewLoco(float dt, float x, float y, float z, f
 */
 float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float z, float yaw)
 {
-	SmartBody::SBScene* scene = SmartBody::SBScene::getScene();
+	auto& scene = _steerManager._scene;
 	
 	PPRAgent* pprAgent = dynamic_cast<PPRAgent*>(agent);
 	const std::queue<SteerLib::AgentGoalInfo>& goalQueue = pprAgent->getLandmarkQueue();
@@ -1442,8 +1442,8 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 			targetLoc.x = goalQueue.front().targetLocation.x;
 			targetLoc.y = goalQueue.front().targetLocation.y;
 			targetLoc.z = goalQueue.front().targetLocation.z;
-			distToTarget = sqrt((x * scene->getScale() - targetLoc.x) * (x * scene->getScale() - targetLoc.x) + 
-				(z * scene->getScale() - targetLoc.z) * (z * scene->getScale() - targetLoc.z));
+			distToTarget = sqrt((x * scene.getScale() - targetLoc.x) * (x * scene.getScale() - targetLoc.x) + 
+				(z * scene.getScale() - targetLoc.z) * (z * scene.getScale() - targetLoc.z));
 
 			if (distToTarget < agent->radius()*10.f)
 			{
@@ -1456,13 +1456,13 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 
 				if (penetration > 0.f && collisionTime > 1.f) // if the current target become blocked
 				{
-					SrVec newTarget = getCollisionFreeGoal(targetLoc, curSteerPos*scene->getScale());
+					SrVec newTarget = getCollisionFreeGoal(targetLoc, curSteerPos*scene.getScale());
 					agent->clearGoals();
 					SteerLib::AgentGoalInfo goal;
 					goal.desiredSpeed = desiredSpeed;
 					goal.goalType = SteerLib::GOAL_TYPE_SEEK_STATIC_TARGET;
 					goal.targetIsRandom = false;
-					//goal.targetLocation = Util::Point(goalx * scene->getScale(), 0.0f, goalz * scene->getScale());
+					//goal.targetLocation = Util::Point(goalx * scene.getScale(), 0.0f, goalz * scene.getScale());
 					goal.targetLocation = Util::Point(newTarget.x, 0.0f, newTarget.z);
 					//SmartBody::util::log("agent %s, newTarget = %f %f %f",character->getName().c_str(),newTarget.x, newTarget.y,newTarget.z);
 					agent->addGoal(goal);
@@ -1513,11 +1513,11 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 	if (stepAdjust)
 		if (!character->param_animation_ct->hasPABlend(stepStateName))
 		{
-			agentToTargetDist = distToTarget / scene->getScale();
-			agentToTargetVec.x = targetLoc.x - x * scene->getScale();
-			agentToTargetVec.y = targetLoc.y - y * scene->getScale();
-			agentToTargetVec.z = targetLoc.z - z * scene->getScale();
-			agentToTargetVec /= scene->getScale();
+			agentToTargetDist = distToTarget / scene.getScale();
+			agentToTargetVec.x = targetLoc.x - x * scene.getScale();
+			agentToTargetVec.y = targetLoc.y - y * scene.getScale();
+			agentToTargetVec.z = targetLoc.z - z * scene.getScale();
+			agentToTargetVec /= scene.getScale();
 		}
 
 	PABlendData* curStateData =  character->param_animation_ct->getCurrentPABlendData();
@@ -1543,8 +1543,8 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 	if (character->param_animation_ct->isIdle() && numGoals != 0 && nextStateName.empty() && distToTarget > distDownThreshold)
 	{
 		// check to see if there's anything obstacles around it		
-		//float targetAngle = radToDeg(atan2(pprAgent->getStartTargetPosition().x - x * scene->getScale(), pprAgent->getStartTargetPosition().z - z * scene->getScale()));
-		float targetAngle = radToDeg(atan2(targetLoc.x - x * scene->getScale(), targetLoc.z - z * scene->getScale()));
+		//float targetAngle = radToDeg(atan2(pprAgent->getStartTargetPosition().x - x * scene.getScale(), pprAgent->getStartTargetPosition().z - z * scene.getScale()));
+		float targetAngle = radToDeg(atan2(targetLoc.x - x * scene.getScale(), targetLoc.z - z * scene.getScale()));
 		normalizeAngle(targetAngle);
 		//SmartBody::util::log("steering:normalize target angle = %f",targetAngle);
 		normalizeAngle(yaw);
@@ -1555,17 +1555,17 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 		
 
 		std::vector<float> neigbors;
-		const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
+		const std::vector<std::string>& pawns = _steerManager._scene.getPawnNames();
 		for (const auto & pawnIter : pawns)
 		{
 		
-			SmartBody::SBPawn* pawn = SmartBody::SBScene::getScene()->getPawn(pawnIter);
+			SmartBody::SBPawn* pawn = _steerManager._scene.getPawn(pawnIter);
 			if (pawn->getName() != character->getName())
 			{
 				float cX, cY, cZ, cYaw, cRoll, cPitch;
 				pawn->get_world_offset(cX, cY, cZ, cYaw, cPitch, cRoll);
 				float cDist = sqrt((x - cX) * (x - cX) + (z - cZ) * (z - cZ));
-				if (cDist < (1.5f / scene->getScale()))
+				if (cDist < (1.5f / scene.getScale()))
 				{
 					float cAngle = radToDeg(atan2(pprAgent->getStartTargetPosition().x - x, pprAgent->getStartTargetPosition().z - z));
 					normalizeAngle(cAngle);
@@ -1619,13 +1619,13 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 			goalList.pop_front();
 			agent->clearGoals();
 
-			SrVec newGoal = getCollisionFreeGoal(SrVec(goalx,goaly,goalz)*scene->getScale(),curSteerPos*scene->getScale());		
+			SrVec newGoal = getCollisionFreeGoal(SrVec(goalx,goaly,goalz)*scene.getScale(),curSteerPos*scene.getScale());		
 			//SmartBody::util::log("evaluateExampleLoco : original goal = %f %f %f, new goal = %f %f %f",goalx,goaly,goalz, newGoal.x*100.f, newGoal.y*100.f, newGoal.z*100.f);
 			SteerLib::AgentGoalInfo goal;
 			goal.desiredSpeed = desiredSpeed;
 			goal.goalType = SteerLib::GOAL_TYPE_SEEK_STATIC_TARGET;
 			goal.targetIsRandom = false;
-			//goal.targetLocation = Util::Point(goalx * scene->getScale(), 0.0f, goalz * scene->getScale());
+			//goal.targetLocation = Util::Point(goalx * scene.getScale(), 0.0f, goalz * scene.getScale());
 			goal.targetLocation = Util::Point(newGoal.x, 0.0f, newGoal.z);
 			agent->addGoal(goal);
 
@@ -1663,7 +1663,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 	float parameterScale = 1.f;
 	if (character && blend)
 	{
-		SmartBody::SBRetarget* retarget = SmartBody::SBScene::getScene()->getRetargetManager()->getRetarget(blend->getBlendSkeleton(),character->getSkeleton()->getName());				
+		SmartBody::SBRetarget* retarget = _steerManager._scene.getRetargetManager()->getRetarget(blend->getBlendSkeleton(),character->getSkeleton()->getName());				
 		if (retarget)
 			parameterScale = 1.f/retarget->getHeightRatio();
 	}
@@ -1677,10 +1677,10 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 		
 
 		float tnormal[3];
-		Heightfield* heightField = SmartBody::SBScene::getScene()->getHeightfield();
+		Heightfield* heightField = _steerManager._scene.getHeightfield();
 		if (heightField)
 		{
-			SmartBody::SBScene::getScene()->queryTerrain(x, z, tnormal);
+			_steerManager._scene.queryTerrain(x, z, tnormal);
 		}
 		//SmartBody::util::log("current normal %f %f %f", tnormal[0], tnormal[1], tnormal[2]);
 
@@ -1724,7 +1724,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 					}
 				}
 			}
-			curSpeed = curSpeed * scene->getScale();
+			curSpeed = curSpeed * scene.getScale();
 
 			if (steeringCommand.aimForTargetSpeed)
 			{
@@ -1775,7 +1775,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 			}			
 			// update locomotion state
 			newSpeed = curSpeed;
-			curSpeed = curSpeed / scene->getScale();
+			curSpeed = curSpeed / scene.getScale();
 		}
 		else	// direct gaining
 		{
@@ -1785,7 +1785,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 			float angleDiff = angleGlobal - yaw;
 			normalizeAngle(angleDiff);
 
-			curSpeed = targetSpeed / scene->getScale();
+			curSpeed = targetSpeed / scene.getScale();
 			curTurningAngle = angleDiff * paLocoAngleGain ;
 			curScoot = steeringCommand.scoot * paLocoScootGain;			
 			newSpeed = targetSpeed;
@@ -1856,8 +1856,8 @@ void PPRAISteeringAgent::adjustFacingAngle( float angleDiff )
 		std::string cmd = "bml chr " + character->getName() + " success";
 		//cmd = cmd + " facing: " + boost::lexical_cast<std::string>(facing)
 		facingEvent.setParameters(cmd);
-		facingEvent.setSource(SmartBody::SBScene::getScene()->getStringFromObject(character));
-		SmartBody::SBEventManager* manager = SmartBody::SBScene::getScene()->getEventManager();		
+		facingEvent.setSource(_steerManager._scene.getStringFromObject(character));
+		SmartBody::SBEventManager* manager = _steerManager._scene.getEventManager();		
 		manager->handleEvent(&facingEvent);
 		facingAdjust = false; // stop facing adjustment
 	}
@@ -1900,7 +1900,7 @@ void PPRAISteeringAgent::startParameterTesting()
 {
 	SmartBody::util::log("Parameter Testing Start...");
 	
-	paramTestStartTime = (float) SmartBody::SBScene::getScene()->getSimulationManager()->getTime();
+	paramTestStartTime = (float) _steerManager._scene.getSimulationManager()->getTime();
 	paramTestFlag = true;
 	paramTestAngle = 0.0f;
 	paramTestDistance = 0.0f;
@@ -1912,7 +1912,7 @@ void PPRAISteeringAgent::startParameterTesting()
 void PPRAISteeringAgent::parameterTesting()
 {
 	
-	if ((SmartBody::SBScene::getScene()->getSimulationManager()->getTime() - paramTestStartTime) > paramTestDur)
+	if ((_steerManager._scene.getSimulationManager()->getTime() - paramTestStartTime) > paramTestDur)
 	{
 		paramTestFlag = false;
 		paramTestAngle *= (float(M_PI) / 1.8f);
@@ -2021,9 +2021,9 @@ void PPRAISteeringAgent::startLocomotionState()
 	PPRAgent* pprAgent = dynamic_cast<PPRAgent*>(agent);
 	const SteerLib::SteeringCommand & steeringCommand = pprAgent->getSteeringCommand();
 	float targetSpeed = this->desiredSpeed;//steeringCommand.targetSpeed;
-	targetSpeed *= 1.0f / SmartBody::SBScene::getScene()->getScale();
+	targetSpeed *= 1.0f / _steerManager._scene.getScale();
 
-	SmartBody::SBAnimationBlendManager* stateManager = SmartBody::SBScene::getScene()->getBlendManager();
+	SmartBody::SBAnimationBlendManager* stateManager = _steerManager._scene.getBlendManager();
 	SmartBody::SBAnimationBlend* state = stateManager->getBlend(locomotionName);
 	if (!state)
 	{
@@ -2034,7 +2034,7 @@ void PPRAISteeringAgent::startLocomotionState()
 	float parameterScale = 1.f;
 	if (character && state)
 	{
-		SmartBody::SBRetarget* retarget = SmartBody::SBScene::getScene()->getRetargetManager()->getRetarget(state->getBlendSkeleton(),character->getSkeleton()->getName());
+		SmartBody::SBRetarget* retarget = _steerManager._scene.getRetargetManager()->getRetarget(state->getBlendSkeleton(),character->getSkeleton()->getName());
 		if (retarget)
 			parameterScale = 1.f/retarget->getHeightRatio();
 	}
@@ -2050,7 +2050,7 @@ void PPRAISteeringAgent::adjustLocomotionBlend(SmartBody::SBCharacter* character
 		return;
 	}
 
-	SmartBody::SBAnimationBlend* blend = SmartBody::SBScene::getScene()->getBlendManager()->getBlend(blendName);
+	SmartBody::SBAnimationBlend* blend = _steerManager._scene.getBlendManager()->getBlend(blendName);
 	if (!blend)
 	{
 		SmartBody::util::log("Blend %s does not exist, cannot update locomotion to (%d, %d, %d)", blendName.c_str(), x, y, z);

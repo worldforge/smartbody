@@ -1559,6 +1559,7 @@ void CMainApplication::RenderScene(vr::Hmd_Eye nEye)
 #endif
 
 #if 1
+		bool useGPUBlendShapes = scene.getBoolAttribute("useGPUBlendshapes");
 		const std::vector<std::string>& pawns = SmartBody::SBScene::getScene()->getPawnNames();
 		for (std::vector<std::string>::const_iterator pawnIter = pawns.begin();
 			pawnIter != pawns.end();
@@ -1575,7 +1576,7 @@ void CMainApplication::RenderScene(vr::Hmd_Eye nEye)
 					//SmartBody::util::log("drawDeformableModels(): Rendering %s", pawn->getName().c_str());
 					//meshInstance->update();
 					DeformableMesh* mesh = meshInstance->getDeformableMesh();
-					SrGlRenderFuncs::renderDeformableMesh(meshInstance, false);
+					SrGlRenderFuncs::renderDeformableMesh(useGPUBlendShapes, meshInstance, false);
 				}
 				else
 				{
@@ -1583,7 +1584,7 @@ void CMainApplication::RenderScene(vr::Hmd_Eye nEye)
 					DeformableMesh* mesh = meshInstance->getDeformableMesh();
 					//if (mesh)
 					//	printf("drawStatic Mesh, mesh name = %s\n", mesh->getName().c_str());
-					SrGlRenderFuncs::renderDeformableMesh(meshInstance, false);
+					SrGlRenderFuncs::renderDeformableMesh(useGPUBlendShapes, meshInstance, false);
 				}
 			}
 		}

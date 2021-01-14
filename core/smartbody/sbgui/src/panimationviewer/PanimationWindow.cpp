@@ -237,7 +237,7 @@ void PanimationWindow::execCmd(PanimationWindow* window, std::string cmd, double
 
 	BML::SbmCommand* command = new BML::SbmCommand(cmd, (float)(Session::current->scene.getSimulationManager()->getTime() + tOffset));
 	bool success = true;
-	srCmdSeq *seq = new srCmdSeq(); //sequence that holds the commands
+	auto seq = std::make_unique<srCmdSeq>(); //sequence that holds the commands
 	if( command != nullptr )
 	{
 		if( seq->insert( (float)(command->time), command->command.c_str() ) != CMD_SUCCESS ) 
@@ -254,7 +254,7 @@ void PanimationWindow::execCmd(PanimationWindow* window, std::string cmd, double
 	{
 		if (!scene->isRemoteMode())
 		{
-			if( Session::current->scene.getCommandManager()->execute_seq(seq) != CMD_SUCCESS )
+			if( Session::current->scene.getCommandManager()->execute_seq(std::move(seq)) != CMD_SUCCESS )
 				SmartBody::util::log("ERROR: PanimationWindow::generateBML: Failed to execute sequence.");			
 		}
 		else

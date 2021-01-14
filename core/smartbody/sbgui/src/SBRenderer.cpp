@@ -150,7 +150,7 @@ void SBRenderer::initRenderer(int w, int h)
 
 	shaderManager.addShader("depthQuad_shader", shaderPath + "depthQuad.vert", shaderPath + "depthQuad.frag", true);
 	depthQuadShader = shaderManager.getShader("depthQuad_shader");
-	texManager.updateEnvMaps();
+	texManager.updateEnvMaps(*scene);
 
 	initSSAO(w, h);
 	rendererInitialized = true;

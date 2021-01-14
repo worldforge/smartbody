@@ -119,7 +119,7 @@ bradRagdoll = False
 
 '''
 # Enable collision
-collisionManager = getScene().getCollisionManager()
+collisionManager = scene.getCollisionManager()
 collisionManager.setStringAttribute('collisionResolutionType', 'default')
 collisionManager.setEnable(True)
 '''

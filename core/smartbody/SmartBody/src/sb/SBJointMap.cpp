@@ -63,11 +63,9 @@ void SBJointMap::applyMotion(SmartBody::SBMotion* motion)
 //	_mappedMotions.emplace_back(motion->getName());
 }
 
-void SBJointMap::applyMotionRecurse(const std::string& directory)
+void SBJointMap::applyMotionRecurse(SBScene& scene, const std::string& directory)
 {
-	SBScene* scene = SmartBody::SBScene::getScene();
-
-	std::string mediaPath = scene->getMediaPath();
+	std::string mediaPath = scene.getMediaPath();
 
 	boost::filesystem::path path(directory);
 	
@@ -93,10 +91,10 @@ void SBJointMap::applyMotionRecurse(const std::string& directory)
 		return;
 	}
 
-	std::vector<std::string> motionNames = scene->getMotionNames();
+	std::vector<std::string> motionNames = scene.getMotionNames();
 	for (auto & motionName : motionNames)
 	{
-		SBMotion* motion = scene->getMotion(motionName);
+		SBMotion* motion = scene.getMotion(motionName);
 		if (!motion)
 		{
 			SmartBody::util::log("Motion not found for name '%s'.", motionName.c_str());

@@ -96,7 +96,6 @@ public:
 public:
 	static dGeomID createODERawGeometry(SBGeomObject* geomObj); 	
 	static void updateODEGeometryTransform(SBGeomObject* geomObj, dGeomID geomID);
-	static ODEPhysicsSim* getODESim();
 protected:
 	static void updateODEMass(dMass& odeMass, SBGeomObject* geomObj, float mass);
 	static void nearCallBack(void *data, dGeomID o1, dGeomID o2);
@@ -117,13 +116,13 @@ public:
 	ODECollisionSpace();
 	~ODECollisionSpace();
 
-	void addCollisionObjects(const std::string& objName) override;
-	void removeCollisionObjects(const std::string& objName) override;
+	void addCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName) override;
+	void removeCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName) override;
 	void getPotentialCollisionPairs(SbmCollisionPairList& collisionPairs) override;
 	static  void collisionSpaceNearCallBack(void *data, dGeomID o1, dGeomID o2);
 	std::string getODEGeomName(dGeomID geomID);
 	SbmCollisionPairList& getCurrentCollisionPairList();
-	void collisionDetection(SBGeomObject* obj1, SBGeomObject* obj2, std::vector<SBGeomContact>& contactPts);
+	void collisionDetection(SBGeomObject* obj1, SBGeomObject* obj2, std::vector<SBGeomContact>& contactPts) override;
 protected:
 	dGeomID getODEGeomID(const std::string& geomName);	
 };

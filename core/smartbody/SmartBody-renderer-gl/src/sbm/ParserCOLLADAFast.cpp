@@ -128,7 +128,7 @@ void TextLineSplitterFast::SplitLine( const char *line,
 
 
 
-bool ParserCOLLADAFast::parse(SkSkeleton& skeleton, SkMotion& motion, std::string pathName, float scale, bool doParseSkeleton, bool doParseMotion)
+bool ParserCOLLADAFast::parse(SmartBody::SBScene& scene, SkSkeleton& skeleton, SkMotion& motion, std::string pathName, float scale, bool doParseSkeleton, bool doParseMotion)
 {
 	bool zaxis = false;
 	rapidxml::file<char>* rapidFile = nullptr;
@@ -212,7 +212,7 @@ bool ParserCOLLADAFast::parse(SkSkeleton& skeleton, SkMotion& motion, std::strin
 		if (doParseMotion)
 		{
 			std::vector<std::unique_ptr<SmartBody::SBMotion>> motions;
-			parseLibraryAnimations(skmNode, skeleton, motions, scale, order, zaxis);
+			parseLibraryAnimations(scene, skmNode, skeleton, motions, scale, order, zaxis);
 		}
 	//	animationPostProcess(skeleton, motion);
 		
@@ -1293,7 +1293,8 @@ void ParserCOLLADAFast::parseLibrarySingleAnimation(rapidxml::xml_node<>* node, 
 }
 
 
-void ParserCOLLADAFast::parseLibraryAnimations( rapidxml::xml_node<>* node,
+void ParserCOLLADAFast::parseLibraryAnimations( SmartBody::SBScene& scene,
+												rapidxml::xml_node<>* node,
 												SkSkeleton& skeleton,
 												std::vector<std::unique_ptr<SmartBody::SBMotion>>& motions,
 												float scale,
@@ -1322,7 +1323,7 @@ void ParserCOLLADAFast::parseLibraryAnimations( rapidxml::xml_node<>* node,
 		std::string node1Name = node1->name();
 		if (node1Name == "animation")
 		{
-			auto motion = std::make_unique<SmartBody::SBMotion>();
+			auto motion = std::make_unique<SmartBody::SBMotion>(scene);
 			
 			rapidxml::xml_attribute<>* idNode = node1->first_attribute("id");
 			std::string idAttr;
