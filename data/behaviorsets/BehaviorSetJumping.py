@@ -87,7 +87,7 @@ def retargetBehaviorSet(charName):
     jumpMotions.append("ChrGarza@IdleStand01_JumpUpHigh01")
     jumpMotions.append("ChrGarza@IdleStand01_JumpUpLow01")
     jumpMotions.append("ChrGarza@IdleStand01_JumpUpMedium01")
-    # include the mirrored motions
+    #include the mirrored motions
     jumpMotions.append("ChrGarza@IdleStand01_JumpLeft45HighMid01" + "Rt")
     jumpMotions.append("ChrGarza@IdleStand01_JumpLeft45HighNear01" + "Rt")
     jumpMotions.append("ChrGarza@IdleStand01_JumpLeft45LowFar01" + "Rt")

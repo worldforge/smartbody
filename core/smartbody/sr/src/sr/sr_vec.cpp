@@ -20,9 +20,9 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <math.h>
-# include <sr/sr_vec.h>
-# include <sr/sr_vec2.h>
+#include <cmath>
+#include <sr/sr_vec.h>
+#include <sr/sr_vec2.h>
 #include <boost/lexical_cast.hpp>
 
 //===========================================================================

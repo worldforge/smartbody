@@ -18,11 +18,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
  
-# include <sr/sr_camera.h>
-# include <math.h>
-# include <sr/sr_box.h>
-# include <sr/sr_plane.h>
-# include <sr/sr_mat.h>
+#include <sr/sr_camera.h>
+#include <cmath>
+#include <sr/sr_box.h>
+#include <sr/sr_plane.h>
+#include <sr/sr_mat.h>
 #include <sstream>
 
 #include "gwiz_math.h"

@@ -42,6 +42,7 @@
 #include <sbm/PPRAISteeringAgent.h>
 #include <SBBMLProcessorPython.h>
 #include <boost/optional.hpp>
+#include <sbm/BMLDefs.h>
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1434,6 +1435,11 @@ int main( int argc, char **argv )	{
 	// finally, delete SBScene
 	delete Session::current;
 	SmartBody::util::g_log.RemoveListener(&listener);
+	//We need to release BML defs before we terminate XML, since the XML framework owns that memory.
+	//This setup is not ideal.
+	BML::BMLDefs::shutdown();
+	XMLPlatformUtils::Terminate();
+
 	return 0;
 }
 

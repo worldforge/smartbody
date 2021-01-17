@@ -26,9 +26,9 @@
 //================================ SkScene =================================================
 
 #include <sb/SBTypes.h>
-# include <sr/sr_array.h>
-# include <sr/sr_sn_group.h>
-# include <sr/sr_sn_shape.h>
+#include <sr/sr_array.h>
+#include <sr/sr_sn_group.h>
+#include <sr/sr_sn_shape.h>
 #include "sr/sr_shared_ptr.hpp"
 
 class SrModel;
@@ -38,7 +38,7 @@ class SkSkeleton;
 /*! Maintains a scene graph containing geometries to display a given SkSkeleton */
 class SBAPI SkScene : public SrSnGroup
  { private :
-    SrArray<SrSnGroup*> _jgroup;
+    std::vector<boost::intrusive_ptr<SrSnGroup>> _jgroup;
     float _cradius, _sfactor, _axislen;
 	float scaleFactor;
 	boost::intrusive_ptr<SkSkeleton> _skeleton;
@@ -53,7 +53,7 @@ class SBAPI SkScene : public SrSnGroup
     SkScene ();
 
     /*! Destructor unreferences the associated skeleton */
-    virtual ~SkScene ();
+    ~SkScene () override;
 
     /*! Creates a scene graph according to the given skeleton.
         Only the visualization geometry is set as visible; method

@@ -25,7 +25,7 @@
 /** \file sr_mat.h 
  * A 4x4 matrix */
 #include "SBABI.h"
-# include <sr/sr_vec.h>
+#include <sr/sr_vec.h>
 
 /*! \class SrMat sr_mat.h
     \brief A 4x4 matrix

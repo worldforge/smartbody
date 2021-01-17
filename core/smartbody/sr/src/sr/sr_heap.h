@@ -5,7 +5,7 @@
 /** \file sr_heap.h 
  * Template for a heap based on SrArray. */
 #include "SBABI.h"
-# include <sr/sr_array.h> 
+#include <sr/sr_array.h>
 
 /*! \class SrHeap sr_heap.h
     \brief Heap based on a SrArray 

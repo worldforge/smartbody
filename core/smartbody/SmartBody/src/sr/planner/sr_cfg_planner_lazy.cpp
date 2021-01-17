@@ -1,10 +1,10 @@
 
-# include "sr_cfg_planner.h"
+#include "sr_cfg_planner.h"
 
 //# define SR_USE_TRACE1    // not used
 //# define SR_USE_TRACE2    // update
 //# define SR_USE_TRACE3    // bridge
-# include <sr/sr_trace.h>
+#include <sr/sr_trace.h>
 
 //============================= SrCfgPlannerBase ========================================
 

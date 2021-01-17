@@ -5,9 +5,9 @@
 /** \file sr_class_manager.h 
  * Generic way to allocate, io and compare classes */
 
-# include <SR/sr_input.h>
-# include <SR/sr_output.h>
-# include <SR/sr_shared_class.h>
+#include <SR/sr_input.h>
+#include <SR/sr_output.h>
+#include <SR/sr_shared_class.h>
 
 class SrClassManagerBase : public SrSharedClass
  { protected :

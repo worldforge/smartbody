@@ -634,7 +634,7 @@ BOOST_PYTHON_MODULE (SmartBody) {
 	boost::python::class_<SBReachManager, boost::noncopyable>("SBReachManager", boost::python::no_init)
 			.def("createReach", &SBReachManager::createReach, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a reach engine for a character.")
 			.def("createReachWithTag", &SBReachManager::createReachWithTag, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a reach engine for a character with specified tag.")
-			.def("removeReach", &SBReachManager::removeReach, "Removes a reach engine for a character")
+//			.def("removeReach", &SBReachManager::removeReach, "Removes a reach engine for a character")
 			.def("getNumReaches", &SBReachManager::getNumReaches, "Returns the number of reach engines present.")
 			.def("getReach", &SBReachManager::getReach, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Returns a reach engine for a given character.");
 

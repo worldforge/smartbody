@@ -20,18 +20,17 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SteerPath.h"
 #include <sr/sr_line.h>
-#include <float.h>
-#include <math.h>
+#include <cfloat>
+#include <cmath>
 
 
 SteerPath::SteerPath()
+: pathRadius(0)
 {
 	currentGoal = 1;
 }
 
-SteerPath::~SteerPath()
-{
-}
+SteerPath::~SteerPath() = default;
 
 void SteerPath::initPath( const std::vector<SrPnt>& pts, float radius )
 {

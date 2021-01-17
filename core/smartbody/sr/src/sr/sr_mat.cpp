@@ -19,12 +19,12 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <math.h>
+#include <cmath>
 
-# include <sr/sr_mat.h>
+#include <sr/sr_mat.h>
 #include <sr/sr_euler.h>
 #include <boost/lexical_cast.hpp>
-//# include <sr/sr_utils.h>
+//#include <sr/sr_utils.h>
 
 //================================== Static Data ===================================
 

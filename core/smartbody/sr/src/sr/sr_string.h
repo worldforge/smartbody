@@ -28,7 +28,7 @@
 # define SR_STRING_H
 
 #include "SBABI.h"
-# include <sr/sr.h> 
+#include <sr/sr.h>
 
 /*! \class SrString sr_string.h
     \brief Resizable dynamic string

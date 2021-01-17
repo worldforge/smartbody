@@ -398,8 +398,8 @@ bool KNNInterpolator::buildInterpolator()
 
 	// put together example data & resample data
 	finalExampleData = resampleData;
-	for (unsigned int i=0;i<interpExamples.size();i++)	
-		finalExampleData.emplace_back(interpExamples[i]);
+	for (auto & interpExample : interpExamples)
+		finalExampleData.emplace_back(interpExample);
 
 #if USE_ANN
 	// build Kd-Tree

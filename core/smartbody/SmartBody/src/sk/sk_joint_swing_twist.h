@@ -24,7 +24,7 @@
 # ifndef SK_JOINT_SWING_TWIST
 # define SK_JOINT_SWING_TWIST
 
-# include <sk/sk_joint_quat.h>
+#include <sk/sk_joint_quat.h>
 
 /*! Implements the swing and twist decomposition of a rotation, which is
     suitable to define meaningfull swing limits with the use of an ellipse.

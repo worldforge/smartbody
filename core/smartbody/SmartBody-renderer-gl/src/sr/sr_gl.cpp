@@ -20,18 +20,18 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <sr/sr_mat.h>
-# include <sr/sr_vec.h>
-# include <sr/sr_color.h>
-# include <sr/sr_quat.h>
-# include <sr/sr_output.h>
-# include <sr/sr_material.h>
-# include <sr/sr_light.h>
-# include <sr/sr_gl.h>
-# include <math.h>
+#include <sr/sr_mat.h>
+#include <sr/sr_vec.h>
+#include <sr/sr_color.h>
+#include <sr/sr_quat.h>
+#include <sr/sr_output.h>
+#include <sr/sr_material.h>
+#include <sr/sr_light.h>
+#include <sr/sr_gl.h>
+#include <cmath>
 
 # ifdef SR_TARGET_WINDOWS
-# include <Windows.h>
+#include <Windows.h>
 # endif
 
 #if !defined(EMSCRIPTEN)

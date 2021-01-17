@@ -21,16 +21,16 @@
  *      Andrew n marshall, USC
  */
  
-# include <sr/sr_lines.h>
-# include <sr/sr_model.h>
-# include <sr/sr_sphere.h>
-# include <sr/sr_cylinder.h>
-# include <sr/sr_sn_matrix.h>
-# include <sr/sr_sn_shape.h>
+#include <sr/sr_lines.h>
+#include <sr/sr_model.h>
+#include <sr/sr_sphere.h>
+#include <sr/sr_cylinder.h>
+#include <sr/sr_sn_matrix.h>
+#include <sr/sr_sn_shape.h>
 
-# include <sk/sk_scene.h>
-# include <sk/sk_skeleton.h>
-# include <sk/sk_joint.h>
+#include <sk/sk_scene.h>
+#include <sk/sk_skeleton.h>
+#include <sk/sk_joint.h>
 #include "SBUtilities.h"
 
 
@@ -56,36 +56,32 @@ SkScene::SkScene ()
 
 SkScene::~SkScene () = default;
 
-static SrSnGroup* make_joint_group ( const SkJoint* j, SkSkeleton* s, SrArray<SrSnGroup*>& _jgroup )
- {
-	 if (!j)
-		 return nullptr;
-   int i;
-   if (j->index() < 0)
-   {
-	   SmartBody::util::log("Joint %s cannot be added to scene graph since joint index is %d", j->jointName().c_str(), j->index());
-	   return nullptr;
-   }
-   SrSnGroup* g = new SrSnGroup;
-   g->separator ( true );
-   _jgroup [ j->index() ] = g;
+static boost::intrusive_ptr<SrSnGroup> make_joint_group(const SkJoint* j, SkSkeleton* s, std::vector<boost::intrusive_ptr<SrSnGroup>>& _jgroup) {
+	if (!j)
+		return nullptr;
+	int i;
+	if (j->index() < 0) {
+		SmartBody::util::log("Joint %s cannot be added to scene graph since joint index is %d", j->jointName().c_str(), j->index());
+		return nullptr;
+	}
+	boost::intrusive_ptr<SrSnGroup> g(new SrSnGroup);
+	g->separator(true);
+	_jgroup[j->index()] = g;
 
-   // insert children recursivelly
-   for ( i=0; i<j->num_children(); i++ )
-   {
-	   SrSnGroup* group = make_joint_group(j->child(i),s,_jgroup);
-	   if (group)
-	      g->add ( group );
-   }
+	// insert children recursivelly
+	for (i = 0; i < j->num_children(); i++) {
+		auto group = make_joint_group(j->child(i), s, _jgroup);
+		if (group)
+			g->add(group);
+	}
 
-   for (int i=0;i<_jgroup.size();i++)
-   {
-	   if (_jgroup[i] == nullptr)
-		   _jgroup[i] = new SrSnGroup; // create dummy group for dangling joints
-   }
+	for (auto & group : _jgroup) {
+		if (group == nullptr)
+			group.reset(new SrSnGroup()); // create dummy group for dangling joints
+	}
 
-   return g;
- }
+	return g;
+}
 
 enum GroupPos { AxisPos=0, MatrixPos=1, SpherePos=2, GeoPos=3 };
 enum GeoGroupPos { VisgeoPos=0, ColgeoPos=1, FirstCylPos=2 };
@@ -93,7 +89,7 @@ enum GeoGroupPos { VisgeoPos=0, ColgeoPos=1, FirstCylPos=2 };
 void SkScene::init ( boost::intrusive_ptr<SkSkeleton> s, float scale )
  {
    remove_all();
-   _jgroup.size ( 0 );
+   _jgroup.clear();
    // unref seems to make things unstable with random crash. Since SkScene is only getting a pointer to the skeleton, I think its parent is responsible for cleaning it up. 
    //if ( _skeleton ) { _skeleton->unref(); _skeleton=0; }
       
@@ -117,14 +113,13 @@ void SkScene::initInternal()
    SrSnSharedModel* smodel;
 
    auto& joints = _skeleton->joints ();
-   _jgroup.size ( joints.size() );
-   _jgroup.setall(nullptr);
+   _jgroup.resize( joints.size(), nullptr );
 
    SkJoint* root = _skeleton->root();
    if (!root)
 	   return;
 //   const char* root_name = root->name().get_string();  // expose to debugger
-   SrSnGroup* g = make_joint_group ( root, _skeleton.get(), _jgroup );
+   auto g = make_joint_group ( root, _skeleton.get(), _jgroup );
    if (!g)
    {
 	   SmartBody::util::log("Skeleton %s cannot be added to the scene.", _skeleton->getName().c_str());
@@ -155,7 +150,7 @@ void SkScene::initInternal()
       ((SrSnMatrix*)gaxis->get(0))->set ( arot );
 
       // add all visual elements:
-	  SrSnGroup* group_p = _jgroup[i];
+	  auto& group_p = _jgroup[i];
       group_p->add ( gaxis, AxisPos );
 
 	sphere = createSphere(scaleFactor*1.0f);	 
@@ -280,7 +275,6 @@ void SkScene::set_visibility ( int skel, int visgeo, int colgeo, int vaxis )
 
 void SkScene::set_visibility ( SkJoint* joint, int skel, int visgeo, int colgeo, int vaxis )
  {
-   SrSnGroup* g;
    SrSnCylinder* cyl;
    SrSnSphere* sphere;
    SrSnGroup* gaxis;
@@ -290,7 +284,7 @@ void SkScene::set_visibility ( SkJoint* joint, int skel, int visgeo, int colgeo,
    int i, j;
    
    i = joint->index();
-   g = _jgroup[i];
+   auto& g = _jgroup[i];
 
    if ( skel!=-1 )
     { sphere = (SrSnSphere*) g->get(SpherePos);
@@ -302,22 +296,22 @@ void SkScene::set_visibility ( SkJoint* joint, int skel, int visgeo, int colgeo,
       gaxis->visible ( vaxis? true:false );
     }
 
-   g = (SrSnGroup*)_jgroup[i]->get(GeoPos); // the geometry group
+   auto group = (SrSnGroup*)_jgroup[i]->get(GeoPos); // the geometry group
 
    if ( skel!=-1 )
-    { for ( j=FirstCylPos; j<g->num_children(); j++ )
-       { cyl = (SrSnCylinder*) g->get(j);
+    { for ( j=FirstCylPos; j<group->num_children(); j++ )
+       { cyl = (SrSnCylinder*) group->get(j);
          cyl->visible ( skel? true:false );
        }
     }
 
    if ( visgeo!=-1 )
-    { vismodel = (SrSnSharedModel*) g->get(VisgeoPos);
+    { vismodel = (SrSnSharedModel*) group->get(VisgeoPos);
       vismodel->visible ( visgeo? true:false );
     }
 
    if ( colgeo!=-1 )
-    { colmodel = (SrSnSharedModel*) g->get(ColgeoPos);
+    { colmodel = (SrSnSharedModel*) group->get(ColgeoPos);
       colmodel->visible ( colgeo? true:false );
     }
  }
@@ -327,12 +321,11 @@ void SkScene::setJointRadius( SkJoint* joint, float radius )
 {
 	int i;
 	SrSnSphere* sphere;
-	SrSnGroup* g;
-	i = joint->index();	
+	i = joint->index();
 	_cradius = radius;
 	if (_jgroup.size() > i)
 	{
-		g = _jgroup[i];
+		auto& g = _jgroup[i];
 		sphere = (SrSnSphere*) g->get(SpherePos);
 		sphere->shape().radius = _cradius * _sfactor * scaleFactor;	
 	}
@@ -343,9 +336,8 @@ void SkScene::setJointColor( SkJoint* joint, SrColor color )
 {
 	int i;
 	SrSnSphere* sphere;
-	SrSnGroup* g;
 	i = joint->index();
-	g = _jgroup[i];
+	auto& g = _jgroup[i];
 	sphere = (SrSnSphere*) g->get(SpherePos);
 	sphere->color(color);
 	sphere->override_material(sphere->material());
@@ -353,7 +345,6 @@ void SkScene::setJointColor( SkJoint* joint, SrColor color )
 
 void SkScene::set_skeleton_radius ( float r )
  {
-   SrSnGroup* g;
    SrSnCylinder* cyl;
    SrSnSphere* sphere;
    
@@ -363,7 +354,7 @@ void SkScene::set_skeleton_radius ( float r )
 
    int i, j;
    for ( i=0; i<_jgroup.size(); i++ )
-    { g = _jgroup[i];
+    { auto& g = _jgroup[i];
       sphere = (SrSnSphere*) g->get(SpherePos);
       sphere->shape().radius = _cradius * _sfactor;
 
@@ -378,7 +369,6 @@ void SkScene::set_skeleton_radius ( float r )
 
 void SkScene::set_axis_length ( float l )
  {
-   SrSnGroup* g;
    SrSnLines* axis;
 
    if ( _axislen==l || _skeleton==nullptr ) return;
@@ -387,7 +377,7 @@ void SkScene::set_axis_length ( float l )
     auto& joints = _skeleton->joints();
    
    if (_jgroup.size() > 0)
-    { g = _jgroup[0];
+    { auto& g = _jgroup[0];
       axis = (SrSnLines*) ((SrSnGroup*)g->get(AxisPos))->get(1);
       axis->shape().init();
       axis->shape().push_axis ( SrVec::null, _axislen, 3, "xyz"/*let*/, false/*rule*/ );

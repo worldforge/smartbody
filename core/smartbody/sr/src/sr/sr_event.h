@@ -27,9 +27,9 @@
  * A user-generated window-event
  */
 #include "SBABI.h"
-# include <sr/sr_vec2.h>
-# include <sr/sr_line.h>
-# include <sr/sr_output.h>
+#include <sr/sr_vec2.h>
+#include <sr/sr_line.h>
+#include <sr/sr_output.h>
 
 /*! \class SrEvent sr_event.h
     \brief Keeps a window event

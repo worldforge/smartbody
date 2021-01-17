@@ -11,6 +11,8 @@ class BMLDefs
 	private:
 		static std::list<XMLPtr> sAttributes;
 	public:
+
+		static void shutdown();
 		BMLDefs();
 		~BMLDefs();
 

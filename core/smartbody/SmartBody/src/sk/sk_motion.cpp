@@ -19,14 +19,14 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-# include <cmath>
-# include <cstdlib>
-# include <cstring>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <queue>
 
-# include <sk/sk_motion.h>
-# include <sk/sk_posture.h>
-# include <sk/sk_skeleton.h>
+#include <sk/sk_motion.h>
+#include <sk/sk_posture.h>
+#include <sk/sk_skeleton.h>
 #include <sb/SBEvent.h>
 #include "gwiz_math.h"
 #include <algorithm>

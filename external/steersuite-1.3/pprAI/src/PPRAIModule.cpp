@@ -38,7 +38,7 @@ namespace PPRGlobals {
 	bool gShowStats;
 	bool gShowAllStats;
 	
-	PhaseProfilers * gPhaseProfilers;
+	std::unique_ptr<PhaseProfilers> gPhaseProfilers;
 }
 
 using namespace PPRGlobals;
@@ -138,7 +138,7 @@ void PPRAIModule::initializeSimulation()
 	//
 	// initialize the performance profilers
 	//
-	gPhaseProfilers = new PhaseProfilers;
+	gPhaseProfilers = std::make_unique<PhaseProfilers>();
 	gPhaseProfilers->aiProfiler.reset();
 	gPhaseProfilers->longTermPhaseProfiler.reset();
 	gPhaseProfilers->midTermPhaseProfiler.reset();

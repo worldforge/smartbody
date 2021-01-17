@@ -26,7 +26,7 @@
  * retrives the bbox
  */
 #include "SBABI.h"
-# include <sr/sr_sa.h>
+#include <sr/sr_sa.h>
 
 /*! \class SrSaBBox sr_sa_bbox.h
     \brief bbox action

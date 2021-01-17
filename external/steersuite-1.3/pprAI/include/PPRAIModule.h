@@ -45,7 +45,7 @@ namespace PPRGlobals {
 	extern bool gShowAllStats;
 
 
-	extern PhaseProfilers * gPhaseProfilers;
+	extern std::unique_ptr<PhaseProfilers> gPhaseProfilers;
 }
 
 class PPRAIModule : public SteerLib::ModuleInterface

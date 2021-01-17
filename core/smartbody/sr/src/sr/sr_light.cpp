@@ -20,7 +20,7 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <sr/sr_light.h>
+#include <sr/sr_light.h>
 
 //===================================== SrLight ================================
 

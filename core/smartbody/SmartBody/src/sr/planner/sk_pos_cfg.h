@@ -2,11 +2,11 @@
 # ifndef SK_POS_CFG_H
 # define SK_POS_CFG_H
 
-# include "sr_cfg_manager.h"
-# include "sr_cfg_planner.h"
-# include <sr/sr_vec.h>
-# include <vector>
-# include <sb/SBColObject.h>
+#include "sr_cfg_manager.h"
+#include "sr_cfg_planner.h"
+#include <sr/sr_vec.h>
+#include <vector>
+#include <sb/SBColObject.h>
 
 // basic interface for the object to be grabbed
 class ColObject

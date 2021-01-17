@@ -19,10 +19,10 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <sr/sr_sn_group.h>
+#include <sr/sr_sn_group.h>
 
 //# define SR_USE_TRACE1  // Const/Dest
-//# include <sr/sr_trace.h>
+//#include <sr/sr_trace.h>
 
 //======================================= SrSnGroup ====================================
 
@@ -44,14 +44,14 @@ SrSnGroup::~SrSnGroup ()
 void SrSnGroup::capacity ( int c ) 
  { 
    if ( c<=_children.size() ) return;
-   _children.capacity ( c ); 
+   _children.reserve( c );
  }
 
-SrSn* SrSnGroup::get ( int pos ) const
+SrSn*  SrSnGroup::get ( int pos ) const
  { 
-   if ( _children.size()==0 ) return 0;
-   if ( pos<0 || pos>=_children.size() ) return _children.get(_children.size()-1);
-   return _children.get(pos); 
+   if ( _children.empty() ) return nullptr;
+   if ( pos<0 || pos>=_children.size() ) return _children.back().get();
+   return _children[pos].get();
  }
 
 int SrSnGroup::search ( SrSn *n ) const
@@ -62,70 +62,59 @@ int SrSnGroup::search ( SrSn *n ) const
    return -1;
  }
 
-void SrSnGroup::add ( SrSn *sn, int pos )
+void SrSnGroup::add ( boost::intrusive_ptr<SrSn> sn, int pos )
  {
-   sn->ref(); // Increment reference counter
 
    if ( pos<0 || pos>=_children.size() ) // Append
-    { _children.push() = sn;
+    { _children.emplace_back(std::move(sn));
     }
    else // Insert
-    { _children.insert(pos) = sn;
+    { _children.insert(_children.begin() + pos, std::move(sn));
     }
  }
 
-SrSn *SrSnGroup::remove ( int pos )
+boost::intrusive_ptr<SrSn> SrSnGroup::remove ( int pos )
  {
    //SR_TRACE3 ( "remove "<<pos );
 
-   SrSn *sn;
-
    if ( _children.empty() ) // empty
-    { return 0;
+    {
+   	return nullptr;
     }
    else if ( pos<0 || pos>=_children.size() ) // get last child
-    { sn = _children.pop();
+    {
+   	auto sn = _children.back();
+   	_children.pop_back();
+   	return sn;
     }
    else // remove item in the middle
-    { sn = _children[pos];
-      _children.remove(pos);
+    {
+   	auto result = _children.erase(_children.begin() + pos);
+   	return *result;
     }
-
-   int oldref = sn->getref();
-   //delete sn;
-   //return NULL;
-   sn->unref();   
-   return oldref>1? sn:0;
  }
 
-SrSn *SrSnGroup::remove ( SrSn *n )
+boost::intrusive_ptr<SrSn> SrSnGroup::remove ( SrSn *n )
  {
    int pos = search ( n );
-   if ( pos<0 ) return 0;
+   if ( pos<0 ) return nullptr;
    return remove ( pos );
  }
 
-SrSn *SrSnGroup::replace ( int pos, SrSn *sn )
+boost::intrusive_ptr<SrSn> SrSnGroup::replace ( int pos, SrSn *sn )
  {
    //SR_TRACE3 ( "replace "<<pos );
 
-   if ( _children.empty() || pos<0 || pos>=_children.size() ) return 0; // invalid pos
+   if ( _children.empty() || pos<0 || pos>=_children.size() ) return nullptr; // invalid pos
 
-   sn->ref();
-   SrSn *old = _children[pos];
+   auto old = _children[pos];
    _children[pos] = sn;
-
-   int oldref = old->getref();
-   old->unref();
-   return oldref>1? old:0;
-   //delete old;
-   //return NULL;   
+   return old;
  }
 
 void SrSnGroup::remove_all ()
  {
-   //SR_TRACE3 ( "remove_all" );
-   while ( !_children.empty() ) _children.pop()->unref();
+	_children.clear();
  }
 
 //======================================= EOF ====================================

@@ -27,7 +27,7 @@
 /** \file sr_string_array.h 
  * resizeable array of strings */
 #include "SBABI.h"
-# include <sr/sr_array.h> 
+#include <sr/sr_array.h>
 
 /*! \class SrStringArray sr_string_array.h
     \brief resizeable array of strings

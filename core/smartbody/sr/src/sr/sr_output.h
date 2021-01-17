@@ -26,8 +26,8 @@
  * Output to file, function, string or stdout */
 
 #include "SBABI.h"
-# include <stdio.h>
-# include <sr/sr.h>
+#include <stdio.h>
+#include <sr/sr.h>
 
 class SrString;
 

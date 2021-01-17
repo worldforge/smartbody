@@ -20,11 +20,11 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <math.h>
-# include <sr/sr_box.h>
-# include <sr/sr_line.h>
-# include <sr/sr_input.h>
-# include <sr/sr_output.h>
+#include <cmath>
+#include <sr/sr_box.h>
+#include <sr/sr_line.h>
+#include <sr/sr_input.h>
+#include <sr/sr_output.h>
 
 //===========================================================================
 

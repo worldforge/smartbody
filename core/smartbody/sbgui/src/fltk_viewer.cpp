@@ -28,58 +28,58 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sbm/GPU/SbmShader.h"
 #include "sbm/GPU/SbmTexture.h"
-# include <sbm/GPU/SbmDeformableMeshGPU.h>
-# include "fltk_viewer.h"
-# include <FL/Fl.H>
-# include <sr/sr_gl.h>
-# include <FL/glut.H>
+#include <sbm/GPU/SbmDeformableMeshGPU.h>
+#include "fltk_viewer.h"
+#include <FL/Fl.H>
+#include <sr/sr_gl.h>
+#include <FL/glut.H>
 
-# include <FL/fl_draw.H>
-# include <FL/Fl_Color_Chooser.H>
-# include <FL/Fl_File_Chooser.H>
+#include <FL/fl_draw.H>
+#include <FL/Fl_Color_Chooser.H>
+#include <FL/Fl_File_Chooser.H>
 
-# include <sr/sr_box.h>
-# include <sr/sr_sphere.h>
-# include <sr/sr_cylinder.h>
-# include <sr/sr_quat.h>
-# include <sr/sr_line.h>
-# include <sr/sr_plane.h>
-# include <sr/sr_event.h>
-# include <sr/sr_string.h>
+#include <sr/sr_box.h>
+#include <sr/sr_sphere.h>
+#include <sr/sr_cylinder.h>
+#include <sr/sr_quat.h>
+#include <sr/sr_line.h>
+#include <sr/sr_plane.h>
+#include <sr/sr_event.h>
+#include <sr/sr_string.h>
 
-# include <sr/sr_camera.h>
-# include <sr/sr_lines.h>
-# include <sr/sr_color.h>
-# include <sr/sr_euler.h>
+#include <sr/sr_camera.h>
+#include <sr/sr_lines.h>
+#include <sr/sr_color.h>
+#include <sr/sr_euler.h>
 
-# include <sr/sr_sn_matrix.h>
+#include <sr/sr_sn_matrix.h>
 
-# include <sr/sr_sa.h>
-# include <sr/sr_sa_event.h>
-# include <sr/sr_gl_render_funcs.h>
-# include <controllers/me_ct_eyelid.h>
-# include <controllers/me_ct_data_driven_reach.hpp>
-# include <controllers/MeCtBodyReachState.h>
-# include <controllers/me_ct_example_body_reach.hpp>
-# include <controllers/me_ct_constraint.hpp>
-# include <controllers/me_ct_param_animation.h>
-# include <controllers/me_ct_scheduler2.h>
-# include <controllers/me_controller_tree_root.hpp>
+#include <sr/sr_sa.h>
+#include <sr/sr_sa_event.h>
+#include <sr/sr_gl_render_funcs.h>
+#include <controllers/me_ct_eyelid.h>
+#include <controllers/me_ct_data_driven_reach.hpp>
+#include <controllers/MeCtBodyReachState.h>
+#include <controllers/me_ct_example_body_reach.hpp>
+#include <controllers/me_ct_constraint.hpp>
+#include <controllers/me_ct_param_animation.h>
+#include <controllers/me_ct_scheduler2.h>
+#include <controllers/me_controller_tree_root.hpp>
 
-# include <sb/SBJointMap.h>
-# include <sb/SBColObject.h>
-# include <sb/PABlend.h>
-# include <sb/SBScene.h>
-# include <sb/SBCharacter.h>
-# include <sb/SBSteerAgent.h>
-# include <sb/SBAnimationStateManager.h>
-# include <sb/SBCollisionManager.h>
-# include <sb/SBJointMapManager.h>
-# include <sb/SBBehaviorSetManager.h>
-# include <sb/SBSimulationManager.h>
-# include <sb/SBAssetManager.h>
-# include <sb/SBBmlProcessor.h>
-# include <sb/SBNavigationMesh.h>
+#include <sb/SBJointMap.h>
+#include <sb/SBColObject.h>
+#include <sb/PABlend.h>
+#include <sb/SBScene.h>
+#include <sb/SBCharacter.h>
+#include <sb/SBSteerAgent.h>
+#include <sb/SBAnimationStateManager.h>
+#include <sb/SBCollisionManager.h>
+#include <sb/SBJointMapManager.h>
+#include <sb/SBBehaviorSetManager.h>
+#include <sb/SBSimulationManager.h>
+#include <sb/SBAssetManager.h>
+#include <sb/SBBmlProcessor.h>
+#include <sb/SBNavigationMesh.h>
 #include "SBUtilities.h"
 
 #include <boost/filesystem/operations.hpp>
@@ -111,7 +111,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 ////# define SR_USE_TRACE3  // sr translated events
 ////# define SR_USE_TRACE4  // view_all
 ////# define SR_USE_TRACE5  // timeout
-//# include <sr/sr_trace.h>
+//#include <sr/sr_trace.h>
 
 const int SHADOW_MAP_RES = 2048;
 
@@ -1167,7 +1167,7 @@ void FltkViewer::close_requested ()
    exit ( 0 );
  }
 
-//# include <sr/sr_sphere.h>
+//#include <sr/sr_sphere.h>
 //static SrSnSphere* SPH=0;
 //   if ( !SPH ) SPH = new SrSnSphere;
 //   SPH->shape().center = light.position;

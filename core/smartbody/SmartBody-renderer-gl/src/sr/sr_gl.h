@@ -32,10 +32,10 @@
  * and some extra utilities.
  */
 
-# include <sr/sr.h>
+#include <sr/sr.h>
 
 # ifdef SR_TARGET_WINDOWS // defined in sr.h
-# include <Windows.h>
+#include <Windows.h>
 # endif
 
 

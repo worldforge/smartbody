@@ -2,12 +2,12 @@
 # ifndef SK_POS_CFG_MANAGER_H
 # define SK_POS_CFG_MANAGER_H
 
-# include "sr_cfg_manager.h"
-# include "sr_cfg_planner.h"
-# include "sk_pos_cfg.h"
+#include "sr_cfg_manager.h"
+#include "sr_cfg_planner.h"
+#include "sk_pos_cfg.h"
 
-# include <sr/sr_box.h>
-# include <sk/sk_joint.h>
+#include <sr/sr_box.h>
+#include <sk/sk_joint.h>
 //================================ SkPosCfgManager =====================================
 
 class SkPosPlanner;

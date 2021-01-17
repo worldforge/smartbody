@@ -30,15 +30,15 @@ class SrCylinder;
 class SrSphere;
 
 #include "SBABI.h"
-# include <sr/sr_box.h>
-# include <sr/sr_vec.h>
-# include <sr/sr_mat.h>
-# include <sr/sr_vec2.h>
-# include <sr/sr_line.h>
-# include <sr/sr_string.h>
-# include <sr/sr_material.h>
-# include <sr/sr_string_array.h>
-# include <sr/sr_shared_class.h>
+#include <sr/sr_box.h>
+#include <sr/sr_vec.h>
+#include <sr/sr_mat.h>
+#include <sr/sr_vec2.h>
+#include <sr/sr_line.h>
+#include <sr/sr_string.h>
+#include <sr/sr_material.h>
+#include <sr/sr_string_array.h>
+#include <sr/sr_shared_class.h>
 #include <map>
 #include <string>
 #include <vector>

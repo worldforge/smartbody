@@ -22,14 +22,13 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "controllers/me_ct_param_animation.h"
 #include "gwiz_math.h"
 
-#include <sr/sr_euler.h>
 #include <sb/SBAnimationState.h>
 #include <sb/SBAnimationStateManager.h>
 #include <sb/SBEvent.h>
 #include <sb/SBScene.h>
 #include <sb/SBMotion.h>
 #include "SBUtilities.h"
-#include <math.h>
+#include <cmath>
 
 const double timeThreshold = 0.05;
 
@@ -52,7 +51,7 @@ PATimeManager::PATimeManager(PABlendData* data)
 	}
 	else
 	{
-		SmartBody::SBAnimationBlend0D* state0D = dynamic_cast<SmartBody::SBAnimationBlend0D*>(blendData->state);
+		auto* state0D = dynamic_cast<SmartBody::SBAnimationBlend0D*>(blendData->state);
 		if (state0D)
 		{
 			//SmartBody::util::log("state 0D, use blend offset");
@@ -78,9 +77,7 @@ PATimeManager::PATimeManager(PABlendData* data)
 	loadEvents();
 }
 
-PATimeManager::~PATimeManager()
-{
-}
+PATimeManager::~PATimeManager() = default;
 
 int PATimeManager::getNumKeys()
 {
@@ -182,10 +179,10 @@ void PATimeManager::loadEvents()
 		_events.pop();
 
 
-	std::vector<std::pair<SmartBody::SBMotionEvent*, int> >& events = blendData->state->getEvents();
-	for (size_t x = 0; x < events.size(); x++)
+	auto& events = blendData->state->getEvents();
+	for (auto & event : events)
 	{
-		_events.push(events[x]);
+		_events.push(event);
 	}
 }
 
@@ -200,20 +197,20 @@ void PATimeManager::checkEvents()
 	while (!_events.empty() && 
 		    countEvents < numEventsToProcess)
 	{
-		std::pair<SmartBody::SBMotionEvent*, int> event = _events.front();
+		auto event = std::move(_events.front());
 		_events.pop();
 		motionIndex = event.second;
 		countEvents++;
-		if (event.first->isEnabled())
+		if (event.first.isEnabled())
 		{
 			// localTime is the parameterized time, determine the local time of the event
-			if (localTimes[motionIndex] >= event.first->getTime())
+			if (localTimes[motionIndex] >= event.first.getTime())
 			{
 				SmartBody::SBEventManager* manager = blendData->_controller->getScene().getEventManager();
 
 				SmartBody::SBMotionEvent motionEventInstance;
-				motionEventInstance.setType(event.first->getType());
-				motionEventInstance.setParameters(event.first->getParameters());
+				motionEventInstance.setType(event.first.getType());
+				motionEventInstance.setParameters(event.first.getParameters());
 				MeCtParamAnimation* controller = blendData->getController();
 				if (controller)
 				{
@@ -225,7 +222,7 @@ void PATimeManager::checkEvents()
 			}
 			else
 			{
-				_events.push(event);
+				_events.emplace(std::move(event));
 			}
 		}
 	}
@@ -1068,7 +1065,7 @@ PABlendData::~PABlendData()
 bool PABlendData::getTrajPosition( const std::string& effectorName, float time, SrVec& outPos )
 {
 	auto& scene = _controller->getScene();
-	outPos = SrVec(0,0,0);	
+	outPos = SrVec(0,0,0);
 	for (unsigned int i=0;i<weights.size();i++)
 	{
 		SmartBody::SBMotion* sbMotion = scene.getMotion(state->getMotionName(i));
@@ -1211,7 +1208,7 @@ PATransitionManager::PATransitionManager(float transitionLen)
 	blendingMode = true;
 	active = true;
 	transition = nullptr;
-	curve = new srLinearCurve();
+	curve = std::make_unique<srLinearCurve>();
 	curve->insert(0.0, 1.0);
 	float tranLen = transitionLen;
 #if 1
@@ -1231,7 +1228,7 @@ PATransitionManager::PATransitionManager(double easeOutStart, double dur)
 	blendingMode = false;
 	active = true;
 	transition = nullptr;
-	curve = new srLinearCurve();
+	curve = std::make_unique<srLinearCurve>();
 	duration = dur;
 	localTime = 0.0;
 	s1 = easeOutStart;
@@ -1250,20 +1247,18 @@ PATransitionManager::PATransitionManager(SmartBody::SBAnimationTransition* trans
 	from = f;
 	to = t;
 	//transition = trans;
-	transition = new SmartBody::SBAnimationTransition(trans, f->state, to->state);
+	transition = std::make_unique<SmartBody::SBAnimationTransition>(trans, f->state, to->state);
 	update();
 	localTime = 0.0;
 	startTransition = false;
 	blendingMode = false;
 	active = true;
-	curve = new srLinearCurve();
+	curve = std::make_unique<srLinearCurve>();
 	s1 = -1.0;
 	e1 = -1.0;
 }
 
-PATransitionManager::~PATransitionManager()
-{
-}
+PATransitionManager::~PATransitionManager() = default;
 
 
 /* 

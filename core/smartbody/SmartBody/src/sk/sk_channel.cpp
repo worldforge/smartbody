@@ -21,8 +21,8 @@
  *      Andrew n marshall, USC
  */
 
-# include <sk/sk_channel.h>
-# include <sk/sk_joint.h>
+#include <sk/sk_channel.h>
+#include <sk/sk_joint.h>
 
 //============================= SkChannel ============================
 

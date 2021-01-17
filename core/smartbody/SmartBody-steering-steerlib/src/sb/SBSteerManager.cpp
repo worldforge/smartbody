@@ -151,7 +151,7 @@ void SBSteerManager::start()
 		return;
 	}
 
-	auto* steerOptions = new SteerLib::SimulationOptions();
+	auto steerOptions = std::make_unique<SteerLib::SimulationOptions>();
 	steerOptions->moduleOptionsDatabase["testCasePlayer"]["testcase"] = "3-way-confusion-1.xml";
 	std::string ai = dynamic_cast<SmartBody::StringAttribute*>( getAttribute("aimodule") )->getValue();
 	//Zengrui:this is not useful, casue the attribute is nullptr, will cause null ptr error
@@ -201,11 +201,10 @@ void SBSteerManager::start()
 
 	//SmartBody::util::log("INIT STEERSIM");
 	try {
-		getEngineDriver()->init(steerOptions);
+		getEngineDriver()->init(std::move(steerOptions));
 	} catch (Util::GenericException& ge) {
 		SmartBody::util::log("Problem starting steering engine: %s", ge.what());
 		getEngineDriver()->finish();
-		delete steerOptions;
 		return;
 	} catch (std::exception& e) {
 		if (e.what())
@@ -214,7 +213,6 @@ void SBSteerManager::start()
 			SmartBody::util::log("Unknown problem starting steering engine: %s", e.what());
 
 		getEngineDriver()->finish();
-		delete steerOptions;
 		return;
 	}
 

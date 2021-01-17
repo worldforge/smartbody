@@ -24,17 +24,17 @@
 #include <stdint.h>
 #endif
 
-# include <stdlib.h>
-# include <string.h>
-# include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include <string>
-# include <sr/sr_input.h>
-# include <sr/sr_string.h>
-# include <sr/sr_array.h>
+#include <sr/sr_input.h>
+#include <sr/sr_string.h>
+#include <sr/sr_array.h>
 
 //# define SR_USE_TRACE1 //Parser
 //# define SR_USE_TRACE2 //Init
-//# include <sr/sr_trace.h>
+//#include <sr/sr_trace.h>
 
 # define ISNULL      _type==(srbyte)TypeNull
 # define ISFILE      _type==(srbyte)TypeFile

@@ -104,7 +104,7 @@ def retargetBehaviorSet(charName):
     catchMotions.append("Up_Left_Center.bvh")
     catchMotions.append("Up_Right.bvh")
     catchMotions.append("Up_Right_Far.bvh")
-    # include the mirrored motions
+    #include the mirrored motions
     catchMotions.append("Center.bvh" + "Lt")
     catchMotions.append("Center2.bvh" + "Lt")
     catchMotions.append("Far_Center_Up.bvh" + "Lt")

@@ -4,8 +4,8 @@
 /** \file sr_set.h 
  * indexed set of pointers */
 
-# include <sr/sr_array.h> 
-# include <sr/sr_class_manager.h> 
+#include <sr/sr_array.h>
+#include <sr/sr_class_manager.h>
 
 /*! The simplest way to use a 'Set' by means of void pointers.
     This is a low level management class and there is no

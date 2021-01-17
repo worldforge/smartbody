@@ -32,10 +32,10 @@ class SteerSuiteEngineDriver :  public SmartBody::SBObject, public SteerLib::Eng
 {
 public:
 	SteerSuiteEngineDriver();
-	~SteerSuiteEngineDriver();
+	~SteerSuiteEngineDriver() override;
 
 
-	void init(SteerLib::SimulationOptions * options);
+	void init(std::unique_ptr<SteerLib::SimulationOptions> options);
 	SBAPI void finish();
 	void run();
 
@@ -51,20 +51,20 @@ public:
 	/// @name The EngineControllerInterface
 	/// @brief The CommandLineEngineDriver does not support any of the engine controls.
 	//@{
-	virtual bool isStartupControlSupported() { return false; }
-	virtual bool isPausingControlSupported() { return false; }
-	virtual bool isPaused() { return false; }
-	virtual void loadSimulation();
-	virtual void unloadSimulation();
-	virtual void startSimulation();
-	virtual void stopSimulation();
-	virtual void pauseSimulation() { throw Util::GenericException("CommandLineEngineDriver does not support pauseSimulation()."); }
-	virtual void unpauseSimulation() { throw Util::GenericException("CommandLineEngineDriver does not support unpauseSimulation()."); }
-	virtual void togglePausedState() { throw Util::GenericException("CommandLineEngineDriver does not support togglePausedState()."); }
-	virtual void pauseAndStepOneFrame() { throw Util::GenericException("CommandLineEngineDriver does not support pauseAndStepOneFrame()."); }
+	bool isStartupControlSupported() override { return false; }
+	bool isPausingControlSupported() override { return false; }
+	bool isPaused() override { return false; }
+	void loadSimulation() override;
+	void unloadSimulation() override;
+	void startSimulation() override;
+	void stopSimulation() override;
+	void pauseSimulation() override { throw Util::GenericException("CommandLineEngineDriver does not support pauseSimulation()."); }
+	void unpauseSimulation() override { throw Util::GenericException("CommandLineEngineDriver does not support unpauseSimulation()."); }
+	void togglePausedState() override { throw Util::GenericException("CommandLineEngineDriver does not support togglePausedState()."); }
+	void pauseAndStepOneFrame() override { throw Util::GenericException("CommandLineEngineDriver does not support pauseAndStepOneFrame()."); }
 	//@}
 
-	SteerLib::SimulationEngine * _engine;
+	std::unique_ptr<SteerLib::SimulationEngine> _engine;
 
 		// These functions are kept here to protect us from mangling the instance.
 	// Technically the CommandLineEngineDriver is not a singleton, though.
@@ -76,7 +76,7 @@ protected:
 	bool _done;
 	double _startTime;
 	double _lastUpdateTime;
-	SteerLib::SimulationOptions * _options;
+	std::unique_ptr<SteerLib::SimulationOptions> _options;
 
 
 };

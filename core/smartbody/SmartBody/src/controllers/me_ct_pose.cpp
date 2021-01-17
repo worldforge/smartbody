@@ -20,7 +20,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-# include <controllers/me_ct_pose.h>
+#include <controllers/me_ct_pose.h>
 #include <sb/SBPawn.h>
 
 // Enable the inspection of channel values

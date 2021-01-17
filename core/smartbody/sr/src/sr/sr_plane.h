@@ -23,7 +23,7 @@
 # define SR_PLANE_H
 
 #include "SBABI.h"
-# include <sr/sr_vec.h>
+#include <sr/sr_vec.h>
 
 class SBAPI SrPlane
  { public :

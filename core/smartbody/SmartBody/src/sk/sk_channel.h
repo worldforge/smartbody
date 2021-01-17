@@ -24,7 +24,7 @@
 # define SK_CHANNEL_H
 
 #include <sb/SBTypes.h>
-# include <sk/sk_joint.h>
+#include <sk/sk_joint.h>
 
 /*! SkChannel manipulates a joint according to the specified
     channel. A channel can be seen as an extension of a DOF

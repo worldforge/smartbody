@@ -86,7 +86,7 @@ class PATimeManager
 		int getSection(double time);
 		
 
-		std::queue<std::pair<SmartBody::SBMotionEvent*, int> > _events;
+		std::queue<std::pair<SmartBody::SBMotionEvent, int> > _events;
 };
 
 class PAMotions
@@ -232,8 +232,8 @@ class PATransitionManager
 
 		PABlendData* from;
 		PABlendData* to;
-		SmartBody::SBAnimationTransition* transition;
-		srLinearCurve* curve;
+		std::unique_ptr<SmartBody::SBAnimationTransition> transition;
+		std::unique_ptr<srLinearCurve> curve;
 		double duration;
 		double localTime;
 		std::vector<double> easeOutStarts;

@@ -20,13 +20,13 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <math.h>
+#include <cmath>
  
-# include <sr/sr_trackball.h>
-# include <sr/sr_mat.h>
+#include <sr/sr_trackball.h>
+#include <sr/sr_mat.h>
 
 //# define SR_USE_TRACE1  
-//# include <sr/sr_trace.h>
+//#include <sr/sr_trace.h>
 
 //=================================== SrTrackball ===================================
 

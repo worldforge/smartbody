@@ -26,13 +26,13 @@
 # define SK_SKELETON_H
 
 #include <sb/SBTypes.h>
-# include <sr/sr_string.h>
-# include <sr/sr_hash_table.h>
-# include <sr/sr_shared_class.h>
-# include <sr/sr_box.h>
-# include <sk/sk_joint.h>
-# include <sk/sk_channel_array.h>
-# include <sk/sk_posture.h>
+#include <sr/sr_string.h>
+#include <sr/sr_hash_table.h>
+#include <sr/sr_shared_class.h>
+#include <sr/sr_box.h>
+#include <sk/sk_joint.h>
+#include <sk/sk_channel_array.h>
+#include <sk/sk_posture.h>
 #include <sb/SBAsset.h>
 #include "sr/sr_shared_ptr.hpp"
 

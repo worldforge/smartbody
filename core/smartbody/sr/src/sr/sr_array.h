@@ -27,9 +27,9 @@
 /** \file sr_array.h 
  * fast resizeable array template */
 #include "SBABI.h"
-# include <sr/sr.h> 
-# include <sr/sr_input.h> 
-# include <sr/sr_output.h> 
+#include <sr/sr.h>
+#include <sr/sr_input.h>
+#include <sr/sr_output.h>
 
 /*! \class SrArrayBase sr_array.h
     \brief Fast resizeable array base class

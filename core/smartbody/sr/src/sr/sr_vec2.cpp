@@ -20,9 +20,9 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <math.h>
-# include <sr/sr_vec2.h>
-# include <sr/sr_geo2.h>
+#include <cmath>
+#include <sr/sr_vec2.h>
+#include <sr/sr_geo2.h>
 
 //============================= static data ================================
 

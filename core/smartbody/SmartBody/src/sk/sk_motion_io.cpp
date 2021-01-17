@@ -19,8 +19,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-# include <cstdlib>
-# include <sk/sk_motion.h>
+#include <cstdlib>
+#include <sk/sk_motion.h>
 #include <iostream>
 #include <sb/SBMotion.h>
 #include <sb/SBJointMap.h>

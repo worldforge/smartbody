@@ -26,9 +26,9 @@
 /** \file sr_class_manager.h 
  * Generic way to allocate, io and compare classes */
 #include "SBABI.h"
-# include <sr/sr_input.h>
-# include <sr/sr_output.h>
-# include <sr/sr_shared_class.h>
+#include <sr/sr_input.h>
+#include <sr/sr_output.h>
+#include <sr/sr_shared_class.h>
 
 class SrClassManagerBase : public SrSharedClass
  { protected :

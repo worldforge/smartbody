@@ -25,7 +25,7 @@
 # define SK_JOINT_QUAT_H
 
 #include <sb/SBTypes.h>
-# include <sr/sr_quat.h>
+#include <sr/sr_quat.h>
 
 class SkJoint;
 

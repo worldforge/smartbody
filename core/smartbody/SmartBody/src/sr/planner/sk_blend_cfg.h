@@ -2,10 +2,10 @@
 # ifndef SK_BLEND_CFG_H
 # define SK_BLEND_CFG_H
 
-# include "sr_cfg_manager.h"
-# include "sr_cfg_planner.h"
-# include <sr/sr_vec.h>
-# include <vector>
+#include "sr_cfg_manager.h"
+#include "sr_cfg_planner.h"
+#include <sr/sr_vec.h>
+#include <vector>
 #include <sb/SBColObject.h>
 #include <controllers/me_ct_motion_example.hpp>
 

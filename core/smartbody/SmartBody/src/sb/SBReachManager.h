@@ -36,15 +36,15 @@ class SBReachManager : public SBSceneOwned
 		SBAPI explicit SBReachManager(SBScene& scene);
 		SBAPI ~SBReachManager();
 
-		SBAPI SBReach* createReach(std::string characterName);
-		SBAPI SBReach* createReachWithTag(std::string characterName, std::string reachTag);
+		SBAPI SBReach* createReach(const std::string& characterName);
+		SBAPI SBReach* createReachWithTag(const std::string& characterName, const std::string& reachTag);
 
-		SBAPI void removeReach(SBReach* reach);
+		//SBAPI void removeReach(SBReach* reach);
 		SBAPI int getNumReaches();
-		SBAPI SBReach* getReach(std::string characterName, std::string reachTag);
+		SBAPI SBReach* getReach(const std::string& characterName, const std::string& reachTag);
 
 	protected:
-		std::map<std::string, SBReach*> _reaches;
+		std::map<std::string, SBReach> _reaches;
 };
 
 

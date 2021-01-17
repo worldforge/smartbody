@@ -20,10 +20,10 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
  
-# include <stdlib.h>
-# include <string.h>
+#include <stdlib.h>
+#include <string.h>
 
-# include <sr/sr_array.h>
+#include <sr/sr_array.h>
 
 # define DATA(i)    ((char*)_data)+(sizeofx*(i))
 # define NEWDATA(i) ((char*)newdata)+(sizeofx*(i))

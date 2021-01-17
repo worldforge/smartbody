@@ -19,10 +19,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 
-# include <sr/sr_model.h>
+#include <sr/sr_model.h>
 
-# include <sk/sk_skeleton.h>
-# include <sk/sk_posture.h>
+#include <sk/sk_skeleton.h>
+#include <sk/sk_posture.h>
 #include <queue>
 #include <sb/SBJoint.h>
 #include "SBUtilities.h"

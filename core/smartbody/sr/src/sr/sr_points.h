@@ -27,10 +27,10 @@
  * manages a set of points
  */
 #include "SBABI.h"
-# include <sr/sr_box.h>
-# include <sr/sr_vec2.h>
-# include <sr/sr_color.h>
-# include <sr/sr_array.h>
+#include <sr/sr_box.h>
+#include <sr/sr_vec2.h>
+#include <sr/sr_color.h>
+#include <sr/sr_array.h>
 
 /*! \class SrPoints sr_points.h
     \brief a set of points

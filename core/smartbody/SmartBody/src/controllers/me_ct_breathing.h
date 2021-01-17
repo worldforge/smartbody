@@ -22,10 +22,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # ifndef ME_CT_BREATHING_H
 # define ME_CT_BREATHING_H
 
-# include <sr/sr_buffer.h>
-# include <sk/sk_motion.h>
-# include <controllers/me_controller.h>
-# include <controllers/me_ct_breathing_interface.h>
+#include <sr/sr_buffer.h>
+#include <sk/sk_motion.h>
+#include <controllers/me_controller.h>
+#include <controllers/me_ct_breathing_interface.h>
 #include <sb/SBSubject.h>
 #include <sb/SBController.h>
 #include <list>

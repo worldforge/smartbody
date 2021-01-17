@@ -27,12 +27,12 @@
  */
 
 #include "SBABI.h"
-# include <sr/sr_box.h>
-# include <sr/sr_mat.h>
-# include <sr/sr_event.h>
-# include <sr/sr_array.h>
-# include <sr/sr_material.h>
-# include <sr/sr_shared_class.h>
+#include <sr/sr_box.h>
+#include <sr/sr_mat.h>
+#include <sr/sr_event.h>
+#include <sr/sr_array.h>
+#include <sr/sr_material.h>
+#include <sr/sr_shared_class.h>
 
 //======================================= SrSn ====================================
 

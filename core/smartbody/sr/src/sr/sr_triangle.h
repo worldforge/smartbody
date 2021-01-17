@@ -27,7 +27,7 @@
 # define SR_TRIANGLE_H
 
 #include "SBABI.h"
-# include <sr/sr_vec.h> 
+#include <sr/sr_vec.h>
 
 /*! \class SrTriangle sr_triangle.h
     \brief A triangle in 3d space. 

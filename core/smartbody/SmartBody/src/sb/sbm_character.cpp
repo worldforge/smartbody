@@ -140,7 +140,7 @@ SbmCharacter::SbmCharacter(SmartBody::SBScene& scene, const char* character_name
 //  Constructor
 SbmCharacter::SbmCharacter(SmartBody::SBScene& scene, const char* character_name )
 :	SBPawn(scene, character_name ),
-
+	 param_map(nullptr),
 posture_sched_p( CreateSchedulerCt(*this, character_name, "posture" ) ),
 motion_sched_p( CreateSchedulerCt(*this, character_name, "motion" ) ),
 breathing_p( ),
@@ -543,8 +543,6 @@ void SbmCharacter::initData()
 	motionplayer_ct = nullptr;
 	_soft_eyes_enabled = ENABLE_EYELID_CORRECTIVE_CT;
 	_height = 1.0f;
-
-	param_map = new std::map<std::string, GeneralParam*>();
 
 	use_viseme_curve = false;
 	viseme_time_offset = 0.0;

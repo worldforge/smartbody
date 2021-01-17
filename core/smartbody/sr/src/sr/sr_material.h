@@ -27,9 +27,9 @@
 # define SR_MATERIAL_H
 
 #include "SBABI.h"
-# include <sr/sr_input.h> 
-# include <sr/sr_output.h> 
-# include <sr/sr_color.h>
+#include <sr/sr_input.h>
+#include <sr/sr_output.h>
+#include <sr/sr_color.h>
 
 /*! \class SrMaterial sr_material.h
     \brief specifies a material

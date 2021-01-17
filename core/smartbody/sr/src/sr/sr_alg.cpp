@@ -20,10 +20,10 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <math.h>
+#include <cmath>
 
-# include <sr/sr.h>
-# include <sr/sr_alg.h>
+#include <sr/sr.h>
+#include <sr/sr_alg.h>
 
 /*-------------------------------------------------------------------*/
 /* Functions to solve polynomials of 2nd, 3rt and 4th degree.        */

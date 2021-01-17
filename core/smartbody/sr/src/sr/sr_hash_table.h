@@ -26,8 +26,8 @@
 # define SR_HASH_TABLE_H
 
 #include "SBABI.h"
-# include <sr/sr_array.h>
-# include <sr/sr_shared_class.h>
+#include <sr/sr_array.h>
+#include <sr/sr_shared_class.h>
 
 #define SR_HASH_TABLE_OVERRIDE	( 0 )
 

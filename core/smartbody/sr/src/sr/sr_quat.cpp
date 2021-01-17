@@ -19,8 +19,8 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <sr/sr_quat.h>
-# include <sr/sr_euler.h>
+#include <sr/sr_quat.h>
+#include <sr/sr_euler.h>
 #include "gwiz_math.h"
 #include <boost/lexical_cast.hpp>
 #include <string>

@@ -123,8 +123,8 @@ public:
 
 private:
 	// motion database for left and right hand
-	MotionDatabase* _leftDb;
-	MotionDatabase* _rightDb;
+	std::unique_ptr<MotionDatabase> _leftDb;
+	std::unique_ptr<MotionDatabase> _rightDb;
 
 	// pointer to choose between databases
 	MotionDatabase* _selectDb;
@@ -164,7 +164,7 @@ class MotionDatabase : public SBSceneOwned{
 public:
 
 	// initialize the motion datbase
-	MotionDatabase(SBScene& scene);
+	explicit MotionDatabase(SBScene& scene);
 	~MotionDatabase();
 
 	// clear the database

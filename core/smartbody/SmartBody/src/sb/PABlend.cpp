@@ -1286,17 +1286,17 @@ double PABlend::getMotionTime(double localTime, int motionIndex)
 	return motionTime;
 }
 
-const bool ascendingTime2(std::pair<SmartBody::SBMotionEvent*, int>* a, std::pair<SmartBody::SBMotionEvent*, int>* b)
+bool ascendingTime2(std::pair<SmartBody::SBMotionEvent*, int>* a, std::pair<SmartBody::SBMotionEvent*, int>* b)
 {
 	return (a->first->getTime() < b->first->getTime());
 }
 
-std::vector<std::pair<SmartBody::SBMotionEvent*, int> >& PABlend::getEvents()
+std::vector<std::pair<SmartBody::SBMotionEvent, int> >& PABlend::getEvents()
 {
 	return _events;
 }
 
-void PABlend::addEventToMotion(const std::string& motion, SmartBody::SBMotionEvent* motionEvent)
+void PABlend::addEventToMotion(const std::string& motion, SmartBody::SBMotionEvent motionEvent)
 {
 	// determine the motion index
 	int index = getMotionId(motion);
@@ -1305,7 +1305,7 @@ void PABlend::addEventToMotion(const std::string& motion, SmartBody::SBMotionEve
 		SmartBody::util::log("Could not add event to state %s: no motion named %s found.", stateName.c_str(), motion.c_str());
 	}
 
-	_events.emplace_back(std::pair<SmartBody::SBMotionEvent*, int>(motionEvent, index));
+	_events.emplace_back(motionEvent, index);
 	// make sure that the motion events are ordered by time
 //	std::sort(_events.begin(), _events.end(), ascendingTime2);
 }

@@ -57,9 +57,8 @@ struct JointTrajectory
 	std::string refJointName; // joint trajectory is computed as the offset vector relative to the refJoint position
 };
 
-class TrajectoryRecord
+struct TrajectoryRecord
 {
-public:
 	SrVec jointTrajLocalOffset;
 	SrVec jointTrajGlobalPos;
 	SrVec refJointGlobalPos;

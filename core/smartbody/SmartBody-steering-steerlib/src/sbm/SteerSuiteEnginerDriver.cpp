@@ -34,7 +34,6 @@ SteerSuiteEngineDriver::SteerSuiteEngineDriver() : SBObject()
 	_alreadyInitialized = false;
 	_engine = nullptr;
 	_done = false;
-	_options = nullptr;
 	_startTime = 0;
 
 
@@ -42,8 +41,11 @@ SteerSuiteEngineDriver::SteerSuiteEngineDriver() : SBObject()
 
 SteerSuiteEngineDriver::~SteerSuiteEngineDriver()
 {
-	delete _engine;
-	delete _options;
+	if (_engine) {
+		_engine->postprocessSimulation();
+		_engine->cleanupSimulation();
+		_engine->finish();
+	}
 }
 
 bool SteerSuiteEngineDriver::isInitialized()
@@ -82,18 +84,18 @@ double SteerSuiteEngineDriver::getLastUpdateTime()
 //
 // init()
 //
-void SteerSuiteEngineDriver::init(SteerLib::SimulationOptions * options)
+void SteerSuiteEngineDriver::init(std::unique_ptr<SteerLib::SimulationOptions> options)
 {
 	if (_alreadyInitialized) {
 		throw GenericException("SteerSuiteEngineDriver::init() - should not call this function twice.\n");
 	}
 
-	_options = options;
 	_alreadyInitialized = true;
 	_done = false;
 
-	_engine = new SimulationEngine();
-	_engine->init(options, this);
+	_engine = std::make_unique<SimulationEngine>();
+	//Move ownership over to the Steerlib Engine
+	_engine->init(options.release(), this);
 }
 
 
@@ -136,8 +138,7 @@ void SteerSuiteEngineDriver::run()
 void SteerSuiteEngineDriver::finish()
 {
 	_engine->finish();
-	delete _engine;
-	_engine = nullptr;
+	_engine.reset();
 	_alreadyInitialized = false;
 }
 

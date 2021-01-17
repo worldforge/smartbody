@@ -28,7 +28,7 @@
  */
 
 #include "SBABI.h"
-# include <sr/sr_vec.h>
+#include <sr/sr_vec.h>
 
 class SrBox;
 

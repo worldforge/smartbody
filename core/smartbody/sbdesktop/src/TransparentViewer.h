@@ -4,14 +4,14 @@
 //#define _WIN32_WINNT 0x0500
 #include <GL/glew.h>
 #include <windows.h>
-# include <sr/sr_viewer.h>
-# include <sr/sr_light.h>
-# include <sr/sr_event.h>
-# include <sr/sr_camera.h>
-# include <sr/sr_color.h>
-# include <sr/sr_sn_shape.h>
-# include <sr/sr_sa_gl_render.h>
-# include <sr/sr_sa_bbox.h>
+#include <sr/sr_viewer.h>
+#include <sr/sr_light.h>
+#include <sr/sr_event.h>
+#include <sr/sr_camera.h>
+#include <sr/sr_color.h>
+#include <sr/sr_sn_shape.h>
+#include <sr/sr_sa_gl_render.h>
+#include <sr/sr_sa_bbox.h>
 #include <sb/SBObject.h>
 
 #include <GL/glu.h>

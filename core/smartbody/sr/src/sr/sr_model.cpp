@@ -19,21 +19,21 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <stdlib.h>
+#include <stdlib.h>
 
-# include <sr/sr_model.h>
-# include <sr/sr_tree.h>
-# include <sr/sr_sphere.h>
-# include <sr/sr_cylinder.h>
-# include <sr/sr_string_array.h>
+#include <sr/sr_model.h>
+#include <sr/sr_tree.h>
+#include <sr/sr_sphere.h>
+#include <sr/sr_cylinder.h>
+#include <sr/sr_string_array.h>
 #include <set>
-# include <sr/sr_quat.h>
+#include <sr/sr_quat.h>
 #include "SBUtilities.h"
 #include <cmath>
 
 //# define SR_USE_TRACE1 // IO
 //# define SR_USE_TRACE2 // Validation of normals materials, etc
-//# include <sr/sr_trace.h>
+//#include <sr/sr_trace.h>
  
 //=================================== SrModel =================================================
 

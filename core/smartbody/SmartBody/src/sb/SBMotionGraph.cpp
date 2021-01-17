@@ -1733,10 +1733,7 @@ SBMotionNodeState::SBMotionNodeState()
 	useTransitionInterpolation = true;
 }
 
-SBMotionNodeState::~SBMotionNodeState()
-{
-
-}
+SBMotionNodeState::~SBMotionNodeState() = default;
 
 void SBMotionNodeState::initState( SkChannelArray& channelArray, std::vector<std::string>& affectedChannelList, const std::string& baseName )
 {

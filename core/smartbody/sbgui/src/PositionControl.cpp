@@ -8,8 +8,8 @@
 #include <sr/sr_sphere.h>
 #include <sr/sr_sn.h>
 #include <sr/sr_sn_group.h>
-# include <sr/sr_sa_gl_render.h>
-# include <sr/sr_gl_render_funcs.h>
+#include <sr/sr_sa_gl_render.h>
+#include <sr/sr_gl_render_funcs.h>
 
 
 ObjectControl::ObjectControl()

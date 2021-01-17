@@ -372,6 +372,9 @@ XMLCh* BMLDefs::OGRE_WEIGHT = nullptr;
 
 std::list<XMLPtr> BMLDefs::sAttributes;
 
+void BMLDefs::shutdown() {
+	sAttributes.clear();
+}
 
 BMLDefs::BMLDefs()
 {

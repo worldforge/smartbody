@@ -69,9 +69,9 @@ SBHandSynthesis::SBHandSynthesis(boost::intrusive_ptr<SmartBody::SBSkeleton> ske
 //	LOG ( " \n \n \n SBHandSynthesis started \n \n \n " );
 
 	// initailize variables
-	_leftDb = new MotionDatabase(skeleton->_scene);
-	_rightDb = new MotionDatabase(skeleton->_scene);
-	_selectDb = _rightDb;
+	_leftDb = std::make_unique<MotionDatabase>(skeleton->_scene);
+	_rightDb = std::make_unique<MotionDatabase>(skeleton->_scene);
+	_selectDb = _rightDb.get();
 	_bodyMotion = nullptr;
 	_sk = std::move(skeleton);
 	_skCopy = new SmartBody::SBSkeleton(*_sk);
@@ -109,7 +109,7 @@ SBHandSynthesis::SBHandSynthesis(boost::intrusive_ptr<SmartBody::SBSkeleton> ske
 // set name of the configuration
 void SBHandSynthesis::setConfigurationName(std::string configName)
 {
-	_configName = configName;
+	_configName = std::move(configName);
 }
 
 // set the print debug value
@@ -130,11 +130,11 @@ void SBHandSynthesis::changeState(HandState state)
 	// switch between two states
 	if (state == LEFT_HAND)
 	{
-		_selectDb = _leftDb;
+		_selectDb = _leftDb.get();
 	}
 	else if (state == RIGHT_HAND)
 	{
-		_selectDb = _rightDb;
+		_selectDb = _rightDb.get();
 	}
 }
 
@@ -1361,12 +1361,12 @@ void SBHandSynthesis::combineMotion(SmartBody::SBMotion* destMotion, SmartBody::
 // get right database
 MotionDatabase* SBHandSynthesis::getRightDb()
 {
-	return _rightDb;
+	return _rightDb.get();
 }
 
 MotionDatabase* SBHandSynthesis::getLeftDb()
 {
-	return _leftDb;
+	return _leftDb.get();
 }
 
 // print out the results

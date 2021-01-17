@@ -92,6 +92,7 @@ public:
 
 public:
 	// Static Constants
+	//Not owned by this instance.
 	std::map<std::string, GeneralParam*>*   param_map;
 
 	std::vector<SrVec> footStepList[2];	

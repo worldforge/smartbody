@@ -27,15 +27,15 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Menu_Item.H>
-# include <FL/Fl_Gl_Window.H>
-# include <sr/sr_viewer.h>
+#include <FL/Fl_Gl_Window.H>
+#include <sr/sr_viewer.h>
 #include <FL/Fl_Input.H>
-# include <sr/sr_color.h>
-# include <sr/sr_light.h>
-# include <sr/sr_timer.h>
-# include <sr/sr_sa_gl_render.h>
-# include <sr/sr_sa_bbox.h>
-# include <FL/Fl_Menu.H>
+#include <sr/sr_color.h>
+#include <sr/sr_light.h>
+#include <sr/sr_timer.h>
+#include <sr/sr_sa_gl_render.h>
+#include <sr/sr_sa_bbox.h>
+#include <FL/Fl_Menu.H>
 #include "retargetviewer/RetargetViewer.h"
 #include "jointmapviewer/RetargetStepWindow.h"
 #include <sb/SBMotionBlendBase.h>

@@ -30,11 +30,10 @@ SBReachManager::SBReachManager(SBScene& scene) : SBSceneOwned(scene)
 {
 }
 
-SBReachManager::~SBReachManager()
-= default;
+SBReachManager::~SBReachManager() = default;
 
 
-SBAPI SBReach* SBReachManager::createReachWithTag( std::string characterName, std::string reachTag )
+SBAPI SBReach* SBReachManager::createReachWithTag( const std::string& characterName, const std::string& reachTag )
 {
 	// get the character
 	SBCharacter* character = _scene.getCharacter(characterName);
@@ -48,47 +47,44 @@ SBAPI SBReach* SBReachManager::createReachWithTag( std::string characterName, st
 	if (iter != _reaches.end())
 	{
 		// remove the old reach data
-		SBReach* reach = (*iter).second;
-    //return reach;
-		removeReach(reach);
+		SBReach& reach = (*iter).second;
 		_reaches.erase(iter);
 	}
 
   
-	SBReach* reach = new SBReach(character, reachTag);
 	//_reaches.insert(pair<std::string, SBReach*>(characterName, reach));
-	_reaches[charReachTag] = reach;
-	return reach;
+	_reaches[charReachTag] = SBReach(character, reachTag);
+	return &_reaches[charReachTag];
 }
 
 
-SBReach* SBReachManager::createReach(std::string characterName)
+SBReach* SBReachManager::createReach(const std::string& characterName)
 {
 	return createReachWithTag(characterName,"default");
 }
 
-void SBReachManager::removeReach(SBReach* reach)
-{
-	SBCharacter* character = reach->getCharacter();
-	 
-	// clean up all the reach structures...
-	// ...
-	// ...
-  delete reach;
-}
+//void SBReachManager::removeReach(SBReach* reach)
+//{
+//	SBCharacter* character = reach->getCharacter();
+//
+//	// clean up all the reach structures...
+//	// ...
+//	// ...
+//  delete reach;
+//}
 
 int SBReachManager::getNumReaches()
 {
 	return _reaches.size();
 }
 
-SBReach* SBReachManager::getReach(std::string characterName, std::string reachTag)
+SBReach* SBReachManager::getReach(const std::string& characterName, const std::string& reachTag)
 {
 	std::string charReachTag = characterName + "_" + reachTag;
 	auto iter = _reaches.find(charReachTag);
 	if (iter != _reaches.end())
 	{
-		return (*iter).second;
+		return &iter->second;
 	}
 	else
 	{

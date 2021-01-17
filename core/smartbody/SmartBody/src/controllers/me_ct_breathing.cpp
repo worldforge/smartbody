@@ -18,7 +18,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-# include <controllers/me_ct_breathing.h>
+#include <controllers/me_ct_breathing.h>
 #include "gwiz_math.h"
 #include <sb/SBMotion.h>
 #include <sb/SBScene.h>

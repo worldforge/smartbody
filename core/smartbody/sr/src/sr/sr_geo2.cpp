@@ -20,10 +20,10 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <stdio.h>
-# include <math.h>
+#include <stdio.h>
+#include <cmath>
 
-# include <sr/sr_geo2.h>
+#include <sr/sr_geo2.h>
 
 // This file is designed to be as most as possible independent of other sr types
 

@@ -2299,7 +2299,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBScene& scene, SmartBody::SBS
 				{
 					PPRAISteeringAgent* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
 					character->trajectoryGoalList.clear();
-					SteerPath& steerPath = ppraiAgent->steerPath;
+					auto& steerPath = ppraiAgent->steerPath;
 					float pathRadius = 1.f;												
 					float x, y, z;
 					float yaw, pitch, roll;

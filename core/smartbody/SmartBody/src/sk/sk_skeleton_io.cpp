@@ -23,12 +23,12 @@
 *		Jingqiao Fu, USC
 */
 
-# include <sr/sr_model.h>
-# include <sr/sr_path_array.h>
+#include <sr/sr_model.h>
+#include <sr/sr_path_array.h>
 
 
-# include <sk/sk_skeleton.h>
-# include <sk/sk_posture.h>
+#include <sk/sk_skeleton.h>
+#include <sk/sk_posture.h>
 #include <sb/SBJoint.h>
 
 //============================ load_skeleton ============================

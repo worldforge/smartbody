@@ -22,12 +22,12 @@ along with Smartbody.If not, see <http://www.gnu.org/licenses/>.
 # define SK_MOTION_H
 
 #include <sb/SBTypes.h>
-# include <sr/sr_input.h>
-# include <sr/sr_shared_class.h>
-# include <sk/sk_channel_array.h>
-# include <sbm/sr_synch_points.h>
-# include <sb/SBAsset.h>
-# include <queue>
+#include <sr/sr_input.h>
+#include <sr/sr_shared_class.h>
+#include <sk/sk_channel_array.h>
+#include <sbm/sr_synch_points.h>
+#include <sb/SBAsset.h>
+#include <queue>
 
 class SkPosture;
 class SkSkeleton;

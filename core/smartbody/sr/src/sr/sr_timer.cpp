@@ -18,16 +18,16 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 **************************************************************/
 
-# include <stdio.h>
-# include <sr/sr_timer.h>
+#include <stdio.h>
+#include <sr/sr_timer.h>
 #include <SBUtilities.h>
 
 # ifdef SR_TARGET_WINDOWS // defined in sr.h
-# include <windows.h>
-# include <sys/timeb.h>
+#include <windows.h>
+#include <sys/timeb.h>
 # else 
-# include <sys/stat.h>
-# include <sys/time.h>
+#include <sys/stat.h>
+#include <sys/time.h>
 # endif
 
 //======================= SrUtcTimer =====================================

@@ -25,7 +25,7 @@
 /** \file sr_path_array.h 
  * array of file paths */
 #include "SBABI.h"
-# include <sr/sr_string_array.h>
+#include <sr/sr_string_array.h>
 
 //============================== SrPathArray ===============================
 

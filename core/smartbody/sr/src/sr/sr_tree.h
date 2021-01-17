@@ -28,8 +28,8 @@
 # define SR_TREE_H
 
 #include "SBABI.h"
-# include <sr/sr_class_manager.h>
-# include <sr/sr_output.h>
+#include <sr/sr_class_manager.h>
+#include <sr/sr_output.h>
 #include "sr/sr_shared_ptr.hpp"
 
 /*! \class SrTreeNode sr_tree_node.h

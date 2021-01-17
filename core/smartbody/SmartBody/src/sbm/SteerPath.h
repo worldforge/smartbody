@@ -39,7 +39,7 @@ protected:
 	std::vector<SrVec> pathPts;
 	std::vector<SrVec> pathSegDir;
 	std::vector<float> pathSegLength;
-	float              pathRadius;
+	float              pathRadius{};
 	unsigned int       currentGoal;
 public:
 	SteerPath();
@@ -48,11 +48,11 @@ public:
 	void initPath(const std::vector<SrPnt>& pts, float radius);	
 	void clearPath();
 		
-	virtual SrVec closestPointOnPath(const SrVec& pt, SrVec& tangent, float& dist);	
-	virtual SrVec pathPoint(float length);
-	virtual SrVec pathTangent(float length);
-	virtual float pathDistance(const SrVec& pt);
-	virtual float pathLength();
+	SrVec closestPointOnPath(const SrVec& pt, SrVec& tangent, float& dist) override;
+	SrVec pathPoint(float length) override;
+	SrVec pathTangent(float length) override;
+	float pathDistance(const SrVec& pt) override;
+	float pathLength() override;
 	virtual float pathCurvature(float start, float end);
 	SrVec closestPointOnNextGoal(const SrVec& pt, SrVec& tangent, float& dist);		
 	SrVec pathGoalPoint();

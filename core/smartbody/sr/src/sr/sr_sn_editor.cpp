@@ -19,14 +19,14 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <sr/sr_sn_editor.h>
+#include <sr/sr_sn_editor.h>
 
 //# define SR_USE_TRACE1  // SrSn Const/Dest
 //# define SR_USE_TRACE2  // SrSceneGroup Const/Dest
 //# define SR_USE_TRACE3  // SrSceneGroup children management
 //# define SR_USE_TRACE4  // SrSceneMatrix Const/Dest
 //# define SR_USE_TRACE5  // SrSceneShapeBase Const/Dest
-//# include <sr/sr_trace.h>
+//#include <sr/sr_trace.h>
 
 
 //======================================= SrSnEditor ====================================

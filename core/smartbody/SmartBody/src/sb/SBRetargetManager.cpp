@@ -25,17 +25,11 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace SmartBody {
 
-SBAPI SBRetargetManager::SBRetargetManager()
-{
+SBAPI SBRetargetManager::SBRetargetManager() = default;
 
-}
+SBAPI SBRetargetManager::~SBRetargetManager() = default;
 
-SBAPI SBRetargetManager::~SBRetargetManager()
-{
-
-}
-
-SBAPI SBRetarget* SBRetargetManager::createRetarget( std::string sourceSk, std::string targetSk )
+SBAPI SBRetarget* SBRetargetManager::createRetarget( const std::string& sourceSk, const std::string& targetSk )
 {	
 	if (getRetarget(sourceSk, targetSk))
 	{
@@ -43,32 +37,27 @@ SBAPI SBRetarget* SBRetargetManager::createRetarget( std::string sourceSk, std::
 		return nullptr;
 	}
 
-	SmartBody::SBRetarget* retarget = new SmartBody::SBRetarget(sourceSk,targetSk);
 	StringPair skNamePair = StringPair(sourceSk,targetSk);
-	_retargets[skNamePair] = retarget;
-	return retarget;
+	_retargets[skNamePair] = SmartBody::SBRetarget(sourceSk,targetSk);
+	return &_retargets[skNamePair];
 }
 
-SBAPI SBRetarget* SBRetargetManager::getRetarget( std::string sourceSk, std::string targetSk )
+SBAPI SBRetarget* SBRetargetManager::getRetarget( const std::string& sourceSk, const std::string& targetSk )
 {
-	StringPair skNamePair = StringPair(sourceSk,targetSk);
-	SmartBody::SBRetarget* retarget = nullptr;
-	if (_retargets.find(skNamePair) != _retargets.end())
+	auto I = _retargets.find(StringPair(sourceSk,targetSk));
+	if (I != _retargets.end())
 	{
-		retarget = _retargets[skNamePair];
+		return &I->second;
 	}
-	return retarget;
+	return nullptr;
 }
 
 SBAPI std::vector<StringPair> SBRetargetManager::getRetargetNames()
 {
 	std::vector<StringPair> retargetNames;
-	std::map<StringPair, SBRetarget*>::iterator ri;
-	for ( ri  = _retargets.begin();
-		  ri != _retargets.end();
-		  ri++)
+	for (auto & _retarget : _retargets)
 	{
-		retargetNames.emplace_back(ri->first);
+		retargetNames.emplace_back(_retarget.first);
 	}
 	return retargetNames;
 }

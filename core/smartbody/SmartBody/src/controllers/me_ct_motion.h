@@ -24,12 +24,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 //=================================== MeCtMotion =====================================
 
-# include <sr/sr_hash_table.h>
-# include <sr/sr_buffer.h>
+#include <sr/sr_hash_table.h>
+#include <sr/sr_buffer.h>
 
-# include <sk/sk_motion.h>
+#include <sk/sk_motion.h>
 
-# include <sb/SBController.h>
+#include <sb/SBController.h>
 #include <sb/SBCharacter.h>
 #include <queue>
 

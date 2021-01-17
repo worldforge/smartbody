@@ -20,13 +20,13 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-# include <sr/sr_euler.h>
-# include <sr/sr_mat.h>
-# include <math.h>
+#include <sr/sr_euler.h>
+#include <sr/sr_mat.h>
+#include <cmath>
 //#include "gwiz_math.h"
 
 //# define SR_USE_TRACE1
-//# include <sr/sr_trace.h>
+//#include <sr/sr_trace.h>
 
 # define ISZERO(a) ( (a)>-(srtiny) && (a)<(srtiny) )
 

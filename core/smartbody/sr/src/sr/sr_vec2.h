@@ -27,8 +27,8 @@
 # define SR_VEC2_H
 
 #include "SBABI.h"
-# include <sr/sr_input.h> 
-# include <sr/sr_output.h> 
+#include <sr/sr_input.h>
+#include <sr/sr_output.h>
 
 
 class SrVec2;

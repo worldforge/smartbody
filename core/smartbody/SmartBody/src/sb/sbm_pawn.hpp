@@ -68,7 +68,7 @@ protected:
 
 public:  // TODO - properly encapsulate / privatize the following
 	boost::intrusive_ptr<SkSkeleton>	_skeleton;  // MAY BE nullptr!!!
-	SrSnGroup* blendMeshGroup;
+	boost::intrusive_ptr<SrSnGroup> blendMeshGroup;
 	std::string _classType;
 	
 	// Temporarily, until there is a unified multi-skeleton controller tree

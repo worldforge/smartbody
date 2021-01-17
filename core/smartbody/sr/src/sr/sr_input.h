@@ -28,8 +28,8 @@
 
 // sr_array.h cannot be included here because of circular references
 #include "SBABI.h"
-# include <stdio.h>
-# include <sr/sr_string.h>
+#include <stdio.h>
+#include <sr/sr_string.h>
 #include <string>
 
 

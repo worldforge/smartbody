@@ -44,7 +44,7 @@ public:
 	void updateWO(const SrMat& curWO, const SrMat& deltaWO, MeFrameData& frame);
 protected:	
 	SmartBody::SBCharacter* sbChar;
-	SmartBody::SBMotionNodeState* motionState;
+	std::unique_ptr<SmartBody::SBMotionNodeState> motionState;
 	SmartBody::SBMotionFrameBuffer outMotionBuffer;
 	std::string baseJointName;	
 };

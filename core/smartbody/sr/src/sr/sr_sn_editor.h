@@ -26,8 +26,8 @@
  * base editor node
  */
 
-# include <sr/sr_sn.h>
-# include <sr/sr_sn_group.h>
+#include <sr/sr_sn.h>
+#include <sr/sr_sn_group.h>
 
 //==================================== SrSnEditor ====================================
 

@@ -136,9 +136,7 @@ bool SBRetarget::initRetarget(SBAssetManager& assetManager, std::vector<std::str
 	{
 			SmartBody::SBJoint* srcJoint = tempSrcSk.getJointByName(jname);
 		SmartBody::SBJoint* tgtJoint = interSk.getJointByName(jname);		
-		bool isEndJoint = false;
 		if (std::find(endJoints.begin(),endJoints.end(), jname) != endJoints.end())
-			isEndJoint = true;
 
 #if ELITE_HACK
 		if (jname == "r_sternoclavicular" || jname == "l_sternoclavicular" || jname == "r_acromioclavicular" || jname == "l_acromioclavicular")

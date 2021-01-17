@@ -27,8 +27,8 @@
  * Keeps light parameters
  */
 #include "SBABI.h"
-# include <sr/sr_vec.h>
-# include <sr/sr_color.h>
+#include <sr/sr_vec.h>
+#include <sr/sr_color.h>
 
 /*! \class SrLight sr_light.h
     \brief Keeps light parameters

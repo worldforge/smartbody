@@ -21,10 +21,10 @@
  *      Andrew n marshall, USC
  */
 
-# include <stdlib.h>
-# include <string.h>
+#include <stdlib.h>
+#include <string.h>
 
-# include <sr/sr_buffer.h>
+#include <sr/sr_buffer.h>
 
 //=== SrBuffer =======================================================================
 

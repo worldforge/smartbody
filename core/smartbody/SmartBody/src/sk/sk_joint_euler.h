@@ -24,10 +24,10 @@
 # ifndef SK_JOINT_EULER_H
 # define SK_JOINT_EULER_H
 
-# include <sr/sr_mat.h>
+#include <sr/sr_mat.h>
 
-# include <sk/sk_vec_limits.h>
-# include <sk/sk_joint_quat.h>
+#include <sk/sk_vec_limits.h>
+#include <sk/sk_joint_quat.h>
 
 //============================= SkJointEuler ============================
 

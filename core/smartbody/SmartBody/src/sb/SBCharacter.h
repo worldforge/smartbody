@@ -147,7 +147,7 @@ class SBCharacter : public SbmCharacter
 		std::vector<SBBehavior*> _curBehaviors;	
 		SmartBody::SBReach* _reach;
 		SmartBody::SBMotionGraph* _curMotionGraph;
-		std::map<std::string, TrajectoryRecord*> jointTrajMap;
+		std::map<std::string, TrajectoryRecord> jointTrajMap;
 		float jointTrajBlendWeight;
 		bool useJointConstraint;
 		std::unique_ptr<SBM_CharacterFrameDataMarshalFriendly> frameDataMarshalFriendly;

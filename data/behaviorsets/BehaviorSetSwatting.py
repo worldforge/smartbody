@@ -85,7 +85,7 @@ def retargetBehaviorSet(charName):
     swatMotions.append("SwatUp_Left.bvh")
     swatMotions.append("SwatUp_Right.bvh")
 
-    # include the mirrored motions
+    #include the mirrored motions
     swatMotions.append("Center.bvh" + "Lt")
     swatMotions.append("SwatCenter.bvh" + "Lt")
     swatMotions.append("SwatLeft.bvh" + "Lt")

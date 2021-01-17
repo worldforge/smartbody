@@ -27,8 +27,8 @@
  * trackball manipulation
  */
 #include "SBABI.h"
-# include <sr/sr_vec.h>
-# include <sr/sr_quat.h>
+#include <sr/sr_vec.h>
+#include <sr/sr_quat.h>
 
 class SrMat;
 

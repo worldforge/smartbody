@@ -24,7 +24,7 @@
 # define SK_JOINT_POS_H
 
 #include <sb/SBTypes.h>
-# include <sk/sk_vec_limits.h>
+#include <sk/sk_vec_limits.h>
 
 class SkJoint;
 

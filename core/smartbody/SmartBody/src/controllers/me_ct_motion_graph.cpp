@@ -19,7 +19,7 @@ MeCtMotionGraph::~MeCtMotionGraph() = default;
 
 SmartBody::SBMotionNodeState* MeCtMotionGraph::getMotionNodeState()
 {
-	return motionState;
+	return motionState.get();
 }
 
 
@@ -28,7 +28,7 @@ bool MeCtMotionGraph::controller_evaluate( double t, MeFrameData& frame )
 	if (!motionState)
 	{
 		std::vector<std::string> affectedJointNames;
-		motionState = new SmartBody::SBMotionNodeState();
+		motionState = std::make_unique<SmartBody::SBMotionNodeState>();
 		motionState->initState(frame.context()->channels(), affectedJointNames, baseJointName);	
 		outMotionBuffer.copyFrameBuffer(motionState->getCurMotionFrameBuffer());
 	}	
@@ -56,7 +56,7 @@ bool MeCtMotionGraph::controller_evaluate( double t, MeFrameData& frame )
 		{
 			outMotionBuffer.applyRetarget(retarget);
 			SrVec woPos = deltaWO.get_translation();
-			for (unsigned int i=0;i<3;i++)
+			for (size_t i=0;i<3;i++)
 				woPos[i] = retarget->applyRetargetJointTranslation("base",woPos[i]);
 			deltaWO.set_translation(woPos);
 		}

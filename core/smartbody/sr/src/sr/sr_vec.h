@@ -27,8 +27,8 @@
 # define SR_VEC_H
 
 #include "SBABI.h"
-# include <sr/sr_input.h> 
-# include <sr/sr_output.h> 
+#include <sr/sr_input.h>
+#include <sr/sr_output.h>
 #include <string>
 #include <cassert>
 

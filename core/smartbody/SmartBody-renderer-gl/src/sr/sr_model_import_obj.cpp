@@ -32,7 +32,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 //# define SR_USE_TRACE1    // keyword tracking
-//# include <sr/sr_trace.h>
+//#include <sr/sr_trace.h>
 
 # define GETID(n,A) in>>n; if (n>0) n--; else if (n<0) n+=A.size()
  

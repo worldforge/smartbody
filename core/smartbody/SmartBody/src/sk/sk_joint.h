@@ -26,15 +26,15 @@
 # define SK_JOINT_H
 
 #include <sb/SBTypes.h>
-# include <sr/sr_mat.h>
-# include <sr/sr_quat.h>
-# include <sr/sr_array.h>
+#include <sr/sr_mat.h>
+#include <sr/sr_quat.h>
+#include <sr/sr_array.h>
 
-# include <sk/sk_joint_name.h>
-# include <sk/sk_joint_pos.h>
-# include <sk/sk_joint_quat.h>
-# include <sk/sk_joint_euler.h>
-# include <sk/sk_joint_swing_twist.h>
+#include <sk/sk_joint_name.h>
+#include <sk/sk_joint_pos.h>
+#include <sk/sk_joint_quat.h>
+#include <sk/sk_joint_euler.h>
+#include <sk/sk_joint_swing_twist.h>
 #include "sr/sr_shared_ptr.hpp"
 #include <sb/SBObject.h>
 

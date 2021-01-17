@@ -27,10 +27,10 @@
 /** \file sr_buffer.h 
  * fast buffer memory management template */
 #include "SBABI.h"
-# include <algorithm> 
-# include <sr/sr.h> 
-# include <sr/sr_input.h> 
-# include <sr/sr_output.h> 
+#include <algorithm>
+#include <sr/sr.h>
+#include <sr/sr_input.h>
+#include <sr/sr_output.h>
 
 /*! Allocates memory with sizeofx*newsize bytes using the C function realloc. 
     If newsize is zero, buffer is freed and both buffer and size becomes zero.

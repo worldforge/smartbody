@@ -2,11 +2,11 @@
 # ifndef SK_POS_PLANNER_H
 # define SK_POS_PLANNER_H
 
-# include <sr/sr_lines.h>
-# include "sr_cfg_manager.h"
-# include "sr_cfg_planner.h"
+#include <sr/sr_lines.h>
+#include "sr_cfg_manager.h"
+#include "sr_cfg_planner.h"
 
-# include "sk_pos_cfg_manager.h"
+#include "sk_pos_cfg_manager.h"
 
 //=================================== SkArmPlanner =====================================
 

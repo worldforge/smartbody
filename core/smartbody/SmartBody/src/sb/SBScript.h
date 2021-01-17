@@ -35,7 +35,7 @@ class SBScript : public SBAsset
 		SBAPI virtual void setEnable(bool val);
 		SBAPI virtual bool isEnable();
 
-		SBAPI virtual void notify(SBSubject* subject);
+		SBAPI void notify(SBSubject* subject) override;
 
 	protected:
 		bool _enabled;

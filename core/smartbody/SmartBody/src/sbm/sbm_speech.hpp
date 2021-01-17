@@ -21,10 +21,10 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 # ifndef SBM_AUDIO_HPP
 # define SBM_AUDIO_HPP
 
-# include <vector>
-# include <iostream>
+#include <vector>
+#include <iostream>
 
-# include "xercesc_utils.hpp"
+#include "xercesc_utils.hpp"
 
 
 // Forward declarations

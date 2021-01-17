@@ -27,7 +27,7 @@
  * 3d axis-aligned box
  */
 #include "SBABI.h"
-# include <sr/sr_vec.h>
+#include <sr/sr_vec.h>
 #include <vector>
 
 class SrMat;

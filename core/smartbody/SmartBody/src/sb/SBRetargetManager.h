@@ -25,6 +25,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <map>
 #include <vector>
+#include <memory>
 
 namespace SmartBody {
 
@@ -38,12 +39,12 @@ class SBRetargetManager
 		SBAPI SBRetargetManager();
 		SBAPI ~SBRetargetManager();
 
-		SBAPI SBRetarget* createRetarget(std::string sourceSk, std::string targetSk);		
-		SBAPI SBRetarget* getRetarget(std::string sourceSk, std::string targetSk);
+		SBAPI SBRetarget* createRetarget(const std::string& sourceSk, const std::string& targetSk);
+		SBAPI SBRetarget* getRetarget(const std::string& sourceSk, const std::string& targetSk);
 		SBAPI std::vector<StringPair> getRetargetNames();
 
 	protected:
-		std::map<StringPair, SBRetarget*> _retargets;
+		std::map<StringPair, SBRetarget> _retargets;
 };
 
 }

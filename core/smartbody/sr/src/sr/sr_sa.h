@@ -26,7 +26,7 @@
  * scene action base class
  */
 #include "SBABI.h"
-# include <sr/sr_sn.h>
+#include <sr/sr_sn.h>
 
 class SrSnGroup;
 class SrSnEditor;

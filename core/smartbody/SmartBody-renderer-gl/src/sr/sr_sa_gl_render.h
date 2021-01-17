@@ -26,8 +26,8 @@
  * OpenGL render action
  */
 #include "SBABI.h"
-# include <sr/sr_sa.h>
-# include <sr/sr_sn_shape.h>
+#include <sr/sr_sa.h>
+#include <sr/sr_sn_shape.h>
 
 struct SrOverrideAction;
 struct SrOGLData;

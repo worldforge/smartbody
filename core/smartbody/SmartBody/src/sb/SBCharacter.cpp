@@ -262,7 +262,11 @@ SBCharacter::SBCharacter(SmartBody::SBScene& scene, const std::string& name, con
 }
 
 
-SBAPI SBCharacter::~SBCharacter() = default;
+SBAPI SBCharacter::~SBCharacter() {
+	if (frameDataMarshalFriendly) {
+		FreeFrameDataMarshalFriendly();
+	}
+}
 
 
 void SBCharacter::startMotionRecord( double frameRate )
@@ -1018,32 +1022,30 @@ SBAPI void SBCharacter::addJointTrajectoryConstraint( const std::string& jointNa
 {
 	if (jointTrajMap.find(jointName) == jointTrajMap.end())
 	{
-		jointTrajMap[jointName] = new TrajectoryRecord();
+		jointTrajMap[jointName] = {};
 	}
-	TrajectoryRecord* trajRecord = jointTrajMap[jointName];
-	trajRecord->effectorName = jointName;
-	trajRecord->refJointName = refJointName;
-	trajRecord->isEnable = true;
+	auto& trajRecord = jointTrajMap[jointName];
+	trajRecord.effectorName = jointName;
+	trajRecord.refJointName = refJointName;
+	trajRecord.isEnable = true;
 }
 
 SBAPI TrajectoryRecord* SBCharacter::getJointTrajectoryConstraint( const std::string& jointName )
 {
-	if (jointTrajMap.find(jointName) == jointTrajMap.end())
+	auto I = jointTrajMap.find(jointName);
+	if (I == jointTrajMap.end())
 	{
 		return nullptr;
 	}
-	return jointTrajMap[jointName];
+	return &I->second;
 }
 
 SBAPI std::vector<std::string> SBCharacter::getJointConstraintNames()
 {
-	std::map<std::string, TrajectoryRecord*>::iterator mi;
 	std::vector<std::string> jointConsNames;
-	for ( mi  = jointTrajMap.begin();
-		  mi != jointTrajMap.end();
-		  mi++)
+	for (auto & mi : jointTrajMap)
 	{
-		jointConsNames.emplace_back(mi->first);
+		jointConsNames.emplace_back(mi.first);
 	}
 	return jointConsNames;
 }

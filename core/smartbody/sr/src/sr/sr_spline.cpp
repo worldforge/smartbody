@@ -20,8 +20,8 @@
  *      Marcelo Kallmann, USC (currently UC Merced)
  */
 
-//# include <math.h>
-# include <sr/sr_spline.h> 
+//#include <cmath>
+#include <sr/sr_spline.h>
 
 //============================== SrSpline ===============================
 

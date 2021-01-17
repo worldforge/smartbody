@@ -27,7 +27,7 @@
  * shape base and template class
  */
 #include "SBABI.h"
-# include <sr/sr_sn.h>
+#include <sr/sr_sn.h>
 
 //================================ SrSnShapeBase ====================================
 

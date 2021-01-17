@@ -114,8 +114,8 @@ class PABlend : public SmartBody::SBObject
 		SBAPI std::vector<TriangleInfo>& getTriangles() {return triangles;}
 		SBAPI std::vector<TetrahedronInfo> & getTetrahedrons() {return tetrahedrons;}
 
-		SBAPI std::vector<std::pair<SmartBody::SBMotionEvent*, int> >& getEvents();
-		SBAPI void addEventToMotion(const std::string& motion, SmartBody::SBMotionEvent* motionEvent);
+		SBAPI std::vector<std::pair<SmartBody::SBMotionEvent, int> >& getEvents();
+		SBAPI void addEventToMotion(const std::string& motion, SmartBody::SBMotionEvent motionEvent);
 
 		std::string stateName;
 		std::vector<SmartBody::SBMotion*> motions;
@@ -145,7 +145,7 @@ class PABlend : public SmartBody::SBObject
 		std::vector<TriangleInfo> triangles;
 		std::vector<TetrahedronInfo> tetrahedrons;
 		std::string emptyString;
-		std::vector<std::pair<SmartBody::SBMotionEvent*, int> > _events;
+		std::vector<std::pair<SmartBody::SBMotionEvent, int> > _events;
 		SrVec paraMax, paraMin;
 };
 
