@@ -213,7 +213,7 @@ class PATransitionManager
 {
 	public:
 		
-		PATransitionManager(float transitionLen);
+		explicit PATransitionManager(float transitionLen);
 		PATransitionManager(double easeOutStart, double duration);
 		PATransitionManager(SmartBody::SBAnimationTransition* transition, PABlendData* from, PABlendData* to);
 		~PATransitionManager();

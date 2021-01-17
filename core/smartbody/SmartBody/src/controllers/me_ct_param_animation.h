@@ -128,7 +128,7 @@ class MeCtParamAnimation : public MeCtContainer
 
 	private:
 		void autoScheduling(double time);
-		PABlendData* createStateModule(ScheduleUnit su);		
+		std::unique_ptr<PABlendData> createStateModule(ScheduleUnit su);
 		void updateWo(SrMat& mat, MeCtChannelWriter* wo, SrBuffer<float>& buffer);
 		void updateIK(PABlendData* curBlendData, SrMat& woMat, SrMat& woDeltaMat, float dt, SrBuffer<float>& buff);
 		void updateJointTrajectory(PABlendData* blendData);
@@ -143,11 +143,11 @@ class MeCtParamAnimation : public MeCtContainer
 		SmartBody::SBCharacter*	character;
 		std::string baseJointName;
 		MeCtChannelWriter* woWriter;
-		PATransitionManager* transitionManager;
+		std::unique_ptr<PATransitionManager> transitionManager;
 		double			prevGlobalTime;
 
-		PABlendData*	curStateData;
-		PABlendData*	nextStateData;
+		std::unique_ptr<PABlendData>	curStateData;
+		std::unique_ptr<PABlendData>	nextStateData;
 		std::list<ScheduleUnit> waitingList;
 		BodyMotionFrame inputFrame, outputFrame;
 		MeCtIKTreeScenario ikScenario;

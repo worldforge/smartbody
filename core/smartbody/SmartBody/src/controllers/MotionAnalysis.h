@@ -78,9 +78,9 @@ protected:
 	float startTime{}, endTime{};
 	std::map<int,LegCycleVec> legCycleMap;
 public:
-	std::vector<LegInfo*> legInfos;	
+	std::vector<LegInfo>& legInfos;
 public:
-	LocomotionAnalyzer();
+	explicit LocomotionAnalyzer(std::vector<LegInfo>& legInfos);
 	~LocomotionAnalyzer();
 	std::string getMotionName();
 	void initLegCycles(SmartBody::SBScene& scene, const std::string& name, SmartBody::SBAnimationBlend* locoBlend, KeyTagMap& keyTag, SmartBody::SBSkeleton* skelCopy);
@@ -88,7 +88,7 @@ public:
 	LocomotionLegCycle* getLegCycleByIndex(int iLeg, int cycleIdx);
 protected:
 	double getKeyTagTime(const std::string& key, int iCycle, KeyTag& tag);
-	void sampleLegCycle(LegInfo* legInfo, LocomotionLegCycle& legCycle, SmartBody::SBMotion* motion, SmartBody::SBSkeleton* skel, int nSample);
+	void sampleLegCycle(const LegInfo& legInfo, LocomotionLegCycle& legCycle, SmartBody::SBMotion* motion, SmartBody::SBSkeleton* skel, int nSample);
 };
 
 class MotionAnalysis
@@ -97,13 +97,13 @@ protected:
 	SmartBody::SBScene& _scene;
 	std::vector<std::string> motionNames;
 	MeCtCCDIK             ikCCD;	
-	std::vector<LegInfo*>  legInfos;
+	std::vector<LegInfo>  legInfos;
 	std::vector<LegCycleState> legStates;
-	std::vector<LocomotionAnalyzer*> locoAnalyzers;
+	std::vector<std::unique_ptr<LocomotionAnalyzer>> locoAnalyzers;
 	boost::intrusive_ptr<SmartBody::SBSkeleton> skelCopy;
 	float skelBaseHeight;	
 public:
-	MotionAnalysis(SmartBody::SBScene& scene);
+	explicit MotionAnalysis(SmartBody::SBScene& scene);
 	~MotionAnalysis();
 	void init(const std::string& skeletonName, const std::string& baseJoint, SmartBody::SBAnimationBlend* locomotionBlend, const std::vector<std::string>& motions, const std::string& motionPrefix);
 	void initLegInfos();

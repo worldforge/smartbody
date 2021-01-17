@@ -204,8 +204,6 @@ void SBMotionBlendBase::buildBlendBase( const std::string& motionParameter, cons
 	//// 		updateSmoothSurface(surf);
 	//// 	}
 	}
-
-	pseudoParameters = blendEngine->resamplePts;
 }
 
 

@@ -290,8 +290,8 @@ travelDirection = ([0, 0, 0, 0, 0, 0, 0, 0, -90, 90, 0, 0, 0, 0, 0, 0, 0, -90, 9
 for i in range(0, len(motions)):
     motion = scene.getMotion(motions[i])
     motion.connect(skeleton)
-    correspondancePoints = statemarineLocomotion.getCorrespondancePoints(i)
-    lenCorrespondancePoints = len(correspondancePoints)
+    #correspondancePoints = statemarineLocomotion.getCorrespondancePoints(i)
+    #lenCorrespondancePoints = len(correspondancePoints)
     # speed = motion.getJointSpeed(joint, correspondancePoints[0], correspondancePoints[lenCorrespondancePoints - 1])
     # omega = motion.getJointAngularSpeed(joint, correspondancePoints[0], correspondancePoints[lenCorrespondancePoints - 1])
     speed = motion.getJointSpeed(joint, 0, motion.getDuration())
@@ -304,7 +304,7 @@ for i in range(0, len(motions)):
     omega = motion.getJointAngularSpeed(joint, 0, motion.getDuration())
 
     statemarineLocomotion.setParameter(motions[i], speed, omega, direction)
-    # print "Motion " + motion.getName() + " (" + str(speed) + ", " + str(omega) + ", " + str(direction) + ")"
+    print("Motion " + motion.getName() + " (" + str(speed) + ", " + str(omega) + ", " + str(direction) + ")")
     motion.disconnect()
 
 statemarineLocomotion.addTetrahedron("ChrMarine@Idle01", "ChrMarine@Meander01", "ChrMarine@StrafeSlowRt01", "ChrMarine@WalkCircleLf01_smooth")

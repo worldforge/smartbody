@@ -102,7 +102,7 @@ float LocomotionLegCycle::getTransitionWeight( float motionTime, int& phase )
 /************************************************************************/
 /* Locomotion Analyzer                                                  */
 /************************************************************************/
-LocomotionAnalyzer::LocomotionAnalyzer() = default;
+LocomotionAnalyzer::LocomotionAnalyzer(std::vector<LegInfo>& legInfos): legInfos(legInfos) {}
 
 LocomotionAnalyzer::~LocomotionAnalyzer() = default;
 
@@ -210,11 +210,11 @@ double LocomotionAnalyzer::getKeyTagTime( const std::string& key, int iCycle, Ke
 	return value;
 }
 
-void LocomotionAnalyzer::sampleLegCycle(LegInfo* legInfo, LocomotionLegCycle& legCycle, SmartBody::SBMotion* motion, SmartBody::SBSkeleton* skel, int nSample )
+void LocomotionAnalyzer::sampleLegCycle(const LegInfo& legInfo, LocomotionLegCycle& legCycle, SmartBody::SBMotion* motion, SmartBody::SBSkeleton* skel, int nSample )
 {
 	legCycle.samples.resize(nSample);
 	
-	SmartBody::SBJoint* baseJoint = skel->getJointByName(legInfo->base);
+	SmartBody::SBJoint* baseJoint = skel->getJointByName(legInfo.base);
 	motion->connect(skel);
 	double dt = legCycle.cycleDuration/(nSample-1);	
 	for (int i=0;i<nSample;i++)
@@ -224,20 +224,20 @@ void LocomotionAnalyzer::sampleLegCycle(LegInfo* legInfo, LocomotionLegCycle& le
 		motion->apply((float)motionTime);		
 		skel->update_global_matrices();
 		LegCycleSample& legSample = legCycle.samples[i];
-		legSample.supportPos.resize(legInfo->supportJoints.size());
-		for (unsigned int sup = 0; sup < legInfo->supportJoints.size(); sup++)
+		legSample.supportPos.resize(legInfo.supportJoints.size());
+		for (unsigned int sup = 0; sup < legInfo.supportJoints.size(); sup++)
 		{
-			SmartBody::SBJoint* supJoint = skel->getJointByName(legInfo->supportJoints[sup]);		
+			SmartBody::SBJoint* supJoint = skel->getJointByName(legInfo.supportJoints[sup]);
 			legSample.supportPos[sup] = supJoint->gmat().get_translation()*baseJoint->gmat().inverse();
 		}		
 	}		
 	double nextStanceTime = legCycle.cycleEndTime;
 	motion->apply((float)nextStanceTime);
 	skel->update_global_matrices();
-	legCycle.stanceSupportPos.resize(legInfo->supportJoints.size());
-	for (unsigned int sup = 0; sup < legInfo->supportJoints.size(); sup++)
+	legCycle.stanceSupportPos.resize(legInfo.supportJoints.size());
+	for (unsigned int sup = 0; sup < legInfo.supportJoints.size(); sup++)
 	{
-		SmartBody::SBJoint* supJoint = skel->getJointByName(legInfo->supportJoints[sup]);		
+		SmartBody::SBJoint* supJoint = skel->getJointByName(legInfo.supportJoints[sup]);
 		legCycle.stanceSupportPos[sup] = supJoint->gmat().get_translation()*baseJoint->gmat().inverse();
 	}		
 	motion->disconnect();
@@ -254,29 +254,7 @@ std::string LocomotionAnalyzer::getMotionName()
 
 MotionAnalysis::MotionAnalysis(SmartBody::SBScene& scene): _scene(scene) {}
 
-MotionAnalysis::~MotionAnalysis()
-{
-	for (auto & legInfo : legInfos)
-	{
-		if (legInfo)
-		{
-			delete legInfo;
-			legInfo = nullptr;
-		}
-	}
-	legInfos.clear();
-
-	for (auto & locoAnalyzer : locoAnalyzers)
-	{
-		if (locoAnalyzer)
-		{
-			delete locoAnalyzer;
-			locoAnalyzer = nullptr;
-		}
-	}
-	locoAnalyzers.clear();
-
-}
+MotionAnalysis::~MotionAnalysis() = default;
 
 void MotionAnalysis::init(const std::string& skeletonName, const std::string& baseJoint, SmartBody::SBAnimationBlend* locomotionBlend, const std::vector<std::string>& motions, const std::string& motionPrefix )
 {		
@@ -288,10 +266,9 @@ void MotionAnalysis::init(const std::string& skeletonName, const std::string& ba
 	{
 		const std::string& motionName = motions[i];
 		KeyTagMap& keyTagMap = *locomotionBlend->getKeyTagMap(motionPrefix+motionName);
-		LocomotionAnalyzer* analyzer = new LocomotionAnalyzer();
-		analyzer->legInfos = legInfos;
+		auto analyzer = std::make_unique<LocomotionAnalyzer>(legInfos);
 		analyzer->initLegCycles(_scene, motionName,locomotionBlend,keyTagMap,skelCopy.get());
-		locoAnalyzers.emplace_back(analyzer);
+		locoAnalyzers.emplace_back(std::move(analyzer));
 	}	
 
 	for (int i=0;i<2;i++)
@@ -305,24 +282,23 @@ void MotionAnalysis::initLegInfos()
 	const std::string lFootName[] = {"l_forefoot", "l_ankle" };
 	const std::string rFootName[] = {"r_forefoot", "r_ankle" };
 
-	LegInfo* lLeg = new LegInfo();	
-	lLeg->supportOffset.resize(2);
-	lLeg->supportJoints.resize(2);
-	lLeg->supportJoints[1] = lFootName[1];
-	lLeg->supportJoints[0] = lFootName[0];
-	lLeg->base = "base";
-	lLeg->hip = "l_hip";	
+	LegInfo lLeg;
+	lLeg.supportOffset.resize(2);
+	lLeg.supportJoints.resize(2);
+	lLeg.supportJoints[1] = lFootName[1];
+	lLeg.supportJoints[0] = lFootName[0];
+	lLeg.base = "base";
+	lLeg.hip = "l_hip";
 
-	LegInfo* rLeg = new LegInfo();
-	rLeg->supportOffset.resize(2);
-	rLeg->supportJoints.resize(2);
-	rLeg->supportJoints[1] = rFootName[1];
-	rLeg->supportJoints[0] = rFootName[0];
-	rLeg->base = "base";
-	rLeg->hip = "r_hip";
+	LegInfo rLeg;
+	rLeg.supportOffset.resize(2);
+	rLeg.supportJoints.resize(2);
+	rLeg.supportJoints[1] = rFootName[1];
+	rLeg.supportJoints[0] = rFootName[0];
+	rLeg.base = "base";
+	rLeg.hip = "r_hip";
 
-	legInfos.emplace_back(lLeg);
-	legInfos.emplace_back(rLeg);
+
 	legStates.resize(2);
 
 	for (int i=0;i<2;i++)
@@ -330,17 +306,19 @@ void MotionAnalysis::initLegInfos()
 		auto lFoot = std::make_unique<EffectorConstantConstraint>();
 		lFoot->efffectorName = lFootName[i];
 		lFoot->rootName = "";
-		lLeg->ikConstraint[lFoot->efffectorName] = std::move(lFoot);
+		lLeg.ikConstraint[lFoot->efffectorName] = std::move(lFoot);
 
 		auto rFoot = std::make_unique<EffectorConstantConstraint>();
 		rFoot->efffectorName = rFootName[i];
 		rFoot->rootName = "";
-		rLeg->ikConstraint[rFoot->efffectorName] = std::move(rFoot);
+		rLeg.ikConstraint[rFoot->efffectorName] = std::move(rFoot);
 
 		legStates[i].curSupportPos.resize(2);
 		legStates[i].globalSupportPos.resize(2);
 		legStates[i].stanceSupportPos.resize(2);		
-	}	
+	}
+	legInfos.emplace_back(std::move(lLeg));
+	legInfos.emplace_back(std::move(rLeg));
 	//ikScenario.buildIKTreeFromJointRoot(skelCopy->getJointByMappedName("base"),stopJoint);
 }
 
@@ -388,17 +366,17 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 	float tgtBaseHeight = tgtSk->getBaseHeight(baseName); // to decide the terrain compensation offset
 	float scaleRatio = tgtSk->getBaseHeight(baseName)/srcSk->getBaseHeight(baseName);
 
-	for (auto info : legInfos)
+	for (auto& info : legInfos)
 	{
-			for (unsigned int k=0;k<info->supportJoints.size();k++)
+			for (unsigned int k=0;k<info.supportJoints.size();k++)
 		{
-			MeCtIKTreeNode* supNode = ikScenario.findIKTreeNode(info->supportJoints[k].c_str());
+			MeCtIKTreeNode* supNode = ikScenario.findIKTreeNode(info.supportJoints[k].c_str());
 			supNode->active = false;
-			SmartBody::SBJoint* srcSupJoint = srcSk->getJointByName(info->supportJoints[k]);
-			SmartBody::SBJoint* tgtSupJoint = tgtSk->getJointByName(info->supportJoints[k]);
+			SmartBody::SBJoint* srcSupJoint = srcSk->getJointByName(info.supportJoints[k]);
+			SmartBody::SBJoint* tgtSupJoint = tgtSk->getJointByName(info.supportJoints[k]);
 			SrVec srcOffset = (srcSupJoint->getPosition() - srcBase->getPosition())*scaleRatio;
 			SrVec tgtOffset = tgtSupJoint->getPosition() - tgtBase->getPosition();
-			info->supportOffset[k] = tgtOffset - srcOffset;
+			info.supportOffset[k] = tgtOffset - srcOffset;
 		}
 	}	
 
@@ -429,7 +407,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		}
 	}	
 	// get normalize cycle from maxWeight locomotion
-	LocomotionAnalyzer* maxWeightAnalyzer = locoAnalyzers[maxWeightIndex];
+	auto& maxWeightAnalyzer = locoAnalyzers[maxWeightIndex];
 	for (unsigned int k=0;k<legStates.size();k++)
 	{
 		LegCycleState& legState = legStates[k];		
@@ -440,7 +418,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		sbChar->flightTime[k] = legState.flightTime;
 		for (unsigned int i=0;i<locoAnalyzers.size();i++) // weighted sum of local foot base
 		{
-			LocomotionAnalyzer* analyzer = locoAnalyzers[i];		
+			auto& analyzer = locoAnalyzers[i];
 			double moTime = timeManager->motionTimes[i];
 			LocomotionLegCycle* legCycle = analyzer->getLegCycle(k,(float)moTime);		
 			//LocomotionLegCycle* legCycle = analyzer->getLegCycleByIndex(k,maxCycle->cycleIdx);		
@@ -488,7 +466,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		if (angSpeed > 20.0)
 			nextStepCharPos = rotCenter - rotCenter*SrQuat(vUp,nextStepAngle); //
 		//SrVec nextStepCharPos =  rotCenter - rotCenter*SrQuat(vUp,nextStepAngle); //
-		SrVec nextStepFootPos = gmatBase.get_translation() + nextStepCharPos + (legState.stanceSupportPos[0]*scaleRatio + legInfos[k]->supportOffset[0])*nextStepRotMat;
+		SrVec nextStepFootPos = gmatBase.get_translation() + nextStepCharPos + (legState.stanceSupportPos[0]*scaleRatio + legInfos[k].supportOffset[0])*nextStepRotMat;
 		//SrVec nextStepFootPos = gmatBase.get_translation() + nextStepCharPos + (legState.stanceSupportPos[0]*scaleRatio + legInfos[k]->supportOffset[0])*gmatBase.get_rotation(); //
 		//SrVec nextStepFootPos = gmatBase.get_translation() + nextStepCharPos + (legState.stanceSupportPos[0]*scaleRatio + legInfos[k]->supportOffset[0])*gmatBase.get_rotation(); //
 		// 		
@@ -516,7 +494,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 	
 
 
-	LocomotionAnalyzer* dominantAnalyzer = locoAnalyzers[maxWeightIndex];
+	auto& dominantAnalyzer = locoAnalyzers[maxWeightIndex];
 	double dominantMotime = timeManager->motionTimes[maxWeightIndex];
 
 	for (unsigned int k=0;k<legStates.size();k++)
@@ -524,7 +502,7 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 		LegCycleState& legState = legStates[k];
 		for (unsigned int m=0;m<legState.curSupportPos.size();m++)
 		{
-			legState.globalSupportPos[m] = (legState.curSupportPos[m]*scaleRatio + legInfos[k]->supportOffset[m])*gmatBase; // transform to global space	
+			legState.globalSupportPos[m] = (legState.curSupportPos[m]*scaleRatio + legInfos[k].supportOffset[m])*gmatBase; // transform to global space
 			if (k==0 && m==0)
 			{
 				SrVec spos;
@@ -635,13 +613,13 @@ void MotionAnalysis::applyIKFix(MeCtIKTreeScenario& ikScenario, SmartBody::SBCha
 	// set ik constraint
 	for (unsigned int i=0;i<legInfos.size();i++)
 	{
-		LegInfo* leg = legInfos[i];
+		auto& leg = legInfos[i];
 		LegCycleState& legState = legStates[i];
-		ConstraintMap& constraint = leg->ikConstraint;
+		ConstraintMap& constraint = leg.ikConstraint;
 		ConstraintMap::iterator mi;
-		for (unsigned int k=0;k<leg->supportJoints.size();k++)
+		for (unsigned int k=0;k<leg.supportJoints.size();k++)
 		{			
-			auto* foot = dynamic_cast<EffectorConstantConstraint*>(constraint[leg->supportJoints[k]].get());
+			auto* foot = dynamic_cast<EffectorConstantConstraint*>(constraint[leg.supportJoints[k]].get());
 			foot->targetPos = legState.globalSupportPos[k];
 		}		
 		ikScenario.ikPosEffectors = &constraint;

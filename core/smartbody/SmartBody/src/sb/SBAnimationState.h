@@ -148,7 +148,7 @@ class SBAnimationBlend : public PABlend, public SBSceneOwned
 		SrMat plotVectorFlowTransform;
 		std::vector<boost::intrusive_ptr<SrSnShape<SrLines>>> vecflowLinesArray;
 		// put a list of joint global positions into array
-		void getJointsGPosFromSkel(SkSkeleton* sk, SrArray<SrVec>& pnts_array, const std::vector<std::unique_ptr<SkJoint>>& jnt_list);
+		void getJointsGPosFromSkel(SkSkeleton* sk, std::vector<SrVec>& pnts_array, const std::vector<std::unique_ptr<SkJoint>>& jnt_list);
 		// find maximum vector norm (vector are connected between jnt global positions in consecutive frame pairs)
 		float getVectorMaxNorm(SrArray<SrArray<SrVec>*>& pnts_arr);
 		std::vector<boost::intrusive_ptr<SrSnLines>> plotMotionLinesArray; // plotMotion()

@@ -21,6 +21,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "SBAnimationTransition.h"
 #include <sb/SBAnimationState.h>
 #include <sstream>
+#include <utility>
 
 namespace SmartBody {
 
@@ -29,7 +30,7 @@ SBAnimationTransition::SBAnimationTransition() : SBObject()
 	_rule = nullptr;
 }
 
-SBAnimationTransition::SBAnimationTransition(std::string name) : SBObject()
+SBAnimationTransition::SBAnimationTransition(const std::string& name) : SBObject()
 {
 	setName(name);
 	_rule = nullptr;
@@ -41,10 +42,10 @@ SBAPI SBAnimationTransition::SBAnimationTransition(SBAnimationTransition* transi
 	this->toState = to;
 	this->fromMotionName = transition->fromMotionName;
 	this->toMotionName = transition->toMotionName;
-	for (unsigned int i = 0; i < transition->easeOutStart.size(); i++)
-		this->easeOutStart.emplace_back(transition->easeOutStart[i]);
-	for (unsigned int i = 0; i < transition->easeOutEnd.size(); i++)
-		this->easeOutEnd.emplace_back(transition->easeOutEnd[i]);
+	for (double & i : transition->easeOutStart)
+		this->easeOutStart.emplace_back(i);
+	for (double & i : transition->easeOutEnd)
+		this->easeOutEnd.emplace_back(i);
 	this->easeInStart = transition->getEaseInStart();
 	this->easeInEnd = transition->getEaseInEnd();
 }
@@ -94,7 +95,7 @@ void SBAnimationTransition::set(SBAnimationBlend* source, SBAnimationBlend* dest
 
 void SBAnimationTransition::setEaseInInterval(std::string destMotion, float start, float end)
 {
-	toMotionName = destMotion;
+	toMotionName = std::move(destMotion);
 	easeInStart = start;
 	easeInEnd = end;
 }
@@ -118,7 +119,7 @@ std::vector<double> SBAnimationTransition::getEaseOutInterval(int num)
 
 void SBAnimationTransition::addEaseOutInterval(std::string sourceMotion, float start, float end)
 {
-	fromMotionName = sourceMotion;
+	fromMotionName = std::move(sourceMotion);
 	easeOutStart.emplace_back(start);
 	easeOutEnd.emplace_back(end);
 }

@@ -62,8 +62,8 @@ class PABlend : public SmartBody::SBObject
 {
 	public:
 		SBAPI PABlend();
-		SBAPI PABlend(PABlend* data);
-		SBAPI PABlend(const std::string& name);
+		SBAPI explicit PABlend(const PABlend& rhs);
+		SBAPI explicit PABlend(const std::string& name);
 		SBAPI ~PABlend();
 		
 		SBAPI virtual bool getWeightsFromParameters(double x, std::vector<double>& weights);
@@ -88,7 +88,7 @@ class PABlend : public SmartBody::SBObject
 		SBAPI void removeTetrahedrons(const std::string& motion);
 		SBAPI int getTetrahedronIndex(const std::string& motion1, const std::string& motion2, const std::string& motion3, const std::string& motion4);
 		SBAPI void buildTetrahedron();
-		SBAPI int getType();
+		SBAPI int getType() const;
 		SBAPI void setType(int typ);
 		SBAPI double getLocalTime(double motionTime, int motionIndex);
 		SBAPI double getMotionTime(double localTime, int motionIndex);
@@ -137,8 +137,6 @@ class PABlend : public SmartBody::SBObject
 		SrVec vecMultiply(SrVec& vec1, SrVec& vec2);
 
 		int type;
-		//std::vector<std::string> motionNames;
-		std::vector<SrVec> pseudoParameters;
 		std::vector<SrVec> parameters;
 		SrVec parameterScale;
 		SrVec invParameterScale;
@@ -153,7 +151,7 @@ class PABlend : public SmartBody::SBObject
 class MotionParameters
 {
 	public:
-		MotionParameters(SkMotion* m, SkSkeleton* skel, std::string jName = "");
+		MotionParameters(SkMotion* m, SkSkeleton* skel, const std::string& jName = "");
 		~MotionParameters();
 
 		void setFrameId(int min, int max);

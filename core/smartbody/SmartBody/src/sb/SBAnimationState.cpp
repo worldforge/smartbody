@@ -138,9 +138,9 @@ void SBAnimationBlend::setIncrementWorldOffsetY(bool flag)
 
 void SBAnimationBlend::backupMotionKey()
 {
-	for (size_t i = 0; i < backupKeys.size(); ++i)
+	for (auto & backupKey : backupKeys)
 	{
-		backupKeys[i].clear();
+		backupKey.clear();
 	}
 	backupKeys.clear();
 
@@ -486,14 +486,14 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 											   float plotThreshold, unsigned int slidWinHalfSize, bool clearAll)
 {
 	SkMotion* mo = SBAnimationBlend::getSkMotion(motionName);
-	if(mo==0) return;
+	if(mo==nullptr) return;
 	if(mo->frames()<3)
 	{
 		SmartBody::util::log("createMotionVectorFlow(): motion does not have enough frames, aborting...");
 		return;
 	}
 	boost::intrusive_ptr<SkSkeleton> sk = mo->connected_skeleton();
-	if(sk==0)
+	if(sk==nullptr)
 	{
 		SBCharacter* sbSk = _scene.getCharacter(chrName);
 		if(sbSk)
@@ -524,58 +524,57 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 	const int frames = mo->frames();
 	const float dur = mo->duration();
 	const float intv = dur / (frames-1);
-	SrArray<SrArray<SrVec>*> pnts_arr; // jsize X frames
+	std::vector<std::vector<SrVec>> pnts_arr; // jsize X frames
 	for(int i=0; i<frames; i++)
 	{
-		pnts_arr.push(new SrArray<SrVec>);
+		pnts_arr.emplace_back(std::vector<SrVec>());
 		// mo->apply_frame(i); // use original frames
 		mo->apply(intv * i); // resample motion time uniformly
 		sk->invalidate_global_matrices();
 		sk->update_global_matrices();
-		getJointsGPosFromSkel(sk.get(), *pnts_arr.top(), jnts);
+		getJointsGPosFromSkel(sk.get(), pnts_arr.back(), jnts);
 	}
 
 	// SmartBody::util::log("createMotionVectorFlow(): max vector norm = %f \n", getVectorMaxNorm(pnts_arr));
 
 	// compute all vector norms
-	SrArray<SrArray<float>*> norm_arr; // jsize X (frames-1)
+	std::vector<std::vector<float>> norm_arr; // jsize X (frames-1)
 	for(int i=0; i<frames-1; i++)
 	{
-		SrArray<float>* n_arr = new SrArray<float>;
-		norm_arr.push(n_arr);
-		n_arr->capacity(jsize);
-		n_arr->size(jsize);
+		norm_arr.emplace_back(std::vector<float>());
+		auto& n_arr = norm_arr.back();
+		n_arr.resize(jsize);
 		for(int k=0; k<jsize; k++)
 		{
 			SkJoint* j = jnts[k].get(); if(isExcluded(j)) continue;
-			SrVec curr_p = pnts_arr[i]->get(k);
-			SrVec next_p = pnts_arr[i+1]->get(k);
-			n_arr->set(k, dist(curr_p, next_p));
+			SrVec curr_p = pnts_arr[i][k];
+			SrVec next_p = pnts_arr[i+1][k];
+			n_arr[k] = dist(curr_p, next_p);
 		}
 	}
 
 	// compute norm threshold with sliding window
-	SrArray<SrArray<float>*> norm_th_arr; // jsize X (frames-1)
+	std::vector<std::vector<float>> norm_th_arr; // jsize X (frames-1)
 	for(int i=0; i<frames; i++)
 	{
-		SrArray<float>* n_arr = new SrArray<float>;
-		norm_th_arr.push(n_arr);
-		n_arr->capacity(jsize);
-		n_arr->size(jsize);
+		norm_arr.emplace_back(std::vector<float>());
+		auto& n_arr = norm_arr.back();
+		n_arr.resize(jsize);
 		float th;
 		for(int k=0; k<jsize; k++)
 		{
-			SkJoint* j = jnts[k].get(); if(isExcluded(j)) continue;
+			SkJoint* joint = jnts[k].get(); if(isExcluded(joint)) continue;
 			th = 0.0f;
 			for(unsigned int j=i-slidWinHalfSize; j<=i+slidWinHalfSize; j++)
 			{
 				int m = j;
 				SR_CLIP(m, 0, frames-2);
-				th = th + norm_arr[m]->get(k);
+				th = th + norm_arr[m][k];
 			}
 			th = th / (2*slidWinHalfSize+1);
-			n_arr->set(k, th);
+			n_arr[k] = th;
 		}
+		norm_th_arr.emplace_back(n_arr);
 	}
 
 	// plot vector flow
@@ -589,10 +588,10 @@ void SBAnimationBlend::createMotionVectorFlow(const std::string& motionName, con
 		for(int k=0; k<jsize; k++)
 		{
 			SkJoint* j = jnts[k].get(); if(isExcluded(j)) continue;
-			const SrVec& curr_p = pnts_arr[i]->get(k);
-			const SrVec& next_p = pnts_arr[i+1]->get(k);
-			const float& norm = norm_arr[i]->get(k);
-			const float& th = norm_th_arr[i]->get(k);
+			const SrVec& curr_p = pnts_arr[i][k];
+			const SrVec& next_p = pnts_arr[i+1][k];
+			const float& norm = norm_arr[i][k];
+			const float& th = norm_th_arr[i][k];
 			float c = norm / th;
 			if(c > 1.0f+plotThreshold)
 			{
@@ -879,12 +878,11 @@ void SBAnimationBlend::setPlotVectorFlowTransform(SrVec offset, float yRot)
 }
 
 
-void SBAnimationBlend::getJointsGPosFromSkel(SkSkeleton* sk, SrArray<SrVec>& pnts_array,
+void SBAnimationBlend::getJointsGPosFromSkel(SkSkeleton* sk, std::vector<SrVec>& pnts_array,
 											  const std::vector<std::unique_ptr<SkJoint>>& jnt_list)
 {
 	auto size = jnt_list.size();
-	pnts_array.capacity(size);
-	pnts_array.size(size);
+	pnts_array.resize(size);
 
 	for(size_t k=0; k<size; k++) // set k=1 to skip ref root
 	{
@@ -948,7 +946,7 @@ bool SBAnimationBlend::isExcluded(SkJoint* j)
 
 void SBAnimationBlend::addCorrespondencePoints(const std::vector<std::string>& motionNames, const std::vector<double>& points)
 {
-	if (motions.size() == 0)
+	if (motions.empty())
 	{
 		SmartBody::util::log("Add motions before add correspondence points for state");
 		return;
@@ -975,7 +973,7 @@ void SBAnimationBlend::addCorrespondencePoints(const std::vector<std::string>& m
 
 	// find the right place to insert the keys
 	int insertPosition = -1;
-	if (keys.size() > 0)
+	if (!keys.empty())
 	{
 		for (size_t i = 0; i < keys[0].size(); i++)
 		{
@@ -1013,12 +1011,9 @@ void SBAnimationBlend::removeCorrespondencePoints(int index)
 	if (index < 0 || (keys.size() == 0) || (index >= (int) keys[0].size()))
 		return;
 
-	for (std::vector< std::vector<double> >::iterator iter = keys.begin();
-		 iter != keys.end();
-		 iter++)
+	for (auto & keyArray : keys)
 	{
-		std::vector<double>& keyArray = (*iter);
-		keyArray.erase(keyArray.begin() + index);
+			keyArray.erase(keyArray.begin() + index);
 	}	
 }
 
@@ -1159,7 +1154,7 @@ bool SBAnimationBlend::validateState()
 			keys.emplace_back(std::vector<double>());
 		}		
 		std::vector<double>& keyVec = keys[i];
-		if (keyVec.size() == 0) // if no keys for the motion, automatically set up this based on motion duration
+		if (keyVec.empty()) // if no keys for the motion, automatically set up this based on motion duration
 		{
 			keyVec.emplace_back(0.0);
 			keyVec.emplace_back(motion->duration());

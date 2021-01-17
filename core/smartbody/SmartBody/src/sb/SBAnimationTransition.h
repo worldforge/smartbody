@@ -37,7 +37,7 @@ class SBAnimationTransition : public SBObject
 {
 	public:
 		SBAPI SBAnimationTransition();
-		SBAPI SBAnimationTransition(std::string name);
+		SBAPI SBAnimationTransition(const std::string& name);
 		SBAPI SBAnimationTransition(SBAnimationTransition* transition, PABlend* from, PABlend* to);
 		SBAPI ~SBAnimationTransition();
 

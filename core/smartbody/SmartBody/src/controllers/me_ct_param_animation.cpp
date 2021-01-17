@@ -32,8 +32,9 @@
 #include <sb/SBRetargetManager.h>
 #include <sb/SBRetarget.h>
 #include "SBUtilities.h"
-#include <sr/sr_euler.h>
 #include <sr/sr_mat.h>
+
+#include <utility>
 #include "controllers/MotionAnalysis.h"
 
 std::string MeCtParamAnimation::Context::CONTEXT_TYPE = "MeCtParamAnimation::Context";
@@ -155,37 +156,32 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 	
 	if (transitionManager)
 	{
-		if (curStateData == nullptr || nextStateData == nullptr)
-		{
+		if (curStateData == nullptr || nextStateData == nullptr) {
 			std::string errorInfo;
 			errorInfo = character->getName() + "'s animation state transition warning. ";
-      if (curStateData) {
+			if (curStateData) {
 				if (curStateData->state)
 					errorInfo += "current state: " + curStateData->state->stateName;
-        else
-          errorInfo += "current state: null ";
-      }
-      if (nextStateData) {
+				else
+					errorInfo += "current state: null ";
+			}
+			if (nextStateData) {
 				if (nextStateData->state)
 					errorInfo += "next state: " + nextStateData->state->stateName;
-        else
-          errorInfo += "next state: null ";
-      }
+				else
+					errorInfo += "next state: null ";
+			}
 			SmartBody::util::log("%s", errorInfo.c_str());
 
-			if (curStateData == nullptr && nextStateData != nullptr)
-			{
+			if (curStateData == nullptr && nextStateData != nullptr) {
 				if (nextStateData->state)
 					SmartBody::util::log("would start state %s now", nextStateData->state->stateName.c_str());
-				curStateData = nextStateData;
+				curStateData = std::move(nextStateData);
 				curStateData->active = true;
-				nextStateData = nullptr;
-				delete transitionManager;
-				transitionManager = nullptr;
+				transitionManager.reset();
 				return true;
 			}
-			if (curStateData != nullptr && nextStateData == nullptr)
-			{
+			if (curStateData != nullptr && nextStateData == nullptr) {
 				SmartBody::util::log("scheduling problem, please check the corresponding time marks for two states.");
 				reset();
 				return false;
@@ -195,7 +191,7 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 		if (!transitionManager->blendingMode)
 		{
 			//SmartBody::util::log("Transition align");
-			transitionManager->align(curStateData, nextStateData);
+			transitionManager->align(curStateData.get(), nextStateData.get());
 		}
 		else
 		{
@@ -282,12 +278,12 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 				if (curStateData->getStateName() == PseudoIdleState && !useJointConstraint) // transition from idle pose, and poseture doesn't provide IK traj
 				{	
 					character->setJointTrajBlendWeight(1.f - transitionManager->getCurrentTransitionWeight());										
-					updateJointTrajectory(nextStateData);	
+					updateJointTrajectory(nextStateData.get());
 				}
 				else if (nextStateData->getStateName() == PseudoIdleState && !useJointConstraint) // transition to idle pose, and poseture doesn't provide IK traj
 				{
 					character->setJointTrajBlendWeight(transitionManager->getCurrentTransitionWeight());	
-					updateJointTrajectory(curStateData);	
+					updateJointTrajectory(curStateData.get());
 				}		
 				else // blend the joint trajectory from current state to next state
 				{
@@ -298,7 +294,7 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 				
 					if (curStateData->getStateName() != PseudoIdleState)
 					{
-						updateJointTrajectory(curStateData);
+						updateJointTrajectory(curStateData.get());
 						getCharacterJointTrajectory(curStatePosList);
 					}										
 					else
@@ -308,7 +304,7 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 					
 					if (nextStateData->getStateName() != PseudoIdleState)
 					{
-						updateJointTrajectory(nextStateData);
+						updateJointTrajectory(nextStateData.get());
 						getCharacterJointTrajectory(nextStatePostList);
 					}
 					else
@@ -338,12 +334,9 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 				//else if (nextStateData->getStateName() == PseudoIdleState)
 				//	character->setJointTrajBlendWeight(0.f);
 
-				delete transitionManager;
-				transitionManager = nullptr;
-				delete curStateData;
-				curStateData = nextStateData;
-				nextStateData = nullptr;
-			}			
+				transitionManager.reset();
+				curStateData = std::move(nextStateData);
+			}
 		}
 	} 
 	
@@ -356,20 +349,18 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 		auto& scene = getScene();
 		SmartBody::SBAnimationBlendManager* blendManager = scene.getBlendManager();
 		PABlend* blend = curStateData->state;
-		SmartBody::SBAnimationBlend* sbstate = dynamic_cast<SmartBody::SBAnimationBlend*>(blend);
+		auto* sbstate = dynamic_cast<SmartBody::SBAnimationBlend*>(blend);
 		std::vector<std::string> blends = blendManager->getTransitionBlends(blend->stateName);
-		for (std::vector<std::string>::iterator iter = blends.begin();
-			 iter != blends.end();
-			 iter++)
+		for (auto & iter : blends)
 		{
-			SmartBody::SBAnimationTransition* transition = blendManager->getTransition(blend->stateName, (*iter));
+			SmartBody::SBAnimationTransition* transition = blendManager->getTransition(blend->stateName, iter);
 			if (transition)
 			{
 				SmartBody::SBAnimationTransitionRule* rule = transition->getTransitionRule();
 				if (rule)
 				{
-					SmartBody::SBCharacter* sbchar = dynamic_cast<SmartBody::SBCharacter*>(character);
-					SmartBody::SBAnimationBlend* sbblend = dynamic_cast<SmartBody::SBAnimationBlend*>(blend);
+					auto* sbchar = dynamic_cast<SmartBody::SBCharacter*>(character);
+					auto* sbblend = dynamic_cast<SmartBody::SBAnimationBlend*>(blend);
 					bool ret = rule->check(sbchar, sbblend);
 					if (ret)
 					{
@@ -391,7 +382,7 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 			if (character && character->getBoolAttribute("ikPostFix") && curStateData->getStateName().find("Locomotion") != std::string::npos)
 			{
 				SrMat mat = character->get_world_offset();
-				updateIK(curStateData, mat, curStateData->woManager->getBaseTransformMat(), (float)timeStep,frame.buffer());
+				updateIK(curStateData.get(), mat, curStateData->woManager->getBaseTransformMat(), (float)timeStep,frame.buffer());
 				
 				character->setWorldOffset(ikScenario.ikGlobalMat);
 				float woYOffset = ikScenario.ikGlobalMat.get_translation().y;
@@ -405,14 +396,13 @@ bool MeCtParamAnimation::controller_evaluate(double t, MeFrameData& frame)
 			}
 
 			// update IK trajectory			
-			updateJointTrajectory(curStateData);		
+			updateJointTrajectory(curStateData.get());
 #endif				
 			return true;
 		}
 		else
 		{
-			delete curStateData;
-			curStateData = nullptr;
+			curStateData.reset();
 		}
 	}
 	return true;
@@ -432,7 +422,7 @@ void MeCtParamAnimation::schedule(PABlend* state, double x, double y, double z, 
 {
 	std::vector<double> weights;
 	weights.resize(state->getNumMotions());
-	SmartBody::SBAnimationBlend0D* state0D = dynamic_cast<SmartBody::SBAnimationBlend0D*>(state);
+	auto* state0D = dynamic_cast<SmartBody::SBAnimationBlend0D*>(state);
 	if (state0D)
 	{
 		if (state->getNumMotions() > 0)
@@ -440,28 +430,28 @@ void MeCtParamAnimation::schedule(PABlend* state, double x, double y, double z, 
 	}
 	else
 	{
-		SmartBody::SBAnimationBlend1D* state1D = dynamic_cast<SmartBody::SBAnimationBlend1D*>(state);
+		auto* state1D = dynamic_cast<SmartBody::SBAnimationBlend1D*>(state);
 		if (state1D)
 		{
 			state->getWeightsFromParameters(x, weights);
 		}
 		else
 		{
-			SmartBody::SBAnimationBlend2D* state2D = dynamic_cast<SmartBody::SBAnimationBlend2D*>(state);
+			auto* state2D = dynamic_cast<SmartBody::SBAnimationBlend2D*>(state);
 			if (state2D)
 			{
 				state->getWeightsFromParameters(x, y, weights);
 			}
 			else
 			{
-				SmartBody::SBAnimationBlend3D* state3D = dynamic_cast<SmartBody::SBAnimationBlend3D*>(state);
+				auto* state3D = dynamic_cast<SmartBody::SBAnimationBlend3D*>(state);
 				if (state3D)
 				{
 					state->getWeightsFromParameters(x, y, z, weights);
 				}
 				else
 				{
-					SmartBody::SBMotionBlendBase* blendBase = dynamic_cast<SmartBody::SBMotionBlendBase*>(state);					
+					auto* blendBase = dynamic_cast<SmartBody::SBMotionBlendBase*>(state);
 					if (blendBase)
 					{
 						state->getWeightsFromParameters(x, y, z, weights);
@@ -474,7 +464,7 @@ void MeCtParamAnimation::schedule(PABlend* state, double x, double y, double z, 
 			}
 		}
 	}
-	this->schedule(state, weights, wrap, schedule, blend, jName, timeOffset, stateTimeOffset, stateTimeTrim, transitionLen, directPlay);
+	this->schedule(state, weights, wrap, schedule, blend, std::move(jName), timeOffset, stateTimeOffset, stateTimeTrim, transitionLen, directPlay);
 }
 
 void MeCtParamAnimation::schedule( PABlend* state, const std::vector<double>& weights, const ScheduleType& scType )
@@ -495,7 +485,7 @@ void MeCtParamAnimation::schedule( PABlend* state, const std::vector<double>& we
 	
 
 	ScheduleUnit unit;
-	SmartBody::SBAnimationBlend* animState = dynamic_cast<SmartBody::SBAnimationBlend*>(state);
+	auto* animState = dynamic_cast<SmartBody::SBAnimationBlend*>(state);
 	if (animState)
 	{
 		animState->validateState(); // to make sure the animaion state is valid before schedule it
@@ -519,7 +509,7 @@ void MeCtParamAnimation::schedule( PABlend* state, const std::vector<double>& we
 
 	//SmartBody::util::log("unit schedule mode = %d",unit.schedule);
 
-	float unitTransitionLen = (float)defaultTransition; // set this to initial default	
+	auto unitTransitionLen = (float)defaultTransition; // set this to initial default
 	// override if the default attribute exists
 	if (character->hasAttribute("defaultTransition") && character->getDoubleAttribute("defaultTransition") >= 0)
 	{
@@ -532,7 +522,7 @@ void MeCtParamAnimation::schedule( PABlend* state, const std::vector<double>& we
 	}
 	unit.transitionLength = unitTransitionLen;
 	// make sure the weights are valid for non-pseudoidle state
-	if (unit.weights.size() == 0 && unit.data != nullptr)
+	if (unit.weights.empty() && unit.data != nullptr)
 	{
 		if (unit.data->stateName != PseudoIdleState)
 		{
@@ -566,7 +556,7 @@ void MeCtParamAnimation::schedule(PABlend* blendData, const std::vector<double>&
 	scType.wrap = wrap;
 	scType.schedule = scheduleMode;
 	scType.blend = blend;
-	scType.jName = jName;
+	scType.jName = std::move(jName);
 	scType.timeOffset = timeOffset;
 	scType.stateTimeOffset = stateTimeOffset;
 	scType.stateTimeTrim = stateTimeTrim;
@@ -658,8 +648,8 @@ void MeCtParamAnimation::updateWeights(std::vector<double>& w)
 		return;
 
 	double wCheck = 0.0;
-	for (size_t i = 0; i < w.size(); i++)
-		wCheck += w[i];
+	for (double i : w)
+		wCheck += i;
 	if (fabs(wCheck - 1.0) > 0.1)
 	{
 		for (size_t i = 0; i < w.size(); i++)
@@ -714,7 +704,7 @@ const std::string& MeCtParamAnimation::getCurrentStateName()
 PABlendData* MeCtParamAnimation::getCurrentPABlendData()
 {
 	if (curStateData)
-		return curStateData;
+		return curStateData.get();
 	else
 		return nullptr;
 }
@@ -749,16 +739,16 @@ bool MeCtParamAnimation::isIdle()
 		getCurrentPABlendData()->state &&
 		getCurrentPABlendData()->state->stateName != PseudoIdleState)
 		return false;
-	if (getNextStateName() != "")
+	if (!getNextStateName().empty())
 		return false;
-	if (waitingList.size() != 0)
+	if (!waitingList.empty())
 		return false;
 	return true;
 }
 
 void MeCtParamAnimation::autoScheduling(double time)
 {
-	if (waitingList.size() == 0)
+	if (waitingList.empty())
 		return;	
 
 	ScheduleUnit nextUnit = waitingList.front();
@@ -789,9 +779,7 @@ void MeCtParamAnimation::autoScheduling(double time)
 
 	if (curStateData == nullptr)
 	{
-		if (nextStateData)
-			delete nextStateData;
-		nextStateData = nullptr;
+		nextStateData.reset();
 		curStateData = createStateModule(nextUnit);
 		if (!curStateData)
 		{
@@ -802,8 +790,8 @@ void MeCtParamAnimation::autoScheduling(double time)
 	}
 	else
 	{
-		if (transitionManager)
-			delete transitionManager;
+
+		transitionManager.reset();
 		SmartBody::SBAnimationTransition* data = nullptr;
 		if (nextUnit.data)
 			data = getScene().getBlendManager()->getTransition(curStateData->state->stateName, nextUnit.data->stateName);
@@ -812,13 +800,13 @@ void MeCtParamAnimation::autoScheduling(double time)
 		if (!data) // no existing transition data
 		{
 			if (curStateData->state->stateName == PseudoIdleState)
-				transitionManager = new PATransitionManager(nextStateData->transitionLength);
+				transitionManager = std::make_unique<PATransitionManager>(nextStateData->transitionLength);
 			else
 			{
 				double transitionLen = nextStateData->transitionLength;				
 				if (nextStateData->scheduleMode == PABlendData::Now)
 				{
-					transitionManager = new PATransitionManager((float)transitionLen);					
+					transitionManager = std::make_unique<PATransitionManager>((float)transitionLen);
 				}
 				else
 				{
@@ -840,7 +828,7 @@ void MeCtParamAnimation::autoScheduling(double time)
 					}
 
 					//SmartBody::util::log("easeOutStart = %f, duration = %f",easeOutStart, easeOutDur);
-					transitionManager = new PATransitionManager(easeOutStart, easeOutDur);					
+					transitionManager = std::make_unique<PATransitionManager>(easeOutStart, easeOutDur);
 					//transitionManager = new PATransitionManager(curStateData->timeManager->getDuration(), 0.0);
 				}
 			}
@@ -848,20 +836,20 @@ void MeCtParamAnimation::autoScheduling(double time)
 		else
 		{
 			//SmartBody::util::log("state transition from = %s, to = %s, easeOut = %f, easeIn = %f",curStateData->getStateName().c_str(), nextStateData->getStateName().c_str(),data->easeOutStart[0], data->easeInStart);
-			transitionManager = new PATransitionManager(data, curStateData, nextStateData);			
+			transitionManager = std::make_unique<PATransitionManager>(data, curStateData.get(), nextStateData.get());
 			nextStateData->timeManager->updateLocalTimes(transitionManager->s2);
 		}
 		waitingList.pop_front();
 	}
 }
 
-PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
+std::unique_ptr<PABlendData> MeCtParamAnimation::createStateModule(ScheduleUnit su)
 {
-	PABlendData* module = nullptr;
+	std::unique_ptr<PABlendData> module;
 	if (su.data)
 	{
-		module = new PABlendData(this, su.data, su.weights, su.blend, su.wrap, su.schedule, su.stateTimeOffset, su.stateTimeTrim, su.directPlay);		
-		SmartBody::SBAnimationBlend* animBlend = dynamic_cast<SmartBody::SBAnimationBlend*>(su.data);
+		module = std::make_unique<PABlendData>(this, su.data, su.weights, su.blend, su.wrap, su.schedule, su.stateTimeOffset, su.stateTimeTrim, su.directPlay);
+		auto* animBlend = dynamic_cast<SmartBody::SBAnimationBlend*>(su.data);
 		if (animBlend) // set retarget information if it is available
 		{
 			SmartBody::SBRetargetManager* retargetManager = getScene().getRetargetManager();
@@ -883,22 +871,22 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 		}
 		if (su.blend == PABlendData::Additive)
 		{
-			if (su.partialJoint == "" || su.partialJoint == "null")
+			if (su.partialJoint.empty() || su.partialJoint == "null")
 				su.partialJoint = "base";
 		}
 		std::vector<std::string> joints;
 		std::vector<std::string> jointNameVec;
 		SmartBody::util::tokenize(su.partialJoint, jointNameVec);
-		for (size_t jointId = 0; jointId < jointNameVec.size(); ++jointId)
+		for (auto & jointId : jointNameVec)
 		{
-			SkJoint* j = character->getSkeleton()->search_joint(jointNameVec[jointId].c_str());
+			SkJoint* j = character->getSkeleton()->search_joint(jointId.c_str());
 			if (j)
 			{
 				std::vector<SkJoint*> jVec;
 				SkJoint::recursive_children(jVec, j);
-				for (size_t i = 0; i < jVec.size(); i++)
+				for (auto & i : jVec)
 				{
-					joints.emplace_back(jVec[i]->getMappedJointName());//jointName());
+					joints.emplace_back(i->getMappedJointName());//jointName());
 				}
 			}
 		}
@@ -906,7 +894,7 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 	}
 	else
 	{
-		module = new PABlendData(this, PseudoIdleState, su.weights, su.blend, su.wrap, su.schedule, su.stateTimeOffset, su.stateTimeTrim, su.directPlay);
+		module = std::make_unique<PABlendData>(this, PseudoIdleState, su.weights, su.blend, su.wrap, su.schedule, su.stateTimeOffset, su.stateTimeTrim, su.directPlay);
 		module->transitionLength = su.transitionLength;
 	}
 	if (_context)
@@ -916,8 +904,6 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 		SkJoint* baseJoint = character->getSkeleton()->search_joint(baseJointName.c_str());
 		if (!baseJoint)
 		{
-			if (module)
-				delete module;
 			return nullptr;
 		}
 		module->interpolator->initPreRotation(baseJoint->quat()->orientation()*baseJoint->quat()->prerot());
@@ -929,8 +915,6 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 	}
 	else
 	{
-		if (module)
-			delete module;
 		return nullptr;
 	}
 
@@ -956,15 +940,9 @@ PABlendData* MeCtParamAnimation::createStateModule(ScheduleUnit su)
 
 void MeCtParamAnimation::reset()
 {
-	if (curStateData)
-		delete curStateData;
-	curStateData = nullptr;
-	if (nextStateData)
-		delete nextStateData;
-	nextStateData = nullptr;
-	if (transitionManager)
-		delete transitionManager;
-	transitionManager = nullptr;
+	curStateData.reset();
+	nextStateData.reset();
+	transitionManager.reset();
 	waitingList.clear();
 }
 
@@ -1041,12 +1019,12 @@ void MeCtParamAnimation::updateWo(SrMat& mat, MeCtChannelWriter* woWriter, SrBuf
 
 void MeCtParamAnimation::updateIK( PABlendData* curBlendData, SrMat& woMat, SrMat& woDeltaMat, float dt, SrBuffer<float>& buff )
 {
-	SmartBody::SBAnimationBlend* blend = dynamic_cast<SmartBody::SBAnimationBlend*>(curBlendData->state);
+	auto* blend = dynamic_cast<SmartBody::SBAnimationBlend*>(curBlendData->state);
 	if (!blend) return;
 	MotionAnalysis* moAnalysis = blend->getMotionAnalysis();
 	if (!moAnalysis) return;
 	
-	if (ikScenario.ikTreeNodes.size() == 0) // initialize ik nodes
+	if (ikScenario.ikTreeNodes.empty()) // initialize ik nodes
 	{
 		std::vector<std::string> stopJoint;
 		stopJoint.emplace_back("spine1");

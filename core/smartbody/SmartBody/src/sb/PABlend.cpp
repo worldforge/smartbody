@@ -40,40 +40,19 @@ PABlend::PABlend() : SBObject()
 	incrementWorldOffsetY = false;
 }
 
-PABlend::PABlend(PABlend* data) : SBObject()
+PABlend::PABlend(const PABlend& rhs) : SBObject(),
+stateName(rhs.stateName),
+motions(rhs.motions),
+keys(rhs.keys),
+cycle(rhs.cycle),
+type(rhs.type),
+incrementWorldOffsetY(rhs.incrementWorldOffsetY),
+parameters(rhs.parameters),
+triangles(rhs.triangles),
+tetrahedrons(rhs.tetrahedrons),
+parameterScale({1.0f, 1.0f, 1.0f})
 {
-	stateName = data->stateName;
-	for (unsigned int i = 0; i < data->motions.size(); i++)
-	{
-		motions.emplace_back(data->motions[i]);
-	}
 
-	for (unsigned int i = 0; i < data->keys.size(); i++)
-	{
-		std::vector<double> tempVec;
-		for (unsigned int j = 0; j <data->keys[i].size(); j++)
-			tempVec.emplace_back(data->keys[i][j]);
-		keys.emplace_back(tempVec);
-	}
-	
-	cycle = data->cycle;
-
-	type = data->getType();
-
-	incrementWorldOffsetY = data->incrementWorldOffsetY;
-	
-	for (unsigned int i = 0; i < data->getParameters().size(); i++)
-		parameters.emplace_back(data->getParameters()[i]);
-
-	for (unsigned int i = 0; i < data->getTriangles().size(); i++)
-		triangles.emplace_back(data->getTriangles()[i]);
-	for (unsigned int i = 0; i < data->getTetrahedrons().size(); i++)
-		tetrahedrons.emplace_back(data->getTetrahedrons()[i]);
-
-	
-	parameterScale.x = 1.0f;
-	parameterScale.y = 1.0f;
-	parameterScale.z = 1.0f;
 }
 
 
@@ -91,10 +70,6 @@ PABlend::PABlend(const std::string& name) : SBObject()
 
 PABlend::~PABlend()
 {
-	for (unsigned int i = 0; i < motions.size(); i++)
-	{
-		motions[i] = nullptr;
-	}
 	motions.clear();
 }
 
@@ -169,8 +144,8 @@ bool PABlend::getWeightsFromParameters(double x, std::vector<double>& weights)
 	if (weights.size() != getNumMotions()) weights.resize(getNumMotions());
 	double left = -9999.0;
 	double right = 9999.0;
-	std::string leftMotion = "";
-	std::string rightMotion = "";
+	std::string leftMotion;
+	std::string rightMotion;
 	int minIndex = -1;
 	int maxIndex = -1;
 	double minValue = 9999999;
@@ -200,12 +175,12 @@ bool PABlend::getWeightsFromParameters(double x, std::vector<double>& weights)
 				rightMotion =  motions[i]->getName();
 			}
 	}
-	if (leftMotion == "")
+	if (leftMotion.empty())
 	{
 		if (minIndex != -1)
 			leftMotion = motions[minIndex]->getName();
 	}
-	if (rightMotion == "")
+	if (rightMotion.empty())
 	{
 		if (minIndex != -1)
 			rightMotion = motions[maxIndex]->getName();
@@ -338,16 +313,16 @@ bool PABlend::getWeightsFromParameters(double x, double y, double z, std::vector
 
 	if (weights.size() != getNumMotions()) weights.resize(getNumMotions());
 	SrVec point = SrVec((float)x, (float)y, (float)z);
-	for (unsigned int i = 0; i < tetrahedrons.size(); i++)
+	for (auto & tetrahedron : tetrahedrons)
 	{
-		SrVec v1 = tetrahedrons[i].v1;
-		SrVec v2 = tetrahedrons[i].v2;
-		SrVec v3 = tetrahedrons[i].v3;
-		SrVec v4 = tetrahedrons[i].v4;
-		int id1 = getMotionId(tetrahedrons[i].motion1);
-		int id2 = getMotionId(tetrahedrons[i].motion2);
-		int id3 = getMotionId(tetrahedrons[i].motion3);
-		int id4 = getMotionId(tetrahedrons[i].motion4);
+		SrVec v1 = tetrahedron.v1;
+		SrVec v2 = tetrahedron.v2;
+		SrVec v3 = tetrahedron.v3;
+		SrVec v4 = tetrahedron.v4;
+		int id1 = getMotionId(tetrahedron.motion1);
+		int id2 = getMotionId(tetrahedron.motion2);
+		int id3 = getMotionId(tetrahedron.motion3);
+		int id4 = getMotionId(tetrahedron.motion4);
 
 		if (id1 < 0 || id2 < 0 || id3 < 0 || id4 < 0)
 			return false;
@@ -498,7 +473,7 @@ void PABlend::getParametersFromWeights(float& x, float& y, std::vector<double>& 
 		if (weights[i] > 0.0)
 			indices.emplace_back(i);
 	}
-	if (indices.size() == 0)
+	if (indices.empty())
 		return;
 	else if (indices.size() == 1)
 	{
@@ -514,9 +489,9 @@ void PABlend::getParametersFromWeights(float& x, float& y, std::vector<double>& 
 	else
 	{
 		std::vector<SrVec> vecs;
-		for (size_t i = 0; i < indices.size(); i++)
+		for (int indice : indices)
 		{
-			int id = getMotionId(motions[indices[i]]->getName());
+			int id = getMotionId(motions[indice]->getName());
 			if (id >= 0)
 				vecs.emplace_back(getVec(id));
 			else
@@ -538,7 +513,7 @@ void PABlend::getParametersFromWeights(float& x, float& y, float& z, std::vector
 		if (weights[i] > 0.0)
 			indices.emplace_back(i);
 	}
-	if (indices.size() == 0)
+	if (indices.empty())
 		return;
 	else if (indices.size() == 1)
 	{
@@ -555,9 +530,9 @@ void PABlend::getParametersFromWeights(float& x, float& y, float& z, std::vector
 	else
 	{
 		std::vector<SrVec> vecs;
-		for (size_t i = 0; i < indices.size(); i++)
+		for (int indice : indices)
 		{
-			int id = getMotionId(motions[indices[i]]->getName());
+			int id = getMotionId(motions[indice]->getName());
 			if (id >= 0)
 				vecs.emplace_back(getVec(id));
 			else
@@ -582,21 +557,21 @@ void PABlend::updateParameterScale()
 	float zMax = -9999.0f;
 
 	// find the min and max values
-	for (size_t i = 0; i < parameters.size(); i++)
+	for (auto & parameter : parameters)
 	{
-		if (parameters[i].x < xMin)
-			xMin = parameters[i].x;
-		if (parameters[i].y < yMin)
-			yMin = parameters[i].y;
-		if (parameters[i].z < zMin)
-			zMin = parameters[i].z;
+		if (parameter.x < xMin)
+			xMin = parameter.x;
+		if (parameter.y < yMin)
+			yMin = parameter.y;
+		if (parameter.z < zMin)
+			zMin = parameter.z;
 
-		if (parameters[i].x > xMax)
-			xMax = parameters[i].x;
-		if (parameters[i].y > yMax)
-			yMax = parameters[i].y;
-		if (parameters[i].z > zMax)
-			zMax = parameters[i].z;
+		if (parameter.x > xMax)
+			xMax = parameter.x;
+		if (parameter.y > yMax)
+			yMax = parameter.y;
+		if (parameter.z > zMax)
+			zMax = parameter.z;
 	}
 
 	paraMax = SrVec(xMax,yMax,zMax);
@@ -943,7 +918,7 @@ void PABlend::buildTetrahedron()
 #endif
 }
 
-int PABlend::getType()
+int PABlend::getType() const
 {
 	return type;
 }
@@ -1253,7 +1228,7 @@ double PABlend::getLocalTime(double motionTime, int motionIndex)
 		SmartBody::util::log("Only %d motions for state %s, cannot find local time at index %d.", getNumMotions(), stateName.c_str(), motionIndex);
 		return motionTime;
 	}
-	if (keys[motionIndex].size() == 0)
+	if (keys[motionIndex].empty())
 	{
 		return motionTime;
 	}
@@ -1271,7 +1246,7 @@ double PABlend::getMotionTime(double localTime, int motionIndex)
 		SmartBody::util::log("Only %d motions for state %s, cannot find local time at index %d.", getNumMotions(), stateName.c_str(), motionIndex);
 		return localTime;
 	}
-	if (keys[motionIndex].size() == 0)
+	if (keys[motionIndex].empty())
 	{
 		return localTime;
 	}	
@@ -1305,7 +1280,7 @@ void PABlend::addEventToMotion(const std::string& motion, SmartBody::SBMotionEve
 		SmartBody::util::log("Could not add event to state %s: no motion named %s found.", stateName.c_str(), motion.c_str());
 	}
 
-	_events.emplace_back(motionEvent, index);
+	_events.emplace_back(std::move(motionEvent), index);
 	// make sure that the motion events are ordered by time
 //	std::sort(_events.begin(), _events.end(), ascendingTime2);
 }
@@ -1317,7 +1292,7 @@ double PABlend::getMotionKey( const std::string& motionName, int iKey )
 }
 
 
-MotionParameters::MotionParameters(SkMotion* m, SkSkeleton* skel, std::string j)
+MotionParameters::MotionParameters(SkMotion* m, SkSkeleton* skel, const std::string& j)
 {
 	motion = m;
 	skeleton = new SkSkeleton(*skel);
@@ -1384,7 +1359,7 @@ double MotionParameters::getAvgSpeed()
 	const SrMat& destMat = joint->gmat();
 	SrVec destPt = SrVec(destMat.get(12), destMat.get(13), destMat.get(14));
 	float distance = dist(srcPt, destPt);
-	double avgSpd = double(distance / motion->duration());
+	auto avgSpd = double(distance / motion->duration());
 	return avgSpd;
 }
 
@@ -1403,7 +1378,7 @@ double MotionParameters::getAccSpeed()
 		SrVec destPt = SrVec(destMat.get(12), destMat.get(13), destMat.get(14));
 		distance += dist(srcPt, destPt);
 	}
-	double accSpd = double(distance / motion->duration());
+	auto accSpd = double(distance / motion->duration());
 	return accSpd;
 }
 
@@ -1421,7 +1396,7 @@ double MotionParameters::getAvgAngularSpeed()
 	sr_euler_angles(rotType, destMat, rx, ry, rz);
 	float destRotY = ry;
 	float diffRotY = destRotY - srcRotY;
-	double avgAngularSpd = double(diffRotY / motion->duration());
+	auto avgAngularSpd = double(diffRotY / motion->duration());
 	return avgAngularSpd;
 }
 
@@ -1448,7 +1423,7 @@ double MotionParameters::getAccAngularSpeed()
 			diff = destRotY - srcRotY;
 		diffRotY += diff;
 	}
-	double accAngularSpd = double(diffRotY / motion->duration());
+	auto accAngularSpd = double(diffRotY / motion->duration());
 	return accAngularSpd;
 }
 
