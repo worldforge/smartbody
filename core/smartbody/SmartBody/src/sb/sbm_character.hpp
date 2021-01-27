@@ -288,18 +288,11 @@ public:
 	bool is_face_controller_enabled();
 
 
-	static int character_cmd_func( srArgBuffer& args );
-
-	static int character_init_cmd( srArgBuffer& args);
-
-
 public:
 	
 	SBAPI void addBlendShapeChannel(std::string shapeName);
 	SBAPI void addBlendShapeChannels(std::vector<std::string>& shapeNames);
 
-	static void addTagSkMotion(int tag, SkMotion* motion, std::set<std::pair<int,SkMotion*> >& motionSet);
-		
 	// viseme curve related functions
 	void set_viseme_curve_mode( bool mode )		{ use_viseme_curve = mode; }
 	bool get_viseme_curve_mode( ) const	{ return( use_viseme_curve ); }

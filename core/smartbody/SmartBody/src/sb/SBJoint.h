@@ -81,8 +81,8 @@ class SBJoint : public SkJoint, public SBTransformObjInterface
 		SBAPI void setJointOrientation(SrQuat& quat);
 		SBAPI SrQuat getJointOrientation();
 
-		SBAPI virtual SBTransform& getGlobalTransform();
-		SBAPI virtual void setGlobalTransform(SBTransform& newGlobalTransform);
+		SBAPI SBTransform& getGlobalTransform() override;
+		SBAPI void setGlobalTransform(SBTransform& newGlobalTransform) override;
 
 		SBAPI void setAsfAxis(SrVec axis);
 		SBAPI SrVec& getAsfAxis();

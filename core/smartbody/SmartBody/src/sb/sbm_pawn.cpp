@@ -26,7 +26,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <sb/SBSceneListener.h>
-#include <sb/SBPhysicsManager.h>
 #include <sb/SBCollisionManager.h>
 #include "SBUtilities.h"
 #include <controllers/me_controller_tree_root.hpp>
@@ -419,8 +418,8 @@ void SbmPawn::set_world_offset( float x, float y, float z,
 								 break;
 		case SkJoint::TypeQuat: {
 			SkJointQuat* joint_quat = woj->quat();
-			gwiz::quat_t q = gwiz::euler_t(pitch,yaw,roll);
-			float q_data[4] = { (float)q.w(), (float)q.x(), (float)q.y(), (float)q.z() };
+			gwiz::quat_t q_joint = gwiz::euler_t(pitch, yaw, roll);
+			float q_data[4] = {(float)q_joint.w(), (float)q_joint.x(), (float)q_joint.y(), (float)q_joint.z() };
 			joint_quat->value( q_data );
 								}
 								break;
@@ -464,9 +463,9 @@ void SbmPawn::wo_cache_update() {
 	const SrQuat& quat = (const_cast<SkJoint*>(joint))->quat()->value();
 	gwiz::euler_t euler( gwiz::quat_t( quat.w, quat.x, quat.y, quat.z ) );
 	// Marcus's mappings
-	float p = (float)euler.x();
-	float h = (float)euler.y();
-	float r = (float)euler.z();
+	auto p = (float)euler.x();
+	auto h = (float)euler.y();
+	auto r = (float)euler.z();
 	this->wo_cache.p = p;
 	this->wo_cache.h = h;
 	this->wo_cache.r = r;

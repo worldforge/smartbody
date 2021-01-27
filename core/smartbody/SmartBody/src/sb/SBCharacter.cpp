@@ -995,15 +995,6 @@ SmartBody::SBReach* SBCharacter::getReach()
 	return _reach;
 }
 
-void SBCharacter::setDeformableMeshScale( double meshScale )
-{
-	SmartBody::Vec3Attribute* meshScaleAttribute = dynamic_cast<SmartBody::Vec3Attribute*>(getAttribute("deformableMeshScale"));
-	if (meshScaleAttribute)
-	{
-		meshScaleAttribute->setValue(SrVec((float) meshScale, (float) meshScale, (float) meshScale));
-	}
-}
-
 std::string SBCharacter::getPostureName()
 {
 	MeCtScheduler2::VecOfTrack tracks = posture_sched_p->tracks();

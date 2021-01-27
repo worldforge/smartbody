@@ -99,7 +99,6 @@ class SBCharacter : public SbmCharacter
 
 		SBAPI void notify(SBSubject* subject) override;
 		SBAPI std::string getPostureName(); // get the current posture of character
-		SBAPI void setDeformableMeshScale(double meshScale);
 	    SBAPI void copy(SBCharacter* origChar);
 		SBAPI void setReach(SmartBody::SBReach* reach);
 		SBAPI SmartBody::SBReach* getReach();

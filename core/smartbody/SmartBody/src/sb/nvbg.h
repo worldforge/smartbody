@@ -38,7 +38,7 @@ public:
 		virtual bool executeEvent(std::string character, std::string messageId, std::string state);
 		virtual bool executeSpeech(std::string character, std::string speechStatus, std::string speechId, std::string speaker);
 		virtual bool executeSpeechRequest(std::vector<std::string> behaviors, std::vector<std::string> types, std::vector<float> times, std::vector<std::string> targets, std::vector<std::string> info);
-		virtual void notify(SmartBody::SBSubject* subject);
+		void notify(SmartBody::SBSubject* subject) override;
 		virtual void notifyLocal(std::string name);
 
 		virtual void notifyAction(std::string name);
