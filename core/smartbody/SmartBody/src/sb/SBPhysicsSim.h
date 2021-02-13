@@ -87,14 +87,14 @@ public:
 	SBAPI void          setDensity(float density) { objDensity = density; }
 
 	SBAPI SrVec& getExternalTorque() { return externalTorque; }
-	SBAPI void   setExternalTorque(SrVec val) { externalTorque = val; }
+	SBAPI void   setExternalTorque(const SrVec& val) { externalTorque = val; }
 	SBAPI SrVec& getExternalForce() { return externalForce; }
-	SBAPI void   setExternalForce(SrVec val) { externalForce = val; }
+	SBAPI void   setExternalForce(const SrVec& val) { externalForce = val; }
 
 	SBAPI SrVec getLinearVel();
-	SBAPI void  setLinearVel(SrVec val);
+	SBAPI void  setLinearVel(const SrVec& val);
 	SBAPI SrVec getAngularVel();
-	SBAPI void  setAngularVel(SrVec val);
+	SBAPI void  setAngularVel(const SrVec& val);
 
 	SBAPI void notify(SBSubject* subject) override;
 	SBAPI virtual void handleCollision(SrVec contactPt, SBPhysicsObj* colObj);
@@ -119,12 +119,12 @@ public:
 	SBAPI ~SBPhysicsJoint();
 	SBAPI SBJoint* getSBJoint() { return sbmJoint; }
 	SBAPI SrQuat& getRefQuat() { return refQuat; }
-	SBAPI void setRefQuat(SrQuat val) { refQuat = val; }
+	SBAPI void setRefQuat(const SrQuat& val) { refQuat = val; }
 	SBAPI SrVec& getRefAngularVel() { return refAngularVel; }
-	SBAPI void setRefAngularVel(SrVec val) { refAngularVel = val; }
+	SBAPI void setRefAngularVel(const SrVec& val) { refAngularVel = val; }
 
 	SBAPI SrVec& getJointTorque() { return jointTorque; }
-	SBAPI void   setJointTorque(SrVec val) { jointTorque = val; }	
+	SBAPI void   setJointTorque(const SrVec& val) { jointTorque = val; }
 	SBAPI SbmJointObj* getParentObj() const { return parentObj; }
 	SBAPI void setParentObj(SbmJointObj* val) { parentObj = val; }
 	SBAPI SbmJointObj* getChildObj() const { return childObj; }
@@ -181,11 +181,11 @@ protected:
 	std::map<std::string, SBPhysicsJoint*> jointMap;
 	std::map<std::string, SbmJointObj*>     jointObjMap;
 	//std::map<std::string, SBGeomObject*>   jointGeometryMap;
-	SBCharacter* character;
+	SBCharacter& character;
 	std::vector<CollisionRecord> collisionRecords;
 public:
-	SBAPI explicit SBPhysicsCharacter(SBPhysicsSim& physicsSim);
-	SBAPI virtual void initPhysicsCharacter(SBCharacter* character, std::vector<std::string>& jointNameList, bool buildGeometry = false);
+	SBAPI SBPhysicsCharacter(SBPhysicsSim& physicsSim, SBCharacter& character);
+	SBAPI void initPhysicsCharacter(std::vector<std::string>& jointNameList, bool buildGeometry = false);
 
 	SBAPI void enablePhysicsSim(bool bPhy) override;
 	SBAPI void enableCollisionSim(bool bCol) override;

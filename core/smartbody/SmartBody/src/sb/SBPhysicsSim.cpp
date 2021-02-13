@@ -149,7 +149,7 @@ SBPhysicsCharacter* SBPhysicsSim::getPhysicsCharacter( const std::string& charNa
 
 void SBPhysicsSim::notify( SBSubject* subject )
 {
-	SBAttribute* attribute = dynamic_cast<SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SBAttribute*>(subject);
 	if (attribute)
 	{
 		if (attribute->getName() == "Kd" || attribute->getName() == "Ks" || attribute->getName() == "dT")
@@ -343,7 +343,7 @@ SrVec SBPhysicsObj::getLinearVel()
 	return linearVel;
 }
 
-void SBPhysicsObj::setLinearVel( SrVec val )
+void SBPhysicsObj::setLinearVel( const SrVec& val )
 {
 	linearVel = val;
 }
@@ -353,7 +353,7 @@ SrVec SBPhysicsObj::getAngularVel()
 	return angularVel;
 }
 
-void SBPhysicsObj::setAngularVel( SrVec val )
+void SBPhysicsObj::setAngularVel( const SrVec& val )
 {
 	angularVel = val;
 }
@@ -542,11 +542,11 @@ SrMat SbmJointObj::getRelativeOrientation()
 
 void SbmJointObj::handleCollision( SrVec contactPt, SBPhysicsObj* colObj )
 {
-	SbmJointObj* colJointObj = dynamic_cast<SbmJointObj*>(colObj);
+	auto* colJointObj = dynamic_cast<SbmJointObj*>(colObj);
 	if (colJointObj && colJointObj->getPhysicsCharacter() == phyChar) // do not handle self-collision
 		return;
 	std::vector<CollisionRecord>& colRecords = phyChar->getCollisionRecords();
-	if (colRecords.size() > 0) return;
+	if (!colRecords.empty()) return;
 	CollisionRecord rec;
 	rec.collisionPt = contactPt;
 	rec.hitJointObj = this;
@@ -563,8 +563,8 @@ void SbmJointObj::handleCollision( SrVec contactPt, SBPhysicsObj* colObj )
 /* Physics Character                                                    */
 /************************************************************************/
 
-SBPhysicsCharacter::SBPhysicsCharacter(SBPhysicsSim& physicsSim)
-: physicsSim(physicsSim), character(nullptr)
+SBPhysicsCharacter::SBPhysicsCharacter(SBPhysicsSim& physicsSim, SBCharacter& character)
+: physicsSim(physicsSim), character(character)
 {
 	root = nullptr;
 
@@ -573,7 +573,7 @@ SBPhysicsCharacter::SBPhysicsCharacter(SBPhysicsSim& physicsSim)
 	SBObject::createBoolAttribute("usePD",false,true, "Basic", 20, false, false, false, "?");	
 }
 
-std::string SBPhysicsCharacter::getPhysicsCharacterName() { return character->getName(); }
+std::string SBPhysicsCharacter::getPhysicsCharacterName() { return character.getName(); }
 
 
 SbmJointObj* SBPhysicsCharacter::getJointObj(const std::string& jointName )
@@ -628,21 +628,18 @@ std::map<std::string,SbmJointObj*>& SBPhysicsCharacter::getJointObjMap()
 	return jointObjMap;
 }
 
-void SBPhysicsCharacter::initPhysicsCharacter(SmartBody::SBCharacter* character, std::vector<std::string>& jointNameList, bool buildGeometry )
+void SBPhysicsCharacter::initPhysicsCharacter(std::vector<std::string>& jointNameList, bool buildGeometry )
 {
-
-	if (!character) // no character
-		return;
 	cleanUpJoints();
-	auto skel = character->getSkeleton();
+	const auto& skel = character.getSkeleton();
 
 	for (auto & i : jointNameList) // only process the joints that are in the name lists
 	{
 		SBJoint* joint = skel->getJointByName(i);
 		if (!joint)
 			continue;
-		SBPhysicsJoint* phyJoint = new SBPhysicsJoint(physicsSim, joint);
-		SbmJointObj* jointObj = new SbmJointObj(physicsSim, this);//phySim->createJointObj();
+		auto* phyJoint = new SBPhysicsJoint(physicsSim, joint);
+		auto* jointObj = new SbmJointObj(physicsSim, this);//phySim->createJointObj();
 		if (joint->mass() > 0)
 			jointObj->setMass(joint->mass());
 		if (buildGeometry)
@@ -711,26 +708,26 @@ void SBPhysicsCharacter::cleanUpJoints()
 std::unique_ptr<SBGeomObject> SBPhysicsCharacter::createJointGeometry( SBJoint* joint, float radius )
 {
 	if (radius < 0.0)
-		radius = character->getHeight()*0.03f;
-		//radius = curCharacter->getHeight()*0.01f;
+		radius = character.getHeight()*0.03f;
+		//radius = curcharacter.getHeight()*0.01f;
 	if (joint->getMappedJointName() == "spine1" || joint->getMappedJointName() == "spine2" || joint->getMappedJointName() == "spine3")
-		radius = character->getHeight()*0.06f;
-		//radius = curCharacter->getHeight()*0.02f;
+		radius = character.getHeight()*0.06f;
+		//radius = curcharacter.getHeight()*0.02f;
 	if (joint->getMappedJointName() == "l_sternoclavicular" || joint->getMappedJointName() == "r_sternoclavicular" || joint->getMappedJointName() == "l_acromioclavicular" || joint->getMappedJointName() == "r_acromioclavicular")
-		radius = character->getHeight()*0.01f;
+		radius = character.getHeight()*0.01f;
 	if (joint->getMappedJointName() == "l_hip" || joint->getMappedJointName() == "r_hip")
-		radius = character->getHeight()*0.04f;
-	float extend = character->getHeight()*0.015f;
+		radius = character.getHeight()*0.04f;
+	float extend = character.getHeight()*0.015f;
 
 	
 
 	if (joint->getMappedJointName() == "l_wrist" || joint->getMappedJointName() == "r_wrist")
-		extend = character->getHeight()*0.03f;
+		extend = character.getHeight()*0.03f;
 
 // 	if (joint->getName() == "l_ankle" || joint->getName() == "r_ankle")
 // 	{
 // 		SrBox bbox;		
-// 		radius = curCharacter->getHeight()*0.06;
+// 		radius = curcharacter.getHeight()*0.06;
 // 		bbox.extend(joint->getLocalCenter());			
 // 		bbox.grows(extend,extend,extend); 		
 // 		bbox.grows(radius,0,0);
@@ -962,31 +959,25 @@ SrVec SBPhysicsCharacter::computeSPDTorque( SrQuat& q, SrQuat& qD, SrVec& w, SrV
 
 void SBPhysicsCharacter::enablePhysicsSim( bool bPhy )
 {
-	std::map<std::string, SbmJointObj*>::iterator mi = jointObjMap.begin();
-	for ( mi  = jointObjMap.begin();
-		  mi != jointObjMap.end();
-		  mi++)
+	for (auto & mi : jointObjMap)
 	{
-		SbmJointObj* obj = mi->second;
+		SbmJointObj* obj = mi.second;
 		obj->enablePhysicsSim(bPhy);		
 	}
 }
 
 void SBPhysicsCharacter::enableCollisionSim( bool bCol )
 {
-	std::map<std::string, SbmJointObj*>::iterator mi = jointObjMap.begin();
-	for ( mi  = jointObjMap.begin();
-		mi != jointObjMap.end();
-		mi++)
+	for (auto & mi : jointObjMap)
 	{
-		SbmJointObj* obj = mi->second;
+		SbmJointObj* obj = mi.second;
 		obj->enableCollisionSim(bCol);		
 	}
 }
 
 void SBPhysicsCharacter::notify( SBSubject* subject )
 {
-	SBAttribute* attribute = dynamic_cast<SBAttribute*>(subject);
+	auto* attribute = dynamic_cast<SBAttribute*>(subject);
 	if (attribute)
 	{
 		if (attribute->getName() == "enable")
@@ -1019,7 +1010,7 @@ void SBPhysicsCharacter::notify( SBSubject* subject )
 // 		float boneLen = offset.len();	
 // 		float len = boneLen+0.001f;	
 // 		if (radius <= 0.f)
-// 			radius = 1.0;//curCharacter->getHeight()*0.05f;//	
+// 			radius = 1.0;//curCharacter->getHeight()*0.05f;//
 // 		// generate new geometry
 // 		newGeomObj = new SBGeomCapsule(center-dir*len*0.5f, center+dir*len*0.5f,radius);
 // 		//newGeomObj = new SBGeomCapsule(SrVec(0,-len*0.3f,0), SrVec(0,len*0.3f,0),radius);

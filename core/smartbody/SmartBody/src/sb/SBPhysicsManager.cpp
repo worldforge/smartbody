@@ -231,7 +231,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter(const std::string&
 		// create physics character
 		auto& joints = sbmChar->getSkeleton()->joints();
 		//printf("init physics obj\n");
-		phyChar = new SBPhysicsCharacter(*_physicsSim);
+		phyChar = new SBPhysicsCharacter(*_physicsSim, *sbmChar);
 		std::queue<SkJoint*> tempJointList;
 		std::vector<std::string> jointNameList;
 		std::set<std::string> excludeNameList;
@@ -261,7 +261,7 @@ SmartBody::SBObject* SBPhysicsManager::createPhysicsCharacter(const std::string&
 					tempJointList.push(cj);
 			}
 		}
-		phyChar->initPhysicsCharacter(sbmChar, jointNameList, true);
+		phyChar->initPhysicsCharacter(jointNameList, true);
 #if USE_PHYSICS_CHARACTER
 		_physicsSim->addPhysicsCharacter(phyChar);
 #endif
