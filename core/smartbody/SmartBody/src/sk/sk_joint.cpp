@@ -24,6 +24,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sk/sk_skeleton.h>
 
 #include <memory>
+#include <utility>
 #include "SBUtilities.h"
 //============================= SkJoint ============================
 
@@ -75,18 +76,14 @@ SkJoint::SkJoint ( SkSkeleton* sk, SkJoint* parent, RotType rtype, int i )
 
 SkJoint::~SkJoint() = default;
 
-void SkJoint::visgeo ( SrModel* m )
+void SkJoint::visgeo ( boost::intrusive_ptr<SrModel> m )
  { 
-   if ( m ) m->ref();
-   if ( _visgeo ) _visgeo->unref();
-   _visgeo = m;
+   _visgeo = std::move(m);
  }
 
-void SkJoint::colgeo ( SrModel* m )
+void SkJoint::colgeo ( boost::intrusive_ptr<SrModel> m )
  { 
-   if ( m ) m->ref();
-   if ( _colgeo ) _colgeo->unref();
-   _colgeo = m;
+   _colgeo = std::move(m);
  }
 
 void SkJoint::offset ( const SrVec& o )

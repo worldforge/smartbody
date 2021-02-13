@@ -115,12 +115,12 @@ public:
 	/*! Replaces the visualization geometry pointer with the new one.
 	The ref/unref methods are used during replacement and null can be
 	passed in order to only unref the visualization geometry */
-	void visgeo ( SrModel* m );
+	void visgeo ( boost::intrusive_ptr<SrModel> m );
 
 	/*! Replaces the collision geometry pointer with the new one.
 	The ref/unref methods are used during replacement and null can be
 	passed in order to only unref the collision geometry */
-	void colgeo ( SrModel* m );
+	void colgeo ( boost::intrusive_ptr<SrModel> m );
 
 	/*! Get a pointer to the skeleton owner of this joint */
 	SkSkeleton* skeleton () { return _skeleton; }

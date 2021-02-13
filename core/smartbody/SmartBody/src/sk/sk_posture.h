@@ -63,8 +63,8 @@ class SkPosture
    private :
     char* _name;
     bool _syncpoints;
-    SkChannelArray* _channels;
-    SkPostureDfJoints* _dfjoints;
+	boost::intrusive_ptr<SkChannelArray> _channels;
+	boost::intrusive_ptr<SkPostureDfJoints> _dfjoints;
     char* _filename;          // file name (optional)
 
    public :
@@ -92,15 +92,15 @@ class SkPosture
     void init ( SkSkeleton* s );
 
     /*! Initializes by referencing to the given skeleton */
-    void init ( SkChannelArray* ca );
+    void init ( boost::intrusive_ptr<SkChannelArray> ca );
 
     /*! Initializes from both the channel array and distance function joints */
-    void init ( SkChannelArray* ca, SkPostureDfJoints* ja );
+    void init ( boost::intrusive_ptr<SkChannelArray> ca, boost::intrusive_ptr<SkPostureDfJoints> ja );
 
     /*! Returns the referenced channel array (which should not be modified).
         Remember that the channels here are shared, using ref()/unref(). */
-    SkChannelArray* channels () { return _channels; }
-    const SkChannelArray* const_channels () const { return _channels; }
+	boost::intrusive_ptr<SkChannelArray> channels () { return _channels; }
+    const boost::intrusive_ptr<SkChannelArray>& const_channels () const { return _channels; }
 
     /*! Connects the channel array to the given skeleton */
     void connect ( SkSkeleton* sk ) { _channels->connect(sk); }
@@ -138,10 +138,10 @@ class SkPosture
     /*! Set specific joints to be considered by the distance function,
         otherwise, all joints of the channel array are used.
         Given dfjoints is a shared class. */
-    void dfjoints ( SkPostureDfJoints* dfjoints );
+    void dfjoints ( boost::intrusive_ptr<SkPostureDfJoints> dfjoints );
 
     /*! Returns the referenced array of distance function joints (should not be modified) */
-    SkPostureDfJoints* dfjoints () { return _dfjoints; }
+	boost::intrusive_ptr<SkPostureDfJoints>& dfjoints () { return _dfjoints; }
 
 
     /*! Force to recompute the distance function points next time they are needed */

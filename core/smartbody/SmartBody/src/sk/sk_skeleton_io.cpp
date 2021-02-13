@@ -203,18 +203,18 @@ static bool read_channel(SrInput& in, SkJoint* j) {
 	return false; // should not reach here
 }
 
-static SrModel* read_model(SrInput& in, SrPathArray& paths, SrMat* mat) {
-	if (in.get_token() != SrInput::String) return 0;
+static boost::intrusive_ptr<SrModel> read_model(SrInput& in, SrPathArray& paths, SrMat* mat) {
+	if (in.get_token() != SrInput::String) return nullptr;
 	SrString file = in.last_token();
 
 	int i = 0;
 	SrInput fi;
 
 	if (!paths.open(fi, file)) { //SR_TRACE2 ( "Could not read model." );
-		return 0; // file not found
+		return nullptr; // file not found
 	}
 
-	SrModel* m = new SrModel;
+	boost::intrusive_ptr<SrModel> m = new SrModel();
 
 	bool ok = false;
 	SrString ext;
@@ -232,21 +232,18 @@ static SrModel* read_model(SrInput& in, SrPathArray& paths, SrMat* mat) {
 		if (mat) m->apply_transformation(*mat);
 		//m->ref();
 	} else { //SR_TRACE2 ( "Loading Error!" );
-		delete m;
 		m = nullptr;
 	}
 
 	return m;
 }
 
-static void _setmodel(SrModel* curm, SrModel* newm) {
+static void _setmodel(boost::intrusive_ptr<SrModel> curm, const boost::intrusive_ptr<SrModel>& newm) {
 	if (!newm) return;
 	if (curm) {
 		curm->add_model(*newm);
-		delete newm;
 	} else {
 		curm = newm;
-		curm->ref();
 	}
 }
 

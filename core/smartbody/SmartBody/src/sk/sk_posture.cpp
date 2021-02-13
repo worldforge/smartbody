@@ -26,6 +26,8 @@
 #include <sk/sk_posture.h>
 #include <sr/sr_vec.h>
 
+#include <utility>
+
 
 //=========================== SkPostureDfJoints ===============================
 
@@ -68,24 +70,19 @@ SkPosture::SkPosture ( const SkPosture& p )
           : values ( p.values ),
             points ( p.points )
  {
-   _channels = 0;
-   _dfjoints = 0;
-   if ( p._channels ) { _channels=p._channels; _channels->ref(); }
-   if ( p._dfjoints ) { _dfjoints=p._dfjoints; _dfjoints->ref(); }
+   if ( p._channels ) { _channels=p._channels;  }
+   if ( p._dfjoints ) { _dfjoints=p._dfjoints;}
       
    _syncpoints = p._syncpoints;
-   _name = 0;
+   _name = nullptr;
    name ( p.name() );
  }
 
 SkPosture::SkPosture ( SkChannelArray* ca, SkPostureDfJoints* dfj )
  {
-   _dfjoints = 0;
    _syncpoints = false;
-   _name = 0;
 
    _channels = ca;
-   _channels->ref();
    values.size ( _channels->floats() );
    
    if ( dfj ) dfjoints(dfj);
@@ -93,13 +90,11 @@ SkPosture::SkPosture ( SkChannelArray* ca, SkPostureDfJoints* dfj )
 
 SkPosture::SkPosture ( SkSkeleton* s )
  {
-   _dfjoints = 0;
    _syncpoints = false;
    _name = nullptr;
    _filename = nullptr;
 
    _channels = &s->channels();
-   _channels->ref();
    values.size ( _channels->floats() );
  }
 
@@ -114,25 +109,24 @@ SkPosture::~SkPosture ()
 
 void SkPosture::init ()
  {
-   if ( _channels ) { _channels->unref(); _channels=0; }
-   if ( _dfjoints ) { _dfjoints->unref(); _dfjoints=0; }
+	_channels.reset();
+	_dfjoints.reset();
    _syncpoints = false;
    values.size(0);
    points.size(0);
  }
 
-void SkPosture::init ( SkChannelArray* ca )
+void SkPosture::init ( boost::intrusive_ptr<SkChannelArray> ca )
  {
    init ();
-   _channels = ca;
-   _channels->ref();
+   _channels = std::move(ca);
    values.size ( _channels->floats() );
  }
 
-void SkPosture::init ( SkChannelArray* ca, SkPostureDfJoints* ja )
+void SkPosture::init ( boost::intrusive_ptr<SkChannelArray> ca, boost::intrusive_ptr<SkPostureDfJoints> ja )
  {
-   init ( ca );
-   dfjoints ( ja );
+   init ( std::move(ca) );
+   dfjoints ( std::move(ja) );
  }
 
 void SkPosture::init ( SkSkeleton* s )
@@ -157,11 +151,9 @@ void SkPosture::get ()
 //   _channels->get_random_values ( &values[0] );
 // }
 
-void SkPosture::dfjoints ( SkPostureDfJoints* dfjoints )
+void SkPosture::dfjoints ( boost::intrusive_ptr<SkPostureDfJoints> dfjoints )
  {
-   if ( _dfjoints ) _dfjoints->unref();
-   _dfjoints = dfjoints;
-   _dfjoints->ref();
+   _dfjoints = std::move(dfjoints);
    points.size ( _dfjoints->joints.size() );
    _syncpoints = false;
  }
@@ -201,15 +193,13 @@ SkPosture& SkPosture::operator= ( const SkPosture& p )
    _syncpoints = p._syncpoints;
 
    if ( _channels!=p._channels )
-    { if ( _channels ) _channels->unref();
+    {
       _channels = p._channels;
-      if ( _channels ) _channels->ref();
     }
 
    if ( _dfjoints!=p._dfjoints )
-    { if ( _dfjoints ) _dfjoints->unref();
+    {
       _dfjoints = p._dfjoints;
-      if ( _dfjoints ) _dfjoints->ref();
     }
 
    values = p.values;
@@ -318,9 +308,8 @@ SrInput& operator>> ( SrInput& inp, SkPosture& p )
    if ( inp.last_token()=="add_posture" )
 	   inp.get_token();  // Ignore and get next
    if ( inp.last_token()=="channels" )
-    { if ( p._channels ) p._channels->unref();
+    {
       p._channels = new SkChannelArray;
-      p._channels->ref();
       inp.unget_token();
       inp >> *p._channels;
       inp.get_token();
