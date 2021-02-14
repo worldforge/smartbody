@@ -44,13 +44,10 @@ class SBCharacter : public SbmCharacter
 		SBAPI explicit SBCharacter(SmartBody::SBScene& scene, const std::string& name, const std::string& type = "");
 		SBAPI ~SBCharacter() override;
 
-		SBAPI const std::string& getName() const override;
 		SBAPI void setName(const std::string& name) override;
 
 		SBAPI void setType(const std::string& type);
 		SBAPI std::string getType();
-		
-		SBAPI int setup() override;
 
 		SBAPI int getNumControllers();
 

@@ -436,8 +436,8 @@ std::vector<int> SrModel::merge_redundant_vertices ( float prec )
       F[i][2] = newArrayMap[ F[i][2] ];
     }
 
-   for (unsigned int i=0;i<iarray.size();i++)
-	   iarray[i] = newArrayMap[iarray[i]];
+   for (int & i : iarray)
+	   i = newArrayMap[i];
 
    return iarray;
  }
@@ -538,7 +538,7 @@ bool SrModel::load ( SrInput &in )
 		 mtlnames.clear();
          mtlnames.resize ( M.size() ); // realloc
 
-         while ( 1 )
+         while ( true )
           { if ( in.get_token()!=SrInput::Integer ) { in.unget_token(); break; }
             i = atoi ( in.last_token() );
             in.get_token();

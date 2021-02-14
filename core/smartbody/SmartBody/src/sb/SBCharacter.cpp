@@ -294,16 +294,6 @@ void SBCharacter::writeMotionRecord(const std::string& motionName, const std::st
 	}
 }
 
-int SBCharacter::setup()
-{
-	return SbmCharacter::setup();
-}
-
-const std::string& SBCharacter::getName() const
-{
-	return SbmCharacter::getName();
-}
-
 void SBCharacter::setName(const std::string& name)
 {
 	SBPawn::setName(name);
