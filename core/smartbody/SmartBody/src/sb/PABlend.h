@@ -62,7 +62,7 @@ class PABlend : public SmartBody::SBObject
 {
 	public:
 		SBAPI PABlend();
-		SBAPI explicit PABlend(const PABlend& rhs);
+		SBAPI PABlend(const PABlend& rhs);
 		SBAPI explicit PABlend(const std::string& name);
 		SBAPI ~PABlend();
 		

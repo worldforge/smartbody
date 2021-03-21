@@ -29,7 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <cctype>
 #include <string>
-#include <sbm/BMLDefs.h>
+#include "sbm/xercesc_utils.hpp"
 #include "sbm/GPU/SbmTexture.h"
 #include <sb/SBScene.h>
 #include "SBUtilities.h"

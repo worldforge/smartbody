@@ -1293,7 +1293,7 @@ void BmlRequest::gestureRequestProcess(SmartBody::SBScene& scene)
 			{
 				std::vector<float> weights;
 				SrVec param((float)x, (float)y, (float)z);
-				blendObject->getWeightsFromParameters(param, weights);
+				blendObject->getVectorWeightsFromParameters(param, weights);
 				std::vector<double> floatWeights;
 				for (size_t k = 0; k < weights.size(); ++k)
 				{

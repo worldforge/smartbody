@@ -329,7 +329,9 @@ void SBRenderer::drawDeferredRendering(SmartBody::SBRenderScene& renderScene, st
 	for (auto& entry : renderScene.getRenderables()) {
 		auto& renderable = entry.second;
 		DeformableMeshInstance* meshInstance = renderable.getActiveMesh();
-
+		auto joint = renderable.pawn->getSkeleton()->getJointByMappedName("r_wrist");
+		auto q = joint->getJointOrientation();
+			std::cout << q.w << ", " << q.x << ", " << q.y << ", " << q.z << std::endl;
 		float alphaThreshold = (float)renderable.pawn->getDoubleAttribute("alphaThreshold");
 		glUniform1f(glGetUniformLocation(gbufferShader->getShaderProgram(), "alphaThreshold"), alphaThreshold);
 		if (meshInstance)

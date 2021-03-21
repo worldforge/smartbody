@@ -88,7 +88,7 @@ class SBMotion : public SkMotion, public SBSceneOwned
 		SBAPI explicit SBMotion(SBScene& scene, std::string motionFile);
 		SBAPI ~SBMotion() override;
 		SBAPI const std::string& getMotionFileName() const;
-		SBAPI int getNumFrames();
+		SBAPI int getNumFrames() const;
 		SBAPI std::vector<float> getFrameData(int i);
 		SBAPI int getFrameSize();
 		void setMotionType(MotionType type);
@@ -195,7 +195,7 @@ class SBMotion : public SkMotion, public SBSceneOwned
 		SBAPI SBMotion* constrain(std::string name, std::string srcSkeletonName, std::string tgtSkeletonName, std::string tgtMotionName, std::vector<std::string>& endJoints, std::vector<std::string>& endJointRoots);
 
 		SBAPI double getFrameRate();
-		SBAPI double getDuration();
+		SBAPI double getDuration() const;
 		SBAPI double getTimeStart();
 		SBAPI double getTimeReady();
 		SBAPI double getTimeStrokeStart();

@@ -1443,20 +1443,20 @@ SBAPI SrBox SBAnimationBlend::getParameterBoundBox()
 	return SrBox(paraMin, paraMax);
 }
 
-SBAPI bool SBAnimationBlend::getWeightsFromParameters( SrVec& para, std::vector<float>& weights )
+SBAPI bool SBAnimationBlend::getVectorWeightsFromParameters( SrVec& para, std::vector<float>& weights )
 {
 	std::vector<double> doubleWeights;
 	if (getParameterDimension() == 1)
 	{
-		PABlend::getWeightsFromParameters(para[0],doubleWeights);
+		getWeightsFromParameters(para[0],doubleWeights);
 	}
 	else if (getParameterDimension() == 2)
 	{
-		PABlend::getWeightsFromParameters(para[0],para[1],doubleWeights);
+		getWeightsFromParameters(para[0],para[1],doubleWeights);
 	}
 	else if (getParameterDimension() == 3)
 	{
-		PABlend::getWeightsFromParameters(para[0],para[1],para[2],doubleWeights);
+		getWeightsFromParameters(para[0],para[1],para[2],doubleWeights);
 	}
 	weights.resize(doubleWeights.size());
 	for (unsigned int i=0;i<weights.size();i++)

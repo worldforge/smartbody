@@ -34,7 +34,7 @@ class SBCollisionManager : public SBService
 {
 	public:
 		SBAPI explicit SBCollisionManager(SBScene& scene, std::unique_ptr<SBCollisionSpace> collisionSpace);
-		SBAPI ~SBCollisionManager();
+		SBAPI ~SBCollisionManager() override;
 
 		SBAPI void setEnable(bool enable) override;
 		SBAPI void start() override;

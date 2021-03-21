@@ -74,8 +74,8 @@ namespace SmartBody {
 	class SBMotionNode
 	{
 	protected:
-		int index;		
-		SBAnimationBlend* animBlend;
+		int index{};
+		SBAnimationBlend* animBlend{};
 		std::vector<MotionTimeWarpFunc*> timeWarpFuncs;
 		std::string baseJointName;
 		SrMat basePreRot;
@@ -89,7 +89,7 @@ namespace SmartBody {
 		float getActualTime(float u, const std::vector<float>& weights);
 		float getRefDeltaTime(float u, float dt, const std::vector<float>& weights);
 		SBAnimationBlend* getAnimBlend();
-		int getIndex();
+		int getIndex() const;
 		std::string getName();
 		void addOutEdge(SBMotionTransitionEdge* edge);
 		const std::vector<SBMotionTransitionEdge*>& getOutEdges();
@@ -205,7 +205,7 @@ namespace SmartBody {
 		std::vector<SBMotion*> transitionMotions; // store the temp motions created by addMotionNodeFromMotionTransition
 		bool useTransitionInterpolation;
 	public:		
-		SBAPI SBMotionGraph(SBScene& scene);
+		SBAPI explicit SBMotionGraph(SBScene& scene);
 		SBAPI ~SBMotionGraph();		
 
 		SBAPI SBMotionNode* addMotionNodeFromMotion( const std::string& nodeName, const std::string& motionName, int startFrame = -1, int endFrame = -1);		

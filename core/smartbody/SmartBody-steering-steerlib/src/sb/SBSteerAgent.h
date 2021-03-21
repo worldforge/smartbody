@@ -33,7 +33,7 @@ class SBSteerAgent
 {
 	public:
 		SBAPI SBSteerAgent(SBCharacter* sbCharacter, SmartBody::SBSteerManager& steerManager);
-		SBAPI ~SBSteerAgent();
+		SBAPI virtual ~SBSteerAgent();
 
 		SBAPI SBCharacter* getCharacter();
 

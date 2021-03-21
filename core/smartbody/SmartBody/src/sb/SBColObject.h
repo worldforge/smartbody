@@ -219,7 +219,7 @@ protected:
 	std::map<SbmCollisionPair, bool> excludePairMap;
 public:
 	SBCollisionSpace();
-	~SBCollisionSpace();
+	virtual ~SBCollisionSpace();
 	virtual void addCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName);
 	virtual void removeCollisionObjects(SmartBody::SBCollisionManager& collisionManager, const std::string& objName);
 	virtual void addExcludePair(const std::string& objName1, const std::string& objName2);

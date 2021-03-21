@@ -247,6 +247,13 @@ void SBBaseRenderer::draw(std::vector<SrLight>& lights, bool isDrawFloor)
 		auto& renderable = entry.second;
 		auto meshInstance = renderable.getActiveMesh();
 
+		if (renderable.pawn->getSkeleton()) {
+			auto joint = renderable.pawn->getSkeleton()->getJointByMappedName("r_wrist");
+			if (joint) {
+				auto q = joint->getLocalRawQuaternion();
+				std::cout << q.w << ", " << q.x << ", " << q.y << ", " << q.z << std::endl;
+			}
+		}
 		if (meshInstance)
 		{
 			renderMesh(meshInstance, normalMapShader, false);

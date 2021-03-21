@@ -36,7 +36,7 @@ SkJoint::SkJoint()
 
    _parent = nullptr;
 
-   _lmat_uptodate = 0;
+   _lmat_uptodate = false;
    _name = "";
    _index = -1;
    _skeleton = nullptr;
@@ -57,7 +57,7 @@ SkJoint::SkJoint ( SkSkeleton* sk, SkJoint* parent, RotType rtype, int i )
 
    _parent = parent;
 
-   _lmat_uptodate = 0;
+   _lmat_uptodate = false;
    _name = "";
    _index = i;
    _skeleton = sk;
@@ -139,11 +139,11 @@ void SkJoint::init_rot ()
 void SkJoint::update_lmat ()
  {
    if ( _lmat_uptodate ) return;
-   _lmat_uptodate = 1;
+   _lmat_uptodate = true;
 
    // update the 3x3 rotation submatrix if required:
    if ( !_quat->_jntsync )
-    { _quat->_jntsync = 1;
+    { _quat->_jntsync = true;
       const SrQuat& q = _quat->value();
 
       float x2  = q.x+q.x;
@@ -224,7 +224,7 @@ void SkJoint::update_gmat_up ( SkJoint* stop_joint )
 
 void SkJoint::set_lmat_changed ()
  {
-   _lmat_uptodate = 0;
+   _lmat_uptodate = false;
    if (_skeleton)
 	_skeleton->invalidate_global_matrices();
  }

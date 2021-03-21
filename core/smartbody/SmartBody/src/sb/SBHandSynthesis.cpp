@@ -89,13 +89,13 @@ SBHandSynthesis::SBHandSynthesis(boost::intrusive_ptr<SmartBody::SBSkeleton> ske
 	// set the base joint
 	_baseJoint = _sk->getJointByName("base");
 
-	// add the two motions to asset manager
-	SmartBody::SBAssetManager* assetManager =_sk->_scene.getAssetManager();
-	
+
 	// set the names
 	_leftDb->getFinalMotion()->setName("_leftMotion");
 	_rightDb->getFinalMotion()->setName("_rightMotion");
 
+	// add the two motions to asset manager
+	//SmartBody::SBAssetManager* assetManager =_sk->_scene.getAssetManager();
 	// add the two motions to assets (TODO: mb add thees with the character name)
 	//assetManager->addMotion(_leftDb->getFinalMotion());
 	//assetManager->addMotion(_rightDb->getFinalMotion());
@@ -149,8 +149,8 @@ void SBHandSynthesis::addDatabaseMotion(SmartBody::SBMotion* dbMotion)
 	}
 
 	// make new motions for hand and body
-	SmartBody::SBMotion *handMotion = new SmartBody::SBMotion(_sk->_scene);
-	SmartBody::SBMotion *bodyMotion = new SmartBody::SBMotion(_sk->_scene);
+	auto handMotion = std::make_unique<SmartBody::SBMotion>(_sk->_scene);
+	auto bodyMotion = std::make_unique<SmartBody::SBMotion>(_sk->_scene);
 
 	// copy the body motion
 	handMotion->setMotion(*dbMotion);
@@ -182,17 +182,16 @@ void SBHandSynthesis::addDatabaseMotion(SmartBody::SBMotion* dbMotion)
 	bodyMotion->setName(bodyFileName);
 
 	// use these motions instead
-	_handDbMotion.emplace_back(handMotion);
-	_bodyDbMotion.emplace_back(bodyMotion);
+	_handDbMotion.emplace_back(std::move(handMotion));
+	_bodyDbMotion.emplace_back(std::move(bodyMotion));
 }
 
 // load the database motions
 bool SBHandSynthesis::loadDatabase()
 {
 	// check what the hand configuration is
-	if (_configName.compare("") == 0)
+	if (_configName.empty())
 	{
-
 		return false;
 	}
 
@@ -250,14 +249,14 @@ void SBHandSynthesis::generateDatabaseSegments()
 	
 	for (size_t i = 0 ; i < _bodyDbMotion.size() ; i++ ) 
 	{
-		SmartBody::SBMotion* curBodyDbMotion = _bodyDbMotion[i];
-		SmartBody::SBMotion* curHandDbMotion = _handDbMotion[i];
+		auto& curBodyDbMotion = _bodyDbMotion[i];
+		auto& curHandDbMotion = _handDbMotion[i];
 
 		// connect motion to skeleton
 		curBodyDbMotion->connect(_sk.get());
 
 		// get the framerate and the wrist joint name
-		float frameRate = (float)curBodyDbMotion->getFrameRate();
+		auto frameRate = (float)curBodyDbMotion->getFrameRate();
 		SmartBody::SBJoint* wristJoint = _sk->getJointByName(_selectDb->getJointName());
 		bool added = false;
 		float lastOffset = 0.0f;
@@ -281,12 +280,9 @@ void SBHandSynthesis::generateDatabaseSegments()
 			{
 
 				// create segments
-				SmartBody::SBMotion* bodySegment = createSegment(curBodyDbMotion,lastOffset,t,frameRate);
-				SmartBody::SBMotion* handSegment = createSegment(curHandDbMotion,lastOffset,t,frameRate);
+				auto bodySegment = createSegment(curBodyDbMotion.get(),lastOffset,t,frameRate);
+				auto handSegment = createSegment(curHandDbMotion.get(),lastOffset,t,frameRate);
 
-				// add to db
-				_selectDb->addBodyDbSegment(bodySegment);
-				_selectDb->addHandDbSegment(handSegment);
 
 				// set the names for body and hand db segments
 				bodySegment->setName(curBodyDbMotion->getName()+"_body_db_seg_"+_selectDb->getJointName()+"_" +boost::lexical_cast<std::string>(_selectDb->getBodyDbSegments().size()));
@@ -296,6 +292,10 @@ void SBHandSynthesis::generateDatabaseSegments()
 				lastOffset = t;
 				added = true;
 
+				// add to db
+				_selectDb->addBodyDbSegment(std::move(bodySegment));
+				_selectDb->addHandDbSegment(std::move(handSegment));
+
 				// creating a new segment
 				//SmartBody::util::log("Creating new segment of time %f", bodySegment->duration());
  			}
@@ -304,23 +304,24 @@ void SBHandSynthesis::generateDatabaseSegments()
 		// if length smaller 
 		if (!added){
 			// copy the motion and give them new names
-			SmartBody::SBMotion* bodySegment = new SmartBody::SBMotion(_sk->_scene);
-			SmartBody::SBMotion* handSegment = new SmartBody::SBMotion(_sk->_scene);
+			auto bodySegment = std::make_unique<SmartBody::SBMotion>(_sk->_scene);
+			auto handSegment = std::make_unique<SmartBody::SBMotion>(_sk->_scene);
 
 			// set motions
 			bodySegment->setMotion(*curBodyDbMotion);
 			handSegment->setMotion(*curHandDbMotion);
 
-			// simply add to database
-			_selectDb->addHandDbSegment(handSegment);
-			_selectDb->addBodyDbSegment(bodySegment);
-
-			// set new names 
+			// set new names
 			bodySegment->setName(curBodyDbMotion->getName()+"_body_db_seg_"+_selectDb->getJointName()+"_"+ boost::lexical_cast<std::string>(_selectDb->getBodyDbSegments().size()));
 			handSegment->setName(curHandDbMotion->getName()+"_hand_db_seg_"+_selectDb->getJointName()+"_"+ boost::lexical_cast<std::string>(_selectDb->getHandDbSegments().size()));			
 		
 			// log results
 			//SmartBody::util::log("No segment generated. Adding motion with time %f", bodySegment->duration());
+
+			// simply add to database
+			_selectDb->addHandDbSegment(std::move(handSegment));
+			_selectDb->addBodyDbSegment(std::move(bodySegment));
+
 		}
 
 		// disconnect motion from skeleton
@@ -352,7 +353,7 @@ void SBHandSynthesis::clearData()
 void SBHandSynthesis::synthesizeHands(SmartBody::SBMotion* bodyMotion, int maxLevels, bool useRandom)
 {
 	// check if database is present
-	if (_leftDb->getBodyDbSegments().size() == 0 && _rightDb->getBodyDbSegments().size() == 0 )
+	if (_leftDb->getBodyDbSegments().empty() && _rightDb->getBodyDbSegments().empty() )
 	{
 		SmartBody::util::log ("No body database selected. unable to generate hand motion");
 		return;
@@ -466,11 +467,11 @@ void SBHandSynthesis::generateMotionSegments()
 		else if (t-lastOffset >= maxLength || (speed > threshold))
 		{
 
-			SmartBody::SBMotion* bodySegment = createSegment(_bodyMotion,lastOffset,t,frameRate);
-			_selectDb->addMotionSegment(bodySegment);
+			auto bodySegment = createSegment(_bodyMotion,lastOffset,t,frameRate);
 
 			bodySegment->setName(_bodyMotion->getName()+"_motion_seg_"+_selectDb->getJointName()+"_" +boost::lexical_cast<std::string>(_selectDb->getMotionSegments().size()));
 
+			_selectDb->addMotionSegment(std::move(bodySegment));
 			lastOffset = t;
 			isAdded = true;
  		}
@@ -479,10 +480,10 @@ void SBHandSynthesis::generateMotionSegments()
 	// if not added, add the whole motion copy
 	if (!isAdded)
 	{
-		SmartBody::SBMotion* copyMotion = new SmartBody::SBMotion(_sk->_scene);
+		auto copyMotion = std::make_unique<SmartBody::SBMotion>(_sk->_scene);
 		copyMotion->setMotion(*_bodyMotion);
-		_selectDb->addMotionSegment(copyMotion);
 		copyMotion->setName(_bodyMotion->getName()+"_motion_seg_"+_selectDb->getJointName()+"_" +boost::lexical_cast<std::string>(_selectDb->getMotionSegments().size()));
+		_selectDb->addMotionSegment(std::move(copyMotion));
 	}
 
 	// print out some stats
@@ -494,9 +495,9 @@ void SBHandSynthesis::generateMotionSegments()
 }
 
 // create a segment given a motion
-SmartBody::SBMotion* SBHandSynthesis::createSegment(SmartBody::SBMotion* motion, float tStart, float tEnd, float frameRate)
+std::unique_ptr<SmartBody::SBMotion> SBHandSynthesis::createSegment(SmartBody::SBMotion* motion, float tStart, float tEnd, float frameRate)
 {
-	SmartBody::SBMotion* segment = new SmartBody::SBMotion(_sk->_scene);
+	auto segment = std::make_unique<SmartBody::SBMotion>(_sk->_scene);
 	segment->setMotion(*motion);
 
 	int trimFront = (int)(tStart/frameRate);
@@ -548,7 +549,7 @@ void SBHandSynthesis::findSimilarSegments()
 	{
 		costVector.clear();
 
-		SmartBody::SBMotion* segment = _selectDb->getMotionSegments()[i];
+		auto& segment = _selectDb->getMotionSegments()[i];
 
 		// connect to a skeleton
 		segment->connect(_sk.get());
@@ -556,7 +557,7 @@ void SBHandSynthesis::findSimilarSegments()
 		// compare with fragments in database 
 		for (size_t j=0;j<_selectDb->getBodyDbSegments().size();j++)
 		{
-			SmartBody::SBMotion* databaseSegment = _selectDb->getBodyDbSegments()[j];
+			auto& databaseSegment = _selectDb->getBodyDbSegments()[j];
 
 			//if ((databaseSegment->duration() <=0) || (segment->duration() <= 0))
 				//cout<<"starting Segment of zero length"<<endl;
@@ -568,7 +569,7 @@ void SBHandSynthesis::findSimilarSegments()
 			}
 
 			// else compare
-			float cost  = compareSegments(_selectDb->getJointName(), segment, databaseSegment);
+			float cost  = compareSegments(_selectDb->getJointName(), *segment, *databaseSegment);
 
 			// add to cost vector
 			costVector.emplace_back( std::pair<int,float>(j,cost));
@@ -615,42 +616,42 @@ void SBHandSynthesis::findSimilarSegments()
 }
 
 // find comparison cost of segments
-float SBHandSynthesis::compareSegments(std::string wristJointName, SmartBody::SBMotion* segmentInput, SmartBody::SBMotion* segmentDb)
+float SBHandSynthesis::compareSegments(const std::string& wristJointName, SmartBody::SBMotion& segmentInput, SmartBody::SBMotion& segmentDb)
 {
 
 	// apply dynamic time warping to get them to the same length
-	float factor = segmentInput->duration()/segmentDb->duration();
-	segmentDb->retime(factor);
+	float factor = segmentInput.duration()/segmentDb.duration();
+	segmentDb.retime(factor);
 
 	// compare both segments to find cost
 	float w_p = 1, w_r = 0.5, costPosition = 0, costRotation = 0, noFrames = 0;
 
 	
 	// loop through the frames
-	for (float t=0; t< segmentInput->duration(); t ++)
+	for (float t=0; t< segmentInput.duration(); ++t)
 	{
 		// get positions 
 		SmartBody::SBJoint* joint = _sk->getJointByName(wristJointName);
 
 		// get wrist positions
-		segmentInput->connect(_sk.get());
-		SrVec positionInput = segmentInput->getJointPositionFromBase(joint, _baseJoint, t);
-		segmentInput->disconnect();
+		segmentInput.connect(_sk.get());
+		SrVec positionInput = segmentInput.getJointPositionFromBase(joint, _baseJoint, t);
+		segmentInput.disconnect();
 
 		// get wrist position for db
-		segmentDb->connect(_sk.get());
-		SrVec positionDb 	= segmentDb->getJointPositionFromBase(joint, _baseJoint, t);
-		segmentDb->disconnect();
+		segmentDb.connect(_sk.get());
+		SrVec positionDb 	= segmentDb.getJointPositionFromBase(joint, _baseJoint, t);
+		segmentDb.disconnect();
 
 		// get wrist rotations
-		segmentInput->connect(_sk.get());
-		SrQuat rotationInput = segmentInput->getJointRotation(joint, t);
-		segmentInput->disconnect();
+		segmentInput.connect(_sk.get());
+		SrQuat rotationInput = segmentInput.getJointRotation(joint, t);
+		segmentInput.disconnect();
 
 		// get the joint rotations
-		segmentDb->connect(_sk.get());
-		SrQuat rotationDb 	 = segmentDb->getJointRotation(joint, t);
-		segmentDb->disconnect();
+		segmentDb.connect(_sk.get());
+		SrQuat rotationDb 	 = segmentDb.getJointRotation(joint, t);
+		segmentDb.disconnect();
 
 		// compute squared distances
 		float distPosition = (positionInput-positionDb).norm2();
@@ -665,11 +666,11 @@ float SBHandSynthesis::compareSegments(std::string wristJointName, SmartBody::SB
 	}
 
 	// this is just a hack to go around the memory leaks
-	segmentDb->retime(1.0f/factor);
+	segmentDb.retime(1.0f/factor);
 
 	// disconnect the motions
-	//segmentInput->disconnect();
-	//segmentDb->disconnect();
+	//segmentInput.disconnect();
+	//segmentDb.disconnect();
 
 	// return cost
 	return (w_p*costPosition + w_r*costRotation)/ (noFrames);
@@ -734,7 +735,7 @@ void SBHandSynthesis::buildGraphAlternate()
 				edge_array[ currIndex ] = Edge( i*_k + x + 1, (i+1)*_k + y + 1 );
 
 				// calculate cost and add as weight
-				float c_s =  list[x].second , c_t = calcTransitionCost(_selectDb->getHandDbSegments()[list[x].first],_selectDb->getHandDbSegments()[list_b[y].first],_selectDb->getJointName());
+				float c_s =  list[x].second , c_t = calcTransitionCost(*_selectDb->getHandDbSegments()[list[x].first],*_selectDb->getHandDbSegments()[list_b[y].first],_selectDb->getJointName());
 				weights[ currIndex ] = w_s * c_s + w_t * c_t ;
 			}
 		}
@@ -946,7 +947,7 @@ void SBHandSynthesis::buildGraph()
 				int currIndex = ( i * _k * _k ) + ( x * _k ) + y + (_k); 
 
 				// calculate weight
-				float c_s =  list[x].second , c_t = calcTransitionCost(_selectDb->getHandDbSegments()[list[x].first],_selectDb->getHandDbSegments()[list_b[y].first],_selectDb->getJointName());
+				float c_s =  list[x].second , c_t = calcTransitionCost(*_selectDb->getHandDbSegments()[list[x].first],*_selectDb->getHandDbSegments()[list_b[y].first],_selectDb->getJointName());
 				
 				// add the edge from va to vb with weight
 				boost::add_edge( vertex_array[i*_k + x + 1], vertex_array[(i+1)*_k + y + 1], w_s * c_s + w_t * c_t , g);
@@ -1080,13 +1081,13 @@ void SBHandSynthesis::buildGraph()
 }
 
 // calculate the transition cost from one segment to the next
-float SBHandSynthesis::calcTransitionCost(SmartBody::SBMotion* segmentA, SmartBody::SBMotion* segmentB, std::string wristJointName)
+float SBHandSynthesis::calcTransitionCost(SmartBody::SBMotion& segmentA, SmartBody::SBMotion& segmentB, const std::string& wristJointName)
 {
 	// main parameters
 	float w_j = 1, w_w = 0.5, costRotation = 0.0f , costVelocity = 0.0f;
 
 	//segmentA->connect(_sk);
-	//segmentB->connect(_skCopy);
+	//segmentB.connect(_skCopy);
 
 	
 	// find the cost
@@ -1097,27 +1098,27 @@ float SBHandSynthesis::calcTransitionCost(SmartBody::SBMotion* segmentA, SmartBo
 	for (auto curJoint : descendants)
 	{
 			// get rotation for A at the last frame and B at the first frame
-		segmentA->connect(_sk.get());
-		SrQuat rotA = segmentA->getJointRotation(curJoint,segmentA->duration());
-		segmentA->disconnect();
+		segmentA.connect(_sk.get());
+		SrQuat rotA = segmentA.getJointRotation(curJoint,segmentA.duration());
+		segmentA.disconnect();
 
 		// get rotation of B
-		segmentB->connect(_sk.get());
-		SrQuat rotB = segmentB->getJointRotation(curJoint,0);
-		segmentB->disconnect();
+		segmentB.connect(_sk.get());
+		SrQuat rotB = segmentB.getJointRotation(curJoint,0);
+		segmentB.disconnect();
 
 		SrQuat diff = rotB*rotA.inverse();
 		diff.normalize();
 
 		// get the angular velocities (this is speed. need to get velocities)
-		segmentA->connect(_sk.get());
-		SrVec velA = segmentA->getJointAngularVelocity(curJoint,segmentA->duration()-1,segmentA->duration());
-		segmentA->disconnect();
+		segmentA.connect(_sk.get());
+		SrVec velA = segmentA.getJointAngularVelocity(curJoint,segmentA.duration()-1,segmentA.duration());
+		segmentA.disconnect();
 
 		// get angular velocity
-		segmentB->connect(_sk.get());
-		SrVec velB = segmentB->getJointAngularVelocity(curJoint,0,1);
-		segmentB->disconnect();
+		segmentB.connect(_sk.get());
+		SrVec velB = segmentB.getJointAngularVelocity(curJoint,0,1);
+		segmentB.disconnect();
 
 		// calculate the costs
 		costRotation += diff.axisAngle().norm2();
@@ -1125,8 +1126,8 @@ float SBHandSynthesis::calcTransitionCost(SmartBody::SBMotion* segmentA, SmartBo
 		costVelocity += (velB-velA).norm2();
 	}
 
-	//segmentA->disconnect();
-	//segmentB->disconnect();
+	//segmentA.disconnect();
+	//segmentB.disconnect();
 
 	return ((w_j*costRotation + w_w*costVelocity)/descendants.size());
 }
@@ -1157,14 +1158,14 @@ void SBHandSynthesis::createFinalMotion()
 		curIndex = _selectDb->getMotionIndices()[index];
 
 		// get the database motion and retime it
-		SmartBody::SBMotion* dbMotion = _selectDb->getHandDbSegments()[curIndex];
+		auto& dbMotion = _selectDb->getHandDbSegments()[curIndex];
 
 		// retime the motion and retime it later 
 		float factor = _selectDb->getMotionSegments()[index]->duration() / dbMotion->duration();
 		dbMotion->retime(factor);
 
 		// pick the two motions and combine them together
-		combineMotion(_selectDb->getFinalMotion(), dbMotion, _selectDb->getJointName());
+		combineMotion(_selectDb->getFinalMotion(), dbMotion.get(), _selectDb->getJointName());
 
 		// convert dbMotion back 
 		dbMotion->retime(1.0f/factor);
@@ -1398,14 +1399,14 @@ void SBHandSynthesis::printResults()
 	myFile << "\n Body Database Motions : \n";
 	for (auto & i : _bodyDbMotion)
 	{
-		_selectDb->printMotion(i, myFile);
+		SmartBody::MotionDatabase::printMotion(*i, myFile);
 	}
 
 	// print the hand db motions 
 	myFile << "\n Hand Database Motions : \n";
-	for ( size_t i = 0 ; i < _handDbMotion.size() ; i++)
+	for (auto & i : _handDbMotion)
 	{
-		_selectDb->printMotion(_handDbMotion[i], myFile);
+		SmartBody::MotionDatabase::printMotion(*i, myFile);
 	}	
 
 	// print the database itself
@@ -1413,28 +1414,14 @@ void SBHandSynthesis::printResults()
 }
 
 // initialize the motion datbase
-MotionDatabase::MotionDatabase(SBScene& scene) : SBSceneOwned(scene)
+MotionDatabase::MotionDatabase(SBScene& scene) : SBSceneOwned(scene),
+_finalMotion(std::make_unique<SmartBody::SBMotion>(_scene))
 {
-	_finalMotion = new SmartBody::SBMotion(_scene);
 }
 
 
 MotionDatabase::~MotionDatabase()
 {
-	clearDb();
-
-	// clear body segments
-	for (size_t i = 0 ; i < _bodyDatabaseSegments.size() ; i++)
-	{
-		delete _bodyDatabaseSegments[i];
-	}
-
-	// clear hand segments
-	for (size_t i = 0 ; i < _handDatabaseSegments.size() ; i++)
-	{
-		delete _handDatabaseSegments[i];
-	}
-
 	// only clear the datbases here
 	_handDatabaseSegments.clear();
 	_bodyDatabaseSegments.clear();
@@ -1443,20 +1430,9 @@ MotionDatabase::~MotionDatabase()
 // clear the database
 void MotionDatabase::clearDb()
 {
-	// clear final motion
-	if (_finalMotion)
-	{
-		delete _finalMotion;
 
-		// reinitialize
-		_finalMotion = new SmartBody::SBMotion(_scene);
-	}
-
-	// clera motion segments
-	for (auto & _motionSegment : _motionSegments)
-	{
-		delete _motionSegment;
-	}
+	// reinitialize
+	_finalMotion = std::make_unique<SmartBody::SBMotion>(_scene);
 
 	// clear the datbases 
 	_motionSegments.clear();
@@ -1465,19 +1441,19 @@ void MotionDatabase::clearDb()
 }
 
 // get the segments
-std::vector<SBMotion*>& MotionDatabase::getBodyDbSegments() 
+std::vector<std::unique_ptr<SBMotion>>& MotionDatabase::getBodyDbSegments()
 { 
 	return _bodyDatabaseSegments;
 }
 
 
 // get the hand database segments
-std::vector<SBMotion*>& MotionDatabase::getHandDbSegments() 
+std::vector<std::unique_ptr<SBMotion>>& MotionDatabase::getHandDbSegments()
 { 
 	return _handDatabaseSegments;
 }
 
-std::vector<SBMotion*>& MotionDatabase::getMotionSegments()
+std::vector<std::unique_ptr<SBMotion>>& MotionDatabase::getMotionSegments()
 {
 	return _motionSegments;
 }
@@ -1497,41 +1473,41 @@ std::vector<int>& MotionDatabase::getMotionIndices()
 // get the segment at a certina location
 SmartBody::SBMotion* MotionDatabase::getBodyDbSegment(int i) 
 { 
-	return _bodyDatabaseSegments[i];
+	return _bodyDatabaseSegments[i].get();
 }
 
 // get hand segment at certain location
 SmartBody::SBMotion* MotionDatabase::getHandDbSegments(int i ) 
 { 
-	return _handDatabaseSegments[i];
+	return _handDatabaseSegments[i].get();
 }
 
 // get the final motion
 SmartBody::SBMotion* MotionDatabase::getFinalMotion()
 {
-	return _finalMotion;
+	return _finalMotion.get();
 }
 
 // add to body database
-void MotionDatabase::addBodyDbSegment(SmartBody::SBMotion* segment) 
+void MotionDatabase::addBodyDbSegment(std::unique_ptr<SmartBody::SBMotion> segment)
 {
-	_bodyDatabaseSegments.emplace_back(segment);
+	_bodyDatabaseSegments.emplace_back(std::move(segment));
 }
 
 // add to hand database
-void MotionDatabase::addHandDbSegment(SmartBody::SBMotion* segment) 
+void MotionDatabase::addHandDbSegment(std::unique_ptr<SmartBody::SBMotion> segment)
 {
-	_handDatabaseSegments.emplace_back(segment);
+	_handDatabaseSegments.emplace_back(std::move(segment));
 }
 
 // add motion segment
-void MotionDatabase::addMotionSegment(SmartBody::SBMotion* segment)
+void MotionDatabase::addMotionSegment(std::unique_ptr<SmartBody::SBMotion> segment)
 {
-	_motionSegments.emplace_back(segment);
+	_motionSegments.emplace_back(std::move(segment));
 }
 
 // adds a cost list
-void MotionDatabase::addCostList(CostList costList)
+void MotionDatabase::addCostList(const CostList& costList)
 {
 	_similarSegments.emplace_back(costList);
 }
@@ -1544,7 +1520,7 @@ void MotionDatabase::addMotionIndex(int index)
 
 void MotionDatabase::setJointName(std::string jointName)
 {
-	_jointName = jointName;
+	_jointName = std::move(jointName);
 }
 
 std::string MotionDatabase::getJointName()
@@ -1553,10 +1529,10 @@ std::string MotionDatabase::getJointName()
 }
 
 // print the motion
-void MotionDatabase::printMotion(SBMotion *motion, std::ofstream& myFile)
+void MotionDatabase::printMotion(const SBMotion& motion, std::ofstream& myFile)
 {
 	//LOG ("Motion -> {name : %s , duration: %f, frames : %d } ", motion->getName(), motion->getDuration(), motion->getNumFrames());
-	myFile << "Motion -> {name : " << motion->getName() << " , duration: "<< motion->getDuration() <<", frames : "<< motion->getNumFrames() << " } \n";
+	myFile << "Motion -> {name : " << motion.getName() << " , duration: "<< motion.getDuration() <<", frames : "<< motion.getNumFrames() << " } \n";
 }
 
 // print the database
@@ -1565,23 +1541,23 @@ void MotionDatabase::printDatabase(std::ofstream& myFile)
 
 	// first print the body database segments
 	myFile << "\n Body Database : \n";
-	for (size_t i = 0 ; i < _bodyDatabaseSegments.size() ; i++ )
+	for (auto & _bodyDatabaseSegment : _bodyDatabaseSegments)
 	{
-		printMotion(_bodyDatabaseSegments[i], myFile);
+		printMotion(*_bodyDatabaseSegment, myFile);
 	}
 
 	// print the hand database segments
 	myFile << "\n Hand Database : \n";
-	for ( size_t i = 0 ; i < _handDatabaseSegments.size() ; i++ )
+	for (auto & _handDatabaseSegment : _handDatabaseSegments)
 	{
-		printMotion(_handDatabaseSegments[i], myFile);
+		printMotion(*_handDatabaseSegment, myFile);
 	}
 
 	// print out all the motion segments
 	myFile << "\n Motion Segments : \n";
-	for (size_t i = 0 ; i < _motionSegments.size() ; i++)
+	for (auto & _motionSegment : _motionSegments)
 	{
-		printMotion(_motionSegments[i], myFile);
+		printMotion(*_motionSegment, myFile);
 	}
 
 	// printing segments
@@ -1610,14 +1586,14 @@ void MotionDatabase::printDatabase(std::ofstream& myFile)
 
 	// final indices calculated
 	myFile << "\n Final motion indices : ";
-	for ( size_t i = 0 ; i < _finalMotionIndices.size() ; i++ )
+	for (int _finalMotionIndice : _finalMotionIndices)
 	{
-		myFile << _finalMotionIndices[i] << " , ";
+		myFile << _finalMotionIndice << " , ";
 	}
 
 	// and finally print the final motion
 	myFile << "\n Final Motion : ";
-	printMotion(_finalMotion, myFile);
+	printMotion(*_finalMotion, myFile);
 
 	// close the file 
 	myFile.close();

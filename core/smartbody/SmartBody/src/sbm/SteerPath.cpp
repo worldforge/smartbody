@@ -203,9 +203,9 @@ float SteerPath::pathDistance( const SrVec& pt )
 float SteerPath::pathLength()
 {
 	float totalLength = 0.f;
-	for (size_t i=0;i<pathSegLength.size();i++)
+	for (float i : pathSegLength)
 	{
-		totalLength += pathSegLength[i];
+		totalLength += i;
 	}
 	return totalLength;
 }
@@ -216,5 +216,5 @@ float SteerPath::pathCurvature( float start, float end )
 	SrVec dir2 = pathTangent(end);
 	float dotValue = dot(dir1,dir2);
 	if (dotValue > 1) dotValue = 1; if (dotValue < -1) dotValue = -1;
-	return fabs(acos(dotValue));	
+	return std::fabs(std::acos(dotValue));
 }

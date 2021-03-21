@@ -30,11 +30,11 @@
 SkJointQuat::SkJointQuat ( SkJoint* j )
  {
    _joint = j;
-   _jntsync = 0;
-   _dersync = 0;
-   _active = 0;
-   _asknew = 0;
-   _prepost = 0;
+   _jntsync = false;
+   _dersync = false;
+   _active = false;
+   _asknew = false;
+   _prepost = nullptr;
  }
 
 SkJointQuat::~SkJointQuat()
@@ -51,8 +51,8 @@ const SrQuat& SkJointQuat::rawValue()
 void SkJointQuat::value ( const SrQuat& q )
  {
    if ( !_active ) return;
-   _jntsync = 0;
-   _dersync = 0;
+   _jntsync = false;
+   _dersync = false;
    _quat = q;
    _rawQuat = q;
    _joint->set_lmat_changed(); // let joint and skeleton know there was a change
@@ -62,8 +62,8 @@ void SkJointQuat::value ( const SrQuat& q )
 void SkJointQuat::value ( const float* f )
  {
    if ( !_active ) return;
-   _jntsync = 0;
-   _dersync = 0;
+   _jntsync = false;
+   _dersync = false;
    _quat.set ( f );
    _rawQuat = _quat;
    _joint->set_lmat_changed(); // let joint and skeleton know there was a change
@@ -74,11 +74,12 @@ const SrQuat& SkJointQuat::value ()
  {
    if ( _asknew )
     { get_quat ( _quat );
-      if ( _prepost ) 
+      if ( _prepost ) {
 		  _quat = _jorientation * _prepost->pre * _quat * _prepost->post;
-	  else
+	  } else {
 		  _quat = _jorientation * _quat;
-      _asknew = 0;
+	  }
+      _asknew = false;
     }
    return _quat;
  }
@@ -133,9 +134,9 @@ void SkJointQuat::align ( AlignType t, const SrVec& v )
 
 void SkJointQuat::ask_new ()
  {
-   _asknew = 1;
-   _jntsync = 0;
-   _dersync = 1;
+   _asknew = true;
+   _jntsync = false;
+   _dersync = true;
    _joint->set_lmat_changed(); // let joint and skeleton know there was a change
  }
 

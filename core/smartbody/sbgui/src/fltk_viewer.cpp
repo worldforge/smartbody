@@ -4861,8 +4861,8 @@ void FltkViewer::drawLocomotion()
 				{
 					//glVertex3f(character->trajectoryGoalList[(size_t)i * 3 + 0], 0.5f, character->trajectoryGoalList[(size_t)i * 3 + 2]);
 					//glVertex3f(character->trajectoryGoalList[((size_t)i + 1) * 3 + 0], 0.5f, character->trajectoryGoalList[((size_t)i + 1) * 3 + 2]);
-					glVertex3f(character->trajectoryGoalList[(size_t)i * 3 + 0],character->trajectoryGoalList[(size_t)i * 3 + 1], character->trajectoryGoalList[(size_t)i * 3 + 2]);
-					glVertex3f(character->trajectoryGoalList[((size_t)i + 1) * 3 + 0], character->trajectoryGoalList[((size_t)i + 1) * 3 + 1], character->trajectoryGoalList[((size_t)i + 1) * 3 + 2]);
+					glVertex3f(character->trajectoryGoalList[i].x,character->trajectoryGoalList[i].y, character->trajectoryGoalList[i].z);
+					glVertex3f(character->trajectoryGoalList[i + 1].x, character->trajectoryGoalList[i + 1].y, character->trajectoryGoalList[i + 1].z);
 				}
 			glEnd();
 

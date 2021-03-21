@@ -156,7 +156,7 @@ const std::string& SBMotion::getMotionFileName() const
 	return filename();
 }
 
-int SBMotion::getNumFrames()
+int SBMotion::getNumFrames() const
 {
 	return frames();
 }
@@ -2356,7 +2356,7 @@ void SBMotion::setTimeStop(double time)
 	setSyncPoint("stop", time);
 }
 
-double SBMotion::getDuration()
+double SBMotion::getDuration() const
 {
 	return duration();
 }

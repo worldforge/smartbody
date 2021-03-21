@@ -75,8 +75,7 @@ public:
 	dJointGroupID getContactGroupID() { return contactGroupID; }
 	bool   systemIsInit() const { return hasInit; }
 public:	
-	void initSimulation() override;
-	
+
 	void addPhysicsObj(SmartBody::SBPhysicsObj* obj) override;
 	void removePhysicsObj(SmartBody::SBPhysicsObj* obj) override;
 	void addPhysicsCharacter(SmartBody::SBPhysicsCharacter* phyChar) override;

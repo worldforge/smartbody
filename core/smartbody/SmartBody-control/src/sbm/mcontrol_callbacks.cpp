@@ -25,7 +25,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <boost/version.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <sb/SBSimulationManager.h>
 #include <sb/SBScene.h>
@@ -51,7 +50,6 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/Heightfield.h>
 #include <sbm/KinectProcessor.h>
 #include <sbm/local_speech.h>
-#include "sb/SBScene.h"
 
 #include <sbm/action_unit.hpp>
 
@@ -589,6 +587,7 @@ int mcu_panim_cmd_func( srArgBuffer& args, SmartBody::SBScene& scene )
 				return CMD_FAILURE;
 			}
 			std::vector<double> p;
+			p.reserve((type + 1));
 			for (int i = 0; i < (type + 1); i++)
 				p.emplace_back(args.read_double());
 			std::vector<double> weights;
@@ -1542,7 +1541,7 @@ int mcu_play_sound_func( srArgBuffer& args, CommandContext commandContext )
         {
 			std::string soundCacheDir = "../../../../..";
 			std::string soundDir = commandContext.scene.getStringAttribute("speechRelaySoundCacheDir");
-			if (soundDir != "")
+			if (!soundDir.empty())
 				soundCacheDir = soundDir;
 
 			boost::filesystem::path p( soundCacheDir );
@@ -1575,7 +1574,7 @@ int mcu_play_sound_func( srArgBuffer& args, CommandContext commandContext )
 		  if (soundDuration != 0.0f)
 		  {		  
 			std::stringstream strstr2;
-			strstr2 << "sb scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent(\"sound\", \"" << strstr.str() << " stop\", \"" << characterObjectName << "\"))";
+			strstr2 << R"(sb scene.getEventManager().handleEventRemove(scene.getEventManager().createEvent("sound", ")" << strstr.str() << " stop\", \"" << characterObjectName << "\"))";
 			commandContext.scene.commandAt(soundDuration, strstr2.str());
 		  }
         }
@@ -2107,7 +2106,7 @@ int mcu_check_func( srArgBuffer& args, SmartBody::SBScene& scene)
 		for (int i = 0; i < chanSize; i++)
 		{				
 			std::stringstream outputInfo;
-			std::string channelName = "";
+			std::string channelName;
 			if (mode == 1)
 			{
 				chan = mChanArray[i];
@@ -2304,9 +2303,7 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBScene& scene, SmartBody::SBS
 					float x, y, z;
 					float yaw, pitch, roll;
 					character->get_world_offset(x, y, z, yaw, pitch, roll);
-					character->trajectoryGoalList.emplace_back(x);
-					character->trajectoryGoalList.emplace_back(y);
-					character->trajectoryGoalList.emplace_back(z);
+					character->trajectoryGoalList.emplace_back(x, y, z);
 
 					if (mode == "normal")
 					{
@@ -2316,38 +2313,44 @@ int mcu_steer_func( srArgBuffer& args, SmartBody::SBScene& scene, SmartBody::SBS
 							const SteerLib::AgentGoalInfo& curGoal = ppraiAgent->getAgent()->currentGoal();
 							ppraiAgent->getAgent()->clearGoals();
 						}
-						if (ppraiAgent->goalList.size() > 0)
+						if (!ppraiAgent->goalList.empty())
 						{
 							ppraiAgent->sendLocomotionEvent("interrupt");
 						}
 						ppraiAgent->goalList.clear();
 						//SmartBody::util::log("steer move : add agent goals. Num goal = %d",num);
-						for (int i = 0; i < num; i++)
+						for (int i = 0; i < (num + 2); i += 3)
 						{
-							float v = args.read_float();
-							ppraiAgent->goalList.emplace_back(v);
-							character->trajectoryGoalList.emplace_back(v);
+							auto posX = args.read_float();
+							auto poxY = args.read_float();
+							auto posZ = args.read_float();
+							SrVec pos(posX, poxY, posZ);
+							ppraiAgent->goalList.emplace_back(pos);
+							character->trajectoryGoalList.emplace_back(pos);
 						}
 					}
 					else if (mode == "additive")
 					{
-						for (int i = 0; i < num; i++)
+						for (int i = 0; i < (num + 2); i += 3)
 						{
-							float v = args.read_float();
-							ppraiAgent->goalList.emplace_back(v);
-							character->trajectoryGoalList.emplace_back(v);
+							auto posX = args.read_float();
+							auto poxY = args.read_float();
+							auto posZ = args.read_float();
+							SrVec pos(posX, poxY, posZ);
+							ppraiAgent->goalList.emplace_back(pos);
+							character->trajectoryGoalList.emplace_back(pos);
 						}
 					}
 					else
 						SmartBody::util::log("steer move mode not recognized!");
 
-					std::vector<float>& trajList = character->trajectoryGoalList;
+					auto& trajList = character->trajectoryGoalList;
 					std::vector<SrVec> trajPtList;
 					// add steering path
-					for (size_t i=0; i < trajList.size() / 3; i++)
+					trajPtList.reserve(trajList.size());
+					for (auto & i : trajList)
 					{
-						SrVec trajPt = SrVec(trajList[i*3],trajList[i*3+1],trajList[i*3+2]);
-						trajPtList.emplace_back(trajPt);
+						trajPtList.emplace_back(i);
 					}
 					steerPath.clearPath();
 					steerPath.initPath(trajPtList,pathRadius);
@@ -2685,7 +2688,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBScene& scene)
 		}
 		else if (skeletonType == "positions")
 		{
-			;	// TODO: add support to joint global positions
+				// TODO: add support to joint global positions
 		}
 		else if (skeletonType == "rotation")
 		{
@@ -2774,7 +2777,7 @@ int mcu_joint_datareceiver_func( srArgBuffer& args, SmartBody::SBScene& scene)
 							if (fabs(retargetQuats[i].w) > .0001)
 							{
 								const std::string& mappedJointName = scene.getKinectProcessor()->getSBJointName(i);
-								if (mappedJointName != "")
+								if (!mappedJointName.empty())
 									character->datareceiver_ct->setLocalRotation(mappedJointName, retargetQuats[i]);
 							}
 						}
@@ -3242,7 +3245,7 @@ int sb_main_func( srArgBuffer & args, SmartBody::SBScene& scene)
    {  // Process specific
       token = args.read_token(); // Process id
 	  const char * process_id = scene.getProcessId().c_str();
-      if( ( scene.getProcessId() == "" )         // If process id unassigned
+      if( ( scene.getProcessId().empty() )         // If process id unassigned
          || strcmp( token, process_id ) !=0 ) // or doesn't match
          return CMD_SUCCESS;                  // Ignore.
       token = args.read_token(); // Sub-command
@@ -3253,7 +3256,7 @@ int sb_main_func( srArgBuffer & args, SmartBody::SBScene& scene)
    strstr << token;
    if (args_raw)
 	   strstr << " " << args_raw;
-   bool resultOk = scene.run( strstr.str().c_str() );
+   bool resultOk = scene.run( strstr.str() );
    if (resultOk)
    {
 	   return CMD_SUCCESS;

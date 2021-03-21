@@ -49,7 +49,6 @@ SBCollisionManager::SBCollisionManager(SBScene& scene, std::unique_ptr<SBCollisi
 	createDoubleAttribute("jointBVLenRadRatio", 4.0f, true, "Basic", 60, false, false, false, "Joint BV capsule length-radius ratio.");
 
 	_maxIterations = 5;
-	collisionSpace = nullptr;
 
 	_singleChrCapsuleMode = false;
 	_jointBVLenRadRatio = 4.0f;

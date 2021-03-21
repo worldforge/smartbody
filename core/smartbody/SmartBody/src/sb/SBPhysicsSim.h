@@ -254,7 +254,6 @@ public:
 	SBAPI virtual SrVec getJointConstraintPos(SBPhysicsJoint* joint) = 0;
 	SBAPI virtual SrVec getJointRotationAxis(SBPhysicsJoint* joint, int axis) = 0;
 
-	SBAPI virtual void initSimulation() = 0;		
 	SBAPI virtual void updateSimulationInternal(float timeStep) = 0;
 	SBAPI virtual SBPhysicsObj* createPhyObj() = 0;	
 

@@ -19,11 +19,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************/
 
 #include "SBAssetHandlerCOLLADA.h"
-#include <boost/version.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
-#include <boost/algorithm/string.hpp>
 #include <sb/SBMotion.h>
 #include <sb/SBSkeleton.h>
 #include <sb/SBScene.h>

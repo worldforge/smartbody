@@ -43,7 +43,7 @@ class SBAnimationBlend : public PABlend, public SBSceneOwned
 		SBAPI ~SBAnimationBlend();
 
 		SBAPI int getParameterDimension();
-		SBAPI bool getWeightsFromParameters(SrVec& para, std::vector<float>& weights);
+		SBAPI bool getVectorWeightsFromParameters(SrVec& para, std::vector<float>& weights);
 		SBAPI SrBox getParameterBoundBox();
 
 		SBAPI void setBlendSkeleton(std::string skelName);

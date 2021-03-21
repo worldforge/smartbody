@@ -95,7 +95,8 @@ void SteerSuiteEngineDriver::init(std::unique_ptr<SteerLib::SimulationOptions> o
 
 	_engine = std::make_unique<SimulationEngine>();
 	//Move ownership over to the Steerlib Engine
-	_engine->init(options.release(), this);
+	_engine->init(options.get(), this);
+	_options = std::move(options);
 }
 
 

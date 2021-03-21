@@ -77,7 +77,10 @@ class SbmCharacter : public SmartBody::SBPawn	{
 	// Locomotion + steering
 public:
 	std::list<SrVec> trajectoryBuffer;
-	std::vector<float> trajectoryGoalList;
+	/**
+	 * TODO: is this used for anything?
+	 */
+	std::vector<SrVec> trajectoryGoalList;
 	static const int trajectoryLength = 1000;
 	
 	bool _reachTarget;

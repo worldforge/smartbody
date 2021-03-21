@@ -74,7 +74,7 @@ protected:
 	SrMat _gmat;           // global matrix: from the root to the children of this joint
 	SrMat _gmatZero;       // global rotation matrix when all joint channels are zero
 	SrMat _lmat;           // local matrix: from this joint to its children
-	char  _lmat_uptodate;  // true if lmat is up to date
+	bool  _lmat_uptodate;  // true if lmat is up to date
 	std::string _name;     // the given name
 	std::string _sbName;   // smartbody internal name after joint mapping
 	std::string _extName;  // external name for the bone

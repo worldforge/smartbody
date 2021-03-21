@@ -36,7 +36,7 @@ class SBService : public SBObject, public SBSceneOwned
 {
 	public:
 		SBAPI explicit SBService(SBScene& scene);
-		SBAPI ~SBService();
+		SBAPI virtual ~SBService();
 
 		SBAPI virtual void setEnable(bool val);
 		SBAPI virtual bool isEnable();

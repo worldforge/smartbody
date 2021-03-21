@@ -50,7 +50,7 @@ class SBSteerManager : public SmartBody::SBService
 {
 	public:
 		SBAPI explicit SBSteerManager(SBScene& scene);
-		SBAPI ~SBSteerManager();
+		SBAPI ~SBSteerManager() override;
 
 		SBAPI void setEnable(bool enable) override;
 		SBAPI void start() override;

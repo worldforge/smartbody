@@ -40,10 +40,7 @@ namespace SmartBody {
 /************************************************************************/
 
 
-SBMotionFrameBuffer::SBMotionFrameBuffer()
-{
-
-}
+SBMotionFrameBuffer::SBMotionFrameBuffer() = default;
 
 SBMotionFrameBuffer::~SBMotionFrameBuffer()
 {
@@ -64,28 +61,27 @@ void SBMotionFrameBuffer::initFrameBuffer( SkChannelArray& channelArray, std::ve
 	posChannelNames.clear();
 
 	std::map<std::string,int> posChannelMap;
-	if (affectedChannelList.size() != 0) // use subset of all channels
+	if (!affectedChannelList.empty()) // use subset of all channels
 	{
-		for (unsigned int i=0;i<affectedChannelList.size();i++)
+		for (auto & chanName : affectedChannelList)
 		{
-			const std::string& chanName = affectedChannelList[i];
-			for (unsigned int k=0;k<typeList.size();k++)
+				for (auto & k : typeList)
 			{
-				int chanIdx = channelArray.search(chanName, typeList[k]);
+				int chanIdx = channelArray.search(chanName, k);
 				if (chanIdx < 0)
 					continue;
 				int floatIdx = channelArray.float_position(chanIdx);
 				if (floatIdx <0)
 					continue;
-				std::pair<std::string,SkChannel::Type> key(chanName,typeList[k]);
+				std::pair<std::string,SkChannel::Type> key(chanName,k);
 				channelIdxMap[key] = floatIdx;
 
 				// maintain a list of names for all quat channel & position channel
-				if (typeList[k] == SkChannel::Quat)
+				if (k == SkChannel::Quat)
 				{
 					quatChannelNames.emplace_back(chanName);
 				}
-				else if (typeList[k] <= SkChannel::ZPos)
+				else if (k <= SkChannel::ZPos)
 				{
 					if (posChannelMap.find(chanName) == posChannelMap.end())
 					{
@@ -98,7 +94,7 @@ void SBMotionFrameBuffer::initFrameBuffer( SkChannelArray& channelArray, std::ve
 	}
 	else // use all channels
 	{			
-		for (unsigned int i=0;i< (unsigned int) channelArray.size();i++)
+		for (size_t i=0;i< channelArray.size();i++)
 		{
 			const std::string& chanName = channelArray.mappedName(i);
 			SkChannel::Type chanType = channelArray.type(i);
@@ -233,20 +229,18 @@ void SBMotionFrameBuffer::interpMotionFrameBuffer( SBMotionFrameBuffer& frameA, 
 	}
 
 	const std::vector<std::string>& quatChannelNames = frameA.getQuatChannelNames();
-	for (unsigned int i=0;i<quatChannelNames.size();i++)
+	for (const auto & quatName : quatChannelNames)
 	{
-		const std::string& quatName = quatChannelNames[i];
-		SrQuat qa,qb;
+			SrQuat qa,qb;
 		qa = frameA.getQuat(quatName);
 		qb = frameB.getQuat(quatName);
 		SrQuat qout = slerp(qa,qb,weight);
 		outFrame.setQuat(quatName,qout);
 	}
 	const std::vector<std::string>& posChannelNames = frameA.getPosChannelNames();
-	for (unsigned int i=0;i<posChannelNames.size();i++)
+	for (const auto & posName : posChannelNames)
 	{
-		const std::string& posName = posChannelNames[i];
-		SrVec pa,pb;
+			SrVec pa,pb;
 		pa = frameA.getPos(posName);
 		pb = frameB.getPos(posName);
 		SrVec pout = pa*(1-weight) + pb*weight;
@@ -257,19 +251,15 @@ void SBMotionFrameBuffer::interpMotionFrameBuffer( SBMotionFrameBuffer& frameA, 
 
 void SBMotionFrameBuffer::applyRetarget( SBRetarget* retarget )
 {
-	const std::vector<std::string>& quatChannelNames = getQuatChannelNames();
-	for (unsigned int i=0;i<quatChannelNames.size();i++)
+	for (const auto & quatName : quatChannelNames)
 	{
-		const std::string& quatName = quatChannelNames[i];
-		SrQuat qa = getQuat(quatName);
+			SrQuat qa = getQuat(quatName);
 		SrQuat qout = retarget->applyRetargetJointRotation(quatName,qa);
 		setQuat(quatName,qout);
 	}
-	const std::vector<std::string>& posChannelNames = getPosChannelNames();
-	for (unsigned int i=0;i<posChannelNames.size();i++)
+	for (const auto & posName : posChannelNames)
 	{
-		const std::string& posName = posChannelNames[i];
-		SrVec pa = getPos(posName);
+			SrVec pa = getPos(posName);
 		for (int k=0;k<3;k++)
 			pa[k] = retarget->applyRetargetJointTranslation(posName, pa[k]);
 		setPos(posName, pa);
@@ -330,14 +320,8 @@ SBMotionNode::SBMotionNode( SBAnimationBlend* blend, int idx )
 	initTimeWarp();
 }
 
-SBMotionNode::SBMotionNode()
-{
-
-}
-SBMotionNode::~SBMotionNode()
-{
-
-}
+SBMotionNode::SBMotionNode() = default;
+SBMotionNode::~SBMotionNode() = default;
 
 
 void SBMotionNode::initTimeWarp()
@@ -520,7 +504,7 @@ void SBMotionNode::interpPosList( float w, std::vector<SrVec>& posListA, std::ve
 	}
 }
 
-int SBMotionNode::getIndex()
+int SBMotionNode::getIndex() const
 {
 	return index;
 }
@@ -561,10 +545,9 @@ float SBMotionNode::getRefDeltaTime( float u, float dt, const std::vector<float>
 	}
 
 	float du = 0.f;
-	for (unsigned int i=0;i<moIndex.size();i++)
+	for (int idx : moIndex)
 	{
-		int idx = moIndex[i];
-		MotionTimeWarpFunc* timeWarp = timeWarpFuncs[idx];
+			MotionTimeWarpFunc* timeWarp = timeWarpFuncs[idx];
 		du += dt/(float)timeWarp->timeSlope(u)*weights[idx];
 	}
 	return du;
@@ -581,10 +564,9 @@ float SBMotionNode::getActualTime( float u, const std::vector<float>& weights  )
 	}
 
 	float t = 0.f;
-	for (unsigned int i=0;i<moIndex.size();i++)
+	for (int idx : moIndex)
 	{
-		int idx = moIndex[i];
-		MotionTimeWarpFunc* timeWarp = timeWarpFuncs[idx];
+			MotionTimeWarpFunc* timeWarp = timeWarpFuncs[idx];
 		t += ((float)timeWarp->timeWarp(u)-(float)timeWarp->timeWarp(0.f))*weights[idx];
 	}
 	return t;
@@ -601,10 +583,9 @@ float SBMotionNode::getActualDuration( const std::vector<float>& weights )
 	}
 
 	float t = 0.f;
-	for (unsigned int i=0;i<moIndex.size();i++)
+	for (int idx : moIndex)
 	{
-		int idx = moIndex[i];
-		MotionTimeWarpFunc* timeWarp = timeWarpFuncs[idx];
+			MotionTimeWarpFunc* timeWarp = timeWarpFuncs[idx];
 		t += (float)timeWarp->actualTimeLength()*weights[idx];
 	}
 	return t;
@@ -625,7 +606,7 @@ void SBMotionNode::getRandomBlendWeights( std::vector<float>& outWeights )
 		random.limits(paraBox.a[i],paraBox.b[i]);
 		parameter[i] = random.getf();
 	}
-	animBlend->getWeightsFromParameters(parameter,outWeights);
+	animBlend->getVectorWeightsFromParameters(parameter,outWeights);
 }
 
 /************************************************************************/
@@ -666,7 +647,7 @@ SBAPI SBMotionNode* SBMotionGraph::addMotionNodeFromMotionRef( const std::string
 {
 	if (!sbMotion)
 		return nullptr; // no motion available
-	SmartBody::SBAnimationBlend1D* animBlend = new SBAnimationBlend1D(_scene, nodeName);
+	auto* animBlend = new SBAnimationBlend1D(_scene, nodeName);
 	if (startFrame < 0 || startFrame >= sbMotion->getNumFrames())
 		startFrame = 0;
 	if (endFrame < 0 || endFrame >= sbMotion->getNumFrames())
@@ -695,7 +676,7 @@ SBMotionNode* SBMotionGraph::addMotionNodeFromMotionTransition( const std::strin
 	SmartBody::SBMotion* motion1 = assetManager->getMotion(motionName1);
 	SmartBody::SBMotion* motion2 = assetManager->getMotion(motionName2);	
 
-	SmartBody::SBMotion* transMotion = new SmartBody::SBMotion(_scene);
+	auto* transMotion = new SmartBody::SBMotion(_scene);
 	SBMotionFrameBuffer frame1, frame2, outFrame;
 	std::vector<std::string> affectedJointNames;
 	frame1.initFrameBuffer(motion1->channels(), affectedJointNames);
@@ -834,9 +815,8 @@ SBAPI void SBMotionGraph::synthesizePath( SteerPath& desiredPath, const std::str
 	SBRetargetManager* retargetManager = _scene.getRetargetManager();
 	// build the delta transform cache to quickly compute the path cost	
 	std::map<std::string, MotionNodeCache> pathDeltaTransformCache;	
-	for (unsigned int i=0;i<motionNodes.size();i++)
+	for (auto node : motionNodes)
 	{
-		SBMotionNode* node = motionNodes[i];
 		std::string nodeSkelName = node->getAnimBlend()->getBlendSkeleton();
 		SmartBody::SBRetarget* retarget = retargetManager->getRetarget(nodeSkelName, skeletonName);
 

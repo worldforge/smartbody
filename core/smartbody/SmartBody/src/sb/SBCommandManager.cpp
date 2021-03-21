@@ -315,6 +315,7 @@ int SBCommandManager::execute( const char *key, srArgBuffer& args )
 	if (I != _cmd_map.end()) {
 		return I->second(args);
 	} else {
+		SmartBody::util::log("Unrecognized command: %s", key);
 		return 0;
 	}
 }

@@ -394,7 +394,7 @@ SrInput::TokenType SrInput::get_token ( SrString &buf )
    if ( _unget->token.size()>0 )
     { UngetData::Token& t = _unget->token.pop();
       buf.set ( t.string );
-      delete t.string;
+      delete[] t.string;
       return (TokenType) t.type;
     }
 

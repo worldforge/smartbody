@@ -385,7 +385,7 @@ void PPRAISteeringAgent::updateSteerStateName()
 		return;
 
 	std::string prefix = character->getName();
-	if (character->statePrefix != "")
+	if (!character->statePrefix.empty())
 		prefix = character->statePrefix;
 	stepStateName = prefix + "Step";
 	locomotionName = prefix + "Locomotion";
@@ -498,16 +498,12 @@ void PPRAISteeringAgent::evaluate(double dtime)
 			newSpeed = 0.0f;
 		}
 
-		if (goalList.size() != 0 && numGoals == 0)
+		if (!goalList.empty() && numGoals == 0)
 		{
-			float goalx = goalList.front();
-			goalList.pop_front();
-			float goaly = goalList.front();
-			goalList.pop_front();
-			float goalz = goalList.front();
+			auto goalPos = goalList.front();
 			goalList.pop_front();
 			agent->clearGoals();
-			SrVec newGoal = getCollisionFreeGoal(SrVec(goalx,goaly,goalz)*scene.getScale(),curSteerPos*scene.getScale());		
+			SrVec newGoal = getCollisionFreeGoal(goalPos*scene.getScale(),curSteerPos*scene.getScale());
 
 			//SmartBody::util::log("original goal = %f %f %f, new goal = %f %f %f",goalx,goaly,goalz, newGoal.x*100.f, newGoal.y*100.f, newGoal.z*100.f);
 			SteerLib::AgentGoalInfo goal;		
@@ -693,7 +689,7 @@ void PPRAISteeringAgent::sendLocomotionEvent(const std::string& status)
 void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float z, float yaw)
 {
 	PABlendData* curStateData = character->param_animation_ct->getCurrentPABlendData();	
-	std::string curStateName = "";
+	std::string curStateName;
 	if (curStateData)
 		curStateName = curStateData->state->stateName;
 
@@ -724,7 +720,7 @@ void PPRAISteeringAgent::evaluatePathFollowing(float dt, float x, float y, float
 	//	return; 
 	if (character->param_animation_ct->isIdle() && steerPath.pathLength() > 0)    // need to define when you want to start the locomotion
 	{
-		PABlend* locoState = _steerManager._scene.getBlendManager()->getBlend(locomotionName.c_str());
+		PABlend* locoState = _steerManager._scene.getBlendManager()->getBlend(locomotionName);
 		SrVec pathDir;
 		float pathDist;		
 		curSteerPos = SrVec(x,0,z);
@@ -1576,7 +1572,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 				}
 			}
 		}
-		if (neigbors.size() > 0)
+		if (!neigbors.empty())
 			fastInitial = true;
 		else
 			fastInitial = false;
@@ -1599,7 +1595,7 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 	//---end locomotion
 	if (_numSteeringGoal != 0 && numGoals == 0)
 	{
-		if (goalList.size() == 0)
+		if (goalList.empty())
 		{
 			std::vector<double> weights;
 			character->param_animation_ct->schedule(nullptr, weights);
@@ -1611,15 +1607,10 @@ float PPRAISteeringAgent::evaluateExampleLoco(float dt, float x, float y, float 
 		}
 		else
 		{
-			float goalx = goalList.front();
-			goalList.pop_front();
-			float goaly = goalList.front();
-			goalList.pop_front();
-			float goalz = goalList.front();
-			goalList.pop_front();
+			auto goalPos = goalList.front();
 			agent->clearGoals();
 
-			SrVec newGoal = getCollisionFreeGoal(SrVec(goalx,goaly,goalz)*scene.getScale(),curSteerPos*scene.getScale());		
+			SrVec newGoal = getCollisionFreeGoal(goalPos*scene.getScale(),curSteerPos*scene.getScale());
 			//SmartBody::util::log("evaluateExampleLoco : original goal = %f %f %f, new goal = %f %f %f",goalx,goaly,goalz, newGoal.x*100.f, newGoal.y*100.f, newGoal.z*100.f);
 			SteerLib::AgentGoalInfo goal;
 			goal.desiredSpeed = desiredSpeed;
@@ -1842,7 +1833,7 @@ void PPRAISteeringAgent::adjustFacingAngle( float angleDiff )
 {
 		
 	std::string playNow;
-	if (fabs(angleDiff) > facingAngleThreshold && !character->param_animation_ct->hasPABlend(idleTurnName.c_str()))
+	if (fabs(angleDiff) > facingAngleThreshold && !character->param_animation_ct->hasPABlend(idleTurnName))
 	{
 		if (facingDirectBlend)
 			adjustLocomotionBlend(character, idleTurnName, 1,-angleDiff, 0, 0, true, false);
@@ -1885,7 +1876,7 @@ float PPRAISteeringAgent::evaluateSteppingLoco(float dt, float x, float y, float
 		float offsety = dot(agentToTargetVec, heading);
 		SrVec verticalHeading = SrVec(sin(degToRad(yaw - 90)), 0, cos(degToRad(yaw - 90)));
 		float offsetx = dot(agentToTargetVec, verticalHeading);
-		if (!character->param_animation_ct->hasPABlend(stepStateName.c_str()))
+		if (!character->param_animation_ct->hasPABlend(stepStateName))
 		{
 			adjustLocomotionBlend(character, stepStateName, 2, x, y, 0, false, false);
 		}	
@@ -1962,7 +1953,7 @@ void PPRAISteeringAgent::setSteerParamsDirty(bool val)
 	_dirty = val;
 }
 
-bool PPRAISteeringAgent::isSteerParamsDirty()
+bool PPRAISteeringAgent::isSteerParamsDirty() const
 {
 	return _dirty;
 }

@@ -1134,13 +1134,7 @@ SBAPI void SBCharacter::startMotionGraphWithPath( const std::vector<SrVec>& path
 	std::vector<std::pair<std::string,std::string> > graphEdges;
 	moGraphPath.initPath(pathList, 0.1f);
 
-	trajectoryGoalList.clear();
-	trajectoryGoalList.resize(pathList.size()*3);
-	for (unsigned int i=0;i<pathList.size();i++)
-	{
-		for (int k=0;k<3;k++)
-			trajectoryGoalList[i*3+k] = pathList[i][k];
-	}
+	trajectoryGoalList = pathList;
 	_curMotionGraph->synthesizePath(moGraphPath, getSkeleton()->getName(), graphEdges);
 	if (graphEdges.empty())
 	{

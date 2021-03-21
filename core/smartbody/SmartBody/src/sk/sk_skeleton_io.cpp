@@ -30,6 +30,7 @@
 #include <sk/sk_skeleton.h>
 #include <sk/sk_posture.h>
 #include <sb/SBJoint.h>
+#include <vhcl_log.h>
 
 //============================ load_skeleton ============================
 
@@ -203,40 +204,40 @@ static bool read_channel(SrInput& in, SkJoint* j) {
 	return false; // should not reach here
 }
 
-static boost::intrusive_ptr<SrModel> read_model(SrInput& in, SrPathArray& paths, SrMat* mat) {
-	if (in.get_token() != SrInput::String) return nullptr;
-	SrString file = in.last_token();
-
-	int i = 0;
-	SrInput fi;
-
-	if (!paths.open(fi, file)) { //SR_TRACE2 ( "Could not read model." );
-		return nullptr; // file not found
-	}
-
-	boost::intrusive_ptr<SrModel> m = new SrModel();
-
-	bool ok = false;
-	SrString ext;
-	file.get_file_extension(ext);
-
-	if (ext == "srm") { //SR_TRACE2 ( "Loading srm geometry..." );
-		ok = m->load(fi);
-	} else if (ext == "obj") { //SR_TRACE2 ( "Importing obj geometry..." );
-		SrString filename = fi.filename();
-		fi.close();
-		ok = m->import_obj(filename);
-	}
-
-	if (ok) { //SR_TRACE2 ( "Loaded model with "<<m->F.size()<<" triangles" );
-		if (mat) m->apply_transformation(*mat);
-		//m->ref();
-	} else { //SR_TRACE2 ( "Loading Error!" );
-		m = nullptr;
-	}
-
-	return m;
-}
+//static boost::intrusive_ptr<SrModel> read_model(SrInput& in, SrPathArray& paths, SrMat* mat) {
+//	if (in.get_token() != SrInput::String) return nullptr;
+//	SrString file = in.last_token();
+//
+//	int i = 0;
+//	SrInput fi;
+//
+//	if (!paths.open(fi, file)) { //SR_TRACE2 ( "Could not read model." );
+//		return nullptr; // file not found
+//	}
+//
+//	boost::intrusive_ptr<SrModel> m = new SrModel();
+//
+//	bool ok = false;
+//	SrString ext;
+//	file.get_file_extension(ext);
+//
+//	if (ext == "srm") { //SR_TRACE2 ( "Loading srm geometry..." );
+//		ok = m->load(fi);
+//	} else if (ext == "obj") { //SR_TRACE2 ( "Importing obj geometry..." );
+//		SrString filename = fi.filename();
+//		fi.close();
+//		ok = m->import_obj(filename);
+//	}
+//
+//	if (ok) { //SR_TRACE2 ( "Loaded model with "<<m->F.size()<<" triangles" );
+//		if (mat) m->apply_transformation(*mat);
+//		//m->ref();
+//	} else { //SR_TRACE2 ( "Loading Error!" );
+//		m = nullptr;
+//	}
+//
+//	return m;
+//}
 
 static void _setmodel(boost::intrusive_ptr<SrModel> curm, const boost::intrusive_ptr<SrModel>& newm) {
 	if (!newm) return;
@@ -307,10 +308,12 @@ int SkSkeleton::_loadjdata(SrInput& in, SkJoint* j, SrStringArray& paths) {
 							 SkJointQuat::AlignPostInv, v);
 		} else if (kw == VISGEO) // keyword only in hm format
 		{
-			_setmodel(j->_visgeo.get(), read_model(in, (SrPathArray&) paths, hasmat ? &curmat : nullptr));
+			LOG("Skeleton with obsolete 'visgeo' entry.");
+		//	_setmodel(j->_visgeo.get(), read_model(in, (SrPathArray&) paths, hasmat ? &curmat : nullptr));
 		} else if (kw == COLGEO) // keyword only in hm format
 		{
-			_setmodel(j->_colgeo.get(), read_model(in, (SrPathArray&) paths, hasmat ? &curmat : nullptr));
+			LOG("Skeleton with obsolete 'colgeo' entry.");
+		//	_setmodel(j->_colgeo.get(), read_model(in, (SrPathArray&) paths, hasmat ? &curmat : nullptr));
 		} else if (kw == JOINT || kw == END) {
 			return kw;
 		} else if (in.last_token()[0] == '}') return -1;

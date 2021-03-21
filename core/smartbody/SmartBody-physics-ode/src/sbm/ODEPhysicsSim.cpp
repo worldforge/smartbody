@@ -28,13 +28,47 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 /* Physics Sim ODE                                                      */
 /************************************************************************/
 
+namespace {
+void myMessageFunction(int errnum, const char* msg, va_list ap) {
+	SmartBody::util::log("ODE Error %d %s", errnum, msg);
+}
+}
+
+
 ODEPhysicsSim::ODEPhysicsSim()
 {
 	hasInit = false;
-	initSimulation();
+	dSetErrorHandler(&myMessageFunction);
+	dSetDebugHandler(&myMessageFunction);
+	dSetMessageHandler(&myMessageFunction);
+
+
+	dInitODE();
+
+	worldID = dWorldCreate();
+	//dWorldSetAutoDisableFlag(worldID,1);
+	dWorldSetGravity(worldID,0.f,-980.f,0.f);
+	//dWorldSetLinearDamping(worldID,0.002f);
+	//dWorldSetAngularDamping(worldID,0.01f);
+	dWorldSetLinearDamping(worldID,0.0001f);
+	dWorldSetAngularDamping(worldID,0.03f);
+	//dWorldSetAngularDamping(worldID,0.001f);
+
+	//dWorldSetERP(worldID,0.5);
+	//dWorldSetCFM(worldID,1e-3);
+
+	//spaceID = dHashSpaceCreate(0);
+	spaceID = dSimpleSpaceCreate(nullptr);
+
+	groundID = dCreatePlane(spaceID,0,1,0,0.0f); // create a plane at y = 0
+
+	contactGroupID = dJointGroupCreate(0);
+
+	hasInit = true;
 }
 ODEPhysicsSim::~ODEPhysicsSim()
 {
+	dJointGroupDestroy(contactGroupID);
 	dSpaceDestroy(spaceID);
 	dWorldDestroy(worldID);
 }
@@ -91,42 +125,6 @@ void ODEPhysicsSim::nearCallBack(void *data, dGeomID o1, dGeomID o2)
 		dJointID c = dJointCreateContact(phyODE->getWorldID(),phyODE->getContactGroupID(),&contact[i]);
 		dJointAttach (c,b1,b2);	
 	}
-}
-
-static void myMessageFunction(int errnum, const char* msg, va_list ap)
-{
-	SmartBody::util::log("ODE Error %d %s", errnum, msg);
-}
-
-void ODEPhysicsSim::initSimulation()
-{	
-	dSetErrorHandler(&myMessageFunction);
-	dSetDebugHandler(&myMessageFunction);
-	dSetMessageHandler(&myMessageFunction);
-
-
-	dInitODE();
-
-	worldID = dWorldCreate();
-	//dWorldSetAutoDisableFlag(worldID,1);
-	dWorldSetGravity(worldID,0.f,-980.f,0.f);
-	//dWorldSetLinearDamping(worldID,0.002f);
-	//dWorldSetAngularDamping(worldID,0.01f);
-	dWorldSetLinearDamping(worldID,0.0001f);
-	dWorldSetAngularDamping(worldID,0.03f);
-	//dWorldSetAngularDamping(worldID,0.001f);
-
-	//dWorldSetERP(worldID,0.5);
-	//dWorldSetCFM(worldID,1e-3);	
-
-	//spaceID = dHashSpaceCreate(0);
-	spaceID = dSimpleSpaceCreate(nullptr);
-
-	groundID = dCreatePlane(spaceID,0,1,0,0.0f); // create a plane at y = 0
-
-	contactGroupID = dJointGroupCreate(0);
-
-	hasInit = true;
 }
 
 void ODEPhysicsSim::updateSimulationInternal( float timeStep )

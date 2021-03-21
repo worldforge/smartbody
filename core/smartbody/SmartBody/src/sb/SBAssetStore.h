@@ -46,7 +46,7 @@ struct SBAssetsHistory {
 	void addAssetHistory(const std::string& str);
 };
 
-class SBAssetStore {
+class SBAssetStore : boost::noncopyable {
 public:
 
 	explicit SBAssetStore(SBScene& scene);

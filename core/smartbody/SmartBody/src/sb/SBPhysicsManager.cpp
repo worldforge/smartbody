@@ -43,9 +43,6 @@ namespace SmartBody {
 
 SBPhysicsManager::SBPhysicsManager(SBScene& scene, std::unique_ptr<SBPhysicsSim> physicsSim)
 		: SBService(scene), _physicsSim(std::move(physicsSim)) {
-	if (_physicsSim) {
-		_physicsSim->initSimulation();
-	}
 	setName("physics");
 
 	physicsTime = 0;

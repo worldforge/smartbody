@@ -36,7 +36,7 @@ class PPRAISteeringAgent : public SmartBody::SBSteerAgent
 		enum SteeringStateConfig { MINIMAL = 0, STANDARD};
 		
 		PPRAISteeringAgent(SmartBody::SBCharacter* c, SmartBody::SBSteerManager& steerManager);
-		~PPRAISteeringAgent();
+		~PPRAISteeringAgent() override;
 
 		void setCharacter(SmartBody::SBCharacter* c);
 		void evaluate(double dt) override;
@@ -51,7 +51,7 @@ class PPRAISteeringAgent : public SmartBody::SBSteerAgent
 		void updateSteerStateName();
 
 		void setSteerParamsDirty(bool val);
-		bool isSteerParamsDirty();
+		bool isSteerParamsDirty() const;
 		void initSteerParams();
 		void addSteeringAttributes();
 		void sendLocomotionEvent(const std::string& status);
@@ -167,7 +167,7 @@ class PPRAISteeringAgent : public SmartBody::SBSteerAgent
 		float prevYaw;
 
 		// goal lists
-		std::list<float> goalList;
+		std::list<SrVec> goalList;
 		SteerPath        steerPath;
 
 		// low pass filter
