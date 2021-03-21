@@ -6,11 +6,11 @@ from conans.tools import os_info, SystemPackageTool
 
 class OgreConan(ConanFile):
     name = 'ogre'
-    upstream_version = "1.12.4"
+    upstream_version = "1.12.10"
     package_revision = ""
     version = "{0}{1}".format(upstream_version, package_revision)
 
-    generators = ['cmake_paths', 'cmake']
+    generators = ['cmake_paths', 'cmake', 'cmake_find_package']
     settings = 'os', 'arch', 'compiler', 'build_type'
     options = {'shared': [True, False]}
     default_options = {"shared": False}
@@ -23,7 +23,9 @@ class OgreConan(ConanFile):
     requires = ["zlib/1.2.11",
                 "bzip2/1.0.8",
                 "freetype/2.10.1",
-                "freeimage/3.18.0@smartbody/stable"]
+                "freeimage/3.18.0@smartbody/stable",
+                "assimp/5.0.1",
+                "sdl2/2.0.10@smartbody/stable"]
 
     def system_requirements(self):
         if os_info.is_linux:
@@ -41,11 +43,13 @@ class OgreConan(ConanFile):
         os.rename("ogre-{0}".format(self.upstream_version), self.source_subfolder)
 
     def build(self):
-        
+
         tools.replace_in_file("{0}/CMakeLists.txt".format(self.source_subfolder), "include(OgreConfigTargets)", """include(OgreConfigTargets)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 conan_basic_setup()
 """)
+        os.rename("Findassimp.cmake", "FindASSIMP.cmake")
         cmake = CMake(self)
 
         cmake.definitions['OGRE_BUILD_COMPONENT_PYTHON'] = 'OFF'
@@ -70,6 +74,7 @@ conan_basic_setup()
         cmake.definitions['OGRE_BUILD_PLUGIN_PFX'] = 'ON'
         cmake.definitions['OGRE_BUILD_PLUGIN_STBI'] = 'OFF'
         cmake.definitions['OGRE_BUILD_PLUGIN_DOT_SCENE'] = 'OFF'
+        cmake.definitions['OGRE_BUILD_PLUGIN_ASSIMP'] = 'ON'
         cmake.definitions['OGRE_BUILD_DEPENDENCIES'] = 'OFF'
         cmake.definitions['OGRE_CONFIG_ENABLE_ZIP'] = "OFF"
         cmake.definitions['OGRE_BUILD_PLATFORM_APPLE_IOS'] = 'OFF'
@@ -87,7 +92,7 @@ conan_basic_setup()
         cmake.definitions['OGRE_BUILD_LIBS_AS_FRAMEWORKS'] = 'OFF'
         cmake.definitions['OGRE_RESOURCEMANAGER_STRICT'] = 'true'
         cmake.definitions['OGRE_NODELESS_POSITIONING'] = 'OFF'
-        cmake.definitions['OGRE_CONFIG_THREADS'] = '2'
+        cmake.definitions['OGRE_CONFIG_THREADS'] = '3'
         cmake.definitions['CMAKE_TOOLCHAIN_FILE'] = 'conan_paths.cmake'
         cmake.definitions['OGRE_STATIC'] = not self.options.shared
 
@@ -102,26 +107,29 @@ conan_basic_setup()
 
     def package_info(self):
         self.cpp_info.libdirs = ["lib", "lib/OGRE"]
-        self.cpp_info.libs = ["Codec_FreeImageStatic", 
-                              "OgreMeshLodGeneratorStatic",
-                              "OgreOverlayStatic",
-                              "OgreTerrainStatic",
-                              "OgrePagingStatic",
-                              "OgreRTShaderSystemStatic",
-                              "Plugin_ParticleFXStatic", 
-                              "RenderSystem_GL3PlusStatic",
-                              "OgreGLSupportStatic",
-                              "OgreMainStatic"]
+        self.cpp_info.libs = [
+            "OgreBitesStatic",
+            "Codec_FreeImageStatic",
+            "OgreMeshLodGeneratorStatic",
+            "OgreOverlayStatic",
+            "OgreTerrainStatic",
+            "OgrePagingStatic",
+            "OgreRTShaderSystemStatic",
+            "Plugin_ParticleFXStatic",
+            "RenderSystem_GL3PlusStatic",
+            "OgreGLSupportStatic",
+            "OgreMainStatic",
+            ""]
         if tools.os_info.is_windows:
             self.cpp_info.system_libs = ["Opengl32"]
         elif tools.os_info.is_linux:
-            self.cpp_info.system_libs = ["GL", "X11", "Xrandr"]
+            self.cpp_info.system_libs = ["GL", "Xaw", "Xt", "X11", "Xrandr"]
         elif tools.os_info.is_macos:
             self.cpp_info.system_libs = []
             self.cpp_info.frameworks = ["IOKit", "Cocoa", "Carbon", "OpenGL", "CoreVideo"]
-        
+
         self.cpp_info.includedirs = ["include/OGRE",
-                                     "include/OGRE/Overlay", 
+                                     "include/OGRE/Overlay",
                                      "include/OGRE/Terrain",
                                      "include/OGRE/Paging",
                                      "include/OGRE/MeshLodGenerator",
