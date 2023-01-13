@@ -33,6 +33,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sb/SBJointMap.h>
 #include <sb/SBAssetStore.h>
 #include <sb/SBAssetManager.h>
+
+#include <array>
 namespace {
 void createRetargetInstance(SmartBody::SBScene& scene, const std::string& srcSkelName, const std::string& tgtSkelName) {
 	std::vector<std::string> endJoints;

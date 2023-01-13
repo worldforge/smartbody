@@ -174,7 +174,7 @@ void pythonFuncsAnimation()
 		.def("setTransitionRule", &SBAnimationTransition::setTransitionRule, "Sets the rule associated with this transition.")
 		;
 
-	boost::python::class_<SBAnimationBlendManager>("SBAnimationBlendManager", boost::python::no_init)
+	boost::python::class_<SBAnimationBlendManager, boost::noncopyable>("SBAnimationBlendManager", boost::python::no_init)
 		.def("createState0D", &SBAnimationBlendManager::createBlend0D, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a 1D blend.")
 		.def("createState1D", &SBAnimationBlendManager::createBlend1D, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a 1D blend.")
 		.def("createState2D", &SBAnimationBlendManager::createBlend2D, boost::python::return_value_policy<boost::python::reference_existing_object>(), "Creates a 2D blend.")
