@@ -23,11 +23,13 @@ class Conan(ConanFile):
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 """)
-        if not self.options.shared:
-            tools.replace_in_file("{0}/CMakeLists.txt".format(self.source_subfolder), """SET(LIBRARY_TYPE "DYNAMIC" """, """SET(LIBRARY_TYPE "STATIC" """)
-
 
     def build(self):
+
+        if not self.options.shared:
+            tools.replace_in_file("{0}/CMakeLists.txt".format(self.source_subfolder), """SET(LIBRARY_TYPE "DYNAMIC" """,
+                                  """SET(LIBRARY_TYPE "STATIC" """)
+
         cmake = CMake(self)
 
         cmake.definitions['BUILD_SHARED_LIBS'] = self.options.shared

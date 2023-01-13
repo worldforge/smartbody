@@ -30,7 +30,7 @@ class LapackConan(ConanFile):
     exports = "LICENSE"
     exports_sources = "CMakeLists.txt"
     generators = "cmake"
-    requires = "zlib/1.2.11"
+    requires = "zlib/1.2.13"
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 

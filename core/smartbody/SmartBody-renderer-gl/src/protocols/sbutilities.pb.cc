@@ -14,134 +14,132 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
+
+PROTOBUF_PRAGMA_INIT_SEG
+
+namespace _pb = ::PROTOBUF_NAMESPACE_ID;
+namespace _pbi = _pb::internal;
+
 namespace SmartBodyBinary {
-class StringToStringMapDefaultTypeInternal {
- public:
-  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<StringToStringMap> _instance;
-} _StringToStringMap_default_instance_;
-class StringToFloatVectorMapDefaultTypeInternal {
- public:
-  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<StringToFloatVectorMap> _instance;
-} _StringToFloatVectorMap_default_instance_;
-class StringToIntVectorMapDefaultTypeInternal {
- public:
-  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<StringToIntVectorMap> _instance;
-} _StringToIntVectorMap_default_instance_;
-class StringToStringVectorMapDefaultTypeInternal {
- public:
-  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<StringToStringVectorMap> _instance;
-} _StringToStringVectorMap_default_instance_;
+PROTOBUF_CONSTEXPR StringToStringMap::StringToStringMap(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.from_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.to_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
+struct StringToStringMapDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StringToStringMapDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StringToStringMapDefaultTypeInternal() {}
+  union {
+    StringToStringMap _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StringToStringMapDefaultTypeInternal _StringToStringMap_default_instance_;
+PROTOBUF_CONSTEXPR StringToFloatVectorMap::StringToFloatVectorMap(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.to_)*/{}
+  , /*decltype(_impl_.from_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
+struct StringToFloatVectorMapDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StringToFloatVectorMapDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StringToFloatVectorMapDefaultTypeInternal() {}
+  union {
+    StringToFloatVectorMap _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StringToFloatVectorMapDefaultTypeInternal _StringToFloatVectorMap_default_instance_;
+PROTOBUF_CONSTEXPR StringToIntVectorMap::StringToIntVectorMap(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.to_)*/{}
+  , /*decltype(_impl_.from_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
+struct StringToIntVectorMapDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StringToIntVectorMapDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StringToIntVectorMapDefaultTypeInternal() {}
+  union {
+    StringToIntVectorMap _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StringToIntVectorMapDefaultTypeInternal _StringToIntVectorMap_default_instance_;
+PROTOBUF_CONSTEXPR StringToStringVectorMap::StringToStringVectorMap(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.to_)*/{}
+  , /*decltype(_impl_.from_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
+struct StringToStringVectorMapDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StringToStringVectorMapDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StringToStringVectorMapDefaultTypeInternal() {}
+  union {
+    StringToStringVectorMap _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StringToStringVectorMapDefaultTypeInternal _StringToStringVectorMap_default_instance_;
 }  // namespace SmartBodyBinary
-static void InitDefaultsscc_info_StringToFloatVectorMap_sbutilities_2eproto() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
+static ::_pb::Metadata file_level_metadata_sbutilities_2eproto[4];
+static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_sbutilities_2eproto = nullptr;
+static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_sbutilities_2eproto = nullptr;
 
-  {
-    void* ptr = &::SmartBodyBinary::_StringToFloatVectorMap_default_instance_;
-    new (ptr) ::SmartBodyBinary::StringToFloatVectorMap();
-    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::SmartBodyBinary::StringToFloatVectorMap::InitAsDefaultInstance();
-}
-
-::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_StringToFloatVectorMap_sbutilities_2eproto =
-    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_StringToFloatVectorMap_sbutilities_2eproto}, {}};
-
-static void InitDefaultsscc_info_StringToIntVectorMap_sbutilities_2eproto() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::SmartBodyBinary::_StringToIntVectorMap_default_instance_;
-    new (ptr) ::SmartBodyBinary::StringToIntVectorMap();
-    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::SmartBodyBinary::StringToIntVectorMap::InitAsDefaultInstance();
-}
-
-::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_StringToIntVectorMap_sbutilities_2eproto =
-    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_StringToIntVectorMap_sbutilities_2eproto}, {}};
-
-static void InitDefaultsscc_info_StringToStringMap_sbutilities_2eproto() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::SmartBodyBinary::_StringToStringMap_default_instance_;
-    new (ptr) ::SmartBodyBinary::StringToStringMap();
-    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::SmartBodyBinary::StringToStringMap::InitAsDefaultInstance();
-}
-
-::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_StringToStringMap_sbutilities_2eproto =
-    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_StringToStringMap_sbutilities_2eproto}, {}};
-
-static void InitDefaultsscc_info_StringToStringVectorMap_sbutilities_2eproto() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::SmartBodyBinary::_StringToStringVectorMap_default_instance_;
-    new (ptr) ::SmartBodyBinary::StringToStringVectorMap();
-    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::SmartBodyBinary::StringToStringVectorMap::InitAsDefaultInstance();
-}
-
-::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_StringToStringVectorMap_sbutilities_2eproto =
-    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_StringToStringVectorMap_sbutilities_2eproto}, {}};
-
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_sbutilities_2eproto[4];
-static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_sbutilities_2eproto = nullptr;
-static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_sbutilities_2eproto = nullptr;
-
-const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_sbutilities_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringMap, _has_bits_),
+const uint32_t TableStruct_sbutilities_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringMap, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringMap, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringMap, from_),
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringMap, to_),
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringMap, _impl_.from_),
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringMap, _impl_.to_),
   0,
   1,
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToFloatVectorMap, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToFloatVectorMap, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToFloatVectorMap, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToFloatVectorMap, from_),
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToFloatVectorMap, to_),
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToFloatVectorMap, _impl_.from_),
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToFloatVectorMap, _impl_.to_),
   0,
   ~0u,
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToIntVectorMap, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToIntVectorMap, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToIntVectorMap, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToIntVectorMap, from_),
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToIntVectorMap, to_),
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToIntVectorMap, _impl_.from_),
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToIntVectorMap, _impl_.to_),
   0,
   ~0u,
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringVectorMap, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringVectorMap, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringVectorMap, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringVectorMap, from_),
-  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringVectorMap, to_),
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringVectorMap, _impl_.from_),
+  PROTOBUF_FIELD_OFFSET(::SmartBodyBinary::StringToStringVectorMap, _impl_.to_),
   0,
   ~0u,
 };
-static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 7, sizeof(::SmartBodyBinary::StringToStringMap)},
-  { 9, 16, sizeof(::SmartBodyBinary::StringToFloatVectorMap)},
-  { 18, 25, sizeof(::SmartBodyBinary::StringToIntVectorMap)},
-  { 27, 34, sizeof(::SmartBodyBinary::StringToStringVectorMap)},
+static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+  { 0, 8, -1, sizeof(::SmartBodyBinary::StringToStringMap)},
+  { 10, 18, -1, sizeof(::SmartBodyBinary::StringToFloatVectorMap)},
+  { 20, 28, -1, sizeof(::SmartBodyBinary::StringToIntVectorMap)},
+  { 30, 38, -1, sizeof(::SmartBodyBinary::StringToStringVectorMap)},
 };
 
-static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::SmartBodyBinary::_StringToStringMap_default_instance_),
-  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::SmartBodyBinary::_StringToFloatVectorMap_default_instance_),
-  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::SmartBodyBinary::_StringToIntVectorMap_default_instance_),
-  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::SmartBodyBinary::_StringToStringVectorMap_default_instance_),
+static const ::_pb::Message* const file_default_instances[] = {
+  &::SmartBodyBinary::_StringToStringMap_default_instance_._instance,
+  &::SmartBodyBinary::_StringToFloatVectorMap_default_instance_._instance,
+  &::SmartBodyBinary::_StringToIntVectorMap_default_instance_._instance,
+  &::SmartBodyBinary::_StringToStringVectorMap_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_sbutilities_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
@@ -152,165 +150,194 @@ const char descriptor_table_protodef_sbutilities_2eproto[] PROTOBUF_SECTION_VARI
   "\014\n\004from\030\001 \002(\t\022\n\n\002to\030\002 \003(\005\"3\n\027StringToStr"
   "ingVectorMap\022\014\n\004from\030\001 \002(\t\022\n\n\002to\030\002 \003(\t"
   ;
-static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_sbutilities_2eproto_deps[1] = {
+static ::_pbi::once_flag descriptor_table_sbutilities_2eproto_once;
+const ::_pbi::DescriptorTable descriptor_table_sbutilities_2eproto = {
+    false, false, 238, descriptor_table_protodef_sbutilities_2eproto,
+    "sbutilities.proto",
+    &descriptor_table_sbutilities_2eproto_once, nullptr, 0, 4,
+    schemas, file_default_instances, TableStruct_sbutilities_2eproto::offsets,
+    file_level_metadata_sbutilities_2eproto, file_level_enum_descriptors_sbutilities_2eproto,
+    file_level_service_descriptors_sbutilities_2eproto,
 };
-static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_sbutilities_2eproto_sccs[4] = {
-  &scc_info_StringToFloatVectorMap_sbutilities_2eproto.base,
-  &scc_info_StringToIntVectorMap_sbutilities_2eproto.base,
-  &scc_info_StringToStringMap_sbutilities_2eproto.base,
-  &scc_info_StringToStringVectorMap_sbutilities_2eproto.base,
-};
-static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_sbutilities_2eproto_once;
-static bool descriptor_table_sbutilities_2eproto_initialized = false;
-const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_sbutilities_2eproto = {
-  &descriptor_table_sbutilities_2eproto_initialized, descriptor_table_protodef_sbutilities_2eproto, "sbutilities.proto", 238,
-  &descriptor_table_sbutilities_2eproto_once, descriptor_table_sbutilities_2eproto_sccs, descriptor_table_sbutilities_2eproto_deps, 4, 0,
-  schemas, file_default_instances, TableStruct_sbutilities_2eproto::offsets,
-  file_level_metadata_sbutilities_2eproto, 4, file_level_enum_descriptors_sbutilities_2eproto, file_level_service_descriptors_sbutilities_2eproto,
-};
+PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_sbutilities_2eproto_getter() {
+  return &descriptor_table_sbutilities_2eproto;
+}
 
 // Force running AddDescriptors() at dynamic initialization time.
-static bool dynamic_init_dummy_sbutilities_2eproto = (  ::PROTOBUF_NAMESPACE_ID::internal::AddDescriptors(&descriptor_table_sbutilities_2eproto), true);
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_sbutilities_2eproto(&descriptor_table_sbutilities_2eproto);
 namespace SmartBodyBinary {
 
 // ===================================================================
 
-void StringToStringMap::InitAsDefaultInstance() {
-}
 class StringToStringMap::_Internal {
  public:
-  using HasBits = decltype(std::declval<StringToStringMap>()._has_bits_);
+  using HasBits = decltype(std::declval<StringToStringMap>()._impl_._has_bits_);
   static void set_has_from(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
   static void set_has_to(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
+  static bool MissingRequiredFields(const HasBits& has_bits) {
+    return ((has_bits[0] & 0x00000003) ^ 0x00000003) != 0;
+  }
 };
 
-StringToStringMap::StringToStringMap()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:SmartBodyBinary.StringToStringMap)
+StringToStringMap::StringToStringMap(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:SmartBodyBinary.StringToStringMap)
 }
 StringToStringMap::StringToStringMap(const StringToStringMap& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  from_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  StringToStringMap* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.from_){}
+    , decltype(_impl_.to_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.from_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.from_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (from._internal_has_from()) {
-    from_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.from_);
+    _this->_impl_.from_.Set(from._internal_from(), 
+      _this->GetArenaForAllocation());
   }
-  to_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  _impl_.to_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.to_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (from._internal_has_to()) {
-    to_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.to_);
+    _this->_impl_.to_.Set(from._internal_to(), 
+      _this->GetArenaForAllocation());
   }
   // @@protoc_insertion_point(copy_constructor:SmartBodyBinary.StringToStringMap)
 }
 
-void StringToStringMap::SharedCtor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_StringToStringMap_sbutilities_2eproto.base);
-  from_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  to_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void StringToStringMap::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.from_){}
+    , decltype(_impl_.to_){}
+  };
+  _impl_.from_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.from_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.to_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.to_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 StringToStringMap::~StringToStringMap() {
   // @@protoc_insertion_point(destructor:SmartBodyBinary.StringToStringMap)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
   SharedDtor();
 }
 
-void StringToStringMap::SharedDtor() {
-  from_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  to_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void StringToStringMap::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.from_.Destroy();
+  _impl_.to_.Destroy();
 }
 
 void StringToStringMap::SetCachedSize(int size) const {
-  _cached_size_.Set(size);
+  _impl_._cached_size_.Set(size);
 }
-const StringToStringMap& StringToStringMap::default_instance() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_StringToStringMap_sbutilities_2eproto.base);
-  return *internal_default_instance();
-}
-
 
 void StringToStringMap::Clear() {
 // @@protoc_insertion_point(message_clear_start:SmartBodyBinary.StringToStringMap)
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
+  cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      from_.ClearNonDefaultToEmptyNoArena();
+      _impl_.from_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      to_.ClearNonDefaultToEmptyNoArena();
+      _impl_.to_.ClearNonDefaultToEmpty();
     }
   }
-  _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-const char* StringToStringMap::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+const char* StringToStringMap::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
-    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
-    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
-    CHK_(ptr);
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
       // required string from = 1;
       case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           auto str = _internal_mutable_from();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "SmartBodyBinary.StringToStringMap.from");
-          #endif  // !NDEBUG
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-        } else goto handle_unusual;
+          #ifndef NDEBUG
+          ::_pbi::VerifyUTF8(str, "SmartBodyBinary.StringToStringMap.from");
+          #endif  // !NDEBUG
+        } else
+          goto handle_unusual;
         continue;
       // required string to = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           auto str = _internal_mutable_to();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "SmartBodyBinary.StringToStringMap.to");
-          #endif  // !NDEBUG
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-        } else goto handle_unusual;
+          #ifndef NDEBUG
+          ::_pbi::VerifyUTF8(str, "SmartBodyBinary.StringToStringMap.to");
+          #endif  // !NDEBUG
+        } else
+          goto handle_unusual;
         continue;
-      default: {
-      handle_unusual:
-        if ((tag & 7) == 4 || tag == 0) {
-          ctx->SetLastTag(tag);
-          goto success;
-        }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
-        CHK_(ptr != nullptr);
-        continue;
-      }
+      default:
+        goto handle_unusual;
     }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
   }  // while
-success:
-  _has_bits_.Or(has_bits);
+message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
-  goto success;
+  goto message_done;
 #undef CHK_
 }
 
-::PROTOBUF_NAMESPACE_ID::uint8* StringToStringMap::_InternalSerialize(
-    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+uint8_t* StringToStringMap::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:SmartBodyBinary.StringToStringMap)
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
+  cached_has_bits = _impl_._has_bits_[0];
   // required string from = 1;
   if (cached_has_bits & 0x00000001u) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
@@ -332,8 +359,8 @@ failure:
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:SmartBodyBinary.StringToStringMap)
   return target;
@@ -363,7 +390,7 @@ size_t StringToStringMap::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:SmartBodyBinary.StringToStringMap)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
+  if (((_impl_._has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
     // required string from = 1;
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -377,59 +404,38 @@ size_t StringToStringMap::ByteSizeLong() const {
   } else {
     total_size += RequiredFieldsByteSizeFallback();
   }
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
-        _internal_metadata_, total_size, &_cached_size_);
-  }
-  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
-  SetCachedSize(cached_size);
-  return total_size;
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-void StringToStringMap::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:SmartBodyBinary.StringToStringMap)
-  GOOGLE_DCHECK_NE(&from, this);
-  const StringToStringMap* source =
-      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<StringToStringMap>(
-          &from);
-  if (source == nullptr) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:SmartBodyBinary.StringToStringMap)
-    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
-  } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:SmartBodyBinary.StringToStringMap)
-    MergeFrom(*source);
-  }
-}
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StringToStringMap::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    StringToStringMap::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StringToStringMap::GetClassData() const { return &_class_data_; }
 
-void StringToStringMap::MergeFrom(const StringToStringMap& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:SmartBodyBinary.StringToStringMap)
-  GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+
+void StringToStringMap::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StringToStringMap*>(&to_msg);
+  auto& from = static_cast<const StringToStringMap&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:SmartBodyBinary.StringToStringMap)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._has_bits_[0];
+  cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _has_bits_[0] |= 0x00000001u;
-      from_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.from_);
+      _this->_internal_set_from(from._internal_from());
     }
     if (cached_has_bits & 0x00000002u) {
-      _has_bits_[0] |= 0x00000002u;
-      to_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.to_);
+      _this->_internal_set_to(from._internal_to());
     }
   }
-}
-
-void StringToStringMap::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:SmartBodyBinary.StringToStringMap)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void StringToStringMap::CopyFrom(const StringToStringMap& from) {
@@ -440,115 +446,144 @@ void StringToStringMap::CopyFrom(const StringToStringMap& from) {
 }
 
 bool StringToStringMap::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if (_Internal::MissingRequiredFields(_impl_._has_bits_)) return false;
   return true;
 }
 
 void StringToStringMap::InternalSwap(StringToStringMap* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  from_.Swap(&other->from_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
-  to_.Swap(&other->to_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.from_, lhs_arena,
+      &other->_impl_.from_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.to_, lhs_arena,
+      &other->_impl_.to_, rhs_arena
+  );
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StringToStringMap::GetMetadata() const {
-  return GetMetadataStatic();
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_sbutilities_2eproto_getter, &descriptor_table_sbutilities_2eproto_once,
+      file_level_metadata_sbutilities_2eproto[0]);
 }
-
 
 // ===================================================================
 
-void StringToFloatVectorMap::InitAsDefaultInstance() {
-}
 class StringToFloatVectorMap::_Internal {
  public:
-  using HasBits = decltype(std::declval<StringToFloatVectorMap>()._has_bits_);
+  using HasBits = decltype(std::declval<StringToFloatVectorMap>()._impl_._has_bits_);
   static void set_has_from(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
+  static bool MissingRequiredFields(const HasBits& has_bits) {
+    return ((has_bits[0] & 0x00000001) ^ 0x00000001) != 0;
+  }
 };
 
-StringToFloatVectorMap::StringToFloatVectorMap()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:SmartBodyBinary.StringToFloatVectorMap)
+StringToFloatVectorMap::StringToFloatVectorMap(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:SmartBodyBinary.StringToFloatVectorMap)
 }
 StringToFloatVectorMap::StringToFloatVectorMap(const StringToFloatVectorMap& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_),
-      to_(from.to_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  from_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  StringToFloatVectorMap* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.to_){from._impl_.to_}
+    , decltype(_impl_.from_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.from_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.from_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (from._internal_has_from()) {
-    from_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.from_);
+    _this->_impl_.from_.Set(from._internal_from(), 
+      _this->GetArenaForAllocation());
   }
   // @@protoc_insertion_point(copy_constructor:SmartBodyBinary.StringToFloatVectorMap)
 }
 
-void StringToFloatVectorMap::SharedCtor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_StringToFloatVectorMap_sbutilities_2eproto.base);
-  from_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void StringToFloatVectorMap::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.to_){arena}
+    , decltype(_impl_.from_){}
+  };
+  _impl_.from_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.from_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 StringToFloatVectorMap::~StringToFloatVectorMap() {
   // @@protoc_insertion_point(destructor:SmartBodyBinary.StringToFloatVectorMap)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
   SharedDtor();
 }
 
-void StringToFloatVectorMap::SharedDtor() {
-  from_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void StringToFloatVectorMap::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.to_.~RepeatedField();
+  _impl_.from_.Destroy();
 }
 
 void StringToFloatVectorMap::SetCachedSize(int size) const {
-  _cached_size_.Set(size);
+  _impl_._cached_size_.Set(size);
 }
-const StringToFloatVectorMap& StringToFloatVectorMap::default_instance() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_StringToFloatVectorMap_sbutilities_2eproto.base);
-  return *internal_default_instance();
-}
-
 
 void StringToFloatVectorMap::Clear() {
 // @@protoc_insertion_point(message_clear_start:SmartBodyBinary.StringToFloatVectorMap)
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  to_.Clear();
-  cached_has_bits = _has_bits_[0];
+  _impl_.to_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    from_.ClearNonDefaultToEmptyNoArena();
+    _impl_.from_.ClearNonDefaultToEmpty();
   }
-  _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-const char* StringToFloatVectorMap::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+const char* StringToFloatVectorMap::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
-    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
-    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
-    CHK_(ptr);
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
       // required string from = 1;
       case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           auto str = _internal_mutable_from();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "SmartBodyBinary.StringToFloatVectorMap.from");
-          #endif  // !NDEBUG
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-        } else goto handle_unusual;
+          #ifndef NDEBUG
+          ::_pbi::VerifyUTF8(str, "SmartBodyBinary.StringToFloatVectorMap.from");
+          #endif  // !NDEBUG
+        } else
+          goto handle_unusual;
         continue;
       // repeated float to = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 21)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
           ptr -= 1;
           do {
             ptr += 1;
@@ -556,39 +591,43 @@ const char* StringToFloatVectorMap::_InternalParse(const char* ptr, ::PROTOBUF_N
             ptr += sizeof(float);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<21>(ptr));
-        } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18) {
+        } else if (static_cast<uint8_t>(tag) == 18) {
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedFloatParser(_internal_mutable_to(), ptr, ctx);
           CHK_(ptr);
-        } else goto handle_unusual;
+        } else
+          goto handle_unusual;
         continue;
-      default: {
-      handle_unusual:
-        if ((tag & 7) == 4 || tag == 0) {
-          ctx->SetLastTag(tag);
-          goto success;
-        }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
-        CHK_(ptr != nullptr);
-        continue;
-      }
+      default:
+        goto handle_unusual;
     }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
   }  // while
-success:
-  _has_bits_.Or(has_bits);
+message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
-  goto success;
+  goto message_done;
 #undef CHK_
 }
 
-::PROTOBUF_NAMESPACE_ID::uint8* StringToFloatVectorMap::_InternalSerialize(
-    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+uint8_t* StringToFloatVectorMap::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:SmartBodyBinary.StringToFloatVectorMap)
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
+  cached_has_bits = _impl_._has_bits_[0];
   // required string from = 1;
   if (cached_has_bits & 0x00000001u) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
@@ -602,12 +641,12 @@ failure:
   // repeated float to = 2;
   for (int i = 0, n = this->_internal_to_size(); i < n; i++) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(2, this->_internal_to(i), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_to(i), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:SmartBodyBinary.StringToFloatVectorMap)
   return target;
@@ -623,7 +662,7 @@ size_t StringToFloatVectorMap::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_from());
   }
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -632,53 +671,33 @@ size_t StringToFloatVectorMap::ByteSizeLong() const {
     unsigned int count = static_cast<unsigned int>(this->_internal_to_size());
     size_t data_size = 4UL * count;
     total_size += 1 *
-                  ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_to_size());
+                  ::_pbi::FromIntSize(this->_internal_to_size());
     total_size += data_size;
   }
 
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
-        _internal_metadata_, total_size, &_cached_size_);
-  }
-  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
-  SetCachedSize(cached_size);
-  return total_size;
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-void StringToFloatVectorMap::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:SmartBodyBinary.StringToFloatVectorMap)
-  GOOGLE_DCHECK_NE(&from, this);
-  const StringToFloatVectorMap* source =
-      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<StringToFloatVectorMap>(
-          &from);
-  if (source == nullptr) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:SmartBodyBinary.StringToFloatVectorMap)
-    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
-  } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:SmartBodyBinary.StringToFloatVectorMap)
-    MergeFrom(*source);
-  }
-}
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StringToFloatVectorMap::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    StringToFloatVectorMap::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StringToFloatVectorMap::GetClassData() const { return &_class_data_; }
 
-void StringToFloatVectorMap::MergeFrom(const StringToFloatVectorMap& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:SmartBodyBinary.StringToFloatVectorMap)
-  GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+
+void StringToFloatVectorMap::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StringToFloatVectorMap*>(&to_msg);
+  auto& from = static_cast<const StringToFloatVectorMap&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:SmartBodyBinary.StringToFloatVectorMap)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  to_.MergeFrom(from.to_);
+  _this->_impl_.to_.MergeFrom(from._impl_.to_);
   if (from._internal_has_from()) {
-    _has_bits_[0] |= 0x00000001u;
-    from_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.from_);
+    _this->_internal_set_from(from._internal_from());
   }
-}
-
-void StringToFloatVectorMap::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:SmartBodyBinary.StringToFloatVectorMap)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void StringToFloatVectorMap::CopyFrom(const StringToFloatVectorMap& from) {
@@ -689,154 +708,185 @@ void StringToFloatVectorMap::CopyFrom(const StringToFloatVectorMap& from) {
 }
 
 bool StringToFloatVectorMap::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if (_Internal::MissingRequiredFields(_impl_._has_bits_)) return false;
   return true;
 }
 
 void StringToFloatVectorMap::InternalSwap(StringToFloatVectorMap* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  to_.InternalSwap(&other->to_);
-  from_.Swap(&other->from_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.to_.InternalSwap(&other->_impl_.to_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.from_, lhs_arena,
+      &other->_impl_.from_, rhs_arena
+  );
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StringToFloatVectorMap::GetMetadata() const {
-  return GetMetadataStatic();
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_sbutilities_2eproto_getter, &descriptor_table_sbutilities_2eproto_once,
+      file_level_metadata_sbutilities_2eproto[1]);
 }
-
 
 // ===================================================================
 
-void StringToIntVectorMap::InitAsDefaultInstance() {
-}
 class StringToIntVectorMap::_Internal {
  public:
-  using HasBits = decltype(std::declval<StringToIntVectorMap>()._has_bits_);
+  using HasBits = decltype(std::declval<StringToIntVectorMap>()._impl_._has_bits_);
   static void set_has_from(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
+  static bool MissingRequiredFields(const HasBits& has_bits) {
+    return ((has_bits[0] & 0x00000001) ^ 0x00000001) != 0;
+  }
 };
 
-StringToIntVectorMap::StringToIntVectorMap()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:SmartBodyBinary.StringToIntVectorMap)
+StringToIntVectorMap::StringToIntVectorMap(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:SmartBodyBinary.StringToIntVectorMap)
 }
 StringToIntVectorMap::StringToIntVectorMap(const StringToIntVectorMap& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_),
-      to_(from.to_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  from_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  StringToIntVectorMap* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.to_){from._impl_.to_}
+    , decltype(_impl_.from_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.from_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.from_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (from._internal_has_from()) {
-    from_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.from_);
+    _this->_impl_.from_.Set(from._internal_from(), 
+      _this->GetArenaForAllocation());
   }
   // @@protoc_insertion_point(copy_constructor:SmartBodyBinary.StringToIntVectorMap)
 }
 
-void StringToIntVectorMap::SharedCtor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_StringToIntVectorMap_sbutilities_2eproto.base);
-  from_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void StringToIntVectorMap::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.to_){arena}
+    , decltype(_impl_.from_){}
+  };
+  _impl_.from_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.from_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 StringToIntVectorMap::~StringToIntVectorMap() {
   // @@protoc_insertion_point(destructor:SmartBodyBinary.StringToIntVectorMap)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
   SharedDtor();
 }
 
-void StringToIntVectorMap::SharedDtor() {
-  from_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void StringToIntVectorMap::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.to_.~RepeatedField();
+  _impl_.from_.Destroy();
 }
 
 void StringToIntVectorMap::SetCachedSize(int size) const {
-  _cached_size_.Set(size);
+  _impl_._cached_size_.Set(size);
 }
-const StringToIntVectorMap& StringToIntVectorMap::default_instance() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_StringToIntVectorMap_sbutilities_2eproto.base);
-  return *internal_default_instance();
-}
-
 
 void StringToIntVectorMap::Clear() {
 // @@protoc_insertion_point(message_clear_start:SmartBodyBinary.StringToIntVectorMap)
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  to_.Clear();
-  cached_has_bits = _has_bits_[0];
+  _impl_.to_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    from_.ClearNonDefaultToEmptyNoArena();
+    _impl_.from_.ClearNonDefaultToEmpty();
   }
-  _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-const char* StringToIntVectorMap::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+const char* StringToIntVectorMap::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
-    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
-    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
-    CHK_(ptr);
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
       // required string from = 1;
       case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           auto str = _internal_mutable_from();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "SmartBodyBinary.StringToIntVectorMap.from");
-          #endif  // !NDEBUG
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-        } else goto handle_unusual;
+          #ifndef NDEBUG
+          ::_pbi::VerifyUTF8(str, "SmartBodyBinary.StringToIntVectorMap.from");
+          #endif  // !NDEBUG
+        } else
+          goto handle_unusual;
         continue;
       // repeated int32 to = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           ptr -= 1;
           do {
             ptr += 1;
-            _internal_add_to(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr));
+            _internal_add_to(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr));
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<16>(ptr));
-        } else if (static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18) {
+        } else if (static_cast<uint8_t>(tag) == 18) {
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedInt32Parser(_internal_mutable_to(), ptr, ctx);
           CHK_(ptr);
-        } else goto handle_unusual;
+        } else
+          goto handle_unusual;
         continue;
-      default: {
-      handle_unusual:
-        if ((tag & 7) == 4 || tag == 0) {
-          ctx->SetLastTag(tag);
-          goto success;
-        }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
-        CHK_(ptr != nullptr);
-        continue;
-      }
+      default:
+        goto handle_unusual;
     }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
   }  // while
-success:
-  _has_bits_.Or(has_bits);
+message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
-  goto success;
+  goto message_done;
 #undef CHK_
 }
 
-::PROTOBUF_NAMESPACE_ID::uint8* StringToIntVectorMap::_InternalSerialize(
-    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+uint8_t* StringToIntVectorMap::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:SmartBodyBinary.StringToIntVectorMap)
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
+  cached_has_bits = _impl_._has_bits_[0];
   // required string from = 1;
   if (cached_has_bits & 0x00000001u) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
@@ -850,12 +900,12 @@ failure:
   // repeated int32 to = 2;
   for (int i = 0, n = this->_internal_to_size(); i < n; i++) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_to(i), target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(2, this->_internal_to(i), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:SmartBodyBinary.StringToIntVectorMap)
   return target;
@@ -871,62 +921,42 @@ size_t StringToIntVectorMap::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_from());
   }
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated int32 to = 2;
   {
-    size_t data_size = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      Int32Size(this->to_);
+    size_t data_size = ::_pbi::WireFormatLite::
+      Int32Size(this->_impl_.to_);
     total_size += 1 *
-                  ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_to_size());
+                  ::_pbi::FromIntSize(this->_internal_to_size());
     total_size += data_size;
   }
 
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
-        _internal_metadata_, total_size, &_cached_size_);
-  }
-  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
-  SetCachedSize(cached_size);
-  return total_size;
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-void StringToIntVectorMap::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:SmartBodyBinary.StringToIntVectorMap)
-  GOOGLE_DCHECK_NE(&from, this);
-  const StringToIntVectorMap* source =
-      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<StringToIntVectorMap>(
-          &from);
-  if (source == nullptr) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:SmartBodyBinary.StringToIntVectorMap)
-    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
-  } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:SmartBodyBinary.StringToIntVectorMap)
-    MergeFrom(*source);
-  }
-}
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StringToIntVectorMap::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    StringToIntVectorMap::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StringToIntVectorMap::GetClassData() const { return &_class_data_; }
 
-void StringToIntVectorMap::MergeFrom(const StringToIntVectorMap& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:SmartBodyBinary.StringToIntVectorMap)
-  GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+
+void StringToIntVectorMap::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StringToIntVectorMap*>(&to_msg);
+  auto& from = static_cast<const StringToIntVectorMap&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:SmartBodyBinary.StringToIntVectorMap)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  to_.MergeFrom(from.to_);
+  _this->_impl_.to_.MergeFrom(from._impl_.to_);
   if (from._internal_has_from()) {
-    _has_bits_[0] |= 0x00000001u;
-    from_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.from_);
+    _this->_internal_set_from(from._internal_from());
   }
-}
-
-void StringToIntVectorMap::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:SmartBodyBinary.StringToIntVectorMap)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void StringToIntVectorMap::CopyFrom(const StringToIntVectorMap& from) {
@@ -937,155 +967,186 @@ void StringToIntVectorMap::CopyFrom(const StringToIntVectorMap& from) {
 }
 
 bool StringToIntVectorMap::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if (_Internal::MissingRequiredFields(_impl_._has_bits_)) return false;
   return true;
 }
 
 void StringToIntVectorMap::InternalSwap(StringToIntVectorMap* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  to_.InternalSwap(&other->to_);
-  from_.Swap(&other->from_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.to_.InternalSwap(&other->_impl_.to_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.from_, lhs_arena,
+      &other->_impl_.from_, rhs_arena
+  );
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StringToIntVectorMap::GetMetadata() const {
-  return GetMetadataStatic();
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_sbutilities_2eproto_getter, &descriptor_table_sbutilities_2eproto_once,
+      file_level_metadata_sbutilities_2eproto[2]);
 }
-
 
 // ===================================================================
 
-void StringToStringVectorMap::InitAsDefaultInstance() {
-}
 class StringToStringVectorMap::_Internal {
  public:
-  using HasBits = decltype(std::declval<StringToStringVectorMap>()._has_bits_);
+  using HasBits = decltype(std::declval<StringToStringVectorMap>()._impl_._has_bits_);
   static void set_has_from(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
+  static bool MissingRequiredFields(const HasBits& has_bits) {
+    return ((has_bits[0] & 0x00000001) ^ 0x00000001) != 0;
+  }
 };
 
-StringToStringVectorMap::StringToStringVectorMap()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:SmartBodyBinary.StringToStringVectorMap)
+StringToStringVectorMap::StringToStringVectorMap(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:SmartBodyBinary.StringToStringVectorMap)
 }
 StringToStringVectorMap::StringToStringVectorMap(const StringToStringVectorMap& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
-      _has_bits_(from._has_bits_),
-      to_(from.to_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  from_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  StringToStringVectorMap* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.to_){from._impl_.to_}
+    , decltype(_impl_.from_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.from_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.from_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (from._internal_has_from()) {
-    from_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.from_);
+    _this->_impl_.from_.Set(from._internal_from(), 
+      _this->GetArenaForAllocation());
   }
   // @@protoc_insertion_point(copy_constructor:SmartBodyBinary.StringToStringVectorMap)
 }
 
-void StringToStringVectorMap::SharedCtor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_StringToStringVectorMap_sbutilities_2eproto.base);
-  from_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void StringToStringVectorMap::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.to_){arena}
+    , decltype(_impl_.from_){}
+  };
+  _impl_.from_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.from_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 StringToStringVectorMap::~StringToStringVectorMap() {
   // @@protoc_insertion_point(destructor:SmartBodyBinary.StringToStringVectorMap)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
   SharedDtor();
 }
 
-void StringToStringVectorMap::SharedDtor() {
-  from_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+inline void StringToStringVectorMap::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.to_.~RepeatedPtrField();
+  _impl_.from_.Destroy();
 }
 
 void StringToStringVectorMap::SetCachedSize(int size) const {
-  _cached_size_.Set(size);
+  _impl_._cached_size_.Set(size);
 }
-const StringToStringVectorMap& StringToStringVectorMap::default_instance() {
-  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_StringToStringVectorMap_sbutilities_2eproto.base);
-  return *internal_default_instance();
-}
-
 
 void StringToStringVectorMap::Clear() {
 // @@protoc_insertion_point(message_clear_start:SmartBodyBinary.StringToStringVectorMap)
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  to_.Clear();
-  cached_has_bits = _has_bits_[0];
+  _impl_.to_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    from_.ClearNonDefaultToEmptyNoArena();
+    _impl_.from_.ClearNonDefaultToEmpty();
   }
-  _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-const char* StringToStringVectorMap::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+const char* StringToStringVectorMap::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
-    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
-    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
-    CHK_(ptr);
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
       // required string from = 1;
       case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           auto str = _internal_mutable_from();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "SmartBodyBinary.StringToStringVectorMap.from");
-          #endif  // !NDEBUG
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-        } else goto handle_unusual;
+          #ifndef NDEBUG
+          ::_pbi::VerifyUTF8(str, "SmartBodyBinary.StringToStringVectorMap.from");
+          #endif  // !NDEBUG
+        } else
+          goto handle_unusual;
         continue;
       // repeated string to = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr -= 1;
           do {
             ptr += 1;
             auto str = _internal_add_to();
-            ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-            #ifndef NDEBUG
-            ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "SmartBodyBinary.StringToStringVectorMap.to");
-            #endif  // !NDEBUG
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
             CHK_(ptr);
+            #ifndef NDEBUG
+            ::_pbi::VerifyUTF8(str, "SmartBodyBinary.StringToStringVectorMap.to");
+            #endif  // !NDEBUG
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
-        } else goto handle_unusual;
+        } else
+          goto handle_unusual;
         continue;
-      default: {
-      handle_unusual:
-        if ((tag & 7) == 4 || tag == 0) {
-          ctx->SetLastTag(tag);
-          goto success;
-        }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
-        CHK_(ptr != nullptr);
-        continue;
-      }
+      default:
+        goto handle_unusual;
     }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
   }  // while
-success:
-  _has_bits_.Or(has_bits);
+message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
-  goto success;
+  goto message_done;
 #undef CHK_
 }
 
-::PROTOBUF_NAMESPACE_ID::uint8* StringToStringVectorMap::_InternalSerialize(
-    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+uint8_t* StringToStringVectorMap::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:SmartBodyBinary.StringToStringVectorMap)
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = _has_bits_[0];
+  cached_has_bits = _impl_._has_bits_[0];
   // required string from = 1;
   if (cached_has_bits & 0x00000001u) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
@@ -1107,8 +1168,8 @@ failure:
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:SmartBodyBinary.StringToStringVectorMap)
   return target;
@@ -1124,61 +1185,41 @@ size_t StringToStringVectorMap::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_from());
   }
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   // repeated string to = 2;
   total_size += 1 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(to_.size());
-  for (int i = 0, n = to_.size(); i < n; i++) {
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.to_.size());
+  for (int i = 0, n = _impl_.to_.size(); i < n; i++) {
     total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-      to_.Get(i));
+      _impl_.to_.Get(i));
   }
 
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
-        _internal_metadata_, total_size, &_cached_size_);
-  }
-  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
-  SetCachedSize(cached_size);
-  return total_size;
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-void StringToStringVectorMap::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:SmartBodyBinary.StringToStringVectorMap)
-  GOOGLE_DCHECK_NE(&from, this);
-  const StringToStringVectorMap* source =
-      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<StringToStringVectorMap>(
-          &from);
-  if (source == nullptr) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:SmartBodyBinary.StringToStringVectorMap)
-    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
-  } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:SmartBodyBinary.StringToStringVectorMap)
-    MergeFrom(*source);
-  }
-}
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StringToStringVectorMap::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    StringToStringVectorMap::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StringToStringVectorMap::GetClassData() const { return &_class_data_; }
 
-void StringToStringVectorMap::MergeFrom(const StringToStringVectorMap& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:SmartBodyBinary.StringToStringVectorMap)
-  GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+
+void StringToStringVectorMap::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StringToStringVectorMap*>(&to_msg);
+  auto& from = static_cast<const StringToStringVectorMap&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:SmartBodyBinary.StringToStringVectorMap)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  to_.MergeFrom(from.to_);
+  _this->_impl_.to_.MergeFrom(from._impl_.to_);
   if (from._internal_has_from()) {
-    _has_bits_[0] |= 0x00000001u;
-    from_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.from_);
+    _this->_internal_set_from(from._internal_from());
   }
-}
-
-void StringToStringVectorMap::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:SmartBodyBinary.StringToStringVectorMap)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void StringToStringVectorMap::CopyFrom(const StringToStringVectorMap& from) {
@@ -1189,38 +1230,47 @@ void StringToStringVectorMap::CopyFrom(const StringToStringVectorMap& from) {
 }
 
 bool StringToStringVectorMap::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if (_Internal::MissingRequiredFields(_impl_._has_bits_)) return false;
   return true;
 }
 
 void StringToStringVectorMap::InternalSwap(StringToStringVectorMap* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  to_.InternalSwap(&other->to_);
-  from_.Swap(&other->from_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.to_.InternalSwap(&other->_impl_.to_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.from_, lhs_arena,
+      &other->_impl_.from_, rhs_arena
+  );
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StringToStringVectorMap::GetMetadata() const {
-  return GetMetadataStatic();
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_sbutilities_2eproto_getter, &descriptor_table_sbutilities_2eproto_once,
+      file_level_metadata_sbutilities_2eproto[3]);
 }
-
 
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace SmartBodyBinary
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::SmartBodyBinary::StringToStringMap* Arena::CreateMaybeMessage< ::SmartBodyBinary::StringToStringMap >(Arena* arena) {
-  return Arena::CreateInternal< ::SmartBodyBinary::StringToStringMap >(arena);
+template<> PROTOBUF_NOINLINE ::SmartBodyBinary::StringToStringMap*
+Arena::CreateMaybeMessage< ::SmartBodyBinary::StringToStringMap >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::SmartBodyBinary::StringToStringMap >(arena);
 }
-template<> PROTOBUF_NOINLINE ::SmartBodyBinary::StringToFloatVectorMap* Arena::CreateMaybeMessage< ::SmartBodyBinary::StringToFloatVectorMap >(Arena* arena) {
-  return Arena::CreateInternal< ::SmartBodyBinary::StringToFloatVectorMap >(arena);
+template<> PROTOBUF_NOINLINE ::SmartBodyBinary::StringToFloatVectorMap*
+Arena::CreateMaybeMessage< ::SmartBodyBinary::StringToFloatVectorMap >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::SmartBodyBinary::StringToFloatVectorMap >(arena);
 }
-template<> PROTOBUF_NOINLINE ::SmartBodyBinary::StringToIntVectorMap* Arena::CreateMaybeMessage< ::SmartBodyBinary::StringToIntVectorMap >(Arena* arena) {
-  return Arena::CreateInternal< ::SmartBodyBinary::StringToIntVectorMap >(arena);
+template<> PROTOBUF_NOINLINE ::SmartBodyBinary::StringToIntVectorMap*
+Arena::CreateMaybeMessage< ::SmartBodyBinary::StringToIntVectorMap >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::SmartBodyBinary::StringToIntVectorMap >(arena);
 }
-template<> PROTOBUF_NOINLINE ::SmartBodyBinary::StringToStringVectorMap* Arena::CreateMaybeMessage< ::SmartBodyBinary::StringToStringVectorMap >(Arena* arena) {
-  return Arena::CreateInternal< ::SmartBodyBinary::StringToStringVectorMap >(arena);
+template<> PROTOBUF_NOINLINE ::SmartBodyBinary::StringToStringVectorMap*
+Arena::CreateMaybeMessage< ::SmartBodyBinary::StringToStringVectorMap >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::SmartBodyBinary::StringToStringVectorMap >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

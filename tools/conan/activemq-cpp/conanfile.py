@@ -17,7 +17,7 @@ class Conan(ConanFile):
     default_options = {"shared": False}
     generators = "cmake"
     source_subfolder = "activemq-cpp"
-    requires = ["apr/1.7.0", "openssl/1.0.2u", "zlib/1.2.11"]
+    requires = ["apr/1.7.0", "openssl/1.1.1q", "zlib/1.2.13"]
     exports_sources = ["patches*"]
 
     def source(self):

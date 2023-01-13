@@ -44,7 +44,7 @@ class FreeImageConan(ConanFile):
 
     # Use version ranges for dependencies unless there's a reason not to
     requires = (
-        "zlib/1.2.11")
+        "zlib/1.2.13")
 
     short_paths = True
 
@@ -95,8 +95,15 @@ class FreeImageConan(ConanFile):
 
     def apply_patches(self):
         self.output.info("Applying patches")
+        # Allow for compilation with C++17
+        tools.replace_in_file(path.join(self.source_subfolder, "Source/OpenEXR/Imath/ImathVec.h"), " throw (IEX_NAMESPACE::MathExc)", "")
+        tools.replace_in_file(path.join(self.source_subfolder, "Source/OpenEXR/Imath/ImathVec.cpp"), " throw (IEX_NAMESPACE::MathExc)", "")
+        tools.replace_in_file(path.join(self.source_subfolder, "Source/OpenEXR/Imath/ImathMatrix.h"), " throw (IEX_NAMESPACE::MathExc)", "")
 
         shutil.copy('CMakeLists.txt', self.source_subfolder)
+        if self.settings.os == "Macos":
+            tools.patch(patch_file='patches/zlib.patch', base_path=self.source_subfolder)
+            tools.patch(patch_file='patches/jxr.patch', base_path=self.source_subfolder)
 
         if self.settings.compiler == "Visual Studio":
             self.patch_visual_studio()
