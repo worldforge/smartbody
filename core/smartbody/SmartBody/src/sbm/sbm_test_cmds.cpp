@@ -20,10 +20,12 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
+#include "sbm_test_cmds.hpp"
+
 #include <string>
 #include <iostream>
+#include <fstream>
 
-#include "sbm_test_cmds.hpp"
 #include <controllers/me_ct_scheduler2.h>
 #include <controllers/me_ct_channel_writer.hpp>
 #include <sb/SBScene.h>

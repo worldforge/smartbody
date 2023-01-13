@@ -25,6 +25,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include "sbm/sbm_constants.h"
 
 #include <boost/filesystem.hpp>
+#include <fstream>
+#include <algorithm>
 
 namespace SmartBody {
 std::vector<std::string> SBAssetStore::getAssetPaths(const std::string& type) {
