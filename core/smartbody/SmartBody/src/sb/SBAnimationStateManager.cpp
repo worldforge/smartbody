@@ -74,81 +74,85 @@ bool SBAnimationBlendManager::addTransitionEdgeToGraph( const std::string& sourc
 SBAnimationBlend0D* SBAnimationBlendManager::createBlend0D(const std::string& name)
 {
 
-	SBAnimationBlend0D* blend = new SBAnimationBlend0D(_scene, name);
+	auto blend = std::make_unique<SBAnimationBlend0D>(_scene, name);
+	auto blendPtr = blend.get();
 
 	addBlendToGraph(name);
-	_blends.emplace_back(blend);
+	_blends.emplace_back(std::move(blend));
 
 	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
-		listener->OnObjectCreate(blend);
+		listener->OnObjectCreate(_blends.back().get());
 	}
-	return blend;
+	return blendPtr;
 }
 
 SBAnimationBlend1D* SBAnimationBlendManager::createBlend1D(const std::string& name)
 {
 
-	SBAnimationBlend1D* blend = new SBAnimationBlend1D(_scene, name);
-	
+	auto blend = std::make_unique<SBAnimationBlend1D>(_scene, name);
+	auto blendPtr = blend.get();
+
 	addBlendToGraph(name);
-	_blends.emplace_back(blend);
-	
+	_blends.emplace_back(std::move(blend));
+
 	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
-		listener->OnObjectCreate(blend);
+		listener->OnObjectCreate(_blends.back().get());
 	}
-	return blend;
+	return blendPtr;
 }
 
 SBAnimationBlend2D* SBAnimationBlendManager::createBlend2D(const std::string& name)
 {
 
-	SBAnimationBlend2D* blend = new SBAnimationBlend2D(_scene, name);
-	
+	auto blend = std::make_unique<SBAnimationBlend2D>(_scene, name);
+	auto blendPtr = blend.get();
+
 	addBlendToGraph(name);
-	_blends.emplace_back(blend);
+	_blends.emplace_back(std::move(blend));
 
 	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
-		listener->OnObjectCreate(blend);
+		listener->OnObjectCreate(_blends.back().get());
 	}
-
-	return blend;
+	return blendPtr;
 }
 
 SBAnimationBlend3D* SBAnimationBlendManager::createBlend3D(const std::string& name)
 {
 
-	SBAnimationBlend3D* blend = new SBAnimationBlend3D(_scene, name);
-	
+	auto blend = std::make_unique<SBAnimationBlend3D>(_scene, name);
+	auto blendPtr = blend.get();
+
 	addBlendToGraph(name);
-	_blends.emplace_back(blend);
+	_blends.emplace_back(std::move(blend));
 
 	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
-		listener->OnObjectCreate(blend);
+		listener->OnObjectCreate(_blends.back().get());
 	}
-	return blend;
+	return blendPtr;
 }
 
 SBMotionBlendBase* SBAnimationBlendManager::createMotionBlendBase( const std::string& name, const std::string& skelName, int dimension )
 {
-	SBMotionBlendBase* blend = new SBMotionBlendBase(_scene, name,skelName, dimension);
-	
-	//	addBlendToGraph(name);
-	_blends.emplace_back(blend);
+	auto blend = std::make_unique<SBMotionBlendBase>(_scene, name,skelName, dimension);
+	auto blendPtr = blend.get();
+
+	//addBlendToGraph(name);
+	_blends.emplace_back(std::move(blend));
 
 	std::vector<SBSceneListener*>& listeners = _scene.getSceneListeners();
 	for (auto & listener : listeners)
 	{
-		listener->OnObjectCreate(blend);
+		listener->OnObjectCreate(_blends.back().get());
 	}
-	return blend;
+	return blendPtr;
 }
 
 SBAnimationTransition* SBAnimationBlendManager::createTransition(const std::string& source, const std::string& dest)
@@ -185,7 +189,7 @@ SBAnimationBlend* SBAnimationBlendManager::getBlend(const std::string& name)
 	for (auto & _blend : _blends)
 	{
 		if (_blend->stateName == name)
-			return _blend;
+			return _blend.get();
 	}
 	return nullptr;
 }
@@ -224,7 +228,7 @@ SBAnimationTransition* SBAnimationBlendManager::getTransition(const std::string&
 	{
 		if (_transition->getSourceBlend()->stateName == source &&
 			_transition->getDestinationBlend()->stateName == dest)
-			return _transition;
+			return _transition.get();
 	}
 
 	return nullptr;
@@ -235,7 +239,7 @@ SBAnimationTransition* SBAnimationBlendManager::getTransitionByName( const std::
 	for (auto & _transition : _transitions)
 	{
 		if (_transition->getTransitionName() == transitionName)
-			return _transition;
+			return _transition.get();
 	}
 
 	return nullptr;
@@ -245,8 +249,7 @@ SBAnimationTransition* SBAnimationBlendManager::getTransitionByIndex(int id)
 {
 	if (id >= 0 && id < (int) _transitions.size())
 	{
-		SBAnimationTransition* animTransition = _transitions[id];
-		return animTransition;
+		_transitions[id].get();
 	}
 	
 	return nullptr;
@@ -341,10 +344,6 @@ void SBAnimationBlendManager::removeAllBlends()
 	// remove the transitions, too
 	removeAllTransitions();
 
-	for (auto & _blend : _blends)
-	{
-		delete _blend;
-	}
 	_blends.clear();
 
 	stateGraph = BoostGraph();
@@ -353,10 +352,6 @@ void SBAnimationBlendManager::removeAllBlends()
 
 void SBAnimationBlendManager::removeAllTransitions()
 {
-	for (auto & _transition : _transitions)
-	{
-		delete _transition;
-	}
 	_transitions.clear();
 }
 

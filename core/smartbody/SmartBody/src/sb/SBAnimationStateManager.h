@@ -84,8 +84,8 @@ protected:
 
 		BoostGraph stateGraph;		
 
-		std::vector<SBAnimationBlend*> _blends;
-		std::vector<SmartBody::SBAnimationTransition*> _transitions;
+		std::vector<std::unique_ptr<SBAnimationBlend>> _blends;
+		std::vector<std::unique_ptr<SmartBody::SBAnimationTransition>> _transitions;
 };
 
 }
