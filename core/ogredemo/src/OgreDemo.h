@@ -46,7 +46,7 @@ public:
 private:
 
 	SmartBody::SBScene mScene;
-	SmartBody::SBSteerManager mSteerManager;
+	//SmartBody::SBSteerManager mSteerManager;
 	SmartBody::SBBmlProcessor mBmlProcessor;
 	Ogre::SceneManager* mSceneManager;
 	std::unique_ptr<OgreBites::CameraMan> mCameraMan;

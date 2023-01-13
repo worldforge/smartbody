@@ -17,8 +17,8 @@ target_link_libraries(ogredemo
         SmartBody-control
         SmartBody-navmesh
         SmartBody-serialize
-        SmartBody-steering-steerlib-bml
-        SmartBody-steering-steerlib
+#        SmartBody-steering-steerlib-bml
+#        SmartBody-steering-steerlib
         SmartBody-bml
         util
         SmartBody

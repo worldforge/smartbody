@@ -40,7 +40,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 OgreSmartBody::OgreSmartBody(Ogre::SceneManager& sceneManager,
 							 OgreBites::CameraMan& cameraMan,
 							 SmartBody::SBScene& scene,
-							 SmartBody::SBSteerManager& steerManager,
+							 //SmartBody::SBSteerManager& steerManager,
 							 SmartBody::SBBmlProcessor& bmlProcessor
 )
 		:
@@ -95,13 +95,13 @@ OgreSmartBody::OgreSmartBody(Ogre::SceneManager& sceneManager,
 
 	// Set up steering
 //	print("Setting up steering");
-	steerManager.setEnable(false);
-	steerManager.removeSteerAgent(characterName);
-	auto steerAgent = steerManager.createSteerAgent(characterName);
-	steerAgent->setSteerStateNamePrefix("mocap");
-	steerAgent->setSteerType("example");
-	brad->setBoolAttribute("steering.pathFollowingMode", false);  // disable path following mode so that obstacles will be respected
-	steerManager.setEnable(true);
+//	steerManager.setEnable(false);
+//	steerManager.removeSteerAgent(characterName);
+//	auto steerAgent = steerManager.createSteerAgent(characterName);
+//	steerAgent->setSteerStateNamePrefix("mocap");
+//	steerAgent->setSteerType("example");
+//	brad->setBoolAttribute("steering.pathFollowingMode", false);  // disable path following mode so that obstacles will be respected
+//	steerManager.setEnable(true);
 	// Start the simulation
 //	print("Starting the simulation");
 	scene.getSimulationManager()->start();
@@ -112,22 +112,22 @@ OgreSmartBody::OgreSmartBody(Ogre::SceneManager& sceneManager,
 
 	scene.getSimulationManager()->resume();
 	//mBmlProcessor.execBML(characterName, "<animation name=\"ChrHarmony_Relax001_ArmReachLfHigh\"/>");
+//
+//	if (false) {
+//		auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
+//
+//		ppraiAgent->steerPath.clearPath();
+//		ppraiAgent->desiredSpeed = 5;
+//		ppraiAgent->goalList.clear();
+//		SrVec pos{-3, 0, 0};
+//		ppraiAgent->goalList.emplace_back(pos);
+//		//What does steerPath do?
+//		//ppraiAgent->steerPath.initPath({pos}, 1.0);
+//
+//		//scene.command("steer move " + characterName + " normal -0.913949 0.0176676 -0.087908");
+//	}
 
-	if (false) {
-		auto* ppraiAgent = dynamic_cast<PPRAISteeringAgent*>(steerAgent);
-
-		ppraiAgent->steerPath.clearPath();
-		ppraiAgent->desiredSpeed = 5;
-		ppraiAgent->goalList.clear();
-		SrVec pos{-3, 0, 0};
-		ppraiAgent->goalList.emplace_back(pos);
-		//What does steerPath do?
-		//ppraiAgent->steerPath.initPath({pos}, 1.0);
-
-		//scene.command("steer move " + characterName + " normal -0.913949 0.0176676 -0.087908");
-	}
-
-	mCharacterController = std::make_unique<CharacterController>(mExternalCharacter, *brad);
+	mCharacterController = std::make_unique<CharacterController>(mExternalCharacter, *brad, "mocap");
 	//mCharacterController->startLocomotionState();
 }
 
@@ -276,11 +276,9 @@ void CharacterController::adjustLocomotionBlend(const std::string& blendName, in
 }
 
 CharacterController::CharacterController(const ExternalCharacter& externalCharacter,
-										 SmartBody::SBCharacter& character)
+										 SmartBody::SBCharacter& character,
+										 const std::string& prefix)
 		: mExternalCharacter(externalCharacter), mCharacter(character) {
-	std::string prefix = mCharacter.getName();
-	if (!mCharacter.statePrefix.empty())
-		prefix = mCharacter.statePrefix;
 	stepStateName = prefix + "Step";
 	locomotionName = prefix + "Locomotion";
 	startingLName = prefix + "StartingLeft";

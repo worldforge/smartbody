@@ -56,7 +56,7 @@ public:
 	OgreSmartBody(Ogre::SceneManager& sceneManager,
 				  OgreBites::CameraMan& cameraMan,
 				  SmartBody::SBScene& scene,
-				  SmartBody::SBSteerManager& steerManager,
+				  //SmartBody::SBSteerManager& steerManager,
 				  SmartBody::SBBmlProcessor& bmlProcessor
 	);
 
@@ -77,22 +77,24 @@ protected:
 };
 
 
-
 class CharacterController {
 public:
-	explicit CharacterController(const ExternalCharacter& externalCharacter, SmartBody::SBCharacter& character);
+	explicit CharacterController(const ExternalCharacter& externalCharacter,
+								 SmartBody::SBCharacter& character,
+								 const std::string& prefix);
 
 	void update(float dt);
 
-	void startIdleToWalkState(float angleDiff,float targetSpeed);
+	void startIdleToWalkState(float angleDiff, float targetSpeed);
 
 	void startLocomotionState(float turningAngle, float targetSpeed);
 
 	void adjustLocomotionBlend(const std::string& blendName, int blendDimension, double x, double y, double z, bool directPlay, bool loop);
-	void adjustFacingAngle( float angleDiff );
+
+	void adjustFacingAngle(float angleDiff);
 
 protected:
-	const  ExternalCharacter& mExternalCharacter;
+	const ExternalCharacter& mExternalCharacter;
 	SmartBody::SBCharacter& mCharacter;
 
 	std::string stepStateName;
@@ -104,7 +106,6 @@ protected:
 
 	SrVec lastVelocity;
 };
-
 
 
 #endif //SMARTBODY_OGRESMARTBODY_H

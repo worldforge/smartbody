@@ -60,7 +60,7 @@ OgreDemo::OgreDemo() :
 			return SmartBody::SBScene::CoreServices{std::make_unique<SmartBody::SBPhysicsManager>(newScene, std::make_unique<ODEPhysicsSim>()),
 													std::make_unique<SmartBody::SBCollisionManager>(newScene, std::make_unique<ODECollisionSpace>())};
 		}),
-		mSteerManager(mScene),
+		//mSteerManager(mScene),
 		mBmlProcessor(mScene),
 		mSceneManager(nullptr) {
 
@@ -76,7 +76,7 @@ OgreDemo::OgreDemo() :
 	mScene.getAssetStore().addAssetHandler(std::make_unique<SmartBody::SBAssetHandlerCOLLADA>());
 
 
-	mScene.getServiceManager()->addService(&mSteerManager);
+	//mScene.getServiceManager()->addService(&mSteerManager);
 	mScene.setSpeechBehaviourProvider(&mBmlProcessor);
 
 	CommandContext commandContext{
@@ -86,7 +86,7 @@ OgreDemo::OgreDemo() :
 			nullptr,
 			nullptr,
 			mBmlProcessor.getBMLProcessor(),
-			&mSteerManager
+			nullptr //&mSteerManager
 	};
 	SmartBody::registerControlCommands(commandContext);
 
@@ -102,7 +102,7 @@ OgreDemo::OgreDemo() :
 }
 
 OgreDemo::~OgreDemo() {
-	mScene.getServiceManager()->removeService(mSteerManager.getName());
+	//mScene.getServiceManager()->removeService(mSteerManager.getName());
 }
 
 bool OgreDemo::frameStarted(const Ogre::FrameEvent& evt) {
@@ -176,7 +176,7 @@ void OgreDemo::setup() {
 	mCameraMan->setYawPitchDist(Ogre::Degree(0), Ogre::Degree(25), 10);
 	mCameraMan->setTarget(mSceneManager->getRootSceneNode());
 
-	mOgreSmartBody = std::make_unique<OgreSmartBody>(*mSceneManager, *mCameraMan, mScene, mSteerManager, mBmlProcessor);
+	mOgreSmartBody = std::make_unique<OgreSmartBody>(*mSceneManager, *mCameraMan, mScene, mBmlProcessor);
 	addInputListener(window.native, &mOgreSmartBody->mInputListener);
 
 }
