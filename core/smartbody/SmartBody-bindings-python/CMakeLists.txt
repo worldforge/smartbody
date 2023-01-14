@@ -18,7 +18,6 @@ add_library(
 
 target_include_directories(SmartBody-bindings-python PUBLIC
         src
-        ${PYTHON_INCLUDE_DIRS}
         )
 
 
@@ -27,8 +26,5 @@ target_link_libraries(SmartBody-bindings-python PUBLIC
         SmartBody-vhmsg
         SmartBody-bonebus
         SmartBody
-        ${PYTHON_LIBRARIES}
+        CONAN_PKG::cpython
         )
-
-target_link_directories(SmartBody-bindings-python PUBLIC
-        {PYTHON_LIBRARY_DIRS})

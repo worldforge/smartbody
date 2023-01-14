@@ -22,7 +22,7 @@ class OgreConan(ConanFile):
     short_paths = False
     requires = ["zlib/1.2.13",
                 "bzip2/1.0.8",
-                "freetype/2.12.1",
+                "freetype/2.11.1",
                 "freeimage/3.18.0@smartbody/stable",
                 "assimp/5.2.2",
                 "sdl/2.26.1"]
