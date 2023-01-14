@@ -19,6 +19,8 @@ class Conan(ConanFile):
     source_subfolder = "activemq-cpp"
     requires = ["apr/1.7.0", "openssl/1.1.1q", "zlib/1.2.13"]
     exports_sources = ["patches*"]
+    platforms = {"x86": "Win32",
+                 "x86_64": "x64"}
 
     def source(self):
         tools.get("https://github.com/apache/activemq-cpp/archive/activemq-cpp-{0}.tar.gz".format(self.version))
@@ -29,15 +31,13 @@ class Conan(ConanFile):
         with tools.chdir(self.source_subfolder):
             if self.settings.compiler == "Visual Studio":
                 msbuild = MSBuild(self)
-                msbuild.build(os.path.join("vs2010-build", "activemq-cpp.sln"),
-                              platforms=self.platforms,
-                              toolset=self.settings.compiler.toolset)
+                msbuild.build(os.path.join("vs2010-build", "activemq-cpp.sln"))
             else:
                 self.run("./autogen.sh")
                 autotools = AutoToolsBuildEnvironment(self)
-                args = (['--enable-shared', '--disable-static']
+                args = (['--enable-shared', '--disable-static', f'--with-apr={self.deps_cpp_info["apr"].rootpath}']
                         if self.options.shared else
-                        ['--enable-static', '--disable-shared'])
+                        ['--enable-static', '--disable-shared', f'--with-apr={self.deps_cpp_info["apr"].rootpath}'])
                 autotools.configure(args=args)
                 autotools.make()
                 autotools.install()

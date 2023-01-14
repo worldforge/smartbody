@@ -28,6 +28,7 @@ conan_basic_setup()
         cmake = CMake(self)
 
         cmake.definitions['BUILD_SHARED_LIBS'] = self.options.shared
+        cmake.definitions['ODE_WITH_DEMOS'] = False
         if not tools.os_info.is_windows:
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = 'ON'
 

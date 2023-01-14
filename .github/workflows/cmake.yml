@@ -1,0 +1,75 @@
+name: Build all
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  # This makes it correctly use C++11 API on GCC by default.
+  CONAN_V2_MODE: 1
+  CONAN_REVISIONS_ENABLED: 1
+  CONAN_SCM_TO_CONANDATA: 1
+  CONAN_PASSWORD: ${{ secrets.CONAN_PASSWORD }}
+  CONAN_LOGIN_USERNAME: ${{ secrets.CONAN_LOGIN_USERNAME }}
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #Windows deactivated because of issues with building activemq.
+#        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
+        os: [ ubuntu-20.04, ubuntu-22.04 ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fix paths
+        shell: bash
+        #Include all paths for Linux, Windows and MacOS. These will be used in all the steps that follow.
+        run: echo ~/.local/bin:/Users/runner/Library/Python/3.11/bin:/c/Users/runneradmin/AppData/Roaming/Python/Python37/Scripts:/c/Users/runneradmin/AppData/Roaming/Python/Python39/Scripts:$PATH >> $GITHUB_PATH
+
+      - name: Install Conan
+        shell: bash
+        run: |
+          pip3 install pip wheel setuptools
+          pip3 install --user conan
+          conan --version
+          conan user
+          conan remote add worldforge https://artifactory.ogenvik.org/artifactory/api/conan/conan
+          conan profile new default --detect
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{github.workspace}}/build
+
+      - name: Have Conan install packages
+        working-directory: ${{github.workspace}}/build
+        shell: bash
+        run: |
+          cd ../tools/conan && ./build_all.sh
+          conan install .. -pr default --build=missing --update
+          if [[ x"$CONAN_PASSWORD" != "x" && x"$CONAN_LOGIN_USERNAME" != "x" ]]; then
+            conan user -p $CONAN_PASSWORD -r worldforge $CONAN_LOGIN_USERNAME
+            conan upload "*" -r worldforge -c --all
+          fi
+
+      - name: Configure CMake
+        # Use a bash shell so we can use the same syntax for environment variable
+        # access regardless of the host operating system
+        shell: bash
+        working-directory: ${{github.workspace}}/build
+        # Note the current convention is to use the -S and -B options here to specify source
+        # and build directories, but this is only available with CMake 3.13 and higher.
+        # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        shell: bash
+        # Execute the build.  You can specify a specific target with "--target <NAME>"
+        run: cmake --build . --config $BUILD_TYPE
+

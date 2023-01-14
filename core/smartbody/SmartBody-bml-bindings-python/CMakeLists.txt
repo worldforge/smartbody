@@ -1,7 +1,7 @@
 add_library(
         SmartBody-bml-bindings-python
 
-        src/SBBMLProcessorPython
+        src/SBBMLProcessorPython.cpp
 )
 
 target_include_directories(SmartBody-bml-bindings-python PUBLIC

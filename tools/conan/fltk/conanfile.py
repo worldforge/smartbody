@@ -1,5 +1,7 @@
 from conans import CMake, ConanFile, tools
 import os, shutil, glob
+from conans.tools import os_info, SystemPackageTool
+
 
 class FltkConan(ConanFile):
     name = "fltk"
@@ -27,13 +29,26 @@ class FltkConan(ConanFile):
         "use_gl": True,
         "use_threads": True,
     }
-    requires = [
-        "zlib/1.2.13",
-        "libjpeg/9c",
-        "libpng/1.6.39",
-    ]
 
     _source_subfolder = "source_dir"
+
+    def system_requirements(self):
+        if os_info.is_linux:
+            if os_info.with_apt:
+                installer = SystemPackageTool(default_mode="verify")
+                installer.install("libgl1-mesa-dev")
+                installer.install("libegl1-mesa-dev")
+                installer.install("libxrandr-dev")
+
+    def requirements(self):
+        self.requires("zlib/1.2.13")
+        self.requires("libjpeg/9c")
+        self.requires("libpng/1.6.39")
+        if self.settings.os == "Linux":
+            self.requires("opengl/system")
+            self.requires("glu/system")
+            self.requires("fontconfig/2.13.93")
+            self.requires("xorg/system")
 
     def source(self):
         source_url = "https://www.fltk.org/pub/fltk/{0}/fltk-{0}-source.tar.gz".format(self.version)
@@ -79,11 +94,11 @@ class FltkConan(ConanFile):
         removed_libs = ["z", "jpeg", "png"]
         for rlib in removed_libs:
             for fn in glob.glob(self.package_folder + "/*/*fltk_" + rlib + "*.*"):
-                os.remove(fn)       # lib/fltk_png.lib, bin/libfltk_png_SHARED.dll
+                os.remove(fn)  # lib/fltk_png.lib, bin/libfltk_png_SHARED.dll
         if self.options.shared:
             for fn in glob.glob(self.package_folder + "/lib/*.lib"):
                 if '_SHARED' not in fn:
-                    os.remove(fn)   # static libraries
+                    os.remove(fn)  # static libraries
 
     def package_info(self):
         if self.options.shared:
