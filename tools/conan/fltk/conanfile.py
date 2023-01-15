@@ -44,7 +44,7 @@ class FltkConan(ConanFile):
         self.requires("zlib/1.2.13")
         self.requires("libjpeg/9c")
         self.requires("libpng/1.6.39")
-        if self.settings.os == "Linux":
+        if os_info.is_linux:
             self.requires("opengl/system")
             self.requires("glu/system")
             self.requires("fontconfig/2.13.93")
@@ -60,11 +60,13 @@ class FltkConan(ConanFile):
         os.rename(extracted_dir, self._source_subfolder)
 
     def config_options(self):
-        if self.settings.os == "Windows":
+        if os_info.is_windows:
             del self.options.fPIC
 
     def _configure_cmake(self):
         cmake = CMake(self)
+        cmake.definitions['FLTK_BUILD_TEST'] = False
+        cmake.definitions['FLTK_BUILD_EXAMPLES'] = False
         cmake.definitions['OPTION_BUILD_SHARED_LIBS'] = self.options.shared
         cmake.definitions['OPTION_BUILD_EXAMPLES'] = False
         cmake.definitions['OPTION_USE_GL'] = self.options.use_gl
@@ -76,6 +78,8 @@ class FltkConan(ConanFile):
         cmake.definitions['OPTION_USE_XCURSOR'] = False
         cmake.definitions['OPTION_USE_XFIXES'] = False
         cmake.definitions['OPTION_USE_XINERAMA'] = False
+        cmake.definitions['OPTION_BUILD_HTML_DOCUMENTATION'] = False
+        cmake.definitions['OPTION_BUILD_PDF_DOCUMENTATION'] = False
         cmake.configure()
         return cmake
 
@@ -104,7 +108,7 @@ class FltkConan(ConanFile):
         if self.options.shared:
             self.cpp_info.defines.append("FL_DLL")
         self.cpp_info.libs = tools.collect_libs(self)
-        if self.settings.os == "Linux":
+        if os_info.is_linux:
             self.cpp_info.libs.extend(['m', 'dl', 'X11', 'Xext'])
             if self.options.use_threads:
                 self.cpp_info.libs.extend(['pthread'])
