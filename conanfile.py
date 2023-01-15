@@ -11,7 +11,7 @@ class SmartBodyConan(ConanFile):
         "ticpp/2.5.3@smartbody/stable",
         "recastnavigation/cci.20200511",
         # lapack/3.7.1@smartbody/stable
-        "fltk/1.3.5@smartbody/stable",
+        "fltk/1.3.8@smartbody/stable",
         "ncurses/6.2",
         "polyvox/0.2.1@smartbody/stable",
         # assimp/5.0.1
