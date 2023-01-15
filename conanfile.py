@@ -11,6 +11,7 @@ class SmartBodyConan(ConanFile):
         "ticpp/2.5.3@smartbody/stable",
         "recastnavigation/cci.20200511",
         # lapack/3.7.1@smartbody/stable
+        "openblas/0.3.20",
         "fltk/1.3.8@smartbody/stable",
         "ncurses/6.2",
         "polyvox/0.2.1@smartbody/stable",
@@ -46,6 +47,7 @@ class SmartBodyConan(ConanFile):
 
     default_options = {
         "boost:without_python": False,
+        "boost:without_numpy": True,  # numpy seems to fail to build, skip it
         "*:static": True
     }
 
