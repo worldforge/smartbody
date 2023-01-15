@@ -11,7 +11,6 @@ class SmartBodyConan(ConanFile):
         "ticpp/2.5.3@smartbody/stable",
         "recastnavigation/cci.20200511",
         # lapack/3.7.1@smartbody/stable
-        "openblas/0.3.20",
         "fltk/1.3.8@smartbody/stable",
         "ncurses/6.2",
         "polyvox/0.2.1@smartbody/stable",
@@ -41,13 +40,15 @@ class SmartBodyConan(ConanFile):
         # Resolve "'cpython/3.10.0' requires 'libffi/3.2.1' while 'wayland/1.21.0' requires 'libffi/3.4.3'"
         "libffi/3.4.3",
         # Resolve "'libxft/2.3.6' requires 'freetype/2.12.1' while 'ogre/1.12.10@smartbody/stable' requires 'freetype/2.11.1'"
-        "freetype/2.12.1"]
+        "freetype/2.12.1",
+        # Resolve "'fltk/1.3.8@smartbody/stable' requires 'libpng/1.6.39' while 'freetype/2.12.1' requires 'libpng/1.6.37'"
+        "libpng/1.6.39"
+    ]
 
     generators = ["cmake"]
 
     default_options = {
         "boost:without_python": False,
-        "boost:without_numpy": True,  # numpy seems to fail to build, skip it
         "*:static": True
     }
 
