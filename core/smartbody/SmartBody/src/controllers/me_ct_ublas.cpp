@@ -29,8 +29,8 @@ namespace lapack = boost::numeric::bindings::lapack;
 
 
 #if __SB_LA == __SB_LA_EIGEN
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/SVD>
+#include <Eigen/Dense>
+#include <Eigen/SVD>
 using namespace Eigen;
 #endif
 
