@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         #Windows deactivated because of issues with building activemq.
-#        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
+        #        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
         os: [ ubuntu-20.04 ]
 
     steps:
@@ -46,6 +46,13 @@ jobs:
 
       - name: Create Build Environment
         run: cmake -E make_directory ${{github.workspace}}/build
+
+      - name: Install needed system packages
+        if: runner.os == 'Linux'
+        shell: bash
+        # This is needed to get Conan boost package to build with Python support.
+        run: |
+          sudo apt install python3-numpy
 
       - name: Have Conan install packages
         working-directory: ${{github.workspace}}/build
