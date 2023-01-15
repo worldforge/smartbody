@@ -51,7 +51,7 @@ jobs:
         working-directory: ${{github.workspace}}/build
         shell: bash
         run: |
-          pushd && cd ../tools/conan && ./build_all.sh && popd
+          (cd ../tools/conan && ./build_all.sh)
           conan install .. -pr default --build=missing --update
           if [[ x"$CONAN_PASSWORD" != "x" && x"$CONAN_LOGIN_USERNAME" != "x" ]]; then
             conan user -p $CONAN_PASSWORD -r worldforge $CONAN_LOGIN_USERNAME
