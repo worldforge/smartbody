@@ -20,7 +20,7 @@ target_link_libraries(ogredemo
 #        SmartBody-steering-steerlib-bml
 #        SmartBody-steering-steerlib
         SmartBody-bml
-        util
+        SmartBody-util
         SmartBody
         CONAN_PKG::ogre
         pthread

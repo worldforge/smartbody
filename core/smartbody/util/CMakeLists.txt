@@ -1,7 +1,7 @@
 add_library(
-        util
+        SmartBody-util
         src/SBUtilities.cpp)
 
-target_include_directories(util PUBLIC
+target_include_directories(SmartBody-util PUBLIC
         src
         )

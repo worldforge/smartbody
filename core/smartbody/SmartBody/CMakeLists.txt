@@ -254,8 +254,8 @@ target_link_libraries(SmartBody PUBLIC
         sr
         parser
         perlin
-        math
-        util
+        SmartBody-math
+        SmartBody-util
         boost-numeric-bindings
         rapidxml
         vhcl
