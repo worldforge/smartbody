@@ -36,10 +36,6 @@ class OgreConan(ConanFile):
                 installer.install("libgl1-mesa-dev")
                 installer.install("libxrandr-dev")
 
-    def configure(self):
-        if 'CI' not in os.environ:
-            os.environ['CONAN_SYSREQUIRES_MODE'] = 'verify'
-
     def source(self):
         tools.get("https://github.com/OGRECave/ogre/archive/v{0}.tar.gz".format(self.upstream_version))
         os.rename("ogre-{0}".format(self.upstream_version), self.source_subfolder)

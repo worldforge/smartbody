@@ -51,8 +51,11 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         # This is needed to get Conan boost package to build with Python support.
+        # As well as getting GLU installed on Ubuntu 22.04 (as it requires opengl.pc which is provided by libopengl-dev,
+        #  but isn't a dependency to libglu-dev
         run: |
           sudo apt install python3-numpy
+          sudo apt install libopengl-dev
 
       - name: Have Conan install packages
         working-directory: ${{github.workspace}}/build

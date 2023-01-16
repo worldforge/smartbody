@@ -55,7 +55,7 @@ class FltkConan(ConanFile):
         self.requires("libpng/1.6.39")
         if os_info.is_linux:
             self.requires("opengl/system")
-            self.requires("glu/system")
+            self.requires("glu/system@#fabd782b426b03490c5ab08ad0009cd0")
             self.requires("fontconfig/2.13.93")
             self.requires("xorg/system")
             self.requires("libxft/2.3.6")
