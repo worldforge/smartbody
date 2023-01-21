@@ -20,14 +20,16 @@ class OgreConan(ConanFile):
                    "is a scene-oriented, real-time, 3D rendering engine.")
     source_subfolder = 'source_subfolder'
     short_paths = False
-    requires = ["zlib/1.2.13",
-                "bzip2/1.0.8",
-                "freetype/2.12.1",
-                "freeimage/3.18.0@smartbody/stable",
-                "assimp/5.2.2",
-                "sdl/2.26.1",
-                "xkbcommon/1.5.0"
-                ]
+
+    def requirements(self):
+        self.requires("zlib/1.2.13")
+        self.requires("bzip2/1.0.8")
+        self.requires("freetype/2.12.1")
+        self.requires("freeimage/3.18.0@smartbody/stable")
+        self.requires("assimp/5.2.2")
+        self.requires("sdl/2.26.1")
+        if os_info.is_linux:
+            self.requires("xkbcommon/1.5.0")
 
     def system_requirements(self):
         if os_info.is_linux:
