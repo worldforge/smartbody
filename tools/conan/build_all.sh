@@ -7,7 +7,8 @@ conan create ogre smartbody/stable --build missing -c tools.system.package_manag
 conan create ODE smartbody/stable --build missing
 conan create activemq-cpp smartbody/stable --build missing
 conan create alut smartbody/stable --build missing
-conan create lapack smartbody/stable --build missing
+#lapack isn't required and doesn't build on all archs
+#conan create lapack smartbody/stable --build missing
 conan create polyvox smartbody/stable --build missing
 conan create ticpp smartbody/stable --build missing
 
