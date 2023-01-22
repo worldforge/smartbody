@@ -1,4 +1,5 @@
 from conans import ConanFile
+from conans.tools import os_info
 
 
 class SmartBodyConan(ConanFile):
@@ -22,7 +23,8 @@ class SmartBodyConan(ConanFile):
         # self.requires("assimp/5.0.1")
         self.requires("stb/20200203")
         self.requires("protobuf/3.21.9")
-        self.requires("cpython/3.10.0")
+        # CPython 3.10.0 doesn't build on Windows
+        self.requires("cpython/3.9.7")
         self.requires("xerces-c/3.2.4")
         self.requires("glew/2.1.0")
         self.requires("alut/1.1.0@smartbody/stable")
@@ -38,8 +40,6 @@ class SmartBodyConan(ConanFile):
         self.requires("eigen/3.3.9")
         # Resolve "'fontconfig/2.13.93' requires 'expat/2.4.6' while 'wayland/1.21.0' requires 'expat/2.5.0'"
         self.requires("expat/2.5.0", override=False)
-        # Resolve "'openal/1.22.2' requires 'libalsa/1.2.5.1' while 'sdl/2.26.1' requires 'libalsa/1.2.7.2'"
-        self.requires("libalsa/1.2.7.2", override=False)
         # Resolve "'cpython/3.10.0' requires 'openssl/1.1.1l' while 'pulseaudio/14.2' requires 'openssl/1.1.1q'"
         self.requires("openssl/1.1.1q", override=False)
         # Resolve "'cpython/3.10.0' requires 'libffi/3.2.1' while 'wayland/1.21.0' requires 'libffi/3.4.3'"
@@ -48,6 +48,9 @@ class SmartBodyConan(ConanFile):
         self.requires("freetype/2.12.1", override=False)
         # Resolve "'fltk/1.3.8@smartbody/stable' requires 'libpng/1.6.39' while 'freetype/2.12.1' requires 'libpng/1.6.37'"
         self.requires("libpng/1.6.39", override=False)
+        if os_info.is_linux:
+            # Resolve "'openal/1.22.2' requires 'libalsa/1.2.5.1' while 'sdl/2.26.1' requires 'libalsa/1.2.7.2'"
+            self.requires("libalsa/1.2.7.2", override=False)
 
 
 def imports(self):

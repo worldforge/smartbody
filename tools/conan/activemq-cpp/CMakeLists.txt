@@ -9,15 +9,22 @@ conan_basic_setup()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(HAVE_PTHREAD_H 1)
-set(HAVE_TIME_H 1)
-set(HAVE_SIGNAL_H 1)
-set(HAVE_SYS_TIME_H 1)
-set(HAVE_STRING_H 1)
-set(HAVE_STRINGS_H 1)
+#The UNIX build relies on config.h, while the Windows build handle things without that file.
+if (UNIX)
+    find_package(Threads)
+    if (CMAKE_USE_PTHREADS_INIT)
+        set(HAVE_PTHREAD_H 1)
+    endif ()
 
-configure_file(config.tmpl.h config.h @ONLY)
-add_definitions(-DHAVE_CONFIG_H)
+    set(HAVE_TIME_H 1)
+    set(HAVE_SIGNAL_H 1)
+    set(HAVE_SYS_TIME_H 1)
+    set(HAVE_STRING_H 1)
+    set(HAVE_STRINGS_H 1)
+
+    configure_file(config.tmpl.h config.h @ONLY)
+    add_definitions(-DHAVE_CONFIG_H)
+endif (UNIX)
 
 set(SOURCES
         activemq/cmsutil/CachedConsumer.cpp
@@ -383,7 +390,6 @@ set(SOURCES
         decaf/internal/security/provider/crypto/MD4MessageDigestSpi.cpp
         decaf/internal/security/provider/crypto/MD5MessageDigestSpi.cpp
         decaf/internal/security/provider/crypto/SHA1MessageDigestSpi.cpp
-        decaf/internal/security/unix/SecureRandomImpl.cpp
         decaf/internal/util/ByteArrayAdapter.cpp
         decaf/internal/util/GenericResource.cpp
         decaf/internal/util/HexStringParser.cpp
@@ -395,8 +401,6 @@ set(SOURCES
         decaf/internal/util/concurrent/SynchronizableImpl.cpp
         decaf/internal/util/concurrent/ThreadLocalImpl.cpp
         decaf/internal/util/concurrent/Threading.cpp
-        decaf/internal/util/concurrent/unix/Atomics.cpp
-        decaf/internal/util/concurrent/unix/PlatformThread.cpp
         decaf/internal/util/zip/adler32.c
         decaf/internal/util/zip/crc32.c
         decaf/internal/util/zip/deflate.c
@@ -678,6 +682,18 @@ set(SOURCES
         decaf/util/zip/Inflater.cpp
         decaf/util/zip/InflaterInputStream.cpp
         decaf/util/zip/ZipException.cpp)
+
+if (UNIX)
+    LIST(APPEND SOURCES
+            decaf/internal/util/concurrent/unix/Atomics.cpp
+            decaf/internal/util/concurrent/unix/PlatformThread.cpp
+            decaf/internal/security/unix/SecureRandomImpl.cpp)
+else (UNIX)
+    LIST(APPEND SOURCES
+            decaf/internal/util/concurrent/windows/Atomics.cpp
+            decaf/internal/util/concurrent/windows/PlatformThread.cpp
+            decaf/internal/security/windows/SecureRandomImpl.cpp)
+endif (UNIX)
 
 add_library(activemq-cpp
         ${SOURCES}
