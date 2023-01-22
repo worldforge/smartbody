@@ -401,20 +401,6 @@ set(SOURCES
         decaf/internal/util/concurrent/SynchronizableImpl.cpp
         decaf/internal/util/concurrent/ThreadLocalImpl.cpp
         decaf/internal/util/concurrent/Threading.cpp
-        decaf/internal/util/zip/adler32.c
-        decaf/internal/util/zip/crc32.c
-        decaf/internal/util/zip/deflate.c
-        decaf/internal/util/zip/gzclose.c
-        decaf/internal/util/zip/gzlib.c
-        decaf/internal/util/zip/gzread.c
-        decaf/internal/util/zip/gzwrite.c
-        decaf/internal/util/zip/infback.c
-        decaf/internal/util/zip/inffast.c
-        decaf/internal/util/zip/inflate.c
-        decaf/internal/util/zip/inftrees.c
-        decaf/internal/util/zip/trees.c
-        decaf/internal/util/zip/uncompr.c
-        decaf/internal/util/zip/zutil.c
         decaf/io/BlockingByteArrayInputStream.cpp
         decaf/io/BufferedInputStream.cpp
         decaf/io/BufferedOutputStream.cpp
@@ -1095,17 +1081,6 @@ set(HEADERS
         decaf/internal/util/concurrent/Transferer.h
         decaf/internal/util/concurrent/unix/PlatformDefs.h
         decaf/internal/util/concurrent/windows/PlatformDefs.h
-        decaf/internal/util/zip/crc32.h
-        decaf/internal/util/zip/deflate.h
-        decaf/internal/util/zip/gzguts.h
-        decaf/internal/util/zip/inffast.h
-        decaf/internal/util/zip/inffixed.h
-        decaf/internal/util/zip/inflate.h
-        decaf/internal/util/zip/inftrees.h
-        decaf/internal/util/zip/trees.h
-        decaf/internal/util/zip/zconf.h
-        decaf/internal/util/zip/zlib.h
-        decaf/internal/util/zip/zutil.h
         decaf/io/BlockingByteArrayInputStream.h
         decaf/io/BufferedInputStream.h
         decaf/io/BufferedOutputStream.h
