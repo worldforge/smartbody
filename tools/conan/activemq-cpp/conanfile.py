@@ -1,6 +1,7 @@
 import fnmatch
+import shutil
 
-from conans import ConanFile, tools, MSBuild, AutoToolsBuildEnvironment
+from conans import ConanFile, CMake, tools, MSBuild, AutoToolsBuildEnvironment
 import os
 
 
@@ -17,37 +18,30 @@ class Conan(ConanFile):
     default_options = {"shared": False}
     generators = "cmake"
     source_subfolder = "activemq-cpp"
+    build_subfolder = "build_subfolder"
     requires = ["apr/1.7.0", "openssl/1.1.1q", "zlib/1.2.13"]
-    exports_sources = ["patches*"]
+    exports_sources = ["CMakeLists.txt", "config.tmpl.h", "patches/*"]
     platforms = {"x86": "Win32",
                  "x86_64": "x64"}
 
     def source(self):
         tools.get("https://github.com/apache/activemq-cpp/archive/activemq-cpp-{0}.tar.gz".format(self.version))
-        os.rename("activemq-cpp-activemq-cpp-{0}/activemq-cpp".format(self.version), self.source_subfolder)
+        os.rename("activemq-cpp-activemq-cpp-{0}/activemq-cpp/src/main".format(self.version), self.source_subfolder)
         self._apply_patches('patches', "")
 
     def build(self):
-        with tools.chdir(self.source_subfolder):
-            if self.settings.compiler == "Visual Studio":
-                msbuild = MSBuild(self)
-                msbuild.build(os.path.join("vs2010-build", "activemq-cpp.sln"))
-            else:
-                self.run("./autogen.sh")
-                autotools = AutoToolsBuildEnvironment(self)
-                args = (['--enable-shared', '--disable-static', f'--with-apr={self.deps_cpp_info["apr"].rootpath}']
-                        if self.options.shared else
-                        ['--enable-static', '--disable-shared', f'--with-apr={self.deps_cpp_info["apr"].rootpath}'])
-                autotools.configure(args=args)
-                autotools.make()
-                autotools.install()
+        cmake = CMake(self)
+        cmake.configure(build_folder=self.build_subfolder, source_folder=self.source_subfolder)
+        cmake.build()
+        cmake.install()
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
-        self.cpp_info.includedirs = [os.path.join("include", "activemq-cpp-{}".format(self.version))]
+        self.cpp_info.includedirs = [os.path.join("include", "activemq-cpp")]
 
-    @staticmethod
-    def _apply_patches(source, dest):
+    def _apply_patches(self, source, dest):
+        shutil.copy('CMakeLists.txt', self.source_subfolder)
+        shutil.copy('config.tmpl.h', self.source_subfolder)
         for root, _dirnames, filenames in os.walk(source):
             for filename in fnmatch.filter(filenames, '*.patch'):
                 print("Applying path {}.".format(filename))
