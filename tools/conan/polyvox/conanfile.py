@@ -43,4 +43,8 @@ conan_basic_setup()
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
-        self.cpp_info.includedirs = [os.path.join("include", "PolyVoxCore")]
+        # Seems to be packaged differently on Windows and Linux. Haven't looked closer, this seems to fix it though.
+        if tools.os_info.is_linux:
+            self.cpp_info.includedirs = [os.path.join("include", "PolyVoxCore")]
+        else:
+            self.cpp_info.includedirs = [os.path.join("PolyVoxCore", "include")]
