@@ -32,6 +32,7 @@
 #include <sb/PABlend.h>
 #include <sb/SBAnimationTransition.h>
 #include <sb/SBRetarget.h>
+#include <sb/SBEvent.h>
 
 #define LoopHandle 0
 const int rotType = 132;

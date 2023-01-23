@@ -26,7 +26,7 @@ else ()
 endif ()
 
 set(SBM_FLTK_SRC
-
+        src/glfont2.cpp
         src/GenericViewer.cpp
         src/sbm_main.cpp
         src/ppm.cpp
@@ -143,7 +143,6 @@ target_link_libraries(sbgui
         jpge
         pinocchio
         ${MORE_LIBS}
-        pthread
         )
 
 target_include_directories(sbgui PUBLIC

@@ -23,7 +23,6 @@ target_link_libraries(ogredemo
         SmartBody-util
         SmartBody
         CONAN_PKG::ogre
-        pthread
         )
 
 install(TARGETS ogredemo DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})

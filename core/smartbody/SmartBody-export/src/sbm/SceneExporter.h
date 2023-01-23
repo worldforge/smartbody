@@ -53,7 +53,7 @@ SBAPI void exportCharacter(SBRenderScene& renderScene,
 						   std::string outDir);
 
 
-void saveScene(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
+SBAPI void saveScene(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup);
 
 void saveAssets(SBRenderScene& renderScene, std::ostream& ostream, bool remoteSetup, const std::string& mediaPath);
 

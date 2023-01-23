@@ -30,6 +30,12 @@ add_library(vhcl
         ${SRC}
         )
 
+if (MSVC)
+        target_compile_definitions(vhcl PRIVATE _CRT_SECURE_NO_DEPRECATE)
+        target_compile_definitions(vhcl PRIVATE _USRDLL)
+        target_compile_definitions(vhcl PRIVATE DEBUGDLL_EXPORTS)
+endif (MSVC)
+
 target_include_directories(vhcl PUBLIC
         include
         )

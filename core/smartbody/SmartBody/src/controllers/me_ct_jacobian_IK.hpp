@@ -71,7 +71,8 @@ public:
 	SrQuat getRotConstraint() override  { return targetRot; }
 };
 
-typedef std::map<std::string,std::unique_ptr<EffectorConstraint>> ConstraintMap;
+//This should preferably be "std::unique_ptr", but MSVC couldn't get that to compile, so we'll use shared_ptr instead.
+typedef std::map<std::string,std::shared_ptr<EffectorConstraint>> ConstraintMap;
 typedef std::vector<EffectorConstraint*> VecOfConstraintPtr;
 
 class MeCtIKTreeScenario

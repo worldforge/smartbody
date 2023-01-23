@@ -40,7 +40,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 //#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <wingdi.h>
-	#include <GL/ew.h>
+	#include <GL/glew.h>
 #elif defined(SB_IPHONE)
 #include <OpenGLES/ES3/gl.h>
     #include <OpenGLES/ES3/glext.h>

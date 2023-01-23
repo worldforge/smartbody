@@ -46,6 +46,10 @@ add_compile_definitions(BOOST_ALLOW_DEPRECATED_HEADERS)
 add_compile_definitions(BOOST_BIND_GLOBAL_PLACEHOLDERS)
 add_compile_definitions(BOOST_NO_AUTO_PTR)
 
+if (WIN32)
+    #Pinocchio uses the old "hashmap" headers, which MSVC reports as an error. Make it stop.
+    add_compile_definitions(_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS)
+endif ()
 
 #We need to load plugins
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

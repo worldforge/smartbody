@@ -36,14 +36,10 @@
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #include <AL/alut.h>
-#elif defined(LINUX_BUILD) || defined(EMSCRIPTEN_BUILD)
+#else
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alut.h>
-#else
-#include "al.h"
-#include "alc.h"
-#include "alut.h"
 #endif
 
 #include "sndfile.h"

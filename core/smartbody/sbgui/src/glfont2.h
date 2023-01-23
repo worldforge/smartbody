@@ -87,7 +87,7 @@ public:
 		float width;
 		
 		//Height is the same for now...might change in future
-		size->second = (int)(header.chars[header.start_char]->dy *
+		size->second = (int)(header.chars[header.start_char].dy *
 			header.tex_height);
 
 		//Calculate width of string
@@ -119,7 +119,7 @@ public:
 		float width;
 		
 		//Height is the same for now...might change in future
-		size->second = (int)(header.chars[header.start_char]->dy *
+		size->second = (int)(header.chars[header.start_char].dy *
 			header.tex_height);
 
 		//Calculate width of string

@@ -38,10 +38,19 @@
 #include <Windows.h>
 # endif
 
-
+#ifdef WIN32
+#include <windows.h>
+#include <wingdi.h>
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#else
 #include <GL/glew.h>
 #include <GL/glx.h>
 #include <GL/glu.h>
+#endif
+
+
 
 class SrVec;
 class SrMat;

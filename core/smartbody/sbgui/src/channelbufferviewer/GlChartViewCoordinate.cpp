@@ -26,6 +26,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <cstring>
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
+#include "Session.h"
 
 
 GlChartViewCoordinate::GlChartViewCoordinate()

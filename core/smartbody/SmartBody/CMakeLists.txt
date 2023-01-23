@@ -20,11 +20,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             ${AUDIOUNIT_LIBRARY}
             ${CORESERVICES_LIBRARY}
             )
-else ()
-
-    set(MORE_LIBS
-            rt
-            )
 endif ()
 
 

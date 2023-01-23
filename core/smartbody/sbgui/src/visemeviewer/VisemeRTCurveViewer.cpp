@@ -4,6 +4,7 @@
 #include <sr/sr_light.h>
 #include <sb/SBScene.h>
 #include "SBUtilities.h"
+#include "Session.h"
 
 
 #ifdef WIN32

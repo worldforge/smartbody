@@ -22,9 +22,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #Windows deactivated because of issues with building activemq.
-        #        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
-        os: [ ubuntu-20.04, ubuntu-22.04 ]
+        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
 
     steps:
       - uses: actions/checkout@v3
@@ -49,11 +47,9 @@ jobs:
       - name: Install needed system packages
         if: runner.os == 'Linux'
         shell: bash
-        # This is needed to get Conan boost package to build with Python support.
         # As well as getting GLU installed on Ubuntu 22.04 (as it requires opengl.pc which is provided by libopengl-dev,
         #  but isn't a dependency to libglu-dev)
         run: |
-          sudo apt install python3-numpy
           sudo apt install libopengl-dev
 
       - name: Have Conan install packages
@@ -61,7 +57,7 @@ jobs:
         shell: bash
         run: |
           (cd ../tools/conan && ./build_all.sh)
-           if [[ x"$CONAN_PASSWORD" != "x" && x"$CONAN_LOGIN_USERNAME" != "x" ]]; then
+          if [[ x"$CONAN_PASSWORD" != "x" && x"$CONAN_LOGIN_USERNAME" != "x" ]]; then
             conan user -p $CONAN_PASSWORD -r worldforge $CONAN_LOGIN_USERNAME
             conan upload "*" -r worldforge -c --all
           fi

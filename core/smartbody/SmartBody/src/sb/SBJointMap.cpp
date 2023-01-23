@@ -30,6 +30,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/version.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/algorithm/string.hpp>
 #include <controllers/me_controller_tree_root.hpp>
 
 #define USE_STL_MAP 0

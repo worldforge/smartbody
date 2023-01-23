@@ -42,9 +42,20 @@ conan_basic_setup()
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
         # Seems to be packaged differently on Windows and Linux. Haven't looked closer, this seems to fix it though.
         if tools.os_info.is_linux:
-            self.cpp_info.includedirs = [os.path.join("include", "PolyVoxCore")]
+            self.cpp_info.includedirs = [
+                os.path.join("include", "PolyVoxCore"),
+                os.path.join("include", "PolyVoxUtil")
+            ]
+            self.cpp_info.libs = tools.collect_libs(self)
         else:
-            self.cpp_info.includedirs = [os.path.join("PolyVoxCore", "include")]
+            self.cpp_info.libdirs = [
+                "PolyVoxCore/lib",
+                "PolyVoxUtil/lib"]
+            self.cpp_info.libs = [
+                "PolyVoxCore",
+                "PolyVoxUtil"]
+            self.cpp_info.includedirs = [
+                os.path.join("PolyVoxCore", "include"),
+                os.path.join("PolyVoxUtil", "include")]

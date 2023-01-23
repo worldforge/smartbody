@@ -246,7 +246,7 @@ void SBDebuggerServer::Update()
                   sentPawnUpdates = true;
                }
 
-               for (int i : m_sockConnectionsTCP)
+               for (auto i : m_sockConnectionsTCP)
                {
                   //static int c = 0;
                   //SmartBody::util::log("TCP Send %d - %d\n", c++, i);

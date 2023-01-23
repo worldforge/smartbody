@@ -59,6 +59,7 @@
 #endif
 #include <windows.h>
 #include <mmsystem.h>
+#include <signal.h>
 #if SBM_REPORT_MEMORY_LEAKS
 #include <malloc.h>
 #include <crtdbg.h>

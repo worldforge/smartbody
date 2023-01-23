@@ -5,6 +5,7 @@
 #include <sb/SBSkeleton.h>
 #include <sb/SBCharacter.h>
 #include <sb/SBAnimationState.h>
+#include <sb/SBEvent.h>
 #include "me_ct_param_animation_utilities.h"
 #include "me_ct_motion_example.hpp"
 #include "me_ct_ccd_IK.hpp"

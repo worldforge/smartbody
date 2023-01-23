@@ -16,3 +16,8 @@ add_library(pinocchio
 
 target_include_directories(pinocchio PUBLIC
         .)
+if (WIN32)
+    target_compile_definitions(pinocchio
+            PRIVATE _USRDLL
+            PRIVATE PINOCCHIO_EXPORTS)
+endif ()

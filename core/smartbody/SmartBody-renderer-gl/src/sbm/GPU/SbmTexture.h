@@ -29,7 +29,7 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory>
 
 class SbmTexture;
-class SbmTextureData;
+struct SbmTextureData;
 typedef std::map<std::string, std::shared_ptr<SbmTexture>> StrTextureMap;
 
 #if defined(EMSCRIPTEN)

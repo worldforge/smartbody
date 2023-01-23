@@ -66,7 +66,7 @@ std::string srPathList::next_path(const boost::filesystem::path& prefixPath)
 	p.normalize();
 
 #ifdef WIN32
-	std::string convertedPath = finalPath.string();
+	std::string convertedPath = p.string();
 	boost::replace_all(convertedPath, "\\", "/");
 	_curIndex++;
 	return convertedPath;

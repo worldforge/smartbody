@@ -3231,7 +3231,7 @@ int mcu_echo_func( srArgBuffer& args, SmartBody::SBSimulationManager& simMgr)
 	std::string echoStr = args.read_remainder_raw();
 	int pos = echoStr.find("$time");
 	if (pos != std::string::npos)
-		boost::replace_all(echoStr, "$time", timeStr.str());
+		echoStr = boost::replace_all_copy(echoStr, "$time", timeStr.str());
 	
     SmartBody::util::log("%s ", echoStr.c_str() );
 	return( CMD_SUCCESS );

@@ -18,12 +18,6 @@
     along with VHMsg.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef _MSC_VER
-#if _MSC_VER >= 1900
-// to prevent conflicts with new VS2015 time.h and pthread.h for timespec struct
-#define _CRT_NO_TIME_T
-#endif
-#endif
 
 #include "vhmsg-client.h"
 
@@ -761,7 +755,7 @@ void Client::WaitAndPoll( const double waitTimeSeconds )
    pthread_mutex_lock( &pimpl->m_waitMutex );
 
    timespec ts;
-   vhcl::PosixClockGetTime(&ts.tv_sec, &ts.tv_nsec);
+   vhcl::PosixClockGetTime((long*)&ts.tv_sec, (long*)&ts.tv_nsec);
 
    // add the offset
    ts.tv_sec  += (int)floor( waitTimeSeconds );

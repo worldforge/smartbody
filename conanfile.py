@@ -51,6 +51,8 @@ class SmartBodyConan(ConanFile):
         if os_info.is_linux:
             # Resolve "'openal/1.22.2' requires 'libalsa/1.2.5.1' while 'sdl/2.26.1' requires 'libalsa/1.2.7.2'"
             self.requires("libalsa/1.2.7.2", override=False)
+        if os_info.is_windows:
+            self.requires("pthreads4w/3.0.0")
 
 
 def imports(self):
