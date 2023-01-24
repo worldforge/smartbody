@@ -63,7 +63,7 @@ conan_basic_setup()
         cmake.definitions['OGRE_BUILD_RENDERSYSTEM_GLES2'] = 'OFF'
         cmake.definitions['OGRE_BUILD_RENDERSYSTEM_GL3PLUS'] = "ON"
         cmake.definitions['OGRE_BUILD_RENDERSYSTEM_D3D9'] = 'OFF'
-        cmake.definitions['OGRE_BUILD_RENDERSYSTEM_D3D11'] = 'OFF'
+        cmake.definitions['OGRE_BUILD_RENDERSYSTEM_D3D11'] = 'ON' if tools.os_info.is_windows else 'OFF'
         cmake.definitions['OGRE_INSTALL_DOCS'] = 'OFF'
         cmake.definitions['OGRE_BUILD_PLUGIN_BSP'] = 'OFF'
         cmake.definitions['OGRE_BUILD_PLUGIN_CG'] = 'OFF'
