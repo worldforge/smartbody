@@ -23,8 +23,6 @@ class SmartBodyConan(ConanFile):
         # self.requires("assimp/5.0.1")
         self.requires("stb/20200203")
         self.requires("protobuf/3.21.9")
-        # CPython 3.10.0 doesn't build on Windows
-        self.requires("cpython/3.9.7")
         self.requires("xerces-c/3.2.4")
         self.requires("glew/2.1.0")
         self.requires("alut/1.1.0@smartbody/stable")
