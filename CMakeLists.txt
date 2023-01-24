@@ -38,7 +38,7 @@ if (GOOGLE_PROFILER)
     message(STATUS "Using GPerftools for profiling")
     include_directories(${GPERFTOOLS_INCLUDE_DIRS})
     link_libraries(${GPERFTOOLS_LIBRARIES})
-endif()
+endif ()
 
 
 #Temporarily disable the boost warning messages, as they spam the output.
@@ -49,6 +49,8 @@ add_compile_definitions(BOOST_NO_AUTO_PTR)
 if (WIN32)
     #Pinocchio uses the old "hashmap" headers, which MSVC reports as an error. Make it stop.
     add_compile_definitions(_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS)
+    #We need to define PINOCCHIO_EXPORTS since we inherit from some Pinocchio classes.
+    add_compile_definitions(PINOCCHIO_EXPORTS)
 endif ()
 
 #We need to load plugins
