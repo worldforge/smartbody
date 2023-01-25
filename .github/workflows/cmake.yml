@@ -44,13 +44,20 @@ jobs:
       - name: Create Build Environment
         run: cmake -E make_directory ${{github.workspace}}/build
 
-      - name: Install needed system packages
+      - name: Install needed Linux system packages
         if: runner.os == 'Linux'
         shell: bash
-        # As well as getting GLU installed on Ubuntu 22.04 (as it requires opengl.pc which is provided by libopengl-dev,
+        # We need GLU installed on Ubuntu 22.04 (as it requires opengl.pc which is provided by libopengl-dev,
         #  but isn't a dependency to libglu-dev)
         run: |
           sudo apt install libopengl-dev
+
+      - name: Install needed Windows system packages
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          curl -L https://download.microsoft.com/download/a/e/7/ae743f1f-632b-4809-87a9-aa1bb3458e31/DXSDK_Jun10.exe -o _DX2010_.exe
+          ./_DX2010_.exe /silent
 
       - name: Have Conan install packages
         working-directory: ${{github.workspace}}/build
