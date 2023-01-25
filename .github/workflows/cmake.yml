@@ -22,7 +22,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-#        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
+        #        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
         os: [ windows-2019 ]
 
     steps:
@@ -35,7 +35,7 @@ jobs:
       - name: Cache
         if: runner.os == 'Windows'
         id: cache
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/cache
           key: cache
@@ -95,7 +95,7 @@ jobs:
       - name: Configure CMake
         shell: bash
         working-directory: ${{github.workspace}}/build
-        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DPython3_ROOT_DIR=$Python3_ROOT_DIR
 
       - name: Build
         working-directory: ${{github.workspace}}/build

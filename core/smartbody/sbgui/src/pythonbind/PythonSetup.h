@@ -19,7 +19,7 @@
 #ifndef SMARTBODY_PYTHONSETUP_H
 #define SMARTBODY_PYTHONSETUP_H
 
-class Session;
+struct Session;
 
 void setupPython(Session& session);
 

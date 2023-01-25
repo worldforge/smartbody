@@ -4,8 +4,6 @@ add_library(
         src/SBNavmeshPython.cpp
 )
 
-message(STATUS ${PYTHON_INCLUDE_DIRS})
-
 target_include_directories(SmartBody-navmesh-bindings-python PUBLIC
         src
         ${PYTHON_INCLUDE_DIRS}
@@ -13,7 +11,7 @@ target_include_directories(SmartBody-navmesh-bindings-python PUBLIC
 
 
 target_link_libraries(SmartBody-navmesh-bindings-python PUBLIC
-        ${PYTHON_LIBRARIES}
+        Python3::Python
         SmartBody-navmesh
         )
 

@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
+#We want to use the first Python version that matches the version constraint.
+cmake_policy(SET CMP0094 NEW)
 project(SmartBody)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tools/cmake)
@@ -28,8 +30,12 @@ endif (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 
 #We don't provide Python though Conan (currently), since the user must have Python in their system to
 # run Conan anyway. However, we might look into perhaps doing it anyways (as we then could pin the Python version)
-find_package(PythonLibs 3.3 REQUIRED)
+find_package(Python3 COMPONENTS Development REQUIRED)
 
+if (WIN32)
+    string(REPLACE .lib .dll PYTHON_DLL ${Python3_LIBRARIES})
+    install(FILES ${Python3_RUNTIME_LIBRARY_RELEASE} DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
+endif ()
 
 #Gperftools should only be used when developing locally, so we don't provide this through Conan.
 find_package(Gperftools 2.5)
