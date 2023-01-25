@@ -22,9 +22,24 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
+#        os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
+        os: [ windows-2019 ]
 
     steps:
+
+      - name: Config DirectX
+        if: runner.os == 'Windows'
+        run: echo "DXSDK_DIR=$HOME/cache/" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Cache
+        if: runner.os == 'Windows'
+        id: cache
+        uses: actions/cache@v1
+        with:
+          path: ~/cache
+          key: cache
+
       - uses: actions/checkout@v3
 
       - uses: actions/setup-python@v4
@@ -53,11 +68,14 @@ jobs:
           sudo apt install libopengl-dev
 
       - name: Install needed Windows system packages
-        if: runner.os == 'Windows'
-        shell: bash
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           curl -L https://download.microsoft.com/download/a/e/7/ae743f1f-632b-4809-87a9-aa1bb3458e31/DXSDK_Jun10.exe -o _DX2010_.exe
-          ./_DX2010_.exe /silent
+          7z x _DX2010_.exe DXSDK/Include -o_DX2010_
+          7z x _DX2010_.exe DXSDK/Lib/x86 -o_DX2010_
+          mv _DX2010_/DXSDK $HOME/cache
+          rm -fR _DX*_ _DX*_.exe
+        shell: bash
 
       - name: Have Conan install packages
         working-directory: ${{github.workspace}}/build
