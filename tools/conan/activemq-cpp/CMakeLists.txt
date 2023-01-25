@@ -21,6 +21,7 @@ if (UNIX)
     set(HAVE_SYS_TIME_H 1)
     set(HAVE_STRING_H 1)
     set(HAVE_STRINGS_H 1)
+    set(HAVE_UNISTD_H 1)
 
     configure_file(config.tmpl.h config.h @ONLY)
     add_definitions(-DHAVE_CONFIG_H)
