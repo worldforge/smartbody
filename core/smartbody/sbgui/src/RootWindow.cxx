@@ -126,7 +126,7 @@ BaseWindow::BaseWindow(bool useEditor, int x, int y, int w, int h, const char* n
 	//deleteObjectMenuIndex = menubar->add("&Create/Delete Object", 0, nullptr, nullptr, FL_SUBMENU_POINTER);
 	menubar->add("&Create/Delete Selected Object", 0, DeleteSelectionCB, this, 0);
 
-	menubar->add("&Create/Terrain...", 0, CreateTerrainCB, this, nullptr); // should replace it with create navigation mesh.
+	menubar->add("&Create/Terrain...", 0, CreateTerrainCB, this, 0); // should replace it with create navigation mesh.
 
 //	setResolutionMenuIndex = menubar->add("&Settings/Set Resolution", 0, 0, 0, FL_SUBMENU_POINTER);
 	menubar->add("&Settings/Default Media Path", 0, SettingsDefaultMediaPathCB, this, 0);

@@ -126,8 +126,8 @@ RequestId remote_speech::requestSpeechAudio( const char* agentName, std::string 
 	_strtime(timebuf);
 	_strdate(datebuf);
 	//following puts the date and time in the correct format (yyymmdd_hhmmss)
-	timebuf[2]=timebuf[3]; timebuf[3]=timebuf[4]; timebuf[4]=timebuf[6];timebuf[5]=timebuf[7]; timebuf[6]=nullptr; timebuf[7]=nullptr; //gets rid of colon in between time
-	tmpdatebuf[0]= '2';tmpdatebuf[1]='0';tmpdatebuf[2]=datebuf[6];tmpdatebuf[3]=datebuf[7];tmpdatebuf[4]=datebuf[0];tmpdatebuf[5]=datebuf[1];tmpdatebuf[6]=datebuf[3];tmpdatebuf[7]=datebuf[4]; tmpdatebuf[8]=nullptr;
+	timebuf[2]=timebuf[3]; timebuf[3]=timebuf[4]; timebuf[4]=timebuf[6];timebuf[5]=timebuf[7]; timebuf[6]=0; timebuf[7]=0; //gets rid of colon in between time
+	tmpdatebuf[0]= '2';tmpdatebuf[1]='0';tmpdatebuf[2]=datebuf[6];tmpdatebuf[3]=datebuf[7];tmpdatebuf[4]=datebuf[0];tmpdatebuf[5]=datebuf[1];tmpdatebuf[6]=datebuf[3];tmpdatebuf[7]=datebuf[4]; tmpdatebuf[8]=0;
 #else
 	tzset();
 	time_t t;
