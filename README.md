@@ -1,5 +1,7 @@
 # Smartbody
 
+[![Build all](https://github.com/worldforge/smartbody/actions/workflows/cmake.yml/badge.svg)](https://github.com/worldforge/smartbody/actions/workflows/cmake.yml)
+
 SmartBody is a character animation platform originally developed at
 the [USC](http://usc.edu/) [Institute for Creative Technologies](http://ict.usc.edu/).
 SmartBody provides locomotion, steering, object manipulation, lip syncing, gazing, nonverbal behavior and retargeting in
@@ -37,7 +39,7 @@ lately. This version of SmartBody is __heavily__ altered, with these changes amo
 * Conan used for all dependency management, making sure it's easily buildable on multiple platforms.
 * Extensive refactoring of all components into much smaller modules.
 * Removal of OpenGL as a core requirement. Demos and tools still require OpenGL, but the core libs doesn't.
-* Fixes of a multitude of memory leaks. Too numerous to list.
+* Fixes of a multitude of memory leaks. Too numerous to list. Code now conforms to C++14 standard.
 
 The main changes are related to the modularization of the package. While previous there was one large component which
 provided all functionality there's now multiple smaller ones. This allows us to also separate out the OpenGL
