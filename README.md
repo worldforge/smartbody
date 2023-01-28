@@ -7,9 +7,10 @@ the [USC](http://usc.edu/) [Institute for Creative Technologies](http://ict.usc.
 SmartBody provides locomotion, steering, object manipulation, lip syncing, gazing, nonverbal behavior and retargeting in
 real time.
 
-This is a port of the original "Smartbody" project. There have been multiple changes to the code base compared to the
-original project. However, since the original project hasn't seen any recent development we've retained the name of the
-project.
+This is a port of the original "Smartbody" project, now managed by
+the [Worldforge project](https://www.worldforge.org/). There have been multiple changes to the code base compared to the
+original project. However, since the original project hasn't seen any recent development we've retained the name of "
+Smartbody".
 
 ## Install
 
@@ -31,6 +32,14 @@ cmake ..
 make -j all
 ```
 
+## Components
+
+The project is made up of different libraries, many of which interact. If you're building this with the
+intention of including it into a larger external work you probably want to pick and choose which ones.
+
+If you however just want to check it out you should start by building and running the "sbgui" component, which is a
+complete suite of SmartBody which includes pretty much all subcomponents as well as a GUI.
+
 ## Changes from original project
 
 The original SmartBody project is located at https://smartbody.ict.usc.edu/. There hasn't however been much development
@@ -50,6 +59,29 @@ isn't available.
 This also means that it's possible to pick and match the components you want. If you don't want BML support for example
 that's now optional.
 
+## TODO
+
+A lot of effort has been put into migrating the code from its original state into where it's now there's a lot of work
+still to be done.
+
+* The code both compiles and runs on Linux. But while it compiles on Windows it currently (2023-01-28) crashes when it's
+  run. Help with getting it to run on Windows would be greatly appreciated.
+* MacOS is a valid target, but the new code base has never been built on this platform. As with Windows, help here would
+  be appreciated.
+* While the code base now is split up into different components there's been no work done in making sure it can easily
+  be used as a third party library this way. We provide a bare-bones Conan file which builds everything at all, with all
+  dependencies. This should be updated to instead allow for certain components to be built. To exemplify, the current
+  Conan setup requires both OGRE and FLTK to be built, while these frameworks would probably not be of interest for
+  someone aiming to incorporate Smartbody as a component into a game engine.
+
 ## License
 
 SmartBody is licensed under LGPL.
+
+This is a somewhat unfortunate license as it prevents Smartbody to be used in game development. The main issue is that
+Smartbody is out of the question for the vast majority of game developers, as it would mean that they then never could
+support consoles, unless their games were licenced under the GPL (which is unrealistic).
+This is due to the fact that consoles lack the ability to link shared libraries. All code must be statically compiled,
+which then requires all code to also be GPL compatible.
+
+If possible a MIT license would be more suitable.

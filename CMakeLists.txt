@@ -25,11 +25,16 @@ if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     set(PROTOC_CMD ${CONAN_BIN_DIRS_PROTOBUF}/protoc)
 else ()
     #TODO: check for correct libs so distros can package this.
-    message(FATAL_ERROR "Building without Conan is currently not supported.")
+    message(FATAL_ERROR "Building without the Conan package manager (https://conan.io/) is currently not supported. Look in README.md how to install dependencies with Conan.")
 endif (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 
 #We don't provide Python though Conan (currently), since the user must have Python in their system to
-# run Conan anyway. However, we might look into perhaps doing it anyways (as we then could pin the Python version)
+# run Conan anyway. However, we might look into perhaps doing it anyways (as we then could pin the Python version).
+#Another reason why we can't currently supply Python through Conan via the CPython dependency is that SmartBody uses
+#boost::python for its bindings, and the Conan boost::python package is coded to only work with the system installed
+#Python environment. So even if we would interact with a Conan provided CPython environment, the boost::python
+#library would be bound to the system one. Which of course results in a festival of linking issues.
+#Once/if the Conan provided boost::python installation uses CPython instead this might be changed.
 find_package(Python3 COMPONENTS Development REQUIRED)
 
 if (WIN32)

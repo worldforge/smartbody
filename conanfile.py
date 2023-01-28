@@ -2,6 +2,7 @@ from conans import ConanFile
 from conans.tools import os_info
 
 
+# TODO: make this much more modular and make most non-core dependencies optional.
 class SmartBodyConan(ConanFile):
     name = "SmartBody"
     version = "1.0.0"
@@ -9,7 +10,7 @@ class SmartBodyConan(ConanFile):
     generators = ["cmake"]
     default_options = {
         "boost:without_python": False,
-        "*:static": True
+        "*:static": True  # This shouldn't perhaps be hard coded?
     }
 
     def requirements(self):
