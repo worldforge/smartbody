@@ -1,5 +1,6 @@
 # Smartbody
 
+[![Join us on Gitter!](https://badges.gitter.im/Worldforge.svg)](https://gitter.im/Worldforge/Lobby)
 [![Build all](https://github.com/worldforge/smartbody/actions/workflows/cmake.yml/badge.svg)](https://github.com/worldforge/smartbody/actions/workflows/cmake.yml)
 
 SmartBody is a character animation platform originally developed at
@@ -79,6 +80,15 @@ still to be done.
   dependencies. This should be updated to instead allow for certain components to be built. To exemplify, the current
   Conan setup requires both OGRE and FLTK to be built, while these frameworks would probably not be of interest for
   someone aiming to incorporate Smartbody as a component into a game engine.
+* Although most memory leaks have been plugged (using both Valgrind and Asan to verify) there are still _a lot_ of
+  places where there are crashes and outright bugs. These of course needs to be fixed.
+* All code is in C++, but there are multiple different code styles in play. It would be nice if the code that's unique
+  to Smartbody at least was formatted in one uniform way. The main reason that it hasn't been done yet is that there are
+  some libs that we suspect really are "external", but still are placed under the "libs" directory. Formatting them
+  would make it much harder to then sync upstreams. So first order of business would be to move all of these to "
+  external", and then reformat the code.
+* Documentation is sorely lacking. This goes both for high level concepts as well as low level things such as component
+  layout.
 
 ## License
 
