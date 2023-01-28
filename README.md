@@ -12,6 +12,12 @@ the [Worldforge project](https://www.worldforge.org/). There have been multiple 
 original project. However, since the original project hasn't seen any recent development we've retained the name of "
 Smartbody".
 
+## Example screenshots
+
+| Visualization of multiple actors        | Editing of all aspects of the simulation | Full physics support              |
+|-----------------------------------------|------------------------------------------|-----------------------------------|
+| ![](docs/screenshots/scene_example.png) | ![](docs/screenshots/editors.png)        | ![](docs/screenshots/physics.png) |
+
 ## Install
 
 We use Conan for installation of third party dependencies. Some packages are provided by Conan Center, and some are
