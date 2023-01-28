@@ -83,7 +83,7 @@ set(BUILD_FESTIVAL FALSE)
 
 
 add_subdirectory(external)
-add_subdirectory(core)
+add_subdirectory(libs)
 
 #Install all data
 install(DIRECTORY data DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/smartbody)

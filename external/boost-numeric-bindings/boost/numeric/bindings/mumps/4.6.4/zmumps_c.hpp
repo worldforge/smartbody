@@ -104,7 +104,7 @@ typedef struct
     ZMUMPS_INT size_schur; ZMUMPS_INT *listvar_schur; ZMUMPS_DOUBLE *schur;
     /* Internal parameters */
     ZMUMPS_INT instance_number;
-    /* For out-of-core */
+    /* For out-of-libs */
     char ooc_tmpdir[151];
     char ooc_prefix[151];
   } ZMUMPS_STRUC_C;

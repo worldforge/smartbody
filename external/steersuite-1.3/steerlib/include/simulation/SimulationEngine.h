@@ -74,7 +74,7 @@ namespace SteerLib {
 	 *      -# clean up the simulation by calling cleanupSimulation().
 	 *   -# Once you are done, call finish() to clean up the engine, and de-allocate it.
 	 *
-	 * In addition to this core simulation usage, the engine can render the simulation using openGL by calling draw(), handle keyboard events
+	 * In addition to this libs simulation usage, the engine can render the simulation using openGL by calling draw(), handle keyboard events
 	 * with processKeyboardInput(), and provides much more through the SteerLib::EngineInterface functionality.
 	 *
 	 * For modules, only the SteerLib::EngineInterface functionality is exposed.  Refer to the SteerLib::EngineInterface

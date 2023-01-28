@@ -319,7 +319,7 @@ string create_bml( Utterance & ut )
 void tt_client_callback( const char * op, const char * args, void * user_data )
 {
    // Parsers TTS reply message. Example message:
-   // RemoteSpeechReply utah 1 OK: <?xml version="1.0" encoding="UTF-8"?><speak><soundFile name="C:\saso\saso\core\beavin\..\..\..\dimr\tmpaudio\utah-yer_new_to_town.wav"/>
+   // RemoteSpeechReply utah 1 OK: <?xml version="1.0" encoding="UTF-8"?><speak><soundFile name="C:\saso\saso\libs\beavin\..\..\..\dimr\tmpaudio\utah-yer_new_to_town.wav"/>
    //   <viseme start="0.0" type="_"/>
    //   <viseme start="0.0" type="_"/>
    //   <mark name="sp1:T0" time="0.049977324263038546"/><word end="0.16997732426303855" start="0.049977324263038546">

@@ -37,7 +37,7 @@
 /**
  * @brief Allocates a module, and returns a pointer to it.
  *
- * When loading a plugin, the core engine will call #createModule() to get an
+ * When loading a plugin, the libs engine will call #createModule() to get an
  * instance of your class that implements the ModuleInterface. The engine will use that 
  * ModuleInterface object as needed, and then to unload the plugin, the engine will 
  * call #destroyModule().
@@ -55,7 +55,7 @@ PLUGIN_API SteerLib::ModuleInterface * createModule();
 /**
  * @brief De-allocates a module that was allocated by the same dynamic library.
  *
- * When loading a plugin, the core engine will call #createModule() to get an
+ * When loading a plugin, the libs engine will call #createModule() to get an
  * instance of your class that implements the ModuleInterface. The engine will use that 
  * ModuleInterface object as needed, and then to unload the plugin, the engine will 
  * call #destroyModule().

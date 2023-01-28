@@ -104,7 +104,7 @@ typedef struct
     CMUMPS_INT size_schur; CMUMPS_INT *listvar_schur; CMUMPS_DOUBLE *schur;
     /* Internal parameters */
     CMUMPS_INT instance_number;
-    /* For out-of-core */
+    /* For out-of-libs */
     char ooc_tmpdir[151];
     char ooc_prefix[151];
   } CMUMPS_STRUC_C;

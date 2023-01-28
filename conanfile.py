@@ -2,7 +2,7 @@ from conans import ConanFile
 from conans.tools import os_info
 
 
-# TODO: make this much more modular and make most non-core dependencies optional.
+# TODO: make this much more modular and make most non-libs dependencies optional.
 class SmartBodyConan(ConanFile):
     name = "SmartBody"
     version = "1.0.0"

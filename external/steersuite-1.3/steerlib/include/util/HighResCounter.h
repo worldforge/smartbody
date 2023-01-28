@@ -94,7 +94,7 @@ namespace Util {
 	 * of this function and find two other options that are more platform-independent, but also perform worse.
 	 *
 	 * Because of this "migration" to HPET, there are three issues to be aware of, if the Intel TSC is used:
-	 *  - Timing problems can occur if a process context switches to a different CPU core, which may
+	 *  - Timing problems can occur if a process context switches to a different CPU libs, which may
 	 *    have a different counter value.
 	 *  - Timing problems can also occur if any power management techniques are enabled that dynamically change CPU frequencies.
 	 *
@@ -131,7 +131,7 @@ namespace Util {
 		// **** NOTE CAREFULLY: ****
 		// if you change the option used here, you MUST update the frequency that is computed in getHighResCounterFrequency() as well!
 
-		// OPTION 1: use intel's time stamp counter.  this is the highest resolution, but has problems in the multi-core era,
+		// OPTION 1: use intel's time stamp counter.  this is the highest resolution, but has problems in the multi-libs era,
 		// and only works on intel processors from pentium 4 onwards.
 		//
 		unsigned int lo, hi;

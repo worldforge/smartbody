@@ -103,7 +103,7 @@ typedef struct
     DMUMPS_INT size_schur; DMUMPS_INT *listvar_schur; DMUMPS_DOUBLE *schur;
     /* Internal parameters */
     DMUMPS_INT instance_number;
-    /* For out-of-core */
+    /* For out-of-libs */
     char ooc_tmpdir[151];
     char ooc_prefix[151];
   } DMUMPS_STRUC_C;

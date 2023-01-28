@@ -5,7 +5,7 @@ scene.command("vhmsglog on")
 scene.run("default-viewer.py")
 
 ### Load data/sbm-common assets
-### Assumes current directory is: core/smartbody/sbm/bin
+### Assumes current directory is: libs/smartbody/sbm/bin
 scene.addAssetPath("seq", "sbm-common/scripts")
 scene.addAssetPath("seq", "sbm-test/scripts")
 scene.addAssetPath("mesh", "mesh")
