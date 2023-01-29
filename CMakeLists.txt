@@ -47,6 +47,9 @@ find_package(stb)
 find_package(ticpp)
 find_package(XercesC)
 find_package(ZLIB)
+if (WIN32)
+    find_package(pthreads4w)
+endif()
 
 
 #We don't provide Python though Conan (currently), since the user must have Python in their system to
