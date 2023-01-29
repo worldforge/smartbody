@@ -7,7 +7,7 @@ class SmartBodyConan(ConanFile):
     name = "SmartBody"
     version = "1.0.0"
     settings = "os", "arch", "compiler", "build_type"
-    generators = ["cmake"]
+    generators = ["cmake_find_package", "cmake_paths"]
     default_options = {
         "boost:without_python": False,
         "*:static": True  # This shouldn't perhaps be hard coded?

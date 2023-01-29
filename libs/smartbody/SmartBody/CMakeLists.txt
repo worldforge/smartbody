@@ -255,9 +255,9 @@ target_link_libraries(SmartBody PUBLIC
         rapidxml
         vhcl
         ${MORE_LIBS}
-        CONAN_PKG::nanoflann
-        CONAN_PKG::stb
-        CONAN_PKG::xerces-c
-        CONAN_PKG::boost
-        CONAN_PKG::eigen
+        nanoflann::nanoflann
+        stb::stb
+        XercesC::XercesC
+        Boost::Boost
+        Eigen3::Eigen3
         )

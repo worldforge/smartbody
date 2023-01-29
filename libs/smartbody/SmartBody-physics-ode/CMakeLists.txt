@@ -11,6 +11,6 @@ target_include_directories(SmartBody-physics-ode PUBLIC
 
 
 target_link_libraries(SmartBody-physics-ode PUBLIC
-        CONAN_PKG::ODE
+        ODE::ODE
         SmartBody
         )

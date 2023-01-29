@@ -29,5 +29,5 @@ target_include_directories(SmartBody-serialize PUBLIC
 
 target_link_libraries(SmartBody-serialize PUBLIC
         SmartBody
-        CONAN_PKG::protobuf
+        protobuf::protobuf
         )

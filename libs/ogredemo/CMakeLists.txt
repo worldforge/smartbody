@@ -22,7 +22,7 @@ target_link_libraries(ogredemo
         SmartBody-bml
         SmartBody-util
         SmartBody
-        CONAN_PKG::ogre
+        ogre::ogre
         )
 
 install(TARGETS ogredemo DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})

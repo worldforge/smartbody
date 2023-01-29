@@ -57,7 +57,7 @@ target_link_libraries(SmartBody-renderer-gl PUBLIC
         rply
         SOIL
         jpge
-        CONAN_PKG::glm
-        CONAN_PKG::glew
+        glm::glm
+        GLEW::GLEW
         SmartBody-serialize
         )

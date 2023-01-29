@@ -57,6 +57,6 @@ target_include_directories(vhcl-audio PUBLIC
 
 target_link_libraries(vhcl-audio PUBLIC
         vhcl
-        CONAN_PKG::openal
-        CONAN_PKG::alut
-        CONAN_PKG::libsndfile)
+        OpenAL::OpenAL
+        alut::alut
+        SndFile::SndFile)

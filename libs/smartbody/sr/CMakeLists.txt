@@ -56,6 +56,6 @@ target_include_directories(sr PUBLIC
 target_link_libraries(sr PUBLIC
         SmartBody-util
         SmartBody-math
-        CONAN_PKG::boost
+#        boost::boost
         )
 

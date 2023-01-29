@@ -18,9 +18,9 @@ target_include_directories(vhmsg-client PUBLIC
 target_link_libraries(vhmsg-client PUBLIC
         vhmsg
         vhcl
-        CONAN_PKG::activemq-cpp)
+        activemq-cpp::activemq-cpp)
 
 if (WIN32)
     target_link_libraries(vhmsg-client PUBLIC
-            CONAN_PKG::pthreads4w)
+            pthreads4w::pthreads4w)
 endif ()

@@ -138,8 +138,8 @@ target_link_libraries(sbgui
         SmartBody-export
         SmartBody-bml
         SmartBody
-        CONAN_PKG::polyvox
-        CONAN_PKG::fltk
+        polyvox::polyvox
+        fltk::fltk
         jpge
         pinocchio
         ${MORE_LIBS}
