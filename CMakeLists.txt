@@ -12,9 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 include(GNUInstallDirs)
 include(CMakeDependentOption)
 
-if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+if (EXISTS "${CMAKE_BINARY_DIR}/conan_paths.cmake")
     message(STATUS "Using Conan for dependency resolution.")
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 
     #We need to copy all .dll files that Conan installed too.
     #TODO: make sure that Conan only builds static libraries on Windows. Which currently is impossible as Python can't be built statically.
@@ -25,7 +25,9 @@ if (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 
     #We need to call on the "protoc" command to regenerate from the .proto files when they change.
     set(PROTOC_CMD ${CONAN_BIN_DIRS_PROTOBUF}/protoc)
-endif (EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+else()
+    message(STATUS "Conan is not used for dependency resolution.")
+endif ()
 
 find_package(activemq-cpp)
 find_package(alut)
