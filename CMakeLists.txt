@@ -23,9 +23,7 @@ if (EXISTS "${CMAKE_BINARY_DIR}/conan_paths.cmake")
         install(FILES ${DLL_FILES} DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
     endif ()
 
-    #We need to call on the "protoc" command to regenerate from the .proto files when they change.
-    set(PROTOC_CMD ${CONAN_BIN_DIRS_PROTOBUF}/protoc)
-else()
+else ()
     message(STATUS "Conan is not used for dependency resolution.")
 endif ()
 
@@ -51,8 +49,13 @@ find_package(XercesC)
 find_package(ZLIB)
 if (WIN32)
     find_package(pthreads4w)
-endif()
+endif ()
 
+if (Protobuf_PROTOC_EXECUTABLE)
+    #We need to call on the "protoc" command to regenerate from the .proto files when they change.
+    set(PROTOC_CMD ${Protobuf_PROTOC_EXECUTABLE})
+    message(STATUS "${PROTOC_CMD}")
+endif ()
 
 #We don't provide Python though Conan (currently), since the user must have Python in their system to
 # run Conan anyway. However, we might look into perhaps doing it anyways (as we then could pin the Python version).
