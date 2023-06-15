@@ -1,13 +1,16 @@
-project(activemq-cpp)
 cmake_minimum_required(VERSION 3.23)
+project(activemq-cpp)
 set(CMAKE_CXX_STANDARD 11)
 
 option(BUILD_SHARED_LIBS "Build shared library if true, else build static library" OFF)
 
-include(../conanbuildinfo.cmake)
-conan_basic_setup()
-
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+find_package(apr CONFIG REQUIRED)
+find_package(ZLIB CONFIG REQUIRED)
+find_package(OpenSSL CONFIG REQUIRED)
+
+add_compile_options("-w")
 
 #The UNIX build relies on config.h, while the Windows build handle things without that file.
 if (UNIX)
@@ -1369,7 +1372,10 @@ target_include_directories(activemq-cpp PUBLIC
         ${PROJECT_BINARY_DIR}
         )
 
-target_link_libraries(activemq-cpp PRIVATE CONAN_LIBS)
+target_link_libraries(activemq-cpp PRIVATE
+        openssl::openssl
+        apr::apr
+        ZLIB::ZLIB)
 
 install(TARGETS activemq-cpp FILE_SET headers DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/activemq-cpp")
 

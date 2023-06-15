@@ -1,7 +1,7 @@
-Index: activemq-cpp/decaf/util/zip/Adler32.cpp
+Index: decaf/util/zip/Adler32.cpp
 ===================================================================
---- activemq-cpp/decaf/util/zip/Adler32.cpp	(revision 1355046)
-+++ activemq-cpp/decaf/util/zip/Adler32.cpp	(working copy)
+--- decaf/util/zip/Adler32.cpp	(revision 1355046)
++++ decaf/util/zip/Adler32.cpp	(working copy)
 @@ -17,7 +17,7 @@
  
  #include "Adler32.h"
@@ -11,10 +11,10 @@ Index: activemq-cpp/decaf/util/zip/Adler32.cpp
  
  using namespace decaf;
  using namespace decaf::lang;
-Index: activemq-cpp/decaf/util/zip/Inflater.cpp
+Index: decaf/util/zip/Inflater.cpp
 ===================================================================
---- activemq-cpp/decaf/util/zip/Inflater.cpp	(revision 1355046)
-+++ activemq-cpp/decaf/util/zip/Inflater.cpp	(working copy)
+--- decaf/util/zip/Inflater.cpp	(revision 1355046)
++++ decaf/util/zip/Inflater.cpp	(working copy)
 @@ -20,7 +20,7 @@
  #include <stdio.h>
  #include <assert.h>
@@ -24,10 +24,10 @@ Index: activemq-cpp/decaf/util/zip/Inflater.cpp
  
  #include <decaf/lang/exceptions/RuntimeException.h>
  
-Index: activemq-cpp/decaf/util/zip/CRC32.cpp
+Index: decaf/util/zip/CRC32.cpp
 ===================================================================
---- activemq-cpp/decaf/util/zip/CRC32.cpp	(revision 1355046)
-+++ activemq-cpp/decaf/util/zip/CRC32.cpp	(working copy)
+--- decaf/util/zip/CRC32.cpp	(revision 1355046)
++++ decaf/util/zip/CRC32.cpp	(working copy)
 @@ -17,7 +17,7 @@
  
  #include "CRC32.h"
@@ -37,10 +37,10 @@ Index: activemq-cpp/decaf/util/zip/CRC32.cpp
  
  using namespace decaf;
  using namespace decaf::lang;
-Index: activemq-cpp/decaf/util/zip/Deflater.cpp
+Index: decaf/util/zip/Deflater.cpp
 ===================================================================
---- activemq-cpp/decaf/util/zip/Deflater.cpp	(revision 1355046)
-+++ activemq-cpp/decaf/util/zip/Deflater.cpp	(working copy)
+--- decaf/util/zip/Deflater.cpp	(revision 1355046)
++++ decaf/util/zip/Deflater.cpp	(working copy)
 @@ -20,7 +20,7 @@
  #include <stdio.h>
  #include <assert.h>

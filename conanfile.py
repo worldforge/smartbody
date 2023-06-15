@@ -1,5 +1,6 @@
-from conans import ConanFile
-from conans.tools import os_info
+from conan import ConanFile
+from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain
+from conan.tools.microsoft import is_msvc
 
 
 # TODO: make this much more modular and make most non-libs dependencies optional.
@@ -38,19 +39,19 @@ class SmartBodyConan(ConanFile):
         self.requires("nanoflann/1.3.2")
         self.requires("eigen/3.3.9")
         # Resolve "'fontconfig/2.13.93' requires 'expat/2.4.6' while 'wayland/1.21.0' requires 'expat/2.5.0'"
-        self.requires("expat/2.5.0", override=False)
+        self.requires("expat/2.5.0", override=True)
         # Resolve "'cpython/3.10.0' requires 'openssl/1.1.1l' while 'pulseaudio/14.2' requires 'openssl/1.1.1q'"
-        self.requires("openssl/1.1.1q", override=False)
+        self.requires("openssl/1.1.1q", override=True)
         # Resolve "'cpython/3.10.0' requires 'libffi/3.2.1' while 'wayland/1.21.0' requires 'libffi/3.4.3'"
-        self.requires("libffi/3.4.3", override=False)
+        self.requires("libffi/3.4.3", override=True)
         # Resolve "'libxft/2.3.6' requires 'freetype/2.12.1' while 'ogre/1.12.10@smartbody/stable' requires 'freetype/2.11.1'"
-        self.requires("freetype/2.12.1", override=False)
+        self.requires("freetype/2.12.1", override=True)
         # Resolve "'fltk/1.3.8@smartbody/stable' requires 'libpng/1.6.39' while 'freetype/2.12.1' requires 'libpng/1.6.37'"
-        self.requires("libpng/1.6.39", override=False)
-        if os_info.is_linux:
+        self.requires("libpng/1.6.39", override=True)
+        if self.settings.os == "Linux":
             # Resolve "'openal/1.22.2' requires 'libalsa/1.2.5.1' while 'sdl/2.26.1' requires 'libalsa/1.2.7.2'"
-            self.requires("libalsa/1.2.7.2", override=False)
-        if os_info.is_windows:
+            self.requires("libalsa/1.2.7.2", override=True)
+        if self.settings.os == "Windows":
             self.requires("pthreads4w/3.0.0")
 
 
