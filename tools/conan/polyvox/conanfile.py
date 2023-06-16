@@ -1,5 +1,9 @@
-from conans import ConanFile, CMake, tools
 import os
+
+from conan import ConanFile
+from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain, CMake
+from conan.tools.files import get, collect_libs, replace_in_file
+from conan.tools.microsoft import is_msvc
 
 
 class Conan(ConanFile):
@@ -13,42 +17,45 @@ class Conan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = {"shared": False}
-    generators = "cmake"
-    source_subfolder = "volumesoffun-polyvox-95f0aa22c12d"
+    user = "smartbody"
+    package_type = "library"
 
     def source(self):
-        tools.get("https://bitbucket.org/volumesoffun/polyvox/get/v{0}.tar.gz".format(self.version))
+        get(self, "https://bitbucket.org/volumesoffun/polyvox/get/v{0}.tar.gz".format(self.version), strip_root=True)
 
-        tools.replace_in_file("{0}/CMakeLists.txt".format(self.source_subfolder), "PROJECT(PolyVox)", """PROJECT(PolyVox)
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-""")
+    def layout(self):
+        cmake_layout(self)
+
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.variables['BUILD_SHARED_LIBS'] = self.options.shared
+        tc.variables['ENABLE_EXAMPLES'] = "OFF"
+        if not is_msvc(self):
+            tc.variables['CMAKE_POSITION_INDEPENDENT_CODE'] = 'ON'
+        tc.generate()
+        deps = CMakeDeps(self)
+        deps.generate()
 
     def build(self):
-
         if not self.options.shared:
-            tools.replace_in_file("{0}/CMakeLists.txt".format(self.source_subfolder), """SET(LIBRARY_TYPE "DYNAMIC" """,
-                                  """SET(LIBRARY_TYPE "STATIC" """)
-
+            replace_in_file(self, os.path.join(self.source_folder, "CMakeLists.txt"), """SET(LIBRARY_TYPE "DYNAMIC" """,
+                            """SET(LIBRARY_TYPE "STATIC" """)
         cmake = CMake(self)
-
-        cmake.definitions['BUILD_SHARED_LIBS'] = self.options.shared
-        cmake.definitions['ENABLE_EXAMPLES'] = "OFF"
-        if not tools.os_info.is_windows:
-            cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = 'ON'
-
-        cmake.configure(source_folder=self.source_subfolder)
+        cmake.configure()
         cmake.build()
+
+    def package(self):
+        cmake = CMake(self)
         cmake.install()
 
     def package_info(self):
         # Seems to be packaged differently on Windows and Linux. Haven't looked closer, this seems to fix it though.
-        if tools.os_info.is_linux:
+        if self.settings.os == "Linux":
             self.cpp_info.includedirs = [
                 os.path.join("include", "PolyVoxCore"),
                 os.path.join("include", "PolyVoxUtil")
             ]
-            self.cpp_info.libs = tools.collect_libs(self)
+            self.cpp_info.libs = collect_libs(self)
         else:
             self.cpp_info.libdirs = [
                 "PolyVoxCore/lib",

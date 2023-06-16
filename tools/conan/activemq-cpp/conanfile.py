@@ -1,11 +1,10 @@
 import fnmatch
+import os
 import shutil
 
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain, CMake
 from conan.tools.files import get, collect_libs, patch
-from conan.tools.microsoft import is_msvc
-import os
 
 
 class Conan(ConanFile):
@@ -33,7 +32,6 @@ class Conan(ConanFile):
         deps.generate()
 
     def layout(self):
-        # self.folders.source = "activemq-cpp/src/main".format(self.version)
         cmake_layout(self, src_folder="activemq-cpp/src/main".format(self.version))
 
     def source(self):
@@ -41,8 +39,6 @@ class Conan(ConanFile):
             strip_root=True, destination=self.folders.base_source)
 
     def build(self):
-        print(self.source_folder)
-        print(self.folders.build)
         self._apply_patches(self.folders.base_source, self.source_folder)
         cmake = CMake(self)
         cmake.configure()
