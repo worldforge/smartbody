@@ -1,6 +1,9 @@
-from conans import ConanFile, CMake, tools
 import os
-from os import path
+
+from conan import ConanFile
+from conan.tools.cmake import CMakeToolchain, CMake
+from conan.tools.files import get, collect_libs, copy
+from conan.tools.microsoft import is_msvc
 
 
 class Conan(ConanFile):
@@ -13,36 +16,34 @@ class Conan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = {"shared": False}
-    generators = "cmake"
     sha1 = "eb79120ea16b847ce9f483a298a394050f463d6b"
-    source_subfolder = "ticpp-{}".format(sha1)
+
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.variables['BUILD_SHARED_LIBS'] = self.options.shared
+        if not is_msvc(self):
+            tc.variables['CMAKE_POSITION_INDEPENDENT_CODE'] = 'ON'
+        tc.generate()
 
     def source(self):
-        tools.get("https://github.com/wxFormBuilder/ticpp/archive/{}.zip".format(self.sha1))
-
-        tools.replace_in_file("{0}/CMakeLists.txt".format(self.source_subfolder), "project(ticpp)", """project(ticpp)
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-""")
+        get(self, "https://github.com/wxFormBuilder/ticpp/archive/{}.zip".format(self.sha1), strip_root=True)
 
     def build(self):
         cmake = CMake(self)
-
-        cmake.definitions['BUILD_SHARED_LIBS'] = self.options.shared
-        if not tools.os_info.is_windows:
-            cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = 'ON'
-
-        cmake.configure(source_folder=self.source_subfolder)
+        cmake.configure()
         cmake.build()
 
     def package(self):
-        self.copy("*.h", dst="include/tinyxml", src=self.source_subfolder)
-        self.copy("*.lib", dst="lib", keep_path=False)
-        self.copy("*.a", dst="lib", keep_path=False)
-        self.copy("*.so", dst="lib", keep_path=False)
-        self.copy("*.so.*", dst="lib", keep_path=False)
-        self.copy("*.dylib", dst="lib", keep_path=False)
-        self.copy("*.dll", dst="bin", keep_path=False)
+        print(self.build_folder)
+        print(os.getcwd())
+        copy(self, "*.h", dst=os.path.join(self.package_folder, "include/tinyxml"), src=self.build_folder)
+        copy(self, "*.lib", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
+        copy(self, "*.a", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
+        copy(self, "*.so", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
+        copy(self, "*.so.*", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
+        copy(self, "*.dylib", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
+        copy(self, "*.dll", dst=os.path.join(self.package_folder, "bin"), keep_path=False, src=self.build_folder)
+        print("copied")
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = collect_libs(self)
