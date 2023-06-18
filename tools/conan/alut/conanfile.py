@@ -1,16 +1,11 @@
 import fnmatch
 import os
-import shutil
 
-from conans import ConanFile, CMake, tools
-
-
-def apply_patches(source, dest):
-    for root, dirnames, filenames in os.walk(source):
-        for filename in fnmatch.filter(filenames, '*.patch'):
-            patch_file = os.path.join(root, filename)
-            dest_path = os.path.join(dest, os.path.relpath(root, source))
-            tools.patch(base_path=dest_path, patch_file=patch_file)
+from conan import ConanFile
+from conan.tools.cmake import CMakeDeps, CMakeToolchain, CMake
+from conan.tools.files import get, collect_libs, patch
+from conan.tools.files import replace_in_file
+from conan.tools.microsoft import is_msvc
 
 
 class AlutConan(ConanFile):
@@ -18,7 +13,6 @@ class AlutConan(ConanFile):
     description = "Freealut library for OpenAL"
     version = "1.1.0"
     folder = 'freealut-fc814e316c2bfa6e05b723b8cc9cb276da141aae'
-    generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
     options = {
         "shared": [True, False],
@@ -31,13 +25,25 @@ class AlutConan(ConanFile):
     )
     url = ""
     license = "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+    package_type = "library"
+    user = "smartbody"
+
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.variables['BUILD_EXAMPLES'] = False
+        tc.variables['BUILD_TESTS'] = False
+        tc.variables['CMAKE_POSITION_INDEPENDENT_CODE'] = True
+        tc.generate()
+        deps = CMakeDeps(self)
+        deps.generate()
 
     def source(self):
-        tools.get("https://github.com/vancegroup/freealut/archive/fc814e316c2bfa6e05b723b8cc9cb276da141aae.zip")
-        apply_patches('patches', self.folder)
+        get(self, "https://github.com/vancegroup/freealut/archive/fc814e316c2bfa6e05b723b8cc9cb276da141aae.zip",
+            strip_root=True)
+        self.apply_patches('patches', self.source_folder)
 
     def configure(self):
-        if self.settings.compiler == 'Visual Studio':
+        if is_msvc(self):
             del self.options.fPIC
 
     def build(self):
@@ -46,35 +52,36 @@ class AlutConan(ConanFile):
             syslibs = 'Winmm'
         elif self.settings.os == 'Linux':
             syslibs = 'pthread dl'
-        alut_cmakelists = "{0}/src/CMakeLists.txt".format(self.folder)
-        tools.replace_in_file("{0}/CMakeLists.txt".format(self.folder), "project(Alut C)", """project(Alut C)
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-""")
-        tools.replace_in_file(alut_cmakelists,
-                              'target_link_libraries(alut ${OPENAL_LIBRARY})',
-                              'target_link_libraries(alut ${OPENAL_LIBRARY} %s)' % syslibs)
+        alut_cmakelists = "src/CMakeLists.txt"
+
+        replace_in_file(self, alut_cmakelists,
+                        'target_link_libraries(alut ${OPENAL_LIBRARY})',
+                        'target_link_libraries(alut ${OPENAL_LIBRARY} %s)' % syslibs)
         if not self.options.shared:
-            tools.replace_in_file(alut_cmakelists,
-                              'add_library(alut SHARED ${ALUT_SOURCES}',
-                              'add_library(alut ${ALUT_SOURCES}')
+            replace_in_file(self, alut_cmakelists,
+                            'add_library(alut SHARED ${ALUT_SOURCES}',
+                            'add_library(alut ${ALUT_SOURCES}')
         # There are some issues with copying files on macos...
-        tools.replace_in_file(alut_cmakelists, 'if(NOT WIN32)', 'if(FALSE)')
+        replace_in_file(self, alut_cmakelists, 'if(NOT WIN32)', 'if(FALSE)')
 
         cmake = CMake(self)
-        cmake.definitions['BUILD_EXAMPLES'] = False
-        cmake.definitions['BUILD_TESTS'] = False
-        cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = True
-        cmake.configure(source_dir=self.folder)
+
+        cmake.configure()
         cmake.build()
         cmake.install()
 
     def package(self):
-        pass
+        cmake = CMake(self)
+        cmake.install()
 
     def package_info(self):
         if not self.options.shared:
             self.cpp_info.defines = ["ALUT_BUILD_LIBRARY=1"]
-        self.cpp_info.libs = tools.collect_libs(self)
-        if self.settings.os == 'Linux':
-            self.cpp_info.libs.extend(['dl', 'pthread', 'm'])
+        self.cpp_info.libs = collect_libs(self)
+
+    def apply_patches(self, source, dest):
+        for root, dirnames, filenames in os.walk(source):
+            for filename in fnmatch.filter(filenames, '*.patch'):
+                patch_file = os.path.join(root, filename)
+                dest_path = os.path.join(dest, os.path.relpath(root, source))
+                patch(self, base_path=dest_path, patch_file=patch_file)

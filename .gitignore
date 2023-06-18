@@ -3,3 +3,4 @@ cmake-install-*
 cmake-build-*
 .idea
 CMakeUserPresets.json
+build

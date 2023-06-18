@@ -17,6 +17,8 @@ class Conan(ConanFile):
     options = {"shared": [True, False]}
     default_options = {"shared": False}
     sha1 = "eb79120ea16b847ce9f483a298a394050f463d6b"
+    user = "smartbody"
+    package_type = "library"
 
     def generate(self):
         tc = CMakeToolchain(self)

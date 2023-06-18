@@ -1,6 +1,9 @@
-from conans import CMake, ConanFile, tools
+from conan import ConanFile, tools
+from conan.tools.cmake import CMakeDeps, CMakeToolchain, CMake
+from conan.tools.files import get, collect_libs, patch, rmdir, rm, copy, export_conandata_patches
+from conan.tools.files import replace_in_file
+from conan.tools.microsoft import is_msvc
 import os
-from conans.tools import os_info
 
 required_conan_version = ">=1.43.0"
 
@@ -28,16 +31,25 @@ class FltkConan(ConanFile):
         "with_threads": True,
         "with_gdiplus": True,
     }
-    generators = "cmake", "cmake_find_package_multi"
-
-    @property
-    def _source_subfolder(self):
-        return "source_subfolder"
+    user = "smartbody"
+    package_type = "library"
+    exports = ["CMakeLists.txt"]
 
     def export_sources(self):
-        self.copy("CMakeLists.txt")
-        for patch in self.conan_data.get("patches", {}).get(self.version, []):
-            self.copy(patch["patch_file"])
+        export_conandata_patches(self)
+
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.variables['OPTION_BUILD_SHARED_LIBS'] = self.options.shared
+        tc.variables['FLTK_BUILD_TEST'] = False
+        tc.variables['FLTK_BUILD_EXAMPLES'] = False
+        tc.variables['OPTION_USE_GL'] = self.options.with_gl
+        tc.variables['OPTION_USE_THREADS'] = self.options.with_threads
+        tc.variables['OPTION_BUILD_HTML_DOCUMENTATION'] = False
+        tc.variables['OPTION_BUILD_PDF_DOCUMENTATION'] = False
+        tc.generate()
+        deps = CMakeDeps(self)
+        deps.generate()
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -53,45 +65,33 @@ class FltkConan(ConanFile):
         self.requires("zlib/1.2.13")
         self.requires("libjpeg/9c")
         self.requires("libpng/1.6.39")
-        if os_info.is_linux:
+        if self.settings.os == "Linux":
             self.requires("opengl/system")
             self.requires("glu/system@#fabd782b426b03490c5ab08ad0009cd0")
-            self.requires("fontconfig/2.13.93")
+            self.requires("fontconfig/2.14.2")
             self.requires("xorg/system")
-            self.requires("libxft/2.3.6")
-            self.requires("freetype/2.12.1")
+            self.requires("libxft/2.3.6@smartbody")
+            self.requires("freetype/2.13.0")
 
     def source(self):
-        tools.get(**self.conan_data["sources"][self.version],
-                  destination=self._source_subfolder, strip_root=True)
-
-    def _configure_cmake(self):
-        cmake = CMake(self)
-        cmake.definitions['OPTION_BUILD_SHARED_LIBS'] = self.options.shared
-        cmake.definitions['FLTK_BUILD_TEST'] = False
-        cmake.definitions['FLTK_BUILD_EXAMPLES'] = False
-        cmake.definitions['OPTION_USE_GL'] = self.options.with_gl
-        cmake.definitions['OPTION_USE_THREADS'] = self.options.with_threads
-        cmake.definitions['OPTION_BUILD_HTML_DOCUMENTATION'] = False
-        cmake.definitions['OPTION_BUILD_PDF_DOCUMENTATION'] = False
-        cmake.configure()
-        return cmake
+        get(self, **self.conan_data["sources"][self.version], strip_root=True)
 
     def build(self):
-        for patch in self.conan_data.get("patches", {}).get(self.version, []):
-            tools.patch(**patch)
+        for apatch in self.conan_data.get("patches", {}).get(self.version, []):
+            patch(self, **apatch)
 
-        cmake = self._configure_cmake()
+        cmake = CMake(self)
+        cmake.configure()
         cmake.build()
 
     def package(self):
-        self.copy(pattern="COPYING", dst="licenses", src=self._source_subfolder)
-        cmake = self._configure_cmake()
+        copy(self, pattern="COPYING", dst=os.path.join(self.package_folder, "licenses"), src=self.source_folder)
+        cmake = CMake(self)
         cmake.install()
-        tools.rmdir(os.path.join(self.package_folder, "share"))
-        tools.rmdir(os.path.join(self.package_folder, "FLTK.framework"))
-        tools.rmdir(os.path.join(self.package_folder, "CMake"))
-        tools.remove_files_by_mask(os.path.join(self.package_folder, "bin"), "fltk-config*")
+        rmdir(self, os.path.join(self.package_folder, "share"))
+        rmdir(self, os.path.join(self.package_folder, "FLTK.framework"))
+        rmdir(self, os.path.join(self.package_folder, "CMake"))
+        rm(self, "fltk-config*", os.path.join(self.package_folder, "bin"))
 
     def package_info(self):
         self.cpp_info.set_property("cmake_file_name", "fltk")
@@ -102,7 +102,7 @@ class FltkConan(ConanFile):
 
         if self.options.shared and self.settings.os == "Windows":
             self.cpp_info.defines.append("FL_DLL")
-        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = collect_libs(self)
         if self.settings.os in ("Linux", "FreeBSD"):
             if self.options.with_threads:
                 self.cpp_info.system_libs.extend(['pthread', 'dl'])
