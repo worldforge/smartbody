@@ -7,15 +7,12 @@ on:
       - master
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
-  # This makes it correctly use C++11 API on GCC by default.
-  CONAN_V2_MODE: 1
   CONAN_REVISIONS_ENABLED: 1
   CONAN_SCM_TO_CONANDATA: 1
   CONAN_SYSREQUIRES_MODE: enabled
   CONAN_PASSWORD: ${{ secrets.CONAN_PASSWORD }}
   CONAN_LOGIN_USERNAME: ${{ secrets.CONAN_LOGIN_USERNAME }}
+  PROFILE_CONAN: conan-release
 
 jobs:
   build:
@@ -50,13 +47,8 @@ jobs:
         shell: bash
         run: |
           pip install -r .github/workflows/requirements.txt
-          conan --version
-          conan user
+          conan profile detect
           conan remote add worldforge https://artifactory.ogenvik.org/artifactory/api/conan/conan
-          conan profile new default --detect
-
-      - name: Create Build Environment
-        run: cmake -E make_directory ${{github.workspace}}/build
 
       - name: Install needed Linux system packages
         if: runner.os == 'Linux'
@@ -77,27 +69,24 @@ jobs:
         shell: bash
 
       - name: Have Conan install packages
-        working-directory: ${{github.workspace}}/build
         shell: bash
         run: |
-          (cd ../tools/conan && ./build_all.sh)
+          ./tools/conan/build_all.sh
           if [[ x"$CONAN_PASSWORD" != "x" && x"$CONAN_LOGIN_USERNAME" != "x" ]]; then
             conan user -p $CONAN_PASSWORD -r worldforge $CONAN_LOGIN_USERNAME
-            conan upload "*" -r worldforge -c --all
+            conan upload "*" -r worldforge -c
           fi
-          conan install .. -pr default --build=missing --update
+          conan install . -pr default --build=missing --update -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
           if [[ x"$CONAN_PASSWORD" != "x" && x"$CONAN_LOGIN_USERNAME" != "x" ]]; then
             conan user -p $CONAN_PASSWORD -r worldforge $CONAN_LOGIN_USERNAME
-            conan upload "*" -r worldforge -c --all
+            conan upload "*" -r worldforge -c
           fi
 
       - name: Configure CMake
         shell: bash
-        working-directory: ${{github.workspace}}/build
-        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DPython3_ROOT_DIR=$Python3_ROOT_DIR
+        run: cmake --preset conan-release -DCMAKE_INSTALL_PREFIX=./cmake-install -DBUILD_TESTING=ON
 
       - name: Build
-        working-directory: ${{github.workspace}}/build
         shell: bash
-        run: cmake --build . --config $BUILD_TYPE
+        run: cmake --build --preset $PROFILE_CONAN
 
