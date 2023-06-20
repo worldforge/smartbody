@@ -1,4 +1,5 @@
 #add_definitions(-DENABLE_GUI)
+find_package(ticpp CONFIG REQUIRED)
 
 # osx c++ version >= clang 4.2.0
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

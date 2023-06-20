@@ -1,3 +1,9 @@
+find_package(nanoflann CONFIG REQUIRED)
+find_package(stb CONFIG REQUIRED)
+find_package(XercesC CONFIG REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED)
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_definitions("-Dfopen64=fopen")
     add_definitions("-Dfseeko64=fseeko")
@@ -258,6 +264,6 @@ target_link_libraries(SmartBody PUBLIC
         nanoflann::nanoflann
         stb::stb
         XercesC::XercesC
-        Boost::Boost
-        Eigen3::Eigen3
+        boost::boost
+        Eigen3::Eigen
         )

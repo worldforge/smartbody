@@ -1,3 +1,5 @@
+find_package(recastnavigation CONFIG REQUIRED)
+
 add_library(
         SmartBody-navmesh
 
@@ -11,7 +13,6 @@ target_include_directories(SmartBody-navmesh PUBLIC
 
 
 target_link_libraries(SmartBody-navmesh PUBLIC
-        RecastNavigation::Recast
-        RecastNavigation::Detour
+        recastnavigation::recastnavigation
         SmartBody
         )

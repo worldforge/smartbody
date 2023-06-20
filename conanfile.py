@@ -1,6 +1,5 @@
 from conan import ConanFile
-from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain
-from conan.tools.microsoft import is_msvc
+from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout
 
 
 # TODO: make this much more modular and make most non-libs dependencies optional.
@@ -8,27 +7,37 @@ class SmartBodyConan(ConanFile):
     name = "SmartBody"
     version = "1.0.0"
     settings = "os", "arch", "compiler", "build_type"
-    generators = ["cmake_find_package", "cmake_paths"]
     default_options = {
-        "boost:without_python": False,
-        "*:static": True  # This shouldn't perhaps be hard coded?
+        "boost/*:without_python": False,
+        "*:static": True
     }
 
+    def generate(self):
+        deps = CMakeDeps(self)
+        # OGRE provides its own CMake files which we should use
+        #deps.set_property("ogre", "cmake_find_mode", "none")
+        deps.generate()
+
+        tc = CMakeToolchain(self)
+        # We need to do some stuff differently if Conan is in use, so we'll tell the CMake system this.
+        tc.variables["CONAN_FOUND"] = "TRUE"
+        tc.generate()
+
     def requirements(self):
-        self.requires("ogre/1.12.10@smartbody/stable")
-        self.requires("ticpp/2.5.3@smartbody/stable")
+        self.requires("ogre/13.4.2@smartbody")
+        self.requires("ticpp/2.5.3@smartbody")
         self.requires("recastnavigation/cci.20200511")
         # self.requires("lapack/3.7.1@smartbody/stable")
-        self.requires("fltk/1.3.8")
-        self.requires("ncurses/6.2")
-        self.requires("polyvox/0.2.1@smartbody/stable")
+        self.requires("fltk/1.3.8@smartbody")
+        # self.requires("ncurses/6.2") #Used by FestivalRelay, but there's no good Conan 2 version
+        self.requires("polyvox/0.2.1@smartbody")
         # self.requires("assimp/5.0.1")
-        self.requires("stb/20200203")
+        self.requires("stb/cci.20220909")
         self.requires("protobuf/3.21.9")
         self.requires("xerces-c/3.2.4")
         self.requires("glew/2.1.0")
-        self.requires("alut/1.1.0@smartbody/stable")
-        self.requires("libsndfile/1.0.31")
+        self.requires("alut/1.1.0@smartbody")
+        self.requires("libsndfile/1.2.0")
         self.requires("ode/0.16.2")
         self.requires("activemq-cpp/3.9.5@smartbody")
         self.requires("boost/1.81.0")
@@ -38,23 +47,10 @@ class SmartBodyConan(ConanFile):
         self.requires("glm/0.9.9.8")
         self.requires("nanoflann/1.3.2")
         self.requires("eigen/3.3.9")
-        # Resolve "'fontconfig/2.13.93' requires 'expat/2.4.6' while 'wayland/1.21.0' requires 'expat/2.5.0'"
-        self.requires("expat/2.5.0", override=True)
-        # Resolve "'cpython/3.10.0' requires 'openssl/1.1.1l' while 'pulseaudio/14.2' requires 'openssl/1.1.1q'"
-        self.requires("openssl/1.1.1q", override=True)
-        # Resolve "'cpython/3.10.0' requires 'libffi/3.2.1' while 'wayland/1.21.0' requires 'libffi/3.4.3'"
-        self.requires("libffi/3.4.3", override=True)
-        # Resolve "'libxft/2.3.6' requires 'freetype/2.12.1' while 'ogre/1.12.10@smartbody/stable' requires 'freetype/2.11.1'"
-        self.requires("freetype/2.12.1", override=True)
-        # Resolve "'fltk/1.3.8@smartbody/stable' requires 'libpng/1.6.39' while 'freetype/2.12.1' requires 'libpng/1.6.37'"
-        self.requires("libpng/1.6.39", override=True)
-        if self.settings.os == "Linux":
-            # Resolve "'openal/1.22.2' requires 'libalsa/1.2.5.1' while 'sdl/2.26.1' requires 'libalsa/1.2.7.2'"
-            self.requires("libalsa/1.2.7.2", override=True)
+        self.requires("openssl/3.1.1", override=True)
+
         if self.settings.os == "Windows":
             self.requires("pthreads4w/3.0.0")
 
-
-def imports(self):
-    self.copy("*.dll", src="bin", dst="bin")
-    self.copy("*.dylib", src="lib", dst="bin")
+    def layout(self):
+        cmake_layout(self)

@@ -1,3 +1,5 @@
+find_package(activemq-cpp CONFIG REQUIRED)
+
 add_library(vhmsg INTERFACE)
 
 target_include_directories(vhmsg INTERFACE

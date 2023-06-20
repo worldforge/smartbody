@@ -29,7 +29,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SBUtilities.h"
 
-#include "stb_image_aug.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 #include <boost/filesystem.hpp>
 #include "sb/SBAssetStore.h"

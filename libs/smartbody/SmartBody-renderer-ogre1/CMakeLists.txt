@@ -1,3 +1,4 @@
+find_package(ogre REQUIRED)
 
 add_library(
         SmartBody-renderer-ogre1

@@ -28,9 +28,13 @@ class OgreConan(ConanFile):
     description = ("Object-Oriented Graphics Rendering Engine (OGRE) "
                    "is a scene-oriented, real-time, 3D rendering engine.")
     short_paths = False
-    requires = ["freetype/2.13.0"]
     user = "smartbody"
     package_type = "library"
+
+    def requirements(self):
+        self.requires("freetype/2.13.0")
+        self.requires("sdl/2.26.5")
+        self.requires("libxml2/2.10.4", override = True)
 
     def layout(self):
         cmake_layout(self)
@@ -113,10 +117,10 @@ class OgreConan(ConanFile):
         else:
             self.cpp_info.libdirs = ["lib", "lib/OGRE"]
 
-        self.cpp_info.libs = ["Codec_STBIStatic",
+        self.cpp_info.libs = ["OgreBitesStatic",
+                              "Codec_STBIStatic",
                               "OgreMeshLodGeneratorStatic",
                               "OgreOverlayStatic",
-                              "OgreBitesStatic",
                               "OgreTerrainStatic",
                               "OgreRTShaderSystemStatic",
                               "Plugin_ParticleFXStatic",

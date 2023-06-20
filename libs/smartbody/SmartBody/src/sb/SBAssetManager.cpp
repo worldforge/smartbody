@@ -27,8 +27,8 @@ along with Smartbody.  If not, see <http://www.gnu.org/licenses/>.
 #include <sbm/lin_win.h>
 #include <sbm/sbm_constants.h>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include <stb_image_write.h>
 
 #if defined(EMSCRIPTEN)
 #include <emscripten.h>

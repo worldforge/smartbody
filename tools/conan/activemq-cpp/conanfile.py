@@ -18,7 +18,7 @@ class Conan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = {"shared": False}
-    requires = ["apr/1.7.0", "openssl/1.1.1q", "zlib/1.2.13"]
+    requires = ["apr/1.7.0", "openssl/3.1.1", "zlib/1.2.13"]
     exports_sources = ["CMakeLists.txt", "config.tmpl.h", "patches/*"]
     platforms = {"x86": "Win32",
                  "x86_64": "x64"}

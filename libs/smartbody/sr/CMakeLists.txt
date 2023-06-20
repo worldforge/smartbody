@@ -1,3 +1,5 @@
+find_package(Boost CONFIG REQUIRED)
+
 add_library(
         sr
         src/sr/sr_alg.cpp
@@ -56,6 +58,6 @@ target_include_directories(sr PUBLIC
 target_link_libraries(sr PUBLIC
         SmartBody-util
         SmartBody-math
-        Boost::Boost
+        boost::boost
         )
 

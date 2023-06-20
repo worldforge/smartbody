@@ -1,3 +1,5 @@
+find_package(ogre CONFIG REQUIRED)
+
 add_executable(ogredemo
         src/OgreDemo.cpp
         src/ParserCOLLADAFast.cpp

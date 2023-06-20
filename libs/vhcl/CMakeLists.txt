@@ -1,3 +1,6 @@
+find_package(alut CONFIG REQUIRED)
+find_package(SndFile CONFIG REQUIRED)
+
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     add_definitions(/EHa)
@@ -57,6 +60,5 @@ target_include_directories(vhcl-audio PUBLIC
 
 target_link_libraries(vhcl-audio PUBLIC
         vhcl
-        OpenAL::OpenAL
         alut::alut
-        SndFile::SndFile)
+        SndFile::sndfile)

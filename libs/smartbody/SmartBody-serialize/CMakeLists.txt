@@ -1,7 +1,9 @@
+find_package(protobuf CONFIG REQUIRED)
+
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.pb.cc
         COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
-        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbmotion.proto
+        COMMAND ${Protobuf_PROTOC_EXECUTABLE} --proto_path=. --cpp_out=. sbmotion.proto
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmotion.proto
 )

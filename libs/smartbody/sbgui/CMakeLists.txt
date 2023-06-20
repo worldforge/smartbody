@@ -1,3 +1,6 @@
+find_package(polyvox CONFIG REQUIRED)
+find_package(fltk CONFIG REQUIRED)
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     find_library(COREAUDIO_LIBRARY CoreAudio)
     find_library(AUDIOUNIT_LIBRARY AudioUnit)

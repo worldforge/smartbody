@@ -1,3 +1,6 @@
+find_package(ZLIB CONFIG REQUIRED)
+find_package(minizip CONFIG REQUIRED)
+
 add_library(
         SmartBody-export
 

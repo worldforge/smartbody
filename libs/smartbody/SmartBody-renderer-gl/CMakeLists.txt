@@ -1,8 +1,13 @@
+find_package(glm CONFIG REQUIRED)
+find_package(glew CONFIG REQUIRED)
+find_package(protobuf CONFIG REQUIRED)
+find_package(stb CONFIG REQUIRED)
+
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.pb.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.pb.cc
         COMMAND ${CMAKE_COMMAND} -E echo "Building Protobuffer bindings"
-        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbmesh.proto
-        COMMAND ${PROTOC_CMD} --proto_path=. --cpp_out=. sbutilities.proto
+        COMMAND ${Protobuf_PROTOC_EXECUTABLE} --proto_path=. --cpp_out=. sbmesh.proto
+        COMMAND ${Protobuf_PROTOC_EXECUTABLE} --proto_path=. --cpp_out=. sbutilities.proto
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbmesh.proto ${CMAKE_CURRENT_SOURCE_DIR}/src/protocols/sbutilities.proto
 )
@@ -55,7 +60,7 @@ target_include_directories(SmartBody-renderer-gl PUBLIC
 
 target_link_libraries(SmartBody-renderer-gl PUBLIC
         rply
-        SOIL
+        stb::stb
         jpge
         glm::glm
         GLEW::GLEW

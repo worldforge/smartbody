@@ -1,3 +1,4 @@
+find_package(ODE CONFIG REQUIRED)
 add_library(
         SmartBody-physics-ode
 
