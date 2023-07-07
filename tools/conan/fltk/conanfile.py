@@ -43,6 +43,7 @@ class FltkConan(ConanFile):
         tc.variables['OPTION_BUILD_SHARED_LIBS'] = self.options.shared
         tc.variables['FLTK_BUILD_TEST'] = False
         tc.variables['FLTK_BUILD_EXAMPLES'] = False
+        tc.variables['OPTION_USE_XFT'] = False
         tc.variables['OPTION_USE_GL'] = self.options.with_gl
         tc.variables['OPTION_USE_THREADS'] = self.options.with_threads
         tc.variables['OPTION_BUILD_HTML_DOCUMENTATION'] = False
@@ -67,10 +68,9 @@ class FltkConan(ConanFile):
         self.requires("libpng/1.6.39")
         if self.settings.os == "Linux":
             self.requires("opengl/system")
-            self.requires("glu/system@#fabd782b426b03490c5ab08ad0009cd0")
+            self.requires("glu/system@#ee50fc2ade0e1c0c8ebb3be3ea60e0f5")
             self.requires("fontconfig/2.14.2")
             self.requires("xorg/system")
-            self.requires("libxft/2.3.6@smartbody")
             self.requires("freetype/2.13.0")
 
     def source(self):

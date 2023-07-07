@@ -1,6 +1,6 @@
 .svn
-cmake-install-*
-cmake-build-*
+cmake-install*
+cmake-build*
 .idea
 CMakeUserPresets.json
 build
