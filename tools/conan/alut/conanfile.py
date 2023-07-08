@@ -20,13 +20,13 @@ class AlutConan(ConanFile):
     }
     default_options = {"shared": False, "fPIC": True}
     exports = ["CMakeLists.txt", "patches*"]
-    requires = (
-        "openal/1.22.2"
-    )
     url = ""
     license = "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
     package_type = "library"
     user = "smartbody"
+
+    def requirements(self):
+        self.requires("openal/1.22.2", transitive_headers=True)
 
     def generate(self):
         tc = CMakeToolchain(self)
