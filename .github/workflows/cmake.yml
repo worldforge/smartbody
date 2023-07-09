@@ -18,6 +18,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022 ]
 
@@ -73,12 +74,12 @@ jobs:
         run: |
           ./tools/conan/build_all.sh
           if [[ x"$CONAN_PASSWORD" != "x" && x"$CONAN_LOGIN_USERNAME" != "x" ]]; then
-            conan user -p $CONAN_PASSWORD -r worldforge $CONAN_LOGIN_USERNAME
+            conan remote login worldforge $CONAN_LOGIN_USERNAME -p $CONAN_PASSWORD
             conan upload "*" -r worldforge -c
           fi
           conan install . -pr default --build=missing --update -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
           if [[ x"$CONAN_PASSWORD" != "x" && x"$CONAN_LOGIN_USERNAME" != "x" ]]; then
-            conan user -p $CONAN_PASSWORD -r worldforge $CONAN_LOGIN_USERNAME
+            conan remote login worldforge $CONAN_LOGIN_USERNAME -p $CONAN_PASSWORD
             conan upload "*" -r worldforge -c
           fi
 
