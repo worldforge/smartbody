@@ -1,5 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout
+from conan.tools.microsoft import is_msvc
 
 
 # TODO: make this much more modular and make most non-libs dependencies optional.
@@ -9,7 +10,9 @@ class SmartBodyConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     default_options = {
         "boost/*:without_python": False,
-        "*:static": True
+        "*:static": True,
+        # We're getting compilation errors on Ubuntu 22.04 with "mpg123" so we'll disable that.
+        'libsndfile/*:with_mpeg': False
     }
 
     def generate(self):
@@ -48,7 +51,7 @@ class SmartBodyConan(ConanFile):
 
         self.requires("openssl/3.1.1", override=True)
 
-        if self.settings.os == "Windows":
+        if is_msvc(self):
             self.requires("pthreads4w/3.0.0")
 
     def layout(self):

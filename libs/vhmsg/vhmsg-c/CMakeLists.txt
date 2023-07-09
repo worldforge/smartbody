@@ -23,6 +23,7 @@ target_link_libraries(vhmsg-client PUBLIC
         activemq-cpp::activemq-cpp)
 
 if (WIN32)
+    find_package(pthreads4w CONFIG REQUIRED)
     target_link_libraries(vhmsg-client PUBLIC
             pthreads4w::pthreads4w)
 endif ()
