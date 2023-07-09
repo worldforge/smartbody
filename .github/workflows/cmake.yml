@@ -91,5 +91,5 @@ jobs:
 
       - name: Build
         shell: bash
-        run: cmake --build --preset $PROFILE_CONAN
+        run: cmake --build --preset conan-release
 
