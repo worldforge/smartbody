@@ -1,7 +1,7 @@
 import os
 
 from conan import ConanFile
-from conan.tools.cmake import CMakeToolchain, CMake
+from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout
 from conan.tools.files import get, collect_libs, copy
 from conan.tools.microsoft import is_msvc
 
@@ -16,9 +16,12 @@ class Conan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = {"shared": False}
-    sha1 = "eb79120ea16b847ce9f483a298a394050f463d6b"
+    sha1 = "6f45ec628cbf34784bb3b3132c0d00aac8e491c6"
     user = "smartbody"
     package_type = "library"
+
+    def layout(self):
+        cmake_layout(self)
 
     def generate(self):
         tc = CMakeToolchain(self)
@@ -36,16 +39,9 @@ class Conan(ConanFile):
         cmake.build()
 
     def package(self):
-        print(self.build_folder)
-        print(os.getcwd())
-        copy(self, "*.h", dst=os.path.join(self.package_folder, "include/tinyxml"), src=self.build_folder)
-        copy(self, "*.lib", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
-        copy(self, "*.a", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
-        copy(self, "*.so", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
-        copy(self, "*.so.*", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
-        copy(self, "*.dylib", dst=os.path.join(self.package_folder, "lib"), keep_path=False, src=self.build_folder)
-        copy(self, "*.dll", dst=os.path.join(self.package_folder, "bin"), keep_path=False, src=self.build_folder)
-        print("copied")
+        cmake = CMake(self)
+        cmake.install()
+        copy(self, "*.h", dst=os.path.join(self.package_folder, "include/tinyxml"), src=self.source_folder)
 
     def package_info(self):
         self.cpp_info.libs = collect_libs(self)
