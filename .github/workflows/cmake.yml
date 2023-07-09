@@ -24,10 +24,12 @@ jobs:
 
     steps:
 
-      - name: Config DirectX
+      - name: Config Windows
         if: runner.os == 'Windows'
-        run: echo "DXSDK_DIR=$HOME/cache/" >> $GITHUB_ENV
         shell: bash
+        run: |
+          echo "DXSDK_DIR=$HOME/cache/" >> $GITHUB_ENV
+          echo "PROFILE_CONAN=conan-default" >> $GITHUB_ENV
 
       - name: Cache
         if: runner.os == 'Windows'
@@ -85,7 +87,7 @@ jobs:
 
       - name: Configure CMake
         shell: bash
-        run: cmake --preset conan-release -DCMAKE_INSTALL_PREFIX=./cmake-install -DBUILD_TESTING=ON
+        run: cmake --preset $PROFILE_CONAN -DCMAKE_INSTALL_PREFIX=./cmake-install -DBUILD_TESTING=ON
 
       - name: Build
         shell: bash
