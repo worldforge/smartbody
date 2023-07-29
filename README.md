@@ -33,7 +33,7 @@ tools/conan/build_all.sh
 Once that's done the code itself can be built through
 
 ```shell
-conan install . --build missing -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+conan install . --build missing -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True  --lockfile-partial
 cmake --preset conan-release -DCMAKE_INSTALL_PREFIX=./cmake-install
 cmake --build --preset conan-release -j --target all --target install
 ```
