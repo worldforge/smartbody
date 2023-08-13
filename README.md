@@ -88,6 +88,10 @@ still to be done.
   external", and then reformat the code.
 * Documentation is sorely lacking. This goes both for high level concepts as well as low level things such as component
   layout.
+* Work is needed in making sure SmartBody more easily can interact with game engines. There needs to be a better 
+  interface between the core of SmartBody and the physical world in which it operates. Currently, the world is expressed
+  using "sr" scene library. Instead of this tight coupling it would be beneficial if SmartBody could query an external
+  world, allowing it to be directly integrated into game engines.
 
 ## License
 
